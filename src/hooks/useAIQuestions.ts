@@ -4,10 +4,11 @@ import { toast } from 'sonner';
 
 export interface AIQuestion {
   id: string;
-  type: 'radio' | 'select' | 'checkbox';
+  type: 'radio' | 'select' | 'checkbox' | 'multiple-choice';
   label: string;
   required: boolean;
   options: string[];
+  maxSelections?: number; // For multiple-choice type
 }
 
 export interface PriceEstimate {

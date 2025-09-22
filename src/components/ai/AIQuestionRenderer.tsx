@@ -80,6 +80,47 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
           </div>
         );
 
+      case 'multiple-choice':
+        const multiSelectedValues = Array.isArray(value) ? value : [];
+        const maxSelections = question.maxSelections || 2;
+        return (
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground mb-2">
+              Select up to {maxSelections} option{maxSelections > 1 ? 's' : ''}
+            </p>
+            {question.options.map((option, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`${question.id}-${index}`}
+                  checked={multiSelectedValues.includes(option)}
+                  disabled={!multiSelectedValues.includes(option) && multiSelectedValues.length >= maxSelections}
+                  onCheckedChange={(checked) => {
+                    const newValues = checked
+                      ? [...multiSelectedValues, option]
+                      : multiSelectedValues.filter(v => v !== option);
+                    onAnswerChange(question.id, newValues);
+                  }}
+                />
+                <Label 
+                  htmlFor={`${question.id}-${index}`} 
+                  className={`text-sm ${
+                    !multiSelectedValues.includes(option) && multiSelectedValues.length >= maxSelections 
+                      ? 'text-muted-foreground' 
+                      : ''
+                  }`}
+                >
+                  {option}
+                </Label>
+              </div>
+            ))}
+            {multiSelectedValues.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {multiSelectedValues.length}/{maxSelections} selected
+              </p>
+            )}
+          </div>
+        );
+
       default:
         return null;
     }
