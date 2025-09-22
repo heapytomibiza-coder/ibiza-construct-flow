@@ -251,7 +251,7 @@ const PostJob: React.FC = () => {
           <div className="space-y-6">
               <div className="text-center space-y-2">
                 <h2 className="text-2xl font-semibold">Tell us more about your {state.microService}</h2>
-                <div className="text-muted-foreground">AI-generated questions tailored to your specific needs</div>
+                <div className="text-muted-foreground">Hold tight while we load your questions tailored to your needs</div>
               </div>
             
             {/* AI-Generated Questions */}
