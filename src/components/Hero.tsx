@@ -1,7 +1,18 @@
 import { ArrowRight, Star, Shield, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import heroImage from '@/assets/hero-construction.jpg';
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  const handlePostProject = () => {
+    navigate('/services');
+  };
+
+  const handleBrowseProfessionals = () => {
+    navigate('/professionals');
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -52,11 +63,17 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="btn-hero group">
+            <button 
+              onClick={handlePostProject}
+              className="btn-hero group"
+            >
               Post Your Project
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-lg font-semibold border border-white/20 hover:bg-white/20 transition-all duration-300">
+            <button 
+              onClick={handleBrowseProfessionals}
+              className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-lg font-semibold border border-white/20 hover:bg-white/20 transition-all duration-300"
+            >
               Browse Professionals
             </button>
           </div>
