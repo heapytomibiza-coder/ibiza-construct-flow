@@ -150,6 +150,131 @@ const Services = () => {
           </div>
         </section>
 
+        {/* Specialized Categories Section */}
+        <section className="py-16 bg-gradient-subtle">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-display text-3xl md:text-4xl font-bold text-charcoal mb-6">
+                Specialized Categories
+              </h2>
+              <p className="text-body text-lg text-muted-foreground max-w-2xl mx-auto">
+                Professional and technical services for complex projects requiring specialized expertise
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Architects & Design */}
+              <div className="card-luxury p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Home className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-charcoal">Architects & Design</h3>
+                </div>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Architect (Home Design, Renovations, Extensions, Permits)</li>
+                  <li>• Technical Architect / Aparejador (Site Supervision, Compliance)</li>
+                  <li>• Structural Engineer (Calculations, Reinforcements, Retrofitting)</li>
+                  <li>• Civil Engineer (Drainage, Retaining Walls, Driveways)</li>
+                  <li>• MEP Engineer (Plumbing, Electrical & HVAC Design)</li>
+                  <li>• Interior Designer (Layouts, Kitchens, Bathrooms, Finishes)</li>
+                  <li>• Land Surveyor / Topógrafo (Boundaries, Topographic Surveys)</li>
+                  <li>• Geotechnical Specialist (Soil Testing, Foundations, Reports)</li>
+                </ul>
+              </div>
+
+              {/* Builders & Structural Works */}
+              <div className="card-luxury p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Hammer className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-charcoal">Builders & Structural Works</h3>
+                </div>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Groundworks & Excavation</li>
+                  <li>• Foundations & Concrete</li>
+                  <li>• Bricklaying & Masonry</li>
+                  <li>• Stonework & Restoration</li>
+                  <li>• Timber Framing & Roof Carpentry</li>
+                  <li>• Structural Steel & Welding</li>
+                  <li>• Formwork Carpentry</li>
+                </ul>
+              </div>
+
+              {/* Floors, Doors & Windows */}
+              <div className="card-luxury p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Wrench className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-charcoal">Floors, Doors & Windows</h3>
+                </div>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Tiling (Floors & Walls)</li>
+                  <li>• Wood Flooring (Solid, Engineered, Laminate)</li>
+                  <li>• Carpet & Vinyl Flooring</li>
+                  <li>• Door Fitting (Wooden, Sliding, Security)</li>
+                  <li>• Window Fitting & Glazing (PVC, Aluminium, Double/Triple)</li>
+                  <li>• Skylights & Roof Windows</li>
+                </ul>
+              </div>
+
+              {/* Kitchen & Bathroom Fitter */}
+              <div className="card-luxury p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Droplets className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-charcoal">Kitchen & Bathroom Fitter</h3>
+                </div>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Kitchen Installation</li>
+                  <li>• Kitchen Renovation</li>
+                  <li>• Bathroom Installation & Fit-Out</li>
+                  <li>• Wetrooms & Waterproofing</li>
+                  <li>• Joinery & Cabinetry</li>
+                </ul>
+              </div>
+
+              {/* Design & Planning */}
+              <div className="card-luxury p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Paintbrush className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-charcoal">Design & Planning</h3>
+                </div>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Project Planning & Design</li>
+                  <li>• Architectural Planning</li>
+                  <li>• Interior Design Services</li>
+                  <li>• Permit Applications</li>
+                  <li>• Compliance & Regulations</li>
+                </ul>
+              </div>
+
+              {/* Commercial Projects */}
+              <div className="card-luxury p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-charcoal">Commercial Projects</h3>
+                </div>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Design, Project Management & Cost Control</li>
+                  <li>• Structural & Heavy Works (Earthworks, Piling, Steel, Concrete)</li>
+                  <li>• MEP Systems (Commercial Electrical, HVAC, Plumbing, Fire Safety, ICT)</li>
+                  <li>• Interior Fit-Out (Partitions, Flooring, Joinery, Painting)</li>
+                  <li>• Exterior & Infrastructure (Facades, Roofing, Civils, Landscaping)</li>
+                  <li>• Commissioning & Facilities Management</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Main Content */}
         <section className="py-16">
           <div className="container mx-auto px-4">
