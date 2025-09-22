@@ -1,43 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Clock, Zap, Wrench } from 'lucide-react';
 import { useFeature } from '@/hooks/useFeature';
+import { useServices } from '@/hooks/useServices';
 
 const ExpressModeSection: React.FC = () => {
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
+  const { services, loading } = useServices();
 
-  const expressPresets = [
-    {
-      title: "Fix Leaky Tap",
-      category: "Plumbing",
-      icon: "💧",
-      estimatedTime: "Today",
-      estimatedPrice: "€80-150"
-    },
-    {
-      title: "Hang Pictures",
-      category: "Handyman", 
-      icon: "🖼️",
-      estimatedTime: "2 hours",
-      estimatedPrice: "€50-100"
-    },
-    {
-      title: "Fix Door Lock", 
-      category: "Handyman",
-      icon: "🔒",
-      estimatedTime: "1 hour", 
-      estimatedPrice: "€60-120"
-    },
-    {
-      title: "Install Light Fixture",
-      category: "Electrical",
-      icon: "💡",
-      estimatedTime: "2-3 hours",
-      estimatedPrice: "€100-200"
-    }
-  ];
+  // Get popular express tasks from database
+  const getExpressPresets = () => {
+    const popularMicroServices = [
+      { micro: 'Fix leaky tap', category: 'Plumbing', icon: '💧', time: 'Today', price: '€80-150' },
+      { micro: 'Hang pictures', category: 'Handyman', icon: '🖼️', time: '2 hours', price: '€50-100' },
+      { micro: 'Fix door lock', category: 'Handyman', icon: '🔒', time: '1 hour', price: '€60-120' },
+      { micro: 'Install light fixture', category: 'Electrical', icon: '💡', time: '2-3 hours', price: '€100-200' },
+    ];
+
+    // Try to match with database services, fallback to presets
+    return popularMicroServices.map(preset => {
+      const dbService = services.find(s => 
+        s.micro.toLowerCase().includes(preset.micro.toLowerCase().split(' ')[0]) ||
+        s.micro.toLowerCase() === preset.micro.toLowerCase()
+      );
+      
+      return {
+        title: dbService?.micro || preset.micro,
+        category: dbService?.category || preset.category,
+        icon: preset.icon,
+        estimatedTime: preset.time,
+        estimatedPrice: preset.price
+      };
+    });
+  };
+
+  const expressPresets = getExpressPresets();
 
   const handleExpressClick = (preset: any) => {
     if (jobWizardEnabled) {
@@ -65,25 +64,37 @@ const ExpressModeSection: React.FC = () => {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {expressPresets.map((preset, index) => (
-              <button
-                key={index}
-                onClick={() => handleExpressClick(preset)}
-                className="bg-white rounded-xl p-6 text-left hover:scale-105 transition-transform shadow-card hover:shadow-luxury group"
-              >
-                <div className="text-3xl mb-3">{preset.icon}</div>
-                <h3 className="font-semibold text-charcoal mb-2">{preset.title}</h3>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Clock className="w-3 h-3" />
-                    <span>{preset.estimatedTime}</span>
-                  </div>
-                  <div className="text-sm font-medium text-copper">
-                    {preset.estimatedPrice}
-                  </div>
+            {loading ? (
+              // Loading skeleton for express presets
+              Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="bg-white rounded-xl p-6 animate-pulse">
+                  <div className="w-8 h-8 bg-gradient-hero/20 rounded mb-3"></div>
+                  <div className="h-5 bg-gradient-hero/20 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-gradient-hero/20 rounded w-1/2 mb-1"></div>
+                  <div className="h-4 bg-gradient-hero/20 rounded w-2/3"></div>
                 </div>
-              </button>
-            ))}
+              ))
+            ) : (
+              expressPresets.map((preset, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleExpressClick(preset)}
+                  className="bg-white rounded-xl p-6 text-left hover:scale-105 transition-transform shadow-card hover:shadow-luxury group"
+                >
+                  <div className="text-3xl mb-3">{preset.icon}</div>
+                  <h3 className="font-semibold text-charcoal mb-2">{preset.title}</h3>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      <span>{preset.estimatedTime}</span>
+                    </div>
+                    <div className="text-sm font-medium text-copper">
+                      {preset.estimatedPrice}
+                    </div>
+                  </div>
+                </button>
+              ))
+            )}
           </div>
 
           <div className="mt-8">

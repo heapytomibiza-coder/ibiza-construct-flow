@@ -67,10 +67,10 @@ export const useWizard = () => {
         .select('*')
         .eq('service_id', serviceId)
         .order('version', { ascending: false })
-        .limit(1);
+        .maybeSingle();
       
       if (error) throw error;
-      setQuestions((data?.[0]?.questions as any[]) || []);
+      setQuestions((data?.questions as any[]) || []);
     } catch (err: any) {
       setError(err.message);
     } finally {
