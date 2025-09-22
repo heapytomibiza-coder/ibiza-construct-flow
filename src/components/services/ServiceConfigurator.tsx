@@ -31,6 +31,7 @@ export const ServiceConfigurator = ({ service, professionalId }: ServiceConfigur
   const [selections, setSelections] = useState<ServiceItemSelection[]>([]);
   const [addonSelections, setAddonSelections] = useState<AddonSelection[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [viewMode, setViewMode] = useState<'visual' | 'detailed'>('visual');
 
   // Calculate total price whenever selections change
   useEffect(() => {
@@ -108,26 +109,77 @@ export const ServiceConfigurator = ({ service, professionalId }: ServiceConfigur
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Configuration Section */}
       <div className="lg:col-span-2 space-y-6">
+        {/* View Mode Toggle */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-display text-2xl font-semibold text-charcoal">
+            Configure Your Service
+          </h2>
+          <div className="flex bg-sand rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('visual')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                viewMode === 'visual' 
+                  ? 'bg-white text-charcoal shadow-sm' 
+                  : 'text-muted-foreground hover:text-charcoal'
+              }`}
+            >
+              Visual Mode
+            </button>
+            <button
+              onClick={() => setViewMode('detailed')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                viewMode === 'detailed' 
+                  ? 'bg-white text-charcoal shadow-sm' 
+                  : 'text-muted-foreground hover:text-charcoal'
+              }`}
+            >
+              Detailed View
+            </button>
+          </div>
+        </div>
+
         {/* Professional Service Catalog */}
         {Object.entries(groupedItems).map(([category, categoryItems]) => (
-          <Card key={category} className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <h3 className="text-lg font-semibold">
-                {categoryLabels[category as keyof typeof categoryLabels] || category}
-              </h3>
-              <Badge variant="outline" className="text-xs">
-                {categoryItems.length} services
-              </Badge>
+          <Card key={category} className="card-luxury">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-hero rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">
+                  {category === 'labor' ? '⚒️' : category === 'materials' ? '🔧' : '✨'}
+                </span>
+              </div>
+              <div>
+                <h3 className="text-display font-semibold text-charcoal">
+                  {categoryLabels[category as keyof typeof categoryLabels] || category}
+                </h3>
+                <Badge variant="secondary" className="bg-copper/10 text-copper">
+                  {categoryItems.length} options available
+                </Badge>
+              </div>
             </div>
-            <div className="space-y-4">
-              {categoryItems.map(item => (
-                <ServiceItemCard
-                  key={item.id}
-                  item={item}
-                  onSelectionChange={handleItemChange}
-                />
-              ))}
-            </div>
+            
+            {viewMode === 'visual' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {categoryItems.map(item => (
+                  <ServiceItemCard
+                    key={item.id}
+                    item={item}
+                    onSelectionChange={handleItemChange}
+                    viewMode="visual"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {categoryItems.map(item => (
+                  <ServiceItemCard
+                    key={item.id}
+                    item={item}
+                    onSelectionChange={handleItemChange}
+                    viewMode="detailed"
+                  />
+                ))}
+              </div>
+            )}
           </Card>
         ))}
 

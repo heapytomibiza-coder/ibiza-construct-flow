@@ -1,14 +1,23 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { CalendarDays, MapPin, MessageSquare, Send, Shield, Star } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { LocationChips, PropertyTypeChips, UrgencyChips } from './QuickSelectionChips';
+import { VisualPricingTiers } from './VisualPricingTiers';
+import { 
+  ShoppingCart, 
+  Plus, 
+  Calendar, 
+  MapPin, 
+  CheckCircle,
+  Shield,
+  Clock,
+  Star,
+  Users
+} from 'lucide-react';
 
 interface ServiceItemSelection {
   itemId: string;
@@ -33,21 +42,21 @@ interface BookingRequestSummaryProps {
   addons: any[];
 }
 
-export const BookingRequestSummary = ({
-  service,
-  selections,
-  addonSelections,
-  totalPrice,
-  serviceItems,
-  addons
+export const BookingRequestSummary = ({ 
+  service, 
+  selections, 
+  addonSelections, 
+  totalPrice, 
+  serviceItems, 
+  addons 
 }: BookingRequestSummaryProps) => {
+  const navigate = useNavigate();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
-  const [locationDetails, setLocationDetails] = useState('');
-  const [specialRequirements, setSpecialRequirements] = useState('');
-  const [preferredDate, setPreferredDate] = useState('');
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
+  const [selectedPropertyType, setSelectedPropertyType] = useState<string[]>([]);
+  const [selectedUrgency, setSelectedUrgency] = useState<string[]>([]);
+  const [selectedPackage, setSelectedPackage] = useState<string>('');
 
   const formatPrice = (price: number) => `€${price.toFixed(0)}`;
 

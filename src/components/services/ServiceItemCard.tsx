@@ -28,9 +28,10 @@ interface ProfessionalServiceItem {
 interface ServiceItemCardProps {
   item: ProfessionalServiceItem;
   onSelectionChange: (itemId: string, quantity: number, price: number, pricingType: string, unitType: string) => void;
+  viewMode?: 'visual' | 'detailed';
 }
 
-export const ServiceItemCard = ({ item, onSelectionChange }: ServiceItemCardProps) => {
+export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed' }: ServiceItemCardProps) => {
   const [quantity, setQuantity] = useState(0);
 
   const formatPrice = (price: number) => `€${price.toFixed(0)}`;
@@ -96,119 +97,206 @@ export const ServiceItemCard = ({ item, onSelectionChange }: ServiceItemCardProp
 
   if (item.pricing_type === 'quote_required') {
     return (
-      <Card className="p-4 border-l-4 border-l-orange-500">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <h4 className="font-medium text-foreground">{item.name}</h4>
-              <Badge variant="outline" className="text-xs bg-orange-50 text-orange-700">
-                Quote Required
-              </Badge>
-              <Badge className={`text-xs ${getDifficultyColor()}`}>
-                {item.difficulty_level}
-              </Badge>
+      <Card className={`p-4 bg-gradient-card border-2 border-dashed border-copper/30 hover:border-copper/50 transition-colors ${
+        viewMode === 'visual' ? 'text-center' : ''
+      }`}>
+        <div className={`flex items-center ${viewMode === 'visual' ? 'flex-col gap-3' : 'justify-between'}`}>
+          {viewMode === 'visual' && (
+            <div className="w-12 h-12 bg-gradient-hero rounded-xl flex items-center justify-center">
+              <span className="text-white text-lg">💬</span>
             </div>
-            
-            {item.description && (
-              <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
-            )}
-            
+          )}
+          <div className="flex-1">
+            <h4 className="font-semibold text-charcoal">{item.name}</h4>
+            <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
             {item.estimated_duration_minutes && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Clock className="w-3 h-3" />
-                <span>Est. {formatDuration(item.estimated_duration_minutes)}</span>
+              <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground justify-center">
+                <Clock className="w-4 h-4" />
+                <span>{formatDuration(item.estimated_duration_minutes)}</span>
               </div>
             )}
           </div>
-          
-          <Button variant="outline" size="sm" className="ml-4">
-            Request Quote
-          </Button>
+          <div className={viewMode === 'visual' ? 'w-full' : 'text-right'}>
+            <Badge variant="outline" className="bg-copper/10 text-copper border-copper/30">
+              Quote Required
+            </Badge>
+          </div>
         </div>
       </Card>
     );
   }
 
-  return (
-    <Card className="p-4 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-medium text-foreground">{item.name}</h4>
-            <Badge className={`text-xs ${getDifficultyColor()}`}>
-              {item.difficulty_level}
-            </Badge>
-            {item.bulk_discount_threshold && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
-                      Bulk Discount
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{formatPrice(item.bulk_discount_price!)} each when ordering {item.bulk_discount_threshold}+ {getUnitLabel()}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+  if (viewMode === 'visual') {
+    return (
+      <Card className="card-luxury hover:scale-105 transition-all duration-300 cursor-pointer group">
+        <div className="p-4">
+          {/* Visual Header */}
+          <div className="text-center mb-4">
+            <div className="w-16 h-16 mx-auto bg-gradient-hero rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+              <span className="text-white text-2xl">
+                {item.category === 'labor' ? '⚒️' : item.category === 'materials' ? '🔧' : '✨'}
+              </span>
+            </div>
+            <h4 className="font-semibold text-charcoal">{item.name}</h4>
+            {item.difficulty_level && (
+              <Badge className={`text-xs mt-1 ${getDifficultyColor()}`}>
+                {item.difficulty_level}
+              </Badge>
             )}
           </div>
-          
-          {item.description && (
-            <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
-          )}
-          
-          <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
-            <span className="font-medium text-foreground">
-              {formatPrice(item.base_price)} {getPricingTypeLabel()}
-            </span>
+
+          {/* Description */}
+          <p className="text-sm text-muted-foreground text-center mb-4 leading-relaxed">
+            {item.description}
+          </p>
+
+          {/* Duration and Unit */}
+          <div className="flex justify-center gap-4 text-xs text-muted-foreground mb-4">
             {item.estimated_duration_minutes && (
               <div className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                <span>Est. {formatDuration(item.estimated_duration_minutes)}</span>
+                <span>{formatDuration(item.estimated_duration_minutes)}</span>
+              </div>
+            )}
+            <span>Per {getUnitLabel()}</span>
+          </div>
+
+          {/* Price Display */}
+          <div className="text-center mb-4">
+            <div className="text-copper font-bold text-lg">
+              {formatPrice(item.base_price)}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {getPricingTypeLabel()}
+            </div>
+            {item.bulk_discount_threshold && item.bulk_discount_price && (
+              <div className="text-xs text-green-600 mt-1">
+                Bulk: {formatPrice(item.bulk_discount_price!)} after {item.bulk_discount_threshold}
               </div>
             )}
           </div>
-        </div>
-        
-        <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2">
+
+          {/* Quantity Selector */}
+          <div className="flex items-center justify-center gap-3 mb-4">
             <Button
-              variant="outline"
+              variant="outline" 
               size="sm"
-              onClick={() => handleQuantityChange(quantity - 1)}
+              onClick={() => handleQuantityChange(Math.max(0, quantity - 1))}
               disabled={quantity <= 0}
-              className="h-8 w-8 p-0"
+              className="w-8 h-8 p-0 hover:bg-copper/10"
             >
               <Minus className="w-3 h-3" />
             </Button>
-            
-            <div className="text-center min-w-[60px]">
-              <div className="text-sm font-medium">{quantity}</div>
-              <div className="text-xs text-muted-foreground">{getUnitLabel()}</div>
+            <div className="w-16 h-8 bg-sand/50 rounded-md flex items-center justify-center font-medium">
+              {quantity}
             </div>
-            
             <Button
-              variant="outline"
+              variant="outline" 
               size="sm"
               onClick={() => handleQuantityChange(quantity + 1)}
-              disabled={item.max_quantity ? quantity >= item.max_quantity : false}
-              className="h-8 w-8 p-0"
+              disabled={item.max_quantity && quantity >= item.max_quantity}
+              className="w-8 h-8 p-0 hover:bg-copper/10"
             >
               <Plus className="w-3 h-3" />
             </Button>
           </div>
           
+          {/* Total Price */}
           {quantity > 0 && (
-            <div className="text-right">
-              <div className="text-lg font-semibold text-foreground">
-                {formatPrice(totalPrice())}
+            <div className="text-center p-2 bg-gradient-card rounded-lg">
+              <div className="text-sm font-semibold text-charcoal">
+                Total: {formatPrice(totalPrice())}
               </div>
-              {item.bulk_discount_threshold && quantity >= item.bulk_discount_threshold && (
-                <div className="text-xs text-green-600">Bulk discount applied!</div>
-              )}
             </div>
           )}
+        </div>
+      </Card>
+    );
+  }
+
+  // Detailed view (original layout)
+  return (
+    <Card className="card-luxury hover:shadow-card transition-shadow">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-3">
+            <h4 className="font-semibold text-charcoal text-lg">{item.name}</h4>
+            {item.difficulty_level && (
+              <Badge 
+                variant="outline" 
+                className={`text-xs px-2 py-1 ${getDifficultyColor()}`}
+              >
+                {item.difficulty_level}
+              </Badge>
+            )}
+          </div>
+          
+          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            {item.description}
+          </p>
+
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+            {item.estimated_duration_minutes && (
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                <span>{formatDuration(item.estimated_duration_minutes)}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1">
+              <span>Per {getUnitLabel()}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-right min-w-[140px]">
+          <div className="mb-4">
+            <div className="text-right">
+              <span className="text-copper font-bold text-xl">
+                {formatPrice(item.base_price)}
+              </span>
+              <div className="text-xs text-muted-foreground mt-1">
+                {getPricingTypeLabel()}
+              </div>
+            </div>
+            
+            {item.bulk_discount_threshold && item.bulk_discount_price && (
+              <div className="text-xs text-green-600 mt-1">
+                {formatPrice(item.bulk_discount_price!)} each after {item.bulk_discount_threshold}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline" 
+                size="sm"
+                onClick={() => handleQuantityChange(Math.max(0, quantity - 1))}
+                disabled={quantity <= 0}
+                className="w-8 h-8 p-0"
+              >
+                <Minus className="w-3 h-3" />
+              </Button>
+              <span className="w-12 text-center font-medium">{quantity}</span>
+              <Button
+                variant="outline" 
+                size="sm"
+                onClick={() => handleQuantityChange(quantity + 1)}
+                disabled={item.max_quantity && quantity >= item.max_quantity}
+                className="w-8 h-8 p-0"
+              >
+                <Plus className="w-3 h-3" />
+              </Button>
+            </div>
+            
+            {quantity > 0 && (
+              <div className="text-center">
+                <div className="text-sm font-semibold text-charcoal">
+                  Total: {formatPrice(totalPrice())}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       
