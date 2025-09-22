@@ -1,13 +1,12 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export function useFeature(key: string, defaultValue = false) {
-  const [enabled, setEnabled] = React.useState(defaultValue);
+  const [enabled, setEnabled] = useState(defaultValue);
 
-  React.useEffect(() => {
-    const channel = supabase.channel(`ff:${key}`);
-    
-    (async () => {
+  useEffect(() => {
+    // Simple feature flag fetch without realtime subscription
+    const fetchFeatureFlag = async () => {
       try {
         const { data } = await supabase
           .from('feature_flags')
@@ -15,21 +14,16 @@ export function useFeature(key: string, defaultValue = false) {
           .eq('key', key)
           .single();
         
-        if (data) setEnabled(!!data.enabled);
+        if (data) {
+          setEnabled(!!data.enabled);
+        }
       } catch (error) {
         console.warn(`Feature flag ${key} not found, using default:`, defaultValue);
         setEnabled(defaultValue);
       }
-    })();
-
-    channel.on('postgres_changes',
-      { event: 'UPDATE', schema: 'public', table: 'feature_flags', filter: `key=eq.${key}` },
-      (payload) => setEnabled((payload.new as any).enabled)
-    ).subscribe();
-
-    return () => { 
-      channel.unsubscribe(); 
     };
+
+    fetchFeatureFlag();
   }, [key, defaultValue]);
 
   return enabled;
