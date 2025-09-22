@@ -24,7 +24,7 @@ export const generalQuestions: Question[] = [
   {
     id: 'description',
     type: 'textarea',
-    label: 'Describe what you need done',
+    label: 'Any other details needed?',
     placeholder: 'Please provide details about the work needed, location, any specific requirements...',
     required: true,
   },
