@@ -27,6 +27,7 @@ import Professionals from "./pages/Professionals";
 import ProfessionalProfile from "./pages/ProfessionalProfile";
 import HowItWorks from "./pages/HowItWorks";
 import Contact from "./pages/Contact";
+import SpecialistCategories from "./pages/SpecialistCategories";
 // import { useFeature } from "./hooks/useFeature"; // temporarily disabled
 
 export default function App() {
@@ -44,6 +45,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/specialist-categories" element={<SpecialistCategories />} />
           <Route path="/professionals" element={<Professionals />} />
           <Route path="/professional/:id" element={<ProfessionalProfile />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
