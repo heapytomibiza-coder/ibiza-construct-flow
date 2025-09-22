@@ -234,67 +234,117 @@ const PostJob: React.FC = () => {
         );
 
       case 4:
-        // Job Details Step - Let client describe their job
+        // Service-Specific Questions Step
+        if (!questions || questions.length === 0) {
+          return (
+            <div className="space-y-6">
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-semibold">Loading questions...</h2>
+                <p className="text-muted-foreground">Getting specific questions for {state.microService}</p>
+              </div>
+            </div>
+          );
+        }
+
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-semibold">Tell us about your job</h2>
-              <p className="text-muted-foreground">Describe what you need done so professionals can provide accurate quotes</p>
+              <h2 className="text-2xl font-semibold">Tell us more about your {state.microService}</h2>
+              <p className="text-muted-foreground">Help professionals understand exactly what you need</p>
             </div>
             
             <Card className="p-6">
               <div className="space-y-6">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Job Title</label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Fix leaky kitchen faucet"
-                    value={state.generalAnswers.title || ''}
-                    onChange={(e) => handleGeneralAnswerChange('title', e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
+                {questions.map((question: any, index: number) => (
+                  <div key={question.id || index}>
+                    <label className="text-sm font-medium mb-3 block">
+                      {question.question}
+                      {question.required && <span className="text-destructive ml-1">*</span>}
+                    </label>
+                    
+                    {question.type === 'multiple_choice' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {question.options?.map((option: string, optionIndex: number) => (
+                          <Card
+                            key={optionIndex}
+                            className={`p-4 cursor-pointer hover:shadow-md transition-all border-2 ${
+                              state.microAnswers[question.id] === option
+                                ? 'border-primary bg-primary/5'
+                                : 'hover:border-primary/20'
+                            }`}
+                            onClick={() => handleMicroAnswerChange(question.id, option)}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-4 h-4 rounded-full border-2 ${
+                                state.microAnswers[question.id] === option
+                                  ? 'bg-primary border-primary'
+                                  : 'border-muted-foreground'
+                              }`} />
+                              <span className="text-sm">{option}</span>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {question.type === 'text' && (
+                      <input
+                        type="text"
+                        placeholder={question.placeholder || "Enter your answer"}
+                        value={state.microAnswers[question.id] || ''}
+                        onChange={(e) => handleMicroAnswerChange(question.id, e.target.value)}
+                        className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      />
+                    )}
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Detailed Description</label>
-                  <textarea
-                    placeholder="Describe the work needed, any specific requirements, timeline, etc."
-                    value={state.generalAnswers.description || ''}
-                    onChange={(e) => handleGeneralAnswerChange('description', e.target.value)}
-                    rows={4}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  />
-                </div>
+                    {question.type === 'select' && (
+                      <select
+                        value={state.microAnswers[question.id] || ''}
+                        onChange={(e) => handleMicroAnswerChange(question.id, e.target.value)}
+                        className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      >
+                        <option value="">Select an option</option>
+                        {question.options?.map((option: string, optionIndex: number) => (
+                          <option key={optionIndex} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                ))}
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Budget Range (Optional)</label>
-                  <select
-                    value={state.generalAnswers.budget || ''}
-                    onChange={(e) => handleGeneralAnswerChange('budget', e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  >
-                    <option value="">Select budget range</option>
-                    <option value="under-100">Under €100</option>
-                    <option value="100-250">€100 - €250</option>
-                    <option value="250-500">€250 - €500</option>
-                    <option value="500-1000">€500 - €1,000</option>
-                    <option value="over-1000">Over €1,000</option>
-                    <option value="open">Open to proposals</option>
-                  </select>
-                </div>
+                {/* Add basic job details if not covered by service questions */}
+                <div className="border-t pt-6 mt-6">
+                  <h3 className="font-medium mb-4">Additional Details</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Job Title</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., Replace kitchen tiles"
+                        value={state.generalAnswers.title || state.microService}
+                        onChange={(e) => handleGeneralAnswerChange('title', e.target.value)}
+                        className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      />
+                    </div>
 
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Urgency</label>
-                  <select
-                    value={state.generalAnswers.urgency || 'flexible'}
-                    onChange={(e) => handleGeneralAnswerChange('urgency', e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  >
-                    <option value="asap">ASAP</option>
-                    <option value="this-week">This week</option>
-                    <option value="this-month">This month</option>
-                    <option value="flexible">Flexible</option>
-                  </select>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Budget Range (Optional)</label>
+                      <select
+                        value={state.generalAnswers.budget || ''}
+                        onChange={(e) => handleGeneralAnswerChange('budget', e.target.value)}
+                        className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      >
+                        <option value="">Select budget range</option>
+                        <option value="under-100">Under €100</option>
+                        <option value="100-250">€100 - €250</option>
+                        <option value="250-500">€250 - €500</option>
+                        <option value="500-1000">€500 - €1,000</option>
+                        <option value="over-1000">Over €1,000</option>
+                        <option value="open">Open to proposals</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -306,7 +356,7 @@ const PostJob: React.FC = () => {
               </Button>
               <Button 
                 onClick={nextStep}
-                disabled={!state.generalAnswers.title || !state.generalAnswers.description}
+                disabled={!state.generalAnswers.title}
               >
                 Continue
                 <ArrowRight className="w-4 h-4 ml-2" />
