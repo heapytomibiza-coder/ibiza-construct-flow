@@ -53,6 +53,18 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             <a href="/" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               Home
             </a>
+            <a href="/services" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              Services
+            </a>
+            <a href="/professionals" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              Professionals
+            </a>
+            <a href="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              How It Works
+            </a>
+            <a href="/contact" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              Contact
+            </a>
           </nav>
 
           {/* CTA Buttons / User Menu */}
@@ -123,6 +135,18 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             <nav className="flex flex-col space-y-4">
               <a href="/" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 Home
+              </a>
+              <a href="/services" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                Services
+              </a>
+              <a href="/professionals" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                Professionals
+              </a>
+              <a href="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                How It Works
+              </a>
+              <a href="/contact" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                Contact
               </a>
               <div className="flex flex-col space-y-3 pt-4">
                 {user ? (
