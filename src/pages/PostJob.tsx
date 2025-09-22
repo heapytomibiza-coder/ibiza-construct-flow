@@ -162,6 +162,15 @@ const PostJob: React.FC = () => {
                 </Card>
               ))}
             </div>
+            
+            <div className="text-center mt-8 pt-6 border-t border-border/50">
+              <p className="text-sm text-muted-foreground mb-3">
+                Can't find what you are looking for?
+              </p>
+              <Button variant="outline" size="sm">
+                Browse Specialized Categories
+              </Button>
+            </div>
           </div>
         );
 
