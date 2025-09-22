@@ -10,6 +10,7 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useFeature } from '@/hooks/useFeature';
+import { useServices } from '@/hooks/useServices';
 
 interface ServicePageProps {}
 
@@ -18,120 +19,87 @@ const ServicePage: React.FC<ServicePageProps> = () => {
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
+  const { getServiceCards, getServicesByCategory, loading } = useServices();
 
-  const serviceData: Record<string, any> = {
-    handyman: {
-      icon: Wrench,
-      title: "Handyman Services",
-      description: "Quick fixes, small repairs, and maintenance tasks for your Ibiza property",
-      category: "Handyman",
-      popularTasks: [
-        "Fix leaky tap", "Hang pictures", "Repair fence", "Install shelves", 
-        "Fix door lock", "Paint touch-ups", "Replace light fixtures"
-      ],
-      packages: [
-        {
-          name: "Essential",
-          price: "€50-150",
-          duration: "2-4 hours",
-          features: ["Basic repairs", "Standard tools included", "Clean-up"]
-        },
-        {
-          name: "Premium", 
-          price: "€150-350",
-          duration: "Half day",
-          features: ["Complex repairs", "Professional tools", "Parts sourcing", "Warranty"]
-        },
-        {
-          name: "Bespoke",
-          price: "€350+",
-          duration: "Full day+",
-          features: ["Custom solutions", "Multiple tasks", "Project planning", "Follow-up visits"]
-        }
-      ]
-    },
-    plumbing: {
-      icon: Droplets,
-      title: "Plumbing Services",
-      description: "Professional plumbing installation, repairs, and maintenance",
-      category: "Plumbing",
-      popularTasks: [
-        "Fix leaky tap", "Unblock drain", "Install toilet", "Repair shower", 
-        "Replace pipes", "Fix water heater", "Install dishwasher"
-      ],
-      packages: [
-        {
-          name: "Essential",
-          price: "€80-200",
-          duration: "1-3 hours",
-          features: ["Basic repairs", "Standard parts", "Call-out included"]
-        },
-        {
-          name: "Premium",
-          price: "€200-500", 
-          duration: "Half day",
-          features: ["Advanced repairs", "Quality parts", "Guarantee", "Emergency service"]
-        },
-        {
-          name: "Bespoke",
-          price: "€500+",
-          duration: "1-3 days",
-          features: ["Full installations", "Design consultation", "Premium materials", "Project warranty"]
-        }
-      ]
-    },
-    electrical: {
-      icon: Zap,
-      title: "Electrical Services",
-      description: "Safe and certified electrical installation, repairs, and inspections",
-      category: "Electrical",
-      popularTasks: [
-        "Install light fixture", "Fix power outlet", "Rewiring", "Fuse box upgrade",
-        "Install ceiling fan", "Security lighting", "Smart home setup"
-      ],
-      packages: [
-        {
-          name: "Essential",
-          price: "€100-250",
-          duration: "2-4 hours", 
-          features: ["Basic installations", "Safety testing", "Certified work"]
-        },
-        {
-          name: "Premium",
-          price: "€250-800",
-          duration: "Full day",
-          features: ["Complex installations", "Upgraded materials", "Compliance certificate", "Follow-up"]
-        },
-        {
-          name: "Bespoke", 
-          price: "€800+",
-          duration: "2-5 days",
-          features: ["Full rewiring", "Smart systems", "Design consultation", "Extended warranty"]
-        }
-      ]
-    }
+  const iconMap = {
+    'Wrench': Wrench,
+    'Home': Home,
+    'Zap': Zap,
+    'Paintbrush': Paintbrush,
+    'Hammer': Hammer,
+    'Droplets': Droplets,
+    'Thermometer': Thermometer,
+    'Car': Car
   };
 
-  const currentService = serviceData[slug || ''] || serviceData.handyman;
-  const IconComponent = currentService.icon;
+  // Find the service by slug
+  const serviceCards = getServiceCards();
+  const currentServiceCard = serviceCards.find(s => s.slug === slug) || serviceCards[0];
+  const currentCategory = currentServiceCard?.category || 'Handyman';
+  const categoryServices = getServicesByCategory(currentCategory);
+  
+  const IconComponent = iconMap[currentServiceCard?.icon as keyof typeof iconMap] || Wrench;
+
+  // Get popular tasks from database services
+  const popularTasks = categoryServices
+    .slice(0, 8) // Limit to 8 tasks
+    .map(service => service.micro);
+
+  const packages = [
+    {
+      name: "Essential",
+      price: "€50-150",
+      duration: "2-4 hours",
+      features: ["Basic repairs", "Standard tools included", "Clean-up"]
+    },
+    {
+      name: "Premium", 
+      price: "€150-350",
+      duration: "Half day",
+      features: ["Complex repairs", "Professional tools", "Parts sourcing", "Warranty"]
+    },
+    {
+      name: "Bespoke",
+      price: "€350+",
+      duration: "Full day+",
+      features: ["Custom solutions", "Multiple tasks", "Project planning", "Follow-up visits"]
+    }
+  ];
 
   const handleTaskClick = (task: string) => {
     if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(currentService.category)}&preset=${encodeURIComponent(task)}`);
+      navigate(`/post?category=${encodeURIComponent(currentCategory)}&preset=${encodeURIComponent(task)}`);
     }
   };
 
   const handlePackageClick = (packageName: string) => {
     if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(currentService.category)}&package=${encodeURIComponent(packageName)}`);
+      navigate(`/post?category=${encodeURIComponent(currentCategory)}&package=${encodeURIComponent(packageName)}`);
     }
   };
 
   const handleGetQuoteClick = () => {
     if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(currentService.category)}`);
+      navigate(`/post?category=${encodeURIComponent(currentCategory)}`);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
+        <main className="pt-20">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-copper mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading service details...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,11 +115,11 @@ const ServicePage: React.FC<ServicePageProps> = () => {
               </div>
               
               <h1 className="text-display text-4xl md:text-5xl font-bold text-charcoal mb-4">
-                {currentService.title}
+                {currentServiceCard?.title || 'Service'}
               </h1>
               
               <p className="text-body text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                {currentService.description}
+                {currentServiceCard?.description || 'Professional services for your Ibiza property'}
               </p>
 
               <div className="flex items-center justify-center gap-6 mb-8">
@@ -185,15 +153,21 @@ const ServicePage: React.FC<ServicePageProps> = () => {
               </h2>
               
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {currentService.popularTasks.map((task: string, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => handleTaskClick(task)}
-                    className="p-4 bg-white rounded-lg border border-sand-dark/20 hover:border-copper/30 hover:shadow-card transition-all text-sm text-center hover:scale-105"
-                  >
-                    {task}
-                  </button>
-                ))}
+                {popularTasks.length > 0 ? (
+                  popularTasks.map((task: string, index: number) => (
+                    <button
+                      key={index}
+                      onClick={() => handleTaskClick(task)}
+                      className="p-4 bg-white rounded-lg border border-sand-dark/20 hover:border-copper/30 hover:shadow-card transition-all text-sm text-center hover:scale-105"
+                    >
+                      {task}
+                    </button>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center text-muted-foreground">
+                    <p>Loading popular tasks...</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -208,7 +182,7 @@ const ServicePage: React.FC<ServicePageProps> = () => {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {currentService.packages.map((pkg: any, index: number) => (
+                {packages.map((pkg: any, index: number) => (
                   <Card 
                     key={index}
                     className={`relative overflow-hidden cursor-pointer hover:scale-105 transition-transform ${

@@ -1,85 +1,28 @@
 import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFeature } from '@/hooks/useFeature';
+import { useServices } from '@/hooks/useServices';
 
 const Services = () => {
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
+  const { getServiceCards, loading } = useServices();
   
-  const services = [
-    {
-      icon: Wrench,
-      title: "Handyman Services",
-      description: "Quick fixes, small repairs, and maintenance tasks",
-      priceRange: "€50 - €500",
-      popular: true,
-      category: "Handyman",
-      slug: "handyman"
-    },
-    {
-      icon: Home,
-      title: "Home Renovations", 
-      description: "Kitchen, bathroom, and complete home makeovers",
-      priceRange: "€2K - €50K",
-      popular: false,
-      category: "Construction",
-      slug: "renovation"
-    },
-    {
-      icon: Zap,
-      title: "Electrical Work",
-      description: "Installation, repairs, and safety inspections",
-      priceRange: "€100 - €5K",
-      popular: false,
-      category: "Electrical",
-      slug: "electrical"
-    },
-    {
-      icon: Paintbrush,
-      title: "Painting & Decorating",
-      description: "Interior and exterior painting, wallpaper, finishes",
-      priceRange: "€200 - €3K",
-      popular: true,
-      category: "Painting",
-      slug: "painting"
-    },
-    {
-      icon: Hammer,
-      title: "Construction",
-      description: "New builds, extensions, and structural work",
-      priceRange: "€10K - €1M+",
-      popular: false,
-      category: "Construction",
-      slug: "construction"
-    },
-    {
-      icon: Droplets,
-      title: "Plumbing",
-      description: "Installation, repairs, and bathroom fitting",
-      priceRange: "€80 - €2K",
-      popular: true,
-      category: "Plumbing",
-      slug: "plumbing"
-    },
-    {
-      icon: Thermometer,
-      title: "HVAC Systems",
-      description: "Air conditioning, heating, and ventilation",
-      priceRange: "€300 - €8K",
-      popular: false,
-      category: "HVAC",
-      slug: "hvac"
-    },
-    {
-      icon: Car,
-      title: "Pool & Outdoor",
-      description: "Pool maintenance, garden landscaping, patios",
-      priceRange: "€150 - €15K",
-      popular: false,
-      category: "Outdoor",
-      slug: "outdoor"
-    }
-  ];
+  const iconMap = {
+    'Wrench': Wrench,
+    'Home': Home,
+    'Zap': Zap,
+    'Paintbrush': Paintbrush,
+    'Hammer': Hammer,
+    'Droplets': Droplets,
+    'Thermometer': Thermometer,
+    'Car': Car
+  };
+
+  const services = getServiceCards().map(service => ({
+    ...service,
+    icon: iconMap[service.icon as keyof typeof iconMap] || Wrench
+  }));
 
   const handleServiceClick = (service: any) => {
     if (jobWizardEnabled) {
@@ -111,42 +54,56 @@ const Services = () => {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((service, index) => {
-            const IconComponent = service.icon;
-            return (
-              <div
-                key={index}
-                className="card-luxury hover:scale-105 group cursor-pointer relative"
-                onClick={() => handleServiceClick(service)}
-              >
-                {service.popular && (
-                  <div className="absolute -top-3 -right-3 bg-gradient-hero text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    Popular
-                  </div>
-                )}
-                
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="card-luxury animate-pulse">
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-gradient-hero rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <IconComponent className="w-8 h-8 text-white" />
-                  </div>
-                  
-                  <h3 className="text-display font-semibold text-charcoal mb-2 text-lg">
-                    {service.title}
-                  </h3>
-                  
-                  <p className="text-body text-muted-foreground text-sm mb-4 leading-relaxed">
-                    {service.description}
-                  </p>
-                  
-                  <div className="mt-auto">
-                    <span className="text-copper font-semibold text-sm">
-                      {service.priceRange}
-                    </span>
-                  </div>
+                  <div className="w-16 h-16 bg-gradient-hero/20 rounded-xl mb-4"></div>
+                  <div className="h-6 bg-gradient-hero/20 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-gradient-hero/20 rounded w-full mb-4"></div>
+                  <div className="h-4 bg-gradient-hero/20 rounded w-1/2"></div>
                 </div>
               </div>
-            );
-          })}
+            ))
+          ) : (
+            services.map((service, index) => {
+              const IconComponent = service.icon;
+              return (
+                <div
+                  key={index}
+                  className="card-luxury hover:scale-105 group cursor-pointer relative"
+                  onClick={() => handleServiceClick(service)}
+                >
+                  {service.popular && (
+                    <div className="absolute -top-3 -right-3 bg-gradient-hero text-white px-3 py-1 rounded-full text-xs font-semibold">
+                      Popular
+                    </div>
+                  )}
+                  
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-16 h-16 bg-gradient-hero rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    <h3 className="text-display font-semibold text-charcoal mb-2 text-lg">
+                      {service.title}
+                    </h3>
+                    
+                    <p className="text-body text-muted-foreground text-sm mb-4 leading-relaxed">
+                      {service.description}
+                    </p>
+                    
+                    <div className="mt-auto">
+                      <span className="text-copper font-semibold text-sm">
+                        {service.priceRange}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         {/* CTA */}
