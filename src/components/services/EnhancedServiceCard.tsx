@@ -14,6 +14,8 @@ interface ServiceCardProps {
     rating?: number;
     completedJobs?: number;
     responseTime?: string;
+    micro?: string;
+    slug?: string;
   };
   onViewService: () => void;
   onBookNow: () => void;
@@ -21,6 +23,15 @@ interface ServiceCardProps {
 
 export const EnhancedServiceCard = ({ service, onViewService, onBookNow }: ServiceCardProps) => {
   const IconComponent = service.icon;
+
+  const handleViewDetails = () => {
+    // Navigate to detailed service page if we have micro and slug
+    if (service.micro && service.slug) {
+      window.location.href = `/service/${encodeURIComponent(service.micro)}/${service.slug}`;
+    } else {
+      onViewService();
+    }
+  };
 
   return (
     <Card className="card-luxury hover:scale-105 group cursor-pointer relative transition-all duration-300">
@@ -87,7 +98,7 @@ export const EnhancedServiceCard = ({ service, onViewService, onBookNow }: Servi
             <Button 
               variant="outline" 
               className="flex-1 group/btn"
-              onClick={onViewService}
+              onClick={handleViewDetails}
             >
               View Details
               <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform" />

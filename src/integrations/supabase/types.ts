@@ -256,6 +256,51 @@ export type Database = {
           },
         ]
       }
+      professional_deals: {
+        Row: {
+          created_at: string
+          deal_type: string
+          description: string | null
+          duration_hours: number | null
+          id: string
+          includes: Json | null
+          is_active: boolean | null
+          price: number
+          professional_id: string
+          service_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deal_type?: string
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          includes?: Json | null
+          is_active?: boolean | null
+          price: number
+          professional_id: string
+          service_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deal_type?: string
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          includes?: Json | null
+          is_active?: boolean | null
+          price?: number
+          professional_id?: string
+          service_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       professional_profiles: {
         Row: {
           created_at: string | null
@@ -321,6 +366,84 @@ export type Database = {
           preferred_language?: string | null
           roles?: Json | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      service_addons: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_popular: boolean | null
+          name: string
+          price: number
+          service_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_popular?: boolean | null
+          name: string
+          price: number
+          service_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_popular?: boolean | null
+          name?: string
+          price?: number
+          service_id?: string
+        }
+        Relationships: []
+      }
+      service_options: {
+        Row: {
+          base_price: number
+          category: string
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          is_required: boolean | null
+          max_quantity: number | null
+          min_quantity: number | null
+          name: string
+          price_per_unit: number | null
+          service_id: string
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          category: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_required?: boolean | null
+          max_quantity?: number | null
+          min_quantity?: number | null
+          name: string
+          price_per_unit?: number | null
+          service_id: string
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_required?: boolean | null
+          max_quantity?: number | null
+          min_quantity?: number | null
+          name?: string
+          price_per_unit?: number | null
+          service_id?: string
+          updated_at?: string
         }
         Relationships: []
       }

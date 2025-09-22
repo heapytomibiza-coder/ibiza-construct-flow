@@ -20,6 +20,7 @@ import ProfessionalDashboardPage from "./pages/ProfessionalDashboardPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import PostJob from "./pages/PostJob";
 import ServicePage from "./pages/ServicePage";
+import { ServiceDetailPage } from "./pages/ServiceDetailPage";
 import AuthPage from "./pages/AuthPage";
 import Services from "./pages/Services";
 import Professionals from "./pages/Professionals";
@@ -58,6 +59,7 @@ export default function App() {
           
           {/* Service Pages */}
           <Route path="/service/:slug" element={<ServicePage />} />
+          <Route path="/service/:micro/:slug" element={<ServiceDetailPage />} />
           
           {/* Job Wizard - Feature Flagged */}
           {jobWizardEnabled && (

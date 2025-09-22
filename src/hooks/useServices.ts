@@ -10,6 +10,7 @@ interface Service {
 }
 
 interface ServiceWithIcon {
+  id: string;
   category: string;
   title: string;
   description: string;
@@ -17,6 +18,7 @@ interface ServiceWithIcon {
   popular: boolean;
   slug: string;
   icon: string;
+  micro: string;
 }
 
 export const useServices = () => {
@@ -73,17 +75,17 @@ export const useServices = () => {
   // Map database micro-services to UI service cards  
   const getServiceCards = (): ServiceWithIcon[] => {
     // Return cards for each micro-service instead of categories
-    const serviceCards = services.map(service => ({
+    return services.map(service => ({
+      id: service.id,
       category: service.category,
       title: service.micro,
       description: getMicroServiceDescription(service.micro, service.category),
       priceRange: getMicroServicePriceRange(service.micro, service.category),
       popular: isPopularMicroService(service.micro),
       slug: getServiceSlugByCategory(service.category),
-      icon: getMicroServiceIconName(service.micro, service.category)
+      icon: getMicroServiceIconName(service.micro, service.category),
+      micro: service.micro
     }));
-    
-    return serviceCards;
   };
 
   const getMicroServiceDescription = (micro: string, category: string): string => {
