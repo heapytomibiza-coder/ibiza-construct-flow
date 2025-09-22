@@ -167,7 +167,11 @@ const PostJob: React.FC = () => {
               <p className="text-sm text-muted-foreground mb-3">
                 Can't find what you are looking for?
               </p>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/services')}
+              >
                 Browse Specialized Categories
               </Button>
             </div>
