@@ -26,10 +26,11 @@ import Services from "./pages/Services";
 import Professionals from "./pages/Professionals";
 import HowItWorks from "./pages/HowItWorks";
 import Contact from "./pages/Contact";
-import { useFeature } from "./hooks/useFeature";
+// import { useFeature } from "./hooks/useFeature"; // temporarily disabled
 
 export default function App() {
-  const jobWizardEnabled = useFeature('ff.jobWizardV2');
+  // Temporarily disable feature flag to isolate React module issue
+  const jobWizardEnabled = false; // useFeature('ff.jobWizardV2');
   
   return (
     <TooltipProvider>
