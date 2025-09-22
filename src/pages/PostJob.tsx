@@ -234,89 +234,83 @@ const PostJob: React.FC = () => {
         );
 
       case 4:
-        // Package Selection Step
-        const packages = [
-          {
-            name: "Essential",
-            price: "€50-150",
-            duration: "2-4 hours",
-            features: ["Basic work", "Standard tools", "Clean-up"],
-            description: "Perfect for simple tasks and quick fixes"
-          },
-          {
-            name: "Premium", 
-            price: "€150-500",
-            duration: "Half day",
-            features: ["Complex work", "Professional tools", "Parts sourcing", "Warranty"],
-            description: "Comprehensive service with quality guarantee",
-            popular: true
-          },
-          {
-            name: "Bespoke",
-            price: "€500+", 
-            duration: "Full day+",
-            features: ["Custom solutions", "Multiple tasks", "Project planning", "Follow-up visits"],
-            description: "Tailored service for complex projects"
-          }
-        ];
-
+        // Job Details Step - Let client describe their job
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-semibold">Choose your package</h2>
-              <p className="text-muted-foreground">Select the level of service that fits your needs</p>
+              <h2 className="text-2xl font-semibold">Tell us about your job</h2>
+              <p className="text-muted-foreground">Describe what you need done so professionals can provide accurate quotes</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {packages.map((pkg) => (
-                <Card 
-                  key={pkg.name}
-                  className={`relative cursor-pointer hover:shadow-md transition-all border-2 ${
-                    state.generalAnswers.package === pkg.name 
-                      ? 'border-primary shadow-md' 
-                      : 'hover:border-primary/20'
-                  } ${pkg.popular ? 'border-copper shadow-luxury' : ''}`}
-                  onClick={() => {
-                    handleGeneralAnswerChange('package', pkg.name);
-                    setTimeout(nextStep, 300);
-                  }}
-                >
-                  {pkg.popular && (
-                    <div className="absolute -top-3 -right-3 bg-gradient-hero text-white px-3 py-1 rounded-full text-xs font-semibold">
-                      Popular
-                    </div>
-                  )}
-                  
-                  <div className="p-6 text-center">
-                    <h3 className="text-xl font-semibold mb-2">{pkg.name}</h3>
-                    <div className="text-2xl font-bold text-copper mb-2">{pkg.price}</div>
-                    <p className="text-sm text-muted-foreground mb-4">{pkg.duration}</p>
-                    <p className="text-sm mb-4">{pkg.description}</p>
-                    
-                    <ul className="space-y-2 text-sm text-left">
-                      {pkg.features.map((feature, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-copper rounded-full"></div>
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <Card className="p-6">
+              <div className="space-y-6">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Job Title</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Fix leaky kitchen faucet"
+                    value={state.generalAnswers.title || ''}
+                    onChange={(e) => handleGeneralAnswerChange('title', e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Detailed Description</label>
+                  <textarea
+                    placeholder="Describe the work needed, any specific requirements, timeline, etc."
+                    value={state.generalAnswers.description || ''}
+                    onChange={(e) => handleGeneralAnswerChange('description', e.target.value)}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Budget Range (Optional)</label>
+                  <select
+                    value={state.generalAnswers.budget || ''}
+                    onChange={(e) => handleGeneralAnswerChange('budget', e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="">Select budget range</option>
+                    <option value="under-100">Under €100</option>
+                    <option value="100-250">€100 - €250</option>
+                    <option value="250-500">€250 - €500</option>
+                    <option value="500-1000">€500 - €1,000</option>
+                    <option value="over-1000">Over €1,000</option>
+                    <option value="open">Open to proposals</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Urgency</label>
+                  <select
+                    value={state.generalAnswers.urgency || 'flexible'}
+                    onChange={(e) => handleGeneralAnswerChange('urgency', e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="asap">ASAP</option>
+                    <option value="this-week">This week</option>
+                    <option value="this-month">This month</option>
+                    <option value="flexible">Flexible</option>
+                  </select>
+                </div>
+              </div>
+            </Card>
             
             <div className="flex justify-between pt-6">
               <Button variant="outline" onClick={prevStep}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
-              {state.generalAnswers.package && (
-                <Button onClick={nextStep}>
-                  Continue
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              )}
+              <Button 
+                onClick={nextStep}
+                disabled={!state.generalAnswers.title || !state.generalAnswers.description}
+              >
+                Continue
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
             </div>
           </div>
         );
@@ -368,10 +362,17 @@ const PostJob: React.FC = () => {
                   </div>
                 )}
 
-                {state.generalAnswers.package && (
+                {state.generalAnswers.budget && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Package</label>
-                    <p className="mt-1">{state.generalAnswers.package}</p>
+                    <label className="text-sm font-medium text-muted-foreground">Budget Range</label>
+                    <p className="mt-1">{state.generalAnswers.budget}</p>
+                  </div>
+                )}
+
+                {state.generalAnswers.urgency && (
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Urgency</label>
+                    <p className="mt-1 capitalize">{state.generalAnswers.urgency.replace('-', ' ')}</p>
                   </div>
                 )}
               </div>
