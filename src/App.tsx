@@ -24,6 +24,7 @@ import { ServiceDetailPage } from "./pages/ServiceDetailPage";
 import AuthPage from "./pages/AuthPage";
 import Services from "./pages/Services";
 import Professionals from "./pages/Professionals";
+import ProfessionalProfile from "./pages/ProfessionalProfile";
 import HowItWorks from "./pages/HowItWorks";
 import Contact from "./pages/Contact";
 // import { useFeature } from "./hooks/useFeature"; // temporarily disabled
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
           <Route path="/professionals" element={<Professionals />} />
+          <Route path="/professional/:id" element={<ProfessionalProfile />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
           

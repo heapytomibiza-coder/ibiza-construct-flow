@@ -1,177 +1,211 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Users, Star, Shield, Clock, Briefcase, Hammer, Zap, Droplets, Paintbrush, Wrench, Home, PenTool } from 'lucide-react';
+import { useState } from 'react';
+import { useProfessionals } from '@/hooks/useProfessionals';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useServices } from '@/hooks/useServices';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ProfessionalCard from '@/components/professionals/ProfessionalCard';
+import { 
+  Users,
+  Shield,
+  Star,
+  Clock,
+  Search,
+  Filter
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const Professionals = () => {
+export default function Professionals() {
+  const { professionals, loading } = useProfessionals();
   const navigate = useNavigate();
-  const { services, loading, getCategories } = useServices();
-  
-  // Map service categories to professional specializations
-  const categoryMappings = {
-    'Moving': {
-      icon: Briefcase,
-      title: 'Moving Specialists',
-      description: 'Professional movers and logistics experts',
-      count: '45+',
-      rating: '4.8',
-      responseTime: '2 hours'
-    },
-    'Cleaning': {
-      icon: Home,
-      title: 'Cleaning Professionals',
-      description: 'Certified cleaning and maintenance specialists',
-      count: '78+',
-      rating: '4.9',
-      responseTime: '1 hour'
-    },
-    'Delivery': {
-      icon: Users,
-      title: 'Delivery Experts',
-      description: 'Reliable delivery and courier professionals',
-      count: '32+',
-      rating: '4.7',
-      responseTime: '30 mins'
-    },
-    'Personal': {
-      icon: Star,
-      title: 'Personal Assistants',
-      description: 'Skilled personal and lifestyle assistants',
-      count: '24+',
-      rating: '4.8',
-      responseTime: '1 hour'
-    },
-    'Handyman': {
-      icon: Hammer,
-      title: 'Handyman Services',
-      description: 'Experienced handymen and repair specialists',
-      count: '89+',
-      rating: '4.9',
-      responseTime: '2 hours'
-    },
-    'Outdoor': {
-      icon: PenTool,
-      title: 'Outdoor Specialists',
-      description: 'Landscaping and outdoor maintenance experts',
-      count: '56+',
-      rating: '4.6',
-      responseTime: '4 hours'
-    }
-  };
+  const [searchTerm, setSearchTerm] = useState('');
+  const [specializationFilter, setSpecializationFilter] = useState('all');
+  const [availabilityFilter, setAvailabilityFilter] = useState('all');
 
-  const handleViewProfiles = (category: string) => {
-    navigate(`/services?category=${encodeURIComponent(category)}`);
-  };
+  // Get all unique specializations
+  const allSpecializations = Array.from(
+    new Set(
+      professionals.flatMap(p => p.specializations || [])
+    )
+  ).sort();
 
-  const categories = getCategories();
-  const professionalCategories = categories.map(category => ({
-    category,
-    ...categoryMappings[category as keyof typeof categoryMappings] || {
-      icon: Wrench,
-      title: `${category} Professionals`,
-      description: `Expert ${category.toLowerCase()} service providers`,
-      count: '25+',
-      rating: '4.7',
-      responseTime: '2 hours'
-    }
-  }));
+  // Filter professionals based on search and filters
+  const filteredProfessionals = professionals.filter(professional => {
+    const matchesSearch = !searchTerm || 
+      professional.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      professional.bio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      professional.specializations?.some(spec => 
+        spec.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+    const matchesSpecialization = specializationFilter === 'all' ||
+      professional.specializations?.includes(specializationFilter);
+
+    const matchesAvailability = availabilityFilter === 'all' ||
+      professional.availability_status === availabilityFilter;
+
+    return matchesSearch && matchesSpecialization && matchesAvailability;
+  });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="pt-20">
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h1 className="text-display text-4xl md:text-5xl font-bold text-charcoal mb-4">
-              Our Professionals
-            </h1>
-            <p className="text-body text-xl text-muted-foreground max-w-2xl mx-auto">
-              Meet our network of skilled and verified professionals ready to help with your projects
-            </p>
-          </div>
-
-          {/* Stats Overview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Users className="w-6 h-6 text-copper mr-2" />
-                <span className="text-display font-bold text-3xl text-charcoal">324+</span>
-              </div>
-              <p className="text-body text-sm text-muted-foreground">Verified Professionals</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Briefcase className="w-6 h-6 text-copper mr-2" />
-                <span className="text-display font-bold text-3xl text-charcoal">2,100+</span>
-              </div>
-              <p className="text-body text-sm text-muted-foreground">Completed Projects</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Star className="w-6 h-6 text-copper mr-2" />
-                <span className="text-display font-bold text-3xl text-charcoal">4.8/5</span>
-              </div>
-              <p className="text-body text-sm text-muted-foreground">Average Rating</p>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Shield className="w-6 h-6 text-copper mr-2" />
-                <span className="text-display font-bold text-3xl text-charcoal">100%</span>
-              </div>
-              <p className="text-body text-sm text-muted-foreground">SafePay Protected</p>
+      
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-r from-primary/10 to-secondary/10 py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-3xl mx-auto">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                Find <span className="text-primary">Trusted Professionals</span> Near You
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8">
+                Connect with verified local experts for all your service needs. 
+                Quality work, competitive prices, and reliable service guaranteed.
+              </p>
             </div>
           </div>
+        </section>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-body text-muted-foreground">Loading professional categories...</p>
+        {/* Stats Overview */}
+        <section className="py-12 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mx-auto mb-3">
+                  <Users className="w-6 h-6 text-primary" />
+                </div>
+                <div className="text-2xl font-bold">{professionals.length}</div>
+                <div className="text-sm text-muted-foreground">Verified Professionals</div>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
+                  <Shield className="w-6 h-6 text-green-600" />
+                </div>
+                <div className="text-2xl font-bold">{professionals.reduce((sum, p) => sum + (p.total_jobs_completed || 0), 0)}</div>
+                <div className="text-sm text-muted-foreground">Completed Projects</div>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-full mx-auto mb-3">
+                  <Star className="w-6 h-6 text-yellow-600" />
+                </div>
+                <div className="text-2xl font-bold">
+                  {professionals.length > 0 
+                    ? (professionals.reduce((sum, p) => sum + (p.rating || 0), 0) / professionals.length).toFixed(1)
+                    : '4.8'
+                  }
+                </div>
+                <div className="text-sm text-muted-foreground">Average Rating</div>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-3">
+                  <Clock className="w-6 h-6 text-blue-600" />
+                </div>
+                <div className="text-2xl font-bold">24/7</div>
+                <div className="text-sm text-muted-foreground">SafePay Protection</div>
+              </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {professionalCategories.map((prof) => {
-                const IconComponent = prof.icon;
-                return (
-                  <div key={prof.category} className="card-luxury text-center hover:scale-105 transition-luxury">
-                    <div className="w-20 h-20 bg-gradient-hero rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <IconComponent className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-display text-xl font-semibold mb-2 text-charcoal">{prof.title}</h3>
-                    <p className="text-body text-muted-foreground mb-4">{prof.description}</p>
-                    
-                    {/* Professional Stats */}
-                    <div className="flex justify-center items-center space-x-6 mb-6 text-sm">
-                      <div className="flex items-center">
-                        <Users className="w-4 h-4 text-copper mr-1" />
-                        <span className="text-body font-medium text-charcoal">{prof.count}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 text-copper mr-1" />
-                        <span className="text-body font-medium text-charcoal">{prof.rating}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 text-copper mr-1" />
-                        <span className="text-body font-medium text-charcoal">{prof.responseTime}</span>
-                      </div>
-                    </div>
-                    
-                    <button 
-                      className="btn-hero w-full"
-                      onClick={() => handleViewProfiles(prof.category)}
-                    >
-                      View Professionals
-                    </button>
+          </div>
+        </section>
+
+        {/* Search and Filters */}
+        <section className="py-8 bg-muted/50">
+          <div className="container mx-auto px-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Search className="w-5 h-5" />
+                  Find the Right Professional
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-4 gap-4">
+                  <div className="md:col-span-2">
+                    <Input
+                      placeholder="Search by name, skills, or services..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full"
+                    />
                   </div>
-                );
-              })}
+                  
+                  <Select value={specializationFilter} onValueChange={setSpecializationFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Specialization" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Specializations</SelectItem>
+                      {allSpecializations.map((spec) => (
+                        <SelectItem key={spec} value={spec}>
+                          {spec.charAt(0).toUpperCase() + spec.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Availability" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Availability</SelectItem>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="busy">Busy</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Professionals Grid */}
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold">Available Professionals</h2>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Filter className="w-4 h-4" />
+                <span>{filteredProfessionals.length} professionals found</span>
+              </div>
             </div>
-          )}
-        </div>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : filteredProfessionals.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground mb-4">No professionals found matching your criteria.</p>
+                <Button 
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSpecializationFilter('all');
+                    setAvailabilityFilter('all');
+                  }}
+                  variant="outline"
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-6">
+                {filteredProfessionals.map((professional) => (
+                  <ProfessionalCard key={professional.id} professional={professional} />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       </main>
+      
       <Footer />
     </div>
   );
-};
-
-export default Professionals;
+}
