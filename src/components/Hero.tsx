@@ -9,8 +9,8 @@ const Hero = () => {
     navigate('/post');
   };
 
-  const handleBrowseProfessionals = () => {
-    navigate('/professionals');
+  const handleBrowseServices = () => {
+    navigate('/services');
   };
 
   return (
@@ -71,10 +71,10 @@ const Hero = () => {
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
             <button 
-              onClick={handleBrowseProfessionals}
+              onClick={handleBrowseServices}
               className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-lg font-semibold border border-white/20 hover:bg-white/20 transition-all duration-300"
             >
-              Browse Professionals
+              Browse Services
             </button>
           </div>
 
