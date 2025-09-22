@@ -78,21 +78,33 @@ const TwoSectionQuestionsStep: React.FC<TwoSectionQuestionsStepProps> = ({
         );
 
       case 'radio':
+        const isOtherSelected = question.allowOther && value === 'Other';
         return (
-          <RadioGroup
-            value={value || ''}
-            onValueChange={(val) => onChange(question.id, val)}
-            className="space-y-2"
-          >
-            {question.options?.map((option) => (
-              <div key={option} className="flex items-center space-x-2">
-                <RadioGroupItem value={option} id={`${questionKey}-${option}`} />
-                <Label htmlFor={`${questionKey}-${option}`} className="text-sm font-normal">
-                  {option}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
+          <div className="space-y-3">
+            <RadioGroup
+              value={value || ''}
+              onValueChange={(val) => onChange(question.id, val)}
+              className="space-y-2"
+            >
+              {question.options?.map((option) => (
+                <div key={option} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option} id={`${questionKey}-${option}`} />
+                  <Label htmlFor={`${questionKey}-${option}`} className="text-sm font-normal">
+                    {option}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+            {isOtherSelected && (
+              <Input
+                type="text"
+                placeholder="Please specify"
+                value={value?.includes('Other:') ? value.replace('Other:', '').trim() : ''}
+                onChange={(e) => onChange(question.id, `Other: ${e.target.value}`)}
+                className="ml-6 mt-2"
+              />
+            )}
+          </div>
         );
 
       case 'checkbox':
@@ -185,7 +197,9 @@ const TwoSectionQuestionsStep: React.FC<TwoSectionQuestionsStepProps> = ({
         </div>
         
         <div className="space-y-6">
-          {generalQuestions.map((question) => (
+          {generalQuestions
+            .filter(question => !question.showIf || question.showIf(generalAnswers))
+            .map((question) => (
             <div key={question.id} className="space-y-2">
               <Label htmlFor={`general-${question.id}`} className="text-sm font-medium">
                 {question.label}
@@ -208,7 +222,9 @@ const TwoSectionQuestionsStep: React.FC<TwoSectionQuestionsStepProps> = ({
           </div>
           
           <div className="space-y-6">
-            {microQuestions.map((question) => (
+            {microQuestions
+              .filter(question => !question.showIf || question.showIf(microAnswers))
+              .map((question) => (
               <div key={question.id} className="space-y-2">
                 <Label htmlFor={`micro-${question.id}`} className="text-sm font-medium">
                   {question.label}

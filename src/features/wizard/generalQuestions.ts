@@ -5,6 +5,8 @@ export interface Question {
   placeholder?: string;
   required?: boolean;
   options?: string[];
+  allowOther?: boolean;
+  showIf?: (answers: Record<string, any>) => boolean;
   min?: number;
   max?: number;
   step?: number;
@@ -27,22 +29,73 @@ export const generalQuestions: Question[] = [
     required: true,
   },
   {
-    id: 'urgency',
+    id: 'address_area',
     type: 'radio',
-    label: 'How urgent is this job?',
+    label: 'Where is this job located?',
+    required: true,
+    allowOther: true,
+    options: [
+      'Ibiza Town',
+      'San Antonio',
+      'Santa Eulària',
+      'Sant Josep',
+      'Sant Joan',
+      'Other'
+    ],
+  },
+  {
+    id: 'parking',
+    type: 'radio',
+    label: 'What\'s the parking situation?',
     required: true,
     options: [
-      'ASAP (Emergency)',
-      'Within 24 hours',
-      'Within a week',
-      'Within a month',
+      'Driveway available',
+      'Street parking nearby',
+      'No parking available',
+      'Paid parking nearby'
+    ],
+  },
+  {
+    id: 'access_notes',
+    type: 'radio',
+    label: 'Property access',
+    required: true,
+    options: [
+      'Ground floor',
+      'Elevator available',
+      'Stairs only',
+      'Gated community'
+    ],
+  },
+  {
+    id: 'preferred_timeslot',
+    type: 'radio',
+    label: 'When do you need this done?',
+    required: true,
+    options: [
+      'ASAP (within 48h)',
+      'This week',
+      'Next 2 weeks',
       'Flexible timing'
     ],
   },
   {
-    id: 'budget',
+    id: 'schedule_detail',
+    type: 'radio',
+    label: 'Preferred time of day',
+    required: true,
+    showIf: (answers) => answers.preferred_timeslot !== 'Flexible timing',
+    options: [
+      'Morning (8am-12pm)',
+      'Afternoon (12pm-6pm)',
+      'Evening (6pm-8pm)',
+      'Weekend only'
+    ],
+  },
+  {
+    id: 'budget_band',
     type: 'select',
-    label: 'What\'s your budget range?',
+    label: 'Budget range (auto-suggested based on service)',
     required: true,
     options: [
       '€50 - €100',
@@ -55,29 +108,24 @@ export const generalQuestions: Question[] = [
     ],
   },
   {
-    id: 'property_type',
+    id: 'escrow_preference',
     type: 'radio',
-    label: 'What type of property is this?',
+    label: 'Use secure payment escrow?',
     required: true,
     options: [
-      'Apartment/Flat',
-      'House',
-      'Villa',
-      'Commercial',
-      'Other'
+      'Yes, hold payment until completion',
+      'No, direct payment preferred'
     ],
   },
   {
-    id: 'access',
-    type: 'checkbox',
-    label: 'Access considerations (check all that apply)',
+    id: 'contact_method',
+    type: 'radio',
+    label: 'Preferred contact method',
+    required: true,
     options: [
-      'Easy street parking',
-      'Parking permit needed',
-      'Stairs/No elevator',
-      'Narrow doorways',
-      'Tools/materials need to be carried far',
-      'Special access arrangements needed'
+      'WhatsApp',
+      'Phone call',
+      'Email only'
     ],
   },
   {

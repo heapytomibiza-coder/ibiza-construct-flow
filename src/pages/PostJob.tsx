@@ -336,20 +336,6 @@ const PostJob: React.FC = () => {
         );
 
       case 6:
-        // Questions Step
-        return (
-          <TwoSectionQuestionsStep
-            generalAnswers={state.generalAnswers}
-            microAnswers={state.microAnswers}
-            microQuestions={questions}
-            onGeneralChange={handleGeneralAnswerChange}
-            onMicroChange={handleMicroAnswerChange}
-            onNext={nextStep}
-            onBack={prevStep}
-          />
-        );
-
-      case 5:
         // Review Step
         return (
           <div className="space-y-6">
