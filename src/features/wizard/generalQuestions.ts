@@ -142,16 +142,6 @@ export const generalQuestions: Question[] = [
     ],
   },
   {
-    id: 'escrow_preference',
-    type: 'radio',
-    label: 'Use secure payment escrow?',
-    required: true,
-    options: [
-      'Yes, hold payment until completion',
-      'No, direct payment preferred'
-    ],
-  },
-  {
     id: 'contact_method',
     type: 'radio',
     label: 'Preferred contact method',
