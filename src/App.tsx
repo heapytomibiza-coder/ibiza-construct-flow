@@ -30,6 +30,9 @@ import Contact from "./pages/Contact";
 // import { useFeature } from "./hooks/useFeature"; // temporarily disabled
 
 export default function App() {
+  // TEMPORARY: Disable auth for wireframe development
+  const DISABLE_AUTH_FOR_WIREFRAME = true;
+  
   // Enable job wizard for implementation
   const jobWizardEnabled = true; // useFeature('ff.jobWizardV2');
   
@@ -67,28 +70,44 @@ export default function App() {
           {/* Job Wizard - Feature Flagged */}
           {jobWizardEnabled && (
             <Route path="/post" element={
-              <ProtectedRoute role="client">
+              DISABLE_AUTH_FOR_WIREFRAME ? (
                 <PostJob />
-              </ProtectedRoute>
+              ) : (
+                <ProtectedRoute role="client">
+                  <PostJob />
+                </ProtectedRoute>
+              )
             } />
           )}
           
           {/* Protected Dashboard Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/client" element={
-            <ProtectedRoute role="client">
+            DISABLE_AUTH_FOR_WIREFRAME ? (
               <ClientDashboardPage />
-            </ProtectedRoute>
+            ) : (
+              <ProtectedRoute role="client">
+                <ClientDashboardPage />
+              </ProtectedRoute>
+            )
           } />
           <Route path="/dashboard/pro" element={
-            <ProtectedRoute role="professional">
+            DISABLE_AUTH_FOR_WIREFRAME ? (
               <ProfessionalDashboardPage />
-            </ProtectedRoute>
+            ) : (
+              <ProtectedRoute role="professional">
+                <ProfessionalDashboardPage />
+              </ProtectedRoute>
+            )
           } />
           <Route path="/dashboard/admin" element={
-            <ProtectedRoute role="admin">
+            DISABLE_AUTH_FOR_WIREFRAME ? (
               <AdminDashboardPage />
-            </ProtectedRoute>
+            ) : (
+              <ProtectedRoute role="admin">
+                <AdminDashboardPage />
+              </ProtectedRoute>
+            )
           } />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
