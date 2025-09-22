@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-interface ServiceOption {
+interface ProfessionalServiceItem {
   id: string;
+  professional_id: string;
   service_id: string;
-  category: string;
   name: string;
   description: string | null;
   base_price: number;
-  price_per_unit: number | null;
+  pricing_type: string;
+  unit_type: string;
   min_quantity: number;
   max_quantity: number | null;
-  is_required: boolean;
+  bulk_discount_threshold: number | null;
+  bulk_discount_price: number | null;
+  category: string;
+  estimated_duration_minutes: number | null;
+  difficulty_level: string;
+  is_active: boolean;
   display_order: number;
 }
 
@@ -24,8 +30,8 @@ interface ServiceAddon {
   is_popular: boolean;
 }
 
-export const useServiceOptions = (serviceId: string) => {
-  const [options, setOptions] = useState<ServiceOption[]>([]);
+export const useServiceOptions = (serviceId: string, professionalId?: string) => {
+  const [serviceItems, setServiceItems] = useState<ProfessionalServiceItem[]>([]);
   const [addons, setAddons] = useState<ServiceAddon[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,16 +44,24 @@ export const useServiceOptions = (serviceId: string) => {
         setLoading(true);
         setError(null);
 
-        // Load service options
-        const { data: optionsData, error: optionsError } = await supabase
-          .from('service_options')
+        // Load professional service items (prioritize specific professional if provided)
+        let query = supabase
+          .from('professional_service_items')
           .select('*')
           .eq('service_id', serviceId)
+          .eq('is_active', true)
+          .order('category')
           .order('display_order');
 
-        if (optionsError) throw optionsError;
+        if (professionalId) {
+          query = query.eq('professional_id', professionalId);
+        }
 
-        // Load service addons
+        const { data: itemsData, error: itemsError } = await query;
+
+        if (itemsError) throw itemsError;
+
+        // Load service addons (keep existing addon system)
         const { data: addonsData, error: addonsError } = await supabase
           .from('service_addons')
           .select('*')
@@ -56,7 +70,7 @@ export const useServiceOptions = (serviceId: string) => {
 
         if (addonsError) throw addonsError;
 
-        setOptions(optionsData || []);
+        setServiceItems(itemsData || []);
         setAddons(addonsData || []);
       } catch (err: any) {
         setError(err.message);
@@ -67,10 +81,10 @@ export const useServiceOptions = (serviceId: string) => {
     };
 
     loadServiceOptions();
-  }, [serviceId]);
+  }, [serviceId, professionalId]);
 
   return {
-    options,
+    serviceItems,
     addons,
     loading,
     error,

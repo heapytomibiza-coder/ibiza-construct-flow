@@ -6,14 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Shield, Award, Tag } from 'lucide-react';
-import { ServiceSelection, AddonSelection } from './ServiceConfigurator';
+import { ServiceItemSelection, AddonSelection } from './ServiceConfigurator';
 
 interface BookingSummaryProps {
   service: any;
-  selections: ServiceSelection[];
+  selections: ServiceItemSelection[];
   addonSelections: AddonSelection[];
   totalPrice: number;
-  options: any[];
+  serviceItems: any[];
   addons: any[];
 }
 
@@ -22,7 +22,7 @@ export const BookingSummary = ({
   selections,
   addonSelections,
   totalPrice,
-  options,
+  serviceItems,
   addons
 }: BookingSummaryProps) => {
   const navigate = useNavigate();
@@ -67,15 +67,15 @@ export const BookingSummary = ({
             <span className="font-medium">{service.title}</span>
           </div>
           
-          {/* Selected Options */}
+          {/* Selected Items */}
           {selections.map(selection => {
-            const option = options.find(o => o.id === selection.optionId);
-            if (!option) return null;
+            const item = serviceItems.find(i => i.id === selection.itemId);
+            if (!item) return null;
             
             return (
-              <div key={selection.optionId} className="flex justify-between items-start text-sm">
+              <div key={selection.itemId} className="flex justify-between items-start text-sm">
                 <div>
-                  <span className="text-muted-foreground">{option.name}</span>
+                  <span className="text-muted-foreground">{item.name}</span>
                   {selection.quantity > 1 && (
                     <span className="text-xs text-muted-foreground ml-1">
                       × {selection.quantity}
@@ -136,14 +136,14 @@ export const BookingSummary = ({
           <span>{formatPrice(finalPrice)}</span>
         </div>
         
-        {/* Book Now Button */}
+        {/* Request Booking Button */}
         <Button 
           className="w-full mt-4" 
           size="lg"
           onClick={handleBookNow}
           disabled={selections.length === 0}
         >
-          Book Now
+          Request Booking
         </Button>
         
         {/* Trust Signals */}

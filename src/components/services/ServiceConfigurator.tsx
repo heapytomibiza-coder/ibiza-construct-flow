@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
-import { ServiceOptionCard } from './ServiceOptionCard';
+import { ServiceItemCard } from './ServiceItemCard';
 import { ServiceAddons } from './ServiceAddons';
-import { BookingSummary } from './BookingSummary';
+import { BookingRequestSummary } from './BookingRequestSummary';
 import { ServiceBenefits } from './ServiceBenefits';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useServiceOptions } from '@/hooks/useServiceOptions';
 
 interface ServiceConfiguratorProps {
   service: any;
+  professionalId?: string;
 }
 
-export interface ServiceSelection {
-  optionId: string;
+export interface ServiceItemSelection {
+  itemId: string;
   quantity: number;
   price: number;
+  pricingType: string;
+  unitType: string;
 }
 
 export interface AddonSelection {
@@ -22,38 +26,48 @@ export interface AddonSelection {
   price: number;
 }
 
-export const ServiceConfigurator = ({ service }: ServiceConfiguratorProps) => {
-  const { options, addons, loading } = useServiceOptions(service.id);
-  const [selections, setSelections] = useState<ServiceSelection[]>([]);
+export const ServiceConfigurator = ({ service, professionalId }: ServiceConfiguratorProps) => {
+  const { serviceItems, addons, loading } = useServiceOptions(service.id, professionalId);
+  const [selections, setSelections] = useState<ServiceItemSelection[]>([]);
   const [addonSelections, setAddonSelections] = useState<AddonSelection[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
   // Calculate total price whenever selections change
   useEffect(() => {
-    const optionsTotal = selections.reduce((sum, selection) => 
-      sum + (selection.price * selection.quantity), 0
-    );
+    const itemsTotal = selections.reduce((sum, selection) => {
+      const item = serviceItems.find(item => item.id === selection.itemId);
+      if (!item) return sum;
+
+      let itemPrice = selection.price;
+      
+      // Apply bulk discount if applicable
+      if (item.bulk_discount_threshold && item.bulk_discount_price && selection.quantity >= item.bulk_discount_threshold) {
+        itemPrice = item.bulk_discount_price;
+      }
+      
+      return sum + (itemPrice * selection.quantity);
+    }, 0);
     
     const addonsTotal = addonSelections
       .filter(addon => addon.selected)
       .reduce((sum, addon) => sum + addon.price, 0);
     
-    setTotalPrice(optionsTotal + addonsTotal);
-  }, [selections, addonSelections]);
+    setTotalPrice(itemsTotal + addonsTotal);
+  }, [selections, addonSelections, serviceItems]);
 
-  const handleOptionChange = (optionId: string, quantity: number, price: number) => {
+  const handleItemChange = (itemId: string, quantity: number, price: number, pricingType: string, unitType: string) => {
     setSelections(prev => {
-      const existing = prev.find(s => s.optionId === optionId);
+      const existing = prev.find(s => s.itemId === itemId);
       if (existing) {
         if (quantity === 0) {
-          return prev.filter(s => s.optionId !== optionId);
+          return prev.filter(s => s.itemId !== itemId);
         }
         return prev.map(s => 
-          s.optionId === optionId ? { ...s, quantity, price } : s
+          s.itemId === itemId ? { ...s, quantity, price } : s
         );
       }
       if (quantity > 0) {
-        return [...prev, { optionId, quantity, price }];
+        return [...prev, { itemId, quantity, price, pricingType, unitType }];
       }
       return prev;
     });
@@ -72,34 +86,45 @@ export const ServiceConfigurator = ({ service }: ServiceConfiguratorProps) => {
   };
 
   if (loading) {
-    return <div>Loading service options...</div>;
+    return <div>Loading professional services...</div>;
   }
 
-  // Group options by category
-  const groupedOptions = options.reduce((groups, option) => {
-    if (!groups[option.category]) {
-      groups[option.category] = [];
+  // Group service items by category
+  const groupedItems = serviceItems.reduce((groups, item) => {
+    if (!groups[item.category]) {
+      groups[item.category] = [];
     }
-    groups[option.category].push(option);
+    groups[item.category].push(item);
     return groups;
-  }, {} as Record<string, typeof options>);
+  }, {} as Record<string, typeof serviceItems>);
+
+  const categoryLabels = {
+    labor: 'Labor & Services',
+    materials: 'Materials & Parts',
+    additional_services: 'Additional Services'
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Configuration Section */}
       <div className="lg:col-span-2 space-y-6">
-        {/* Service Options */}
-        {Object.entries(groupedOptions).map(([category, categoryOptions]) => (
+        {/* Professional Service Catalog */}
+        {Object.entries(groupedItems).map(([category, categoryItems]) => (
           <Card key={category} className="p-6">
-            <h3 className="text-lg font-semibold mb-4 capitalize">
-              {category.replace('_', ' ')}
-            </h3>
+            <div className="flex items-center gap-3 mb-4">
+              <h3 className="text-lg font-semibold">
+                {categoryLabels[category as keyof typeof categoryLabels] || category}
+              </h3>
+              <Badge variant="outline" className="text-xs">
+                {categoryItems.length} services
+              </Badge>
+            </div>
             <div className="space-y-4">
-              {categoryOptions.map(option => (
-                <ServiceOptionCard
-                  key={option.id}
-                  option={option}
-                  onSelectionChange={handleOptionChange}
+              {categoryItems.map(item => (
+                <ServiceItemCard
+                  key={item.id}
+                  item={item}
+                  onSelectionChange={handleItemChange}
                 />
               ))}
             </div>
@@ -118,14 +143,14 @@ export const ServiceConfigurator = ({ service }: ServiceConfiguratorProps) => {
         <ServiceBenefits service={service} />
       </div>
 
-      {/* Booking Summary Sidebar */}
+      {/* Booking Request Summary Sidebar */}
       <div className="space-y-4">
-        <BookingSummary
+        <BookingRequestSummary
           service={service}
           selections={selections}
           addonSelections={addonSelections}
           totalPrice={totalPrice}
-          options={options}
+          serviceItems={serviceItems}
           addons={addons}
         />
       </div>

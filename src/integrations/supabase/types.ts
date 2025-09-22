@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_requests: {
+        Row: {
+          client_id: string
+          created_at: string
+          description: string | null
+          id: string
+          location_details: string | null
+          preferred_dates: Json | null
+          professional_id: string | null
+          professional_notes: string | null
+          professional_quote: number | null
+          selected_items: Json | null
+          service_id: string
+          special_requirements: string | null
+          status: string | null
+          title: string
+          total_estimated_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          location_details?: string | null
+          preferred_dates?: Json | null
+          professional_id?: string | null
+          professional_notes?: string | null
+          professional_quote?: number | null
+          selected_items?: Json | null
+          service_id: string
+          special_requirements?: string | null
+          status?: string | null
+          title: string
+          total_estimated_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          location_details?: string | null
+          preferred_dates?: Json | null
+          professional_id?: string | null
+          professional_notes?: string | null
+          professional_quote?: number | null
+          selected_items?: Json | null
+          service_id?: string
+          special_requirements?: string | null
+          status?: string | null
+          title?: string
+          total_estimated_price?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           budget_range: string | null
@@ -338,6 +395,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      professional_service_items: {
+        Row: {
+          base_price: number
+          bulk_discount_price: number | null
+          bulk_discount_threshold: number | null
+          category: string
+          created_at: string
+          description: string | null
+          difficulty_level: string | null
+          display_order: number | null
+          estimated_duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          max_quantity: number | null
+          min_quantity: number | null
+          name: string
+          pricing_type: string
+          professional_id: string
+          service_id: string
+          unit_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          bulk_discount_price?: number | null
+          bulk_discount_threshold?: number | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          display_order?: number | null
+          estimated_duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_quantity?: number | null
+          min_quantity?: number | null
+          name: string
+          pricing_type?: string
+          professional_id: string
+          service_id: string
+          unit_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          bulk_discount_price?: number | null
+          bulk_discount_threshold?: number | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          display_order?: number | null
+          estimated_duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_quantity?: number | null
+          min_quantity?: number | null
+          name?: string
+          pricing_type?: string
+          professional_id?: string
+          service_id?: string
+          unit_type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
