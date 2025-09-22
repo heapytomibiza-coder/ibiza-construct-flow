@@ -141,41 +141,23 @@ const SpecialistCategories = () => {
         {/* Categories Grid */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {specialistCategories.map((category) => {
                 const IconComponent = category.icon;
                 return (
                   <Card 
                     key={category.id}
-                    className="p-6 cursor-pointer hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 group"
+                    className="p-6 cursor-pointer hover:shadow-md transition-shadow border-2 hover:border-primary/20"
                     onClick={() => handleCategorySelect(category)}
                   >
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                        <IconComponent className="w-6 h-6 text-primary" />
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <IconComponent className="w-5 h-5 text-primary" />
                       </div>
-                      <h3 className="text-xl font-semibold text-charcoal group-hover:text-primary transition-colors">
-                        {category.title}
-                      </h3>
-                    </div>
-                    
-                    <ul className="space-y-3">
-                      {category.services.map((service, index) => (
-                        <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="w-1.5 h-1.5 bg-primary/60 rounded-full mt-2 flex-shrink-0"></span>
-                          <span>{service}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    <div className="mt-6 pt-4 border-t border-border/50">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                      >
-                        Select Category
-                      </Button>
+                      <div>
+                        <h3 className="font-medium">{category.title}</h3>
+                        <p className="text-sm text-muted-foreground">Professional services</p>
+                      </div>
                     </div>
                   </Card>
                 );
