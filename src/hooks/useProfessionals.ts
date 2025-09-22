@@ -5,22 +5,23 @@ interface Professional {
   id: string;
   full_name: string | null;
   display_name: string | null;
-  bio: string | null;
-  specializations: any;
-  experience_years: number | null;
-  hourly_rate: number | null;
-  location: string | null;
-  profile_image_url: string | null;
-  phone: string | null;
-  rating: number | null;
-  total_jobs_completed: number | null;
-  total_reviews: number | null;
-  availability_status: string | null;
-  verification_status: string | null;
   preferred_language: string | null;
   roles: any;
   created_at: string | null;
   updated_at: string | null;
+  // Professional-specific fields (may be null if not set)
+  bio?: string | null;
+  specializations?: string[] | null;
+  experience_years?: number | null;
+  hourly_rate?: number | null;
+  location?: string | null;
+  profile_image_url?: string | null;
+  phone?: string | null;
+  rating?: number | null;
+  total_jobs_completed?: number | null;
+  total_reviews?: number | null;
+  availability_status?: string | null;
+  verification_status?: string | null;
 }
 
 export const useProfessionals = () => {
@@ -63,9 +64,13 @@ export const useProfessionals = () => {
   };
 
   const getProfessionalsBySpecialization = (specialization: string) => {
-    return professionals.filter(professional => 
-      professional.specializations?.includes(specialization.toLowerCase())
-    );
+    return professionals.filter(professional => {
+      const specs = professional.specializations;
+      if (Array.isArray(specs)) {
+        return specs.includes(specialization.toLowerCase());
+      }
+      return false;
+    });
   };
 
   useEffect(() => {

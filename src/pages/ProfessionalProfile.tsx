@@ -19,21 +19,28 @@ import {
   ArrowLeft
 } from 'lucide-react';
 
+// Use the same Professional interface from the hook
 interface Professional {
   id: string;
   full_name: string | null;
-  bio: string | null;
-  specializations: any;
-  experience_years: number | null;
-  hourly_rate: number | null;
-  location: string | null;
-  profile_image_url: string | null;
-  phone: string | null;
-  rating: number | null;
-  total_jobs_completed: number | null;
-  total_reviews: number | null;
-  availability_status: string | null;
-  verification_status: string | null;
+  display_name: string | null;
+  preferred_language: string | null;
+  roles: any;
+  created_at: string | null;
+  updated_at: string | null;
+  // Professional-specific fields (may be null if not set)
+  bio?: string | null;
+  specializations?: string[] | null;
+  experience_years?: number | null;
+  hourly_rate?: number | null;
+  location?: string | null;
+  profile_image_url?: string | null;
+  phone?: string | null;
+  rating?: number | null;
+  total_jobs_completed?: number | null;
+  total_reviews?: number | null;
+  availability_status?: string | null;
+  verification_status?: string | null;
 }
 
 export default function ProfessionalProfile() {
@@ -126,53 +133,62 @@ export default function ProfessionalProfile() {
                       )}
                     </div>
                     
-                    <div className="flex-1 text-center md:text-left">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                        <h1 className="text-3xl font-bold">{professional.full_name}</h1>
-                        <div className="flex items-center justify-center md:justify-start gap-1 mt-2 md:mt-0">
-                          <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                          <span className="font-semibold">{professional.rating}</span>
-                          <span className="text-muted-foreground">({professional.total_reviews} reviews)</span>
-                        </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                      <h1 className="text-3xl font-bold">{professional.full_name || 'Professional'}</h1>
+                      <div className="flex items-center justify-center md:justify-start gap-1 mt-2 md:mt-0">
+                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                        <span className="font-semibold">{professional.rating || 5.0}</span>
+                        <span className="text-muted-foreground">({professional.total_reviews || 0} reviews)</span>
                       </div>
-                      
+                    </div>
+                    
+                    {professional.location && (
                       <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                         <MapPin className="w-4 h-4 text-muted-foreground" />
                         <span className="text-muted-foreground">{professional.location}</span>
                       </div>
-                      
-                      <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
-                        {professional.specializations?.map((spec) => (
-                          <Badge key={spec} variant="secondary">
-                            {spec}
-                          </Badge>
-                        ))}
-                      </div>
-                      
-                      <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground">
+                    )}
+                    
+                    <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
+                      {Array.isArray(professional.specializations) && professional.specializations.map((spec) => (
+                        <Badge key={spec} variant="secondary">
+                          {spec}
+                        </Badge>
+                      ))}
+                      {(!professional.specializations || !Array.isArray(professional.specializations) || professional.specializations.length === 0) && (
+                        <Badge variant="secondary">General Services</Badge>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground">
+                      {professional.experience_years && (
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           <span>{professional.experience_years} years experience</span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Award className="w-4 h-4" />
-                          <span>{professional.total_jobs_completed} jobs completed</span>
-                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <Award className="w-4 h-4" />
+                        <span>{professional.total_jobs_completed || 0} jobs completed</span>
                       </div>
                     </div>
+                  </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* About Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>About</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">{professional.bio}</p>
-                </CardContent>
-              </Card>
+              {professional.bio && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>About</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground leading-relaxed">{professional.bio}</p>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Experience & Skills */}
               <Card>
@@ -180,21 +196,28 @@ export default function ProfessionalProfile() {
                   <CardTitle>Experience & Skills</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2">Years of Experience</h4>
-                    <p className="text-muted-foreground">{professional.experience_years} years in the field</p>
-                  </div>
-                  
-                  <Separator />
+                  {professional.experience_years && (
+                    <>
+                      <div>
+                        <h4 className="font-semibold mb-2">Years of Experience</h4>
+                        <p className="text-muted-foreground">{professional.experience_years} years in the field</p>
+                      </div>
+                      
+                      <Separator />
+                    </>
+                  )}
                   
                   <div>
                     <h4 className="font-semibold mb-2">Specializations</h4>
                     <div className="flex flex-wrap gap-2">
-                      {professional.specializations?.map((spec) => (
+                      {Array.isArray(professional.specializations) && professional.specializations.map((spec) => (
                         <Badge key={spec} variant="outline">
                           {spec}
                         </Badge>
                       ))}
+                      {(!professional.specializations || !Array.isArray(professional.specializations) || professional.specializations.length === 0) && (
+                        <Badge variant="outline">General Services</Badge>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -213,17 +236,19 @@ export default function ProfessionalProfile() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-center mb-4">
-                    <div className="text-2xl font-bold">${professional.hourly_rate}</div>
+                    <div className="text-2xl font-bold">${professional.hourly_rate || 50}</div>
                     <div className="text-sm text-muted-foreground">per hour</div>
                   </div>
                   
-                  <Button
-                    onClick={handleContact}
-                    className="w-full flex items-center gap-2"
-                  >
-                    <Phone className="w-4 h-4" />
-                    Call Now
-                  </Button>
+                  {professional.phone && (
+                    <Button
+                      onClick={handleContact}
+                      className="w-full flex items-center gap-2"
+                    >
+                      <Phone className="w-4 h-4" />
+                      Call Now
+                    </Button>
+                  )}
                   
                   <Button
                     variant="outline"
@@ -252,19 +277,19 @@ export default function ProfessionalProfile() {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Jobs Completed</span>
-                    <span className="font-semibold">{professional.total_jobs_completed}</span>
+                    <span className="font-semibold">{professional.total_jobs_completed || 0}</span>
                   </div>
                   
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total Reviews</span>
-                    <span className="font-semibold">{professional.total_reviews}</span>
+                    <span className="font-semibold">{professional.total_reviews || 0}</span>
                   </div>
                   
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Rating</span>
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-semibold">{professional.rating}</span>
+                      <span className="font-semibold">{professional.rating || 5.0}</span>
                     </div>
                   </div>
                   
@@ -273,7 +298,7 @@ export default function ProfessionalProfile() {
                     <Badge 
                       variant={professional.availability_status === 'available' ? 'default' : 'secondary'}
                     >
-                      {professional.availability_status}
+                      {professional.availability_status || 'available'}
                     </Badge>
                   </div>
                 </CardContent>

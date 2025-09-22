@@ -7,19 +7,19 @@ import { useNavigate } from 'react-router-dom';
 interface ProfessionalCardProps {
   professional: {
     id: string;
-    full_name: string;
-    bio: string;
-    specializations: string[];
-    experience_years: number;
-    hourly_rate: number;
-    location: string;
-    profile_image_url: string;
-    phone: string;
-    rating: number;
-    total_jobs_completed: number;
-    total_reviews: number;
-    availability_status: string;
-    verification_status: string;
+    full_name: string | null;
+    bio?: string | null;
+    specializations?: string[] | null;
+    experience_years?: number | null;
+    hourly_rate?: number | null;
+    location?: string | null;
+    profile_image_url?: string | null;
+    phone?: string | null;
+    rating?: number | null;
+    total_jobs_completed?: number | null;
+    total_reviews?: number | null;
+    availability_status?: string | null;
+    verification_status?: string | null;
   };
 }
 
@@ -41,7 +41,7 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
           <div className="relative">
             <img
               src={professional.profile_image_url || '/placeholder.svg'}
-              alt={professional.full_name}
+              alt={professional.full_name || 'Professional'}
               className="w-16 h-16 rounded-full object-cover"
             />
             {professional.verification_status === 'verified' && (
@@ -51,50 +51,61 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-lg truncate">{professional.full_name}</h3>
+              <h3 className="font-semibold text-lg truncate">{professional.full_name || 'Professional'}</h3>
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium">{professional.rating}</span>
-                <span className="text-sm text-muted-foreground">({professional.total_reviews})</span>
+                <span className="text-sm font-medium">{professional.rating || 5.0}</span>
+                <span className="text-sm text-muted-foreground">({professional.total_reviews || 0})</span>
               </div>
             </div>
             
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{professional.location}</span>
-            </div>
+            {professional.location && (
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">{professional.location}</span>
+              </div>
+            )}
             
-            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{professional.bio}</p>
+            {professional.bio && (
+              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{professional.bio}</p>
+            )}
             
             <div className="flex flex-wrap gap-1 mb-3">
-              {professional.specializations?.slice(0, 3).map((spec) => (
+              {Array.isArray(professional.specializations) && professional.specializations.slice(0, 3).map((spec) => (
                 <Badge key={spec} variant="secondary" className="text-xs">
                   {spec}
                 </Badge>
               ))}
-              {professional.specializations?.length > 3 && (
+              {Array.isArray(professional.specializations) && professional.specializations.length > 3 && (
                 <Badge variant="outline" className="text-xs">
                   +{professional.specializations.length - 3}
+                </Badge>
+              )}
+              {(!professional.specializations || !Array.isArray(professional.specializations) || professional.specializations.length === 0) && (
+                <Badge variant="outline" className="text-xs">
+                  General Services
                 </Badge>
               )}
             </div>
             
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <span className="font-medium">${professional.hourly_rate}/hr</span>
-                <span className="text-muted-foreground"> • {professional.total_jobs_completed} jobs</span>
+                <span className="font-medium">${professional.hourly_rate || 50}/hr</span>
+                <span className="text-muted-foreground"> • {professional.total_jobs_completed || 0} jobs</span>
               </div>
               
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleContact}
-                  className="flex items-center gap-1"
-                >
-                  <Phone className="w-3 h-3" />
-                  Call
-                </Button>
+                {professional.phone && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleContact}
+                    className="flex items-center gap-1"
+                  >
+                    <Phone className="w-3 h-3" />
+                    Call
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   onClick={handleViewProfile}

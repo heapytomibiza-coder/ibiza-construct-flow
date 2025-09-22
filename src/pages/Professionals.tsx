@@ -28,21 +28,26 @@ export default function Professionals() {
   // Get all unique specializations
   const allSpecializations = Array.from(
     new Set(
-      professionals.flatMap(p => p.specializations || [])
+      professionals.flatMap(p => {
+        const specs = p.specializations;
+        return Array.isArray(specs) ? specs : [];
+      })
     )
   ).sort();
 
   // Filter professionals based on search and filters
   const filteredProfessionals = professionals.filter(professional => {
+    const specs = professional.specializations;
+    
     const matchesSearch = !searchTerm || 
       professional.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       professional.bio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      professional.specializations?.some(spec => 
+      (Array.isArray(specs) && specs.some(spec => 
         spec.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      ));
 
     const matchesSpecialization = specializationFilter === 'all' ||
-      professional.specializations?.includes(specializationFilter);
+      (Array.isArray(specs) && specs.includes(specializationFilter));
 
     const matchesAvailability = availabilityFilter === 'all' ||
       professional.availability_status === availabilityFilter;
