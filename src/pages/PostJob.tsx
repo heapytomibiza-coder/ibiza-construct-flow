@@ -301,10 +301,7 @@ const PostJob: React.FC = () => {
                 Back
               </Button>
               <Button 
-                onClick={async () => {
-                  await generatePriceEstimate();
-                  nextStep();
-                }}
+                onClick={nextStep}
                 disabled={!state.generalAnswers.title}
               >
                 Continue
@@ -323,7 +320,10 @@ const PostJob: React.FC = () => {
             microQuestions={questions}
             onGeneralChange={handleGeneralAnswerChange}
             onMicroChange={handleMicroAnswerChange}
-            onNext={nextStep}
+            onNext={async () => {
+              await generatePriceEstimate();
+              nextStep();
+            }}
             onBack={prevStep}
           />
         );
