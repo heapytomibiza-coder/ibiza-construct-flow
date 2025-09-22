@@ -18,8 +18,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ClientDashboardPage from "./pages/ClientDashboardPage";
 import ProfessionalDashboardPage from "./pages/ProfessionalDashboardPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import PostJob from "./pages/PostJob";
+import { useFeature } from "./hooks/useFeature";
 
 export default function App() {
+  const jobWizardEnabled = useFeature('ff.jobWizardV2');
+  
   return (
     <TooltipProvider>
       <Toaster />
@@ -41,6 +45,15 @@ export default function App() {
           
           {/* Role Switcher */}
           <Route path="/role-switcher" element={<RoleSwitcher />} />
+          
+          {/* Job Wizard - Feature Flagged */}
+          {jobWizardEnabled && (
+            <Route path="/post" element={
+              <ProtectedRoute role="client">
+                <PostJob />
+              </ProtectedRoute>
+            } />
+          )}
           
           {/* Protected Dashboard Routes */}
           <Route path="/dashboard" element={<Dashboard />} />

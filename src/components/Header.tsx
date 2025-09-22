@@ -52,7 +52,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
               </Link>
             )}
             {jobWizardEnabled && (
-              <Link to="/auth" className="btn-hero">
+              <Link to="/post" className="btn-hero">
                 Post Project
               </Link>
             )}
@@ -98,7 +98,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                   </Link>
                 )}
                 {jobWizardEnabled && (
-                  <Link to="/auth" className="btn-hero">
+                  <Link to="/post" className="btn-hero">
                     Post Project
                   </Link>
                 )}
