@@ -133,12 +133,17 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-blue-500" />
-          AI-Generated Service Questions
+        <CardTitle className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+            <div className="h-2 w-2 bg-primary rounded-full animate-bounce"></div>
+            <div className="h-2 w-2 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="h-2 w-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+          <span className="animate-fade-in">Hold tight while we load your questions tailored to your needs</span>
         </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          These questions are dynamically generated based on your specific service needs
+        <p className="text-sm text-muted-foreground animate-fade-in">
+          Our AI is crafting personalized questions based on your specific service requirements
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
