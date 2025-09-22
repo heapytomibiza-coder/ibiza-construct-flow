@@ -1,6 +1,15 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, Home, Briefcase, Users, Phone } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, Home, Briefcase, Users, Phone, User, LogOut, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/hooks/useAuth';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -9,6 +18,20 @@ interface HeaderProps {
 
 const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, profile, signOut, isAdmin, isProfessional, isClient } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const getDashboardPath = () => {
+    if (isAdmin()) return '/dashboard/admin';
+    if (isProfessional()) return '/dashboard/pro';
+    if (isClient()) return '/dashboard/client';
+    return '/dashboard';
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-sand-dark/20 z-50">
@@ -44,22 +67,56 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             </a>
           </nav>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons / User Menu */}
           <div className="hidden md:flex items-center space-x-4">
-            {proInboxEnabled && (
-              <Link to="/auth" className="btn-secondary">
-                Join as Pro
-              </Link>
-            )}
-            {jobWizardEnabled && (
-              <Link to="/post" className="btn-hero">
-                Post Project
-              </Link>
-            )}
-            {!jobWizardEnabled && !proInboxEnabled && (
-              <Link to="/auth" className="btn-secondary">
-                Sign In
-              </Link>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-gradient-hero rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-medium">
+                      {profile?.display_name || profile?.full_name || 'User'}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => navigate(getDashboardPath())}>
+                    <Settings className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  {jobWizardEnabled && isClient() && (
+                    <DropdownMenuItem onClick={() => navigate('/post')}>
+                      <Briefcase className="w-4 h-4 mr-2" />
+                      Post Project
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                {proInboxEnabled && (
+                  <Link to="/auth/sign-up" className="btn-secondary">
+                    Join as Pro
+                  </Link>
+                )}
+                {jobWizardEnabled && (
+                  <Link to="/post" className="btn-hero">
+                    Post Project
+                  </Link>
+                )}
+                {!jobWizardEnabled && !proInboxEnabled && (
+                  <Link to="/auth/sign-in" className="btn-secondary">
+                    Sign In
+                  </Link>
+                )}
+              </>
             )}
           </div>
 
@@ -92,20 +149,38 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                 Contact
               </a>
               <div className="flex flex-col space-y-3 pt-4">
-                {proInboxEnabled && (
-                  <Link to="/auth" className="btn-secondary">
-                    Join as Pro
-                  </Link>
-                )}
-                {jobWizardEnabled && (
-                  <Link to="/post" className="btn-hero">
-                    Post Project
-                  </Link>
-                )}
-                {!jobWizardEnabled && !proInboxEnabled && (
-                  <Link to="/auth" className="btn-secondary">
-                    Sign In
-                  </Link>
+                {user ? (
+                  <>
+                    <Link to={getDashboardPath()} className="btn-secondary">
+                      Dashboard
+                    </Link>
+                    {jobWizardEnabled && isClient() && (
+                      <Link to="/post" className="btn-hero">
+                        Post Project
+                      </Link>
+                    )}
+                    <Button onClick={handleSignOut} variant="outline" className="w-full">
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    {proInboxEnabled && (
+                      <Link to="/auth/sign-up" className="btn-secondary">
+                        Join as Pro
+                      </Link>
+                    )}
+                    {jobWizardEnabled && (
+                      <Link to="/post" className="btn-hero">
+                        Post Project
+                      </Link>
+                    )}
+                    {!jobWizardEnabled && !proInboxEnabled && (
+                      <Link to="/auth/sign-in" className="btn-secondary">
+                        Sign In
+                      </Link>
+                    )}
+                  </>
                 )}
               </div>
             </nav>

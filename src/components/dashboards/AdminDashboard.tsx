@@ -10,9 +10,12 @@ import UserInspector from '@/components/admin/UserInspector';
 
 interface Profile {
   id: string;
-  roles: string[];
   full_name: string | null;
+  display_name: string | null;
+  roles: any;
+  preferred_language: string;
   created_at: string;
+  updated_at: string;
 }
 
 interface AdminDashboardProps {

@@ -20,6 +20,7 @@ import ProfessionalDashboardPage from "./pages/ProfessionalDashboardPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import PostJob from "./pages/PostJob";
 import ServicePage from "./pages/ServicePage";
+import AuthPage from "./pages/AuthPage";
 import { useFeature } from "./hooks/useFeature";
 
 export default function App() {
@@ -42,7 +43,7 @@ export default function App() {
           <Route path="/auth/quick-start" element={<QuickStart />} />
           
           {/* Legacy Auth Route */}
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/auth" element={<AuthPage />} />
           
           {/* Role Switcher */}
           <Route path="/role-switcher" element={<RoleSwitcher />} />
