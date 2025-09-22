@@ -27,6 +27,7 @@ export default function AuthCallback() {
         if (data.session) {
           const user = data.session.user;
           const role = searchParams.get('role') || user.user_metadata?.intent_role || 'client';
+          const redirectTo = searchParams.get('redirect');
           
           // Ensure profile exists (fallback if trigger failed)
           const { data: profile } = await supabase
@@ -60,14 +61,18 @@ export default function AuthCallback() {
             return;
           }
 
-          // Profile is complete, redirect to dashboard
-          const roles = profile.roles as string[];
-          if (roles.includes('client') && roles.includes('professional')) {
-            navigate('/role-switcher');
-          } else if (roles.includes('professional')) {
-            navigate('/dashboard/pro');
+          // Profile is complete, check for redirect or go to dashboard
+          if (redirectTo) {
+            navigate(redirectTo);
           } else {
-            navigate('/dashboard/client');
+            const roles = profile.roles as string[];
+            if (roles.includes('client') && roles.includes('professional')) {
+              navigate('/role-switcher');
+            } else if (roles.includes('professional')) {
+              navigate('/dashboard/pro');
+            } else {
+              navigate('/dashboard/client');
+            }
           }
         } else {
           navigate('/auth/sign-in');

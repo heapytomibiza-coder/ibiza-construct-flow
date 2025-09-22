@@ -45,7 +45,8 @@ export default function ProtectedRoute({ children, role }: ProtectedRouteProps) 
   }
   
   if (status === 'redirect') {
-    return <Navigate to="/auth/sign-in" replace />;
+    const currentPath = window.location.pathname + window.location.search;
+    return <Navigate to={`/auth/sign-in?redirect=${encodeURIComponent(currentPath)}`} replace />;
   }
   
   return children;

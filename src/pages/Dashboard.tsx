@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
@@ -7,6 +7,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const checkUserAndRedirect = async () => {
@@ -18,6 +19,13 @@ const Dashboard = () => {
         }
 
         setUser(session.user);
+
+        // Check if there's a redirect parameter
+        const redirectTo = searchParams.get('redirect');
+        if (redirectTo) {
+          navigate(redirectTo);
+          return;
+        }
 
         // Get user profile to determine role-based redirect
         const { data: profile } = await supabase

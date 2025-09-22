@@ -20,6 +20,7 @@ export default function SignIn() {
   const [authMode, setAuthMode] = useState<'magic' | 'password'>('magic');
   
   const role = searchParams.get('role') as 'client' | 'professional' || 'client';
+  const redirectTo = searchParams.get('redirect');
   const magicLinkEnabled = useFeature('ff.magicLink', true);
   const socialAuthEnabled = useFeature('ff.socialAuth', true);
 
@@ -42,7 +43,7 @@ export default function SignIn() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?role=${role}`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?role=${role}${redirectTo ? `&redirect=${encodeURIComponent(redirectTo)}` : ''}`,
         }
       });
 
@@ -82,7 +83,8 @@ export default function SignIn() {
         description: 'You have been signed in successfully.',
       });
       
-      navigate('/dashboard');
+      // Navigate to redirect URL if provided, otherwise to dashboard
+      navigate(redirectTo || '/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
