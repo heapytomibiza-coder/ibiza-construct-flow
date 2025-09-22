@@ -92,10 +92,13 @@ const PostJob: React.FC = () => {
       microService: service.micro,
       title: service.micro // Pre-fill title
     });
+    nextStep();
     
     // Load AI-generated questions for better contextual experience
-    await loadAIQuestions(service.id);
-    nextStep();
+    // Use setTimeout to avoid blocking the UI transition
+    setTimeout(() => {
+      loadAIQuestions(service.id);
+    }, 100);
   };
 
   const handleGeneralAnswerChange = (questionId: string, value: any) => {
@@ -246,10 +249,10 @@ const PostJob: React.FC = () => {
         // Service-Specific Questions Step with AI
         return (
           <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-semibold">Tell us more about your {state.microService}</h2>
-              <p className="text-muted-foreground">AI-generated questions tailored to your specific needs</p>
-            </div>
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-semibold">Tell us more about your {state.microService}</h2>
+                <div className="text-muted-foreground">AI-generated questions tailored to your specific needs</div>
+              </div>
             
             {/* AI-Generated Questions */}
             <AIQuestionRenderer

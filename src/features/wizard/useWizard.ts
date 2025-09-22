@@ -100,7 +100,7 @@ export const useWizard = () => {
       // Fallback to database questions
       await loadQuestions(serviceId);
     }
-  }, [services, state.generalAnswers, aiQuestions, loadQuestions]);
+  }, [services, aiQuestions.generateQuestions, loadQuestions]); // Removed state.generalAnswers dependency
 
   // AI-powered price estimation
   const generatePriceEstimate = useCallback(async () => {
