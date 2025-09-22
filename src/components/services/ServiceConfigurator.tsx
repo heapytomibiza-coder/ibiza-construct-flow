@@ -114,26 +114,26 @@ export const ServiceConfigurator = ({ service, professionalId }: ServiceConfigur
           <h2 className="text-display text-2xl font-semibold text-charcoal">
             Configure Your Service
           </h2>
-          <div className="flex bg-sand rounded-lg p-1">
+          <div className="flex bg-sand/50 rounded-lg p-1 border">
             <button
               onClick={() => setViewMode('visual')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 viewMode === 'visual' 
-                  ? 'bg-white text-charcoal shadow-sm' 
-                  : 'text-muted-foreground hover:text-charcoal'
+                  ? 'bg-white text-charcoal shadow-md border border-white/20 font-semibold' 
+                  : 'text-muted-foreground hover:text-charcoal hover:bg-white/50'
               }`}
             >
-              Visual Mode
+              📱 Visual Mode
             </button>
             <button
               onClick={() => setViewMode('detailed')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 viewMode === 'detailed' 
-                  ? 'bg-white text-charcoal shadow-sm' 
-                  : 'text-muted-foreground hover:text-charcoal'
+                  ? 'bg-white text-charcoal shadow-md border border-white/20 font-semibold' 
+                  : 'text-muted-foreground hover:text-charcoal hover:bg-white/50'
               }`}
             >
-              Detailed View
+              📋 Detailed View
             </button>
           </div>
         </div>
