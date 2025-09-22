@@ -407,16 +407,20 @@ export type Database = {
           difficulty_level: string | null
           display_order: number | null
           estimated_duration_minutes: number | null
+          gallery_images: Json | null
           id: string
+          image_alt_text: string | null
           is_active: boolean | null
           max_quantity: number | null
           min_quantity: number | null
           name: string
           pricing_type: string
+          primary_image_url: string | null
           professional_id: string
           service_id: string
           unit_type: string | null
           updated_at: string
+          video_url: string | null
         }
         Insert: {
           base_price?: number
@@ -428,16 +432,20 @@ export type Database = {
           difficulty_level?: string | null
           display_order?: number | null
           estimated_duration_minutes?: number | null
+          gallery_images?: Json | null
           id?: string
+          image_alt_text?: string | null
           is_active?: boolean | null
           max_quantity?: number | null
           min_quantity?: number | null
           name: string
           pricing_type?: string
+          primary_image_url?: string | null
           professional_id: string
           service_id: string
           unit_type?: string | null
           updated_at?: string
+          video_url?: string | null
         }
         Update: {
           base_price?: number
@@ -449,16 +457,20 @@ export type Database = {
           difficulty_level?: string | null
           display_order?: number | null
           estimated_duration_minutes?: number | null
+          gallery_images?: Json | null
           id?: string
+          image_alt_text?: string | null
           is_active?: boolean | null
           max_quantity?: number | null
           min_quantity?: number | null
           name?: string
           pricing_type?: string
+          primary_image_url?: string | null
           professional_id?: string
           service_id?: string
           unit_type?: string | null
           updated_at?: string
+          video_url?: string | null
         }
         Relationships: []
       }

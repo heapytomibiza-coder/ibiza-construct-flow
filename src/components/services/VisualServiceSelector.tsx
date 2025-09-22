@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Check, Star, Clock } from 'lucide-react';
+import { ImageCarousel } from './ImageCarousel';
 
 interface ServiceOption {
   id: string;
@@ -13,6 +14,10 @@ interface ServiceOption {
   icon: string;
   estimatedTime: string;
   difficulty: 'easy' | 'medium' | 'hard';
+  primary_image_url?: string;
+  gallery_images?: string[];
+  video_url?: string;
+  image_alt_text?: string;
 }
 
 interface VisualServiceSelectorProps {
@@ -59,67 +64,96 @@ export const VisualServiceSelector = ({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {options.map((option) => {
           const isSelected = selectedOptions.includes(option.id);
           
           return (
             <Card 
               key={option.id}
-              className={`cursor-pointer transition-all duration-300 hover:scale-105 relative ${
+              className={`cursor-pointer transition-all duration-300 hover:shadow-lg group overflow-hidden ${
                 isSelected 
-                  ? 'ring-2 ring-copper shadow-luxury bg-gradient-card' 
-                  : 'card-luxury hover:shadow-card'
+                  ? 'ring-2 ring-primary bg-primary/5 border-primary shadow-md' 
+                  : 'hover:border-primary/50 hover:shadow-md'
               }`}
               onClick={() => handleOptionClick(option.id)}
             >
-              {option.popular && (
-                <div className="absolute -top-2 -right-2 bg-gradient-hero text-white px-2 py-1 rounded-full text-xs font-semibold z-10">
-                  <Star className="w-3 h-3 inline mr-1" />
-                  Popular
-                </div>
-              )}
-              
-              {isSelected && (
-                <div className="absolute top-3 right-3 w-6 h-6 bg-copper rounded-full flex items-center justify-center">
-                  <Check className="w-4 h-4 text-white" />
-                </div>
-              )}
-
-              <CardContent className="p-6">
-                <div className="text-center mb-4">
-                  <div className="w-16 h-16 mx-auto bg-gradient-hero rounded-xl flex items-center justify-center text-2xl mb-3">
-                    {option.icon}
-                  </div>
-                  <h4 className="text-display font-semibold text-charcoal">
-                    {option.name}
-                  </h4>
-                </div>
-
-                <p className="text-sm text-muted-foreground text-center mb-4 leading-relaxed">
-                  {option.description}
-                </p>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-1 text-muted-foreground">
-                      <Clock className="w-4 h-4" />
-                      {option.estimatedTime}
-                    </span>
-                    <Badge className={`text-xs px-2 py-1 ${getDifficultyColor(option.difficulty)}`}>
+              {/* Hero Image Section */}
+              <div className="relative">
+                <ImageCarousel
+                  images={option.gallery_images || []}
+                  primaryImage={option.primary_image_url}
+                  videoUrl={option.video_url}
+                  altText={option.image_alt_text || option.name}
+                  aspectRatio="video"
+                  showThumbnails={false}
+                  className="rounded-none"
+                />
+                
+                {/* Floating Badges */}
+                <div className="absolute top-3 right-3 flex flex-col gap-2">
+                  <Badge className="bg-white/90 text-charcoal border-0 font-bold text-lg px-3 py-1">
+                    €{option.price}
+                  </Badge>
+                  {option.difficulty && (
+                    <Badge 
+                      variant="outline" 
+                      className={`bg-white/90 border-0 ${getDifficultyColor(option.difficulty)}`}
+                    >
                       {option.difficulty}
                     </Badge>
+                  )}
+                </div>
+                
+                {option.popular && (
+                  <div className="absolute top-3 left-3">
+                    <Badge className="bg-amber-500 text-white border-0">
+                      <Star className="w-3 h-3 mr-1 fill-current" />
+                      Popular
+                    </Badge>
+                  </div>
+                )}
+                
+                {/* Selection Indicator */}
+                {isSelected && (
+                  <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                    <div className="bg-primary text-white rounded-full p-2">
+                      <Check className="w-6 h-6" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <CardContent className="p-4">
+                <div className="space-y-3">
+                  {/* Service Name & Icon */}
+                  <div className="flex items-center gap-3">
+                    {option.icon && (
+                      <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span className="text-white text-sm">{option.icon}</span>
+                      </div>
+                    )}
+                    <h3 className="font-semibold text-charcoal group-hover:text-primary transition-colors text-lg">
+                      {option.name}
+                    </h3>
                   </div>
 
-                  <div className="text-center">
-                    <span className="text-copper font-bold text-lg">
-                      €{option.price}
-                    </span>
-                    <span className="text-muted-foreground text-sm ml-1">
-                      starting from
-                    </span>
-                  </div>
+                  {/* Description */}
+                  {option.description && (
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                      {option.description}
+                    </p>
+                  )}
 
+                  {/* Footer with time estimate */}
+                  {option.estimatedTime && (
+                    <div className="flex items-center gap-2 pt-2 border-t text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      <span>{option.estimatedTime}</span>
+                    </div>
+                  )}
+
+                  {/* Selection Button */}
                   <Button 
                     variant={isSelected ? "default" : "outline"}
                     className={`w-full ${isSelected ? 'btn-hero' : ''}`}

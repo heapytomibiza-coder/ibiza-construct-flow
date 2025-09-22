@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Minus, Clock, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ImageCarousel } from './ImageCarousel';
 
 interface ProfessionalServiceItem {
   id: string;
@@ -23,6 +24,10 @@ interface ProfessionalServiceItem {
   difficulty_level: string;
   is_active: boolean;
   display_order: number;
+  primary_image_url?: string;
+  gallery_images?: string[];
+  video_url?: string;
+  image_alt_text?: string;
 }
 
 interface ServiceItemCardProps {
@@ -128,96 +133,136 @@ export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed'
 
   if (viewMode === 'visual') {
     return (
-      <Card className="card-luxury hover:scale-105 transition-all duration-300 cursor-pointer group">
-        <div className="p-4">
-          {/* Visual Header */}
-          <div className="text-center mb-4">
-            <div className="w-16 h-16 mx-auto bg-gradient-hero rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-              <span className="text-white text-2xl">
-                {item.category === 'labor' ? '⚒️' : item.category === 'materials' ? '🔧' : '✨'}
-              </span>
-            </div>
-            <h4 className="font-semibold text-charcoal">{item.name}</h4>
-            {item.difficulty_level && (
-              <Badge className={`text-xs mt-1 ${getDifficultyColor()}`}>
-                {item.difficulty_level}
-              </Badge>
-            )}
-          </div>
-
-          {/* Description */}
-          <p className="text-sm text-muted-foreground text-center mb-4 leading-relaxed">
-            {item.description}
-          </p>
-
-          {/* Duration and Unit */}
-          <div className="flex justify-center gap-4 text-xs text-muted-foreground mb-4">
-            {item.estimated_duration_minutes && (
-              <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                <span>{formatDuration(item.estimated_duration_minutes)}</span>
-              </div>
-            )}
-            <span>Per {getUnitLabel()}</span>
-          </div>
-
-          {/* Price Display */}
-          <div className="text-center mb-4">
-            <div className="text-copper font-bold text-lg">
-              {formatPrice(item.base_price)}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {getPricingTypeLabel()}
-            </div>
-            {item.bulk_discount_threshold && item.bulk_discount_price && (
-              <div className="text-xs text-green-600 mt-1">
-                Bulk: {formatPrice(item.bulk_discount_price!)} after {item.bulk_discount_threshold}
-              </div>
-            )}
-          </div>
-
-          {/* Quantity Selector */}
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Button
-              variant="outline" 
-              size="sm"
-              onClick={() => handleQuantityChange(Math.max(0, quantity - 1))}
-              disabled={quantity <= 0}
-              className="w-8 h-8 p-0 hover:bg-copper/10"
-            >
-              <Minus className="w-3 h-3" />
-            </Button>
-            <div className="w-16 h-8 bg-sand/50 rounded-md flex items-center justify-center font-medium">
-              {quantity}
-            </div>
-            <Button
-              variant="outline" 
-              size="sm"
-              onClick={() => handleQuantityChange(quantity + 1)}
-              disabled={item.max_quantity && quantity >= item.max_quantity}
-              className="w-8 h-8 p-0 hover:bg-copper/10"
-            >
-              <Plus className="w-3 h-3" />
-            </Button>
+      <Card className="card-luxury hover:shadow-lg transition-all duration-300 group overflow-hidden">
+        {/* Hero Image Section */}
+        <div className="relative">
+          <ImageCarousel
+            images={item.gallery_images || []}
+            primaryImage={item.primary_image_url}
+            videoUrl={item.video_url}
+            altText={item.image_alt_text || item.name}
+            aspectRatio="video"
+            showThumbnails={false}
+            className="rounded-none"
+          />
+          
+          {/* Floating Price Badge */}
+          <div className="absolute top-3 right-3">
+            <Badge className="bg-white/90 text-charcoal border-0 font-bold text-lg px-3 py-1">
+              {formatPrice(totalPrice() || item.base_price)}
+            </Badge>
           </div>
           
-          {/* Total Price */}
-          {quantity > 0 && (
-            <div className="text-center p-2 bg-gradient-card rounded-lg">
-              <div className="text-sm font-semibold text-charcoal">
-                Total: {formatPrice(totalPrice())}
-              </div>
-            </div>
+          {/* Difficulty Badge */}
+          {item.difficulty_level && (
+            <Badge 
+              variant="outline" 
+              className={`absolute top-3 left-3 bg-white/90 border-0 ${getDifficultyColor()}`}
+            >
+              {item.difficulty_level}
+            </Badge>
           )}
+        </div>
+
+        <div className="p-4">
+          <div className="space-y-3">
+            <div>
+              <h4 className="font-semibold text-charcoal group-hover:text-primary transition-colors text-lg">
+                {item.name}
+              </h4>
+              {item.description && (
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                  {item.description}
+                </p>
+              )}
+            </div>
+
+            {/* Duration Info */}
+            {item.estimated_duration_minutes && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="w-4 h-4" />
+                <span>{formatDuration(item.estimated_duration_minutes)}</span>
+                <span>•</span>
+                <span>{getPricingTypeLabel()}</span>
+              </div>
+            )}
+
+            {/* Quantity Selector */}
+            <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuantityChange(Math.max(0, quantity - 1))}
+                  disabled={quantity <= 0}
+                  className="h-9 w-9 p-0 rounded-full"
+                >
+                  <Minus className="w-4 h-4" />
+                </Button>
+                
+                <div className="text-center min-w-[3rem]">
+                  <div className="font-bold text-lg">{quantity}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {getUnitLabel()}
+                  </div>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuantityChange(quantity + 1)}
+                  disabled={item.max_quantity && quantity >= item.max_quantity}
+                  className="h-9 w-9 p-0 rounded-full"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Add to Selection Button */}
+              <Button 
+                variant={quantity > 0 ? "default" : "outline"}
+                size="sm"
+                className="ml-4"
+              >
+                {quantity > 0 ? `Added (${quantity})` : 'Add'}
+              </Button>
+            </div>
+
+            {/* Minimum Quantity Warning */}
+            {item.min_quantity > 1 && quantity > 0 && quantity < item.min_quantity && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-amber-800">
+                    Minimum quantity: {item.min_quantity} {getUnitLabel()}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </Card>
     );
   }
 
-  // Detailed view (original layout)
+  // Detailed view with images
   return (
-    <Card className="card-luxury hover:shadow-card transition-shadow">
-      <div className="flex items-start justify-between gap-4">
+    <Card className="card-luxury overflow-hidden">
+      {/* Image Section */}
+      <div className="relative">
+        <ImageCarousel
+          images={item.gallery_images || []}
+          primaryImage={item.primary_image_url}
+          videoUrl={item.video_url}
+          altText={item.image_alt_text || item.name}
+          aspectRatio="video"
+          showThumbnails={true}
+          className="rounded-none"
+        />
+      </div>
+      
+      <div className="p-6">
+        <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-3">
             <h4 className="font-semibold text-charcoal text-lg">{item.name}</h4>
@@ -301,10 +346,11 @@ export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed'
       </div>
       
       {item.min_quantity > 1 && quantity > 0 && quantity < item.min_quantity && (
-        <div className="mt-2 text-xs text-orange-600 bg-orange-50 p-2 rounded">
+        <div className="mx-6 mb-6 text-xs text-orange-600 bg-orange-50 p-2 rounded">
           Minimum quantity: {item.min_quantity} {getUnitLabel()}
         </div>
       )}
+      </div>
     </Card>
   );
 };
