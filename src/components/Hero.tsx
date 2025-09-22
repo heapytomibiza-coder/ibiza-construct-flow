@@ -42,7 +42,7 @@ const Hero = () => {
           </h1>
 
           <p className="text-body text-xl md:text-2xl text-white/90 mb-8 max-w-2xl leading-relaxed">
-            Connect with Ibiza's most trusted construction professionals. From €50 handyman jobs to million-euro luxury builds.
+            Connect with Ibiza's most trusted construction professionals. From handyman jobs to luxury builds, our community is installing quality across the island.
           </p>
 
           {/* Trust Indicators */}
