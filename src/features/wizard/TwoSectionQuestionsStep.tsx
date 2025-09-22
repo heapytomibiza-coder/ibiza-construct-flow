@@ -299,7 +299,11 @@ const TwoSectionQuestionsStep: React.FC<TwoSectionQuestionsStepProps> = ({
           Back
         </Button>
         <Button 
-          onClick={onNext}
+          onClick={() => {
+            if (isFormValid()) {
+              onNext();
+            }
+          }}
           disabled={!isFormValid()}
           className="min-w-[120px]"
         >
