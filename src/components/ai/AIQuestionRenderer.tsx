@@ -140,7 +140,7 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
             <div className="h-2 w-2 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
             <div className="h-2 w-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
           </div>
-          <span className="animate-fade-in">Hold tight while we load your questions tailored to your needs</span>
+          <span className="animate-fade-in">Hold tight while we load your specialized questions</span>
         </CardTitle>
         <p className="text-sm text-muted-foreground animate-fade-in">
           Our AI is crafting personalized questions based on your specific service requirements
