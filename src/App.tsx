@@ -30,8 +30,8 @@ import Contact from "./pages/Contact";
 // import { useFeature } from "./hooks/useFeature"; // temporarily disabled
 
 export default function App() {
-  // Temporarily disable feature flag to isolate React module issue
-  const jobWizardEnabled = false; // useFeature('ff.jobWizardV2');
+  // Enable job wizard for implementation
+  const jobWizardEnabled = true; // useFeature('ff.jobWizardV2');
   
   return (
     <TooltipProvider>
