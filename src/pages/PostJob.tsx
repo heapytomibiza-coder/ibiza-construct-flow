@@ -172,7 +172,7 @@ const PostJob: React.FC = () => {
                 size="sm"
                 onClick={() => navigate('/services')}
               >
-                Browse Specialized Categories
+                Browse Specialised Categories
               </Button>
             </div>
           </div>
