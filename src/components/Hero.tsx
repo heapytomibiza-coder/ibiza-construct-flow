@@ -6,7 +6,7 @@ const Hero = () => {
   const navigate = useNavigate();
 
   const handlePostProject = () => {
-    navigate('/services');
+    navigate('/post');
   };
 
   const handleBrowseProfessionals = () => {
