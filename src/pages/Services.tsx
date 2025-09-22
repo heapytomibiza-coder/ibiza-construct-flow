@@ -7,12 +7,12 @@ import { ServiceSearch } from '@/components/services/ServiceSearch';
 import { ServiceFilters } from '@/components/services/ServiceFilters';
 import { EnhancedServiceCard } from '@/components/services/EnhancedServiceCard';
 import { ServicePackages } from '@/components/services/ServicePackages';
-import { useServices } from '@/hooks/useServices';
+import { useServicesWithPricing } from '@/hooks/useServicesWithPricing';
 import { useFeature } from '@/hooks/useFeature';
 
 const Services = () => {
   const navigate = useNavigate();
-  const { getServiceCards, getCategories, loading } = useServices();
+  const { services: rawServices, getCategories, loading, error } = useServicesWithPricing();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,12 +34,10 @@ const Services = () => {
     'Car': Car
   };
 
-  const services = getServiceCards().map(service => ({
+  const services = rawServices.map(service => ({
     ...service,
     icon: iconMap[service.icon as keyof typeof iconMap] || Wrench,
-    rating: 4.8 + Math.random() * 0.4, // Mock rating
-    completedJobs: Math.floor(Math.random() * 500) + 50,
-    responseTime: ['2h avg', '4h avg', '1 day', 'Same day'][Math.floor(Math.random() * 4)]
+    popular: Math.random() > 0.7 // Add popular property
   }));
 
   // Filter services based on search and filters

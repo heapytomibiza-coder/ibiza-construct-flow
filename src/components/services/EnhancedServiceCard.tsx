@@ -16,6 +16,8 @@ interface ServiceCardProps {
     responseTime?: string;
     micro?: string;
     slug?: string;
+    itemCount?: number;
+    addonCount?: number;
   };
   onViewService: () => void;
   onBookNow: () => void;
@@ -62,6 +64,22 @@ export const EnhancedServiceCard = ({ service, onViewService, onBookNow }: Servi
             <p className="text-body text-muted-foreground text-sm mb-4 leading-relaxed">
               {service.description}
             </p>
+
+            {/* Service Options Count */}
+            {(service.itemCount || service.addonCount) && (
+              <div className="flex items-center gap-3 mb-4">
+                {service.itemCount > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    {service.itemCount} options
+                  </Badge>
+                )}
+                {service.addonCount > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{service.addonCount} add-ons
+                  </Badge>
+                )}
+              </div>
+            )}
 
             {/* Stats */}
             <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
