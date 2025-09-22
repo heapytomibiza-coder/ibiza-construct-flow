@@ -251,7 +251,14 @@ const PostJob: React.FC = () => {
           <div className="space-y-6">
               <div className="text-center space-y-2">
                 <h2 className="text-2xl font-semibold">Tell us more about your {state.microService}</h2>
-                <div className="text-muted-foreground">Hold tight while we load your questions tailored to your needs</div>
+                <div className="text-muted-foreground flex items-center justify-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className="h-2 w-2 bg-primary rounded-full animate-bounce"></div>
+                    <div className="h-2 w-2 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="h-2 w-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                  Hold tight while we load your questions tailored to your needs
+                </div>
               </div>
             
             {/* AI-Generated Questions */}
