@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import * as React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export function useFeature(key: string, defaultValue = false) {
-  const [enabled, setEnabled] = useState(defaultValue);
+  const [enabled, setEnabled] = React.useState(defaultValue);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const channel = supabase.channel(`ff:${key}`);
     
     (async () => {
