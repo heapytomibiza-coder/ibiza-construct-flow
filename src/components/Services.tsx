@@ -48,7 +48,7 @@ const Services = () => {
             <span className="text-copper">No Dream Too Big</span>
           </h2>
           <p className="text-body text-xl text-muted-foreground max-w-3xl mx-auto">
-            From quick €50 fixes to million-euro luxury builds, our verified professionals deliver excellence at every scale. Your Ibiza property deserves the best.
+            From quick fixes to million-euro luxury builds, our verified professionals deliver excellence at every scale. Your Ibiza property deserves the best.
           </p>
         </div>
 
