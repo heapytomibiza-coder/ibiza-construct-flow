@@ -134,12 +134,6 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-            <div className="h-2 w-2 bg-primary rounded-full animate-bounce"></div>
-            <div className="h-2 w-2 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-            <div className="h-2 w-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-          </div>
           <span className="animate-fade-in">Your specialised questions</span>
         </CardTitle>
         <p className="text-sm text-muted-foreground animate-fade-in">
