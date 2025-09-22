@@ -21,6 +21,10 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import PostJob from "./pages/PostJob";
 import ServicePage from "./pages/ServicePage";
 import AuthPage from "./pages/AuthPage";
+import Services from "./pages/Services";
+import Professionals from "./pages/Professionals";
+import HowItWorks from "./pages/HowItWorks";
+import Contact from "./pages/Contact";
 import { useFeature } from "./hooks/useFeature";
 
 export default function App() {
@@ -33,6 +37,10 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/professionals" element={<Professionals />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/contact" element={<Contact />} />
           
           {/* New Auth Flow Routes */}
           <Route path="/auth/role-select" element={<RoleSelect />} />
