@@ -275,23 +275,6 @@ const PostJob: React.FC = () => {
                     className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Budget Range (Optional)</label>
-                  <select
-                    value={state.generalAnswers.budget || ''}
-                    onChange={(e) => handleGeneralAnswerChange('budget', e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  >
-                    <option value="">Select budget range</option>
-                    <option value="under-100">Under €100</option>
-                    <option value="100-250">€100 - €250</option>
-                    <option value="250-500">€250 - €500</option>
-                    <option value="500-1000">€500 - €1,000</option>
-                    <option value="over-1000">Over €1,000</option>
-                    <option value="open">Open to proposals</option>
-                  </select>
-                </div>
               </div>
             </Card>
             
