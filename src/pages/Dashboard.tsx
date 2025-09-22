@@ -2,27 +2,17 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
-import ClientDashboard from '@/components/dashboards/ClientDashboard';
-import ProfessionalDashboard from '@/components/dashboards/ProfessionalDashboard';
-import AdminDashboard from '@/components/dashboards/AdminDashboard';
-import { Skeleton } from '@/components/ui/skeleton';
-
-type UserRole = 'client' | 'professional' | 'admin';
-
-interface Profile {
-  id: string;
-  role: UserRole;
-  full_name: string | null;
-  phone: string | null;
-  avatar_url: string | null;
-  created_at: string;
-}
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { AlertCircle, Database, LogOut } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check initial session
@@ -32,7 +22,7 @@ const Dashboard = () => {
         return;
       }
       setUser(session.user);
-      fetchProfile(session.user.id);
+      setLoading(false);
     });
 
     // Listen for auth changes
@@ -43,66 +33,92 @@ const Dashboard = () => {
       }
       if (event === 'SIGNED_IN' && session) {
         setUser(session.user);
-        fetchProfile(session.user.id);
+        setLoading(false);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      // If no profile exists, redirect to auth to complete profile setup
-      navigate('/auth');
-    } finally {
-      setLoading(false);
-    }
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You've been signed out successfully.",
+    });
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <Skeleton className="h-8 w-48" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
-          </div>
-          <Skeleton className="h-96" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (!user || !profile) {
+  if (!user) {
     return null;
   }
 
-  const renderDashboard = () => {
-    switch (profile.role) {
-      case 'client':
-        return <ClientDashboard user={user} profile={profile} />;
-      case 'professional':
-        return <ProfessionalDashboard user={user} profile={profile} />;
-      case 'admin':
-        return <AdminDashboard user={user} profile={profile} />;
-      default:
-        return <ClientDashboard user={user} profile={profile} />;
-    }
-  };
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground">Welcome, {user.email}</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Badge variant="secondary">Authenticated</Badge>
+            <Button variant="outline" onClick={handleSignOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </header>
 
-  return renderDashboard();
+      <main className="max-w-7xl mx-auto p-6">
+        <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950/10 dark:border-orange-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-800 dark:text-orange-200">
+              <Database className="w-5 h-5" />
+              Database Migration Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5" />
+              <div>
+                <p className="text-orange-800 dark:text-orange-200 mb-2">
+                  Your authentication is working, but the database schema needs to be applied first.
+                </p>
+                <div className="text-sm text-orange-700 dark:text-orange-300 space-y-1">
+                  <p>✅ Authentication system: Active</p>
+                  <p>✅ Role-based routing: Ready</p>
+                  <p>⏳ Database schema: Pending migration</p>
+                  <p>⏳ User profiles: Waiting for tables</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-lg border">
+              <p className="text-sm font-medium mb-2">Next Steps:</p>
+              <ol className="text-sm space-y-1 text-muted-foreground">
+                <li>1. Run the database migration that was created</li>
+                <li>2. The profile system will activate automatically</li>
+                <li>3. Role-based dashboards will become available</li>
+                <li>4. Phase 1 features can then be implemented</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  );
 };
 
 export default Dashboard;

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, X, Home, Briefcase, Users, Phone } from 'lucide-react';
 
 const Header = () => {
@@ -40,12 +41,12 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="btn-secondary">
+            <Link to="/auth" className="btn-secondary">
               Join as Pro
-            </button>
-            <button className="btn-hero">
+            </Link>
+            <Link to="/auth" className="btn-hero">
               Post Project
-            </button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -77,12 +78,12 @@ const Header = () => {
                 Contact
               </a>
               <div className="flex flex-col space-y-3 pt-4">
-                <button className="btn-secondary">
+                <Link to="/auth" className="btn-secondary">
                   Join as Pro
-                </button>
-                <button className="btn-hero">
+                </Link>
+                <Link to="/auth" className="btn-hero">
                   Post Project
-                </button>
+                </Link>
               </div>
             </nav>
           </div>
