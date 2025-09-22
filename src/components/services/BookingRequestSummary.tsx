@@ -222,14 +222,16 @@ export const BookingRequestSummary = ({
 
       {/* Service Summary Card */}
       <Card className="card-luxury">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-gradient-hero rounded-xl flex items-center justify-center">
-            <ShoppingCart className="w-5 h-5 text-white" />
-          </div>
-          <h3 className="text-display font-semibold text-charcoal">
-            Service Summary
-          </h3>
-        </div>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-hero rounded-xl flex items-center justify-center">
+              <ShoppingCart className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-display font-semibold text-charcoal">
+              Service Summary
+            </span>
+          </CardTitle>
+        </CardHeader>
 
         <CardContent className="space-y-4">
           {/* Service Summary */}
