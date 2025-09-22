@@ -34,6 +34,15 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
     });
   };
 
+  // Extra safety check (though it should be handled in AdminDashboardPage)
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Profile data not available</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">

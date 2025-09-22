@@ -13,5 +13,17 @@ export default function AdminDashboardPage() {
     );
   }
 
+  // Don't render if user or profile is missing
+  if (!user || !profile) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-muted-foreground">Unable to load admin dashboard</p>
+          <p className="text-sm text-muted-foreground mt-2">Profile data not found</p>
+        </div>
+      </div>
+    );
+  }
+
   return <AdminDashboard user={user} profile={profile} />;
 }
