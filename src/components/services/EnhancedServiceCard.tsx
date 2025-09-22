@@ -2,7 +2,6 @@ import { Star, Clock, Award, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 
 interface ServiceCardProps {
   service: {
@@ -17,21 +16,18 @@ interface ServiceCardProps {
     responseTime?: string;
     micro?: string;
     slug?: string;
-    itemCount?: number;
-    addonCount?: number;
   };
   onViewService: () => void;
   onBookNow: () => void;
 }
 
 export const EnhancedServiceCard = ({ service, onViewService, onBookNow }: ServiceCardProps) => {
-  const navigate = useNavigate();
   const IconComponent = service.icon;
 
   const handleViewDetails = () => {
     // Navigate to detailed service page if we have micro and slug
     if (service.micro && service.slug) {
-      navigate(`/service/${encodeURIComponent(service.micro)}/${service.slug}`);
+      window.location.href = `/service/${encodeURIComponent(service.micro)}/${service.slug}`;
     } else {
       onViewService();
     }
@@ -66,22 +62,6 @@ export const EnhancedServiceCard = ({ service, onViewService, onBookNow }: Servi
             <p className="text-body text-muted-foreground text-sm mb-4 leading-relaxed">
               {service.description}
             </p>
-
-            {/* Service Options Count */}
-            {(service.itemCount || service.addonCount) && (
-              <div className="flex items-center gap-3 mb-4">
-                {service.itemCount > 0 && (
-                  <Badge variant="outline" className="text-xs">
-                    {service.itemCount} options
-                  </Badge>
-                )}
-                {service.addonCount > 0 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{service.addonCount} add-ons
-                  </Badge>
-                )}
-              </div>
-            )}
 
             {/* Stats */}
             <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
