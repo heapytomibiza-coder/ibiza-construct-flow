@@ -54,6 +54,12 @@ export const useServicesWithPricing = () => {
       'Plumbing': 'Droplets',
       'Gardening': 'Thermometer',
       'Painting': 'Paintbrush',
+      'Home & Property Services': 'Home',
+      'Handyman': 'Wrench',
+      'HVAC': 'Thermometer',
+      'Moving': 'Car',
+      'Outdoor': 'Thermometer',
+      'Personal': 'Home',
     };
     return iconMap[category] || 'Wrench';
   };

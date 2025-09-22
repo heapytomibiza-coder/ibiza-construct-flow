@@ -2,6 +2,7 @@ import { Star, Clock, Award, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface ServiceCardProps {
   service: {
@@ -24,12 +25,13 @@ interface ServiceCardProps {
 }
 
 export const EnhancedServiceCard = ({ service, onViewService, onBookNow }: ServiceCardProps) => {
+  const navigate = useNavigate();
   const IconComponent = service.icon;
 
   const handleViewDetails = () => {
     // Navigate to detailed service page if we have micro and slug
     if (service.micro && service.slug) {
-      window.location.href = `/service/${encodeURIComponent(service.micro)}/${service.slug}`;
+      navigate(`/service/${encodeURIComponent(service.micro)}/${service.slug}`);
     } else {
       onViewService();
     }
