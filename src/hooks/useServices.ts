@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getServiceSlugByCategory, getServiceIconName, isPopularService, formatServicePrice } from '@/utils/serviceHelpers';
+import { getServiceSlugByCategory, getMicroServiceIconName, isPopularMicroService, formatServicePrice } from '@/utils/serviceHelpers';
 
 interface Service {
   id: string;
@@ -70,56 +70,116 @@ export const useServices = () => {
     return services.filter(s => s.category === category);
   };
 
-  // Map database categories to UI service cards  
+  // Map database micro-services to UI service cards  
   const getServiceCards = (): ServiceWithIcon[] => {
-    const categories = getCategories();
+    // Return cards for each micro-service instead of categories
+    const serviceCards = services.map(service => ({
+      category: service.category,
+      title: service.micro,
+      description: getMicroServiceDescription(service.micro, service.category),
+      priceRange: getMicroServicePriceRange(service.micro, service.category),
+      popular: isPopularMicroService(service.micro),
+      slug: getServiceSlugByCategory(service.category),
+      icon: getMicroServiceIconName(service.micro, service.category)
+    }));
     
-    const createServiceCard = (category: string): ServiceWithIcon => ({
-      category,
-      title: category === 'Construction' ? 'Home Renovations' : `${category} Services`,
-      description: getServiceDescription(category),
-      priceRange: getServicePriceRange(category),
-      popular: isPopularService(category),
-      slug: getServiceSlugByCategory(category),
-      icon: getServiceIconName(category)
-    });
-
-    // Return cards for categories that exist in database, plus fallback defaults
-    const dbCards = categories.map(createServiceCard);
-    
-    // If no database categories, return default cards
-    if (dbCards.length === 0) {
-      const defaultCategories = ['Handyman', 'Construction', 'Electrical', 'Painting', 'Plumbing', 'HVAC', 'Outdoor'];
-      return defaultCategories.map(createServiceCard);
-    }
-    
-    return dbCards;
+    return serviceCards;
   };
 
-  const getServiceDescription = (category: string): string => {
+  const getMicroServiceDescription = (micro: string, category: string): string => {
     const descriptions: Record<string, string> = {
-      'Handyman': 'Quick fixes, small repairs, and maintenance tasks',
-      'Construction': 'Kitchen, bathroom, and complete home makeovers', 
-      'Electrical': 'Installation, repairs, and safety inspections',
-      'Painting': 'Interior and exterior painting, wallpaper, finishes',
-      'Plumbing': 'Installation, repairs, and bathroom fitting',
-      'HVAC': 'Air conditioning, heating, and ventilation',
-      'Outdoor': 'Pool maintenance, garden landscaping, patios'
+      // Moving services
+      'Help Moving': 'Professional moving assistance and heavy lifting',
+      'Truck Assisted Moving': 'Full-service moving with truck and crew',
+      'Heavy Lifting & Loading': 'Safe handling of heavy furniture and appliances',
+      'Packing Services': 'Professional packing with quality materials',
+      'Unpacking Services': 'Complete unpacking and organizing service',
+      
+      // Cleaning services
+      'House Cleaning': 'Regular or one-time house cleaning service',
+      'Deep Cleaning': 'Thorough deep cleaning for every room',
+      'Post-Party Cleanup': 'Quick cleanup after events and parties',
+      'Carpet Cleaning': 'Professional carpet and upholstery cleaning',
+      'Window Cleaning': 'Interior and exterior window cleaning',
+      
+      // Delivery services
+      'Grocery Shopping': 'Personal grocery shopping and delivery',
+      'Personal Shopping': 'Shopping assistance for any items',
+      'Same Day Delivery': 'Fast same-day delivery service',
+      'Furniture Delivery': 'Safe furniture delivery and placement',
+      'Package Pickup': 'Convenient package pickup and delivery',
+      
+      // Personal services
+      'Home Organization': 'Professional organizing and decluttering',
+      'Office Organization': 'Workspace organization and filing',
+      'Personal Assistant Tasks': 'Various personal assistance tasks',
+      'Wait in Line Service': 'Professional waiting and queuing service',
+      'Dog Walking': 'Regular dog walking and exercise',
+      'Pet Sitting': 'In-home pet care and sitting',
+      
+      // Handyman services
+      'IKEA Furniture Assembly': 'Expert IKEA furniture assembly',
+      'General Furniture Assembly': 'Assembly of any furniture pieces',
+      'TV Mounting': 'Professional TV wall mounting service',
+      'Picture & Artwork Hanging': 'Precise picture and artwork hanging',
+      'Smart Home Installation': 'Smart device setup and installation',
+      
+      // Outdoor services
+      'Christmas Lights Installation': 'Holiday lighting installation and removal',
+      'Holiday Decorating': 'Complete holiday decoration service',
+      'Pressure Washing': 'High-pressure cleaning for exteriors',
+      'Gutter Cleaning': 'Professional gutter cleaning and maintenance'
     };
-    return descriptions[category] || 'Professional services for your property';
+    
+    return descriptions[micro] || `Professional ${micro.toLowerCase()} service`;
   };
 
-  const getServicePriceRange = (category: string): string => {
+  const getMicroServicePriceRange = (micro: string, category: string): string => {
     const ranges: Record<string, string> = {
-      'Handyman': '€50 - €500',
-      'Construction': '€2K - €50K',
-      'Electrical': '€100 - €5K', 
-      'Painting': '€200 - €3K',
-      'Plumbing': '€80 - €2K',
-      'HVAC': '€300 - €8K',
-      'Outdoor': '€150 - €15K'
+      // Moving services
+      'Help Moving': '€80 - €200',
+      'Truck Assisted Moving': '€200 - €600',
+      'Heavy Lifting & Loading': '€60 - €150',
+      'Packing Services': '€100 - €300',
+      'Unpacking Services': '€80 - €250',
+      
+      // Cleaning services
+      'House Cleaning': '€60 - €150',
+      'Deep Cleaning': '€120 - €300',
+      'Post-Party Cleanup': '€80 - €200',
+      'Carpet Cleaning': '€100 - €250',
+      'Window Cleaning': '€60 - €120',
+      
+      // Delivery services
+      'Grocery Shopping': '€25 - €50',
+      'Personal Shopping': '€30 - €60',
+      'Same Day Delivery': '€20 - €80',
+      'Furniture Delivery': '€50 - €150',
+      'Package Pickup': '€15 - €40',
+      
+      // Personal services
+      'Home Organization': '€80 - €200',
+      'Office Organization': '€100 - €250',
+      'Personal Assistant Tasks': '€40 - €100',
+      'Wait in Line Service': '€25 - €60',
+      'Dog Walking': '€20 - €40',
+      'Pet Sitting': '€30 - €80',
+      
+      // Handyman services
+      'IKEA Furniture Assembly': '€50 - €120',
+      'General Furniture Assembly': '€60 - €150',
+      'TV Mounting': '€80 - €150',
+      'Picture & Artwork Hanging': '€40 - €80',
+      'Smart Home Installation': '€100 - €300',
+      
+      // Outdoor services
+      'Christmas Lights Installation': '€150 - €400',
+      'Holiday Decorating': '€100 - €300',
+      'Pressure Washing': '€120 - €300',
+      'Gutter Cleaning': '€100 - €200'
     };
-    return ranges[category] || '€50 - €500';
+    
+    return ranges[micro] || '€50 - €150';
   };
 
   useEffect(() => {
