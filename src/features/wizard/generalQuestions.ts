@@ -1,6 +1,6 @@
 export interface Question {
   id: string;
-  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'slider' | 'file';
+  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'slider' | 'file' | 'date';
   label: string;
   placeholder?: string;
   required?: boolean;
@@ -78,6 +78,13 @@ export const generalQuestions: Question[] = [
       'Next 2 weeks',
       'Flexible timing'
     ],
+  },
+  {
+    id: 'preferred_start_date',
+    type: 'date',
+    label: 'Preferred start date',
+    required: false,
+    showIf: (answers) => answers.preferred_timeslot !== 'ASAP (within 48h)' && answers.preferred_timeslot !== 'Flexible timing',
   },
   {
     id: 'schedule_detail',
