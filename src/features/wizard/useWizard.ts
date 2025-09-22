@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAIQuestions, AIQuestion } from '@/hooks/useAIQuestions';
+import { toast } from 'sonner';
 
 export interface WizardState {
   step: number;
@@ -39,6 +41,9 @@ export const useWizard = () => {
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // AI-powered question generation
+  const aiQuestions = useAIQuestions();
 
   // Load all services
   const loadServices = useCallback(async () => {
@@ -77,6 +82,43 @@ export const useWizard = () => {
       setLoading(false);
     }
   }, []);
+
+  // AI-powered question loading
+  const loadAIQuestions = useCallback(async (serviceId: string) => {
+    const service = services.find(s => s.id === serviceId);
+    if (!service) return;
+
+    try {
+      await aiQuestions.generateQuestions(
+        service.micro,
+        service.category,
+        service.subcategory,
+        state.generalAnswers
+      );
+    } catch (error) {
+      console.error('Failed to load AI questions:', error);
+      // Fallback to database questions
+      await loadQuestions(serviceId);
+    }
+  }, [services, state.generalAnswers, aiQuestions, loadQuestions]);
+
+  // AI-powered price estimation
+  const generatePriceEstimate = useCallback(async () => {
+    const service = services.find(s => s.id === state.serviceId);
+    if (!service || !state.microAnswers) return;
+
+    try {
+      await aiQuestions.estimatePrice(
+        service.micro,
+        service.category,
+        service.subcategory,
+        { ...state.generalAnswers, ...state.microAnswers },
+        state.generalAnswers?.location
+      );
+    } catch (error) {
+      console.error('Failed to generate price estimate:', error);
+    }
+  }, [services, state.serviceId, state.generalAnswers, state.microAnswers, aiQuestions]);
 
   const updateState = useCallback((updates: Partial<WizardState>) => {
     setState(prev => ({ ...prev, ...updates }));
@@ -159,17 +201,25 @@ export const useWizard = () => {
   return {
     state,
     services,
-    questions,
-    loading,
-    error,
+    questions: aiQuestions.questions.length > 0 ? aiQuestions.questions : questions,
+    loading: loading || aiQuestions.loading,
+    error: error || aiQuestions.error,
+    priceEstimate: aiQuestions.priceEstimate,
     updateState,
     nextStep,
     prevStep,
     submitBooking,
     loadServices,
     loadQuestions,
+    loadAIQuestions,
+    generatePriceEstimate,
     getCategories,
     getSubcategories,
     getMicroServices,
+    clearAIData: () => {
+      aiQuestions.clearQuestions();
+      aiQuestions.clearPriceEstimate();
+      aiQuestions.clearError();
+    }
   };
 };

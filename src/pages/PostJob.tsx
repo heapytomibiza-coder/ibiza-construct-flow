@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight, Check, Wrench, Settings, Star } from 'lucide-react';
 import { useWizard } from '@/features/wizard/useWizard';
 import TwoSectionQuestionsStep from '@/features/wizard/TwoSectionQuestionsStep';
+import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
+import { AIPriceEstimate } from '@/components/ai/AIPriceEstimate';
 import { toast } from 'sonner';
 
 const PostJob: React.FC = () => {
@@ -15,16 +17,20 @@ const PostJob: React.FC = () => {
     state,
     loading,
     error,
+    priceEstimate,
     updateState,
     nextStep,
     prevStep,
     submitBooking,
     loadServices,
     loadQuestions,
+    loadAIQuestions,
+    generatePriceEstimate,
     getCategories,
     getSubcategories,
     getMicroServices,
-    questions
+    questions,
+    clearAIData
   } = useWizard();
 
   useEffect(() => {
@@ -80,12 +86,15 @@ const PostJob: React.FC = () => {
     nextStep();
   };
 
-  const handleMicroServiceSelect = (service: any) => {
+  const handleMicroServiceSelect = async (service: any) => {
     updateState({ 
       serviceId: service.id, 
       microService: service.micro,
       title: service.micro // Pre-fill title
     });
+    
+    // Load AI-generated questions for better contextual experience
+    await loadAIQuestions(service.id);
     nextStep();
   };
 
@@ -234,117 +243,51 @@ const PostJob: React.FC = () => {
         );
 
       case 4:
-        // Service-Specific Questions Step
-        if (!questions || questions.length === 0) {
-          return (
-            <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <h2 className="text-2xl font-semibold">Loading questions...</h2>
-                <p className="text-muted-foreground">Getting specific questions for {state.microService}</p>
-              </div>
-            </div>
-          );
-        }
-
+        // Service-Specific Questions Step with AI
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-semibold">Tell us more about your {state.microService}</h2>
-              <p className="text-muted-foreground">Help professionals understand exactly what you need</p>
+              <p className="text-muted-foreground">AI-generated questions tailored to your specific needs</p>
             </div>
             
+            {/* AI-Generated Questions */}
+            <AIQuestionRenderer
+              questions={questions}
+              answers={state.microAnswers || {}}
+              onAnswerChange={handleMicroAnswerChange}
+            />
+            
+            {/* Basic Job Information */}
             <Card className="p-6">
-              <div className="space-y-6">
-                {questions.map((question: any, index: number) => (
-                  <div key={question.id || index}>
-                    <label className="text-sm font-medium mb-3 block">
-                      {question.question}
-                      {question.required && <span className="text-destructive ml-1">*</span>}
-                    </label>
-                    
-                    {question.type === 'multiple_choice' && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {question.options?.map((option: string, optionIndex: number) => (
-                          <Card
-                            key={optionIndex}
-                            className={`p-4 cursor-pointer hover:shadow-md transition-all border-2 ${
-                              state.microAnswers[question.id] === option
-                                ? 'border-primary bg-primary/5'
-                                : 'hover:border-primary/20'
-                            }`}
-                            onClick={() => handleMicroAnswerChange(question.id, option)}
-                          >
-                            <div className="flex items-center space-x-3">
-                              <div className={`w-4 h-4 rounded-full border-2 ${
-                                state.microAnswers[question.id] === option
-                                  ? 'bg-primary border-primary'
-                                  : 'border-muted-foreground'
-                              }`} />
-                              <span className="text-sm">{option}</span>
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {question.type === 'text' && (
-                      <input
-                        type="text"
-                        placeholder={question.placeholder || "Enter your answer"}
-                        value={state.microAnswers[question.id] || ''}
-                        onChange={(e) => handleMicroAnswerChange(question.id, e.target.value)}
-                        className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      />
-                    )}
+              <h3 className="font-medium mb-4">Job Details</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Job Title</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Replace kitchen tiles"
+                    value={state.generalAnswers.title || state.microService}
+                    onChange={(e) => handleGeneralAnswerChange('title', e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
 
-                    {question.type === 'select' && (
-                      <select
-                        value={state.microAnswers[question.id] || ''}
-                        onChange={(e) => handleMicroAnswerChange(question.id, e.target.value)}
-                        className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      >
-                        <option value="">Select an option</option>
-                        {question.options?.map((option: string, optionIndex: number) => (
-                          <option key={optionIndex} value={option}>{option}</option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
-                ))}
-
-                {/* Add basic job details if not covered by service questions */}
-                <div className="border-t pt-6 mt-6">
-                  <h3 className="font-medium mb-4">Additional Details</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Job Title</label>
-                      <input
-                        type="text"
-                        placeholder="e.g., Replace kitchen tiles"
-                        value={state.generalAnswers.title || state.microService}
-                        onChange={(e) => handleGeneralAnswerChange('title', e.target.value)}
-                        className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Budget Range (Optional)</label>
-                      <select
-                        value={state.generalAnswers.budget || ''}
-                        onChange={(e) => handleGeneralAnswerChange('budget', e.target.value)}
-                        className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      >
-                        <option value="">Select budget range</option>
-                        <option value="under-100">Under €100</option>
-                        <option value="100-250">€100 - €250</option>
-                        <option value="250-500">€250 - €500</option>
-                        <option value="500-1000">€500 - €1,000</option>
-                        <option value="over-1000">Over €1,000</option>
-                        <option value="open">Open to proposals</option>
-                      </select>
-                    </div>
-                  </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Budget Range (Optional)</label>
+                  <select
+                    value={state.generalAnswers.budget || ''}
+                    onChange={(e) => handleGeneralAnswerChange('budget', e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="">Select budget range</option>
+                    <option value="under-100">Under €100</option>
+                    <option value="100-250">€100 - €250</option>
+                    <option value="250-500">€250 - €500</option>
+                    <option value="500-1000">€500 - €1,000</option>
+                    <option value="over-1000">Over €1,000</option>
+                    <option value="open">Open to proposals</option>
+                  </select>
                 </div>
               </div>
             </Card>
@@ -355,7 +298,10 @@ const PostJob: React.FC = () => {
                 Back
               </Button>
               <Button 
-                onClick={nextStep}
+                onClick={async () => {
+                  await generatePriceEstimate();
+                  nextStep();
+                }}
                 disabled={!state.generalAnswers.title}
               >
                 Continue
@@ -380,13 +326,18 @@ const PostJob: React.FC = () => {
         );
 
       case 6:
-        // Review Step
+        // Review Step with AI Price Estimate
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-semibold">Review your job post</h2>
-              <p className="text-muted-foreground">Make sure everything looks correct before posting</p>
+              <p className="text-muted-foreground">AI-powered insights and final review</p>
             </div>
+
+            {/* AI Price Estimate */}
+            {priceEstimate && (
+              <AIPriceEstimate estimate={priceEstimate} />
+            )}
 
             <Card className="p-6">
               <h3 className="font-semibold mb-4">Job Summary</h3>
@@ -416,6 +367,20 @@ const PostJob: React.FC = () => {
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Budget Range</label>
                     <p className="mt-1">{state.generalAnswers.budget}</p>
+                  </div>
+                )}
+
+                {/* AI-Generated Question Responses */}
+                {state.microAnswers && Object.keys(state.microAnswers).length > 0 && (
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">AI Questions & Answers</label>
+                    <div className="mt-2 space-y-1">
+                      {Object.entries(state.microAnswers).map(([key, value]) => (
+                        <div key={key} className="text-sm bg-blue-50 p-2 rounded">
+                          <span className="font-medium capitalize">{key.replace(/_/g, ' ')}:</span> {String(value)}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
