@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useFeature } from '@/hooks/useFeature';
 
 export default function SignIn() {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,7 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [authMode, setAuthMode] = useState<'magic' | 'password'>('magic');
   
+  const role = searchParams.get('role') as 'client' | 'professional' || 'client';
   const magicLinkEnabled = useFeature('ff.magicLink', true);
   const socialAuthEnabled = useFeature('ff.socialAuth', true);
 
@@ -40,7 +42,7 @@ export default function SignIn() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?role=${role}`,
         }
       });
 
@@ -80,7 +82,7 @@ export default function SignIn() {
         description: 'You have been signed in successfully.',
       });
       
-      // Navigation will be handled by the auth state change listener in App.tsx
+      navigate('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',

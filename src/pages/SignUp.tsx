@@ -248,7 +248,7 @@ export default function SignUp() {
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
                 Already have an account?{' '}
-                <Link to="/auth/sign-in" className="text-primary hover:underline">
+                <Link to={`/auth/sign-in?role=${role}`} className="text-primary hover:underline">
                   Sign in
                 </Link>
               </p>
