@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Home, Briefcase, Users, Phone } from 'lucide-react';
 
-const Header = () => {
+interface HeaderProps {
+  jobWizardEnabled?: boolean;
+  proInboxEnabled?: boolean;
+}
+
+const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -41,12 +46,21 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/auth" className="btn-secondary">
-              Join as Pro
-            </Link>
-            <Link to="/auth" className="btn-hero">
-              Post Project
-            </Link>
+            {proInboxEnabled && (
+              <Link to="/auth" className="btn-secondary">
+                Join as Pro
+              </Link>
+            )}
+            {jobWizardEnabled && (
+              <Link to="/auth" className="btn-hero">
+                Post Project
+              </Link>
+            )}
+            {!jobWizardEnabled && !proInboxEnabled && (
+              <Link to="/auth" className="btn-secondary">
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -78,12 +92,21 @@ const Header = () => {
                 Contact
               </a>
               <div className="flex flex-col space-y-3 pt-4">
-                <Link to="/auth" className="btn-secondary">
-                  Join as Pro
-                </Link>
-                <Link to="/auth" className="btn-hero">
-                  Post Project
-                </Link>
+                {proInboxEnabled && (
+                  <Link to="/auth" className="btn-secondary">
+                    Join as Pro
+                  </Link>
+                )}
+                {jobWizardEnabled && (
+                  <Link to="/auth" className="btn-hero">
+                    Post Project
+                  </Link>
+                )}
+                {!jobWizardEnabled && !proInboxEnabled && (
+                  <Link to="/auth" className="btn-secondary">
+                    Sign In
+                  </Link>
+                )}
               </div>
             </nav>
           </div>
