@@ -1,64 +1,99 @@
 import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useFeature } from '@/hooks/useFeature';
 
 const Services = () => {
+  const navigate = useNavigate();
+  const jobWizardEnabled = useFeature('ff.jobWizardV2');
+  
   const services = [
     {
       icon: Wrench,
       title: "Handyman Services",
       description: "Quick fixes, small repairs, and maintenance tasks",
       priceRange: "€50 - €500",
-      popular: true
+      popular: true,
+      category: "Handyman",
+      slug: "handyman"
     },
     {
       icon: Home,
       title: "Home Renovations", 
       description: "Kitchen, bathroom, and complete home makeovers",
       priceRange: "€2K - €50K",
-      popular: false
+      popular: false,
+      category: "Construction",
+      slug: "renovation"
     },
     {
       icon: Zap,
       title: "Electrical Work",
       description: "Installation, repairs, and safety inspections",
       priceRange: "€100 - €5K",
-      popular: false
+      popular: false,
+      category: "Electrical",
+      slug: "electrical"
     },
     {
       icon: Paintbrush,
       title: "Painting & Decorating",
       description: "Interior and exterior painting, wallpaper, finishes",
       priceRange: "€200 - €3K",
-      popular: true
+      popular: true,
+      category: "Painting",
+      slug: "painting"
     },
     {
       icon: Hammer,
       title: "Construction",
       description: "New builds, extensions, and structural work",
       priceRange: "€10K - €1M+",
-      popular: false
+      popular: false,
+      category: "Construction",
+      slug: "construction"
     },
     {
       icon: Droplets,
       title: "Plumbing",
       description: "Installation, repairs, and bathroom fitting",
       priceRange: "€80 - €2K",
-      popular: true
+      popular: true,
+      category: "Plumbing",
+      slug: "plumbing"
     },
     {
       icon: Thermometer,
       title: "HVAC Systems",
       description: "Air conditioning, heating, and ventilation",
       priceRange: "€300 - €8K",
-      popular: false
+      popular: false,
+      category: "HVAC",
+      slug: "hvac"
     },
     {
       icon: Car,
       title: "Pool & Outdoor",
       description: "Pool maintenance, garden landscaping, patios",
       priceRange: "€150 - €15K",
-      popular: false
+      popular: false,
+      category: "Outdoor",
+      slug: "outdoor"
     }
   ];
+
+  const handleServiceClick = (service: any) => {
+    if (jobWizardEnabled) {
+      navigate(`/post?category=${encodeURIComponent(service.category)}`);
+    } else {
+      navigate(`/service/${service.slug}`);
+    }
+  };
+
+  const handleGetQuoteClick = () => {
+    if (jobWizardEnabled) {
+      navigate('/post');
+    }
+  };
 
   return (
     <section className="py-20 bg-background">
@@ -82,6 +117,7 @@ const Services = () => {
               <div
                 key={index}
                 className="card-luxury hover:scale-105 group cursor-pointer relative"
+                onClick={() => handleServiceClick(service)}
               >
                 {service.popular && (
                   <div className="absolute -top-3 -right-3 bg-gradient-hero text-white px-3 py-1 rounded-full text-xs font-semibold">
@@ -115,7 +151,7 @@ const Services = () => {
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <button className="btn-hero">
+          <button className="btn-hero" onClick={handleGetQuoteClick}>
             Get Instant Quote
           </button>
           <p className="text-body text-muted-foreground mt-4">

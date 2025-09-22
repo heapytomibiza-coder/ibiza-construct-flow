@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 
 const PostJob: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const {
     state,
     loading,
@@ -29,6 +30,39 @@ const PostJob: React.FC = () => {
   useEffect(() => {
     loadServices();
   }, [loadServices]);
+
+  // Handle URL parameters for pre-filling wizard
+  useEffect(() => {
+    const category = searchParams.get('category');
+    const preset = searchParams.get('preset');
+    const packageParam = searchParams.get('package');
+    const express = searchParams.get('express') === 'true';
+    
+    if (category && state.step === 1) {
+      handleCategorySelect(category);
+      
+      // If it's express mode or has preset, pre-fill some answers
+      if (preset) {
+        updateState({ 
+          title: preset,
+          generalAnswers: { 
+            ...state.generalAnswers, 
+            title: preset,
+            express: express 
+          }
+        });
+      }
+      
+      if (packageParam) {
+        updateState({
+          generalAnswers: {
+            ...state.generalAnswers,
+            package: packageParam
+          }
+        });
+      }
+    }
+  }, [searchParams, state.step]);
 
   useEffect(() => {
     if (state.serviceId) {
@@ -200,6 +234,108 @@ const PostJob: React.FC = () => {
         );
 
       case 4:
+        // Package Selection Step
+        const packages = [
+          {
+            name: "Essential",
+            price: "€50-150",
+            duration: "2-4 hours",
+            features: ["Basic work", "Standard tools", "Clean-up"],
+            description: "Perfect for simple tasks and quick fixes"
+          },
+          {
+            name: "Premium", 
+            price: "€150-500",
+            duration: "Half day",
+            features: ["Complex work", "Professional tools", "Parts sourcing", "Warranty"],
+            description: "Comprehensive service with quality guarantee",
+            popular: true
+          },
+          {
+            name: "Bespoke",
+            price: "€500+", 
+            duration: "Full day+",
+            features: ["Custom solutions", "Multiple tasks", "Project planning", "Follow-up visits"],
+            description: "Tailored service for complex projects"
+          }
+        ];
+
+        return (
+          <div className="space-y-6">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-semibold">Choose your package</h2>
+              <p className="text-muted-foreground">Select the level of service that fits your needs</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {packages.map((pkg) => (
+                <Card 
+                  key={pkg.name}
+                  className={`relative cursor-pointer hover:shadow-md transition-all border-2 ${
+                    state.generalAnswers.package === pkg.name 
+                      ? 'border-primary shadow-md' 
+                      : 'hover:border-primary/20'
+                  } ${pkg.popular ? 'border-copper shadow-luxury' : ''}`}
+                  onClick={() => {
+                    handleGeneralAnswerChange('package', pkg.name);
+                    setTimeout(nextStep, 300);
+                  }}
+                >
+                  {pkg.popular && (
+                    <div className="absolute -top-3 -right-3 bg-gradient-hero text-white px-3 py-1 rounded-full text-xs font-semibold">
+                      Popular
+                    </div>
+                  )}
+                  
+                  <div className="p-6 text-center">
+                    <h3 className="text-xl font-semibold mb-2">{pkg.name}</h3>
+                    <div className="text-2xl font-bold text-copper mb-2">{pkg.price}</div>
+                    <p className="text-sm text-muted-foreground mb-4">{pkg.duration}</p>
+                    <p className="text-sm mb-4">{pkg.description}</p>
+                    
+                    <ul className="space-y-2 text-sm text-left">
+                      {pkg.features.map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-copper rounded-full"></div>
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Card>
+              ))}
+            </div>
+            
+            <div className="flex justify-between pt-6">
+              <Button variant="outline" onClick={prevStep}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              {state.generalAnswers.package && (
+                <Button onClick={nextStep}>
+                  Continue
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
+          </div>
+        );
+
+      case 5:
+        // Questions Step
+        return (
+          <TwoSectionQuestionsStep
+            generalAnswers={state.generalAnswers}
+            microAnswers={state.microAnswers}
+            microQuestions={questions}
+            onGeneralChange={handleGeneralAnswerChange}
+            onMicroChange={handleMicroAnswerChange}
+            onNext={nextStep}
+            onBack={prevStep}
+          />
+        );
+
+      case 6:
         // Questions Step
         return (
           <TwoSectionQuestionsStep
@@ -246,10 +382,10 @@ const PostJob: React.FC = () => {
                   </div>
                 )}
 
-                {state.budgetRange && (
+                {state.generalAnswers.package && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Budget</label>
-                    <p className="mt-1">{state.budgetRange}</p>
+                    <label className="text-sm font-medium text-muted-foreground">Package</label>
+                    <p className="mt-1">{state.generalAnswers.package}</p>
                   </div>
                 )}
               </div>
@@ -294,10 +430,10 @@ const PostJob: React.FC = () => {
   return (
     <div className="min-h-screen bg-background pt-20 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Progress indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            {[1, 2, 3, 4, 5].map((step) => (
+          {/* Progress indicator */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              {[1, 2, 3, 4, 5, 6].map((step) => (
               <div key={step} className="flex items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
                   ${state.step >= step 
@@ -306,7 +442,7 @@ const PostJob: React.FC = () => {
                   }`}>
                   {state.step > step ? <Check className="w-4 h-4" /> : step}
                 </div>
-                {step < 5 && (
+                {step < 6 && (
                   <div className={`w-12 h-0.5 mx-2 ${
                     state.step > step ? 'bg-primary' : 'bg-muted'
                   }`} />
@@ -314,9 +450,9 @@ const PostJob: React.FC = () => {
               </div>
             ))}
           </div>
-          <p className="text-center text-sm text-muted-foreground">
-            Step {state.step} of 5
-          </p>
+            <p className="text-center text-sm text-muted-foreground">
+              Step {state.step} of 6
+            </p>
         </div>
 
         {/* Step content */}

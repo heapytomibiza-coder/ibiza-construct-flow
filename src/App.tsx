@@ -19,6 +19,7 @@ import ClientDashboardPage from "./pages/ClientDashboardPage";
 import ProfessionalDashboardPage from "./pages/ProfessionalDashboardPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import PostJob from "./pages/PostJob";
+import ServicePage from "./pages/ServicePage";
 import { useFeature } from "./hooks/useFeature";
 
 export default function App() {
@@ -45,6 +46,9 @@ export default function App() {
           
           {/* Role Switcher */}
           <Route path="/role-switcher" element={<RoleSwitcher />} />
+          
+          {/* Service Pages */}
+          <Route path="/service/:slug" element={<ServicePage />} />
           
           {/* Job Wizard - Feature Flagged */}
           {jobWizardEnabled && (

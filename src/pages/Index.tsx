@@ -3,6 +3,7 @@ import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import HowItWorks from '@/components/HowItWorks';
 import ProfessionalNetwork from '@/components/ProfessionalNetwork';
+import ExpressModeSection from '@/components/ExpressModeSection';
 import Footer from '@/components/Footer';
 import { useFeature } from '@/hooks/useFeature';
 
@@ -15,6 +16,7 @@ const Index = () => {
       <main>
         <Hero />
         <Services />
+        <ExpressModeSection />
         <HowItWorks />
         <ProfessionalNetwork />
       </main>
