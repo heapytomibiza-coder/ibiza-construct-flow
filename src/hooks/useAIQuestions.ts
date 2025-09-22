@@ -29,6 +29,44 @@ export const useAIQuestions = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Create cache key from service parameters
+  const getCacheKey = useCallback((serviceType: string, category: string, subcategory: string) => {
+    return `ai-questions-${serviceType}-${category}-${subcategory}`;
+  }, []);
+
+  // Load questions from cache
+  const loadFromCache = useCallback((cacheKey: string): AIQuestion[] | null => {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsedCache = JSON.parse(cached);
+        // Check if cache is still valid (24 hours)
+        const cacheAge = Date.now() - parsedCache.timestamp;
+        if (cacheAge < 24 * 60 * 60 * 1000) {
+          return parsedCache.questions;
+        }
+        // Remove expired cache
+        localStorage.removeItem(cacheKey);
+      }
+    } catch (error) {
+      console.error('Error loading from cache:', error);
+    }
+    return null;
+  }, []);
+
+  // Save questions to cache
+  const saveToCache = useCallback((cacheKey: string, questions: AIQuestion[]) => {
+    try {
+      const cacheData = {
+        questions,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Error saving to cache:', error);
+    }
+  }, []);
+
   const generateQuestions = useCallback(async (
     serviceType: string,
     category: string,
@@ -37,6 +75,20 @@ export const useAIQuestions = () => {
   ) => {
     setLoading(true);
     setError(null);
+    
+    const cacheKey = getCacheKey(serviceType, category, subcategory);
+    
+    // Only use cache if no existing answers (first load)
+    if (!existingAnswers || Object.keys(existingAnswers).length === 0) {
+      const cachedQuestions = loadFromCache(cacheKey);
+      if (cachedQuestions) {
+        console.log('Loading questions from cache:', { serviceType, category, subcategory });
+        setQuestions(cachedQuestions);
+        setLoading(false);
+        toast.success('Questions loaded from cache');
+        return;
+      }
+    }
     
     try {
       console.log('Generating AI questions for service:', { serviceType, category, subcategory });
@@ -61,6 +113,12 @@ export const useAIQuestions = () => {
 
       console.log('Generated questions:', data.questions);
       setQuestions(data.questions);
+      
+      // Cache only if no existing answers (initial questions)
+      if (!existingAnswers || Object.keys(existingAnswers).length === 0) {
+        saveToCache(cacheKey, data.questions);
+      }
+      
       toast.success('AI-generated questions loaded');
       
     } catch (err) {
@@ -71,7 +129,7 @@ export const useAIQuestions = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getCacheKey, loadFromCache, saveToCache]);
 
   const estimatePrice = useCallback(async (
     serviceType: string,
