@@ -202,20 +202,43 @@ const TwoSectionQuestionsStep: React.FC<TwoSectionQuestionsStepProps> = ({
     }
   };
 
-  const isFormValid = () => {
+  const getMissingFields = () => {
+    const missing: string[] = [];
+    
     // Check required general questions
-    const requiredGeneral = generalQuestions.filter(q => q.required);
+    const requiredGeneral = generalQuestions.filter(q => q.required && (!q.showIf || q.showIf(generalAnswers)));
     for (const question of requiredGeneral) {
-      if (!generalAnswers[question.id]) return false;
+      if (!generalAnswers[question.id]) {
+        missing.push(question.label.replace(/\*/g, '').trim());
+      }
     }
 
     // Check required micro questions
-    const requiredMicro = microQuestions.filter(q => q.required);
+    const requiredMicro = microQuestions.filter(q => q.required && (!q.showIf || q.showIf(microAnswers)));
     for (const question of requiredMicro) {
-      if (!microAnswers[question.id]) return false;
+      if (!microAnswers[question.id]) {
+        missing.push(question.label.replace(/\*/g, '').trim());
+      }
     }
 
-    return true;
+    return missing;
+  };
+
+  const isFormValid = () => {
+    return getMissingFields().length === 0;
+  };
+
+  const getButtonText = () => {
+    if (isFormValid()) return 'Continue';
+    
+    const missing = getMissingFields();
+    if (missing.length === 1) {
+      return `Complete: ${missing[0]}`;
+    } else if (missing.length === 2) {
+      return `Complete: ${missing[0]} & ${missing[1]}`;
+    } else {
+      return `Complete ${missing.length} required fields`;
+    }
   };
 
   return (
@@ -280,7 +303,7 @@ const TwoSectionQuestionsStep: React.FC<TwoSectionQuestionsStepProps> = ({
           disabled={!isFormValid()}
           className="min-w-[120px]"
         >
-          Continue
+          {getButtonText()}
         </Button>
       </div>
     </div>
