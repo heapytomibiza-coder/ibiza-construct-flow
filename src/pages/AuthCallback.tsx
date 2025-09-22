@@ -28,26 +28,46 @@ export default function AuthCallback() {
           const user = data.session.user;
           const role = searchParams.get('role') || user.user_metadata?.intent_role || 'client';
           
-          // Check if user needs quick start
+          // Ensure profile exists (fallback if trigger failed)
           const { data: profile } = await supabase
             .from('profiles')
             .select('roles, display_name')
             .eq('id', user.id)
-            .single();
+            .maybeSingle();
 
-          // If profile exists and is complete, redirect to dashboard
-          if (profile && profile.display_name) {
-            const roles = profile.roles as string[];
-            if (roles.includes('client') && roles.includes('professional')) {
-              navigate('/role-switcher');
-            } else if (roles.includes('professional')) {
-              navigate('/dashboard/pro');
-            } else {
-              navigate('/dashboard/client');
+          if (!profile) {
+            // Create profile if it doesn't exist
+            const { error: createError } = await supabase
+              .from('profiles')
+              .insert({
+                id: user.id,
+                full_name: user.user_metadata?.full_name || user.email,
+                roles: [role === 'professional' ? 'professional' : 'client'],
+              });
+
+            if (createError) {
+              console.error('Failed to create profile:', createError);
             }
-          } else {
-            // Redirect to quick start
+
+            // Send to quick start to complete setup
             navigate(`/auth/quick-start?role=${role}`);
+            return;
+          }
+
+          // If profile exists but is incomplete, send to quick start
+          if (!profile.display_name) {
+            navigate(`/auth/quick-start?role=${role}`);
+            return;
+          }
+
+          // Profile is complete, redirect to dashboard
+          const roles = profile.roles as string[];
+          if (roles.includes('client') && roles.includes('professional')) {
+            navigate('/role-switcher');
+          } else if (roles.includes('professional')) {
+            navigate('/dashboard/pro');
+          } else {
+            navigate('/dashboard/client');
           }
         } else {
           navigate('/auth/sign-in');

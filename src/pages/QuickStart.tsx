@@ -71,23 +71,24 @@ export default function QuickStart() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
-      // Update profile
+      // Upsert profile (handle case where trigger might have failed)
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          id: user.id,
           display_name: displayName,
           preferred_language: selectedLanguages[0] || 'en',
-          roles: role === 'professional' ? ['professional'] : ['client']
-        })
-        .eq('id', user.id);
+          roles: role === 'professional' ? ['professional'] : ['client'],
+          full_name: user.user_metadata?.full_name || user.email,
+        });
 
       if (profileError) throw profileError;
 
-      // If professional, create professional profile
+      // If professional, create/update professional profile
       if (role === 'professional' && selectedTrade) {
         const { error: proError } = await supabase
           .from('professional_profiles')
-          .insert({
+          .upsert({
             user_id: user.id,
             primary_trade: selectedTrade,
             zones: selectedAreas,
