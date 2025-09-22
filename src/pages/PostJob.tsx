@@ -437,26 +437,47 @@ const PostJob: React.FC = () => {
       <div className="max-w-4xl mx-auto">
           {/* Progress indicator */}
           <div className="mb-8">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              {[1, 2, 3, 4, 5, 6].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-                  ${state.step >= step 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted text-muted-foreground'
+            <div className="flex items-center justify-between mb-6 max-w-3xl mx-auto">
+              {[
+                { step: 1, label: 'Category' },
+                { step: 2, label: 'Service' },
+                { step: 3, label: 'Details' },
+                { step: 4, label: 'AI Questions' },
+                { step: 5, label: 'Requirements' },
+                { step: 6, label: 'Review' }
+              ].map(({ step, label }, index) => (
+                <div key={step} className="flex flex-col items-center flex-1">
+                  <div className="flex items-center w-full">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors
+                      ${state.step >= step 
+                        ? 'bg-primary text-primary-foreground shadow-sm' 
+                        : 'bg-muted text-muted-foreground'
+                      }`}>
+                      {state.step > step ? <Check className="w-5 h-5" /> : step}
+                    </div>
+                    {index < 5 && (
+                      <div className={`flex-1 h-0.5 mx-3 transition-colors ${
+                        state.step > step ? 'bg-primary' : 'bg-muted'
+                      }`} />
+                    )}
+                  </div>
+                  <p className={`text-xs mt-2 text-center transition-colors ${
+                    state.step >= step ? 'text-primary font-medium' : 'text-muted-foreground'
                   }`}>
-                  {state.step > step ? <Check className="w-4 h-4" /> : step}
+                    {label}
+                  </p>
                 </div>
-                {step < 6 && (
-                  <div className={`w-12 h-0.5 mx-2 ${
-                    state.step > step ? 'bg-primary' : 'bg-muted'
-                  }`} />
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
             <p className="text-center text-sm text-muted-foreground">
-              Step {state.step} of 6
+              Step {state.step} of 6: {
+                state.step === 1 ? 'Choose Category' :
+                state.step === 2 ? 'Select Service' :
+                state.step === 3 ? 'Pick Details' :
+                state.step === 4 ? 'AI Questions & Basic Info' :
+                state.step === 5 ? 'Answer Requirements' :
+                'Review & Post'
+              }
             </p>
         </div>
 
