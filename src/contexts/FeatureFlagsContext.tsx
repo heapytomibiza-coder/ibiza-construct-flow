@@ -35,13 +35,49 @@ export const FeatureFlagsProvider: React.FC<{ children: ReactNode }> = ({ childr
           }
         }
 
-        // Fetch all feature flags in one query
+        // Check if user is authenticated before making DB calls
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        // Provide defaults for unauthenticated users (for auth pages)
+        if (!user) {
+          const defaultFlags = {
+            'ff.magicLink': true,
+            'ff.socialAuth': true,
+            'ff.jobWizardV2': true,
+            'ff.enhancedServiceCards': true,
+            'ff.visualPricingTiers': true,
+            'ff.smartLocationSuggestions': true,
+            'ff.smartPricingHints': true,
+            'ff.aiQuestions': true,
+            'ff.contractFlow': true,
+            'ff.paymentSystem': true
+          };
+          setFlags(defaultFlags);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch all feature flags in one query for authenticated users
         const { data, error } = await supabase
           .from('feature_flags')
           .select('key, enabled');
 
         if (error) {
           console.warn('Failed to load feature flags:', error.message);
+          // Fallback to defaults on error
+          const defaultFlags = {
+            'ff.magicLink': true,
+            'ff.socialAuth': true,
+            'ff.jobWizardV2': true,
+            'ff.enhancedServiceCards': true,
+            'ff.visualPricingTiers': true,
+            'ff.smartLocationSuggestions': true,
+            'ff.smartPricingHints': true,
+            'ff.aiQuestions': true,
+            'ff.contractFlow': true,
+            'ff.paymentSystem': true
+          };
+          setFlags(defaultFlags);
           setLoading(false);
           return;
         }
