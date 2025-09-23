@@ -248,6 +248,22 @@ const PostJob: React.FC = () => {
                   </div>
                 </Card>
               ))}
+              
+              {/* Transport and Deliveries */}
+              <Card 
+                className="p-6 cursor-pointer hover:shadow-md transition-shadow border-2 hover:border-primary/20"
+                onClick={() => handleCategorySelect('Transport & Deliveries')}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Wrench className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Transport & Deliveries</h3>
+                    <p className="text-sm text-muted-foreground">Moving and delivery services</p>
+                  </div>
+                </div>
+              </Card>
             </div>
             
             {/* Job Templates */}
