@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
 import { AIPriceEstimate } from '@/components/ai/AIPriceEstimate';
 import { LocationStep } from '@/components/wizard/LocationStep';
 import { JobTemplateManager } from '@/components/smart/JobTemplateManager';
+import { SimpleJobTemplateManager } from '@/components/smart/SimpleJobTemplateManager';
 import { ResumeJobModal } from '@/components/smart/ResumeJobModal';
 import { SmartPricingHints } from '@/components/smart/SmartPricingHints';
 import { MatchingFeedback } from '@/components/smart/MatchingFeedback';
@@ -18,6 +19,7 @@ import { toast } from 'sonner';
 
 const PostJob: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [showResumeModal, setShowResumeModal] = React.useState(false);
   const [savedSession, setSavedSession] = React.useState<any>(null);
@@ -59,6 +61,14 @@ const PostJob: React.FC = () => {
   useEffect(() => {
     loadServices();
     
+    // Check for template data from navigation state
+    if (location.state?.templateData) {
+      handleLoadTemplate(location.state.templateData);
+      // Clear the location state to prevent re-loading on refresh
+      window.history.replaceState({}, document.title);
+      toast.success('Template loaded successfully');
+    }
+    
     // Check for saved session on component mount
     const initializeSavedSession = async () => {
       const session = await checkForSavedSession();
@@ -69,7 +79,7 @@ const PostJob: React.FC = () => {
     };
     
     initializeSavedSession();
-  }, [loadServices, checkForSavedSession]);
+  }, [loadServices, checkForSavedSession, location.state]);
 
   // Handle URL parameters for pre-filling wizard
   useEffect(() => {
@@ -280,9 +290,8 @@ const PostJob: React.FC = () => {
               </Button>
             </div>
 
-            <JobTemplateManager
+            <SimpleJobTemplateManager
               onLoadTemplate={handleLoadTemplate}
-              onSaveTemplate={() => {}}
               currentWizardData={state}
               className="mt-6"
             />

@@ -93,10 +93,16 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                       Dashboard
                     </DropdownMenuItem>
                     {jobWizardEnabled && isClient() && (
-                      <DropdownMenuItem onClick={() => navigate('/post')}>
-                        <Briefcase className="w-4 h-4 mr-2" />
-                        Post Project
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem onClick={() => navigate('/post')}>
+                          <Briefcase className="w-4 h-4 mr-2" />
+                          Post Project
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/templates')}>
+                          <Settings className="w-4 h-4 mr-2" />
+                          Templates
+                        </DropdownMenuItem>
+                      </>
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
@@ -168,9 +174,14 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                       Dashboard
                     </Link>
                     {jobWizardEnabled && isClient() && (
-                      <Link to="/post" className="btn-hero">
-                        Post Project
-                      </Link>
+                      <>
+                        <Link to="/post" className="btn-hero">
+                          Post Project
+                        </Link>
+                        <Link to="/templates" className="btn-secondary">
+                          Templates
+                        </Link>
+                      </>
                     )}
                     <Button onClick={handleSignOut} variant="outline" className="w-full">
                       Sign Out

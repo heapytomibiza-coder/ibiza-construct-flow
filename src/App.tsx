@@ -28,6 +28,7 @@ import Contact from "./pages/Contact";
 import SpecialistCategories from "./pages/SpecialistCategories";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCanceled from "./pages/PaymentCanceled";
+import Templates from "./pages/Templates";
 import { useFeature } from "./contexts/FeatureFlagsContext";
 
 export default function App() {
@@ -88,6 +89,17 @@ export default function App() {
               )
             } />
           )}
+          
+          {/* Templates Page */}
+          <Route path="/templates" element={
+            DISABLE_AUTH_FOR_WIREFRAME ? (
+              <Templates />
+            ) : (
+              <ProtectedRoute role="client">
+                <Templates />
+              </ProtectedRoute>
+            )
+          } />
           
           {/* Protected Dashboard Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
