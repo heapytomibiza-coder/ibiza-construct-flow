@@ -1,9 +1,15 @@
+import { useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut } from 'lucide-react';
+import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import AIPanel from '@/components/admin/AIPanel';
+import CommandCentre from '@/components/admin/workspaces/CommandCentre';
+import ServiceCatalogue from '@/components/admin/workspaces/ServiceCatalogue';
+import ProfessionalHub from '@/components/admin/workspaces/ProfessionalHub';
 import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
 
 interface Profile {
@@ -23,6 +29,17 @@ interface AdminDashboardProps {
 
 const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const { toast } = useToast();
+  const [activeWorkspace, setActiveWorkspace] = useState('command');
+  const [aiContext, setAiContext] = useState<{ type: 'job' | 'professional' | 'service' | 'review' | 'overview' }>({ type: 'overview' });
+
+  const workspaces = [
+    { id: 'command', name: 'Command Centre', icon: Command, description: 'Live jobs and operations' },
+    { id: 'services', name: 'Service Catalogue', icon: Folder, description: 'Manage service taxonomy' },
+    { id: 'professionals', name: 'Professional Hub', icon: Users, description: 'Professional management' },
+    { id: 'finance', name: 'Finance Console', icon: CreditCard, description: 'Payments & escrow' },
+    { id: 'safety', name: 'Trust & Safety', icon: Shield, description: 'Reviews & moderation' },
+    { id: 'legacy', name: 'Legacy Tools', icon: Settings, description: 'Original admin tools' }
+  ];
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -41,30 +58,123 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground">
-              Platform Administration - {profile.full_name || user.email}
-            </p>
+  const renderWorkspaceContent = () => {
+    switch (activeWorkspace) {
+      case 'command':
+        return <CommandCentre />;
+      case 'services':
+        return <ServiceCatalogue />;
+      case 'professionals':
+        return <ProfessionalHub />;
+      case 'finance':
+        return (
+          <div className="text-center py-12">
+            <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="font-medium text-lg mb-2">Finance Console</h3>
+            <p className="text-muted-foreground">Escrow management and payment processing coming soon</p>
           </div>
-          <div className="flex items-center gap-4">
-            <Badge variant="destructive">Admin</Badge>
-            <Button variant="outline" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+        );
+      case 'safety':
+        return (
+          <div className="text-center py-12">
+            <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="font-medium text-lg mb-2">Trust & Safety</h3>
+            <p className="text-muted-foreground">Review moderation and safety tools coming soon</p>
+          </div>
+        );
+      case 'legacy':
+        return <AdminDashboardTabs />;
+      default:
+        return <CommandCentre />;
+    }
+  };
+
+  const AppSidebar = () => (
+    <Sidebar className="w-64">
+      <SidebarContent>
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center gap-2">
+            <Bot className="h-6 w-6 text-primary" />
+            <div>
+              <h2 className="font-semibold">Admin Console</h2>
+              <p className="text-xs text-muted-foreground">
+                {profile.full_name || user.email}
+              </p>
+            </div>
           </div>
         </div>
-      </header>
+        
+        <SidebarGroup>
+          <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {workspaces.map((workspace) => (
+                <SidebarMenuItem key={workspace.id}>
+                  <SidebarMenuButton 
+                    onClick={() => {
+                      setActiveWorkspace(workspace.id);
+                      setAiContext({ type: workspace.id === 'command' ? 'job' : 'overview' });
+                    }}
+                    className={activeWorkspace === workspace.id ? 'bg-primary text-primary-foreground' : ''}
+                  >
+                    <workspace.icon className="h-4 w-4" />
+                    <div className="flex flex-col items-start">
+                      <span className="text-sm font-medium">{workspace.name}</span>
+                      <span className="text-xs text-muted-foreground">{workspace.description}</span>
+                    </div>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
 
-      <main className="max-w-7xl mx-auto p-6">
-        <AdminDashboardTabs />
-      </main>
-    </div>
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="flex items-center justify-between px-6 py-4">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger />
+                <div>
+                  <h1 className="text-xl font-semibold text-foreground">
+                    {workspaces.find(w => w.id === activeWorkspace)?.name || 'Admin Dashboard'}
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    {workspaces.find(w => w.id === activeWorkspace)?.description || 'Platform Administration'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Badge variant="destructive" className="text-xs">Admin</Badge>
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content with AI Panel */}
+          <div className="flex-1 flex">
+            <main className="flex-1 p-6 overflow-auto">
+              {renderWorkspaceContent()}
+            </main>
+            
+            {/* AI Assistant Panel */}
+            <AIPanel context={aiContext} />
+          </div>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 };
 
