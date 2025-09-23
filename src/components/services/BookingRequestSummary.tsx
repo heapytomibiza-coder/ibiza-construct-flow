@@ -75,7 +75,8 @@ export const BookingRequestSummary = ({
   const handleRequestBooking = async () => {
     if (!user) {
       toast.error('Please sign in to request a booking');
-      navigate('/auth');
+      const currentPath = window.location.pathname + window.location.search;
+      navigate(`/auth/sign-in?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
 

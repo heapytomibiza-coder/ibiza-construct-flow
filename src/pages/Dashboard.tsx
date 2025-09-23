@@ -14,7 +14,7 @@ const Dashboard = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-          navigate('/auth');
+          navigate('/auth/sign-in');
           return;
         }
 
@@ -49,7 +49,7 @@ const Dashboard = () => {
         }
       } catch (error) {
         console.error('Error checking user role:', error);
-        navigate('/auth');
+        navigate('/auth/sign-in');
       }
     };
 
@@ -58,7 +58,7 @@ const Dashboard = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
-        navigate('/auth');
+        navigate('/auth/sign-in');
       }
     });
 
