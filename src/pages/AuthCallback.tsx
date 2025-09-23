@@ -25,48 +25,49 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
-          const user = data.session.user;
-          const role = searchParams.get('role') || user.user_metadata?.intent_role || 'client';
           const redirectTo = searchParams.get('redirect');
           
-          // Ensure profile exists (fallback if trigger failed)
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('roles, display_name')
-            .eq('id', user.id)
-            .maybeSingle();
+          // Wait for profile to be created by trigger
+          let retries = 0;
+          let profile = null;
+          
+          while (retries < 5 && !profile) {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('roles, active_role, full_name')
+              .eq('id', data.session.user.id)
+              .maybeSingle();
+            
+            if (profileData) {
+              profile = profileData;
+              break;
+            }
+            
+            retries++;
+            if (retries < 5) {
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
 
           if (!profile) {
-            // Create profile if it doesn't exist
-            const { error: createError } = await supabase
-              .from('profiles')
-              .insert({
-                id: user.id,
-                full_name: user.user_metadata?.full_name || user.email,
-                roles: [role === 'professional' ? 'professional' : 'client'],
-              });
-
-            if (createError) {
-              console.error('Failed to create profile:', createError);
-            }
-
-            // Send to quick start to complete setup
-            navigate(`/auth/quick-start?role=${role}`);
+            toast({
+              variant: 'destructive',
+              title: 'Profile Creation Error',
+              description: 'Failed to create your profile. Please try signing in again.',
+            });
+            navigate('/auth/sign-in');
             return;
           }
 
-          // If profile exists but is incomplete, send to quick start
-          if (!profile.display_name) {
-            navigate(`/auth/quick-start?role=${role}`);
-            return;
-          }
-
-          // Profile is complete, check for redirect or go to dashboard
+          // Handle redirect or role-based navigation
           if (redirectTo) {
             navigate(redirectTo);
           } else {
-            const roles = profile.roles as string[];
-            if (roles.includes('client') && roles.includes('professional')) {
+            const roles = Array.isArray(profile.roles) ? profile.roles : JSON.parse(profile.roles || '[]');
+            
+            if (roles.includes('admin')) {
+              navigate('/dashboard/admin');
+            } else if (roles.includes('client') && roles.includes('professional')) {
               navigate('/role-switcher');
             } else if (roles.includes('professional')) {
               navigate('/dashboard/pro');

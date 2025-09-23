@@ -744,27 +744,45 @@ export type Database = {
       }
       professional_profiles: {
         Row: {
+          availability: Json | null
+          bio: string | null
           created_at: string | null
+          experience_years: number | null
+          hourly_rate: number | null
           languages: Json | null
+          portfolio_images: Json | null
           primary_trade: string | null
+          skills: Json | null
           updated_at: string | null
           user_id: string
           verification_status: string | null
           zones: Json | null
         }
         Insert: {
+          availability?: Json | null
+          bio?: string | null
           created_at?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
           languages?: Json | null
+          portfolio_images?: Json | null
           primary_trade?: string | null
+          skills?: Json | null
           updated_at?: string | null
           user_id: string
           verification_status?: string | null
           zones?: Json | null
         }
         Update: {
+          availability?: Json | null
+          bio?: string | null
           created_at?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
           languages?: Json | null
+          portfolio_images?: Json | null
           primary_trade?: string | null
+          skills?: Json | null
           updated_at?: string | null
           user_id?: string
           verification_status?: string | null
@@ -1072,7 +1090,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { user_id: string }
+        Returns: string
+      }
+      user_has_role: {
+        Args: { role_name: string; user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "client" | "professional"

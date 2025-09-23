@@ -113,35 +113,45 @@ export default function SignUp() {
 
   const handleOnboardingComplete = async (onboardingData: OnboardingData) => {
     try {
-      // Save onboarding data to professional profile
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        // Create professional profile with onboarding data
-        const { error } = await supabase
-          .from('professional_profiles')
-          .insert({
-            user_id: user.id,
-            zones: onboardingData.serviceAreas,
-            languages: onboardingData.languages,
-            primary_trade: onboardingData.skills[0] || null,
-          });
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
 
-        if (error) {
-          console.error('Error saving professional profile:', error);
-        }
+      // Create comprehensive professional profile with all onboarding data
+      const { error } = await supabase
+        .from('professional_profiles')
+        .insert({
+          user_id: user.id,
+          zones: onboardingData.serviceAreas || [],
+          languages: onboardingData.languages || ['en'],
+          primary_trade: onboardingData.skills?.[0] || null,
+          skills: onboardingData.skills || [],
+          experience_years: Array.isArray(onboardingData.experience) ? onboardingData.experience.length : 0,
+          hourly_rate: onboardingData.hourlyRate || null,
+          availability: onboardingData.availability || [],
+          bio: onboardingData.bio || null,
+          portfolio_images: onboardingData.portfolioPhotos || onboardingData.portfolioImages || [],
+        });
+
+      if (error) {
+        console.error('Error saving professional profile:', error);
+        throw error;
       }
 
       toast({
-        title: 'Profile setup complete!',
-        description: 'Your professional profile has been created successfully.',
+        title: 'Professional profile created!',
+        description: 'Your profile has been set up successfully.',
       });
       
-      navigate('/dashboard');
+      // Navigate to email verification or dashboard
+      navigate('/auth/verify-email');
     } catch (error: any) {
+      console.error('Failed to save professional profile:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to save profile data. Please try again.',
+        title: 'Setup Error',
+        description: error.message || 'Failed to save profile data. Please try again.',
       });
     }
   };
