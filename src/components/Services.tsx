@@ -1,9 +1,10 @@
+import React from 'react';
 import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useFeature } from '@/hooks/useFeature';
-import { useServices } from '@/hooks/useServices';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { useServices } from '@/contexts/ServicesContext';
 
-const Services = () => {
+const Services = React.memo(() => {
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const { getServiceCards, loading } = useServices();
@@ -19,24 +20,26 @@ const Services = () => {
     'Car': Car
   };
 
-  const services = getServiceCards().map(service => ({
-    ...service,
-    icon: iconMap[service.icon as keyof typeof iconMap] || Wrench
-  }));
+  const services = React.useMemo(() => 
+    getServiceCards().map(service => ({
+      ...service,
+      icon: iconMap[service.icon as keyof typeof iconMap] || Wrench
+    })), [getServiceCards]
+  );
 
-  const handleServiceClick = (service: any) => {
+  const handleServiceClick = React.useCallback((service: any) => {
     if (jobWizardEnabled) {
       navigate(`/post?category=${encodeURIComponent(service.category)}`);
     } else {
       navigate(`/service/${service.slug}`);
     }
-  };
+  }, [jobWizardEnabled, navigate]);
 
-  const handleGetQuoteClick = () => {
+  const handleGetQuoteClick = React.useCallback(() => {
     if (jobWizardEnabled) {
       navigate('/post');
     }
-  };
+  }, [jobWizardEnabled, navigate]);
 
   return (
     <section className="py-20 bg-background">
@@ -118,6 +121,8 @@ const Services = () => {
       </div>
     </section>
   );
-};
+});
+
+Services.displayName = 'Services';
 
 export default Services;

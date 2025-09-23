@@ -30,20 +30,25 @@ import Contact from "./pages/Contact";
 import SpecialistCategories from "./pages/SpecialistCategories";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCanceled from "./pages/PaymentCanceled";
-// import { useFeature } from "./hooks/useFeature"; // temporarily disabled
+import { useFeature } from "./contexts/FeatureFlagsContext";
 
 export default function App() {
   // TEMPORARY: Disable auth for wireframe development
   const DISABLE_AUTH_FOR_WIREFRAME = true;
   
   // Enable job wizard for implementation
-  const jobWizardEnabled = true; // useFeature('ff.jobWizardV2');
+  const jobWizardEnabled = useFeature('ff.jobWizardV2', true);
   
   return (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter 
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+      >
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
