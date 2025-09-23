@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import RoleSelect from "./pages/RoleSelect";
@@ -21,7 +20,6 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import PostJob from "./pages/PostJob";
 import ServicePage from "./pages/ServicePage";
 import { ServiceDetailPage } from "./pages/ServiceDetailPage";
-import AuthPage from "./pages/AuthPage";
 import Services from "./pages/Services";
 import Professionals from "./pages/Professionals";
 import ProfessionalProfile from "./pages/ProfessionalProfile";
@@ -66,8 +64,6 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth/quick-start" element={<QuickStart />} />
           
-          {/* Legacy Auth Route */}
-          <Route path="/auth" element={<AuthPage />} />
           
           {/* Role Switcher */}
           <Route path="/role-switcher" element={<RoleSwitcher />} />
