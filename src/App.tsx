@@ -28,6 +28,8 @@ import ProfessionalProfile from "./pages/ProfessionalProfile";
 import HowItWorks from "./pages/HowItWorks";
 import Contact from "./pages/Contact";
 import SpecialistCategories from "./pages/SpecialistCategories";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCanceled from "./pages/PaymentCanceled";
 // import { useFeature } from "./hooks/useFeature"; // temporarily disabled
 
 export default function App() {
@@ -68,6 +70,10 @@ export default function App() {
           {/* Service Pages */}
           <Route path="/service/:slug" element={<ServicePage />} />
           <Route path="/service/:micro/:slug" element={<ServiceDetailPage />} />
+          
+          {/* Payment Pages */}
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-canceled" element={<PaymentCanceled />} />
           
           {/* Job Wizard - Feature Flagged */}
           {jobWizardEnabled && (
