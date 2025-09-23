@@ -203,6 +203,39 @@ export type Database = {
         }
         Relationships: []
       }
+      conversion_analytics: {
+        Row: {
+          event_type: string
+          id: string
+          metadata: Json | null
+          session_id: string
+          step_number: number | null
+          timestamp: string
+          user_id: string | null
+          variant: string | null
+        }
+        Insert: {
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          session_id: string
+          step_number?: number | null
+          timestamp?: string
+          user_id?: string | null
+          variant?: string | null
+        }
+        Update: {
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string
+          step_number?: number | null
+          timestamp?: string
+          user_id?: string | null
+          variant?: string | null
+        }
+        Relationships: []
+      }
       escrow_payments: {
         Row: {
           amount: number
@@ -331,6 +364,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      job_templates: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_favorite: boolean
+          last_used_at: string | null
+          micro_service: string
+          name: string
+          subcategory: string
+          template_data: Json
+          updated_at: string
+          usage_count: number
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          is_favorite?: boolean
+          last_used_at?: string | null
+          micro_service: string
+          name: string
+          subcategory: string
+          template_data?: Json
+          updated_at?: string
+          usage_count?: number
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_favorite?: boolean
+          last_used_at?: string | null
+          micro_service?: string
+          name?: string
+          subcategory?: string
+          template_data?: Json
+          updated_at?: string
+          usage_count?: number
+          user_id?: string
+        }
+        Relationships: []
       }
       jobs: {
         Row: {
@@ -484,6 +562,48 @@ export type Database = {
           tasker_id?: string
           type?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      pricing_hints: {
+        Row: {
+          avg_price: number
+          created_at: string
+          id: string
+          last_updated: string
+          location_type: string
+          max_price: number
+          micro_service: string
+          min_price: number
+          sample_size: number
+          service_category: string
+          service_subcategory: string
+        }
+        Insert: {
+          avg_price: number
+          created_at?: string
+          id?: string
+          last_updated?: string
+          location_type?: string
+          max_price: number
+          micro_service: string
+          min_price: number
+          sample_size?: number
+          service_category: string
+          service_subcategory: string
+        }
+        Update: {
+          avg_price?: number
+          created_at?: string
+          id?: string
+          last_updated?: string
+          location_type?: string
+          max_price?: number
+          micro_service?: string
+          min_price?: number
+          sample_size?: number
+          service_category?: string
+          service_subcategory?: string
         }
         Relationships: []
       }

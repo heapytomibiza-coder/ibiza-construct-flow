@@ -9,11 +9,19 @@ import TwoSectionQuestionsStep from '@/features/wizard/TwoSectionQuestionsStep';
 import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
 import { AIPriceEstimate } from '@/components/ai/AIPriceEstimate';
 import { LocationStep } from '@/components/wizard/LocationStep';
+import { JobTemplateManager } from '@/components/smart/JobTemplateManager';
+import { ResumeJobModal } from '@/components/smart/ResumeJobModal';
+import { SmartPricingHints } from '@/components/smart/SmartPricingHints';
+import { MatchingFeedback } from '@/components/smart/MatchingFeedback';
+import { useEnhancedAutosave } from '@/hooks/useEnhancedAutosave';
 import { toast } from 'sonner';
 
 const PostJob: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [showResumeModal, setShowResumeModal] = React.useState(false);
+  const [savedSession, setSavedSession] = React.useState<any>(null);
+  
   const {
     state,
     loading,
@@ -34,9 +42,34 @@ const PostJob: React.FC = () => {
     clearAIData
   } = useWizard();
 
+  // Enhanced autosave with session restoration
+  const {
+    checkForSavedSession,
+    saveWithAnalytics,
+    clearSession
+  } = useEnhancedAutosave({
+    formType: 'job-posting-wizard',
+    wizardState: state,
+    onSessionRestored: (sessionData) => {
+      setSavedSession(sessionData);
+      setShowResumeModal(true);
+    }
+  });
+
   useEffect(() => {
     loadServices();
-  }, [loadServices]);
+    
+    // Check for saved session on component mount
+    const initializeSavedSession = async () => {
+      const session = await checkForSavedSession();
+      if (session) {
+        setSavedSession(session);
+        setShowResumeModal(true);
+      }
+    };
+    
+    initializeSavedSession();
+  }, [loadServices, checkForSavedSession]);
 
   // Handle URL parameters for pre-filling wizard
   useEffect(() => {
@@ -125,11 +158,64 @@ const PostJob: React.FC = () => {
   const handleSubmit = async () => {
     const success = await submitBooking();
     if (success) {
+      // Clear saved session after successful submission
+      await clearSession();
       toast.success('Job posted successfully!');
       navigate('/dashboard/client');
     } else {
       toast.error(error || 'Failed to post job');
     }
+  };
+
+  const handleLoadTemplate = (templateData: any) => {
+    updateState(templateData);
+    if (templateData.category) {
+      // Find service ID from template data
+      const services = getCategories().map(cat => 
+        getSubcategories(cat).map(subcat =>
+          getMicroServices(cat, subcat)
+        )
+      ).flat(2);
+      
+      const service = services.find(s => 
+        s.category === templateData.category &&
+        s.subcategory === templateData.subcategory &&
+        s.micro === templateData.microService
+      );
+      
+      if (service) {
+        updateState({ serviceId: service.id });
+        // Navigate to appropriate step based on template completeness
+        const targetStep = templateData.generalAnswers?.location ? 6 : 5;
+        updateState({ step: targetStep });
+      }
+    }
+  };
+
+  const handleResumeSession = (sessionData: any) => {
+    updateState(sessionData);
+    setShowResumeModal(false);
+    toast.success('Resumed your previous session');
+  };
+
+  const handleStartFresh = async () => {
+    await clearSession();
+    setShowResumeModal(false);
+    toast.info('Starting fresh');
+  };
+
+  const handleOptimizationSuggestion = (type: string, value: any) => {
+    switch (type) {
+      case 'timing':
+        handleGeneralAnswerChange('urgency', value);
+        break;
+      case 'budget':
+        handleGeneralAnswerChange('budget', value);
+        break;
+      default:
+        break;
+    }
+    toast.success('Applied optimization suggestion');
   };
 
   const renderStepContent = () => {
@@ -163,6 +249,14 @@ const PostJob: React.FC = () => {
                 </Card>
               ))}
             </div>
+            
+            {/* Job Templates */}
+            <JobTemplateManager
+              onLoadTemplate={handleLoadTemplate}
+              onSaveTemplate={() => {}}
+              currentWizardData={state}
+              className="mt-6"
+            />
             
             <div className="text-center mt-8 pt-6 border-t border-border/50">
               <p className="text-sm text-muted-foreground mb-3">
@@ -324,6 +418,22 @@ const PostJob: React.FC = () => {
               onAnswerChange={handleGeneralAnswerChange}
               selectedService={state.microService}
             />
+
+            {/* Smart Pricing Hints */}
+            <SmartPricingHints
+              category={state.category}
+              subcategory={state.subcategory}
+              microService={state.microService}
+              location={state.generalAnswers?.location}
+              currentBudget={state.generalAnswers?.budget}
+              onBudgetSuggestion={(budget) => handleGeneralAnswerChange('budget', budget)}
+            />
+
+            {/* Matching Feedback */}
+            <MatchingFeedback
+              wizardState={state}
+              onOptimizationSuggestion={handleOptimizationSuggestion}
+            />
             
             <div className="flex justify-between pt-4">
               <Button variant="outline" onClick={prevStep}>
@@ -451,6 +561,15 @@ const PostJob: React.FC = () => {
   return (
     <div className="min-h-screen bg-background pt-20 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
+        
+        {/* Resume Session Modal */}
+        <ResumeJobModal
+          isOpen={showResumeModal}
+          onClose={() => setShowResumeModal(false)}
+          onResumeSession={handleResumeSession}
+          onStartFresh={handleStartFresh}
+          savedSession={savedSession}
+        />
           {/* Progress indicator */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6 max-w-3xl mx-auto">
