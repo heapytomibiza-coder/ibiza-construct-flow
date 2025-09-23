@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import DatabaseStats from '@/components/admin/DatabaseStats';
 import FeatureFlagsManager from '@/components/admin/FeatureFlagsManager';
 import UserInspector from '@/components/admin/UserInspector';
+import { AdminDocumentReview } from '@/components/admin/AdminDocumentReview';
 
 interface Profile {
   id: string;
@@ -67,10 +68,11 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
         {/* Database Stats Overview */}
         <DatabaseStats />
 
-        {/* Feature Flags and User Management */}
+        {/* Feature Flags, User Management, and Document Review */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <FeatureFlagsManager />
           <UserInspector />
+          <AdminDocumentReview />
         </div>
       </main>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 import { ServiceCreationForm } from '@/components/services/ServiceCreationForm';
 import { DocumentUpload } from '@/components/documents/DocumentUpload';
+import { BookingResponseModal } from '@/components/booking/BookingResponseModal';
 
 const ProfessionalDashboard = ({ user, profile }: any) => {
   const [applications, setApplications] = useState([]);
@@ -19,6 +20,8 @@ const ProfessionalDashboard = ({ user, profile }: any) => {
   const [serviceItems, setServiceItems] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedBookingRequest, setSelectedBookingRequest] = useState(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [stats, setStats] = useState({
     activeJobs: 0,
     applications: 0,
@@ -292,8 +295,15 @@ const ProfessionalDashboard = ({ user, profile }: any) => {
                           <Button size="sm" variant="outline">
                             View
                           </Button>
-                          <Button size="sm" className="bg-gradient-hero hover:bg-copper">
-                            Apply
+                          <Button 
+                            size="sm" 
+                            className="bg-gradient-hero hover:bg-copper"
+                            onClick={() => {
+                              setSelectedBookingRequest(match.bookings);
+                              setIsBookingModalOpen(true);
+                            }}
+                          >
+                            Respond
                           </Button>
                         </div>
                       </div>
@@ -423,6 +433,17 @@ const ProfessionalDashboard = ({ user, profile }: any) => {
           />
         )}
       </main>
+
+      {/* Booking Response Modal */}
+      <BookingResponseModal
+        open={isBookingModalOpen}
+        onOpenChange={setIsBookingModalOpen}
+        bookingRequest={selectedBookingRequest}
+        onResponseSent={() => {
+          setIsBookingModalOpen(false);
+          fetchProfessionalData();
+        }}
+      />
     </div>
   );
 };

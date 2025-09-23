@@ -14,6 +14,7 @@ import { DocumentUpload } from '@/components/documents/DocumentUpload';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { StripePaymentSetup } from '@/components/payments/StripePaymentSetup';
 
 interface ProfessionalOnboardingProps {
   onComplete: (data: OnboardingData) => void;
@@ -30,6 +31,7 @@ export interface OnboardingData {
   hourlyRate: number;
   portfolioImages: string[];
   documentsUploaded: boolean;
+  paymentCompleted: boolean;
 }
 
 export const ProfessionalOnboarding = ({ onComplete, onSkip }: ProfessionalOnboardingProps) => {
@@ -44,6 +46,7 @@ export const ProfessionalOnboarding = ({ onComplete, onSkip }: ProfessionalOnboa
     hourlyRate: 50,
     portfolioImages: [],
     documentsUploaded: false,
+    paymentCompleted: false,
   });
 
   const totalSteps = 9;
@@ -176,24 +179,17 @@ export const ProfessionalOnboarding = ({ onComplete, onSkip }: ProfessionalOnboa
       validation: () => true // Optional step
     },
     {
-      title: "Set up payments",
-      description: "Connect your payment method to receive earnings",
+      title: "Professional Registration",
+      description: "Complete your professional verification with a one-time registration fee",
       component: (
-        <div className="space-y-4 text-center">
-          <div className="p-6 border-2 border-dashed border-muted rounded-lg">
-            <h3 className="text-lg font-medium mb-2">Payment Setup</h3>
-            <p className="text-muted-foreground mb-4">
-              We'll help you set up secure payments after you complete registration
-            </p>
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p>✓ Secure bank transfers</p>
-              <p>✓ Weekly payouts</p>
-              <p>✓ Transaction protection</p>
-            </div>
-          </div>
+        <div className="flex justify-center">
+          <StripePaymentSetup
+            type="registration"
+            onSuccess={() => setData(prev => ({ ...prev, paymentCompleted: true }))}
+          />
         </div>
       ),
-      validation: () => true // Will be handled after registration
+      validation: () => data.paymentCompleted || false
     },
   ];
 
