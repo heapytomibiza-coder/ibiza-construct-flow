@@ -42,7 +42,7 @@ export const BookingSummary = ({
       totalPrice: finalPrice
     };
     
-    navigate('/post-job', { state: { bookingData } });
+    navigate('/post', { state: { bookingData } });
   };
 
   const applyCoupon = () => {

@@ -33,8 +33,8 @@ import PaymentCanceled from "./pages/PaymentCanceled";
 import { useFeature } from "./contexts/FeatureFlagsContext";
 
 export default function App() {
-  // TEMPORARY: Disable auth for wireframe development
-  const DISABLE_AUTH_FOR_WIREFRAME = true;
+  // Enable auth for production
+  const DISABLE_AUTH_FOR_WIREFRAME = false;
   
   // Enable job wizard for implementation
   const jobWizardEnabled = useFeature('ff.jobWizardV2', true);

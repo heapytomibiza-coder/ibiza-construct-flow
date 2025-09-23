@@ -8,7 +8,7 @@ import { ServiceFilters } from '@/components/services/ServiceFilters';
 import { EnhancedServiceCard } from '@/components/services/EnhancedServiceCard';
 import { ServicePackages } from '@/components/services/ServicePackages';
 import { useServices } from '@/hooks/useServices';
-import { useFeature } from '@/hooks/useFeature';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
 
 const Services = () => {
   const navigate = useNavigate();

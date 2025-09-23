@@ -5,7 +5,7 @@ import HowItWorks from '@/components/HowItWorks';
 import ProfessionalNetwork from '@/components/ProfessionalNetwork';
 import ExpressModeSection from '@/components/ExpressModeSection';
 import Footer from '@/components/Footer';
-import { useFeature } from '@/hooks/useFeature';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
 
 const Index = () => {
   const jobWizardEnabled = useFeature('ff.jobWizardV2');

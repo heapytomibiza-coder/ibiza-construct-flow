@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useFeature } from '@/hooks/useFeature';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useServices } from '@/hooks/useServices';
 
 interface ServicePageProps {}

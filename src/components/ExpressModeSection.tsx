@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Clock, Zap, Wrench } from 'lucide-react';
-import { useFeature } from '@/hooks/useFeature';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useServices } from '@/hooks/useServices';
 
 const ExpressModeSection: React.FC = () => {

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import { useFeature } from '@/hooks/useFeature';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
 
 export default function SignIn() {
   const [searchParams] = useSearchParams();

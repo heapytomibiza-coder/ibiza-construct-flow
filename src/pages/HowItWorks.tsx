@@ -147,7 +147,7 @@ const HowItWorks = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
-                onClick={() => navigate('/post-job')}
+                onClick={() => navigate('/post')}
                 className="btn-hero"
               >
                 Post Your Project
@@ -441,7 +441,7 @@ const HowItWorks = () => {
                   </li>
                 </ul>
                 <button 
-                  onClick={() => navigate('/post-job')}
+                  onClick={() => navigate('/post')}
                   className="btn-hero w-full"
                 >
                   Start Custom Project
@@ -462,7 +462,7 @@ const HowItWorks = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
-                onClick={() => navigate('/post-job')}
+                onClick={() => navigate('/post')}
                 className="btn-hero bg-white text-copper hover:bg-white/90"
               >
                 Post Your First Project
