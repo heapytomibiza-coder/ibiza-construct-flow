@@ -95,7 +95,7 @@ export const useServices = () => {
       'Truck Assisted Moving': 'Full-service moving with truck and crew',
       'Heavy Lifting & Loading': 'Safe handling of heavy furniture and appliances',
       'Packing Services': 'Professional packing with quality materials',
-      'Unpacking Services': 'Complete unpacking and organizing service',
+      'Unpacking Services': 'Complete unpacking and organising service',
       
       // Cleaning services
       'House Cleaning': 'Regular or one-time house cleaning service',
@@ -112,8 +112,8 @@ export const useServices = () => {
       'Package Pickup': 'Convenient package pickup and delivery',
       
       // Personal services
-      'Home Organization': 'Professional organizing and decluttering',
-      'Office Organization': 'Workspace organization and filing',
+      'Home Organization': 'Professional organising and decluttering',
+      'Office Organization': 'Workspace organisation and filing',
       'Personal Assistant Tasks': 'Various personal assistance tasks',
       'Wait in Line Service': 'Professional waiting and queuing service',
       'Dog Walking': 'Regular dog walking and exercise',

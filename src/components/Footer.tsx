@@ -54,7 +54,7 @@ const Footer = () => {
               <li><a href="#" className="text-body text-white/80 hover:text-copper transition-all duration-300">Join as Professional</a></li>
               <li><a href="#" className="text-body text-white/80 hover:text-copper transition-all duration-300">SafePay Protection</a></li>
               <li><a href="#" className="text-body text-white/80 hover:text-copper transition-all duration-300">Trust & Safety</a></li>
-              <li><a href="#" className="text-body text-white/80 hover:text-copper transition-all duration-300">Help Center</a></li>
+              <li><a href="#" className="text-body text-white/80 hover:text-copper transition-all duration-300">Help Centre</a></li>
             </ul>
           </div>
 

@@ -136,7 +136,7 @@ export function SimpleJobTemplateManager({
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Star className="w-4 h-4 text-amber-500" />
-              <span className="text-sm font-medium text-muted-foreground">Favorites</span>
+              <span className="text-sm font-medium text-muted-foreground">Favourites</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {favorites.map(template => (

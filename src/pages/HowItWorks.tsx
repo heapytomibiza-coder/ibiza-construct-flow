@@ -45,7 +45,7 @@ const HowItWorks = () => {
         "Review and rating system integration",
         "Specialization filters (handyman, luxury builds, etc.)"
       ],
-      details: "We analyze your project requirements against professional capabilities, past work, and current availability to ensure perfect matches."
+      details: "We analyse your project requirements against professional capabilities, past work, and current availability to ensure perfect matches."
     },
     {
       id: "collaborate",
@@ -246,7 +246,7 @@ const HowItWorks = () => {
                             {index === 0 ? 'Perfect Match' : index === 1 ? 'Quality Professionals' : 'Secure Completion'}
                           </h4>
                           <p className="text-muted-foreground">
-                            {index === 0 ? 'AI analyzes your needs for optimal matches' : index === 1 ? 'Verified experts with proven track records' : 'Protected payments and guaranteed satisfaction'}
+                            {index === 0 ? 'AI analyses your needs for optimal matches' : index === 1 ? 'Verified experts with proven track records' : 'Protected payments and guaranteed satisfaction'}
                           </p>
                         </div>
                       </div>

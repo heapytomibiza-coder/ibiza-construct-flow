@@ -94,10 +94,10 @@ export default function Templates() {
           : template
       ));
 
-      toast.success(currentFavorite ? 'Removed from favorites' : 'Added to favorites');
+      toast.success(currentFavorite ? 'Removed from favourites' : 'Added to favourites');
     } catch (error) {
       console.error('Error updating favorite status:', error);
-      toast.error('Failed to update favorite status');
+      toast.error('Failed to update favourite status');
     }
   };
 
@@ -238,7 +238,7 @@ export default function Templates() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-display text-2xl font-semibold text-charcoal mb-2">Job Templates</h1>
-              <p className="text-muted-foreground">Manage and organize your job posting templates</p>
+              <p className="text-muted-foreground">Manage and organise your job posting templates</p>
             </div>
             <div className="flex items-center gap-3">
               <Button onClick={() => navigate('/post')} className="bg-gradient-hero text-white">
@@ -263,7 +263,7 @@ export default function Templates() {
             <Card>
               <CardContent className="p-4 text-center">
                 <div className="text-2xl font-bold text-amber-600">{stats.favorites}</div>
-                <div className="text-sm text-muted-foreground">Favorites</div>
+                <div className="text-sm text-muted-foreground">Favourites</div>
               </CardContent>
             </Card>
             <Card>
@@ -312,7 +312,7 @@ export default function Templates() {
         {/* Templates Content */}
         <Tabs defaultValue="organized" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="organized">Organized View</TabsTrigger>
+            <TabsTrigger value="organized">Organised View</TabsTrigger>
             <TabsTrigger value="all">All Templates</TabsTrigger>
           </TabsList>
 
@@ -322,7 +322,7 @@ export default function Templates() {
               <div>
                 <h3 className="text-lg font-semibold text-charcoal mb-4 flex items-center">
                   <Star className="w-5 h-5 text-amber-500 mr-2" />
-                  Favorites ({categorizedTemplates.favorites.length})
+                  Favourites ({categorizedTemplates.favorites.length})
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {categorizedTemplates.favorites.map(template => (

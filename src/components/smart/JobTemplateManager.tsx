@@ -241,7 +241,7 @@ export const JobTemplateManager: React.FC<JobTemplateManagerProps> = ({
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-1">
                   <Star className="w-3 h-3" />
-                  Favorites
+                  Favourites
                 </h4>
                 <div className="space-y-2">
                   {favoriteTemplates.map(template => (
