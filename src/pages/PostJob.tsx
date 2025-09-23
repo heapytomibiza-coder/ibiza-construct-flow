@@ -267,14 +267,7 @@ const PostJob: React.FC = () => {
             </div>
             
             {/* Job Templates */}
-            <JobTemplateManager
-              onLoadTemplate={handleLoadTemplate}
-              onSaveTemplate={() => {}}
-              currentWizardData={state}
-              className="mt-6"
-            />
-            
-            <div className="text-center mt-8 pt-6 border-t border-border/50">
+            <div className="text-center mb-6 pb-6 border-b border-border/50">
               <p className="text-sm text-muted-foreground mb-3">
                 Can't find what you are looking for?
               </p>
@@ -286,6 +279,13 @@ const PostJob: React.FC = () => {
                 Browse Specialised Categories
               </Button>
             </div>
+
+            <JobTemplateManager
+              onLoadTemplate={handleLoadTemplate}
+              onSaveTemplate={() => {}}
+              currentWizardData={state}
+              className="mt-6"
+            />
           </div>
         );
 
