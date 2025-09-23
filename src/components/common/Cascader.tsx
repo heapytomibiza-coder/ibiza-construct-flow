@@ -13,10 +13,11 @@ type ServiceMicro = {
 };
 
 type CascaderOutput = {
+  id: string;
   category: string;
   subcategory: string;
   microservice: string;
-  microserviceId: string;
+  micro: string;
 };
 
 interface CascaderProps {
@@ -32,27 +33,49 @@ export default function Cascader({ onChange, placeholder = "Select a service", c
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
+  // Cache services in localStorage for performance
+  const cacheKey = 'cascader_services_cache';
+  const cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
   const fetchServices = async () => {
     try {
+      // Try to load from cache first
+      const cachedData = localStorage.getItem(cacheKey);
+      if (cachedData) {
+        const { data, timestamp } = JSON.parse(cachedData);
+        if (Date.now() - timestamp < cacheTimeout) {
+          setServices(data);
+          setLoading(false);
+          return;
+        }
+      }
+
       const { data, error } = await supabase
-        .from('services')
+        .from('services_micro')
         .select('id, category, subcategory, micro')
         .order('category')
         .order('subcategory')
         .order('micro');
 
       if (error) throw error;
+      
       setServices(data || []);
+      
+      // Cache the data
+      localStorage.setItem(cacheKey, JSON.stringify({
+        data: data || [],
+        timestamp: Date.now()
+      }));
     } catch (error) {
       console.error('Error fetching services:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
 
   const getCategories = () => {
     const categories = [...new Set(services.map(s => s.category))];
@@ -93,10 +116,11 @@ export default function Cascader({ onChange, placeholder = "Select a service", c
 
   const handleMicroserviceSelect = (microservice: ServiceMicro) => {
     onChange({
+      id: microservice.id,
       category: microservice.category,
       subcategory: microservice.subcategory,
       microservice: microservice.micro,
-      microserviceId: microservice.id
+      micro: microservice.micro
     });
   };
 

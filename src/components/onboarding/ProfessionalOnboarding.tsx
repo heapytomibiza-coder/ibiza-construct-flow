@@ -8,6 +8,12 @@ import { ServiceAreasChips } from './ServiceAreasChips';
 import { ExperienceChips } from './ExperienceChips';
 import { LanguageChips } from './LanguageChips';
 import { AvailabilityChips } from './AvailabilityChips';
+import Cascader from '@/components/common/Cascader';
+import { ServicePhotoUploader } from '@/components/services/ServicePhotoUploader';
+import { DocumentUpload } from '@/components/documents/DocumentUpload';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ProfessionalOnboardingProps {
   onComplete: (data: OnboardingData) => void;
@@ -20,6 +26,10 @@ export interface OnboardingData {
   experience: string[];
   languages: string[];
   availability: string[];
+  services: any[];
+  hourlyRate: number;
+  portfolioImages: string[];
+  documentsUploaded: boolean;
 }
 
 export const ProfessionalOnboarding = ({ onComplete, onSkip }: ProfessionalOnboardingProps) => {
@@ -30,22 +40,48 @@ export const ProfessionalOnboarding = ({ onComplete, onSkip }: ProfessionalOnboa
     experience: [],
     languages: ['english'], // Default to English
     availability: [],
+    services: [],
+    hourlyRate: 50,
+    portfolioImages: [],
+    documentsUploaded: false,
   });
 
-  const totalSteps = 5;
+  const totalSteps = 9;
   const progress = (currentStep / totalSteps) * 100;
 
   const steps = [
     {
       title: "What services do you offer?",
-      description: "Help clients find you by selecting your specialties",
+      description: "Select specific services from our comprehensive catalog",
       component: (
-        <SkillsChips
-          selectedOptions={data.skills}
-          onSelectionChange={(options) => setData(prev => ({ ...prev, skills: options }))}
-        />
+        <div className="space-y-4">
+          <Cascader
+            onChange={(service) => {
+              if (service && !data.services.find(s => s.id === service.id)) {
+                setData(prev => ({ ...prev, services: [...prev.services, service] }));
+              }
+            }}
+            placeholder="Search and select services..."
+          />
+          <div className="flex flex-wrap gap-2">
+            {data.services.map((service, index) => (
+              <div key={index} className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full text-sm">
+                <span>{service.category} → {service.microservice}</span>
+                <button 
+                  onClick={() => setData(prev => ({ 
+                    ...prev, 
+                    services: prev.services.filter((_, i) => i !== index) 
+                  }))}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       ),
-      validation: () => data.skills.length > 0
+      validation: () => data.services.length > 0
     },
     {
       title: "Where do you provide services?",
@@ -90,6 +126,74 @@ export const ProfessionalOnboarding = ({ onComplete, onSkip }: ProfessionalOnboa
         />
       ),
       validation: () => data.availability.length > 0
+    },
+    {
+      title: "Set your pricing",
+      description: "What's your hourly rate for most services?",
+      component: (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="hourly-rate">Hourly Rate (€)</Label>
+            <Input
+              id="hourly-rate"
+              type="number"
+              value={data.hourlyRate}
+              onChange={(e) => setData(prev => ({ ...prev, hourlyRate: Number(e.target.value) }))}
+              placeholder="50"
+              min="10"
+              max="500"
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            You can set specific pricing for individual services later. This helps clients get an initial estimate.
+          </p>
+        </div>
+      ),
+      validation: () => data.hourlyRate > 0
+    },
+    {
+      title: "Show your best work",
+      description: "Upload 3-5 photos of your completed projects",
+      component: (
+        <ServicePhotoUploader
+          serviceItemId="portfolio"
+          currentImages={data.portfolioImages}
+          onImagesUpdate={(images) => setData(prev => ({ ...prev, portfolioImages: images }))}
+          onVideoUpdate={() => {}}
+        />
+      ),
+      validation: () => data.portfolioImages.length >= 3
+    },
+    {
+      title: "Verify your credentials",
+      description: "Upload documents to build trust with clients",
+      component: (
+        <DocumentUpload
+          professionalId="temp-id"
+          onDocumentsUpdate={() => setData(prev => ({ ...prev, documentsUploaded: true }))}
+        />
+      ),
+      validation: () => true // Optional step
+    },
+    {
+      title: "Set up payments",
+      description: "Connect your payment method to receive earnings",
+      component: (
+        <div className="space-y-4 text-center">
+          <div className="p-6 border-2 border-dashed border-muted rounded-lg">
+            <h3 className="text-lg font-medium mb-2">Payment Setup</h3>
+            <p className="text-muted-foreground mb-4">
+              We'll help you set up secure payments after you complete registration
+            </p>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>✓ Secure bank transfers</p>
+              <p>✓ Weekly payouts</p>
+              <p>✓ Transaction protection</p>
+            </div>
+          </div>
+        </div>
+      ),
+      validation: () => true // Will be handled after registration
     },
   ];
 
