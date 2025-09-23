@@ -1,0 +1,84 @@
+import { useState } from 'react';
+import { useActiveRole } from '@/hooks/useActiveRole';
+import { switchActiveRole } from '@/lib/roles';
+import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { User, Briefcase } from 'lucide-react';
+
+export default function HeaderRoleSwitcher() {
+  const { activeRole, roles, setActiveRole, loading } = useActiveRole();
+  const [switching, setSwitching] = useState(false);
+  const { toast } = useToast();
+
+  const handleRoleSwitch = async (newRole: 'client' | 'professional') => {
+    if (activeRole === newRole || switching) return;
+    
+    setSwitching(true);
+    try {
+      await switchActiveRole(newRole);
+      setActiveRole(newRole);
+      toast({
+        title: "Role switched",
+        description: `You're now in ${newRole} mode`
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error switching role",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setSwitching(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="h-8 w-20 bg-muted animate-pulse rounded-full" />;
+  }
+
+  // If user only has one role, show a simple badge
+  if (roles.length < 2) {
+    return (
+      <Badge variant="secondary" className="flex items-center gap-1">
+        {activeRole === 'professional' ? (
+          <>
+            <Briefcase className="h-3 w-3" />
+            Professional
+          </>
+        ) : (
+          <>
+            <User className="h-3 w-3" />
+            Client
+          </>
+        )}
+      </Badge>
+    );
+  }
+
+  // If user has multiple roles, show segmented control
+  return (
+    <div className="inline-flex rounded-full bg-muted p-1">
+      <Button
+        variant={activeRole === 'client' ? 'default' : 'ghost'}
+        size="sm"
+        onClick={() => handleRoleSwitch('client')}
+        disabled={switching}
+        className="rounded-full h-8 px-3 text-xs"
+      >
+        <User className="h-3 w-3 mr-1" />
+        Client
+      </Button>
+      <Button
+        variant={activeRole === 'professional' ? 'default' : 'ghost'}
+        size="sm"
+        onClick={() => handleRoleSwitch('professional')}
+        disabled={switching}
+        className="rounded-full h-8 px-3 text-xs"
+      >
+        <Briefcase className="h-3 w-3 mr-1" />
+        Professional
+      </Button>
+    </div>
+  );
+}

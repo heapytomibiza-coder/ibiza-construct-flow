@@ -7,6 +7,8 @@ interface Profile {
   full_name: string | null;
   display_name: string | null;
   roles: any; // JSON field from database
+  active_role: string;
+  tasker_onboarding_status: string;
   preferred_language: string;
   created_at: string;
   updated_at: string;
@@ -107,6 +109,10 @@ export const useAuth = () => {
   const isAdmin = (): boolean => hasRole('admin');
   const isProfessional = (): boolean => hasRole('professional');
   const isClient = (): boolean => hasRole('client');
+  
+  // New methods for active role
+  const getActiveRole = (): string => profile?.active_role || 'client';
+  const isActiveRole = (role: string): boolean => getActiveRole() === role;
 
   return {
     user,
@@ -119,6 +125,8 @@ export const useAuth = () => {
     hasRole,
     isAdmin,
     isProfessional,
-    isClient
+    isClient,
+    getActiveRole,
+    isActiveRole
   };
 };

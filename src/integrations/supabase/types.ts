@@ -269,6 +269,30 @@ export type Database = {
         }
         Relationships: []
       }
+      form_sessions: {
+        Row: {
+          form_type: string
+          id: string
+          payload: Json
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          form_type: string
+          id?: string
+          payload?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          form_type?: string
+          id?: string
+          payload?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       job_matches: {
         Row: {
           booking_id: string | null
@@ -668,30 +692,42 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_role: string | null
           created_at: string | null
           display_name: string | null
           full_name: string | null
           id: string
           preferred_language: string | null
           roles: Json | null
+          tasker_onboarding_status:
+            | Database["public"]["Enums"]["tasker_onboarding_status"]
+            | null
           updated_at: string | null
         }
         Insert: {
+          active_role?: string | null
           created_at?: string | null
           display_name?: string | null
           full_name?: string | null
           id: string
           preferred_language?: string | null
           roles?: Json | null
+          tasker_onboarding_status?:
+            | Database["public"]["Enums"]["tasker_onboarding_status"]
+            | null
           updated_at?: string | null
         }
         Update: {
+          active_role?: string | null
           created_at?: string | null
           display_name?: string | null
           full_name?: string | null
           id?: string
           preferred_language?: string | null
           roles?: Json | null
+          tasker_onboarding_status?:
+            | Database["public"]["Enums"]["tasker_onboarding_status"]
+            | null
           updated_at?: string | null
         }
         Relationships: []
@@ -881,6 +917,7 @@ export type Database = {
         | "cancelled"
       milestone_status: "pending" | "completed" | "disputed"
       payment_status: "pending" | "completed" | "refunded" | "disputed"
+      tasker_onboarding_status: "not_started" | "in_progress" | "complete"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1019,6 +1056,7 @@ export const Constants = {
       ],
       milestone_status: ["pending", "completed", "disputed"],
       payment_status: ["pending", "completed", "refunded", "disputed"],
+      tasker_onboarding_status: ["not_started", "in_progress", "complete"],
     },
   },
 } as const

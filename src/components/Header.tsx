@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
+import AuthModal from '@/components/auth/AuthModal';
+import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -18,6 +20,8 @@ interface HeaderProps {
 
 const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
   const { user, profile, signOut, isAdmin, isProfessional, isClient } = useAuth();
   const navigate = useNavigate();
 
@@ -70,52 +74,58 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
           {/* CTA Buttons / User Menu */}
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gradient-hero rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="font-medium">
-                      {profile?.display_name || profile?.full_name || 'User'}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={() => navigate(getDashboardPath())}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Dashboard
-                  </DropdownMenuItem>
-                  {jobWizardEnabled && isClient() && (
-                    <DropdownMenuItem onClick={() => navigate('/post')}>
-                      <Briefcase className="w-4 h-4 mr-2" />
-                      Post Project
+              <>
+                <HeaderRoleSwitcher />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gradient-hero rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="font-medium">
+                        {profile?.display_name || profile?.full_name || 'User'}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem onClick={() => navigate(getDashboardPath())}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Dashboard
                     </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    {jobWizardEnabled && isClient() && (
+                      <DropdownMenuItem onClick={() => navigate('/post')}>
+                        <Briefcase className="w-4 h-4 mr-2" />
+                        Post Project
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
               <>
-                {proInboxEnabled && (
-                  <Link to="/auth/sign-up" className="btn-secondary">
-                    Join as Pro
-                  </Link>
-                )}
-                {jobWizardEnabled && (
-                  <Link to="/post" className="btn-hero">
-                    Post Project
-                  </Link>
-                )}
-                {!jobWizardEnabled && !proInboxEnabled && (
-                  <Link to="/auth/sign-in" className="btn-secondary">
-                    Sign In
-                  </Link>
-                )}
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setAuthDefaultTab('signin');
+                    setAuthModalOpen(true);
+                  }}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setAuthDefaultTab('signup');
+                    setAuthModalOpen(true);
+                  }}
+                  className="bg-gradient-hero text-white"
+                >
+                  Join as Pro
+                </Button>
               </>
             )}
           </div>
@@ -151,6 +161,9 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
               <div className="flex flex-col space-y-3 pt-4">
                 {user ? (
                   <>
+                    <div className="flex justify-center py-2">
+                      <HeaderRoleSwitcher />
+                    </div>
                     <Link to={getDashboardPath()} className="btn-secondary">
                       Dashboard
                     </Link>
@@ -165,21 +178,27 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                   </>
                 ) : (
                   <>
-                    {proInboxEnabled && (
-                      <Link to="/auth/sign-up" className="btn-secondary">
-                        Join as Pro
-                      </Link>
-                    )}
-                    {jobWizardEnabled && (
-                      <Link to="/post" className="btn-hero">
-                        Post Project
-                      </Link>
-                    )}
-                    {!jobWizardEnabled && !proInboxEnabled && (
-                      <Link to="/auth/sign-in" className="btn-secondary">
-                        Sign In
-                      </Link>
-                    )}
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        setAuthDefaultTab('signin');
+                        setAuthModalOpen(true);
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <Button 
+                      className="w-full bg-gradient-hero text-white"
+                      onClick={() => {
+                        setAuthDefaultTab('signup');
+                        setAuthModalOpen(true);
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Join as Pro
+                    </Button>
                   </>
                 )}
               </div>
@@ -187,6 +206,12 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
           </div>
         )}
       </div>
+      
+      <AuthModal 
+        open={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)}
+        defaultTab={authDefaultTab}
+      />
     </header>
   );
 };
