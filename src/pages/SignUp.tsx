@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useFeature } from '@/hooks/useFeature';
+import { ProfessionalOnboarding, OnboardingData } from '@/components/onboarding/ProfessionalOnboarding';
 
 export default function SignUp() {
   const [searchParams] = useSearchParams();
@@ -19,6 +20,7 @@ export default function SignUp() {
   const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [authMode, setAuthMode] = useState<'magic' | 'password'>('magic');
+  const [showOnboarding, setShowOnboarding] = useState(false);
   
   const role = searchParams.get('role') as 'client' | 'professional' || 'client';
   const magicLinkEnabled = useFeature('ff.magicLink', true);
@@ -89,12 +91,15 @@ export default function SignUp() {
 
       if (error) throw error;
 
-      toast({
-        title: 'Check your email',
-        description: 'Please verify your email address to complete sign up',
-      });
-      
-      navigate('/auth/verify-email');
+      if (role === 'professional') {
+        setShowOnboarding(true);
+      } else {
+        toast({
+          title: 'Check your email',
+          description: 'Please verify your email address to complete sign up',
+        });
+        navigate('/auth/verify-email');
+      }
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -105,6 +110,58 @@ export default function SignUp() {
       setLoading(false);
     }
   };
+
+  const handleOnboardingComplete = async (onboardingData: OnboardingData) => {
+    try {
+      // Save onboarding data to professional profile
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Create professional profile with onboarding data
+        const { error } = await supabase
+          .from('professional_profiles')
+          .insert({
+            user_id: user.id,
+            zones: onboardingData.serviceAreas,
+            languages: onboardingData.languages,
+            primary_trade: onboardingData.skills[0] || null,
+          });
+
+        if (error) {
+          console.error('Error saving professional profile:', error);
+        }
+      }
+
+      toast({
+        title: 'Profile setup complete!',
+        description: 'Your professional profile has been created successfully.',
+      });
+      
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to save profile data. Please try again.',
+      });
+    }
+  };
+
+  const handleOnboardingSkip = () => {
+    toast({
+      title: 'Check your email',
+      description: 'Please verify your email address to complete sign up',
+    });
+    navigate('/auth/verify-email');
+  };
+
+  if (showOnboarding) {
+    return (
+      <ProfessionalOnboarding
+        onComplete={handleOnboardingComplete}
+        onSkip={handleOnboardingSkip}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background flex items-center justify-center p-4">

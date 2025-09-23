@@ -8,6 +8,7 @@ import { useWizard } from '@/features/wizard/useWizard';
 import TwoSectionQuestionsStep from '@/features/wizard/TwoSectionQuestionsStep';
 import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
 import { AIPriceEstimate } from '@/components/ai/AIPriceEstimate';
+import { LocationStep } from '@/components/wizard/LocationStep';
 import { toast } from 'sonner';
 
 const PostJob: React.FC = () => {
@@ -315,20 +316,32 @@ const PostJob: React.FC = () => {
         );
 
       case 5:
-        // Questions Step
+        // Location & Timing Step with Visual Chips
         return (
-          <TwoSectionQuestionsStep
-            generalAnswers={state.generalAnswers}
-            microAnswers={state.microAnswers}
-            microQuestions={questions}
-            onGeneralChange={handleGeneralAnswerChange}
-            onMicroChange={handleMicroAnswerChange}
-            onNext={async () => {
-              await generatePriceEstimate();
-              nextStep();
-            }}
-            onBack={prevStep}
-          />
+          <div className="space-y-6">
+            <LocationStep
+              answers={state.generalAnswers}
+              onAnswerChange={handleGeneralAnswerChange}
+              selectedService={state.microService}
+            />
+            
+            <div className="flex justify-between pt-4">
+              <Button variant="outline" onClick={prevStep}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <Button 
+                onClick={async () => {
+                  await generatePriceEstimate();
+                  nextStep();
+                }}
+                disabled={!state.generalAnswers.location || !state.generalAnswers.urgency}
+              >
+                Continue to Review
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </div>
         );
 
       case 6:
