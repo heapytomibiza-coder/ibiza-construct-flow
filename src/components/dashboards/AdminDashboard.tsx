@@ -4,10 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import DatabaseStats from '@/components/admin/DatabaseStats';
-import FeatureFlagsManager from '@/components/admin/FeatureFlagsManager';
-import UserInspector from '@/components/admin/UserInspector';
-import { AdminDocumentReview } from '@/components/admin/AdminDocumentReview';
+import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
 
 interface Profile {
   id: string;
@@ -64,16 +61,8 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Database Stats Overview */}
-        <DatabaseStats />
-
-        {/* Feature Flags, User Management, and Document Review */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <FeatureFlagsManager />
-          <UserInspector />
-          <AdminDocumentReview />
-        </div>
+      <main className="max-w-7xl mx-auto p-6">
+        <AdminDashboardTabs />
       </main>
     </div>
   );
