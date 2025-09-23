@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Check, MapPin, Clock, Home, Users } from 'lucide-react';
 
 interface ChipOption {
@@ -29,90 +30,70 @@ export const QuickSelectionChips = ({
   multiSelect = true,
   maxSelection
 }: QuickSelectionChipsProps) => {
-  const handleChipClick = (optionId: string) => {
-    if (multiSelect) {
-      const isSelected = selectedOptions.includes(optionId);
-      
-      if (isSelected) {
-        // Remove from selection
-        onSelectionChange(selectedOptions.filter(id => id !== optionId));
-      } else {
-        // Add to selection (check max limit)
-        if (!maxSelection || selectedOptions.length < maxSelection) {
-          onSelectionChange([...selectedOptions, optionId]);
-        }
-      }
-    } else {
-      // Single select
-      onSelectionChange([optionId]);
+  const handleValueChange = (value: string) => {
+    if (!multiSelect) {
+      onSelectionChange([value]);
     }
   };
 
+  const selectedLabels = selectedOptions
+    .map(id => options.find(opt => opt.id === id)?.label)
+    .filter(Boolean)
+    .join(', ');
+
   return (
     <Card className="p-6 card-luxury">
-      <div className="mb-6">
+      <div className="mb-4">
         <h3 className="text-display text-lg font-semibold text-charcoal mb-2">
           {title}
         </h3>
         {subtitle && (
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm mb-4">
             {subtitle}
           </p>
         )}
         {maxSelection && multiSelect && (
-          <p className="text-xs text-copper mt-1">
+          <p className="text-xs text-copper mb-4">
             Select up to {maxSelection} options ({selectedOptions.length}/{maxSelection} selected)
           </p>
         )}
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        {options.map((option) => {
-          const isSelected = selectedOptions.includes(option.id);
-          const isDisabled = maxSelection && !isSelected && selectedOptions.length >= maxSelection;
-          
-          return (
-            <button
-              key={option.id}
-              onClick={() => handleChipClick(option.id)}
-              disabled={isDisabled}
-              className={`
-                flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
-                transition-all duration-200 relative group
-                ${isSelected 
-                  ? 'bg-gradient-hero text-white shadow-luxury' 
-                  : isDisabled
-                    ? 'bg-sand/50 text-muted-foreground cursor-not-allowed'
-                    : 'bg-sand hover:bg-sand-dark text-charcoal hover:shadow-card cursor-pointer'
-                }
-              `}
+      <Select value={selectedOptions[0] || ""} onValueChange={handleValueChange}>
+        <SelectTrigger className="w-full bg-background">
+          <SelectValue placeholder={`Select ${title.toLowerCase()}...`}>
+            {selectedLabels || `Select ${title.toLowerCase()}...`}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent className="bg-background border border-border z-50">
+          {options.map((option) => (
+            <SelectItem 
+              key={option.id} 
+              value={option.id}
+              className="hover:bg-muted focus:bg-muted"
             >
-              {option.icon && (
-                <span className="flex items-center">
-                  {option.icon}
-                </span>
-              )}
-              
-              <span>{option.label}</span>
-              
-              {option.popular && !isSelected && (
-                <Badge variant="secondary" className="bg-copper/20 text-copper text-xs px-1 py-0">
-                  Popular
-                </Badge>
-              )}
-              
-              {isSelected && (
-                <Check className="w-4 h-4" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+              <div className="flex items-center gap-2">
+                {option.icon && (
+                  <span className="flex items-center">
+                    {option.icon}
+                  </span>
+                )}
+                <span>{option.label}</span>
+                {option.popular && (
+                  <Badge variant="secondary" className="bg-copper/20 text-copper text-xs px-1 py-0 ml-2">
+                    Popular
+                  </Badge>
+                )}
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       {selectedOptions.length > 0 && (
         <div className="mt-4 p-3 bg-gradient-card rounded-lg">
           <p className="text-sm text-charcoal">
-            <strong>Selected:</strong> {selectedOptions.length} option{selectedOptions.length !== 1 ? 's' : ''}
+            <strong>Selected:</strong> {selectedLabels}
           </p>
         </div>
       )}
