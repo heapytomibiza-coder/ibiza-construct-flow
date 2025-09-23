@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_events: {
+        Row: {
+          admin_id: string
+          created_at: string
+          description: string | null
+          entity_id: string
+          entity_type: string
+          event_type: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          description?: string | null
+          entity_id: string
+          entity_type: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          description?: string | null
+          entity_id?: string
+          entity_type?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
       booking_requests: {
         Row: {
           client_id: string
@@ -128,6 +161,48 @@ export type Database = {
           },
         ]
       }
+      contracts: {
+        Row: {
+          agreed_amount: number
+          client_id: string
+          created_at: string
+          end_at: string | null
+          escrow_status: string
+          id: string
+          job_id: string
+          start_at: string | null
+          tasker_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          agreed_amount: number
+          client_id: string
+          created_at?: string
+          end_at?: string | null
+          escrow_status?: string
+          id?: string
+          job_id: string
+          start_at?: string | null
+          tasker_id: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          agreed_amount?: number
+          client_id?: string
+          created_at?: string
+          end_at?: string | null
+          escrow_status?: string
+          id?: string
+          job_id?: string
+          start_at?: string | null
+          tasker_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       escrow_payments: {
         Row: {
           amount: number
@@ -233,6 +308,87 @@ export type Database = {
           },
         ]
       }
+      jobs: {
+        Row: {
+          answers: Json
+          budget_type: string
+          budget_value: number | null
+          client_id: string
+          created_at: string
+          description: string | null
+          id: string
+          location: Json | null
+          micro_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          answers?: Json
+          budget_type?: string
+          budget_value?: number | null
+          client_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: Json | null
+          micro_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          answers?: Json
+          budget_type?: string
+          budget_value?: number | null
+          client_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: Json | null
+          micro_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          contract_id: string | null
+          created_at: string
+          id: string
+          job_id: string | null
+          message_type: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          contract_id?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          message_type?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          contract_id?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          message_type?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       milestones: {
         Row: {
           amount: number | null
@@ -270,6 +426,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      offers: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          job_id: string
+          message: string | null
+          status: string
+          tasker_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          job_id: string
+          message?: string | null
+          status?: string
+          tasker_id: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          job_id?: string
+          message?: string | null
+          status?: string
+          tasker_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       professional_applications: {
         Row: {
@@ -635,6 +827,39 @@ export type Database = {
           id?: string
           micro?: string
           subcategory?: string
+        }
+        Relationships: []
+      }
+      services_micro: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          micro: string
+          questions_logistics: Json
+          questions_micro: Json
+          subcategory: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          micro: string
+          questions_logistics?: Json
+          questions_micro?: Json
+          subcategory: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          micro?: string
+          questions_logistics?: Json
+          questions_micro?: Json
+          subcategory?: string
+          updated_at?: string
         }
         Relationships: []
       }
