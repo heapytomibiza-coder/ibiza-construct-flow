@@ -30,17 +30,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 
 interface Professional {
-  id?: string;
+  id: string;
   user_id: string;
-  bio: string;
+  bio: string | null;
   verification_status: string;
-  experience_years: number;
-  hourly_rate: number;
-  skills: string[];
-  languages: string[];
-  zones: string[];
-  created_at: string;
-  updated_at: string;
+  experience_years: number | null;
+  hourly_rate: number | null;
+  skills: string[] | null;
+  languages: string[] | null;
+  zones: string[] | null;
+  created_at: string | null;
+  updated_at: string | null;
   // Joined data
   full_name?: string;
   email?: string;
@@ -101,7 +101,17 @@ export default function ProfessionalHub() {
       const processedProfessionals = professionalsData?.map(prof => {
         const completionScore = calculateProfileCompletion(prof);
         return {
-          ...prof,
+          id: prof.user_id, // Use user_id as the id
+          user_id: prof.user_id,
+          bio: prof.bio,
+          verification_status: prof.verification_status || 'unverified',
+          experience_years: prof.experience_years,
+          hourly_rate: prof.hourly_rate,
+          skills: Array.isArray(prof.skills) ? prof.skills.map(skill => String(skill)) : [],
+          languages: Array.isArray(prof.languages) ? prof.languages.map(lang => String(lang)) : [],
+          zones: Array.isArray(prof.zones) ? prof.zones.map(zone => String(zone)) : [],
+          created_at: prof.created_at,
+          updated_at: prof.updated_at,
           full_name: prof.profiles?.full_name || 'Unknown',
           profile_completion: completionScore,
           documents_count: 0, // Will be updated from documents
@@ -211,7 +221,7 @@ export default function ProfessionalHub() {
       const { error } = await supabase
         .from('professional_profiles')
         .update({ verification_status: newStatus })
-        .eq('id', professionalId);
+        .eq('user_id', professionalId);
 
       if (error) throw error;
       
