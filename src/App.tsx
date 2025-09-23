@@ -32,7 +32,7 @@ import { useFeature } from "./contexts/FeatureFlagsContext";
 
 export default function App() {
   // Enable auth for production
-  const DISABLE_AUTH_FOR_WIREFRAME = false;
+  const DISABLE_AUTH_FOR_WIREFRAME = true;
   
   // Enable job wizard for implementation
   const jobWizardEnabled = useFeature('ff.jobWizardV2', true);

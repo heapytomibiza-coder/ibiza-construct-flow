@@ -10,9 +10,18 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children, role }: ProtectedRouteProps) {
   const [status, setStatus] = useState<'loading' | 'ok' | 'redirect'>('loading');
 
+  // Disable auth for wireframe mode
+  const DISABLE_AUTH_FOR_WIREFRAME = true;
+
   useEffect(() => {
     (async () => {
       try {
+        // Skip authentication in wireframe mode
+        if (DISABLE_AUTH_FOR_WIREFRAME) {
+          setStatus('ok');
+          return;
+        }
+
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return setStatus('redirect');
 

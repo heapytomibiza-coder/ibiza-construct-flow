@@ -12,6 +12,17 @@ const Dashboard = () => {
   useEffect(() => {
     const checkUserAndRedirect = async () => {
       try {
+        // Disable auth for wireframe mode
+        const DISABLE_AUTH_FOR_WIREFRAME = true;
+        
+        // Skip authentication in wireframe mode
+        if (DISABLE_AUTH_FOR_WIREFRAME) {
+          setLoading(false);
+          // Default to client dashboard for wireframe mode
+          navigate('/dashboard/client');
+          return;
+        }
+
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           navigate('/auth/sign-in');
