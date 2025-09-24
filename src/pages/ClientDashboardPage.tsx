@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import ClientDashboard from '@/components/dashboards/ClientDashboard';
+import EnhancedClientDashboard from '@/components/dashboards/EnhancedClientDashboard';
 
 export default function ClientDashboardPage() {
   const { user, profile, loading } = useAuth();
@@ -12,5 +12,5 @@ export default function ClientDashboardPage() {
     );
   }
 
-  return <ClientDashboard user={user} profile={profile} />;
+  return <EnhancedClientDashboard user={user} profile={profile} />;
 }
