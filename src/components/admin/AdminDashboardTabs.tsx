@@ -16,6 +16,7 @@ import DatabaseStats from './DatabaseStats';
 import FeatureFlagsManager from './FeatureFlagsManager';
 import UserInspector from './UserInspector';
 import { AdminDocumentReview } from './AdminDocumentReview';
+import { TestRunner } from './TestRunner';
 
 export default function AdminDashboardTabs() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,6 +46,12 @@ export default function AdminDashboardTabs() {
       label: 'System Settings',
       icon: Settings,
       description: 'Feature flags and platform configuration'
+    },
+    {
+      id: 'test-runner',
+      label: 'Test Runner',
+      icon: Database,
+      description: 'Execute comprehensive AI system tests'
     }
   ];
 
@@ -74,7 +81,7 @@ export default function AdminDashboardTabs() {
 
       {/* Main Tabs Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto p-1">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-1">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -155,6 +162,23 @@ export default function AdminDashboardTabs() {
             </CardHeader>
             <CardContent>
               <FeatureFlagsManager />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="test-runner" className="space-y-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Database className="h-5 w-5 text-primary" />
+                <CardTitle>AI System Test Runner</CardTitle>
+              </div>
+              <CardDescription>
+                Execute comprehensive tests on AI edge functions and integration flows
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TestRunner />
             </CardContent>
           </Card>
         </TabsContent>
