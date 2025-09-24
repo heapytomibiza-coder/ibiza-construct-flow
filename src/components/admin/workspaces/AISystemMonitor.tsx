@@ -482,11 +482,6 @@ export default function AISystemMonitor() {
           isOpen={!!selectedRun}
           onClose={() => setSelectedRun(null)}
           runId={selectedRun.id}
-          functionName={selectedRun.operation_type}
-          result={selectedRun.output_data}
-          inputData={selectedRun.input_data}
-          executionTime={selectedRun.execution_time_ms}
-          status={selectedRun.status}
         />
       )}
     </div>
