@@ -123,8 +123,8 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
 
   const tabs = [
     { id: 'home', label: 'Home', icon: Clock },
-    { id: 'jobs', label: 'My Jobs', icon: Briefcase },
-    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'jobs', label: 'My Jobs', icon: Briefcase, tourTarget: 'jobs-tab' },
+    { id: 'messages', label: 'Messages', icon: MessageSquare, tourTarget: 'messages-tab' },
     { id: 'payments', label: 'Payments', icon: Euro }
   ];
 
@@ -182,7 +182,7 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                data-tour={tab.id === 'jobs' ? 'jobs-tab' : undefined}
+                data-tour={tab.tourTarget}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
                   "flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-t-lg transition-colors",
@@ -328,7 +328,7 @@ const JobsTab = ({ bookings, loading }: any) => (
   <div className="space-y-4">
     <div className="flex items-center justify-between">
       <h2 className="text-lg font-semibold text-charcoal">My Jobs</h2>
-      <Button size="sm" className="bg-gradient-hero hover:bg-copper text-white">
+      <Button size="sm" className="bg-gradient-hero hover:bg-copper text-white" data-tour="post-job">
         <Plus className="w-4 h-4 mr-2" />
         New Job
       </Button>

@@ -2246,12 +2246,14 @@ export type Database = {
       profiles: {
         Row: {
           active_role: string | null
+          coverage_area: string | null
           created_at: string | null
           display_name: string | null
           full_name: string | null
           id: string
           preferred_language: string | null
           roles: Json | null
+          service_radius: number | null
           simple_mode: boolean | null
           tasker_onboarding_status:
             | Database["public"]["Enums"]["tasker_onboarding_status"]
@@ -2261,12 +2263,14 @@ export type Database = {
         }
         Insert: {
           active_role?: string | null
+          coverage_area?: string | null
           created_at?: string | null
           display_name?: string | null
           full_name?: string | null
           id: string
           preferred_language?: string | null
           roles?: Json | null
+          service_radius?: number | null
           simple_mode?: boolean | null
           tasker_onboarding_status?:
             | Database["public"]["Enums"]["tasker_onboarding_status"]
@@ -2276,12 +2280,14 @@ export type Database = {
         }
         Update: {
           active_role?: string | null
+          coverage_area?: string | null
           created_at?: string | null
           display_name?: string | null
           full_name?: string | null
           id?: string
           preferred_language?: string | null
           roles?: Json | null
+          service_radius?: number | null
           simple_mode?: boolean | null
           tasker_onboarding_status?:
             | Database["public"]["Enums"]["tasker_onboarding_status"]

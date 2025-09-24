@@ -34,6 +34,8 @@ interface Professional {
   experience_years?: number | null;
   hourly_rate?: number | null;
   location?: string | null;
+  coverage_area?: string | null;
+  service_radius?: number | null;
   profile_image_url?: string | null;
   phone?: string | null;
   rating?: number | null;
@@ -222,6 +224,36 @@ export default function ProfessionalProfile() {
                   </div>
                 </CardContent>
               </Card>
+              {/* Coverage Area Section */}
+              {(professional.coverage_area || professional.service_radius) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Service Coverage</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {professional.coverage_area && (
+                        <div>
+                          <h4 className="font-semibold mb-2">Coverage Areas</h4>
+                          <p className="text-muted-foreground">{professional.coverage_area}</p>
+                        </div>
+                      )}
+                      
+                      {professional.service_radius && (
+                        <>
+                          <Separator />
+                          <div>
+                            <h4 className="font-semibold mb-2">Service Radius</h4>
+                            <p className="text-muted-foreground">
+                              Up to {professional.service_radius}km from base location
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Sidebar */}

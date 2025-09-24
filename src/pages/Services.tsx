@@ -55,16 +55,46 @@ const Services = () => {
   });
 
   const handleServiceClick = (service: any) => {
+    // Track analytics
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'service_card_click', {
+        category: service.category,
+        service_name: service.title
+      });
+    }
+    
     if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(service.category)}`);
+      // Pass more context to wizard for better pre-filling
+      const wizardParams = new URLSearchParams({
+        category: service.category,
+        preset: service.title,
+        source: 'services'
+      });
+      navigate(`/post?${wizardParams.toString()}`);
     } else {
       navigate(`/service/${service.slug}`);
     }
   };
 
   const handleBookNow = (service: any) => {
+    // Track analytics
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'service_book_now', {
+        category: service.category,
+        service_name: service.title,
+        value: service.price
+      });
+    }
+    
     if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(service.category)}`);
+      // Use calendar-first wizard for booking
+      const wizardParams = new URLSearchParams({
+        category: service.category,
+        preset: service.title,
+        calendar: 'true',
+        source: 'booking'
+      });
+      navigate(`/post?${wizardParams.toString()}`);
     } else {
       navigate(`/service/${service.slug}?book=true`);
     }
@@ -139,7 +169,7 @@ const Services = () => {
               </p>
             </div>
             
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-2xl mx-auto" data-tour="service-search">
               <ServiceSearch
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
@@ -280,7 +310,7 @@ const Services = () => {
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Filters Sidebar */}
-              <div className="lg:w-80 flex-shrink-0">
+              <div className="lg:w-80 flex-shrink-0" data-tour="service-filters">
                 <EnhancedServiceFilters
                   filters={{...filters, subcategories: [], specialists: [], location: ''}}
                   onFiltersChange={setFilters}

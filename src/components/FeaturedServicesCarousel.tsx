@@ -1,22 +1,23 @@
 import React from 'react';
-import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useFeature } from '@/contexts/FeatureFlagsContext';
-import { useServices } from '@/contexts/ServicesContext';
 import { Button } from '@/components/ui/button';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+import { Badge } from '@/components/ui/badge';
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem, 
+  CarouselNext, 
+  CarouselPrevious 
 } from '@/components/ui/carousel';
+import { useServices } from '@/hooks/useServices';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car, ArrowRight } from 'lucide-react';
 
 const FeaturedServicesCarousel = React.memo(() => {
   const navigate = useNavigate();
-  const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const { getServiceCards, loading } = useServices();
-  
+  const jobWizardEnabled = useFeature('ff.jobWizardV2');
+
   const iconMap = {
     'Wrench': Wrench,
     'Home': Home,
@@ -28,26 +29,37 @@ const FeaturedServicesCarousel = React.memo(() => {
     'Car': Car
   };
 
-  // Get featured services (first 4 for now, can be enhanced with is_featured field)
   const featuredServices = React.useMemo(() => 
-    getServiceCards()
-      .map(service => ({
-        ...service,
-        icon: iconMap[service.icon as keyof typeof iconMap] || Wrench
-      }))
-      .slice(0, 4), // Show only first 4 services
+    getServiceCards().slice(0, 4).map(service => ({
+      ...service,
+      icon: iconMap[service.icon as keyof typeof iconMap] || Wrench
+    })), 
     [getServiceCards]
   );
 
   const handleServiceClick = React.useCallback((service: any) => {
+    // Track analytics
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'carousel_interacted', {
+        service_category: service.category,
+        service_name: service.title
+      });
+    }
+
     if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(service.category)}`);
+      navigate(`/post?category=${encodeURIComponent(service.category)}&preset=${encodeURIComponent(service.title)}`);
     } else {
       navigate(`/service/${service.slug}`);
     }
   }, [jobWizardEnabled, navigate]);
 
   const handleViewAllServices = React.useCallback(() => {
+    // Track analytics
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'view_all_services', {
+        source: 'featured_carousel'
+      });
+    }
     navigate('/services');
   }, [navigate]);
 
@@ -82,79 +94,81 @@ const FeaturedServicesCarousel = React.memo(() => {
   }
 
   return (
-    <section className="py-16 bg-background">
+    <section className="py-16 bg-background" data-tour="featured-services">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-display text-3xl md:text-4xl font-bold text-charcoal mb-4">
             Featured Services
           </h2>
-          <p className="text-body text-lg text-muted-foreground">
-            Get started with our most popular services
+          <p className="text-body text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+            Get started with our most popular services in Ibiza. From quick fixes to complete renovations, 
+            we've got trusted professionals ready to help.
           </p>
         </div>
-
-        {/* Carousel for mobile and desktop */}
-        <div className="relative">
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-2 md:-ml-4">
-              {featuredServices.map((service, index) => {
-                const IconComponent = service.icon;
-                return (
-                  <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/4">
-                    <div
-                      className="card-luxury hover:scale-105 group cursor-pointer relative h-full"
+        
+        <div className="relative max-w-5xl mx-auto">
+          <Carousel className="w-full">
+            <CarouselContent className="-ml-1">
+              {featuredServices.map((service, index) => (
+                <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
+                  <div className="p-2">
+                    <div 
+                      className="card-luxury p-6 cursor-pointer hover:shadow-lg transition-all group"
                       onClick={() => handleServiceClick(service)}
                     >
-                      {service.popular && (
-                        <div className="absolute -top-3 -right-3 bg-gradient-hero text-white px-3 py-1 rounded-full text-xs font-semibold">
-                          Popular
-                        </div>
-                      )}
-                      
-                      <div className="flex flex-col items-center text-center h-full">
+                      <div className="flex flex-col items-center text-center">
                         <div className="w-16 h-16 bg-gradient-hero rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                          <IconComponent className="w-8 h-8 text-white" />
+                          <service.icon className="w-8 h-8 text-white" />
                         </div>
                         
-                        <h3 className="text-display font-semibold text-charcoal mb-2 text-lg">
+                        <h3 className="text-xl font-semibold text-charcoal mb-2 group-hover:text-copper transition-colors">
                           {service.title}
                         </h3>
                         
-                        <p className="text-body text-muted-foreground text-sm mb-4 leading-relaxed flex-grow">
+                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                           {service.description}
                         </p>
                         
-                        <div className="mt-auto">
-                          <span className="text-copper font-semibold text-sm">
+                        <div className="flex items-center gap-2 mb-4">
+                          {service.popular && (
+                            <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                              Popular
+                            </Badge>
+                          )}
+                          <span className="text-copper font-semibold">
                             {service.priceRange}
                           </span>
                         </div>
+                        
+                        <div className="w-full">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="w-full group-hover:bg-gradient-hero group-hover:text-white group-hover:border-transparent transition-all"
+                          >
+                            View Service
+                            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </CarouselItem>
-                );
-              })}
+                  </div>
+                </CarouselItem>
+              ))}
             </CarouselContent>
-            <CarouselPrevious className="hidden md:flex -left-12" />
-            <CarouselNext className="hidden md:flex -right-12" />
+            <CarouselPrevious />
+            <CarouselNext />
           </Carousel>
         </div>
-
-        {/* View All Services CTA */}
+        
         <div className="text-center mt-12">
           <Button 
             onClick={handleViewAllServices}
-            variant="outline"
             size="lg"
-            className="btn-secondary"
+            className="bg-gradient-hero text-white hover:shadow-lg transition-all"
           >
             View All Services
+            <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
       </div>

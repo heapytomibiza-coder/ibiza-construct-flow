@@ -14,7 +14,10 @@ import { SimpleJobTemplateManager } from '@/components/smart/SimpleJobTemplateMa
 import { ResumeJobModal } from '@/components/smart/ResumeJobModal';
 import { SmartPricingHints } from '@/components/smart/SmartPricingHints';
 import { MatchingFeedback } from '@/components/smart/MatchingFeedback';
+import CalendarFirstWizard from '@/components/wizard/CalendarFirstWizard';
+import { JobSummary } from '@/components/services/JobSummary';
 import { useEnhancedAutosave } from '@/hooks/useEnhancedAutosave';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { toast } from 'sonner';
 
 const PostJob: React.FC = () => {
@@ -23,6 +26,8 @@ const PostJob: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [showResumeModal, setShowResumeModal] = React.useState(false);
   const [savedSession, setSavedSession] = React.useState<any>(null);
+  const calendarFirstEnabled = useFeature('wizard_calendar_first');
+  const [useCalendarWizard, setUseCalendarWizard] = React.useState(false);
   
   const {
     state,
@@ -61,6 +66,10 @@ const PostJob: React.FC = () => {
   useEffect(() => {
     loadServices();
     
+    // Decide which wizard to use based on feature flag and URL params
+    const calendarFirst = searchParams.get('calendar') === 'true' || calendarFirstEnabled;
+    setUseCalendarWizard(calendarFirst);
+    
     // Check for template data from navigation state
     if (location.state?.templateData) {
       handleLoadTemplate(location.state.templateData);
@@ -79,7 +88,7 @@ const PostJob: React.FC = () => {
     };
     
     initializeSavedSession();
-  }, [loadServices, checkForSavedSession, location.state]);
+  }, [loadServices, checkForSavedSession, location.state, searchParams, calendarFirstEnabled]);
 
   // Handle URL parameters for pre-filling wizard
   useEffect(() => {
@@ -174,6 +183,38 @@ const PostJob: React.FC = () => {
       navigate('/dashboard/client');
     } else {
       toast.error(error || 'Failed to post job');
+    }
+  };
+
+  const handleCalendarWizardComplete = async (jobData: any) => {
+    // Convert calendar wizard data to standard format
+    const standardJobData = {
+      category: jobData.serviceId ? 'Selected Service' : state.category,
+      subcategory: state.subcategory,
+      serviceId: jobData.serviceId,
+      microService: state.microService,
+      title: jobData.title || state.title,
+      generalAnswers: {
+        ...state.generalAnswers,
+        ...jobData,
+        location: jobData.location,
+        urgency: jobData.isFlexible ? 'flexible' : 'specific-date'
+      },
+      microAnswers: state.microAnswers,
+      selectedItems: jobData.selectedItems,
+      totalEstimate: jobData.totalEstimate,
+      scheduledDate: jobData.scheduledDate
+    };
+
+    // Submit using existing logic
+    updateState(standardJobData);
+    const success = await submitBooking();
+    if (success) {
+      await clearSession();
+      toast.success('Job posted successfully!');
+      navigate('/dashboard/client');
+    } else {
+      toast.error('Failed to post job');
     }
   };
 
@@ -579,6 +620,31 @@ const PostJob: React.FC = () => {
             Go to Dashboard
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  // Conditionally render wizard based on feature flag
+  if (useCalendarWizard) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <div className="container mx-auto px-4 py-8">
+          <CalendarFirstWizard
+            onComplete={handleCalendarWizardComplete}
+            onCancel={() => navigate('/dashboard/client')}
+          />
+        </div>
+        
+        {/* Resume Modal */}
+        {showResumeModal && savedSession && (
+          <ResumeJobModal
+            isOpen={showResumeModal}
+            savedSession={savedSession}
+            onResumeSession={handleResumeSession}
+            onStartFresh={handleStartFresh}
+            onClose={() => setShowResumeModal(false)}
+          />
+        )}
       </div>
     );
   }
