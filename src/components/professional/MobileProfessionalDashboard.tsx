@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { OfflineIndicator } from './OfflineIndicator';
 import { GamificationPanel } from './GamificationPanel';
+import { RealtimeNotifications } from './RealtimeNotifications';
 import { 
   Home, Users, Briefcase, Calendar, DollarSign, 
   Star, User, Shield, Settings, Plus, Play, 
@@ -22,6 +23,7 @@ import { ReviewsScreen } from './screens/ReviewsScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { ComplianceScreen } from './screens/ComplianceScreen';
 import { ToolsScreen } from './screens/ToolsScreen';
+import { AIIntegrationTest } from './AIIntegrationTest';
 
 interface MobileProfessionalDashboardProps {
   user: any;
@@ -47,7 +49,6 @@ export default function MobileProfessionalDashboard({ user, profile }: MobilePro
   }, [user]);
 
   const fetchDashboardData = async () => {
-    // Mock data for now
     setStats({
       todayEarnings: 245.50,
       weekEarnings: 1240.75,
@@ -109,16 +110,18 @@ export default function MobileProfessionalDashboard({ user, profile }: MobilePro
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <OfflineIndicator />
       
-      {loading && (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )}
-
       <div className="flex flex-col md:flex-row min-h-screen">
         {/* Desktop Sidebar */}
         <div className="hidden md:block w-80 bg-card border-r border-border p-6">
@@ -128,7 +131,7 @@ export default function MobileProfessionalDashboard({ user, profile }: MobilePro
                 key={item.id}
                 variant={activeScreen === item.id ? "default" : "ghost"}
                 className="w-full justify-start"
-                    onClick={() => setActiveScreen(item.id as Screen)}
+                onClick={() => setActiveScreen(item.id as Screen)}
               >
                 <item.icon className="w-4 h-4 mr-3" />
                 {item.label}
@@ -146,38 +149,42 @@ export default function MobileProfessionalDashboard({ user, profile }: MobilePro
             <header className="bg-background border-b border-border p-4">
               <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold">Dashboard</h1>
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <User className="w-5 h-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="w-80">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        {navigationItems.map((item) => (
-                          <Button
-                            key={item.id}
-                            variant={activeScreen === item.id ? "default" : "ghost"}
-                            className="w-full justify-start"
-                            onClick={() => setActiveScreen(item.id as Screen)}
-                          >
-                            <item.icon className="w-4 h-4 mr-3" />
-                            {item.label}
-                          </Button>
-                        ))}
+                <div className="flex items-center gap-2">
+                  <RealtimeNotifications userId={user?.id} />
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <User className="w-5 h-5" />
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right" className="w-80">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          {navigationItems.map((item) => (
+                            <Button
+                              key={item.id}
+                              variant={activeScreen === item.id ? "default" : "ghost"}
+                              className="w-full justify-start"
+                              onClick={() => setActiveScreen(item.id as Screen)}
+                            >
+                              <item.icon className="w-4 h-4 mr-3" />
+                              {item.label}
+                            </Button>
+                          ))}
+                        </div>
+                        <Separator />
+                        <GamificationPanel userId={user?.id} />
                       </div>
-                      <Separator />
-                      <GamificationPanel userId={user?.id} />
-                    </div>
-                  </SheetContent>
-                </Sheet>
+                    </SheetContent>
+                  </Sheet>
+                </div>
               </div>
             </header>
           </div>
 
           {/* Screen Content */}
           <div className="flex-1 p-4">
+            {activeScreen === 'today' && <AIIntegrationTest />}
             {renderScreen()}
           </div>
 

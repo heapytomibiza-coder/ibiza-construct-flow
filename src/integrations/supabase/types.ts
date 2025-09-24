@@ -611,6 +611,36 @@ export type Database = {
           },
         ]
       }
+      job_status_updates: {
+        Row: {
+          created_at: string
+          id: string
+          job_id: string
+          location: Json | null
+          notes: string | null
+          professional_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id: string
+          location?: Json | null
+          notes?: string | null
+          professional_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string
+          location?: Json | null
+          notes?: string | null
+          professional_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       job_templates: {
         Row: {
           category: string
@@ -774,6 +804,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          id: string
+          message: string
+          metadata: Json | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          read_at?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       offers: {
         Row: {
