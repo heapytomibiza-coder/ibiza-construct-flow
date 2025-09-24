@@ -3,7 +3,7 @@ import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp } from 'lucide-react';
+import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import AIPanel from '@/components/admin/AIPanel';
@@ -19,10 +19,11 @@ import { BusinessIntelligencePanel } from '@/components/analytics/BusinessIntell
 import { ReportGenerator } from '@/components/analytics/ReportGenerator';
 import { AlertSystem } from '@/components/analytics/AlertSystem';
 import { SystemHealthMonitor } from '@/components/analytics/SystemHealthMonitor';
-import { UserInspector } from '@/components/admin/UserInspector';
+import UserInspector from '@/components/admin/UserInspector';
 import { AdminDocumentReview } from '@/components/admin/AdminDocumentReview';
-import { DatabaseStats } from '@/components/admin/DatabaseStats';
-import { FeatureFlagsManager } from '@/components/admin/FeatureFlagsManager';
+import DatabaseStats from '@/components/admin/DatabaseStats';
+import FeatureFlagsManager from '@/components/admin/FeatureFlagsManager';
+import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
 
 interface Profile {
   id: string;
@@ -43,6 +44,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const { toast } = useToast();
   const [activeWorkspace, setActiveWorkspace] = useState('command');
   const [selectedView, setSelectedView] = useState('overview');
+  const [aiContext, setAiContext] = useState<{ type: 'job' | 'professional' | 'service' | 'review' | 'overview' }>({ type: 'overview' });
 
   const workspaces = [
     { id: 'command', name: 'Command Centre', icon: Command, description: 'Live jobs and operations' },
@@ -52,7 +54,12 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
     { id: 'market', name: 'Market Intelligence', icon: TrendingUp, description: 'Market analysis & opportunities' },
     { id: 'professionals', name: 'Professional Hub', icon: Users, description: 'Professional management' },
     { id: 'services', name: 'Service Catalogue', icon: Folder, description: 'Manage service taxonomy' },
-    { id: 'legacy', name: 'Legacy Tools', icon: Settings, description: 'Original admin tools' }
+    { id: 'legacy', name: 'Legacy Tools', icon: Settings, description: 'Original admin tools' },
+    { id: 'business-analytics', name: 'Analytics Dashboard', icon: TrendingUp, description: 'Advanced analytics & BI' },
+    { id: 'business-intelligence', name: 'Business Intelligence', icon: Bot, description: 'AI-powered insights' },
+    { id: 'reports', name: 'Report Generator', icon: CreditCard, description: 'Automated reporting' },
+    { id: 'alerts', name: 'Alert System', icon: Shield, description: 'Business alerts & monitoring' },
+    { id: 'system-health', name: 'System Health', icon: Activity, description: 'Platform monitoring' }
   ];
 
   const handleSignOut = async () => {
@@ -90,6 +97,16 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
         return <ServiceCatalogue />;
       case 'legacy':
         return <AdminDashboardTabs />;
+      case 'business-analytics':
+        return <AdvancedAnalyticsDashboard />;
+      case 'business-intelligence':
+        return <BusinessIntelligencePanel />;
+      case 'reports':
+        return <ReportGenerator />;
+      case 'alerts':
+        return <AlertSystem />;
+      case 'system-health':
+        return <SystemHealthMonitor />;
       default:
         return <CommandCenter />;
     }

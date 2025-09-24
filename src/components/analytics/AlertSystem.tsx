@@ -120,7 +120,12 @@ export const AlertSystem = () => {
 
       if (error) throw error;
 
-      setAlertRules(prev => [data, ...prev]);
+      setAlertRules(prev => [{
+        ...data,
+        notification_channels: Array.isArray(data.notification_channels) 
+          ? data.notification_channels.map(String) 
+          : []
+      }, ...prev]);
       setShowCreateRule(false);
       setNewRule({
         name: '',
