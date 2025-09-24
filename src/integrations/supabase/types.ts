@@ -332,6 +332,135 @@ export type Database = {
           },
         ]
       }
+      change_orders: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          delta_amount: number | null
+          description: string
+          id: string
+          job_id: string
+          proposer_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          delta_amount?: number | null
+          description: string
+          id?: string
+          job_id: string
+          proposer_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          delta_amount?: number | null
+          description?: string
+          id?: string
+          job_id?: string
+          proposer_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      client_favorites: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          professional_id: string
+          tags: string[] | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          professional_id: string
+          tags?: string[] | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          professional_id?: string
+          tags?: string[] | null
+        }
+        Relationships: []
+      }
+      client_files: {
+        Row: {
+          client_id: string
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          job_id: string | null
+          tags: string[] | null
+          uploaded_at: string
+        }
+        Insert: {
+          client_id: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          job_id?: string | null
+          tags?: string[] | null
+          uploaded_at?: string
+        }
+        Update: {
+          client_id?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          job_id?: string | null
+          tags?: string[] | null
+          uploaded_at?: string
+        }
+        Relationships: []
+      }
+      client_profiles: {
+        Row: {
+          created_at: string
+          default_property_id: string | null
+          id: string
+          preferences: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          default_property_id?: string | null
+          id?: string
+          preferences?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          default_property_id?: string | null
+          id?: string
+          preferences?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       contracts: {
         Row: {
           agreed_amount: number
@@ -1307,6 +1436,122 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      properties: {
+        Row: {
+          access_notes: string | null
+          address: string
+          client_id: string
+          created_at: string
+          id: string
+          name: string
+          parking_details: Json | null
+          updated_at: string
+        }
+        Insert: {
+          access_notes?: string | null
+          address: string
+          client_id: string
+          created_at?: string
+          id?: string
+          name: string
+          parking_details?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          access_notes?: string | null
+          address?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          parking_details?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quote_requests: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          job_id: string
+          message: string | null
+          professional_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          job_id: string
+          message?: string | null
+          professional_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          job_id?: string
+          message?: string | null
+          professional_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          amount: number
+          breakdown: Json | null
+          created_at: string
+          exclusions: string[] | null
+          id: string
+          inclusions: string[] | null
+          notes: string | null
+          quote_request_id: string
+          updated_at: string
+          valid_until: string | null
+          warranty_info: string | null
+        }
+        Insert: {
+          amount: number
+          breakdown?: Json | null
+          created_at?: string
+          exclusions?: string[] | null
+          id?: string
+          inclusions?: string[] | null
+          notes?: string | null
+          quote_request_id: string
+          updated_at?: string
+          valid_until?: string | null
+          warranty_info?: string | null
+        }
+        Update: {
+          amount?: number
+          breakdown?: Json | null
+          created_at?: string
+          exclusions?: string[] | null
+          id?: string
+          inclusions?: string[] | null
+          notes?: string | null
+          quote_request_id?: string
+          updated_at?: string
+          valid_until?: string | null
+          warranty_info?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_addons: {
         Row: {

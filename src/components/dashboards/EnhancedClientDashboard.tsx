@@ -34,6 +34,7 @@ import { ClientPaymentsView } from '@/components/client/ClientPaymentsView';
 import { ClientPropertiesView } from '@/components/client/ClientPropertiesView';
 import { ClientFavoritesView } from '@/components/client/ClientFavoritesView';
 import { ClientNotificationsView } from '@/components/client/ClientNotificationsView';
+import PostJobView from '@/components/client/PostJobView';
 
 const navigationItems = [
   { 
@@ -234,7 +235,7 @@ const EnhancedClientDashboard = ({ user, profile }: EnhancedClientDashboardProps
       case 'home':
         return <HomeView stats={stats} bookings={bookings} user={user} profile={profile} onViewChange={setActiveView} />;
       case 'post-job':
-        return <div className="p-6">Post Job Wizard Coming Soon</div>;
+        return <PostJobView />;
       case 'compare-pros':
         return <CompareProsView />;
       case 'my-jobs':
