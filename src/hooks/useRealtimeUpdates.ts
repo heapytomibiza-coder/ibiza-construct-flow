@@ -84,11 +84,33 @@ export const useRealtimeUpdates = (userId?: string) => {
   useEffect(() => {
     if (!userId) return;
 
+    // Fetch initial notifications
+    const fetchNotifications = async () => {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) {
+        console.error('Error fetching notifications:', error);
+        return;
+      }
+
+      setNotifications((data || []).map(notification => ({
+        ...notification,
+        type: notification.type as Notification['type']
+      })));
+    };
+
+    fetchNotifications();
+
     // Create realtime channel
     const realtimeChannel = supabase
       .channel('user-updates')
       .on(
-        'postgres_changes',
+        'postgres_changes' as any,
         {
           event: 'INSERT',
           schema: 'public',
@@ -98,23 +120,13 @@ export const useRealtimeUpdates = (userId?: string) => {
         handleNotification
       )
       .on(
-        'postgres_changes',
+        'postgres_changes' as any,
         {
           event: 'INSERT',
           schema: 'public',
           table: 'job_status_updates'
         },
         handleJobUpdate
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'pro_badges',
-          filter: `pro_id=eq.${userId}`
-        },
-        handleBadgeEarned
       );
 
     // Subscribe to channel

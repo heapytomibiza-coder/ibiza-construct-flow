@@ -1919,6 +1919,70 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_earnings: {
+        Row: {
+          amount: number
+          booking_id: string | null
+          contract_id: string | null
+          created_at: string
+          earned_at: string
+          fee_amount: number
+          id: string
+          net_amount: number
+          professional_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          booking_id?: string | null
+          contract_id?: string | null
+          created_at?: string
+          earned_at?: string
+          fee_amount?: number
+          id?: string
+          net_amount?: number
+          professional_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string | null
+          contract_id?: string | null
+          created_at?: string
+          earned_at?: string
+          fee_amount?: number
+          id?: string
+          net_amount?: number
+          professional_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_earnings_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "booking_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_earnings_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_earnings_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professional_profiles: {
         Row: {
           availability: Json | null
@@ -1970,6 +2034,76 @@ export type Database = {
             foreignKeyName: "professional_profiles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_reviews: {
+        Row: {
+          booking_id: string | null
+          client_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          is_featured: boolean
+          is_verified: boolean
+          professional_id: string
+          rating: number
+          responded_at: string | null
+          response: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          booking_id?: string | null
+          client_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          is_verified?: boolean
+          professional_id: string
+          rating: number
+          responded_at?: string | null
+          response?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string | null
+          client_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_featured?: boolean
+          is_verified?: boolean
+          professional_id?: string
+          rating?: number
+          responded_at?: string | null
+          response?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "booking_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_reviews_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_reviews_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2052,6 +2186,62 @@ export type Database = {
           video_url?: string | null
         }
         Relationships: []
+      }
+      professional_stats: {
+        Row: {
+          average_rating: number
+          completed_bookings: number
+          completion_rate: number
+          created_at: string
+          id: string
+          last_active_at: string | null
+          professional_id: string
+          repeat_client_rate: number
+          response_rate: number
+          total_bookings: number
+          total_earnings: number
+          total_reviews: number
+          updated_at: string
+        }
+        Insert: {
+          average_rating?: number
+          completed_bookings?: number
+          completion_rate?: number
+          created_at?: string
+          id?: string
+          last_active_at?: string | null
+          professional_id: string
+          repeat_client_rate?: number
+          response_rate?: number
+          total_bookings?: number
+          total_earnings?: number
+          total_reviews?: number
+          updated_at?: string
+        }
+        Update: {
+          average_rating?: number
+          completed_bookings?: number
+          completion_rate?: number
+          created_at?: string
+          id?: string
+          last_active_at?: string | null
+          professional_id?: string
+          repeat_client_rate?: number
+          response_rate?: number
+          total_bookings?: number
+          total_earnings?: number
+          total_reviews?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_stats_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

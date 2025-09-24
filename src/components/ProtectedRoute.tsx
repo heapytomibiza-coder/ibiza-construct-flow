@@ -10,8 +10,8 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children, role }: ProtectedRouteProps) {
   const [status, setStatus] = useState<'loading' | 'ok' | 'redirect'>('loading');
 
-  // Disable auth for wireframe mode
-  const DISABLE_AUTH_FOR_WIREFRAME = true;
+  // Enable auth for production
+  const DISABLE_AUTH_FOR_WIREFRAME = false;
 
   useEffect(() => {
     (async () => {

@@ -12,8 +12,8 @@ const Dashboard = () => {
   useEffect(() => {
     const checkUserAndRedirect = async () => {
       try {
-        // Disable auth for wireframe mode
-        const DISABLE_AUTH_FOR_WIREFRAME = true;
+        // Enable auth for production
+        const DISABLE_AUTH_FOR_WIREFRAME = false;
         
         // Skip authentication in wireframe mode
         if (DISABLE_AUTH_FOR_WIREFRAME) {
