@@ -77,8 +77,16 @@ export const AISmartMatcher: React.FC<SmartMatcherProps> = ({ jobId, onMatchSele
 
       setMatches((data || []).map(match => ({
         ...match,
-        match_reasons: Array.isArray(match.match_reasons) ? match.match_reasons.map(String) : []
-      })));
+        match_reasons: Array.isArray(match.match_reasons) ? match.match_reasons.map(String) : [],
+        professional: match.professional || {
+          full_name: 'Unknown Professional',
+          avatar_url: '',
+          skills: [],
+          rating: 0,
+          location: {},
+          pricing: {}
+        }
+      })) as SmartMatch[]);
     } catch (error) {
       console.error('Error loading matches:', error);
     } finally {

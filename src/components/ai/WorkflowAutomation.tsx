@@ -94,7 +94,13 @@ export const WorkflowAutomation = () => {
 
       setWorkflows((workflowData || []).map(workflow => ({
         ...workflow,
-        workflow_steps: Array.isArray(workflow.workflow_steps) ? workflow.workflow_steps : [],
+        workflow_steps: Array.isArray(workflow.workflow_steps) ? workflow.workflow_steps.map((step: any) => ({
+          id: step.id || '',
+          type: step.type || '',
+          name: step.name || '',
+          config: step.config || {},
+          order: step.order || 0
+        })) : [],
         execution_history: Array.isArray(workflow.execution_history) ? workflow.execution_history : [],
         trigger_config: typeof workflow.trigger_config === 'object' ? workflow.trigger_config : {}
       })));
@@ -135,7 +141,13 @@ export const WorkflowAutomation = () => {
 
       setWorkflows(prev => [{
         ...data,
-        workflow_steps: Array.isArray(data.workflow_steps) ? data.workflow_steps : [],
+        workflow_steps: Array.isArray(data.workflow_steps) ? data.workflow_steps.map((step: any) => ({
+          id: step.id || '',
+          type: step.type || '',
+          name: step.name || '',
+          config: step.config || {},
+          order: step.order || 0
+        })) : [],
         execution_history: Array.isArray(data.execution_history) ? data.execution_history : [],
         trigger_config: typeof data.trigger_config === 'object' ? data.trigger_config : {}
       }, ...prev]);

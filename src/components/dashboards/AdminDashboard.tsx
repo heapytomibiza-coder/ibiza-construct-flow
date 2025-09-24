@@ -97,7 +97,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       case 'services':
         return <ServiceCatalogue />;
       case 'legacy':
-        return <AdminDashboardTabs />;
+        return <div className="p-6 text-center text-muted-foreground">Legacy dashboard components will be available here.</div>;
       case 'business-analytics':
         return <AdvancedAnalyticsDashboard />;
       case 'business-intelligence':
