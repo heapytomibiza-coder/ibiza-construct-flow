@@ -4,9 +4,9 @@ import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const OfflineIndicator = () => {
-  const { isOnline, queueLength, syncing, syncQueue } = useOfflineSync();
+  const { isOnline, pendingCount, syncInProgress, syncPendingActions } = useOfflineSync();
 
-  if (isOnline && queueLength === 0) return null;
+  if (isOnline && pendingCount === 0) return null;
 
   return (
     <div className="fixed top-4 right-4 z-50">
@@ -18,16 +18,16 @@ export const OfflineIndicator = () => {
         
         {!isOnline && "Offline Mode"}
         
-        {isOnline && queueLength > 0 && (
+        {isOnline && pendingCount > 0 && (
           <div className="flex items-center gap-2">
-            <span>Syncing {queueLength} changes</span>
-            {syncing ? (
+            <span>Syncing {pendingCount} changes</span>
+            {syncInProgress ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={syncQueue}
+                onClick={syncPendingActions}
                 className="h-6 px-2"
               >
                 <RefreshCw className="w-3 h-3" />

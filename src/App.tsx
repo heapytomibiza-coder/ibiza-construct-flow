@@ -61,19 +61,19 @@ export default function App() {
     <ErrorBoundary>
       <TooltipProvider>
         <SafeAreaProvider>
-          <MobileGestures enableSwipeNavigation={true} enablePullToRefresh={true}>
-            <OfflineIndicator />
-            <Toaster />
-            <Sonner />
-            <BrowserRouter
+          <Toaster />
+          <Sonner />
+          <BrowserRouter
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true
           }}
         >
-          <MobileAppWrapper>
-            <Suspense fallback={<SkeletonLoader variant="card" />}>
-              <Routes>
+            <MobileGestures enableSwipeNavigation={true} enablePullToRefresh={true}>
+              <OfflineIndicator />
+              <MobileAppWrapper>
+                <Suspense fallback={<SkeletonLoader variant="card" />}>
+                  <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
@@ -166,12 +166,12 @@ export default function App() {
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
-    </MobileAppWrapper>
-    <BundleAnalyzer />
-  </BrowserRouter>
-          </MobileGestures>
+                  </Routes>
+                </Suspense>
+              </MobileAppWrapper>
+            </MobileGestures>
+            <BundleAnalyzer />
+          </BrowserRouter>
         </SafeAreaProvider>
       </TooltipProvider>
     </ErrorBoundary>

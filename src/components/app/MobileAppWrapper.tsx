@@ -1,11 +1,11 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { MobileOptimizedHeader } from '@/components/mobile/MobileOptimizedHeader';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
-import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 
 interface MobileAppWrapperProps {
   children: React.ReactNode;
@@ -14,6 +14,8 @@ interface MobileAppWrapperProps {
 const MobileAppWrapper = ({ children }: MobileAppWrapperProps) => {
   const isMobile = useIsMobile();
   const location = useLocation();
+  const jobWizardEnabled = useFeature('ff.jobWizardV2', true);
+  const proInboxEnabled = useFeature('ff.proInboxV1', false);
   
   // For now, assume user is available for mobile nav (will be fixed with proper auth integration)
   const user = true; // Temporary - will integrate auth properly later
@@ -43,14 +45,11 @@ const MobileAppWrapper = ({ children }: MobileAppWrapperProps) => {
 
   return (
     <>
-      <ErrorBoundary>
-        <OfflineIndicator />
-        
+      <ErrorBoundary>        
         {showMobileHeader && (
           <MobileOptimizedHeader
-            title={getPageTitle()}
-            showSearch={location.pathname.includes('dashboard')}
-            showNotifications={user ? true : false}
+            jobWizardEnabled={jobWizardEnabled}
+            proInboxEnabled={proInboxEnabled}
           />
         )}
         
