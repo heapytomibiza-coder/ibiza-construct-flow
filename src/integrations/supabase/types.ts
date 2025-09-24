@@ -218,6 +218,87 @@ export type Database = {
         }
         Relationships: []
       }
+      alert_rules: {
+        Row: {
+          comparison_operator: string
+          condition_type: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          metric_name: string
+          name: string
+          notification_channels: Json | null
+          threshold_value: number
+          updated_at: string
+        }
+        Insert: {
+          comparison_operator: string
+          condition_type: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          metric_name: string
+          name: string
+          notification_channels?: Json | null
+          threshold_value: number
+          updated_at?: string
+        }
+        Update: {
+          comparison_operator?: string
+          condition_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          metric_name?: string
+          name?: string
+          notification_channels?: Json | null
+          threshold_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      analytics_dashboards: {
+        Row: {
+          created_at: string
+          dashboard_type: string
+          id: string
+          is_public: boolean
+          layout_config: Json
+          name: string
+          updated_at: string
+          user_id: string | null
+          widget_configs: Json
+        }
+        Insert: {
+          created_at?: string
+          dashboard_type: string
+          id?: string
+          is_public?: boolean
+          layout_config?: Json
+          name: string
+          updated_at?: string
+          user_id?: string | null
+          widget_configs?: Json
+        }
+        Update: {
+          created_at?: string
+          dashboard_type?: string
+          id?: string
+          is_public?: boolean
+          layout_config?: Json
+          name?: string
+          updated_at?: string
+          user_id?: string | null
+          widget_configs?: Json
+        }
+        Relationships: []
+      }
       booking_requests: {
         Row: {
           client_id: string
@@ -331,6 +412,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      business_metrics: {
+        Row: {
+          change_percentage: number | null
+          created_at: string
+          dimensions: Json | null
+          id: string
+          metadata: Json | null
+          metric_category: string
+          metric_name: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          previous_value: number | null
+          updated_at: string
+        }
+        Insert: {
+          change_percentage?: number | null
+          created_at?: string
+          dimensions?: Json | null
+          id?: string
+          metadata?: Json | null
+          metric_category: string
+          metric_name: string
+          metric_value?: number
+          period_end: string
+          period_start: string
+          previous_value?: number | null
+          updated_at?: string
+        }
+        Update: {
+          change_percentage?: number | null
+          created_at?: string
+          dimensions?: Json | null
+          id?: string
+          metadata?: Json | null
+          metric_category?: string
+          metric_name?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+          previous_value?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       change_orders: {
         Row: {
@@ -778,6 +904,56 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      generated_reports: {
+        Row: {
+          file_url: string | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          metadata: Json | null
+          period_end: string
+          period_start: string
+          report_data: Json
+          report_name: string
+          status: string
+          template_id: string | null
+        }
+        Insert: {
+          file_url?: string | null
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          metadata?: Json | null
+          period_end: string
+          period_start: string
+          report_data?: Json
+          report_name: string
+          status?: string
+          template_id?: string | null
+        }
+        Update: {
+          file_url?: string | null
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          metadata?: Json | null
+          period_end?: string
+          period_start?: string
+          report_data?: Json
+          report_name?: string
+          status?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_reports_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "report_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invoices: {
         Row: {
@@ -1817,6 +1993,45 @@ export type Database = {
           },
         ]
       }
+      report_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          frequency: string
+          id: string
+          is_active: boolean
+          name: string
+          report_type: string
+          template_config: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          report_type: string
+          template_config?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          report_type?: string
+          template_config?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       service_addons: {
         Row: {
           created_at: string
@@ -2017,6 +2232,42 @@ export type Database = {
           ip_address?: unknown | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      system_health_metrics: {
+        Row: {
+          error_rate: number | null
+          id: string
+          metadata: Json | null
+          metric_type: string
+          recorded_at: string
+          response_time_ms: number | null
+          service_name: string
+          status: string
+          value: number
+        }
+        Insert: {
+          error_rate?: number | null
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          recorded_at?: string
+          response_time_ms?: number | null
+          service_name: string
+          status?: string
+          value: number
+        }
+        Update: {
+          error_rate?: number | null
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          recorded_at?: string
+          response_time_ms?: number | null
+          service_name?: string
+          status?: string
+          value?: number
         }
         Relationships: []
       }

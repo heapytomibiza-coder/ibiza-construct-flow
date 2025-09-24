@@ -14,7 +14,15 @@ import ProfessionalAnalytics from '@/components/admin/workspaces/ProfessionalAna
 import AISystemMonitor from '@/components/admin/workspaces/AISystemMonitor';
 import RiskManagement from '@/components/admin/workspaces/RiskManagement';
 import MarketIntelligence from '@/components/admin/workspaces/MarketIntelligence';
-import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
+import { AdvancedAnalyticsDashboard } from '@/components/analytics/AdvancedAnalyticsDashboard';
+import { BusinessIntelligencePanel } from '@/components/analytics/BusinessIntelligencePanel';
+import { ReportGenerator } from '@/components/analytics/ReportGenerator';
+import { AlertSystem } from '@/components/analytics/AlertSystem';
+import { SystemHealthMonitor } from '@/components/analytics/SystemHealthMonitor';
+import { UserInspector } from '@/components/admin/UserInspector';
+import { AdminDocumentReview } from '@/components/admin/AdminDocumentReview';
+import { DatabaseStats } from '@/components/admin/DatabaseStats';
+import { FeatureFlagsManager } from '@/components/admin/FeatureFlagsManager';
 
 interface Profile {
   id: string;
@@ -34,7 +42,7 @@ interface AdminDashboardProps {
 const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const { toast } = useToast();
   const [activeWorkspace, setActiveWorkspace] = useState('command');
-  const [aiContext, setAiContext] = useState<{ type: 'job' | 'professional' | 'service' | 'review' | 'overview' }>({ type: 'overview' });
+  const [selectedView, setSelectedView] = useState('overview');
 
   const workspaces = [
     { id: 'command', name: 'Command Centre', icon: Command, description: 'Live jobs and operations' },
