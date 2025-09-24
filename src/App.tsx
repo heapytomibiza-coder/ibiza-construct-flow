@@ -117,7 +117,15 @@ export default function App() {
           } />
           
           {/* Protected Dashboard Routes */}
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={
+            DISABLE_AUTH_FOR_WIREFRAME ? (
+              <Dashboard />
+            ) : (
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            )
+          } />
           <Route path="/dashboard/client" element={
             DISABLE_AUTH_FOR_WIREFRAME ? (
               <ClientDashboardPage />
