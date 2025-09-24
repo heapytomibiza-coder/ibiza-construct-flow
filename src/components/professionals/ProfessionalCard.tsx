@@ -3,6 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, MapPin, CheckCircle, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MobileProfessionalCard } from '@/components/mobile/MobileProfessionalCard';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProfessionalCardProps {
   professional: {
@@ -25,6 +27,7 @@ interface ProfessionalCardProps {
 
 export default function ProfessionalCard({ professional }: ProfessionalCardProps) {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const handleViewProfile = () => {
     navigate(`/professional/${professional.id}`);
@@ -33,6 +36,21 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
   const handleContact = () => {
     window.open(`tel:${professional.phone}`, '_self');
   };
+
+  // Use mobile-optimized card on mobile devices
+  if (isMobile) {
+    return (
+      <MobileProfessionalCard
+        professional={professional}
+        onViewProfile={handleViewProfile}
+        onContact={handleContact}
+        onMessage={() => {
+          // Navigate to messages with professional pre-selected
+          navigate(`/messages?professional=${professional.id}`);
+        }}
+      />
+    );
+  }
 
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200">
@@ -100,7 +118,7 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
                     variant="outline"
                     size="sm"
                     onClick={handleContact}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 min-h-[44px]"
                   >
                     <Phone className="w-3 h-3" />
                     Call
@@ -109,6 +127,7 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
                 <Button
                   size="sm"
                   onClick={handleViewProfile}
+                  className="min-h-[44px]"
                 >
                   View Profile
                 </Button>

@@ -72,7 +72,7 @@ export const MobileBottomNav = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border md:hidden">
-      <div className="flex items-center justify-around px-2 py-2">
+      <div className="flex items-center justify-around px-2 py-2 pb-safe">
         {navItems.map((item) => {
           const active = isActive(item.href);
           return (
@@ -80,7 +80,7 @@ export const MobileBottomNav = () => {
               key={item.href}
               to={item.href}
               className={cn(
-                "flex flex-col items-center justify-center p-2 rounded-lg transition-colors relative min-w-0 flex-1",
+                "flex flex-col items-center justify-center p-3 rounded-lg transition-colors relative min-w-0 flex-1 min-h-[56px]",
                 active 
                   ? "text-primary bg-primary/10" 
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"

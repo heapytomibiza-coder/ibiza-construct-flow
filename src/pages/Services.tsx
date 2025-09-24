@@ -6,19 +6,28 @@ import Footer from '@/components/Footer';
 import { ServiceSearch } from '@/components/services/ServiceSearch';
 import EnhancedServiceFilters from '@/components/services/EnhancedServiceFilters';
 import { EnhancedServiceCard } from '@/components/services/EnhancedServiceCard';
+import { MobileFilterDrawer } from '@/components/mobile/MobileFilterDrawer';
+import { MobileServiceCard } from '@/components/mobile/MobileServiceCard';
+import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ServicePackages } from '@/components/services/ServicePackages';
 import { useServices } from '@/hooks/useServices';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { cn } from '@/lib/utils';
 
 const Services = () => {
   const navigate = useNavigate();
   const { getServiceCards, getCategories, loading } = useServices();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
+  const isMobile = useIsMobile();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     categories: [],
+    subcategories: [],
+    specialists: [],
+    location: '',
     priceRange: [0, 100000] as [number, number],
     availability: []
   });
@@ -51,7 +60,11 @@ const Services = () => {
     const matchesCategory = filters.categories.length === 0 || 
                            filters.categories.includes(service.category);
     
-    return matchesSearch && matchesCategory;
+    const matchesSpecialist = filters.specialists.length === 0 ||
+                             filters.specialists.some(specialist => 
+                               service.category.toLowerCase().includes(specialist.toLowerCase()));
+    
+    return matchesSearch && matchesCategory && matchesSpecialist;
   });
 
   const handleServiceClick = (service: any) => {
@@ -308,42 +321,72 @@ const Services = () => {
         {/* Main Content */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* Filters Sidebar */}
-              <div className="lg:w-80 flex-shrink-0" data-tour="service-filters">
-                <EnhancedServiceFilters
-                  filters={{...filters, subcategories: [], specialists: [], location: ''}}
+            {/* Mobile Filter Button */}
+            {isMobile && (
+              <div className="mb-6">
+                <MobileFilterDrawer
+                  filters={filters}
                   onFiltersChange={setFilters}
                   categories={getCategories()}
-                  visible={showFilters || window.innerWidth >= 1024}
+                  isOpen={showFilters}
+                  onOpenChange={setShowFilters}
                 />
               </div>
+            )}
+
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Desktop Filters Sidebar */}
+              {!isMobile && (
+                <div className="lg:w-80 flex-shrink-0" data-tour="service-filters">
+                  <EnhancedServiceFilters
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    categories={getCategories()}
+                    visible={true}
+                  />
+                </div>
+              )}
 
               {/* Services Grid */}
               <div className="flex-1">
-                <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-display text-2xl font-semibold text-charcoal">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-display text-xl md:text-2xl font-semibold text-charcoal">
                     Available Services ({filteredServices.length})
                   </h2>
                 </div>
 
                 {loading ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className={cn(
+                    "grid gap-4",
+                    isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                  )}>
                     {Array.from({ length: 6 }).map((_, index) => (
                       <div key={index} className="card-luxury animate-pulse">
-                        <div className="h-64 bg-sand/20 rounded"></div>
+                        <div className="h-48 bg-sand/20 rounded"></div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className={cn(
+                    "grid gap-4",
+                    isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                  )}>
                     {filteredServices.map((service, index) => (
-                      <EnhancedServiceCard
-                        key={index}
-                        service={service}
-                        onViewService={() => handleServiceClick(service)}
-                        onBookNow={() => handleBookNow(service)}
-                      />
+                      isMobile ? (
+                        <MobileServiceCard
+                          key={index}
+                          service={service}
+                          onViewService={() => handleServiceClick(service)}
+                          onBookNow={() => handleBookNow(service)}
+                        />
+                      ) : (
+                        <EnhancedServiceCard
+                          key={index}
+                          service={service}
+                          onViewService={() => handleServiceClick(service)}
+                          onBookNow={() => handleBookNow(service)}
+                        />
+                      )
                     ))}
                   </div>
                 )}
@@ -354,6 +397,11 @@ const Services = () => {
                       No services found matching your criteria.
                     </p>
                   </div>
+                )}
+
+                {/* Mobile spacing for sticky CTA */}
+                {isMobile && (
+                  <div className="h-20"></div>
                 )}
               </div>
             </div>
@@ -379,6 +427,37 @@ const Services = () => {
           </div>
         </section>
       </main>
+      
+      {/* Mobile Sticky CTA */}
+      {isMobile && filteredServices.length > 0 && (
+        <StickyMobileCTA
+          primaryAction={{
+            label: "Post Your Job",
+            onClick: () => {
+              if (jobWizardEnabled) {
+                navigate('/post?calendar=true&source=services_cta');
+              } else {
+                navigate('/post');
+              }
+            }
+          }}
+          secondaryAction={{
+            label: "Browse All",
+            onClick: () => {
+              setFilters({
+                categories: [],
+                subcategories: [],
+                specialists: [],
+                location: '',
+                priceRange: [0, 100000],
+                availability: []
+              });
+              setSearchTerm('');
+            }
+          }}
+        />
+      )}
+      
       <Footer />
     </div>
   );
