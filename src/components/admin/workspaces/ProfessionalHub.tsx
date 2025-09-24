@@ -92,14 +92,29 @@ export default function ProfessionalHub() {
         .from('professional_profiles')
         .select(`
           *,
-          profiles!professional_profiles_user_id_fkey(full_name, roles)
+          profiles!user_id(full_name, roles)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
+      // Get document counts separately
+      const { data: documentData } = await supabase
+        .from('professional_documents')
+        .select('professional_id');
+        
+      const documentCounts = documentData ?
+        Object.entries(
+          documentData.reduce((acc: Record<string, number>, doc) => {
+            acc[doc.professional_id] = (acc[doc.professional_id] || 0) + 1;
+            return acc;
+          }, {})
+        ).map(([professional_id, count]) => ({ professional_id, count })) : [];
+
       const processedProfessionals = professionalsData?.map(prof => {
         const completionScore = calculateProfileCompletion(prof);
+        const docCount = documentCounts?.find(dc => dc.professional_id === prof.user_id)?.count || 0;
+        
         return {
           id: prof.user_id, // Use user_id as the id
           user_id: prof.user_id,
@@ -114,9 +129,9 @@ export default function ProfessionalHub() {
           updated_at: prof.updated_at,
           full_name: prof.profiles?.full_name || 'Unknown',
           profile_completion: completionScore,
-          documents_count: 0, // Will be updated from documents
-          active_jobs: 0, // TODO: Add real count
-          rating_avg: 0 // TODO: Add real rating
+          documents_count: docCount,
+          active_jobs: 0, // TODO: Add real count from contracts table
+          rating_avg: 0 // TODO: Add real rating system
         };
       }) || [];
 

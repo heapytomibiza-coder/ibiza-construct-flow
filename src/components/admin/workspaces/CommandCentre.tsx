@@ -71,21 +71,37 @@ export default function CommandCentre() {
         .from('bookings')
         .select(`
           *,
-          profiles!bookings_client_id_fkey(full_name),
-          services(category, subcategory, micro)
+          profiles!client_id(full_name),
+          services!service_id(category, subcategory, micro)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const processedJobs = jobsData?.map(job => ({
-        ...job,
-        client_name: job.profiles?.full_name || 'Unknown Client',
-        service_name: job.services ? 
-          `${job.services.category} > ${job.services.subcategory}` : 
-          'Unknown Service',
-        applications_count: 0 // TODO: Add real count from applications table
-      })) || [];
+      // Get application counts separately
+      const { data: applicationData } = await supabase
+        .from('professional_applications')
+        .select('booking_id');
+      
+      const applicationCounts = applicationData ? 
+        Object.entries(
+          applicationData.reduce((acc: Record<string, number>, app) => {
+            acc[app.booking_id] = (acc[app.booking_id] || 0) + 1;
+            return acc;
+          }, {})
+        ).map(([booking_id, count]) => ({ booking_id, count })) : [];
+
+      const processedJobs = jobsData?.map(job => {
+        const appCount = applicationCounts?.find(ac => ac.booking_id === job.id)?.count || 0;
+        return {
+          ...job,
+          client_name: job.profiles?.full_name || 'Unknown Client',
+          service_name: job.services ? 
+            `${job.services.category} > ${job.services.subcategory}` : 
+            'Unknown Service',
+          applications_count: appCount
+        };
+      }) || [];
 
       setJobs(processedJobs);
       calculateStats(processedJobs);

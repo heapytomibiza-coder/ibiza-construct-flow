@@ -298,24 +298,43 @@ export default function ServiceCatalogue() {
             </div>
           </div>
 
-          {/* Question Configuration (for micro services) */}
-          {selectedService.type === 'micro' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">Question Flow</h4>
-                <Button variant="outline" size="sm">
-                  <TestTube className="w-4 h-4 mr-2" />
-                  Test Questions
-                </Button>
-              </div>
-              
-              <div className="p-4 border rounded-lg bg-muted/50">
-                <p className="text-sm text-muted-foreground">
-                  Question configuration will be loaded here. This includes micro-level questions and logistics questions.
-                </p>
-              </div>
-            </div>
-          )}
+              {/* Question Configuration (for micro services) */}
+              {selectedService.type === 'micro' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Question Flow</h4>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          const { data, error } = await supabase.functions.invoke('ai-question-tester', {
+                            body: {
+                              serviceType: selectedService.name,
+                              category: selectedService.parent || 'general',
+                              subcategory: 'micro',
+                              questions: [] // TODO: Load actual questions from services_micro table
+                            }
+                          });
+                          if (error) throw error;
+                          console.log('Question test result:', data);
+                        } catch (error) {
+                          console.error('Question test failed:', error);
+                        }
+                      }}
+                    >
+                      <TestTube className="w-4 h-4 mr-2" />
+                      Test Questions
+                    </Button>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg bg-muted/50">
+                    <p className="text-sm text-muted-foreground">
+                      Question configuration will be loaded here. This includes micro-level questions and logistics questions.
+                    </p>
+                  </div>
+                </div>
+              )}
         </CardContent>
       </Card>
     );

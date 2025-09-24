@@ -321,7 +321,58 @@ export default function AIPanel({ context, className = '' }: AIPanelProps) {
                         <p className="text-xs text-muted-foreground mb-2">
                           {suggestion.description}
                         </p>
-                        <Button size="sm" variant="outline" className="h-7 text-xs">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="h-7 text-xs"
+                          disabled={isLoading}
+                          onClick={() => {
+                            // Route to appropriate AI function based on suggestion type
+                            switch (suggestion.type) {
+                              case 'validation':
+                                if (context.type === 'service') {
+                                  runAIFunction('ai-question-tester', {
+                                    serviceType: context.type,
+                                    category: 'validation',
+                                    subcategory: 'flow',
+                                    questions: context.data?.questions || []
+                                  });
+                                } else if (context.type === 'professional') {
+                                  runAIFunction('ai-price-validator', {
+                                    serviceType: 'professional',
+                                    location: 'general',
+                                    pricingData: context.data || {}
+                                  });
+                                }
+                                break;
+                              case 'optimization':
+                                runAIFunction('ai-professional-matcher', {
+                                  jobRequirements: context.data || {},
+                                  location: 'general',
+                                  budget: 0,
+                                  urgency: 'normal'
+                                });
+                                break;
+                              case 'alert':
+                                runAIFunction('ai-anomaly-detector', {
+                                  analysisType: 'targeted',
+                                  timeframe: '24h',
+                                  entityType: context.type,
+                                  entityId: context.id
+                                });
+                                break;
+                              case 'insight':
+                                runAIFunction('ai-communications-drafter', {
+                                  communicationType: 'insight_report',
+                                  recipient: 'admin',
+                                  context: context.data || {},
+                                  tone: 'professional',
+                                  keyPoints: [suggestion.title]
+                                });
+                                break;
+                            }
+                          }}
+                        >
                           Apply
                         </Button>
                       </div>
@@ -340,13 +391,44 @@ export default function AIPanel({ context, className = '' }: AIPanelProps) {
               Quick Actions
             </h4>
             <div className="space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start" disabled={isLoading}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start" 
+                disabled={isLoading}
+                onClick={() => runAIFunction('ai-question-tester', {
+                  serviceType: context.type,
+                  category: 'general',
+                  subcategory: 'workflow',
+                  questions: []
+                })}
+              >
                 Test Workflow
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start" disabled={isLoading}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start" 
+                disabled={isLoading}
+                onClick={() => runAIFunction('ai-anomaly-detector', {
+                  analysisType: 'system_health',
+                  timeframe: '24h',
+                  entityType: context.type
+                })}
+              >
                 Generate Report
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start" disabled={isLoading}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start" 
+                disabled={isLoading}
+                onClick={() => runAIFunction('ai-price-validator', {
+                  serviceType: context.type,
+                  location: 'general',
+                  pricingData: context.data || {}
+                })}
+              >
                 Validate Configuration
               </Button>
             </div>
