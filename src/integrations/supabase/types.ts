@@ -47,6 +47,144 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          created_at: string
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          title: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity: string
+          status?: string
+          title: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      ai_prompts: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parameters: Json | null
+          template: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parameters?: Json | null
+          template: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parameters?: Json | null
+          template?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      ai_runs: {
+        Row: {
+          completed_at: string | null
+          confidence_score: number | null
+          created_at: string
+          error_message: string | null
+          execution_time_ms: number | null
+          id: string
+          input_data: Json
+          metadata: Json | null
+          operation_type: string
+          output_data: Json | null
+          prompt_template_id: string | null
+          status: string
+          tokens_used: number | null
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          input_data?: Json
+          metadata?: Json | null
+          operation_type: string
+          output_data?: Json | null
+          prompt_template_id?: string | null
+          status?: string
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          input_data?: Json
+          metadata?: Json | null
+          operation_type?: string
+          output_data?: Json | null
+          prompt_template_id?: string | null
+          status?: string
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       booking_requests: {
         Row: {
           client_id: string
@@ -326,6 +464,81 @@ export type Database = {
         }
         Relationships: []
       }
+      job_broadcasts: {
+        Row: {
+          broadcast_type: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          job_id: string
+          professionals_applied: number | null
+          professionals_notified: number | null
+          professionals_viewed: number | null
+          target_criteria: Json
+        }
+        Insert: {
+          broadcast_type: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          job_id: string
+          professionals_applied?: number | null
+          professionals_notified?: number | null
+          professionals_viewed?: number | null
+          target_criteria: Json
+        }
+        Update: {
+          broadcast_type?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          job_id?: string
+          professionals_applied?: number | null
+          professionals_notified?: number | null
+          professionals_viewed?: number | null
+          target_criteria?: Json
+        }
+        Relationships: []
+      }
+      job_lifecycle_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          from_status: string | null
+          id: string
+          job_id: string
+          metadata: Json | null
+          reason: string | null
+          to_status: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          from_status?: string | null
+          id?: string
+          job_id: string
+          metadata?: Json | null
+          reason?: string | null
+          to_status?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          from_status?: string | null
+          id?: string
+          job_id?: string
+          metadata?: Json | null
+          reason?: string | null
+          to_status?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       job_matches: {
         Row: {
           booking_id: string | null
@@ -562,6 +775,30 @@ export type Database = {
           tasker_id?: string
           type?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      performance_metrics: {
+        Row: {
+          dimensions: Json | null
+          id: string
+          metric_name: string
+          metric_value: number | null
+          recorded_at: string
+        }
+        Insert: {
+          dimensions?: Json | null
+          id?: string
+          metric_name: string
+          metric_value?: number | null
+          recorded_at?: string
+        }
+        Update: {
+          dimensions?: Json | null
+          id?: string
+          metric_name?: string
+          metric_value?: number | null
+          recorded_at?: string
         }
         Relationships: []
       }
@@ -1085,6 +1322,42 @@ export type Database = {
         }
         Relationships: []
       }
+      system_activity_log: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1097,6 +1370,15 @@ export type Database = {
       is_admin_user: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      log_activity: {
+        Args: {
+          p_action: string
+          p_changes?: Json
+          p_entity_id?: string
+          p_entity_type?: string
+        }
+        Returns: string
       }
       user_has_role: {
         Args: { role_name: string; user_id: string }

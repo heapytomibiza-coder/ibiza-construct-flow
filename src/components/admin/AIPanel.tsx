@@ -58,22 +58,42 @@ export default function AIPanel({ context, className = '' }: AIPanelProps) {
   const loadAIInsights = async () => {
     setIsLoading(true);
     try {
-      // Load AI alerts - temporarily disabled until types are updated
-      // const { data: alertsData } = await supabase
-      //   .from('ai_alerts')
-      //   .select('*')
-      //   .is('resolved_at', null)
-      //   .order('created_at', { ascending: false })
-      //   .limit(5);
+      // Load AI alerts from new AI infrastructure
+      const { data: alertsData } = await supabase
+        .from('ai_alerts')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-      // if (alertsData) {
-      //   setAlerts(alertsData);
-      // }
+      if (alertsData) {
+        setAlerts(alertsData.map(alert => ({
+          id: alert.id,
+          type: alert.alert_type,
+          severity: alert.severity as 'low' | 'medium' | 'high' | 'critical',
+          details: { description: alert.description },
+          created_at: alert.created_at
+        })));
+      }
 
       // Generate contextual suggestions based on context type
       generateContextualSuggestions();
     } catch (error) {
       console.error('Error loading AI insights:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const runAIFunction = async (functionName: string, payload: any) => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke(functionName, { body: payload });
+      if (error) throw error;
+      console.log(`${functionName} result:`, data);
+      await loadAIInsights(); // Refresh insights after AI operation
+    } catch (error) {
+      console.error(`Error running ${functionName}:`, error);
     } finally {
       setIsLoading(false);
     }
