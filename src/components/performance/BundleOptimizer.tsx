@@ -1,0 +1,58 @@
+import React from 'react';
+
+// Dynamic import utilities for better code splitting
+export const importUtils = {
+  // Charts - only load when needed
+  loadCharts: () => import('recharts'),
+  
+  // Calendar - only load when needed  
+  loadCalendar: () => import('react-day-picker'),
+  
+  // File upload - only load when needed
+  loadDropzone: () => import('react-dropzone'),
+  
+  // Form validation - only load when needed
+  loadFormValidation: () => import('zod'),
+  
+  // Date utilities - only load when needed
+  loadDateUtils: () => import('date-fns'),
+};
+
+// Resource preloader for critical routes
+export const preloadRoute = (routePath: string) => {
+  const routeMap: Record<string, () => Promise<any>> = {
+    '/dashboard/pro': () => import('@/pages/ProfessionalDashboardPage'),
+    '/dashboard/client': () => import('@/pages/ClientDashboardPage'),  
+    '/dashboard/admin': () => import('@/pages/AdminDashboardPage'),
+    '/post': () => import('@/pages/PostJob'),
+    '/services': () => import('@/pages/Services'),
+  };
+
+  const loader = routeMap[routePath];
+  if (loader) {
+    // Preload in idle time
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(() => loader());
+    } else {
+      setTimeout(loader, 100);
+    }
+  }
+};
+
+// Bundle size analyzer component (development only)
+export const BundleAnalyzer = () => {
+  if (process.env.NODE_ENV !== 'development') return null;
+  
+  const getMemoryUsage = () => {
+    // @ts-ignore - performance.memory is not in all browsers
+    const memory = (performance as any).memory;
+    return memory ? (memory.usedJSHeapSize / 1024 / 1024).toFixed(1) : 'N/A';
+  };
+  
+  return (
+    <div className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded text-xs">
+      <div>Bundle: {getMemoryUsage()}MB</div>
+      <div>Route: {window.location.pathname}</div>
+    </div>
+  );
+};

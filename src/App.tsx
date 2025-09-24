@@ -1,35 +1,41 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
-import RoleSelect from "./pages/RoleSelect";
-import SignUp from "./pages/SignUp";
-import SignIn from "./pages/SignIn";
-import VerifyEmail from "./pages/VerifyEmail";
-import AuthCallback from "./pages/AuthCallback";
-import QuickStart from "./pages/QuickStart";
-import RoleSwitcher from "./pages/RoleSwitcher";
-import ProtectedRoute from "./components/ProtectedRoute";
-import ClientDashboardPage from "./pages/ClientDashboardPage";
-import ProfessionalDashboardPage from "./pages/ProfessionalDashboardPage";
-import AdminDashboardPage from "./pages/AdminDashboardPage";
-import PostJob from "./pages/PostJob";
-import ServicePage from "./pages/ServicePage";
-import { ServiceDetailPage } from "./pages/ServiceDetailPage";
-import Services from "./pages/Services";
-import Professionals from "./pages/Professionals";
-import ProfessionalProfile from "./pages/ProfessionalProfile";
-import HowItWorks from "./pages/HowItWorks";
-import Contact from "./pages/Contact";
-import SpecialistCategories from "./pages/SpecialistCategories";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import PaymentCanceled from "./pages/PaymentCanceled";
-import Templates from "./pages/Templates";
+import { ErrorBoundary } from "./components/error/ErrorBoundary";
+import MobileAppWrapper from "./components/app/MobileAppWrapper";
+import { SkeletonLoader } from "./components/loading/SkeletonLoader";
 import { useFeature } from "./contexts/FeatureFlagsContext";
+import { BundleAnalyzer, preloadRoute } from "./components/performance/BundleOptimizer";
+
+// Lazy load components for better performance
+const Index = React.lazy(() => import("./pages/Index"));
+const Dashboard = React.lazy(() => import("./pages/Dashboard"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
+const RoleSelect = React.lazy(() => import("./pages/RoleSelect"));
+const SignUp = React.lazy(() => import("./pages/SignUp"));
+const SignIn = React.lazy(() => import("./pages/SignIn"));
+const VerifyEmail = React.lazy(() => import("./pages/VerifyEmail"));
+const AuthCallback = React.lazy(() => import("./pages/AuthCallback"));
+const QuickStart = React.lazy(() => import("./pages/QuickStart"));
+const RoleSwitcher = React.lazy(() => import("./pages/RoleSwitcher"));
+const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute"));
+const ClientDashboardPage = React.lazy(() => import("./pages/ClientDashboardPage"));
+const ProfessionalDashboardPage = React.lazy(() => import("./pages/ProfessionalDashboardPage"));
+const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
+const PostJob = React.lazy(() => import("./pages/PostJob"));
+const ServicePage = React.lazy(() => import("./pages/ServicePage"));
+const ServiceDetailPage = React.lazy(() => import("./pages/ServiceDetailPage").then(module => ({ default: module.ServiceDetailPage })));
+const Services = React.lazy(() => import("./pages/Services"));
+const Professionals = React.lazy(() => import("./pages/Professionals"));
+const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
+const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
+const Contact = React.lazy(() => import("./pages/Contact"));
+const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategories"));
+const PaymentSuccess = React.lazy(() => import("./pages/PaymentSuccess"));
+const PaymentCanceled = React.lazy(() => import("./pages/PaymentCanceled"));
+const Templates = React.lazy(() => import("./pages/Templates"));
 
 export default function App() {
   // Enable auth for production
@@ -38,17 +44,26 @@ export default function App() {
   // Enable job wizard for implementation
   const jobWizardEnabled = useFeature('ff.jobWizardV2', true);
   
+  // Preload critical routes on app start
+  React.useEffect(() => {
+    preloadRoute('/dashboard/pro');
+    preloadRoute('/post');
+  }, []);
+  
   return (
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter 
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true
-        }}
-      >
-        <Routes>
+    <ErrorBoundary>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter 
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+        >
+          <MobileAppWrapper>
+            <Suspense fallback={<SkeletonLoader variant="card" />}>
+              <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/services" element={<Services />} />
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
@@ -134,7 +149,11 @@ export default function App() {
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+      </Suspense>
+    </MobileAppWrapper>
+    <BundleAnalyzer />
+  </BrowserRouter>
+</TooltipProvider>
+</ErrorBoundary>
   );
 }
