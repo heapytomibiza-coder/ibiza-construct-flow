@@ -1,6 +1,8 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
+import FeaturedServicesCarousel from '@/components/FeaturedServicesCarousel';
+import BenefitsStrip from '@/components/BenefitsStrip';
 import HowItWorks from '@/components/HowItWorks';
 import ProfessionalNetwork from '@/components/ProfessionalNetwork';
 import ExpressModeSection from '@/components/ExpressModeSection';
@@ -12,6 +14,8 @@ import { Link } from 'react-router-dom';
 const Index = () => {
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
+  const featuredCarouselEnabled = useFeature('enable_featured_services_carousel');
+  const benefitsStripEnabled = useFeature('enable_home_benefits_strip');
   
   return (
     <div className="min-h-screen">
@@ -37,7 +41,8 @@ const Index = () => {
       
       <main>
         <Hero />
-        <Services />
+        {benefitsStripEnabled && <BenefitsStrip />}
+        {featuredCarouselEnabled ? <FeaturedServicesCarousel /> : <Services />}
         <ExpressModeSection />
         <HowItWorks />
         <ProfessionalNetwork />

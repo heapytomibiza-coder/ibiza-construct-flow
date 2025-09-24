@@ -2555,6 +2555,7 @@ export type Database = {
           category: string
           created_at: string | null
           id: string
+          is_featured: boolean | null
           micro: string
           subcategory: string
         }
@@ -2562,6 +2563,7 @@ export type Database = {
           category: string
           created_at?: string | null
           id?: string
+          is_featured?: boolean | null
           micro: string
           subcategory: string
         }
@@ -2569,6 +2571,7 @@ export type Database = {
           category?: string
           created_at?: string | null
           id?: string
+          is_featured?: boolean | null
           micro?: string
           subcategory?: string
         }

@@ -6,6 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { InfoTip } from '@/components/ui/info-tip';
+import { useFeature } from '@/contexts/FeatureFlagsContext';
 import AIPanel from '@/components/admin/AIPanel';
 import { CommandCenter } from '@/components/admin/workspaces/CommandCenter';
 import { ServiceCatalogue } from '@/components/admin/workspaces/ServiceCatalogue';
@@ -46,21 +48,100 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const [activeWorkspace, setActiveWorkspace] = useState('command');
   const [selectedView, setSelectedView] = useState('overview');
   const [aiContext, setAiContext] = useState<{ type: 'job' | 'professional' | 'service' | 'review' | 'overview' }>({ type: 'overview' });
+  const infoTipsEnabled = useFeature('admin_info_tips');
 
   const workspaces = [
-    { id: 'command', name: 'Command Centre', icon: Command, description: 'Live jobs and operations' },
-    { id: 'analytics', name: 'Professional Analytics', icon: Users, description: 'Performance & earnings analytics' },
-    { id: 'ai-monitor', name: 'AI System Monitor', icon: Bot, description: 'AI functions & performance' },
-    { id: 'risk', name: 'Risk Management', icon: Shield, description: 'Risk flags & safety compliance' },
-    { id: 'market', name: 'Market Intelligence', icon: TrendingUp, description: 'Market analysis & opportunities' },
-    { id: 'professionals', name: 'Professional Hub', icon: Users, description: 'Professional management' },
-    { id: 'services', name: 'Service Catalogue', icon: Folder, description: 'Manage service taxonomy' },
-    { id: 'legacy', name: 'Legacy Tools', icon: Settings, description: 'Original admin tools' },
-    { id: 'business-analytics', name: 'Analytics Dashboard', icon: TrendingUp, description: 'Advanced analytics & BI' },
-    { id: 'business-intelligence', name: 'Business Intelligence', icon: Bot, description: 'AI-powered insights' },
-    { id: 'reports', name: 'Report Generator', icon: CreditCard, description: 'Automated reporting' },
-    { id: 'alerts', name: 'Alert System', icon: Shield, description: 'Business alerts & monitoring' },
-    { id: 'ai-automation', name: 'AI Automation', icon: Bot, description: 'Smart matching & automation' },
+    { 
+      id: 'command', 
+      name: 'Command Centre', 
+      icon: Command, 
+      description: 'Live jobs and operations',
+      tooltip: 'Live view of all jobs. Reassign, broadcast, or resolve issues fast. Monitor platform activity in real-time.'
+    },
+    { 
+      id: 'analytics', 
+      name: 'Professional Analytics', 
+      icon: Users, 
+      description: 'Performance & earnings analytics',
+      tooltip: 'Track professional performance metrics, earnings, completion rates, and quality scores across the platform.'
+    },
+    { 
+      id: 'ai-monitor', 
+      name: 'AI System Monitor', 
+      icon: Bot, 
+      description: 'AI functions & performance',
+      tooltip: 'Monitor AI systems performance, function execution rates, error logs, and automated workflows.'
+    },
+    { 
+      id: 'risk', 
+      name: 'Risk Management', 
+      icon: Shield, 
+      description: 'Risk flags & safety compliance',
+      tooltip: 'Identify and manage platform risks, safety violations, compliance issues, and security threats.'
+    },
+    { 
+      id: 'market', 
+      name: 'Market Intelligence', 
+      icon: TrendingUp, 
+      description: 'Market analysis & opportunities',
+      tooltip: 'Analyze market trends, pricing patterns, demand forecasts, and growth opportunities across Ibiza.'
+    },
+    { 
+      id: 'professionals', 
+      name: 'Professional Hub', 
+      icon: Users, 
+      description: 'Professional management',
+      tooltip: 'Manage professional profiles, verification status, skills, availability, and performance reviews.'
+    },
+    { 
+      id: 'services', 
+      name: 'Service Catalogue', 
+      icon: Folder, 
+      description: 'Manage service taxonomy',
+      tooltip: 'Configure service categories, pricing structures, and requirements. Update service offerings and descriptions.'
+    },
+    { 
+      id: 'legacy', 
+      name: 'Legacy Tools', 
+      icon: Settings, 
+      description: 'Original admin tools',
+      tooltip: 'Access original administrative tools and legacy functions for backward compatibility.'
+    },
+    { 
+      id: 'business-analytics', 
+      name: 'Analytics Dashboard', 
+      icon: TrendingUp, 
+      description: 'Advanced analytics & BI',
+      tooltip: 'Deep dive into business metrics, revenue analytics, user behavior patterns, and performance KPIs.'
+    },
+    { 
+      id: 'business-intelligence', 
+      name: 'Business Intelligence', 
+      icon: Bot, 
+      description: 'AI-powered insights',
+      tooltip: 'AI-generated business insights, predictive analytics, and automated recommendations for platform optimization.'
+    },
+    { 
+      id: 'reports', 
+      name: 'Report Generator', 
+      icon: CreditCard, 
+      description: 'Automated reporting',
+      tooltip: 'Generate automated reports for stakeholders, financial summaries, and operational metrics.'
+    },
+    { 
+      id: 'alerts', 
+      name: 'Alert System', 
+      icon: Shield, 
+      description: 'Business alerts & monitoring',
+      tooltip: 'Configure and monitor business alerts, threshold warnings, and automated notifications.'
+    },
+    { 
+      id: 'ai-automation', 
+      name: 'AI Automation', 
+      icon: Bot, 
+      description: 'Smart matching & automation',
+      tooltip: 'Configure AI-powered job matching, workflow automation, and intelligent routing systems.'
+    },
   ];
 
   const handleSignOut = async () => {
@@ -179,13 +260,23 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
             <div className="flex items-center justify-between px-6 py-4">
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
-                <div>
-                  <h1 className="text-xl font-semibold text-foreground">
-                    {workspaces.find(w => w.id === activeWorkspace)?.name || 'Admin Dashboard'}
-                  </h1>
-                  <p className="text-sm text-muted-foreground">
-                    {workspaces.find(w => w.id === activeWorkspace)?.description || 'Platform Administration'}
-                  </p>
+                <div className="flex items-center gap-2">
+                  <div>
+                    <h1 className="text-xl font-semibold text-foreground">
+                      {workspaces.find(w => w.id === activeWorkspace)?.name || 'Admin Dashboard'}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                      {workspaces.find(w => w.id === activeWorkspace)?.description || 'Platform Administration'}
+                    </p>
+                  </div>
+                  {infoTipsEnabled && (
+                    <InfoTip
+                      content={workspaces.find(w => w.id === activeWorkspace)?.tooltip || 'Administrative workspace for platform management'}
+                      side="bottom"
+                      align="start"
+                      maxWidth="max-w-sm"
+                    />
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-4">
