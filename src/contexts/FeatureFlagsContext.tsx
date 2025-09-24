@@ -40,18 +40,20 @@ export const FeatureFlagsProvider: React.FC<{ children: ReactNode }> = ({ childr
         
         // Provide defaults for unauthenticated users (for auth pages)
         if (!user) {
-          const defaultFlags = {
-            'ff.magicLink': true,
-            'ff.socialAuth': true,
-            'ff.jobWizardV2': true,
-            'ff.enhancedServiceCards': true,
-            'ff.visualPricingTiers': true,
-            'ff.smartLocationSuggestions': true,
-            'ff.smartPricingHints': true,
-            'ff.aiQuestions': true,
-            'ff.contractFlow': true,
-            'ff.paymentSystem': true
-          };
+        const defaultFlags = {
+          'ff.magicLink': true,
+          'ff.socialAuth': true,
+          'ff.jobWizardV2': true,
+          'ff.enhancedServiceCards': true,
+          'ff.visualPricingTiers': true,
+          'ff.smartLocationSuggestions': true,
+          'ff.smartPricingHints': true,
+          'ff.aiQuestions': true,
+          'ff.contractFlow': true,
+          'ff.paymentSystem': true,
+          'enhanced_client_dashboard': true,
+          'enhanced_professional_dashboard': true
+        };
           setFlags(defaultFlags);
           setLoading(false);
           return;
@@ -75,7 +77,9 @@ export const FeatureFlagsProvider: React.FC<{ children: ReactNode }> = ({ childr
             'ff.smartPricingHints': true,
             'ff.aiQuestions': true,
             'ff.contractFlow': true,
-            'ff.paymentSystem': true
+            'ff.paymentSystem': true,
+            'enhanced_client_dashboard': true,
+            'enhanced_professional_dashboard': true
           };
           setFlags(defaultFlags);
           setLoading(false);
