@@ -23,7 +23,8 @@ import UserInspector from '@/components/admin/UserInspector';
 import { AdminDocumentReview } from '@/components/admin/AdminDocumentReview';
 import DatabaseStats from '@/components/admin/DatabaseStats';
 import FeatureFlagsManager from '@/components/admin/FeatureFlagsManager';
-import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
+import { AISmartMatcher } from '@/components/ai/AISmartMatcher';
+import { WorkflowAutomation } from '@/components/ai/WorkflowAutomation';
 
 interface Profile {
   id: string;
@@ -59,7 +60,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
     { id: 'business-intelligence', name: 'Business Intelligence', icon: Bot, description: 'AI-powered insights' },
     { id: 'reports', name: 'Report Generator', icon: CreditCard, description: 'Automated reporting' },
     { id: 'alerts', name: 'Alert System', icon: Shield, description: 'Business alerts & monitoring' },
-    { id: 'system-health', name: 'System Health', icon: Activity, description: 'Platform monitoring' }
+    { id: 'ai-automation', name: 'AI Automation', icon: Bot, description: 'Smart matching & automation' },
   ];
 
   const handleSignOut = async () => {
@@ -107,6 +108,13 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
         return <AlertSystem />;
       case 'system-health':
         return <SystemHealthMonitor />;
+      case 'ai-automation':
+        return (
+          <div className="space-y-6">
+            <AISmartMatcher jobId="sample-job-id" />
+            <WorkflowAutomation />
+          </div>
+        );
       default:
         return <CommandCenter />;
     }

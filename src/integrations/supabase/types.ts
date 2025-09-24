@@ -95,6 +95,119 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_automation_rules: {
+        Row: {
+          actions: Json
+          created_at: string
+          created_by: string | null
+          description: string | null
+          execution_count: number | null
+          id: string
+          is_active: boolean
+          name: string
+          rule_type: string
+          success_rate: number | null
+          trigger_conditions: Json
+          updated_at: string
+        }
+        Insert: {
+          actions?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          execution_count?: number | null
+          id?: string
+          is_active?: boolean
+          name: string
+          rule_type: string
+          success_rate?: number | null
+          trigger_conditions?: Json
+          updated_at?: string
+        }
+        Update: {
+          actions?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          execution_count?: number | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          rule_type?: string
+          success_rate?: number | null
+          trigger_conditions?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_conversations: {
+        Row: {
+          context: Json | null
+          conversation_type: string
+          created_at: string
+          id: string
+          session_id: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          context?: Json | null
+          conversation_type?: string
+          created_at?: string
+          id?: string
+          session_id: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          context?: Json | null
+          conversation_type?: string
+          created_at?: string
+          id?: string
+          session_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_prompts: {
         Row: {
           category: string
@@ -131,6 +244,60 @@ export type Database = {
           template?: string
           updated_at?: string
           version?: number
+        }
+        Relationships: []
+      }
+      ai_recommendations: {
+        Row: {
+          actioned_at: string | null
+          confidence_score: number
+          created_at: string
+          data: Json | null
+          description: string | null
+          entity_id: string | null
+          entity_type: string
+          expires_at: string | null
+          id: string
+          priority: string
+          recommendation_type: string
+          status: string
+          title: string
+          user_id: string
+          viewed_at: string | null
+        }
+        Insert: {
+          actioned_at?: string | null
+          confidence_score?: number
+          created_at?: string
+          data?: Json | null
+          description?: string | null
+          entity_id?: string | null
+          entity_type: string
+          expires_at?: string | null
+          id?: string
+          priority?: string
+          recommendation_type: string
+          status?: string
+          title: string
+          user_id: string
+          viewed_at?: string | null
+        }
+        Update: {
+          actioned_at?: string | null
+          confidence_score?: number
+          created_at?: string
+          data?: Json | null
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          expires_at?: string | null
+          id?: string
+          priority?: string
+          recommendation_type?: string
+          status?: string
+          title?: string
+          user_id?: string
+          viewed_at?: string | null
         }
         Relationships: []
       }
@@ -1470,6 +1637,57 @@ export type Database = {
         }
         Relationships: []
       }
+      predictive_insights: {
+        Row: {
+          confidence_level: number
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          expires_at: string | null
+          factors: Json | null
+          id: string
+          insight_type: string
+          predicted_value: number | null
+          prediction_description: string | null
+          prediction_title: string
+          recommendations: Json | null
+          status: string
+          time_horizon: string | null
+        }
+        Insert: {
+          confidence_level?: number
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          expires_at?: string | null
+          factors?: Json | null
+          id?: string
+          insight_type: string
+          predicted_value?: number | null
+          prediction_description?: string | null
+          prediction_title: string
+          recommendations?: Json | null
+          status?: string
+          time_horizon?: string | null
+        }
+        Update: {
+          confidence_level?: number
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          expires_at?: string | null
+          factors?: Json | null
+          id?: string
+          insight_type?: string
+          predicted_value?: number | null
+          prediction_description?: string | null
+          prediction_title?: string
+          recommendations?: Json | null
+          status?: string
+          time_horizon?: string | null
+        }
+        Relationships: []
+      }
       pricing_hints: {
         Row: {
           avg_price: number
@@ -2199,6 +2417,54 @@ export type Database = {
         }
         Relationships: []
       }
+      smart_matches: {
+        Row: {
+          availability_score: number | null
+          created_at: string
+          id: string
+          job_id: string
+          location_score: number | null
+          match_reasons: Json | null
+          match_score: number
+          price_score: number | null
+          professional_id: string
+          reputation_score: number | null
+          skill_score: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          availability_score?: number | null
+          created_at?: string
+          id?: string
+          job_id: string
+          location_score?: number | null
+          match_reasons?: Json | null
+          match_score?: number
+          price_score?: number | null
+          professional_id: string
+          reputation_score?: number | null
+          skill_score?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          availability_score?: number | null
+          created_at?: string
+          id?: string
+          job_id?: string
+          location_score?: number | null
+          match_reasons?: Json | null
+          match_score?: number
+          price_score?: number | null
+          professional_id?: string
+          reputation_score?: number | null
+          skill_score?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       system_activity_log: {
         Row: {
           action: string
@@ -2268,6 +2534,48 @@ export type Database = {
           service_name?: string
           status?: string
           value?: number
+        }
+        Relationships: []
+      }
+      workflow_automations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          execution_history: Json | null
+          id: string
+          is_active: boolean
+          name: string
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string
+          workflow_steps: Json
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          execution_history?: Json | null
+          id?: string
+          is_active?: boolean
+          name: string
+          trigger_config?: Json
+          trigger_type: string
+          updated_at?: string
+          workflow_steps?: Json
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          execution_history?: Json | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string
+          workflow_steps?: Json
         }
         Relationships: []
       }
