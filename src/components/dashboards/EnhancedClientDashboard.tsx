@@ -19,7 +19,7 @@ import {
   Home, Plus, Users, Briefcase, MessageSquare, FileText, 
   CreditCard, MapPin, Heart, Bell, HelpCircle, Clock, 
   CheckCircle, AlertCircle, TrendingUp, LogOut, Sparkles,
-  Search, Filter, Map
+  Search, Filter, Map, FileEdit
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,8 +28,9 @@ import { cn } from '@/lib/utils';
 import { AIAssistantRail } from '@/components/ai/AIAssistantRail';
 import { ClientJobsView } from '@/components/client/ClientJobsView';
 import { CompareProsView } from '@/components/client/CompareProsView';
-import { ClientMessagesView } from '@/components/client/ClientMessagesView';
-import { ClientFilesView } from '@/components/client/ClientFilesView';
+import { EnhancedMessagingSystem } from '@/components/client/EnhancedMessagingSystem';
+import { EnhancedFileVault } from '@/components/client/EnhancedFileVault';
+import { ChangeOrderSystem } from '@/components/client/ChangeOrderSystem';
 import { ClientPaymentsView } from '@/components/client/ClientPaymentsView';
 import { ClientPropertiesView } from '@/components/client/ClientPropertiesView';
 import { ClientFavoritesView } from '@/components/client/ClientFavoritesView';
@@ -50,7 +51,8 @@ const navigationItems = [
     title: 'Communication',
     items: [
       { title: 'Messages', icon: MessageSquare, id: 'messages' },
-      { title: 'Files', icon: FileText, id: 'files' }
+      { title: 'File Vault', icon: FileText, id: 'files' },
+      { title: 'Change Orders', icon: FileEdit, id: 'change_orders' }
     ]
   },
   {
@@ -241,9 +243,11 @@ const EnhancedClientDashboard = ({ user, profile }: EnhancedClientDashboardProps
       case 'my-jobs':
         return <ClientJobsView bookings={bookings} loading={loading} />;
       case 'messages':
-        return <ClientMessagesView />;
+        return <EnhancedMessagingSystem />;
       case 'files':
-        return <ClientFilesView />;
+        return <EnhancedFileVault />;
+      case 'change_orders':
+        return <ChangeOrderSystem />;
       case 'payments':
         return <ClientPaymentsView />;
       case 'properties':
