@@ -274,20 +274,68 @@ All colors MUST be HSL. Premium construction platform aesthetic.
     }
   }
 
-  /* Additional safe area utilities */
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+/* Additional mobile-first utilities */
+.mobile-optimized-input {
+  font-size: 16px; /* Prevents zoom on iOS */
+  min-height: 44px; /* WCAG AA touch target size */
+}
 
-  .pt-safe {
-    padding-top: env(safe-area-inset-top);
+@media (max-width: 768px) {
+  .mobile-optimized-input {
+    font-size: 16px !important; /* Force 16px to prevent zoom */
   }
+}
 
-  .pr-safe {
-    padding-right: env(safe-area-inset-right);
-  }
+/* Progressive disclosure animations */
+.disclosure-enter {
+  animation: disclosure-slide-down 0.2s ease-out;
+}
 
-  .pl-safe {
-    padding-left: env(safe-area-inset-left);
+.disclosure-exit {
+  animation: disclosure-slide-up 0.2s ease-out;
+}
+
+@keyframes disclosure-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+}
+
+@keyframes disclosure-slide-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+  }
+}
+
+/* Input focus states for mobile */
+.mobile-input:focus {
+  transform: scale(1.02);
+  transition: transform 0.1s ease-out;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .disclosure-enter,
+  .disclosure-exit,
+  .mobile-input:focus {
+    animation: none;
+    transform: none;
+    transition: none;
+  }
+}
+
 }

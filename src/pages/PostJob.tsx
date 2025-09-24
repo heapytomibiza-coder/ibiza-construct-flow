@@ -18,6 +18,8 @@ import CalendarFirstWizard from '@/components/wizard/CalendarFirstWizard';
 import { JobSummary } from '@/components/services/JobSummary';
 import { useEnhancedAutosave } from '@/hooks/useEnhancedAutosave';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { MobileCalendarWizard } from '@/components/mobile/MobileCalendarWizard';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 
 const PostJob: React.FC = () => {
@@ -28,6 +30,7 @@ const PostJob: React.FC = () => {
   const [savedSession, setSavedSession] = React.useState<any>(null);
   const calendarFirstEnabled = useFeature('wizard_calendar_first');
   const [useCalendarWizard, setUseCalendarWizard] = React.useState(false);
+  const isMobile = useIsMobile();
   
   const {
     state,
@@ -621,6 +624,17 @@ const PostJob: React.FC = () => {
           </Button>
         </div>
       </div>
+    );
+  }
+
+  // Conditionally render wizard based on feature flag and mobile
+  // Use mobile calendar wizard if on mobile and calendar-first is enabled
+  if ((calendarFirstEnabled || searchParams.get('calendar') === 'true') && isMobile) {
+    return (
+      <MobileCalendarWizard
+        onComplete={handleCalendarWizardComplete}
+        onCancel={() => navigate('/')}
+      />
     );
   }
 
