@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SafeAreaProvider } from "@/components/mobile/SafeAreaProvider";
+import { MobileGestures } from "@/components/mobile/MobileGestures";
+import { OfflineIndicator } from "@/components/mobile/OfflineIndicator";
 import { useWebVitals } from "@/hooks/useWebVitals";
 import { ErrorBoundary } from "./components/error/ErrorBoundary";
 import MobileAppWrapper from "./components/app/MobileAppWrapper";
@@ -59,9 +61,11 @@ export default function App() {
     <ErrorBoundary>
       <TooltipProvider>
         <SafeAreaProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter
+          <MobileGestures enableSwipeNavigation={true} enablePullToRefresh={true}>
+            <OfflineIndicator />
+            <Toaster />
+            <Sonner />
+            <BrowserRouter
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true
@@ -167,6 +171,7 @@ export default function App() {
     </MobileAppWrapper>
     <BundleAnalyzer />
   </BrowserRouter>
+          </MobileGestures>
         </SafeAreaProvider>
       </TooltipProvider>
     </ErrorBoundary>

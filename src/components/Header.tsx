@@ -10,8 +10,10 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsMobile } from '@/hooks/use-mobile';
 import AuthModal from '@/components/auth/AuthModal';
 import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
+import { MobileOptimizedHeader } from '@/components/mobile/MobileOptimizedHeader';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -23,6 +25,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
   const { user, profile, signOut, isAdmin, isProfessional, isClient } = useAuth();
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -36,6 +39,11 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
     if (isClient()) return '/dashboard/client';
     return '/dashboard';
   };
+
+  // Use mobile-optimized header on mobile devices
+  if (isMobile) {
+    return <MobileOptimizedHeader jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />;
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-sand-dark/20 z-50">

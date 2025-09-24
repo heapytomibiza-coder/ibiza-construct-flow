@@ -1,164 +1,256 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, Home, Search, User, Bell, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Menu, 
-  Bell, 
-  Search, 
-  User, 
-  Settings, 
-  LogOut,
-  Home,
-  Briefcase,
-  Users,
-  Calendar,
-  MessageSquare,
-  CreditCard
-} from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
-import { useActiveRole } from '@/hooks/useActiveRole';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useSafeArea } from '@/components/mobile/SafeAreaProvider';
+import { cn } from '@/lib/utils';
+import AuthModal from '@/components/auth/AuthModal';
+import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
 
 interface MobileOptimizedHeaderProps {
-  title?: string;
-  showSearch?: boolean;
-  showNotifications?: boolean;
-  className?: string;
+  jobWizardEnabled?: boolean;
+  proInboxEnabled?: boolean;
 }
 
 export const MobileOptimizedHeader = ({ 
-  title = "Dashboard", 
-  showSearch = true, 
-  showNotifications = true,
-  className = ""
+  jobWizardEnabled = false, 
+  proInboxEnabled = false 
 }: MobileOptimizedHeaderProps) => {
-  const { user } = useAuth();
-  const { activeRole } = useActiveRole();
-  const [notificationCount, setNotificationCount] = useState(3);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const { user, profile, signOut, isAdmin, isProfessional, isClient } = useAuth();
+  const isMobile = useIsMobile();
+  const { insets } = useSafeArea();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast.success('Signed out successfully');
-    } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Failed to sign out');
+    await signOut();
+    navigate('/');
+    setIsMenuOpen(false);
+  };
+
+  const getDashboardPath = () => {
+    if (isAdmin()) return '/dashboard/admin';
+    if (isProfessional()) return '/dashboard/pro';  
+    if (isClient()) return '/dashboard/client';
+    return '/dashboard';
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/services?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
     }
   };
 
-  const navigationItems = [
-    { icon: Home, label: 'Dashboard', href: '/dashboard' },
-    { icon: Briefcase, label: 'Jobs', href: '/jobs' },
-    { icon: Users, label: 'Professionals', href: '/professionals' },
-    { icon: Calendar, label: 'Schedule', href: '/schedule' },
-    { icon: MessageSquare, label: 'Messages', href: '/messages' },
-    { icon: CreditCard, label: 'Payments', href: '/payments' },
-  ];
+  if (!isMobile) return null;
 
   return (
-    <header className={`sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border ${className}`}>
-      <div className="flex items-center justify-between px-4 py-3">
-        {/* Left side - Menu and Title */}
-        <div className="flex items-center space-x-3">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="md:hidden">
-                <Menu className="w-5 h-5" />
+    <>
+      <header 
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50",
+          "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",  
+          "border-b border-border"
+        )}
+        style={{ paddingTop: `${insets.top}px` }}
+      >
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between min-h-[44px]">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+              <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary-glow rounded-lg flex items-center justify-center">
+                <Home className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h1 className="text-sm font-semibold text-foreground">CS Ibiza</h1>
+                <p className="text-xs text-muted-foreground -mt-0.5">Elite Network</p>
+              </div>
+            </Link>
+
+            {/* Actions */}
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="w-10 h-10 p-0"
+              >
+                <Search className="w-4 h-4" />
               </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-80 p-0">
-              <div className="flex flex-col h-full">
-                {/* Header */}
-                <div className="p-4 border-b border-border">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarFallback>
-                        {user?.email?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+              
+              {user && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-10 h-10 p-0"
+                >
+                  <Bell className="w-4 h-4" />
+                </Button>
+              )}
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="w-10 h-10 p-0"
+              >
+                {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          {isSearchOpen && (
+            <form onSubmit={handleSearch} className="mt-3 animate-in slide-in-from-top-2">
+              <Input
+                type="search"
+                placeholder="Search services..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-10"
+                autoFocus
+              />
+            </form>
+          )}
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="border-t border-border bg-background animate-in slide-in-from-top-2">
+            <nav className="px-4 py-4">
+              {/* User Section */}
+              {user ? (
+                <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-primary to-primary-glow rounded-full flex items-center justify-center">
+                      <User className="w-5 h-5 text-white" />
+                    </div>
                     <div>
-                      <p className="font-medium text-sm">{user?.email}</p>
-                      <Badge variant="secondary" className="text-xs">
-                        {activeRole}
-                      </Badge>
+                      <p className="font-medium text-sm">
+                        {profile?.display_name || profile?.full_name || 'User'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                   </div>
+                  <HeaderRoleSwitcher />
                 </div>
-
-                {/* Navigation */}
-                <nav className="flex-1 p-4">
-                  <div className="space-y-2">
-                    {navigationItems.map((item) => (
-                      <a
-                        key={item.href}
-                        href={item.href}
-                        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                      >
-                        <item.icon className="w-5 h-5 text-muted-foreground" />
-                        <span className="font-medium">{item.label}</span>
-                      </a>
-                    ))}
-                  </div>
-                </nav>
-
-                {/* Footer */}
-                <div className="p-4 border-t border-border space-y-2">
-                  <a
-                    href="/settings"
-                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+              ) : (
+                <div className="mb-4 space-y-2">
+                  <Button 
+                    className="w-full h-12 bg-gradient-to-r from-primary to-primary-glow"
+                    onClick={() => {
+                      setAuthDefaultTab('signup');
+                      setAuthModalOpen(true);
+                      setIsMenuOpen(false);
+                    }}
                   >
-                    <Settings className="w-5 h-5 text-muted-foreground" />
-                    <span className="font-medium">Settings</span>
-                  </a>
-                  <button
+                    Join as Pro
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="w-full h-12"
+                    onClick={() => {
+                      setAuthDefaultTab('signin');
+                      setAuthModalOpen(true);
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    Sign In
+                  </Button>
+                </div>
+              )}
+
+              {/* Navigation Links */}
+              <div className="space-y-1">
+                <Link 
+                  to="/" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Home
+                </Link>
+                <Link 
+                  to="/services" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Services
+                </Link>
+                <Link 
+                  to="/professionals" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Professionals
+                </Link>
+                <Link 
+                  to="/how-it-works" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  How It Works
+                </Link>
+                <Link 
+                  to="/contact" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+              </div>
+
+              {/* User Actions */}
+              {user && (
+                <div className="mt-4 pt-4 border-t border-border space-y-1">
+                  <Link 
+                    to={getDashboardPath()} 
+                    className="flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Settings className="w-4 h-4 mr-3" />
+                    Dashboard
+                  </Link>
+                  
+                  {jobWizardEnabled && isClient() && (
+                    <Link 
+                      to="/post" 
+                      className="flex items-center px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Home className="w-4 h-4 mr-3" />
+                      Post Project
+                    </Link>
+                  )}
+                  
+                  <button 
                     onClick={handleSignOut}
-                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors w-full text-left"
+                    className="flex items-center w-full px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors text-left"
                   >
-                    <LogOut className="w-5 h-5 text-muted-foreground" />
-                    <span className="font-medium">Sign Out</span>
+                    <X className="w-4 h-4 mr-3" />
+                    Sign Out
                   </button>
                 </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          <h1 className="font-semibold text-lg md:text-xl truncate">{title}</h1>
-        </div>
-
-        {/* Right side - Actions */}
-        <div className="flex items-center space-x-2">
-          {showSearch && (
-            <Button variant="ghost" size="sm" className="hidden sm:flex">
-              <Search className="w-4 h-4" />
-            </Button>
-          )}
-
-          {showNotifications && (
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="w-4 h-4" />
-              {notificationCount > 0 && (
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center text-xs animate-pulse"
-                >
-                  {notificationCount}
-                </Badge>
               )}
-            </Button>
-          )}
+            </nav>
+          </div>
+        )}
+      </header>
 
-          <Button variant="ghost" size="sm" className="hidden sm:flex">
-            <Avatar className="w-6 h-6">
-              <AvatarFallback className="text-xs">
-                {user?.email?.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </div>
-      </div>
-    </header>
+      <AuthModal 
+        open={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)}
+        defaultTab={authDefaultTab}
+      />
+    </>
   );
 };

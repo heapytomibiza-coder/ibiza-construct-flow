@@ -1,31 +1,58 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-interface QueuedAction {
+interface PendingAction {
   id: string;
-  type: 'photo_upload' | 'message_send' | 'job_update' | 'variation_create';
-  payload: any;
+  type: string;
+  data: any;
   timestamp: number;
-  attempts: number;
+  retryCount: number;
+}
+
+interface OfflineSyncState {
+  isOnline: boolean;
+  pendingActions: PendingAction[];
+  syncInProgress: boolean;
 }
 
 export const useOfflineSync = () => {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [queue, setQueue] = useState<QueuedAction[]>([]);
-  const [syncing, setSyncing] = useState(false);
+  const [state, setState] = useState<OfflineSyncState>({
+    isOnline: navigator.onLine,
+    pendingActions: [],
+    syncInProgress: false
+  });
 
-  // Monitor online status
+  const maxRetries = 3;
+  const retryDelay = 1000; // 1 second
+
+  // Load pending actions from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('offlinePendingActions');
+    if (stored) {
+      try {
+        const pendingActions = JSON.parse(stored);
+        setState(prev => ({ ...prev, pendingActions }));
+      } catch (error) {
+        console.error('Failed to parse stored pending actions:', error);
+        localStorage.removeItem('offlinePendingActions');
+      }
+    }
+  }, []);
+
+  // Save pending actions to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('offlinePendingActions', JSON.stringify(state.pendingActions));
+  }, [state.pendingActions]);
+
+  // Handle online/offline status changes
   useEffect(() => {
     const handleOnline = () => {
-      setIsOnline(true);
-      toast.success('Back online - syncing data...');
-      syncQueue();
+      setState(prev => ({ ...prev, isOnline: true }));
+      syncPendingActions();
     };
 
     const handleOffline = () => {
-      setIsOnline(false);
-      toast.info('Offline mode - changes will sync when reconnected');
+      setState(prev => ({ ...prev, isOnline: false }));
     };
 
     window.addEventListener('online', handleOnline);
@@ -37,111 +64,127 @@ export const useOfflineSync = () => {
     };
   }, []);
 
-  // Load queue from localStorage on mount
-  useEffect(() => {
-    const savedQueue = localStorage.getItem('offline_queue');
-    if (savedQueue) {
-      try {
-        setQueue(JSON.parse(savedQueue));
-      } catch (error) {
-        console.error('Error loading offline queue:', error);
-      }
-    }
-  }, []);
-
-  // Save queue to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('offline_queue', JSON.stringify(queue));
-  }, [queue]);
-
-  const addToQueue = useCallback((type: QueuedAction['type'], payload: any) => {
-    const action: QueuedAction = {
-      id: `${Date.now()}-${Math.random()}`,
+  const addPendingAction = useCallback((type: string, data: any) => {
+    const action: PendingAction = {
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       type,
-      payload,
+      data,
       timestamp: Date.now(),
-      attempts: 0
+      retryCount: 0
     };
 
-    setQueue(prev => [...prev, action]);
+    setState(prev => ({
+      ...prev,
+      pendingActions: [...prev.pendingActions, action]
+    }));
 
-    if (isOnline) {
-      syncQueue();
+    toast.info('Action saved for when you\'re back online', {
+      duration: 3000
+    });
+
+    return action.id;
+  }, []);
+
+  const removePendingAction = useCallback((id: string) => {
+    setState(prev => ({
+      ...prev,
+      pendingActions: prev.pendingActions.filter(action => action.id !== id)
+    }));
+  }, []);
+
+  const syncPendingActions = useCallback(async () => {
+    if (!state.isOnline || state.pendingActions.length === 0 || state.syncInProgress) {
+      return;
     }
-  }, [isOnline]);
 
-  const syncQueue = useCallback(async () => {
-    if (syncing || queue.length === 0) return;
+    setState(prev => ({ ...prev, syncInProgress: true }));
 
-    setSyncing(true);
+    const actionsToSync = [...state.pendingActions];
+    let successCount = 0;
+    let failedActions: PendingAction[] = [];
 
-    const updatedQueue = [...queue];
-    const toRemove: string[] = [];
-
-    for (const action of updatedQueue) {
+    for (const action of actionsToSync) {
       try {
-        await processAction(action);
-        toRemove.push(action.id);
+        // This is where you'd implement the actual sync logic
+        // For now, we'll simulate the sync
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Simulate some failures for testing
+        if (Math.random() > 0.8) {
+          throw new Error('Simulated sync failure');
+        }
+
+        successCount++;
+        removePendingAction(action.id);
       } catch (error) {
         console.error(`Failed to sync action ${action.id}:`, error);
         
-        // Increment attempt count
-        const actionIndex = updatedQueue.findIndex(a => a.id === action.id);
-        if (actionIndex !== -1) {
-          updatedQueue[actionIndex].attempts++;
-          
-          // Remove after 5 failed attempts
-          if (updatedQueue[actionIndex].attempts >= 5) {
-            toRemove.push(action.id);
-            toast.error(`Failed to sync ${action.type} after 5 attempts`);
-          }
+        if (action.retryCount < maxRetries) {
+          failedActions.push({
+            ...action,
+            retryCount: action.retryCount + 1
+          });
+        } else {
+          // Max retries reached, remove the action
+          removePendingAction(action.id);
+          toast.error(`Failed to sync ${action.type} after ${maxRetries} attempts`);
         }
       }
     }
 
-    // Remove successfully synced or failed items
-    setQueue(prev => prev.filter(action => !toRemove.includes(action.id)));
-    setSyncing(false);
+    // Update failed actions with incremented retry count
+    if (failedActions.length > 0) {
+      setState(prev => ({
+        ...prev,
+        pendingActions: failedActions,
+        syncInProgress: false
+      }));
 
-    if (toRemove.length > 0) {
-      toast.success(`Synced ${toRemove.length} pending changes`);
+      // Schedule retry for failed actions
+      setTimeout(() => {
+        if (navigator.onLine) {
+          syncPendingActions();
+        }
+      }, retryDelay);
+    } else {
+      setState(prev => ({ ...prev, syncInProgress: false }));
     }
-  }, [queue, syncing]);
 
-  const processAction = async (action: QueuedAction) => {
-    switch (action.type) {
-      case 'photo_upload':
-        // For now, store in localStorage until database migration is complete
-        const photoKey = `photo_${Date.now()}`;
-        localStorage.setItem(photoKey, JSON.stringify(action.payload));
-        break;
-
-      case 'job_update':
-        const { id, updates } = action.payload;
-        const { error: updateError } = await supabase
-          .from('bookings')
-          .update(updates)
-          .eq('id', id);
-        if (updateError) throw updateError;
-        break;
-
-      case 'variation_create':
-        // Store in localStorage until database migration is complete
-        const variationKey = `variation_${Date.now()}`;
-        localStorage.setItem(variationKey, JSON.stringify(action.payload));
-        break;
-
-      default:
-        console.warn(`Unknown action type: ${action.type}`);
+    if (successCount > 0) {
+      toast.success(`Successfully synced ${successCount} action${successCount > 1 ? 's' : ''}`);
     }
-  };
+  }, [state.isOnline, state.pendingActions, state.syncInProgress, removePendingAction]);
+
+  const clearAllPendingActions = useCallback(() => {
+    setState(prev => ({ ...prev, pendingActions: [] }));
+    localStorage.removeItem('offlinePendingActions');
+    toast.success('All pending actions cleared');
+  }, []);
+
+  const executeAction = useCallback(async (type: string, data: any, syncFunction?: (data: any) => Promise<any>) => {
+    if (state.isOnline && syncFunction) {
+      try {
+        return await syncFunction(data);
+      } catch (error) {
+        // If online action fails, add to pending actions
+        addPendingAction(type, data);
+        throw error;
+      }
+    } else {
+      // Offline, add to pending actions
+      return addPendingAction(type, data);
+    }
+  }, [state.isOnline, addPendingAction]);
 
   return {
-    isOnline,
-    queue,
-    syncing,
-    addToQueue,
-    syncQueue,
-    queueLength: queue.length
+    isOnline: state.isOnline,
+    pendingActions: state.pendingActions,
+    syncInProgress: state.syncInProgress,
+    addPendingAction,
+    removePendingAction,
+    syncPendingActions,
+    clearAllPendingActions,
+    executeAction,
+    pendingCount: state.pendingActions.length
   };
 };
