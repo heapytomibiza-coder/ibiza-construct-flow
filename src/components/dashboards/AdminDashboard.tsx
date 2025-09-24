@@ -10,10 +10,10 @@ import AIPanel from '@/components/admin/AIPanel';
 import { CommandCenter } from '@/components/admin/workspaces/CommandCenter';
 import { ServiceCatalogue } from '@/components/admin/workspaces/ServiceCatalogue';
 import { ProfessionalHub } from '@/components/admin/workspaces/ProfessionalHub';
-import { ProfessionalAnalytics } from '@/components/admin/workspaces/ProfessionalAnalytics';
-import { AISystemMonitor } from '@/components/admin/workspaces/AISystemMonitor';
-import { RiskManagement } from '@/components/admin/workspaces/RiskManagement';
-import { MarketIntelligence } from '@/components/admin/workspaces/MarketIntelligence';
+import ProfessionalAnalytics from '@/components/admin/workspaces/ProfessionalAnalytics';
+import AISystemMonitor from '@/components/admin/workspaces/AISystemMonitor';
+import RiskManagement from '@/components/admin/workspaces/RiskManagement';
+import MarketIntelligence from '@/components/admin/workspaces/MarketIntelligence';
 import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
 
 interface Profile {
