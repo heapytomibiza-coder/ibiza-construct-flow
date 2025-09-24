@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import ProfessionalDashboard from '@/components/dashboards/ProfessionalDashboard';
+import MobileProfessionalDashboard from '@/components/professional/MobileProfessionalDashboard';
 
 export default function ProfessionalDashboardPage() {
   const { user, profile, loading } = useAuth();
@@ -12,5 +12,5 @@ export default function ProfessionalDashboardPage() {
     );
   }
 
-  return <ProfessionalDashboard user={user} profile={profile} />;
+  return <MobileProfessionalDashboard user={user} profile={profile} />;
 }
