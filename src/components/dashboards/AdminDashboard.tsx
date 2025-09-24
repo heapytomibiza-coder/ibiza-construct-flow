@@ -3,13 +3,17 @@ import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home } from 'lucide-react';
+import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import AIPanel from '@/components/admin/AIPanel';
 import CommandCentre from '@/components/admin/workspaces/CommandCentre';
 import ServiceCatalogue from '@/components/admin/workspaces/ServiceCatalogue';
 import ProfessionalHub from '@/components/admin/workspaces/ProfessionalHub';
+import ProfessionalAnalytics from '@/components/admin/workspaces/ProfessionalAnalytics';
+import AISystemMonitor from '@/components/admin/workspaces/AISystemMonitor';
+import RiskManagement from '@/components/admin/workspaces/RiskManagement';
+import MarketIntelligence from '@/components/admin/workspaces/MarketIntelligence';
 import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
 
 interface Profile {
@@ -34,10 +38,12 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
 
   const workspaces = [
     { id: 'command', name: 'Command Centre', icon: Command, description: 'Live jobs and operations' },
-    { id: 'services', name: 'Service Catalogue', icon: Folder, description: 'Manage service taxonomy' },
+    { id: 'analytics', name: 'Professional Analytics', icon: Users, description: 'Performance & earnings analytics' },
+    { id: 'ai-monitor', name: 'AI System Monitor', icon: Bot, description: 'AI functions & performance' },
+    { id: 'risk', name: 'Risk Management', icon: Shield, description: 'Risk flags & safety compliance' },
+    { id: 'market', name: 'Market Intelligence', icon: TrendingUp, description: 'Market analysis & opportunities' },
     { id: 'professionals', name: 'Professional Hub', icon: Users, description: 'Professional management' },
-    { id: 'finance', name: 'Finance Console', icon: CreditCard, description: 'Payments & escrow' },
-    { id: 'safety', name: 'Trust & Safety', icon: Shield, description: 'Reviews & moderation' },
+    { id: 'services', name: 'Service Catalogue', icon: Folder, description: 'Manage service taxonomy' },
     { id: 'legacy', name: 'Legacy Tools', icon: Settings, description: 'Original admin tools' }
   ];
 
@@ -62,26 +68,18 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
     switch (activeWorkspace) {
       case 'command':
         return <CommandCentre />;
-      case 'services':
-        return <ServiceCatalogue />;
+      case 'analytics':
+        return <ProfessionalAnalytics />;
+      case 'ai-monitor':
+        return <AISystemMonitor />;
+      case 'risk':
+        return <RiskManagement />;
+      case 'market':
+        return <MarketIntelligence />;
       case 'professionals':
         return <ProfessionalHub />;
-      case 'finance':
-        return (
-          <div className="text-center py-12">
-            <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-medium text-lg mb-2">Finance Console</h3>
-            <p className="text-muted-foreground">Escrow management and payment processing coming soon</p>
-          </div>
-        );
-      case 'safety':
-        return (
-          <div className="text-center py-12">
-            <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-medium text-lg mb-2">Trust & Safety</h3>
-            <p className="text-muted-foreground">Review moderation and safety tools coming soon</p>
-          </div>
-        );
+      case 'services':
+        return <ServiceCatalogue />;
       case 'legacy':
         return <AdminDashboardTabs />;
       default:
@@ -113,7 +111,11 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
                   <SidebarMenuButton 
                     onClick={() => {
                       setActiveWorkspace(workspace.id);
-                      setAiContext({ type: workspace.id === 'command' ? 'job' : 'overview' });
+                      setAiContext({ 
+                        type: workspace.id === 'command' ? 'job' : 
+                             workspace.id === 'professionals' ? 'professional' :
+                             workspace.id === 'services' ? 'service' : 'overview' 
+                      });
                     }}
                     className={activeWorkspace === workspace.id ? 'bg-primary text-primary-foreground' : ''}
                   >
