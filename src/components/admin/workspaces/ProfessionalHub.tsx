@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import PriceValidationBadge from '../PriceValidationBadge';
 
 interface Professional {
   id: string;
@@ -397,9 +398,21 @@ export default function ProfessionalHub() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="font-medium">
-                        {prof.hourly_rate ? `€${prof.hourly_rate}/hr` : 'Not set'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">
+                          {prof.hourly_rate ? `€${prof.hourly_rate}/hr` : 'Not set'}
+                        </span>
+                        {prof.hourly_rate && prof.hourly_rate > 0 && (
+                          <PriceValidationBadge
+                            serviceType="professional"
+                            category="general"
+                            subcategory="hourly"
+                            currentPrice={prof.hourly_rate}
+                            location="general"
+                            professionalId={prof.id}
+                          />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">

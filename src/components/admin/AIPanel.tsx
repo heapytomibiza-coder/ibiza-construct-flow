@@ -90,7 +90,15 @@ export default function AIPanel({ context, className = '' }: AIPanelProps) {
     try {
       const { data, error } = await supabase.functions.invoke(functionName, { body: payload });
       if (error) throw error;
+      
       console.log(`${functionName} result:`, data);
+      
+      // If the response includes a run_id, we can track the operation
+      if (data?.run_id) {
+        // You could open the result modal here to show detailed results
+        console.log(`AI operation tracked with ID: ${data.run_id}`);
+      }
+      
       await loadAIInsights(); // Refresh insights after AI operation
     } catch (error) {
       console.error(`Error running ${functionName}:`, error);

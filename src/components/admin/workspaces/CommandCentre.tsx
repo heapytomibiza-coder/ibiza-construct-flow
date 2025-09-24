@@ -20,10 +20,14 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
-  Play
+  Play,
+  Bot,
+  Sparkles
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import ProfessionalMatchModal from '../ProfessionalMatchModal';
+import CommunicationsDrafterModal from '../CommunicationsDrafterModal';
 
 interface Job {
   id: string;
@@ -48,6 +52,9 @@ export default function CommandCentre() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [showMatchModal, setShowMatchModal] = useState(false);
+  const [showCommModal, setShowCommModal] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     draft: 0,
@@ -189,8 +196,12 @@ export default function CommandCentre() {
   };
 
   const handleBulkBroadcast = () => {
-    // TODO: Implement bulk broadcast to professionals
-    console.log('Broadcasting to professionals for jobs:', selectedJobs);
+    setShowCommModal(true);
+  };
+
+  const handleFindProfessionals = (job: Job) => {
+    setSelectedJob(job);
+    setShowMatchModal(true);
   };
 
   return (
@@ -274,9 +285,15 @@ export default function CommandCentre() {
                 Refresh
               </Button>
               {selectedJobs.length > 0 && (
-                <Button size="sm" onClick={handleBulkBroadcast}>
-                  Broadcast to Professionals ({selectedJobs.length})
-                </Button>
+                <>
+                  <Button size="sm" variant="outline" onClick={handleBulkBroadcast}>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Draft Message ({selectedJobs.length})
+                  </Button>
+                  <Button size="sm" onClick={handleBulkBroadcast}>
+                    Broadcast to Professionals ({selectedJobs.length})
+                  </Button>
+                </>
               )}
             </div>
           </div>
@@ -383,6 +400,14 @@ export default function CommandCentre() {
                         <Button variant="ghost" size="icon" className="h-8 w-8">
                           <Eye className="h-4 w-4" />
                         </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8"
+                          onClick={() => handleFindProfessionals(job)}
+                        >
+                          <Bot className="h-4 w-4" />
+                        </Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8">
                           <MessageSquare className="h-4 w-4" />
                         </Button>
@@ -395,6 +420,32 @@ export default function CommandCentre() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* AI-Powered Modals */}
+      {selectedJob && (
+        <ProfessionalMatchModal
+          isOpen={showMatchModal}
+          onClose={() => {
+            setShowMatchModal(false);
+            setSelectedJob(null);
+          }}
+          jobId={selectedJob.id}
+          jobTitle={selectedJob.title}
+          jobDescription={selectedJob.description || ''}
+        />
+      )}
+
+      <CommunicationsDrafterModal
+        isOpen={showCommModal}
+        onClose={() => setShowCommModal(false)}
+        context={{
+          type: 'job_broadcast',
+          recipients: selectedJobs.map(id => `job_${id}`),
+          data: {
+            jobs: filteredJobs.filter(job => selectedJobs.includes(job.id))
+          }
+        }}
+      />
     </div>
   );
 }
