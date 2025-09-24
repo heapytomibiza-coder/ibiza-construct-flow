@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ProfessionalCard from '@/components/professionals/ProfessionalCard';
+import EnhancedProfessionalCard from '@/components/professionals/EnhancedProfessionalCard';
 import { 
   Users,
   Shield,
@@ -202,7 +202,20 @@ export default function Professionals() {
             ) : (
               <div className="grid md:grid-cols-2 gap-6">
                 {filteredProfessionals.map((professional) => (
-                  <ProfessionalCard key={professional.id} professional={professional} />
+                  <EnhancedProfessionalCard key={professional.id} professional={{
+                    id: professional.id,
+                    user_id: professional.id,
+                    full_name: professional.full_name || 'Professional',
+                    bio: professional.bio,
+                    specializations: professional.specializations || [],
+                    rating: professional.rating,
+                    total_jobs_completed: professional.total_jobs_completed,
+                    availability_status: professional.availability_status || 'available',
+                    profile_image_url: professional.profile_image_url,
+                    base_price_band: 'standard' as const,
+                    coverage_area: {},
+                    verification_status: 'verified'
+                  }} />
                 ))}
               </div>
             )}

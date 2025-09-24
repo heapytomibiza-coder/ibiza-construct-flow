@@ -4,7 +4,7 @@ import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car } fro
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ServiceSearch } from '@/components/services/ServiceSearch';
-import { ServiceFilters } from '@/components/services/ServiceFilters';
+import EnhancedServiceFilters from '@/components/services/EnhancedServiceFilters';
 import { EnhancedServiceCard } from '@/components/services/EnhancedServiceCard';
 import { ServicePackages } from '@/components/services/ServicePackages';
 import { useServices } from '@/hooks/useServices';
@@ -281,8 +281,8 @@ const Services = () => {
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Filters Sidebar */}
               <div className="lg:w-80 flex-shrink-0">
-                <ServiceFilters
-                  filters={filters}
+                <EnhancedServiceFilters
+                  filters={{...filters, subcategories: [], specialists: [], location: ''}}
                   onFiltersChange={setFilters}
                   categories={getCategories()}
                   visible={showFilters || window.innerWidth >= 1024}
