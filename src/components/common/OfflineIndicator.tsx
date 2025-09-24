@@ -1,16 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Wifi, WifiOff, CloudOff, AlertCircle } from 'lucide-react';
+import { Wifi, WifiOff, CloudOff, AlertCircle, RefreshCw } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface OfflineIndicatorProps {
   className?: string;
+  variant?: 'mobile' | 'professional';
+  useOfflineSync?: {
+    isOnline: boolean;
+    pendingCount: number;
+    syncInProgress: boolean;
+    syncPendingActions: () => Promise<void>;
+  };
 }
 
-export const OfflineIndicator = ({ className }: OfflineIndicatorProps) => {
+export const OfflineIndicator = ({ 
+  className, 
+  variant = 'mobile',
+  useOfflineSync 
+}: OfflineIndicatorProps) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showIndicator, setShowIndicator] = useState(!navigator.onLine);
   const [hasOfflineCapability, setHasOfflineCapability] = useState(false);
+
+  // Use external offline sync hook if provided (professional variant)
+  const syncData = useOfflineSync || {
+    isOnline,
+    pendingCount: 0,
+    syncInProgress: false,
+    syncPendingActions: () => Promise.resolve()
+  };
 
   useEffect(() => {
     // Check if service worker is registered for offline capability
@@ -22,20 +43,24 @@ export const OfflineIndicator = ({ className }: OfflineIndicatorProps) => {
 
     const handleOnline = () => {
       setIsOnline(true);
-      setShowIndicator(false);
-      toast.success('Connection restored', {
-        icon: <Wifi className="w-4 h-4" />,
-        duration: 3000
-      });
+      if (variant === 'mobile') {
+        setShowIndicator(false);
+        toast.success('Connection restored', {
+          icon: <Wifi className="w-4 h-4" />,
+          duration: 3000
+        });
+      }
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      setShowIndicator(true);
-      toast.error('You are offline', {
-        icon: <WifiOff className="w-4 h-4" />,
-        duration: 5000
-      });
+      if (variant === 'mobile') {
+        setShowIndicator(true);
+        toast.error('You are offline', {
+          icon: <WifiOff className="w-4 h-4" />,
+          duration: 5000
+        });
+      }
     };
 
     window.addEventListener('online', handleOnline);
@@ -45,8 +70,45 @@ export const OfflineIndicator = ({ className }: OfflineIndicatorProps) => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [variant]);
 
+  // Professional variant logic
+  if (variant === 'professional') {
+    if (syncData.isOnline && syncData.pendingCount === 0) return null;
+
+    return (
+      <div className="fixed top-4 right-4 z-50">
+        <Badge 
+          variant={syncData.isOnline ? "secondary" : "destructive"}
+          className="flex items-center gap-2 px-3 py-2"
+        >
+          {syncData.isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+          
+          {!syncData.isOnline && "Offline Mode"}
+          
+          {syncData.isOnline && syncData.pendingCount > 0 && (
+            <div className="flex items-center gap-2">
+              <span>Syncing {syncData.pendingCount} changes</span>
+              {syncData.syncInProgress ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={syncData.syncPendingActions}
+                  className="h-6 px-2"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                </Button>
+              )}
+            </div>
+          )}
+        </Badge>
+      </div>
+    );
+  }
+
+  // Mobile variant logic
   if (!showIndicator) return null;
 
   return (

@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SafeAreaProvider } from "@/components/mobile/SafeAreaProvider";
 import { MobileGestures } from "@/components/mobile/MobileGestures";
-import { OfflineIndicator } from "@/components/mobile/OfflineIndicator";
+import { OfflineIndicator } from "@/components/common/OfflineIndicator";
 import { useWebVitals } from "@/hooks/useWebVitals";
 import { ErrorBoundary } from "./components/error/ErrorBoundary";
 import MobileAppWrapper from "./components/app/MobileAppWrapper";
@@ -24,7 +24,7 @@ const VerifyEmail = React.lazy(() => import("./pages/VerifyEmail"));
 const AuthCallback = React.lazy(() => import("./pages/AuthCallback"));
 const QuickStart = React.lazy(() => import("./pages/QuickStart"));
 const RoleSwitcher = React.lazy(() => import("./pages/RoleSwitcher"));
-const ProtectedRoute = React.lazy(() => import("./components/ProtectedRoute"));
+const RouteGuard = React.lazy(() => import("./components/RouteGuard"));
 const ClientDashboardPage = React.lazy(() => import("./pages/ClientDashboardPage"));
 const ProfessionalDashboardPage = React.lazy(() => import("./pages/ProfessionalDashboardPage"));
 const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
@@ -108,9 +108,9 @@ export default function App() {
               DISABLE_AUTH_FOR_WIREFRAME ? (
                 <PostJob />
               ) : (
-                <ProtectedRoute role="client">
+                <RouteGuard requiredRole="client">
                   <PostJob />
-                </ProtectedRoute>
+                </RouteGuard>
               )
             } />
           )}
@@ -120,9 +120,9 @@ export default function App() {
             DISABLE_AUTH_FOR_WIREFRAME ? (
               <Templates />
             ) : (
-              <ProtectedRoute role="client">
+              <RouteGuard requiredRole="client">
                 <Templates />
-              </ProtectedRoute>
+              </RouteGuard>
             )
           } />
           
@@ -131,36 +131,36 @@ export default function App() {
             DISABLE_AUTH_FOR_WIREFRAME ? (
               <Dashboard />
             ) : (
-              <ProtectedRoute>
+              <RouteGuard>
                 <Dashboard />
-              </ProtectedRoute>
+              </RouteGuard>
             )
           } />
           <Route path="/dashboard/client" element={
             DISABLE_AUTH_FOR_WIREFRAME ? (
               <ClientDashboardPage />
             ) : (
-              <ProtectedRoute role="client">
+              <RouteGuard requiredRole="client">
                 <ClientDashboardPage />
-              </ProtectedRoute>
+              </RouteGuard>
             )
           } />
           <Route path="/dashboard/pro" element={
             DISABLE_AUTH_FOR_WIREFRAME ? (
               <ProfessionalDashboardPage />
             ) : (
-              <ProtectedRoute role="professional">
+              <RouteGuard requiredRole="professional">
                 <ProfessionalDashboardPage />
-              </ProtectedRoute>
+              </RouteGuard>
             )
           } />
           <Route path="/dashboard/admin" element={
             DISABLE_AUTH_FOR_WIREFRAME ? (
               <AdminDashboardPage />
             ) : (
-              <ProtectedRoute role="admin">
+              <RouteGuard requiredRole="admin">
                 <AdminDashboardPage />
-              </ProtectedRoute>
+              </RouteGuard>
             )
           } />
           
