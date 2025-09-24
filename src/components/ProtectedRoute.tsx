@@ -11,7 +11,7 @@ export default function ProtectedRoute({ children, role }: ProtectedRouteProps) 
   const [status, setStatus] = useState<'loading' | 'ok' | 'redirect'>('loading');
 
   // Enable auth for production
-  const DISABLE_AUTH_FOR_WIREFRAME = false;
+  const DISABLE_AUTH_FOR_WIREFRAME = true;
 
   useEffect(() => {
     (async () => {
