@@ -41,21 +41,23 @@ const Dashboard = () => {
         // Get user profile to determine role-based redirect
         const { data: profile } = await supabase
           .from('profiles')
-          .select('roles')
+          .select('roles, active_role')
           .eq('id', session.user.id)
           .single();
 
-        if (profile?.roles) {
-          const roles = profile.roles as string[];
-          if (roles.includes('admin')) {
+        if (profile) {
+          // Use active_role if set, otherwise fall back to first available role
+          const activeRole = profile.active_role || (Array.isArray(profile.roles) ? profile.roles[0] : 'client');
+          
+          if (activeRole === 'admin') {
             navigate('/dashboard/admin');
-          } else if (roles.includes('professional')) {
+          } else if (activeRole === 'professional') {
             navigate('/dashboard/pro');
           } else {
             navigate('/dashboard/client');
           }
         } else {
-          // Default to client if no role found
+          // Default to client if no profile found
           navigate('/dashboard/client');
         }
       } catch (error) {
