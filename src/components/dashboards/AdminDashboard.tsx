@@ -7,13 +7,13 @@ import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import AIPanel from '@/components/admin/AIPanel';
-import CommandCentre from '@/components/admin/workspaces/CommandCentre';
-import ServiceCatalogue from '@/components/admin/workspaces/ServiceCatalogue';
-import ProfessionalHub from '@/components/admin/workspaces/ProfessionalHub';
-import ProfessionalAnalytics from '@/components/admin/workspaces/ProfessionalAnalytics';
-import AISystemMonitor from '@/components/admin/workspaces/AISystemMonitor';
-import RiskManagement from '@/components/admin/workspaces/RiskManagement';
-import MarketIntelligence from '@/components/admin/workspaces/MarketIntelligence';
+import { CommandCenter } from '@/components/admin/workspaces/CommandCenter';
+import { ServiceCatalogue } from '@/components/admin/workspaces/ServiceCatalogue';
+import { ProfessionalHub } from '@/components/admin/workspaces/ProfessionalHub';
+import { ProfessionalAnalytics } from '@/components/admin/workspaces/ProfessionalAnalytics';
+import { AISystemMonitor } from '@/components/admin/workspaces/AISystemMonitor';
+import { RiskManagement } from '@/components/admin/workspaces/RiskManagement';
+import { MarketIntelligence } from '@/components/admin/workspaces/MarketIntelligence';
 import AdminDashboardTabs from '@/components/admin/AdminDashboardTabs';
 
 interface Profile {
@@ -67,7 +67,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const renderWorkspaceContent = () => {
     switch (activeWorkspace) {
       case 'command':
-        return <CommandCentre />;
+        return <CommandCenter />;
       case 'analytics':
         return <ProfessionalAnalytics />;
       case 'ai-monitor':
@@ -83,7 +83,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       case 'legacy':
         return <AdminDashboardTabs />;
       default:
-        return <CommandCentre />;
+        return <CommandCenter />;
     }
   };
 

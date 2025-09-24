@@ -1,533 +1,433 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Search, 
   Filter, 
-  UserCheck, 
-  UserX, 
-  AlertTriangle,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Eye,
-  Edit,
-  FileText,
-  MapPin,
-  Star,
-  Shield,
+  Star, 
+  MapPin, 
+  Clock, 
   DollarSign,
+  TrendingUp,
+  Users,
+  Award,
+  AlertCircle,
+  CheckCircle,
   Calendar
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
-import PriceValidationBadge from '../PriceValidationBadge';
+import { toast } from 'sonner';
 
 interface Professional {
   id: string;
-  user_id: string;
-  bio: string | null;
-  verification_status: string;
-  experience_years: number | null;
-  hourly_rate: number | null;
-  skills: string[] | null;
-  languages: string[] | null;
-  zones: string[] | null;
-  created_at: string | null;
-  updated_at: string | null;
-  // Joined data
-  full_name?: string;
-  email?: string;
-  profile_completion?: number;
-  documents_count?: number;
-  active_jobs?: number;
-  rating_avg?: number;
+  name: string;
+  email: string;
+  avatar_url?: string;
+  primary_trade: string;
+  experience_years: number;
+  hourly_rate: number;
+  rating: number;
+  total_jobs: number;
+  completion_rate: number;
+  location: string;
+  status: 'active' | 'inactive' | 'suspended';
+  verification_status: 'verified' | 'pending' | 'rejected';
+  last_active: string;
+  earnings_month: number;
+  next_job_scheduled?: string;
 }
 
-interface Document {
-  id: string;
-  professional_id: string;
-  document_type: string;
-  file_name: string;
-  verification_status: string;
-  expires_at?: string;
-  created_at: string;
+interface ProfessionalStats {
+  total_professionals: number;
+  active_professionals: number;
+  verified_professionals: number;
+  avg_rating: number;
+  total_earnings_month: number;
+  jobs_completed_month: number;
 }
 
-export default function ProfessionalHub() {
+export const ProfessionalHub = () => {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [filteredProfessionals, setFilteredProfessionals] = useState<Professional[]>([]);
+  const [stats, setStats] = useState<ProfessionalStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
-  const [stats, setStats] = useState({
-    total: 0,
-    pending: 0,
-    approved: 0,
-    suspended: 0,
-    documents_pending: 0
-  });
 
   useEffect(() => {
     loadProfessionals();
-    loadDocuments();
+    loadStats();
   }, []);
 
-  useEffect(() => {
-    filterProfessionals();
-  }, [professionals, searchTerm, statusFilter]);
-
   const loadProfessionals = async () => {
-    setLoading(true);
     try {
-      const { data: professionalsData, error } = await supabase
-        .from('professional_profiles')
-        .select(`
-          *,
-          profiles!user_id(full_name, roles)
-        `)
-        .order('created_at', { ascending: false });
+      // Mock professional data - in real implementation, this would come from database
+      const mockProfessionals: Professional[] = [
+        {
+          id: '1',
+          name: 'John Smith',
+          email: 'john.smith@example.com',
+          avatar_url: '/api/placeholder/40/40',
+          primary_trade: 'Plumbing',
+          experience_years: 8,
+          hourly_rate: 85,
+          rating: 4.8,
+          total_jobs: 247,
+          completion_rate: 98.2,
+          location: 'Downtown, City Center',
+          status: 'active',
+          verification_status: 'verified',
+          last_active: '2024-01-15T10:30:00Z',
+          earnings_month: 4250,
+          next_job_scheduled: '2024-01-16T09:00:00Z'
+        },
+        {
+          id: '2',
+          name: 'Sarah Johnson',
+          email: 'sarah.johnson@example.com',
+          primary_trade: 'Electrical',
+          experience_years: 12,
+          hourly_rate: 95,
+          rating: 4.9,
+          total_jobs: 189,
+          completion_rate: 96.8,
+          location: 'North District',
+          status: 'active',
+          verification_status: 'verified',
+          last_active: '2024-01-15T14:20:00Z',
+          earnings_month: 5180,
+          next_job_scheduled: '2024-01-16T11:30:00Z'
+        },
+        {
+          id: '3',
+          name: 'Mike Williams',
+          email: 'mike.williams@example.com',
+          primary_trade: 'Carpentry',
+          experience_years: 15,
+          hourly_rate: 75,
+          rating: 4.7,
+          total_jobs: 156,
+          completion_rate: 94.5,
+          location: 'South Valley',
+          status: 'inactive',
+          verification_status: 'verified',
+          last_active: '2024-01-10T16:45:00Z',
+          earnings_month: 2890
+        },
+        {
+          id: '4',
+          name: 'Lisa Chen',
+          email: 'lisa.chen@example.com',
+          primary_trade: 'HVAC',
+          experience_years: 6,
+          hourly_rate: 80,
+          rating: 4.6,
+          total_jobs: 98,
+          completion_rate: 97.1,
+          location: 'East Side',
+          status: 'active',
+          verification_status: 'pending',
+          last_active: '2024-01-15T13:15:00Z',
+          earnings_month: 3120,
+          next_job_scheduled: '2024-01-17T08:00:00Z'
+        }
+      ];
 
-      if (error) throw error;
-
-      // Get document counts separately
-      const { data: documentData } = await supabase
-        .from('professional_documents')
-        .select('professional_id');
-        
-      const documentCounts = documentData ?
-        Object.entries(
-          documentData.reduce((acc: Record<string, number>, doc) => {
-            acc[doc.professional_id] = (acc[doc.professional_id] || 0) + 1;
-            return acc;
-          }, {})
-        ).map(([professional_id, count]) => ({ professional_id, count })) : [];
-
-      const processedProfessionals = professionalsData?.map(prof => {
-        const completionScore = calculateProfileCompletion(prof);
-        const docCount = documentCounts?.find(dc => dc.professional_id === prof.user_id)?.count || 0;
-        
-        return {
-          id: prof.user_id, // Use user_id as the id
-          user_id: prof.user_id,
-          bio: prof.bio,
-          verification_status: prof.verification_status || 'unverified',
-          experience_years: prof.experience_years,
-          hourly_rate: prof.hourly_rate,
-          skills: Array.isArray(prof.skills) ? prof.skills.map(skill => String(skill)) : [],
-          languages: Array.isArray(prof.languages) ? prof.languages.map(lang => String(lang)) : [],
-          zones: Array.isArray(prof.zones) ? prof.zones.map(zone => String(zone)) : [],
-          created_at: prof.created_at,
-          updated_at: prof.updated_at,
-          full_name: prof.profiles?.full_name || 'Unknown',
-          profile_completion: completionScore,
-          documents_count: docCount,
-          active_jobs: 0, // TODO: Add real count from contracts table
-          rating_avg: 0 // TODO: Add real rating system
-        };
-      }) || [];
-
-      setProfessionals(processedProfessionals);
-      calculateStats(processedProfessionals);
+      setProfessionals(mockProfessionals);
+      setLoading(false);
     } catch (error) {
       console.error('Error loading professionals:', error);
-    } finally {
+      toast.error('Failed to load professional data');
       setLoading(false);
     }
   };
 
-  const loadDocuments = async () => {
+  const loadStats = async () => {
     try {
-      const { data: documentsData, error } = await supabase
-        .from('professional_documents')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Mock stats data
+      const mockStats: ProfessionalStats = {
+        total_professionals: 1247,
+        active_professionals: 892,
+        verified_professionals: 734,
+        avg_rating: 4.6,
+        total_earnings_month: 248750,
+        jobs_completed_month: 1289
+      };
 
-      if (error) throw error;
-      setDocuments(documentsData || []);
+      setStats(mockStats);
     } catch (error) {
-      console.error('Error loading documents:', error);
+      console.error('Error loading stats:', error);
     }
-  };
-
-  const calculateProfileCompletion = (prof: any): number => {
-    let score = 0;
-    const maxScore = 100;
-    
-    if (prof.bio) score += 15;
-    if (prof.experience_years) score += 10;
-    if (prof.hourly_rate) score += 10;
-    if (prof.skills && prof.skills.length > 0) score += 20;
-    if (prof.languages && prof.languages.length > 0) score += 10;
-    if (prof.zones && prof.zones.length > 0) score += 15;
-    if (prof.portfolio_images && prof.portfolio_images.length > 0) score += 20;
-    
-    return Math.min(score, maxScore);
-  };
-
-  const calculateStats = (profData: Professional[]) => {
-    const stats = profData.reduce((acc, prof) => {
-      acc.total++;
-      switch (prof.verification_status) {
-        case 'pending':
-          acc.pending++;
-          break;
-        case 'verified':
-          acc.approved++;
-          break;
-        case 'suspended':
-          acc.suspended++;
-          break;
-      }
-      return acc;
-    }, { total: 0, pending: 0, approved: 0, suspended: 0, documents_pending: 0 });
-
-    // Count pending documents
-    stats.documents_pending = documents.filter(doc => doc.verification_status === 'pending').length;
-    
-    setStats(stats);
-  };
-
-  const filterProfessionals = () => {
-    let filtered = [...professionals];
-
-    if (searchTerm) {
-      filtered = filtered.filter(prof => 
-        prof.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        prof.bio?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(prof => prof.verification_status === statusFilter);
-    }
-
-    setFilteredProfessionals(filtered);
   };
 
   const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: { variant: 'secondary' as const, icon: <Clock className="w-3 h-3" /> },
-      verified: { variant: 'default' as const, icon: <CheckCircle className="w-3 h-3" /> },
-      suspended: { variant: 'destructive' as const, icon: <XCircle className="w-3 h-3" /> },
-      unverified: { variant: 'outline' as const, icon: <AlertTriangle className="w-3 h-3" /> }
-    };
-
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    
-    return (
-      <Badge variant={config.variant} className="flex items-center gap-1">
-        {config.icon}
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
-
-  const handleStatusChange = async (professionalId: string, newStatus: string) => {
-    try {
-      const { error } = await supabase
-        .from('professional_profiles')
-        .update({ verification_status: newStatus })
-        .eq('user_id', professionalId);
-
-      if (error) throw error;
-      
-      // Reload data
-      loadProfessionals();
-    } catch (error) {
-      console.error('Error updating status:', error);
+    switch (status) {
+      case 'active':
+        return <Badge variant="default">Active</Badge>;
+      case 'inactive':
+        return <Badge variant="secondary">Inactive</Badge>;
+      case 'suspended':
+        return <Badge variant="destructive">Suspended</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
-  const OnboardingQueue = () => (
-    <div className="space-y-4">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Pending Review</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-600" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Approved</p>
-                <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
+  const getVerificationBadge = (status: string) => {
+    switch (status) {
+      case 'verified':
+        return <Badge variant="default" className="bg-green-500"><CheckCircle className="w-3 h-3 mr-1" />Verified</Badge>;
+      case 'pending':
+        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+      case 'rejected':
+        return <Badge variant="destructive"><AlertCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Suspended</p>
-                <p className="text-2xl font-bold text-red-600">{stats.suspended}</p>
-              </div>
-              <XCircle className="h-8 w-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
+  const filteredProfessionals = professionals.filter(prof =>
+    prof.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    prof.primary_trade.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    prof.location.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Docs Pending</p>
-                <p className="text-2xl font-bold text-orange-600">{stats.documents_pending}</p>
-              </div>
-              <FileText className="h-8 w-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
+  if (loading) {
+    return (
+      <div className="space-y-6 p-6">
+        <div className="text-center">Loading Professional Hub...</div>
       </div>
-
-      {/* Professionals Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Professional Applications</CardTitle>
-              <CardDescription>Review and approve professional profiles</CardDescription>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search professionals..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64"
-                />
-              </div>
-              
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="verified">Approved</SelectItem>
-                  <SelectItem value="suspended">Suspended</SelectItem>
-                  <SelectItem value="unverified">Unverified</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardHeader>
-        
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Professional</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Completion</TableHead>
-                <TableHead>Experience</TableHead>
-                <TableHead>Rate</TableHead>
-                <TableHead>Documents</TableHead>
-                <TableHead>Applied</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
-                    Loading professionals...
-                  </TableCell>
-                </TableRow>
-              ) : filteredProfessionals.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    No professionals found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredProfessionals.map((prof) => (
-                  <TableRow key={prof.id} className="hover:bg-muted/50">
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src="" />
-                          <AvatarFallback>
-                            {prof.full_name?.charAt(0) || 'P'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{prof.full_name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {prof.skills?.slice(0, 2).join(', ')}
-                            {prof.skills && prof.skills.length > 2 && '...'}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(prof.verification_status)}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Progress value={prof.profile_completion} className="w-16" />
-                        <span className="text-sm text-muted-foreground">
-                          {prof.profile_completion}%
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm">
-                        {prof.experience_years ? `${prof.experience_years} years` : 'Not set'}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">
-                          {prof.hourly_rate ? `€${prof.hourly_rate}/hr` : 'Not set'}
-                        </span>
-                        {prof.hourly_rate && prof.hourly_rate > 0 && (
-                          <PriceValidationBadge
-                            serviceType="professional"
-                            category="general"
-                            subcategory="hourly"
-                            currentPrice={prof.hourly_rate}
-                            location="general"
-                            professionalId={prof.id}
-                          />
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="text-xs">
-                        {prof.documents_count || 0} docs
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm text-muted-foreground">
-                        {format(new Date(prof.created_at), 'MMM d, yyyy')}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8"
-                          onClick={() => setSelectedProfessional(prof)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Select onValueChange={(value) => handleStatusChange(prof.id, value)}>
-                          <SelectTrigger className="w-24 h-8">
-                            <SelectValue placeholder="Action" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="verified">
-                              <div className="flex items-center gap-2">
-                                <UserCheck className="h-3 w-3" />
-                                Approve
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="suspended">
-                              <div className="flex items-center gap-2">
-                                <UserX className="h-3 w-3" />
-                                Suspend
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="pending">
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-3 w-3" />
-                                Pending
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const DocumentReview = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Document Verification</CardTitle>
-        <CardDescription>Review uploaded professional documents</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="text-center py-8 text-muted-foreground">
-          Document review interface will be implemented here
-        </div>
-      </CardContent>
-    </Card>
-  );
+    );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Professional Hub</h2>
-          <p className="text-muted-foreground">
-            Manage professional applications, approvals, and verification
-          </p>
+          <h2 className="text-3xl font-bold">Professional Hub</h2>
+          <p className="text-muted-foreground">Manage and monitor professional workforce</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary">{stats.total} total professionals</Badge>
-        </div>
+        <Button>
+          <Users className="w-4 h-4 mr-2" />
+          Add Professional
+        </Button>
       </div>
 
-      <Tabs defaultValue="onboarding" className="space-y-6">
+      {/* Professional Stats */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-2">
+                <Users className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Professionals</p>
+                  <p className="text-2xl font-bold">{stats.total_professionals}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Active</p>
+                  <p className="text-2xl font-bold">{stats.active_professionals}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-2">
+                <Award className="w-5 h-5 text-blue-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Verified</p>
+                  <p className="text-2xl font-bold">{stats.verified_professionals}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-2">
+                <Star className="w-5 h-5 text-yellow-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Avg Rating</p>
+                  <p className="text-2xl font-bold">{stats.avg_rating}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-2">
+                <DollarSign className="w-5 h-5 text-green-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Monthly Earnings</p>
+                  <p className="text-2xl font-bold">${(stats.total_earnings_month / 1000).toFixed(0)}k</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5 text-purple-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Jobs Completed</p>
+                  <p className="text-2xl font-bold">{stats.jobs_completed_month}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="onboarding">Onboarding Queue</TabsTrigger>
-          <TabsTrigger value="documents">Document Review</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="verification">Verification</TabsTrigger>
+          <TabsTrigger value="scheduling">Scheduling</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="onboarding">
-          <OnboardingQueue />
+        <TabsContent value="overview" className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search professionals..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button variant="outline">
+              <Filter className="w-4 h-4 mr-2" />
+              Filter
+            </Button>
+          </div>
+
+          <div className="grid gap-4">
+            {filteredProfessionals.map((professional) => (
+              <Card key={professional.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage src={professional.avatar_url} />
+                        <AvatarFallback>{professional.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-semibold text-lg">{professional.name}</h3>
+                        <p className="text-muted-foreground">{professional.primary_trade}</p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">{professional.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right">
+                        <div className="flex items-center space-x-2">
+                          <Star className="w-4 h-4 text-yellow-500" />
+                          <span className="font-medium">{professional.rating}</span>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {professional.total_jobs} jobs
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">${professional.hourly_rate}/hr</div>
+                        <div className="text-sm text-muted-foreground">
+                          {professional.experience_years} years exp
+                        </div>
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        {getStatusBadge(professional.status)}
+                        {getVerificationBadge(professional.verification_status)}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Completion Rate</p>
+                      <div className="flex items-center space-x-2">
+                        <Progress value={professional.completion_rate} className="flex-1" />
+                        <span className="text-sm font-medium">{professional.completion_rate}%</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Monthly Earnings</p>
+                      <p className="font-medium">${professional.earnings_month}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Last Active</p>
+                      <p className="font-medium">
+                        {new Date(professional.last_active).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Next Job</p>
+                      <p className="font-medium">
+                        {professional.next_job_scheduled 
+                          ? new Date(professional.next_job_scheduled).toLocaleDateString()
+                          : 'None scheduled'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
 
-        <TabsContent value="documents">
-          <DocumentReview />
-        </TabsContent>
-
-        <TabsContent value="analytics">
+        <TabsContent value="performance" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Professional Analytics</CardTitle>
-              <CardDescription>Insights and performance metrics</CardDescription>
+              <CardTitle>Performance Analytics</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                Analytics dashboard will be implemented here
-              </div>
+              <p className="text-muted-foreground">Professional performance metrics and analytics will be displayed here.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="verification" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Verification Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Professional verification status and document management tools.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="scheduling" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Schedule Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Professional scheduling and availability management tools.</p>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
     </div>
   );
-}
+};
