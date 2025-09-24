@@ -134,6 +134,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_risk_flags: {
+        Row: {
+          created_at: string
+          flag_type: string
+          id: string
+          job_id: string
+          message: string
+          resolved_at: string | null
+          severity: string
+          suggested_action: string | null
+        }
+        Insert: {
+          created_at?: string
+          flag_type: string
+          id?: string
+          job_id: string
+          message: string
+          resolved_at?: string | null
+          severity: string
+          suggested_action?: string | null
+        }
+        Update: {
+          created_at?: string
+          flag_type?: string
+          id?: string
+          job_id?: string
+          message?: string
+          resolved_at?: string | null
+          severity?: string
+          suggested_action?: string | null
+        }
+        Relationships: []
+      }
       ai_runs: {
         Row: {
           completed_at: string | null
@@ -841,6 +874,60 @@ export type Database = {
           sample_size?: number
           service_category?: string
           service_subcategory?: string
+        }
+        Relationships: []
+      }
+      pro_badges: {
+        Row: {
+          awarded_at: string
+          id: string
+          key: string
+          meta: Json | null
+          pro_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          id?: string
+          key: string
+          meta?: Json | null
+          pro_id: string
+        }
+        Update: {
+          awarded_at?: string
+          id?: string
+          key?: string
+          meta?: Json | null
+          pro_id?: string
+        }
+        Relationships: []
+      }
+      pro_targets: {
+        Row: {
+          created_at: string
+          id: string
+          jobs_target: number | null
+          period: string
+          pro_id: string
+          revenue_target: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          jobs_target?: number | null
+          period: string
+          pro_id: string
+          revenue_target?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          jobs_target?: number | null
+          period?: string
+          pro_id?: string
+          revenue_target?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
