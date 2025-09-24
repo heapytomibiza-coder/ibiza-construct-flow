@@ -128,7 +128,7 @@ export default function MobileProfessionalDashboard({ user, profile }: MobilePro
                 key={item.id}
                 variant={activeScreen === item.id ? "default" : "ghost"}
                 className="w-full justify-start"
-                onClick={() => setActiveScreen(item.id)}
+                    onClick={() => setActiveScreen(item.id as Screen)}
               >
                 <item.icon className="w-4 h-4 mr-3" />
                 {item.label}
@@ -160,7 +160,7 @@ export default function MobileProfessionalDashboard({ user, profile }: MobilePro
                             key={item.id}
                             variant={activeScreen === item.id ? "default" : "ghost"}
                             className="w-full justify-start"
-                            onClick={() => setActiveScreen(item.id)}
+                            onClick={() => setActiveScreen(item.id as Screen)}
                           >
                             <item.icon className="w-4 h-4 mr-3" />
                             {item.label}
