@@ -2252,9 +2252,11 @@ export type Database = {
           id: string
           preferred_language: string | null
           roles: Json | null
+          simple_mode: boolean | null
           tasker_onboarding_status:
             | Database["public"]["Enums"]["tasker_onboarding_status"]
             | null
+          tour_completed: boolean | null
           updated_at: string | null
         }
         Insert: {
@@ -2265,9 +2267,11 @@ export type Database = {
           id: string
           preferred_language?: string | null
           roles?: Json | null
+          simple_mode?: boolean | null
           tasker_onboarding_status?:
             | Database["public"]["Enums"]["tasker_onboarding_status"]
             | null
+          tour_completed?: boolean | null
           updated_at?: string | null
         }
         Update: {
@@ -2278,9 +2282,11 @@ export type Database = {
           id?: string
           preferred_language?: string | null
           roles?: Json | null
+          simple_mode?: boolean | null
           tasker_onboarding_status?:
             | Database["public"]["Enums"]["tasker_onboarding_status"]
             | null
+          tour_completed?: boolean | null
           updated_at?: string | null
         }
         Relationships: []
