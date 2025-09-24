@@ -6,9 +6,16 @@ import { Input } from '@/components/ui/input';
 import { 
   Search, Filter, CreditCard, Download, Eye, 
   Euro, Clock, CheckCircle, AlertTriangle,
-  Receipt, Wallet, Shield, Calendar, FileText
+  Receipt, Wallet, Shield, Calendar, FileText,
+  Settings, Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { EnhancedWallet } from '@/components/payments/EnhancedWallet';
+import { EUVATInvoicing } from '@/components/payments/EUVATInvoicing';
+import { SplitPayments } from '@/components/payments/SplitPayments';
+import { EscrowTimeline } from '@/components/payments/EscrowTimeline';
+import { DisputeWizard } from '@/components/disputes/DisputeWizard';
+import { DisputeTracker } from '@/components/disputes/DisputeTracker';
 
 interface Transaction {
   id: string;
@@ -92,9 +99,11 @@ const mockWallet: Wallet = {
 };
 
 export const ClientPaymentsView = () => {
+  const [activeTab, setActiveTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [showDisputeWizard, setShowDisputeWizard] = useState(false);
 
   const filteredTransactions = mockTransactions.filter(transaction => {
     const matchesSearch = transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -135,26 +144,33 @@ export const ClientPaymentsView = () => {
     }
   };
 
-  return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-display font-bold text-charcoal">Payments & Invoices</h2>
-          <p className="text-muted-foreground">Manage your payments, escrow, and financial records</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
-          <Button className="bg-gradient-hero text-white">
-            <CreditCard className="w-4 h-4 mr-2" />
-            Add Payment Method
-          </Button>
-        </div>
-      </div>
+  const handleDisputeSubmit = (dispute: any) => {
+    console.log('Dispute submitted:', dispute);
+    setShowDisputeWizard(false);
+  };
 
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: Wallet },
+    { id: 'wallet', label: 'Wallet', icon: CreditCard },
+    { id: 'invoicing', label: 'EU VAT & Invoicing', icon: FileText },
+    { id: 'split', label: 'Split Payments', icon: Settings },
+    { id: 'escrow', label: 'Escrow Timeline', icon: Shield },
+    { id: 'disputes', label: 'Disputes', icon: AlertTriangle }
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'wallet': return <EnhancedWallet />;
+      case 'invoicing': return <EUVATInvoicing />;
+      case 'split': return <SplitPayments />;
+      case 'escrow': return <EscrowTimeline />;
+      case 'disputes': return <DisputeTracker />;
+      default: return <OverviewContent />;
+    }
+  };
+
+  const OverviewContent = () => (
+    <>
       {/* Wallet Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="card-luxury">
@@ -210,165 +226,152 @@ export const ClientPaymentsView = () => {
         </Card>
       </div>
 
-      {/* Filters */}
-      <Card className="card-luxury">
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
-                <Input
-                  placeholder="Search transactions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-border rounded-lg text-sm bg-white"
-              >
-                <option value="all">All Status</option>
-                <option value="completed">Completed</option>
-                <option value="pending">Pending</option>
-                <option value="failed">Failed</option>
-                <option value="disputed">Disputed</option>
-              </select>
-              
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-3 py-2 border border-border rounded-lg text-sm bg-white"
-              >
-                <option value="all">All Types</option>
-                <option value="payment">Payments</option>
-                <option value="escrow_deposit">Escrow Deposits</option>
-                <option value="escrow_release">Escrow Releases</option>
-                <option value="refund">Refunds</option>
-              </select>
-              
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                More Filters
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Transactions List */}
+      {/* Recent Transactions Preview */}
       <Card className="card-luxury">
         <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Recent Transactions</CardTitle>
+            <Button variant="outline" size="sm">View All</Button>
+          </div>
         </CardHeader>
         <CardContent>
-          {filteredTransactions.length > 0 ? (
-            <div className="space-y-4">
-              {filteredTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-4 border border-sand-dark/20 rounded-lg hover:bg-sand-light/30 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-sand-light rounded-full flex items-center justify-center">
-                      {getTransactionIcon(transaction.type)}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-charcoal">{transaction.description}</h4>
-                        {getStatusBadge(transaction.status)}
-                      </div>
-                      
-                      <div className="text-sm text-muted-foreground space-y-1">
-                        <p>{getTransactionLabel(transaction.type)} • {transaction.jobTitle}</p>
-                        <p>Professional: {transaction.professionalName} • {transaction.paymentMethod}</p>
-                        {transaction.invoiceNumber && (
-                          <p>Invoice: {transaction.invoiceNumber}</p>
-                        )}
-                      </div>
-                    </div>
+          {filteredTransactions.slice(0, 3).map((transaction) => (
+            <div key={transaction.id} className="flex items-center justify-between p-4 border border-sand-dark/20 rounded-lg hover:bg-sand-light/30 transition-colors mb-3 last:mb-0">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-sand-light rounded-full flex items-center justify-center">
+                  {getTransactionIcon(transaction.type)}
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-charcoal">{transaction.description}</h4>
+                    {getStatusBadge(transaction.status)}
                   </div>
                   
-                  <div className="text-right">
-                    <div className={cn(
-                      "text-lg font-semibold mb-1",
-                      transaction.type === 'refund' ? "text-green-600" : "text-charcoal"
-                    )}>
-                      {transaction.type === 'refund' ? '+' : '-'}€{transaction.amount.toFixed(2)}
-                    </div>
-                    <div className="text-sm text-muted-foreground mb-2">
-                      {new Date(transaction.date).toLocaleDateString()}
-                    </div>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Download className="w-4 h-4" />
-                      </Button>
-                    </div>
+                  <div className="text-sm text-muted-foreground">
+                    <p>{getTransactionLabel(transaction.type)} • {transaction.jobTitle}</p>
                   </div>
                 </div>
-              ))}
+              </div>
+              
+              <div className="text-right">
+                <div className={cn(
+                  "text-lg font-semibold mb-1",
+                  transaction.type === 'refund' ? "text-green-600" : "text-charcoal"
+                )}>
+                  {transaction.type === 'refund' ? '+' : '-'}€{transaction.amount.toFixed(2)}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {new Date(transaction.date).toLocaleDateString()}
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-8">
-              <Euro className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-display font-semibold mb-2">No transactions found</h3>
-              <p className="text-muted-foreground">
-                {searchQuery || statusFilter !== 'all' || typeFilter !== 'all'
-                  ? 'Try adjusting your search or filters'
-                  : 'Your transactions will appear here once you start working with professionals'
-                }
-              </p>
-            </div>
-          )}
+          ))}
         </CardContent>
       </Card>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="card-luxury border-copper/20">
+        <Card className="card-luxury border-copper/20 cursor-pointer hover:bg-copper/5 transition-colors" onClick={() => setActiveTab('escrow')}>
           <CardContent className="p-6 text-center">
             <Shield className="w-8 h-8 mx-auto mb-3 text-copper" />
-            <h3 className="font-display font-semibold mb-2">Escrow Protection</h3>
+            <h3 className="font-display font-semibold mb-2">Escrow Timeline</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Your payments are protected until work is completed
+              Track milestone progress and payment releases
             </p>
             <Button variant="outline" size="sm" className="border-copper text-copper">
-              Learn More
+              View Timeline
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="card-luxury">
+        <Card className="card-luxury cursor-pointer hover:bg-blue-50 transition-colors" onClick={() => setActiveTab('invoicing')}>
           <CardContent className="p-6 text-center">
             <FileText className="w-8 h-8 mx-auto mb-3 text-blue-500" />
-            <h3 className="font-display font-semibold mb-2">Tax Documents</h3>
+            <h3 className="font-display font-semibold mb-2">EU VAT & Invoicing</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Download annual summaries for tax purposes
+              Manage VAT-compliant invoices and tax documents
             </p>
             <Button variant="outline" size="sm">
-              Download 2024
+              Manage Invoices
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="card-luxury">
+        <Card className="card-luxury cursor-pointer hover:bg-orange-50 transition-colors" onClick={() => setShowDisputeWizard(true)}>
           <CardContent className="p-6 text-center">
             <AlertTriangle className="w-8 h-8 mx-auto mb-3 text-orange-500" />
             <h3 className="font-display font-semibold mb-2">Dispute Resolution</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Need help with a payment issue?
+              Need help with a payment or work quality issue?
             </p>
-            <Button variant="outline" size="sm">
-              Get Support
+            <Button variant="outline" size="sm" className="border-orange-500 text-orange-500">
+              File Dispute
             </Button>
           </CardContent>
         </Card>
       </div>
+    </>
+  );
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-display font-bold text-charcoal">Payments & Financial Management</h2>
+          <p className="text-muted-foreground">Complete payment system with EU VAT, escrow protection, and dispute resolution</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline">
+            <Download className="w-4 h-4 mr-2" />
+            Export All
+          </Button>
+          <Button className="bg-gradient-hero text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Payment Method
+          </Button>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="border-b border-sand-dark/20">
+        <nav className="-mb-px flex space-x-8 overflow-x-auto">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "flex items-center gap-2 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors",
+                  activeTab === tab.id
+                    ? "border-copper text-copper"
+                    : "border-transparent text-muted-foreground hover:text-charcoal hover:border-sand-dark/30"
+                )}
+              >
+                <Icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      <div className="mt-6">
+        {renderTabContent()}
+      </div>
+
+      {/* Dispute Wizard Modal */}
+      {showDisputeWizard && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <DisputeWizard 
+            onClose={() => setShowDisputeWizard(false)}
+            onSubmit={handleDisputeSubmit}
+          />
+        </div>
+      )}
     </div>
   );
 };

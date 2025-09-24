@@ -536,6 +536,159 @@ export type Database = {
         }
         Relationships: []
       }
+      dispute_evidence: {
+        Row: {
+          created_at: string
+          description: string | null
+          dispute_id: string
+          evidence_type: string
+          file_name: string
+          file_size: number | null
+          file_type: string
+          file_url: string
+          id: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          dispute_id: string
+          evidence_type: string
+          file_name: string
+          file_size?: number | null
+          file_type: string
+          file_url: string
+          id?: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          dispute_id?: string
+          evidence_type?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          id?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
+      disputes: {
+        Row: {
+          amount_disputed: number | null
+          contract_id: string | null
+          created_at: string
+          created_by: string
+          description: string
+          dispute_number: string
+          disputed_against: string
+          due_date: string | null
+          escalated_at: string | null
+          id: string
+          invoice_id: string | null
+          job_id: string
+          priority: string
+          resolution_amount: number | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount_disputed?: number | null
+          contract_id?: string | null
+          created_at?: string
+          created_by: string
+          description: string
+          dispute_number: string
+          disputed_against: string
+          due_date?: string | null
+          escalated_at?: string | null
+          id?: string
+          invoice_id?: string | null
+          job_id: string
+          priority?: string
+          resolution_amount?: number | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          amount_disputed?: number | null
+          contract_id?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string
+          dispute_number?: string
+          disputed_against?: string
+          due_date?: string | null
+          escalated_at?: string | null
+          id?: string
+          invoice_id?: string | null
+          job_id?: string
+          priority?: string
+          resolution_amount?: number | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      escrow_milestones: {
+        Row: {
+          amount: number
+          completed_date: string | null
+          contract_id: string
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          milestone_number: number
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          completed_date?: string | null
+          contract_id: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          milestone_number: number
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          completed_date?: string | null
+          contract_id?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          milestone_number?: number
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       escrow_payments: {
         Row: {
           amount: number
@@ -623,6 +776,72 @@ export type Database = {
           payload?: Json
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      invoices: {
+        Row: {
+          contract_id: string | null
+          created_at: string
+          currency: string
+          due_date: string | null
+          id: string
+          invoice_number: string
+          job_id: string | null
+          line_items: Json
+          notes: string | null
+          paid_date: string | null
+          payment_method_id: string | null
+          split_payment: Json | null
+          status: string
+          subtotal: number
+          total_amount: number
+          updated_at: string
+          user_id: string
+          vat_amount: number | null
+          vat_rate: number | null
+        }
+        Insert: {
+          contract_id?: string | null
+          created_at?: string
+          currency?: string
+          due_date?: string | null
+          id?: string
+          invoice_number: string
+          job_id?: string | null
+          line_items?: Json
+          notes?: string | null
+          paid_date?: string | null
+          payment_method_id?: string | null
+          split_payment?: Json | null
+          status?: string
+          subtotal?: number
+          total_amount?: number
+          updated_at?: string
+          user_id: string
+          vat_amount?: number | null
+          vat_rate?: number | null
+        }
+        Update: {
+          contract_id?: string | null
+          created_at?: string
+          currency?: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          job_id?: string | null
+          line_items?: Json
+          notes?: string | null
+          paid_date?: string | null
+          payment_method_id?: string | null
+          split_payment?: Json | null
+          status?: string
+          subtotal?: number
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+          vat_amount?: number | null
+          vat_rate?: number | null
         }
         Relationships: []
       }
@@ -1003,6 +1222,51 @@ export type Database = {
           tasker_id?: string
           type?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_methods: {
+        Row: {
+          billing_address: Json | null
+          brand: string | null
+          created_at: string
+          expires_month: number | null
+          expires_year: number | null
+          id: string
+          is_default: boolean
+          last_four: string | null
+          stripe_payment_method_id: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_address?: Json | null
+          brand?: string | null
+          created_at?: string
+          expires_month?: number | null
+          expires_year?: number | null
+          id?: string
+          is_default?: boolean
+          last_four?: string | null
+          stripe_payment_method_id: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_address?: Json | null
+          brand?: string | null
+          created_at?: string
+          expires_month?: number | null
+          expires_year?: number | null
+          id?: string
+          is_default?: boolean
+          last_four?: string | null
+          stripe_payment_method_id?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
