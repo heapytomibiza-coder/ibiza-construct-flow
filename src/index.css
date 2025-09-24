@@ -9,7 +9,13 @@ All colors MUST be HSL. Premium construction platform aesthetic.
 */
 
 @layer base {
-  :root {
+:root {
+    /* Safe area support for mobile notches */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+
     /* Mediterranean Luxury Color Palette */
     --background: 41 22% 96%; /* Warm sand white */
     --foreground: 220 13% 18%; /* Sophisticated charcoal */
@@ -179,6 +185,58 @@ All colors MUST be HSL. Premium construction platform aesthetic.
 }
 
 @layer utilities {
+  /* Mobile-first utility classes for safe areas */
+  .safe-top {
+    padding-top: var(--safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: var(--safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  .safe-x {
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  .safe-y {
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  /* Sticky elements with safe areas */
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    padding-top: var(--safe-area-inset-top);
+    z-index: 50;
+  }
+
+  .sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+    z-index: 50;
+  }
+
+  /* Performance optimizations */
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 200px;
+  }
+
   .transition-luxury {
     transition: var(--transition-luxury);
   }
