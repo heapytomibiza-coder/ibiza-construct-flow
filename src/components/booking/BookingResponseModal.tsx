@@ -106,6 +106,11 @@ export function BookingResponseModal({
     });
   };
 
+  // Don't render if no booking request is selected
+  if (!bookingRequest) {
+    return null;
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
