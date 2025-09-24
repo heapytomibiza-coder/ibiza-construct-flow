@@ -29,8 +29,8 @@ const ClientDashboardPage = React.lazy(() => import("./pages/ClientDashboardPage
 const ProfessionalDashboardPage = React.lazy(() => import("./pages/ProfessionalDashboardPage"));
 const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
 const PostJob = React.lazy(() => import("./pages/PostJob"));
-const ServicePage = React.lazy(() => import("./pages/ServicePage"));
-const ServiceDetailPage = React.lazy(() => import("./pages/ServiceDetailPage").then(module => ({ default: module.ServiceDetailPage })));
+const ServicePage = React.lazy(() => import("./pages/UnifiedServicePage"));
+const ServiceDetailPage = React.lazy(() => import("./pages/UnifiedServicePage"));
 const Services = React.lazy(() => import("./pages/Services"));
 const Professionals = React.lazy(() => import("./pages/Professionals"));
 const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));

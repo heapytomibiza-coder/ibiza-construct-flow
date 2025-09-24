@@ -3,19 +3,25 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Wrench, Home, Zap, Paintbrush, Hammer, Droplets, 
-  Thermometer, Car, Clock, Shield, Star 
+  Thermometer, Car, Clock, Shield, Star, Users, Award, Calendar 
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useServices } from '@/hooks/useServices';
+import { ServiceConfigurator } from '@/components/services/ServiceConfigurator';
+import { ServiceHeroSection } from '@/components/services/ServiceHeroSection';
+import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
+import { PortfolioGallery } from '@/components/services/PortfolioGallery';
 
-interface ServicePageProps {}
+interface UnifiedServicePageProps {}
 
-const ServicePage: React.FC<ServicePageProps> = () => {
-  const { slug } = useParams<{ slug: string }>();
+const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
+  const { slug, micro } = useParams<{ slug: string; micro?: string }>();
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
@@ -32,13 +38,19 @@ const ServicePage: React.FC<ServicePageProps> = () => {
     'Car': Car
   };
 
-  // Find the service by slug
+  // Find the service by slug (and optionally micro for detailed view)
   const serviceCards = getServiceCards();
-  const currentServiceCard = serviceCards.find(s => s.slug === slug) || serviceCards[0];
+  const currentServiceCard = micro 
+    ? serviceCards.find(s => s.slug === slug && s.micro === micro)
+    : serviceCards.find(s => s.slug === slug) || serviceCards[0];
+  
   const currentCategory = currentServiceCard?.category || 'Handyman';
   const categoryServices = getServicesByCategory(currentCategory);
   
   const IconComponent = iconMap[currentServiceCard?.icon as keyof typeof iconMap] || Wrench;
+
+  // Determine if this is a detailed professional service view or general service category view
+  const isDetailedView = !!micro && !!currentServiceCard;
 
   // Get popular tasks from database services
   const popularTasks = categoryServices
@@ -65,6 +77,32 @@ const ServicePage: React.FC<ServicePageProps> = () => {
       features: ["Custom solutions", "Multiple tasks", "Project planning", "Follow-up visits"]
     }
   ];
+
+  // Mock professional data for detailed view
+  const mockProfessionalData = {
+    name: "Elite Home Services",
+    rating: 4.9,
+    reviewCount: 2847,
+    completedJobs: 1250,
+    responseTime: "2 hours",
+    location: "Amsterdam, Netherlands",
+    heroImages: [
+      "/placeholder.svg",
+      "/placeholder.svg", 
+      "/placeholder.svg"
+    ],
+    portfolioImages: [
+      "/placeholder.svg",
+      "/placeholder.svg",
+      "/placeholder.svg",
+      "/placeholder.svg",
+      "/placeholder.svg",
+      "/placeholder.svg"
+    ],
+    certifications: ["Licensed Professional", "Insured", "Background Checked"],
+    about: "Professional home services with over 10 years of experience. We specialize in high-quality workmanship and customer satisfaction.",
+    workingHours: "Mon-Sat: 8:00 AM - 6:00 PM"
+  };
 
   const handleTaskClick = (task: string) => {
     if (jobWizardEnabled) {
@@ -101,6 +139,122 @@ const ServicePage: React.FC<ServicePageProps> = () => {
     );
   }
 
+  if (!currentServiceCard) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
+        <main className="container mx-auto px-4 py-8 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">Service Not Found</h1>
+          <p className="text-muted-foreground">The service you're looking for doesn't exist.</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Render detailed professional service view
+  if (isDetailedView) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
+        
+        {/* Hero Section for detailed view */}
+        <ServiceHeroSection 
+          service={currentServiceCard}
+          heroImages={mockProfessionalData.heroImages}
+          professionalStats={{
+            rating: mockProfessionalData.rating,
+            reviewCount: mockProfessionalData.reviewCount,
+            responseTime: mockProfessionalData.responseTime,
+            completedJobs: mockProfessionalData.completedJobs
+          }}
+        />
+
+        <main className="container mx-auto px-4 py-8">
+          {/* Professional Info */}
+          <ProfessionalProfileHeader 
+            professional={mockProfessionalData}
+            showContactButtons={true}
+          />
+
+          {/* Tabbed Content */}
+          <Tabs defaultValue="overview" className="w-full mt-8">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="portfolio" className="flex items-center gap-2">
+                <Award className="w-4 h-4" />
+                Portfolio
+              </TabsTrigger>
+              <TabsTrigger value="reviews" className="flex items-center gap-2">
+                <Star className="w-4 h-4" />
+                Reviews
+              </TabsTrigger>
+              <TabsTrigger value="booking" className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Book Service
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-6">
+              <Card className="card-luxury p-6">
+                <h3 className="text-xl font-semibold mb-4">Service Details</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium mb-2">Working Hours</h4>
+                    <p className="text-muted-foreground">{mockProfessionalData.workingHours}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Service Area</h4>
+                    <p className="text-muted-foreground">{mockProfessionalData.location} + 25km radius</p>
+                  </div>
+                </div>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="portfolio" className="space-y-6">
+              <PortfolioGallery images={mockProfessionalData.portfolioImages} />
+            </TabsContent>
+
+            <TabsContent value="reviews" className="space-y-6">
+              <Card className="card-luxury p-6">
+                <h3 className="text-xl font-semibold mb-4">Customer Reviews</h3>
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="border-b border-gray-100 pb-4 last:border-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="flex">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          ))}
+                        </div>
+                        <span className="font-medium">John D.</span>
+                        <span className="text-sm text-muted-foreground">• 2 weeks ago</span>
+                      </div>
+                      <p className="text-muted-foreground">
+                        Excellent service! Professional, on time, and great attention to detail. 
+                        Would definitely recommend and hire again.
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="booking" className="space-y-6">
+              <ServiceConfigurator service={currentServiceCard} />
+            </TabsContent>
+          </Tabs>
+        </main>
+        
+        <Footer />
+      </div>
+    );
+  }
+
+  // Render general service category view
   return (
     <div className="min-h-screen bg-background">
       <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
@@ -236,4 +390,4 @@ const ServicePage: React.FC<ServicePageProps> = () => {
   );
 };
 
-export default ServicePage;
+export default UnifiedServicePage;

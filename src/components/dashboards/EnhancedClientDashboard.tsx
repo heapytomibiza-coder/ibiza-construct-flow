@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { AIAssistantRail } from '@/components/ai/AIAssistantRail';
 import { ClientJobsView } from '@/components/client/ClientJobsView';
-import { CompareProsView } from '@/components/client/CompareProsView';
+import EnhancedComparePros from '@/components/client/EnhancedComparePros';
 import { EnhancedMessagingSystem } from '@/components/client/EnhancedMessagingSystem';
 import { EnhancedFileVault } from '@/components/client/EnhancedFileVault';
 import { ChangeOrderSystem } from '@/components/client/ChangeOrderSystem';
@@ -239,7 +239,7 @@ const EnhancedClientDashboard = ({ user, profile }: EnhancedClientDashboardProps
       case 'post-job':
         return <PostJobView />;
       case 'compare-pros':
-        return <CompareProsView />;
+        return <EnhancedComparePros />;
       case 'my-jobs':
         return <ClientJobsView bookings={bookings} loading={loading} />;
       case 'messages':
