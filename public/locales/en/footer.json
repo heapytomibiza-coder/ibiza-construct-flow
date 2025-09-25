@@ -1,0 +1,50 @@
+{
+  "brand": {
+    "name": "CS Ibiza",
+    "tagline": "Elite Network",
+    "description": "Constructive Solutions Ibiza connects you with the island's most trusted construction professionals. From quick fixes to luxury builds."
+  },
+  "sections": {
+    "services": {
+      "title": "Services",
+      "links": [
+        "Handyman Services",
+        "Home Renovations",
+        "Electrical Work",
+        "Plumbing",
+        "Construction",
+        "Pool & Outdoor"
+      ]
+    },
+    "company": {
+      "title": "Company",
+      "links": [
+        "About Us",
+        "How It Works",
+        "Join as Professional",
+        "SafePay Protection",
+        "Trust & Safety",
+        "Help Centre"
+      ]
+    },
+    "contact": {
+      "title": "Contact",
+      "address": "Ibiza, Balearic Islands, Spain",
+      "phone": "+34 971 XXX XXX",
+      "email": "hello@csibiza.com",
+      "emergency": {
+        "title": "Emergency Service",
+        "description": "24/7 support for urgent repairs",
+        "phone": "+34 600 XXX XXX"
+      }
+    }
+  },
+  "legal": {
+    "copyright": "© 2024 Constructive Solutions Ibiza. All rights reserved.",
+    "links": [
+      "Privacy Policy",
+      "Terms of Service", 
+      "Cookie Policy"
+    ]
+  }
+}

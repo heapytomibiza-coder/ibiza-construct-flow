@@ -1,0 +1,28 @@
+{
+  "services": {
+    "title": "Ningún Trabajo Demasiado Pequeño,",
+    "titleHighlight": "Ningún Sueño Demasiado Grande",
+    "subtitle": "Desde reparaciones rápidas hasta construcciones de lujo de millones de euros, nuestros profesionales verificados ofrecen excelencia en cualquier escala. Tu propiedad en Ibiza merece lo mejor.",
+    "popular": "Popular",
+    "ctaButton": "Obtener Cotización Instantánea",
+    "ctaSubtext": "Presupuestos gratuitos • Sin compromiso • Respuesta en 24h"
+  },
+  "benefits": {
+    "fastTrustedHelp": {
+      "title": "Ayuda rápida y confiable",
+      "description": "Profesionales verificados, cuando los necesitas"
+    },
+    "protectedPayments": {
+      "title": "Pagos protegidos",
+      "description": "Liberación de garantía solo cuando estés satisfecho"
+    },
+    "clearPricing": {
+      "title": "Precios transparentes",
+      "description": "Menús y presupuestos por adelantado"
+    },
+    "localExperts": {
+      "title": "Expertos locales",
+      "description": "Valorados por clientes de Ibiza como tú"
+    }
+  }
+}

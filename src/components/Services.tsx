@@ -1,11 +1,13 @@
 import React from 'react';
 import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useServices } from '@/contexts/ServicesContext';
 
 const Services = React.memo(() => {
   const navigate = useNavigate();
+  const { t } = useTranslation('components');
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const { getServiceCards, loading } = useServices();
   
@@ -47,11 +49,11 @@ const Services = React.memo(() => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-display text-4xl md:text-5xl font-bold text-charcoal mb-6">
-            No Job Too Small,<br />
-            <span className="text-copper">No Dream Too Big</span>
+            {t('services.title')}<br />
+            <span className="text-copper">{t('services.titleHighlight')}</span>
           </h2>
           <p className="text-body text-xl text-muted-foreground max-w-3xl mx-auto">
-            From quick fixes to million-euro luxury builds, our verified professionals deliver excellence at every scale. Your Ibiza property deserves the best.
+            {t('services.subtitle')}
           </p>
         </div>
 
@@ -80,7 +82,7 @@ const Services = React.memo(() => {
                 >
                   {service.popular && (
                     <div className="absolute -top-3 -right-3 bg-gradient-hero text-white px-3 py-1 rounded-full text-xs font-semibold">
-                      Popular
+                      {t('services.popular')}
                     </div>
                   )}
                   
@@ -112,10 +114,10 @@ const Services = React.memo(() => {
         {/* CTA */}
         <div className="text-center mt-12">
           <button className="btn-hero" onClick={handleGetQuoteClick}>
-            Get Instant Quote
+            {t('services.ctaButton')}
           </button>
           <p className="text-body text-muted-foreground mt-4">
-            Free estimates • No commitment • 24h response
+            {t('services.ctaSubtext')}
           </p>
         </div>
       </div>

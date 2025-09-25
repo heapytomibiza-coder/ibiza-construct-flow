@@ -1,0 +1,41 @@
+{
+  "title": "Cómo Funciona",
+  "subtitle": "Tres simples pasos para conectar con los mejores profesionales de construcción de Ibiza",
+  "steps": {
+    "describe": {
+      "title": "Describe Tu Proyecto",
+      "description": "Dinos qué necesitas hacer usando nuestro simple asistente. Sube fotos, establece tu presupuesto y especifica tu cronograma.",
+      "details": [
+        "Configuración de 5 minutos",
+        "Subida de fotos",
+        "Orientación de presupuesto",
+        "Planificación de cronograma"
+      ]
+    },
+    "match": {
+      "title": "Obtén Coincidencias y Compara",
+      "description": "Nuestra IA te conecta con profesionales verificados. Compara cotizaciones, reseñas y portafolios para encontrar tu pareja perfecta.",
+      "details": [
+        "Matching potenciado por IA",
+        "Cotizaciones instantáneas",
+        "Reseñas verificadas",
+        "Exposición de portafolio"
+      ]
+    },
+    "work": {
+      "title": "Trabajo Protegido",
+      "description": "Colabora de forma segura con la protección de depósito de garantía SafePay. Rastrea el progreso, comunícate y paga solo cuando estés satisfecho.",
+      "details": [
+        "Protección SafePay",
+        "Seguimiento de progreso",
+        "Mensajería directa",
+        "Garantía de satisfacción"
+      ]
+    }
+  },
+  "cta": {
+    "title": "¿Listo para Comenzar Tu Proyecto?",
+    "subtitle": "Únete a miles de clientes satisfechos que han encontrado a sus profesionales perfectos a través de CS Ibiza",
+    "button": "Publica Tu Proyecto Ahora"
+  }
+}

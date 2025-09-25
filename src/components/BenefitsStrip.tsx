@@ -1,27 +1,30 @@
 import React from 'react';
 import { Shield, Clock, Calculator, MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const BenefitsStrip = React.memo(() => {
+  const { t } = useTranslation('components');
+  
   const benefits = [
     {
       icon: Shield,
-      title: 'Fast, trusted help',
-      description: 'Vetted pros, right when you need them'
+      title: t('benefits.fastTrustedHelp.title'),
+      description: t('benefits.fastTrustedHelp.description')
     },
     {
       icon: Clock,
-      title: 'Protected payments',
-      description: 'Escrow release only when you\'re happy'
+      title: t('benefits.protectedPayments.title'),
+      description: t('benefits.protectedPayments.description')
     },
     {
       icon: Calculator,
-      title: 'Clear pricing',
-      description: 'Menus and estimates upfront'
+      title: t('benefits.clearPricing.title'),
+      description: t('benefits.clearPricing.description')
     },
     {
       icon: MapPin,
-      title: 'Local experts',
-      description: 'Rated by Ibiza clients like you'
+      title: t('benefits.localExperts.title'),
+      description: t('benefits.localExperts.description')
     }
   ];
 

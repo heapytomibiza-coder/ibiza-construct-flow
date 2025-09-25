@@ -1,0 +1,50 @@
+{
+  "brand": {
+    "name": "CS Ibiza",
+    "tagline": "Red Elite",
+    "description": "Soluciones Constructivas Ibiza te conecta con los profesionales de construcción más confiables de la isla. Desde reparaciones rápidas hasta construcciones de lujo."
+  },
+  "sections": {
+    "services": {
+      "title": "Servicios",
+      "links": [
+        "Servicios de Manitas",
+        "Renovaciones del Hogar",
+        "Trabajo Eléctrico",
+        "Fontanería",
+        "Construcción",
+        "Piscina y Exterior"
+      ]
+    },
+    "company": {
+      "title": "Empresa",
+      "links": [
+        "Acerca de Nosotros",
+        "Cómo Funciona",
+        "Únete como Profesional",
+        "Protección SafePay",
+        "Confianza y Seguridad",
+        "Centro de Ayuda"
+      ]
+    },
+    "contact": {
+      "title": "Contacto",
+      "address": "Ibiza, Islas Baleares, España",
+      "phone": "+34 971 XXX XXX",
+      "email": "hello@csibiza.com",
+      "emergency": {
+        "title": "Servicio de Emergencia",
+        "description": "Soporte 24/7 para reparaciones urgentes",
+        "phone": "+34 600 XXX XXX"
+      }
+    }
+  },
+  "legal": {
+    "copyright": "© 2024 Soluciones Constructivas Ibiza. Todos los derechos reservados.",
+    "links": [
+      "Política de Privacidad",
+      "Términos de Servicio",
+      "Política de Cookies"
+    ]
+  }
+}

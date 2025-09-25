@@ -1,0 +1,41 @@
+{
+  "title": "How It Works",
+  "subtitle": "Three simple steps to connect with Ibiza's finest construction professionals",
+  "steps": {
+    "describe": {
+      "title": "Describe Your Project",
+      "description": "Tell us what you need done using our simple wizard. Upload photos, set your budget, and specify your timeline.",
+      "details": [
+        "5-minute setup",
+        "Photo uploads",
+        "Budget guidance",
+        "Timeline planning"
+      ]
+    },
+    "match": {
+      "title": "Get Matched & Compare",
+      "description": "Our AI connects you with verified professionals. Compare quotes, reviews, and portfolios to find your perfect match.",
+      "details": [
+        "AI-powered matching",
+        "Instant quotes",
+        "Verified reviews",
+        "Portfolio showcase"
+      ]
+    },
+    "work": {
+      "title": "Work Protected",
+      "description": "Collaborate safely with SafePay escrow protection. Track progress, communicate, and pay only when satisfied.",
+      "details": [
+        "SafePay protection",
+        "Progress tracking",
+        "Direct messaging",
+        "Satisfaction guarantee"
+      ]
+    }
+  },
+  "cta": {
+    "title": "Ready to Start Your Project?",
+    "subtitle": "Join thousands of satisfied clients who've found their perfect professionals through CS Ibiza",
+    "button": "Post Your Project Now"
+  }
+}

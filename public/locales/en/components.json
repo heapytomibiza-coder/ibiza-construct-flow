@@ -1,0 +1,28 @@
+{
+  "services": {
+    "title": "No Job Too Small,",
+    "titleHighlight": "No Dream Too Big",
+    "subtitle": "From quick fixes to million-euro luxury builds, our verified professionals deliver excellence at every scale. Your Ibiza property deserves the best.",
+    "popular": "Popular",
+    "ctaButton": "Get Instant Quote",
+    "ctaSubtext": "Free estimates • No commitment • 24h response"
+  },
+  "benefits": {
+    "fastTrustedHelp": {
+      "title": "Fast, trusted help",
+      "description": "Vetted pros, right when you need them"
+    },
+    "protectedPayments": {
+      "title": "Protected payments", 
+      "description": "Escrow release only when you're happy"
+    },
+    "clearPricing": {
+      "title": "Clear pricing",
+      "description": "Menus and estimates upfront"
+    },
+    "localExperts": {
+      "title": "Local experts",
+      "description": "Rated by Ibiza clients like you"
+    }
+  }
+}
