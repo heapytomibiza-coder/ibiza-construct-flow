@@ -53,7 +53,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-hero rounded-lg flex items-center justify-center">
               <Home className="w-6 h-6 text-white" />
             </div>
@@ -61,7 +61,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
               <h1 className="text-display font-semibold text-charcoal text-lg">CS Ibiza</h1>
               <p className="text-xs text-muted-foreground -mt-1">Elite Network</p>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -76,9 +76,6 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             </Link>
             <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               {t('howItWorks')}
-            </Link>
-            <Link to="/contact" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('contact')}
             </Link>
           </nav>
 
@@ -172,9 +169,6 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
               </Link>
               <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 {t('howItWorks')}
-              </Link>
-              <Link to="/contact" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('contact')}
               </Link>
               <div className="flex flex-col space-y-3 pt-4">
                 <LanguageSwitcher />

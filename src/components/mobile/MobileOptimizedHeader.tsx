@@ -200,13 +200,6 @@ export const MobileOptimizedHeader = ({
                 >
                   How It Works
                 </Link>
-                <Link 
-                  to="/contact" 
-                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Contact
-                </Link>
               </div>
 
               {/* User Actions */}
