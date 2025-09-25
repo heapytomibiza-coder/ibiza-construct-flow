@@ -98,7 +98,7 @@ export default function ColorPreview() {
             <Button 
               size="lg" 
               className={selectedTheme === 'tech' 
-                ? 'bg-electric-blue hover:bg-tech-blue text-white shadow-electric' 
+                ? 'bg-golden-amber hover:bg-sandy-gold text-tech-navy shadow-golden font-semibold' 
                 : 'btn-hero'
               }
             >
@@ -109,12 +109,17 @@ export default function ColorPreview() {
               size="lg" 
               variant="outline"
               className={selectedTheme === 'tech' 
-                ? 'border-steel-gray text-white hover:bg-cool-slate' 
+                ? 'border-steel-gray text-white hover:bg-cool-slate hover:border-golden-amber' 
                 : ''
               }
             >
               Learn More
             </Button>
+            {selectedTheme === 'tech' && (
+              <Badge className="bg-sandy-gold text-tech-navy font-semibold px-3 py-1 text-sm">
+                7 DAY FREE TRIAL
+              </Badge>
+            )}
           </div>
         </section>
 
@@ -132,7 +137,7 @@ export default function ColorPreview() {
             }`}>
               <CardHeader className="text-center">
                 <feature.icon className={`h-12 w-12 mx-auto mb-4 ${
-                  selectedTheme === 'tech' ? 'text-electric-blue' : 'text-copper'
+                  selectedTheme === 'tech' ? 'text-sandy-gold' : 'text-copper'
                 }`} />
                 <CardTitle className="text-xl">{feature.title}</CardTitle>
               </CardHeader>
@@ -179,8 +184,8 @@ export default function ColorPreview() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {(selectedTheme === 'tech' ? [
               { name: 'Tech Navy', color: 'bg-tech-navy', text: 'text-white' },
-              { name: 'Electric Blue', color: 'bg-electric-blue', text: 'text-white' },
-              { name: 'Cool Slate', color: 'bg-cool-slate', text: 'text-white' },
+              { name: 'Golden Amber', color: 'bg-golden-amber', text: 'text-tech-navy' },
+              { name: 'Sandy Gold', color: 'bg-sandy-gold', text: 'text-tech-navy' },
               { name: 'Steel Gray', color: 'bg-steel-gray', text: 'text-charcoal' },
             ] : [
               { name: 'Copper', color: 'bg-copper', text: 'text-white' },

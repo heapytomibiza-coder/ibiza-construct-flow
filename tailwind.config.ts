@@ -70,6 +70,9 @@ export default {
         "steel-gray": "hsl(var(--steel-gray))",
         "electric-blue": "hsl(var(--electric-blue))",
         "deep-navy": "hsl(var(--deep-navy))",
+        "golden-amber": "hsl(var(--golden-amber))",
+        "sandy-gold": "hsl(var(--sandy-gold))",
+        "warm-gold": "hsl(var(--warm-gold))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -91,6 +94,8 @@ export default {
         'gradient-premium': 'var(--gradient-premium)',
         'gradient-tech': 'var(--gradient-tech)',
         'gradient-electric': 'var(--gradient-electric)',
+        'gradient-golden': 'var(--gradient-golden)',
+        'gradient-sandy': 'var(--gradient-sandy)',
       },
       boxShadow: {
         'luxury': 'var(--shadow-luxury)',
@@ -98,6 +103,8 @@ export default {
         'elegant': 'var(--shadow-elegant)',
         'tech': 'var(--shadow-tech)',
         'electric': 'var(--shadow-electric)',
+        'golden': 'var(--shadow-golden)',
+        'sandy': 'var(--shadow-sandy)',
       },
       transitionTimingFunction: {
         'luxury': 'var(--transition-luxury)',
