@@ -1,0 +1,42 @@
+{
+  "appName": "TM Direct Ibiza",
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "continue": "Continue",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "view": "View",
+    "book": "Book",
+    "contact": "Contact"
+  },
+  "lang": {
+    "en": "English",
+    "es": "Español"
+  },
+  "status": {
+    "pending": "Pending",
+    "active": "Active",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "open": "Open",
+    "closed": "Closed"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "network": "Network error, please try again",
+    "unauthorized": "Unauthorized access"
+  },
+  "success": {
+    "saved": "Successfully saved",
+    "deleted": "Successfully deleted",
+    "updated": "Successfully updated"
+  }
+}

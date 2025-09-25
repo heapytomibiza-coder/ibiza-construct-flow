@@ -1,0 +1,25 @@
+{
+  "searchPlaceholder": "Search for services...",
+  "categories": {
+    "all": "All Services",
+    "cleaning": "Cleaning",
+    "maintenance": "Maintenance",
+    "gardening": "Gardening",
+    "repairs": "Repairs",
+    "construction": "Construction",
+    "technology": "Technology"
+  },
+  "filters": {
+    "title": "Filters",
+    "priceRange": "Price Range",
+    "location": "Location",
+    "availability": "Availability",
+    "rating": "Rating"
+  },
+  "hero": {
+    "title": "Find Expert Services in Ibiza",
+    "subtitle": "Connect with trusted local professionals for all your home and business needs",
+    "searchPlaceholder": "What service do you need?",
+    "cta": "Get Started"
+  }
+}

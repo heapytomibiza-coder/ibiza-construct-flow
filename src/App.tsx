@@ -7,6 +7,7 @@ import { SafeAreaProvider } from "@/components/mobile/SafeAreaProvider";
 import { MobileGestures } from "@/components/mobile/MobileGestures";
 import { OfflineIndicator } from "@/components/common/OfflineIndicator";
 import { useWebVitals } from "@/hooks/useWebVitals";
+import { useLanguage } from "@/hooks/useLanguage";
 import { ErrorBoundary } from "./components/error/ErrorBoundary";
 import MobileAppWrapper from "./components/app/MobileAppWrapper";
 import { SkeletonLoader } from "./components/loading/SkeletonLoader";
@@ -45,6 +46,9 @@ const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
 export default function App() {
   // Initialize Web Vitals monitoring
   useWebVitals();
+  
+  // Initialize language management for SEO
+  useLanguage();
   
   // Enable auth for production
   const DISABLE_AUTH_FOR_WIREFRAME = true;

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import "./index.css";
+import "./i18n";
 import { ServicesProvider } from "./contexts/ServicesContext";
 import { FeatureFlagsProvider } from "./contexts/FeatureFlagsContext";
 
@@ -36,7 +37,9 @@ root.render(
     <QueryClientProvider client={qc}>
       <FeatureFlagsProvider>
         <ServicesProvider>
-          <App />
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <App />
+          </React.Suspense>
         </ServicesProvider>
       </FeatureFlagsProvider>
     </QueryClientProvider>

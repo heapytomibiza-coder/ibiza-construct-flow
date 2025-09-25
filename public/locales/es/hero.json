@@ -1,0 +1,21 @@
+{
+  "badge": "Red #1 Valorada de Ibiza",
+  "title": "Construyendo la Isla.",
+  "subtitle": "Construyendo Tus Sueños.",
+  "highlight": "La Red Premier de Construcción de Ibiza",
+  "description": "Conéctate con los profesionales de construcción más confiables de Ibiza. Desde trabajos de bricolaje hasta construcciones de lujo, nuestra comunidad instala calidad en toda la isla.",
+  "trustIndicators": {
+    "safepay": "Protegido SafePay",
+    "response": "Respuesta 24h",
+    "verified": "Solo Pros Verificados"
+  },
+  "cta": {
+    "postProject": "Publica Tu Proyecto",
+    "browseServices": "Explorar Servicios"
+  },
+  "stats": {
+    "pros": "Pros Verificados",
+    "projects": "Proyectos Hechos",
+    "protected": "Protegido"
+  }
+}
