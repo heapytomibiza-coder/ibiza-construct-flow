@@ -1,0 +1,31 @@
+{
+  "steps": {
+    "category": {
+      "title": "¿Qué tipo de trabajo necesitas?",
+      "subtitle": "Elige la categoría que mejor se adapte a tu proyecto",
+      "professionalServices": "Servicios profesionales",
+      "transportDeliveries": "Transporte y Entregas",
+      "movingDeliveryServices": "Servicios de mudanza y entrega",
+      "cantFind": "¿No encuentras lo que buscas?",
+      "browseSpecialized": "Navegar Categorías Especializadas"
+    },
+    "subcategory": {
+      "title": "¿Qué servicio específico necesitas?",
+      "category": "Categoría:",
+      "specializedWork": "Trabajo especializado"
+    },
+    "microservice": {
+      "title": "¿Exactamente qué hay que hacer?",
+      "back": "Atrás"
+    },
+    "details": {
+      "title": "Cuéntanos más sobre tu {{service}}",
+      "loading": "Espera mientras cargamos las preguntas adaptadas a tus necesidades",
+      "jobDetails": "Detalles del Trabajo",
+      "jobTitle": "Título del Trabajo",
+      "jobTitlePlaceholder": "ej., Reemplazar azulejos de cocina",
+      "continue": "Continuar",
+      "back": "Atrás"
+    }
+  }
+}
