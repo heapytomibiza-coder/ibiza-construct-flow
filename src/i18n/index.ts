@@ -24,7 +24,7 @@ i18n
       lookupQuerystring: 'lang',
     },
     react: { 
-      useSuspense: true 
+      useSuspense: false 
     },
   });
 

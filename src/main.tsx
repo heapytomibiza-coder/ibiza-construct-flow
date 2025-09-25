@@ -37,9 +37,7 @@ root.render(
     <QueryClientProvider client={qc}>
       <FeatureFlagsProvider>
         <ServicesProvider>
-          <React.Suspense fallback={<div>Loading...</div>}>
-            <App />
-          </React.Suspense>
+          <App />
         </ServicesProvider>
       </FeatureFlagsProvider>
     </QueryClientProvider>
