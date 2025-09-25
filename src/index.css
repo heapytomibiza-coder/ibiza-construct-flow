@@ -62,15 +62,27 @@ All colors MUST be HSL. Premium construction platform aesthetic.
     --charcoal-light: 220 13% 25%;
     --charcoal-dark: 220 13% 12%;
 
+    /* Tech-Inspired Palette (Augment Code Style) */
+    --tech-navy: 220 25% 8%;
+    --tech-blue: 220 90% 60%;
+    --cool-slate: 220 15% 15%;
+    --steel-gray: 220 10% 70%;
+    --electric-blue: 217 91% 60%;
+    --deep-navy: 220 39% 11%;
+
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(var(--copper)) 0%, hsl(var(--copper-dark)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(var(--sand-light)) 0%, hsl(var(--sand)) 100%);
     --gradient-premium: linear-gradient(135deg, hsl(var(--charcoal)) 0%, hsl(var(--charcoal-light)) 100%);
+    --gradient-tech: linear-gradient(135deg, hsl(var(--tech-navy)) 0%, hsl(var(--deep-navy)) 100%);
+    --gradient-electric: linear-gradient(135deg, hsl(var(--electric-blue)) 0%, hsl(var(--tech-blue)) 100%);
 
     /* Shadows */
     --shadow-luxury: 0 20px 25px -5px hsl(var(--copper) / 0.1), 0 10px 10px -5px hsl(var(--copper) / 0.04);
     --shadow-card: 0 10px 15px -3px hsl(var(--charcoal) / 0.1), 0 4px 6px -2px hsl(var(--charcoal) / 0.05);
     --shadow-elegant: 0 25px 50px -12px hsl(var(--charcoal) / 0.25);
+    --shadow-tech: 0 20px 40px -10px hsl(var(--tech-blue) / 0.3);
+    --shadow-electric: 0 10px 30px -5px hsl(var(--electric-blue) / 0.4);
 
     /* Typography */
     --font-display: 'Playfair Display', serif;

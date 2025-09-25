@@ -40,6 +40,7 @@ const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategori
 const PaymentSuccess = React.lazy(() => import("./pages/PaymentSuccess"));
 const PaymentCanceled = React.lazy(() => import("./pages/PaymentCanceled"));
 const Templates = React.lazy(() => import("./pages/Templates"));
+const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
 
 export default function App() {
   // Initialize Web Vitals monitoring
@@ -125,6 +126,9 @@ export default function App() {
               </RouteGuard>
             )
           } />
+          
+          {/* Color Preview Page */}
+          <Route path="/color-preview" element={<ColorPreview />} />
           
           {/* Protected Dashboard Routes */}
           <Route path="/dashboard" element={

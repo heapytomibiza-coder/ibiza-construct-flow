@@ -63,6 +63,13 @@ export default {
           light: "hsl(var(--charcoal-light))",
           dark: "hsl(var(--charcoal-dark))",
         },
+        // Tech-Inspired Palette
+        "tech-navy": "hsl(var(--tech-navy))",
+        "tech-blue": "hsl(var(--tech-blue))",
+        "cool-slate": "hsl(var(--cool-slate))",
+        "steel-gray": "hsl(var(--steel-gray))",
+        "electric-blue": "hsl(var(--electric-blue))",
+        "deep-navy": "hsl(var(--deep-navy))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -82,11 +89,15 @@ export default {
         'gradient-hero': 'var(--gradient-hero)',
         'gradient-card': 'var(--gradient-card)',
         'gradient-premium': 'var(--gradient-premium)',
+        'gradient-tech': 'var(--gradient-tech)',
+        'gradient-electric': 'var(--gradient-electric)',
       },
       boxShadow: {
         'luxury': 'var(--shadow-luxury)',
         'card': 'var(--shadow-card)',
         'elegant': 'var(--shadow-elegant)',
+        'tech': 'var(--shadow-tech)',
+        'electric': 'var(--shadow-electric)',
       },
       transitionTimingFunction: {
         'luxury': 'var(--transition-luxury)',
