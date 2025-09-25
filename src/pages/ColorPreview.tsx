@@ -99,7 +99,7 @@ export default function ColorPreview() {
               size="lg" 
               className={selectedTheme === 'tech' 
                 ? 'bg-golden-amber hover:bg-sandy-gold text-tech-navy shadow-golden font-semibold' 
-                : 'btn-hero'
+                : 'bg-golden-amber hover:bg-sandy-gold text-tech-navy shadow-golden font-semibold'
               }
             >
               <Zap className="mr-2 h-5 w-5" />
@@ -137,7 +137,7 @@ export default function ColorPreview() {
             }`}>
               <CardHeader className="text-center">
                 <feature.icon className={`h-12 w-12 mx-auto mb-4 ${
-                  selectedTheme === 'tech' ? 'text-sandy-gold' : 'text-copper'
+                  selectedTheme === 'tech' ? 'text-sandy-gold' : 'text-sandy-gold'
                 }`} />
                 <CardTitle className="text-xl">{feature.title}</CardTitle>
               </CardHeader>
@@ -188,7 +188,7 @@ export default function ColorPreview() {
               { name: 'Sandy Gold', color: 'bg-sandy-gold', text: 'text-tech-navy' },
               { name: 'Steel Gray', color: 'bg-steel-gray', text: 'text-charcoal' },
             ] : [
-              { name: 'Copper', color: 'bg-copper', text: 'text-white' },
+              { name: 'Golden Amber', color: 'bg-golden-amber', text: 'text-tech-navy' },
               { name: 'Sand', color: 'bg-sand', text: 'text-charcoal' },
               { name: 'Charcoal', color: 'bg-charcoal', text: 'text-white' },
               { name: 'Primary', color: 'bg-primary', text: 'text-primary-foreground' },
