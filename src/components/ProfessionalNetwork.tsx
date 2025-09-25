@@ -1,29 +1,32 @@
 import { Shield, Award, Clock, Star, Users, Briefcase } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import professionalImage from '@/assets/professional-network.jpg';
 
 const ProfessionalNetwork = () => {
+  const { t } = useTranslation('components');
+
   const stats = [
-    { icon: Users, number: "500+", label: "Verified Professionals" },
-    { icon: Briefcase, number: "2,000+", label: "Completed Projects" },  
-    { icon: Star, number: "4.9/5", label: "Average Rating" },
-    { icon: Shield, number: "100%", label: "SafePay Protected" }
+    { icon: Users, number: "500+", label: t('professionalNetwork.stats.professionals') },
+    { icon: Briefcase, number: "2,000+", label: t('professionalNetwork.stats.projects') },  
+    { icon: Star, number: "4.9/5", label: t('professionalNetwork.stats.rating') },
+    { icon: Shield, number: "100%", label: t('professionalNetwork.stats.protection') }
   ];
 
   const benefits = [
     {
       icon: Shield,
-      title: "Fully Verified",
-      description: "Every professional is background-checked, licensed, and insured"
+      title: t('professionalNetwork.benefits.verified.title'),
+      description: t('professionalNetwork.benefits.verified.description')
     },
     {
       icon: Award,
-      title: "Proven Excellence", 
-      description: "Only professionals with outstanding track records join our network"
+      title: t('professionalNetwork.benefits.excellence.title'), 
+      description: t('professionalNetwork.benefits.excellence.description')
     },
     {
       icon: Clock,
-      title: "Rapid Response",
-      description: "Get quotes within 24 hours, emergency services available"
+      title: t('professionalNetwork.benefits.rapid.title'),
+      description: t('professionalNetwork.benefits.rapid.description')
     }
   ];
 
@@ -34,13 +37,13 @@ const ProfessionalNetwork = () => {
           {/* Content */}
           <div>
             <h2 className="text-display text-4xl md:text-5xl font-bold text-charcoal mb-6">
-              Ibiza's Most
+              {t('professionalNetwork.title')}
               <br />
-              <span className="text-copper">Trusted Network</span>
+              <span className="text-copper">{t('professionalNetwork.titleHighlight')}</span>
             </h2>
             
             <p className="text-body text-xl text-muted-foreground mb-8 leading-relaxed">
-              We handpick only the finest construction professionals who meet our rigorous standards for quality, reliability, and customer service.
+              {t('professionalNetwork.subtitle')}
             </p>
 
             {/* Benefits */}
@@ -68,10 +71,10 @@ const ProfessionalNetwork = () => {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button className="btn-hero">
-                Find Professionals
+                {t('professionalNetwork.buttons.findProfessionals')}
               </button>
               <button className="btn-secondary">
-                Join Our Network
+                {t('professionalNetwork.buttons.joinNetwork')}
               </button>
             </div>
           </div>
@@ -112,7 +115,7 @@ const ProfessionalNetwork = () => {
         {/* Professional Categories */}
         <div className="mt-24">
           <h3 className="text-display text-3xl font-semibold text-charcoal text-center mb-12">
-            Our Professional Categories
+            {t('professionalNetwork.categoriesTitle')}
           </h3>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">

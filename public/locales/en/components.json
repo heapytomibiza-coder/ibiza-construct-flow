@@ -24,5 +24,54 @@
       "title": "Local experts",
       "description": "Rated by Ibiza clients like you"
     }
+  },
+  "expressMode": {
+    "badge": "Express Mode",
+    "title": "Quick Fix Today?",
+    "subtitle": "Skip the questions. Get matched with available professionals instantly for common tasks.",
+    "features": "⚡ Instant matching • 📱 SMS updates • 💯 Same-day service"
+  },
+  "featuredServices": {
+    "title": "Featured Services",
+    "subtitle": "Get started with our most popular services in Ibiza. From quick fixes to complete renovations, we've got trusted professionals ready to help.",
+    "popular": "Popular",
+    "viewService": "View Service",
+    "viewAllServices": "View All Services"
+  },
+  "professionalNetwork": {
+    "title": "Ibiza's Most",
+    "titleHighlight": "Trusted Network",
+    "subtitle": "We handpick only the finest construction professionals who meet our rigorous standards for quality, reliability, and customer service.",
+    "stats": {
+      "professionals": "Verified Professionals",
+      "projects": "Completed Projects",
+      "rating": "Average Rating",
+      "protection": "SafePay Protected"
+    },
+    "benefits": {
+      "verified": {
+        "title": "Fully Verified",
+        "description": "Every professional is background-checked, licensed, and insured"
+      },
+      "excellence": {
+        "title": "Proven Excellence",
+        "description": "Only professionals with outstanding track records join our network"
+      },
+      "rapid": {
+        "title": "Rapid Response",
+        "description": "Get quotes within 24 hours, emergency services available"
+      }
+    },
+    "buttons": {
+      "findProfessionals": "Find Professionals",
+      "joinNetwork": "Join Our Network"
+    },
+    "categoriesTitle": "Our Professional Categories"
+  },
+  "testing": {
+    "title": "🧪 Testing Dashboard Implementation",
+    "professionalDashboard": "Test Professional Dashboard",
+    "adminDashboard": "Test Admin Dashboard",
+    "clientDashboard": "Test Client Dashboard"
   }
 }

@@ -24,5 +24,54 @@
       "title": "Expertos locales",
       "description": "Valorados por clientes de Ibiza como tú"
     }
+  },
+  "expressMode": {
+    "badge": "Modo Express",
+    "title": "¿Reparación Rápida Hoy?",
+    "subtitle": "Salta las preguntas. Conecta instantáneamente con profesionales disponibles para tareas comunes.",
+    "features": "⚡ Coincidencia instantánea • 📱 Actualizaciones por SMS • 💯 Servicio el mismo día"
+  },
+  "featuredServices": {
+    "title": "Servicios Destacados",
+    "subtitle": "Comienza con nuestros servicios más populares en Ibiza. Desde reparaciones rápidas hasta renovaciones completas, tenemos profesionales de confianza listos para ayudar.",
+    "popular": "Popular",
+    "viewService": "Ver Servicio",
+    "viewAllServices": "Ver Todos los Servicios"
+  },
+  "professionalNetwork": {
+    "title": "La Red Más",
+    "titleHighlight": "Confiable de Ibiza",
+    "subtitle": "Seleccionamos cuidadosamente solo a los mejores profesionales de construcción que cumplen nuestros estrictos estándares de calidad, confiabilidad y servicio al cliente.",
+    "stats": {
+      "professionals": "Profesionales Verificados",
+      "projects": "Proyectos Completados",
+      "rating": "Calificación Promedio",
+      "protection": "Protección SafePay"
+    },
+    "benefits": {
+      "verified": {
+        "title": "Completamente Verificados",
+        "description": "Cada profesional tiene verificación de antecedentes, licencias y seguros"
+      },
+      "excellence": {
+        "title": "Excelencia Comprobada",
+        "description": "Solo profesionales con historial excepcional se unen a nuestra red"
+      },
+      "rapid": {
+        "title": "Respuesta Rápida",
+        "description": "Obtén cotizaciones en 24 horas, servicios de emergencia disponibles"
+      }
+    },
+    "buttons": {
+      "findProfessionals": "Encontrar Profesionales",
+      "joinNetwork": "Únete a Nuestra Red"
+    },
+    "categoriesTitle": "Nuestras Categorías Profesionales"
+  },
+  "testing": {
+    "title": "🧪 Prueba de Implementación del Panel",
+    "professionalDashboard": "Probar Panel Profesional",
+    "adminDashboard": "Probar Panel de Administrador",
+    "clientDashboard": "Probar Panel de Cliente"
   }
 }

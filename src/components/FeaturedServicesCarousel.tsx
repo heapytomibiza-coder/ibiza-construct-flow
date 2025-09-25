@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -14,6 +15,7 @@ import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car, ArrowRight } from 'lucide-react';
 
 const FeaturedServicesCarousel = React.memo(() => {
+  const { t } = useTranslation('components');
   const navigate = useNavigate();
   const { getServiceCards, loading } = useServices();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
@@ -69,10 +71,10 @@ const FeaturedServicesCarousel = React.memo(() => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-display text-3xl md:text-4xl font-bold text-charcoal mb-4">
-              Featured Services
+              {t('featuredServices.title')}
             </h2>
             <p className="text-body text-lg text-muted-foreground">
-              Get started with our most popular services
+              {t('featuredServices.subtitle')}
             </p>
           </div>
           
@@ -98,11 +100,10 @@ const FeaturedServicesCarousel = React.memo(() => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-display text-3xl md:text-4xl font-bold text-charcoal mb-4">
-            Featured Services
+            {t('featuredServices.title')}
           </h2>
           <p className="text-body text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            Get started with our most popular services in Ibiza. From quick fixes to complete renovations, 
-            we've got trusted professionals ready to help.
+            {t('featuredServices.subtitle')}
           </p>
         </div>
         
@@ -132,7 +133,7 @@ const FeaturedServicesCarousel = React.memo(() => {
                         <div className="flex items-center gap-2 mb-4">
                           {service.popular && (
                             <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                              Popular
+                              {t('featuredServices.popular')}
                             </Badge>
                           )}
                           <span className="text-copper font-semibold">
@@ -146,7 +147,7 @@ const FeaturedServicesCarousel = React.memo(() => {
                             size="sm"
                             className="w-full group-hover:bg-gradient-hero group-hover:text-white group-hover:border-transparent transition-all"
                           >
-                            View Service
+                            {t('featuredServices.viewService')}
                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                           </Button>
                         </div>
@@ -167,7 +168,7 @@ const FeaturedServicesCarousel = React.memo(() => {
             size="lg"
             className="bg-gradient-hero text-white hover:shadow-lg transition-all"
           >
-            View All Services
+            {t('featuredServices.viewAllServices')}
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>

@@ -8,10 +8,12 @@ import ProfessionalNetwork from '@/components/ProfessionalNetwork';
 import ExpressModeSection from '@/components/ExpressModeSection';
 import Footer from '@/components/Footer';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
+  const { t } = useTranslation('components');
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
   const featuredCarouselEnabled = useFeature('enable_featured_services_carousel');
@@ -27,16 +29,16 @@ const Index = () => {
         {/* Testing Section - Remove in production */}
         <div className="bg-yellow-50 border-b border-yellow-200 p-4">
           <div className="container mx-auto">
-            <h3 className="text-sm font-medium text-yellow-800 mb-2">🧪 Testing Dashboard Implementation</h3>
+            <h3 className="text-sm font-medium text-yellow-800 mb-2">{t('testing.title')}</h3>
             <div className="flex gap-2">
               <Button asChild variant="outline" size="sm">
-                <Link to="/dashboard/pro">Test Professional Dashboard</Link>
+                <Link to="/dashboard/pro">{t('testing.professionalDashboard')}</Link>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <Link to="/dashboard/admin">Test Admin Dashboard</Link>
+                <Link to="/dashboard/admin">{t('testing.adminDashboard')}</Link>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <Link to="/dashboard/client">Test Client Dashboard</Link>
+                <Link to="/dashboard/client">{t('testing.clientDashboard')}</Link>
               </Button>
             </div>
           </div>
