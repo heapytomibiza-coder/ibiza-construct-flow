@@ -30,9 +30,13 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
             className="space-y-2"
           >
             {question.options.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
+              <div 
+                key={index} 
+                className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 hover:bg-accent/50 cursor-pointer transition-all duration-200"
+                onClick={() => onAnswerChange(question.id, option)}
+              >
                 <RadioGroupItem value={option} id={`${question.id}-${index}`} />
-                <Label htmlFor={`${question.id}-${index}`} className="text-sm">
+                <Label htmlFor={`${question.id}-${index}`} className="text-sm font-medium cursor-pointer flex-1">
                   {option}
                 </Label>
               </div>
@@ -60,23 +64,39 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
         const selectedValues = Array.isArray(value) ? value : [];
         return (
           <div className="space-y-2">
-            {question.options.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`${question.id}-${index}`}
-                  checked={selectedValues.includes(option)}
-                  onCheckedChange={(checked) => {
-                    const newValues = checked
-                      ? [...selectedValues, option]
-                      : selectedValues.filter(v => v !== option);
+            {question.options.map((option, index) => {
+              const isSelected = selectedValues.includes(option);
+              return (
+                <div 
+                  key={index} 
+                  className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                    isSelected 
+                      ? 'border-primary bg-primary/10 hover:bg-primary/20' 
+                      : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                  }`}
+                  onClick={() => {
+                    const newValues = isSelected
+                      ? selectedValues.filter(v => v !== option)
+                      : [...selectedValues, option];
                     onAnswerChange(question.id, newValues);
                   }}
-                />
-                <Label htmlFor={`${question.id}-${index}`} className="text-sm">
-                  {option}
-                </Label>
-              </div>
-            ))}
+                >
+                  <Checkbox
+                    id={`${question.id}-${index}`}
+                    checked={isSelected}
+                    onCheckedChange={(checked) => {
+                      const newValues = checked
+                        ? [...selectedValues, option]
+                        : selectedValues.filter(v => v !== option);
+                      onAnswerChange(question.id, newValues);
+                    }}
+                  />
+                  <Label htmlFor={`${question.id}-${index}`} className="text-sm font-medium cursor-pointer flex-1">
+                    {option}
+                  </Label>
+                </div>
+              );
+            })}
           </div>
         );
 
@@ -88,31 +108,49 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
             <p className="text-xs text-muted-foreground mb-2">
               Select up to {maxSelections} option{maxSelections > 1 ? 's' : ''}
             </p>
-            {question.options.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`${question.id}-${index}`}
-                  checked={multiSelectedValues.includes(option)}
-                  disabled={!multiSelectedValues.includes(option) && multiSelectedValues.length >= maxSelections}
-                  onCheckedChange={(checked) => {
-                    const newValues = checked
-                      ? [...multiSelectedValues, option]
-                      : multiSelectedValues.filter(v => v !== option);
+            {question.options.map((option, index) => {
+              const isSelected = multiSelectedValues.includes(option);
+              const isDisabled = !isSelected && multiSelectedValues.length >= maxSelections;
+              return (
+                <div 
+                  key={index} 
+                  className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                    isDisabled
+                      ? 'border-border/50 bg-muted/30 cursor-not-allowed'
+                      : isSelected 
+                        ? 'border-primary bg-primary/10 hover:bg-primary/20' 
+                        : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                  }`}
+                  onClick={() => {
+                    if (isDisabled) return;
+                    const newValues = isSelected
+                      ? multiSelectedValues.filter(v => v !== option)
+                      : [...multiSelectedValues, option];
                     onAnswerChange(question.id, newValues);
                   }}
-                />
-                <Label 
-                  htmlFor={`${question.id}-${index}`} 
-                  className={`text-sm ${
-                    !multiSelectedValues.includes(option) && multiSelectedValues.length >= maxSelections 
-                      ? 'text-muted-foreground' 
-                      : ''
-                  }`}
                 >
-                  {option}
-                </Label>
-              </div>
-            ))}
+                  <Checkbox
+                    id={`${question.id}-${index}`}
+                    checked={isSelected}
+                    disabled={isDisabled}
+                    onCheckedChange={(checked) => {
+                      const newValues = checked
+                        ? [...multiSelectedValues, option]
+                        : multiSelectedValues.filter(v => v !== option);
+                      onAnswerChange(question.id, newValues);
+                    }}
+                  />
+                  <Label 
+                    htmlFor={`${question.id}-${index}`} 
+                    className={`text-sm font-medium cursor-pointer flex-1 ${
+                      isDisabled ? 'text-muted-foreground' : ''
+                    }`}
+                  >
+                    {option}
+                  </Label>
+                </div>
+              );
+            })}
             {multiSelectedValues.length > 0 && (
               <p className="text-xs text-muted-foreground">
                 {multiSelectedValues.length}/{maxSelections} selected
