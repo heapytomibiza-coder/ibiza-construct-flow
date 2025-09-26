@@ -76,22 +76,8 @@ export const useAIQuestions = () => {
     setLoading(true);
     setError(null);
     
-    const cacheKey = getCacheKey(serviceType, category, subcategory);
-    
-    // Only use cache if no existing answers (first load)
-    if (!existingAnswers || Object.keys(existingAnswers).length === 0) {
-      const cachedQuestions = loadFromCache(cacheKey);
-      if (cachedQuestions) {
-        console.log('Loading questions from cache:', { serviceType, category, subcategory });
-        setQuestions(cachedQuestions);
-        setLoading(false);
-        toast.success('Questions loaded from cache');
-        return;
-      }
-    }
-    
     try {
-      console.log('Generating AI questions for service:', { serviceType, category, subcategory });
+      console.log('Requesting questions for micro-category:', { serviceType, category, subcategory });
       
       const { data, error: functionError } = await supabase.functions.invoke('generate-questions', {
         body: {
@@ -102,32 +88,37 @@ export const useAIQuestions = () => {
         }
       });
 
-      // Check for AI service unavailable (503 status or fallback flag)
-      if (functionError || data?.fallback) {
-        console.log('AI questions unavailable, will use database fallback');
-        return; // Gracefully return to allow fallback
+      if (functionError) {
+        console.error('Function error:', functionError);
+        throw new Error(functionError.message || 'Failed to get questions');
       }
 
       if (!data?.questions || !Array.isArray(data.questions)) {
-        console.log('No valid questions received from AI, will use database fallback');
-        return; // Gracefully return to allow fallback
+        throw new Error('No valid questions received');
       }
 
-      console.log('Generated questions:', data.questions);
+      console.log(`Questions loaded from ${data.source}:`, data.questions.length);
       setQuestions(data.questions);
       
-      // Cache only if no existing answers (initial questions)
-      if (!existingAnswers || Object.keys(existingAnswers).length === 0) {
-        saveToCache(cacheKey, data.questions);
-      }
+      // Show success message based on source
+      const sourceMessages = {
+        'snapshot': 'Questions loaded instantly',
+        'ai_generated': 'AI enhanced questions generated',
+        'minimal_fallback': 'Basic questions loaded',
+        'error_fallback': 'Fallback questions loaded'
+      };
+      
+      toast.success(sourceMessages[data.source as keyof typeof sourceMessages] || 'Questions loaded');
       
     } catch (err) {
-      console.log('AI questions unavailable, will fallback to database');
-      // Don't set error state or throw - let useWizard handle fallback gracefully
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load questions';
+      console.error('Error loading questions:', err);
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [getCacheKey, loadFromCache, saveToCache]);
+  }, []);
 
   const estimatePrice = useCallback(async (
     serviceType: string,

@@ -1458,6 +1458,69 @@ export type Database = {
         }
         Relationships: []
       }
+      micro_questions_ai_runs: {
+        Row: {
+          created_at: string | null
+          error: string | null
+          id: string
+          micro_category_id: string
+          model: string
+          prompt_hash: string
+          raw_response: Json | null
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          error?: string | null
+          id?: string
+          micro_category_id: string
+          model: string
+          prompt_hash: string
+          raw_response?: Json | null
+          status: string
+        }
+        Update: {
+          created_at?: string | null
+          error?: string | null
+          id?: string
+          micro_category_id?: string
+          model?: string
+          prompt_hash?: string
+          raw_response?: Json | null
+          status?: string
+        }
+        Relationships: []
+      }
+      micro_questions_snapshot: {
+        Row: {
+          created_at: string | null
+          id: string
+          micro_category_id: string
+          questions_json: Json
+          schema_rev: number
+          updated_at: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          micro_category_id: string
+          questions_json: Json
+          schema_rev?: number
+          updated_at?: string | null
+          version?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          micro_category_id?: string
+          questions_json?: Json
+          schema_rev?: number
+          updated_at?: string | null
+          version?: number
+        }
+        Relationships: []
+      }
       milestones: {
         Row: {
           amount: number | null

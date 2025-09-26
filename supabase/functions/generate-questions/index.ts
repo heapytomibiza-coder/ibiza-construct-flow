@@ -1,10 +1,60 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Initialize Supabase client
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Helper functions
+function createMicroCategoryId(serviceType: string, category: string, subcategory: string): string {
+  return `${serviceType}-${category}-${subcategory}`.toLowerCase().replace(/\s+/g, '-');
+}
+
+function validateQuestions(questions: any): boolean {
+  if (!Array.isArray(questions) || questions.length < 3) return false;
+  
+  return questions.every(q => 
+    q.id && 
+    q.label && 
+    q.type && 
+    typeof q.required === 'boolean' &&
+    Array.isArray(q.options) && 
+    q.options.length >= 2
+  );
+}
+
+async function getMinimalFallback(serviceType: string): Promise<any[]> {
+  return [
+    {
+      id: "description",
+      type: "text",
+      label: `Describe your ${serviceType} needs`,
+      required: true,
+      options: []
+    },
+    {
+      id: "timeline",
+      type: "radio",
+      label: "When do you need this completed?",
+      required: true,
+      options: ["ASAP", "Within 1 week", "Within 1 month", "Flexible"]
+    },
+    {
+      id: "budget",
+      type: "radio", 
+      label: "What's your budget range?",
+      required: false,
+      options: ["Under €100", "€100-€500", "€500-€1000", "€1000+"]
+    }
+  ];
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -21,14 +71,37 @@ serve(async (req) => {
       });
     }
 
+    const microCategoryId = createMicroCategoryId(serviceType, category, subcategory);
+    console.log("Processing questions for micro category:", microCategoryId);
+
+    // 1. Try to load from snapshot first (instant response)
+    const { data: snapshot } = await supabase
+      .from('micro_questions_snapshot')
+      .select('questions_json')
+      .eq('micro_category_id', microCategoryId)
+      .single();
+
+    if (snapshot) {
+      console.log("Returning questions from snapshot");
+      return new Response(JSON.stringify({ 
+        questions: snapshot.questions_json,
+        source: 'snapshot'
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // 2. No snapshot exists - try AI generation with timeout
+    console.log("No snapshot found, attempting AI generation");
+
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!apiKey) {
-      console.log("LOVABLE_API_KEY not configured, AI questions unavailable");
+      console.log("LOVABLE_API_KEY not configured, returning minimal fallback");
+      const fallbackQuestions = await getMinimalFallback(serviceType);
       return new Response(JSON.stringify({ 
-        error: "AI service unavailable", 
-        fallback: true 
+        questions: fallbackQuestions,
+        source: 'minimal_fallback'
       }), {
-        status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -62,89 +135,143 @@ Focus on questions that help professionals:
 - Determine if they have the right expertise
 - Quote accurately and competitively`;
 
-    console.log("Generating questions for:", { serviceType, category, subcategory });
+    console.log("Attempting AI generation for:", { serviceType, category, subcategory });
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // 3. Try AI generation with 8-second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    let aiQuestions;
+    try {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
-        messages: [
-          {
-            role: "system",
-            content: "You are an expert at generating contextual, professional service questions. Always return valid JSON arrays with the exact structure requested. Be specific and actionable.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI Gateway error:", response.status, errorText);
-      
-      // Return a structured error that indicates fallback should be used
-      return new Response(JSON.stringify({ 
-        error: "AI Gateway unavailable", 
-        fallback: true,
-        details: `Status: ${response.status}`
-      }), {
-        status: 503, // Service Unavailable - indicates temporary issue
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert at generating contextual, professional service questions. Always return valid JSON arrays with the exact structure requested. Be specific and actionable.",
+            },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+        }),
       });
-    }
 
-    const data = await response.json();
-    const aiResponse = data.choices?.[0]?.message?.content;
+      clearTimeout(timeoutId);
 
-    if (!aiResponse) {
-      console.error("No response from AI", data);
-      return new Response(JSON.stringify({ 
-        error: "No response from AI", 
-        fallback: true 
-      }), {
-        status: 503,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("AI Gateway error:", response.status, errorText);
+        throw new Error(`AI Gateway error: ${response.status}`);
+      }
 
-    // Parse the JSON response from AI
-    let questions;
-    try {
-      // Extract JSON from response (in case AI wraps it in markdown)
+      const data = await response.json();
+      const aiResponse = data.choices?.[0]?.message?.content;
+
+      if (!aiResponse) {
+        console.error("No response from AI", data);
+        throw new Error("No response from AI");
+      }
+
+      // Parse the JSON response from AI
       const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
       const jsonString = jsonMatch ? jsonMatch[0] : aiResponse;
-      questions = JSON.parse(jsonString);
-    } catch (parseError) {
-      console.error("Failed to parse AI response:", parseError, aiResponse);
+      aiQuestions = JSON.parse(jsonString);
+
+      // Validate questions
+      if (!validateQuestions(aiQuestions)) {
+        throw new Error("Invalid AI questions format");
+      }
+
+      console.log("AI generated valid questions:", aiQuestions.length);
+
+      // 4. Save successful AI response to snapshot
+      await supabase
+        .from('micro_questions_snapshot')
+        .upsert({
+          micro_category_id: microCategoryId,
+          questions_json: aiQuestions,
+          version: 1,
+          schema_rev: 1
+        });
+
+      // Log successful AI run
+      await supabase
+        .from('micro_questions_ai_runs')
+        .insert({
+          micro_category_id: microCategoryId,
+          prompt_hash: `${serviceType}-${category}-${subcategory}`,
+          model: "google/gemini-2.5-flash",
+          raw_response: aiQuestions,
+          status: 'success'
+        });
+
+      console.log("AI questions saved to snapshot");
+      
       return new Response(JSON.stringify({ 
-        error: "Invalid AI response format", 
+        questions: aiQuestions,
+        source: 'ai_generated'
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+
+    } catch (aiError) {
+      clearTimeout(timeoutId);
+      console.error("AI generation failed:", aiError);
+      
+      // Log failed AI run
+      await supabase
+        .from('micro_questions_ai_runs')
+        .insert({
+          micro_category_id: microCategoryId,
+          prompt_hash: `${serviceType}-${category}-${subcategory}`,
+          model: "google/gemini-2.5-flash",
+          raw_response: null,
+          status: 'failed',
+          error: String(aiError)
+        });
+
+      // 5. Return minimal fallback questions
+      console.log("Returning minimal fallback questions");
+      const fallbackQuestions = await getMinimalFallback(serviceType);
+      
+      return new Response(JSON.stringify({ 
+        questions: fallbackQuestions,
+        source: 'minimal_fallback'
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  } catch (error) {
+    console.error("Error generating questions:", error);
+    
+    // Last resort fallback
+    try {
+      const { serviceType } = await req.json();
+      const fallbackQuestions = await getMinimalFallback(serviceType || 'service');
+      
+      return new Response(JSON.stringify({ 
+        questions: fallbackQuestions,
+        source: 'error_fallback'
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    } catch {
+      return new Response(JSON.stringify({ 
+        error: "Internal server error", 
         fallback: true 
       }), {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    console.log("Generated questions:", questions);
-
-    return new Response(JSON.stringify({ questions }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    console.error("Error generating questions:", error);
-    return new Response(JSON.stringify({ 
-      error: "Internal server error", 
-      fallback: true 
-    }), {
-      status: 503,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   }
 });
