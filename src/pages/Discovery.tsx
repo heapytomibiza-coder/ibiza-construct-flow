@@ -9,10 +9,13 @@ import { HybridResultsGrid } from '@/components/discovery/HybridResultsGrid';
 import { LocationBasedDiscovery } from '@/components/discovery/LocationBasedDiscovery';
 import { CrossPollination } from '@/components/discovery/CrossPollination';
 import { SmartSuggestions } from '@/components/discovery/SmartSuggestions';
+import { EnhancedBookingFlow } from '@/components/discovery/EnhancedBookingFlow';
 import { useServices } from '@/hooks/useServices';
 import { useProfessionals } from '@/hooks/useProfessionals';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { useDiscoveryAnalytics } from '@/hooks/useDiscoveryAnalytics';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export type DiscoveryMode = 'services' | 'professionals' | 'both';
 
@@ -28,9 +31,20 @@ const Discovery = () => {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; address: string } | null>(null);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [selectedProfessional, setSelectedProfessional] = useState<any>(null);
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [bookingItem, setBookingItem] = useState<any>(null);
+  const [bookingType, setBookingType] = useState<'service' | 'professional'>('service');
   
   const { getServiceCards, loading: servicesLoading } = useServices();
   const { professionals, loading: professionalsLoading } = useProfessionals();
+  const { 
+    trackDiscoveryView, 
+    trackSearch, 
+    trackModeSwitch, 
+    trackItemClick,
+    trackLocationUse,
+    trackSuggestionClick 
+  } = useDiscoveryAnalytics();
   
   const services = getServiceCards();
   const loading = servicesLoading || professionalsLoading;
@@ -94,27 +108,56 @@ const Discovery = () => {
     );
   }, [selectedProfessional, enhancedServices]);
 
-  const handleServiceClick = (service: any) => {
+  const handleServiceClick = (service: any, position?: number) => {
+    trackItemClick('service', service.id, position || 0, searchTerm);
     setSelectedService(service);
     setSelectedProfessional(null);
     
-    if (jobWizardEnabled) {
-      navigate(`/post?service=${encodeURIComponent(service.title)}&category=${encodeURIComponent(service.category)}`);
-    } else {
-      navigate(`/service/${service.slug}`);
-    }
+    // Open booking modal instead of direct navigation
+    setBookingItem(service);
+    setBookingType('service');
+    setBookingModalOpen(true);
   };
 
-  const handleProfessionalClick = (professional: any) => {
+  const handleProfessionalClick = (professional: any, position?: number) => {
+    trackItemClick('professional', professional.id, position || 0, searchTerm);
     setSelectedProfessional(professional);
     setSelectedService(null);
-    navigate(`/professional/${professional.id}`);
+    
+    // Open booking modal for professionals too
+    setBookingItem(professional);
+    setBookingType('professional');
+    setBookingModalOpen(true);
   };
 
   const handleSuggestionClick = (suggestion: any) => {
+    trackSuggestionClick('smart', suggestion.title);
     setSearchTerm(suggestion.title);
     setActiveMode('services');
   };
+
+  const handleLocationChange = (location: { lat: number; lng: number; address: string } | null) => {
+    setUserLocation(location);
+    trackLocationUse(location ? 'enabled' : 'disabled', location?.address);
+  };
+
+  const handleModeChange = (newMode: DiscoveryMode) => {
+    trackModeSwitch(activeMode, newMode);
+    setActiveMode(newMode);
+  };
+
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
+    if (term.length > 2) {
+      const resultsCount = enhancedServices.length + enhancedProfessionals.length;
+      trackSearch(term, activeMode, resultsCount);
+    }
+  };
+
+  // Track initial page view
+  React.useEffect(() => {
+    trackDiscoveryView(activeMode, userLocation);
+  }, [activeMode, userLocation, trackDiscoveryView]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,7 +177,7 @@ const Discovery = () => {
         {/* Location-based Discovery */}
         <LocationBasedDiscovery
           currentLocation={userLocation}
-          onLocationChange={setUserLocation}
+          onLocationChange={handleLocationChange}
         />
 
         {/* Smart Suggestions */}
@@ -149,7 +192,7 @@ const Discovery = () => {
         {/* Unified Search */}
         <UnifiedSearchBar
           searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
+          onSearchChange={handleSearchChange}
           onFilterToggle={() => setShowFilters(!showFilters)}
           showFilters={showFilters}
         />
@@ -157,7 +200,7 @@ const Discovery = () => {
         {/* Discovery Tabs */}
         <DiscoveryTabs
           activeMode={activeMode}
-          onModeChange={setActiveMode}
+          onModeChange={handleModeChange}
           className="mb-8"
         />
 
@@ -189,6 +232,22 @@ const Discovery = () => {
       </main>
 
       <Footer />
+
+      {/* Enhanced Booking Modal */}
+      <Dialog open={bookingModalOpen} onOpenChange={setBookingModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Book Service</DialogTitle>
+          </DialogHeader>
+          {bookingItem && (
+            <EnhancedBookingFlow
+              type={bookingType}
+              item={bookingItem}
+              onClose={() => setBookingModalOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
