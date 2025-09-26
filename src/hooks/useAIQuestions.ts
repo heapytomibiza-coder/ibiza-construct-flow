@@ -93,58 +93,37 @@ export const useAIQuestions = () => {
     try {
       console.log('Generating AI questions for service:', { serviceType, category, subcategory });
       
-      // Add retry logic with exponential backoff
-      let retryCount = 0;
-      const maxRetries = 3;
-      
-      while (retryCount <= maxRetries) {
-        try {
-          const { data, error: functionError } = await supabase.functions.invoke('generate-questions', {
-            body: {
-              serviceType,
-              category,
-              subcategory,
-              existingAnswers
-            }
-          });
-
-          if (functionError) {
-            console.error('Function error:', functionError);
-            throw new Error(functionError.message || 'Failed to generate questions');
-          }
-
-          if (!data?.questions || !Array.isArray(data.questions)) {
-            throw new Error('No valid questions received from AI');
-          }
-
-          console.log('Generated questions:', data.questions);
-          setQuestions(data.questions);
-          
-          // Cache only if no existing answers (initial questions)
-          if (!existingAnswers || Object.keys(existingAnswers).length === 0) {
-            saveToCache(cacheKey, data.questions);
-          }
-          
-          toast.success('AI-generated questions loaded');
-          return; // Success - exit retry loop
-          
-        } catch (retryError) {
-          retryCount++;
-          if (retryCount > maxRetries) {
-            throw retryError;
-          }
-          
-          console.warn(`Retry ${retryCount} for question generation:`, retryError);
-          // Exponential backoff: 1s, 2s, 4s
-          await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount - 1)));
+      const { data, error: functionError } = await supabase.functions.invoke('generate-questions', {
+        body: {
+          serviceType,
+          category,
+          subcategory,
+          existingAnswers
         }
+      });
+
+      if (functionError) {
+        console.error('Function error:', functionError);
+        throw new Error(functionError.message || 'Failed to generate questions');
+      }
+
+      if (!data?.questions || !Array.isArray(data.questions)) {
+        throw new Error('No valid questions received from AI');
+      }
+
+      console.log('Generated questions:', data.questions);
+      setQuestions(data.questions);
+      
+      // Cache only if no existing answers (initial questions)
+      if (!existingAnswers || Object.keys(existingAnswers).length === 0) {
+        saveToCache(cacheKey, data.questions);
       }
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate questions';
-      console.error('Error generating questions after retries:', err);
+      console.error('Error generating questions:', err);
       setError(errorMessage);
-      toast.error(`${errorMessage}. Please try again or continue with manual input.`);
+      throw err; // Re-throw so useWizard can handle fallback
     } finally {
       setLoading(false);
     }

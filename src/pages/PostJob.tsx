@@ -150,13 +150,10 @@ const PostJob: React.FC = () => {
       microService: service.micro,
       title: service.micro // Pre-fill title
     });
-    nextStep();
     
-    // Load AI-generated questions for better contextual experience
-    // Use setTimeout to avoid blocking the UI transition
-    setTimeout(() => {
-      loadAIQuestions(service.id);
-    }, 100);
+    // Load questions immediately for this service
+    await loadAIQuestions(service.id);
+    nextStep();
   };
 
   const handleGeneralAnswerChange = (questionId: string, value: any) => {

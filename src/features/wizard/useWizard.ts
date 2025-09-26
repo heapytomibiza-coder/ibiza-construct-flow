@@ -91,8 +91,9 @@ export const useWizard = () => {
       return;
     }
 
+    console.log('Loading AI questions for service:', service);
+    
     try {
-      console.log('Loading AI questions for service:', service);
       await aiQuestions.generateQuestions(
         service.micro,
         service.category,
@@ -100,9 +101,8 @@ export const useWizard = () => {
         state.generalAnswers
       );
     } catch (error) {
-      console.error('Failed to load AI questions:', error);
-      toast.error('Failed to load AI questions, using fallback');
-      // Fallback to database questions
+      console.error('Failed to load AI questions, falling back to database:', error);
+      // Immediately fallback to database questions without showing error
       await loadQuestions(serviceId);
     }
   }, [services, aiQuestions.generateQuestions, loadQuestions, state.generalAnswers]);
