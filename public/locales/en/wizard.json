@@ -1,0 +1,80 @@
+{
+  "steps": {
+    "category": {
+      "title": "What type of work do you need?",
+      "subtitle": "Choose the category that best fits your project",
+      "professionalServices": "Professional services",
+      "transportDeliveries": "Transport & Deliveries",
+      "movingDeliveryServices": "Moving and delivery services",
+      "cantFind": "Can't find what you are looking for?",
+      "browseSpecialized": "Browse Specialised Categories"
+    },
+    "subcategory": {
+      "title": "What specific service do you need?",
+      "category": "Category:",
+      "specializedWork": "Specialized work"
+    },
+    "microservice": {
+      "title": "Exactly what needs to be done?",
+      "back": "Back"
+    },
+    "details": {
+      "title": "Tell us more about your {{service}}",
+      "loading": "Hold tight while we load your questions tailored to your needs",
+      "jobDetails": "Job Details",
+      "jobTitle": "Job Title",
+      "jobTitlePlaceholder": "e.g., Replace kitchen tiles",
+      "continue": "Continue",
+      "back": "Back"
+    },
+    "requirements": {
+      "continueToReview": "Continue to Review",
+      "back": "Back"
+    },
+    "review": {
+      "title": "Review your job post",
+      "subtitle": "AI-powered insights and final review",
+      "jobSummary": "Job Summary",
+      "service": "Service",
+      "title": "Title",
+      "description": "Description",
+      "budgetRange": "Budget Range",
+      "aiQuestionsAnswers": "AI Questions & Answers",
+      "urgency": "Urgency",
+      "backToEdit": "Back to Edit",
+      "postJob": "Post Job",
+      "posting": "Posting..."
+    }
+  },
+  "navigation": {
+    "progressLabels": {
+      "category": "Category",
+      "service": "Service", 
+      "details": "Details",
+      "aiQuestions": "AI Questions",
+      "requirements": "Requirements",
+      "review": "Review"
+    },
+    "stepDescriptions": {
+      "chooseCategory": "Choose Category",
+      "selectService": "Select Service",
+      "pickDetails": "Pick Details",
+      "aiQuestionsBasicInfo": "AI Questions & Basic Info",
+      "answerRequirements": "Answer Requirements",
+      "reviewPost": "Review & Post"
+    },
+    "stepCounter": "Step {{current}} of {{total}}: {{description}}"
+  },
+  "messages": {
+    "templateLoaded": "Template loaded successfully",
+    "resumedSession": "Resumed your previous session",
+    "startingFresh": "Starting fresh",
+    "jobPostedSuccess": "Job posted successfully!",
+    "jobPostFailed": "Failed to post job",
+    "optimizationApplied": "Applied optimization suggestion"
+  },
+  "errors": {
+    "title": "Error",
+    "goToDashboard": "Go to Dashboard"
+  }
+}

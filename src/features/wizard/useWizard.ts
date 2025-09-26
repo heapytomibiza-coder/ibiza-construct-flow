@@ -86,8 +86,13 @@ export const useWizard = () => {
   // AI-powered question loading
   const loadAIQuestions = useCallback(async (serviceId: string) => {
     const service = services.find(s => s.id === serviceId);
-    if (!service) return;
+    if (!service) {
+      console.error('Service not found:', serviceId);
+      return;
+    }
 
+    console.log('Loading AI questions for service:', service);
+    
     try {
       await aiQuestions.generateQuestions(
         service.micro,
@@ -96,11 +101,11 @@ export const useWizard = () => {
         state.generalAnswers
       );
     } catch (error) {
-      console.error('Failed to load AI questions:', error);
-      // Fallback to database questions
+      console.error('Failed to load AI questions, falling back to database:', error);
+      // Immediately fallback to database questions without showing error
       await loadQuestions(serviceId);
     }
-  }, [services, aiQuestions.generateQuestions, loadQuestions]); // Removed state.generalAnswers dependency
+  }, [services, aiQuestions.generateQuestions, loadQuestions, state.generalAnswers]);
 
   // AI-powered price estimation
   const generatePriceEstimate = useCallback(async () => {

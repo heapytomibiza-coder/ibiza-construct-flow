@@ -1,0 +1,178 @@
+{
+  "professionals": {
+    "hero": {
+      "title": "Encuentra Profesionales de Confianza Cerca de Ti",
+      "titleHighlight": "Profesionales de Confianza",
+      "subtitle": "Conéctate con expertos locales verificados para todas tus necesidades de servicio. Trabajo de calidad, precios competitivos y servicio confiable garantizado."
+    },
+    "stats": {
+      "verifiedProfessionals": "Profesionales Verificados",
+      "completedProjects": "Proyectos Completados",
+      "averageRating": "Calificación Promedio", 
+      "safePayProtection": "Protección SafePay"
+    },
+    "search": {
+      "title": "Encuentra al Profesional Adecuado",
+      "placeholder": "Buscar por nombre, habilidades o servicios...",
+      "specialization": "Especialización",
+      "allSpecializations": "Todas las Especializaciones",
+      "availability": "Disponibilidad",
+      "allAvailability": "Toda la Disponibilidad",
+      "available": "Disponible",
+      "busy": "Ocupado"
+    },
+    "results": {
+      "title": "Profesionales Disponibles",
+      "found": "profesionales encontrados",
+      "noResults": "No se encontraron profesionales que coincidan con tus criterios.",
+      "clearFilters": "Limpiar Filtros"
+    }
+  },
+  "services": {
+    "hero": {
+      "title": "Servicios Profesionales en Ibiza",
+      "titleHighlight": "Ibiza",
+      "subtitle": "Desde reparaciones rápidas hasta renovaciones completas, conéctate con profesionales verificados para todas tus necesidades de propiedad"
+    },
+    "specializedCategories": {
+      "title": "Categorías Especializadas",
+      "subtitle": "Servicios profesionales y técnicos para proyectos complejos que requieren experiencia especializada",
+      "architectsDesign": {
+        "title": "Arquitectos y Diseño",
+        "items": [
+          "Arquitecto (Diseño de Hogar, Renovaciones, Extensiones, Permisos)",
+          "Arquitecto Técnico / Aparejador (Supervisión de Obra, Cumplimiento)",
+          "Ingeniero Estructural (Cálculos, Refuerzos, Rehabilitación)",
+          "Ingeniero Civil (Drenaje, Muros de Contención, Accesos)",
+          "Ingeniero MEP (Diseño Fontanería, Eléctrico y HVAC)",
+          "Diseñador de Interiores (Distribuciones, Cocinas, Baños, Acabados)",
+          "Agrimensor / Topógrafo (Límites, Levantamientos Topográficos)",
+          "Especialista Geotécnico (Pruebas de Suelo, Cimentaciones, Informes)"
+        ]
+      },
+      "buildersStructural": {
+        "title": "Constructores y Obras Estructurales",
+        "items": [
+          "Movimiento de Tierras y Excavación",
+          "Cimentaciones y Hormigón",
+          "Albañilería y Mampostería",
+          "Cantería y Restauración",
+          "Estructura de Madera y Carpintería de Tejado",
+          "Acero Estructural y Soldadura",
+          "Carpintería de Encofrado"
+        ]
+      },
+      "floorsDoorsWindows": {
+        "title": "Suelos, Puertas y Ventanas",
+        "items": [
+          "Alicatado (Suelos y Paredes)",
+          "Suelos de Madera (Maciza, Multicapa, Laminado)",
+          "Moqueta y Suelos de Vinilo",
+          "Instalación de Puertas (Madera, Correderas, Seguridad)",
+          "Instalación de Ventanas y Acristalamiento (PVC, Aluminio, Doble/Triple)",
+          "Claraboyas y Ventanas de Tejado"
+        ]
+      },
+      "kitchenBathroom": {
+        "title": "Instalador de Cocinas y Baños",
+        "items": [
+          "Instalación de Cocinas",
+          "Renovación de Cocinas",
+          "Instalación y Equipamiento de Baños",
+          "Cuartos Húmedos e Impermeabilización",
+          "Carpintería y Ebanistería"
+        ]
+      },
+      "designPlanning": {
+        "title": "Diseño y Planificación",
+        "items": [
+          "Planificación y Diseño de Proyectos",
+          "Planificación Arquitectónica",
+          "Servicios de Diseño de Interiores",
+          "Solicitudes de Permisos",
+          "Cumplimiento y Regulaciones"
+        ]
+      },
+      "commercial": {
+        "title": "Proyectos Comerciales",
+        "items": [
+          "Diseño, Gestión de Proyectos y Control de Costes",
+          "Obras Estructurales y Pesadas (Movimiento de Tierras, Pilotaje, Acero, Hormigón)",
+          "Sistemas MEP (Eléctrico Comercial, HVAC, Fontanería, Seguridad contra Incendios, ICT)",
+          "Acondicionamiento de Interiores (Particiones, Suelos, Carpintería, Pintura)",
+          "Exterior e Infraestructura (Fachadas, Cubiertas, Obra Civil, Paisajismo)",
+          "Puesta en Servicio y Gestión de Instalaciones"
+        ]
+      }
+    },
+    "results": {
+      "title": "Servicios Disponibles",
+      "noResults": "No se encontraron servicios que coincidan con tus criterios."
+    },
+    "packages": {
+      "title": "Elige Tu Paquete de Servicio",
+      "subtitle": "Selecciona el paquete que mejor se adapte a tus necesidades. Todos los paquetes incluyen servicio profesional y garantía de calidad.",
+      "basic": {
+        "name": "Básico",
+        "description": "Reparaciones esenciales y mantenimiento",
+        "features": [
+          "Hasta 3 reparaciones pequeñas",
+          "Herramientas básicas incluidas",
+          "Tiempo de respuesta 24h",
+          "Garantía de calidad"
+        ]
+      },
+      "standard": {
+        "name": "Estándar",
+        "description": "Paquete de servicio integral",
+        "features": [
+          "Hasta 6 reparaciones/tareas",
+          "Herramientas profesionales",
+          "Servicio el mismo día",
+          "Documentación fotográfica",
+          "Garantía de 30 días"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Solución completa con extras",
+        "features": [
+          "Tareas pequeñas ilimitadas",
+          "Materiales premium",
+          "Reserva prioritaria",
+          "Informe detallado",
+          "Garantía de 90 días",
+          "Servicio de seguimiento"
+        ]
+      }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Contáctanos",
+      "subtitle": "Ponte en contacto con nuestro equipo - estamos aquí para ayudarte con cualquier pregunta"
+    },
+    "form": {
+      "title": "Ponerse en Contacto",
+      "name": "Nombre",
+      "namePlaceholder": "Tu nombre",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "message": "Mensaje",
+      "messagePlaceholder": "¿Cómo podemos ayudarte?",
+      "submit": "Enviar Mensaje"
+    },
+    "info": {
+      "title": "Información de Contacto",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "location": "Ubicación",
+      "businessHours": "Horario Comercial",
+      "hours": {
+        "weekdays": "Lunes - Viernes: 9:00 AM - 6:00 PM",
+        "saturday": "Sábado: 9:00 AM - 2:00 PM",
+        "sunday": "Domingo: Cerrado"
+      }
+    }
+  }
+}

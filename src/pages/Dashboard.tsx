@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
@@ -8,6 +9,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation('dashboard');
 
   useEffect(() => {
     const checkUserAndRedirect = async () => {
@@ -83,7 +85,7 @@ const Dashboard = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Redirecting to your dashboard...</p>
+          <p className="text-muted-foreground">{t('loading')}</p>
         </div>
       </div>
     );

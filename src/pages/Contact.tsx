@@ -1,8 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const Contact = () => {
+  const { t } = useTranslation('pages');
+  
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -10,46 +13,46 @@ const Contact = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-charcoal mb-4">
-              Contact Us
+              {t('contact.hero.title')}
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Get in touch with our team - we're here to help with any questions
+              {t('contact.hero.subtitle')}
             </p>
           </div>
 
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
-              <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
+              <h2 className="text-2xl font-semibold mb-6">{t('contact.form.title')}</h2>
               <form className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Name</label>
+                  <label className="block text-sm font-medium mb-2">{t('contact.form.name')}</label>
                   <input 
                     type="text" 
                     className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Your name"
+                    placeholder={t('contact.form.namePlaceholder')}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
+                  <label className="block text-sm font-medium mb-2">{t('contact.form.email')}</label>
                   <input 
                     type="email" 
                     className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="your@email.com"
+                    placeholder={t('contact.form.emailPlaceholder')}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Message</label>
+                  <label className="block text-sm font-medium mb-2">{t('contact.form.message')}</label>
                   <textarea 
                     rows={5}
                     className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="How can we help you?"
+                    placeholder={t('contact.form.messagePlaceholder')}
                   ></textarea>
                 </div>
                 
                 <button type="submit" className="btn-primary w-full">
-                  Send Message
+                  {t('contact.form.submit')}
                 </button>
               </form>
             </div>
