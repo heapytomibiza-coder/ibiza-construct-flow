@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +14,6 @@ export default function SignUp() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation('auth');
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,8 +56,8 @@ export default function SignUp() {
       if (error) throw error;
 
       toast({
-        title: t('signup.checkEmail'),
-        description: t('signup.magicLinkSent', { email }),
+        title: 'Check your email',
+        description: `We've sent you a secure sign-in link at ${email}`,
       });
       
       navigate('/auth/verify-email');
@@ -97,8 +95,8 @@ export default function SignUp() {
         setShowOnboarding(true);
       } else {
         toast({
-          title: t('signup.checkEmail'),
-          description: t('signup.verifyEmail'),
+          title: 'Check your email',
+          description: 'Please verify your email address to complete sign up',
         });
         navigate('/auth/verify-email');
       }
@@ -142,8 +140,8 @@ export default function SignUp() {
       }
 
       toast({
-        title: t('signup.profileCreated'),
-        description: t('signup.profileSuccess'),
+        title: 'Professional profile created!',
+        description: 'Your profile has been set up successfully.',
       });
       
       // Navigate to email verification or dashboard
@@ -160,8 +158,8 @@ export default function SignUp() {
 
   const handleOnboardingSkip = () => {
     toast({
-      title: t('signup.checkEmail'),
-      description: t('signup.verifyEmail'),
+      title: 'Check your email',
+      description: 'Please verify your email address to complete sign up',
     });
     navigate('/auth/verify-email');
   };
@@ -184,15 +182,15 @@ export default function SignUp() {
             className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {t('signup.backToRoleSelection')}
+            Back to role selection
           </Link>
         </div>
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">{t('signup.title')}</CardTitle>
+            <CardTitle className="text-2xl">Create your account</CardTitle>
             <CardDescription>
-              {role === 'client' ? t('signup.clientSubtitle') : t('signup.professionalSubtitle')}
+              {role === 'client' ? 'Find professionals for your projects' : 'Start offering your services'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -207,7 +205,7 @@ export default function SignUp() {
                   onClick={() => setAuthMode('magic')}
                 >
                   <Mail className="w-4 h-4 mr-2" />
-                  {t('signup.magicLink')}
+                  Magic Link
                 </Button>
                 <Button
                   type="button"
@@ -216,45 +214,45 @@ export default function SignUp() {
                   className="flex-1"
                   onClick={() => setAuthMode('password')}
                 >
-                  {t('signup.password')}
+                  Password
                 </Button>
               </div>
             )}
 
             <form onSubmit={authMode === 'magic' ? handleMagicLink : handlePasswordSignUp} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">{t('signup.fullName')}</Label>
+                <Label htmlFor="fullName">Full Name (Optional)</Label>
                 <Input
                   id="fullName"
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder={t('signup.fullNamePlaceholder')}
+                  placeholder="Your full name"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">{t('signup.email')}</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('signup.emailPlaceholder')}
+                  placeholder="your@email.com"
                   required
                 />
               </div>
 
               {authMode === 'password' && (
                 <div className="space-y-2">
-                  <Label htmlFor="password">{t('signup.password')}</Label>
+                  <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder={t('signup.passwordPlaceholder')}
+                      placeholder="Create a password"
                       required
                     />
                     <Button
@@ -275,8 +273,8 @@ export default function SignUp() {
               )}
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? t('signup.creatingAccount') : 
-                 authMode === 'magic' ? t('signup.sendMagicLink') : t('signup.createAccount')
+                {loading ? 'Creating account...' : 
+                 authMode === 'magic' ? 'Send Magic Link' : 'Create Account'
                 }
               </Button>
             </form>
@@ -289,7 +287,7 @@ export default function SignUp() {
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">
-                      {t('signup.orContinueWith')}
+                      Or continue with
                     </span>
                   </div>
                 </div>
@@ -316,9 +314,9 @@ export default function SignUp() {
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                {t('signup.haveAccount')}{' '}
+                Already have an account?{' '}
                 <Link to={`/auth/sign-in?role=${role}`} className="text-primary hover:underline">
-                  {t('signup.signIn')}
+                  Sign in
                 </Link>
               </p>
             </div>

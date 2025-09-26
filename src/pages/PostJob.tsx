@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +23,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 
 const PostJob: React.FC = () => {
-  const { t } = useTranslation('wizard');
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -80,7 +78,7 @@ const PostJob: React.FC = () => {
       handleLoadTemplate(location.state.templateData);
       // Clear the location state to prevent re-loading on refresh
       window.history.replaceState({}, document.title);
-      toast.success(t('messages.templateLoaded'));
+      toast.success('Template loaded successfully');
     }
     
     // Check for saved session on component mount
@@ -150,10 +148,13 @@ const PostJob: React.FC = () => {
       microService: service.micro,
       title: service.micro // Pre-fill title
     });
-    
-    // Load questions immediately for this service
-    await loadAIQuestions(service.id);
     nextStep();
+    
+    // Load AI-generated questions for better contextual experience
+    // Use setTimeout to avoid blocking the UI transition
+    setTimeout(() => {
+      loadAIQuestions(service.id);
+    }, 100);
   };
 
   const handleGeneralAnswerChange = (questionId: string, value: any) => {
@@ -181,10 +182,10 @@ const PostJob: React.FC = () => {
     if (success) {
       // Clear saved session after successful submission
       await clearSession();
-      toast.success(t('messages.jobPostedSuccess'));
+      toast.success('Job posted successfully!');
       navigate('/dashboard/client');
     } else {
-      toast.error(error || t('messages.jobPostFailed'));
+      toast.error(error || 'Failed to post job');
     }
   };
 
@@ -213,10 +214,10 @@ const PostJob: React.FC = () => {
     const success = await submitBooking();
     if (success) {
       await clearSession();
-      toast.success(t('messages.jobPostedSuccess'));
+      toast.success('Job posted successfully!');
       navigate('/dashboard/client');
     } else {
-      toast.error(t('messages.jobPostFailed'));
+      toast.error('Failed to post job');
     }
   };
 
@@ -248,13 +249,13 @@ const PostJob: React.FC = () => {
   const handleResumeSession = (sessionData: any) => {
     updateState(sessionData);
     setShowResumeModal(false);
-    toast.success(t('messages.resumedSession'));
+    toast.success('Resumed your previous session');
   };
 
   const handleStartFresh = async () => {
     await clearSession();
     setShowResumeModal(false);
-    toast.info(t('messages.startingFresh'));
+    toast.info('Starting fresh');
   };
 
   const handleOptimizationSuggestion = (type: string, value: any) => {
@@ -268,7 +269,7 @@ const PostJob: React.FC = () => {
       default:
         break;
     }
-    toast.success(t('messages.optimizationApplied'));
+    toast.success('Applied optimization suggestion');
   };
 
   const renderStepContent = () => {
@@ -279,8 +280,8 @@ const PostJob: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-semibold">{t('steps.category.title')}</h2>
-              <p className="text-muted-foreground">{t('steps.category.subtitle')}</p>
+              <h2 className="text-2xl font-semibold">What type of work do you need?</h2>
+              <p className="text-muted-foreground">Choose the category that best fits your project</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -296,7 +297,7 @@ const PostJob: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="font-medium">{category}</h3>
-                      <p className="text-sm text-muted-foreground">{t('steps.category.professionalServices')}</p>
+                      <p className="text-sm text-muted-foreground">Professional services</p>
                     </div>
                   </div>
                 </Card>
@@ -312,8 +313,8 @@ const PostJob: React.FC = () => {
                     <Wrench className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-medium">{t('steps.category.transportDeliveries')}</h3>
-                    <p className="text-sm text-muted-foreground">{t('steps.category.movingDeliveryServices')}</p>
+                    <h3 className="font-medium">Transport & Deliveries</h3>
+                    <p className="text-sm text-muted-foreground">Moving and delivery services</p>
                   </div>
                 </div>
               </Card>
@@ -322,14 +323,14 @@ const PostJob: React.FC = () => {
             {/* Job Templates */}
             <div className="text-center mb-6 pb-6 border-b border-border/50">
               <p className="text-sm text-muted-foreground mb-3">
-                {t('steps.category.cantFind')}
+                Can't find what you are looking for?
               </p>
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={() => navigate('/specialist-categories')}
               >
-                {t('steps.category.browseSpecialized')}
+                Browse Specialised Categories
               </Button>
             </div>
 
@@ -347,9 +348,9 @@ const PostJob: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-semibold">{t('steps.subcategory.title')}</h2>
+              <h2 className="text-2xl font-semibold">What specific service do you need?</h2>
               <p className="text-muted-foreground">
-                {t('steps.subcategory.category')} <Badge variant="secondary">{state.category}</Badge>
+                Category: <Badge variant="secondary">{state.category}</Badge>
               </p>
             </div>
             
@@ -366,7 +367,7 @@ const PostJob: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="font-medium">{subcategory}</h3>
-                      <p className="text-sm text-muted-foreground">{t('steps.subcategory.specializedWork')}</p>
+                      <p className="text-sm text-muted-foreground">Specialized work</p>
                     </div>
                   </div>
                 </Card>
@@ -376,7 +377,7 @@ const PostJob: React.FC = () => {
             <div className="flex justify-start pt-4">
               <Button variant="outline" onClick={prevStep}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('steps.subcategory.back')}
+                Back
               </Button>
             </div>
           </div>
@@ -388,7 +389,7 @@ const PostJob: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-semibold">{t('steps.microservice.title')}</h2>
+              <h2 className="text-2xl font-semibold">Exactly what needs to be done?</h2>
               <div className="flex justify-center gap-2">
                 <Badge variant="secondary">{state.category}</Badge>
                 <Badge variant="secondary">{state.subcategory}</Badge>
@@ -415,7 +416,7 @@ const PostJob: React.FC = () => {
             <div className="flex justify-start pt-4">
               <Button variant="outline" onClick={prevStep}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('steps.microservice.back')}
+                Back
               </Button>
             </div>
           </div>
@@ -426,14 +427,14 @@ const PostJob: React.FC = () => {
         return (
           <div className="space-y-6">
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-semibold">{t('steps.details.title', { service: state.microService })}</h2>
+                <h2 className="text-2xl font-semibold">Tell us more about your {state.microService}</h2>
                 <div className="text-muted-foreground flex items-center justify-center gap-2">
                   <div className="flex items-center gap-1">
                     <div className="h-2 w-2 bg-primary rounded-full animate-bounce"></div>
                     <div className="h-2 w-2 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                     <div className="h-2 w-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
-                  {t('steps.details.loading')}
+                  Hold tight while we load your questions tailored to your needs
                 </div>
               </div>
             
@@ -446,13 +447,13 @@ const PostJob: React.FC = () => {
             
             {/* Basic Job Information */}
             <Card className="p-6">
-              <h3 className="font-medium mb-4">{t('steps.details.jobDetails')}</h3>
+              <h3 className="font-medium mb-4">Job Details</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">{t('steps.details.jobTitle')}</label>
+                  <label className="text-sm font-medium mb-2 block">Job Title</label>
                   <input
                     type="text"
-                    placeholder={t('steps.details.jobTitlePlaceholder')}
+                    placeholder="e.g., Replace kitchen tiles"
                     value={state.generalAnswers.title || state.microService}
                     onChange={(e) => handleGeneralAnswerChange('title', e.target.value)}
                     className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -464,13 +465,13 @@ const PostJob: React.FC = () => {
             <div className="flex justify-between pt-6">
               <Button variant="outline" onClick={prevStep}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('steps.details.back')}
+                Back
               </Button>
               <Button 
                 onClick={nextStep}
                 disabled={!state.generalAnswers.title}
               >
-                {t('steps.details.continue')}
+                Continue
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
@@ -506,7 +507,7 @@ const PostJob: React.FC = () => {
             <div className="flex justify-between pt-4">
               <Button variant="outline" onClick={prevStep}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('steps.requirements.back')}
+                Back
               </Button>
               <Button 
                 onClick={async () => {
@@ -515,7 +516,7 @@ const PostJob: React.FC = () => {
                 }}
                 disabled={!state.generalAnswers.location || !state.generalAnswers.urgency}
               >
-                {t('steps.requirements.continueToReview')}
+                Continue to Review
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
@@ -527,8 +528,8 @@ const PostJob: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-semibold">{t('steps.review.title')}</h2>
-              <p className="text-muted-foreground">{t('steps.review.subtitle')}</p>
+              <h2 className="text-2xl font-semibold">Review your job post</h2>
+              <p className="text-muted-foreground">AI-powered insights and final review</p>
             </div>
 
             {/* AI Price Estimate */}
@@ -537,10 +538,10 @@ const PostJob: React.FC = () => {
             )}
 
             <Card className="p-6">
-              <h3 className="font-semibold mb-4">{t('steps.review.jobSummary')}</h3>
+              <h3 className="font-semibold mb-4">Job Summary</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">{t('steps.review.service')}</label>
+                  <label className="text-sm font-medium text-muted-foreground">Service</label>
                   <div className="flex gap-2 mt-1">
                     <Badge>{state.category}</Badge>
                     <Badge>{state.subcategory}</Badge>
@@ -549,20 +550,20 @@ const PostJob: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">{t('steps.review.title')}</label>
+                  <label className="text-sm font-medium text-muted-foreground">Title</label>
                   <p className="mt-1">{state.title}</p>
                 </div>
 
                 {state.generalAnswers.description && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">{t('steps.review.description')}</label>
+                    <label className="text-sm font-medium text-muted-foreground">Description</label>
                     <p className="mt-1 text-sm">{state.generalAnswers.description}</p>
                   </div>
                 )}
 
                 {state.generalAnswers.budget && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">{t('steps.review.budgetRange')}</label>
+                    <label className="text-sm font-medium text-muted-foreground">Budget Range</label>
                     <p className="mt-1">{state.generalAnswers.budget}</p>
                   </div>
                 )}
@@ -570,7 +571,7 @@ const PostJob: React.FC = () => {
                 {/* AI-Generated Question Responses */}
                 {state.microAnswers && Object.keys(state.microAnswers).length > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">{t('steps.review.aiQuestionsAnswers')}</label>
+                    <label className="text-sm font-medium text-muted-foreground">AI Questions & Answers</label>
                     <div className="mt-2 space-y-1">
                       {Object.entries(state.microAnswers).map(([key, value]) => (
                         <div key={key} className="text-sm bg-blue-50 p-2 rounded">
@@ -583,7 +584,7 @@ const PostJob: React.FC = () => {
 
                 {state.generalAnswers.urgency && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">{t('steps.review.urgency')}</label>
+                    <label className="text-sm font-medium text-muted-foreground">Urgency</label>
                     <p className="mt-1 capitalize">{state.generalAnswers.urgency.replace('-', ' ')}</p>
                   </div>
                 )}
@@ -593,13 +594,13 @@ const PostJob: React.FC = () => {
             <div className="flex justify-between pt-6">
               <Button variant="outline" onClick={prevStep}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('steps.review.backToEdit')}
+                Back to Edit
               </Button>
               <Button onClick={handleSubmit} disabled={loading} className="min-w-[120px]">
-                {loading ? t('steps.review.posting') : (
+                {loading ? 'Posting...' : (
                   <>
                     <Check className="w-4 h-4 mr-2" />
-                    {t('steps.review.postJob')}
+                    Post Job
                   </>
                 )}
               </Button>
@@ -616,10 +617,10 @@ const PostJob: React.FC = () => {
     return (
       <div className="min-h-screen bg-background pt-20 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-2xl font-semibold text-destructive mb-4">{t('errors.title')}</h1>
+          <h1 className="text-2xl font-semibold text-destructive mb-4">Error</h1>
           <p className="text-muted-foreground mb-6">{error}</p>
           <Button onClick={() => navigate('/dashboard/client')}>
-            {t('errors.goToDashboard')}
+            Go to Dashboard
           </Button>
         </div>
       </div>
@@ -678,12 +679,12 @@ const PostJob: React.FC = () => {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6 max-w-3xl mx-auto">
               {[
-                { step: 1, label: t('navigation.progressLabels.category') },
-                { step: 2, label: t('navigation.progressLabels.service') },
-                { step: 3, label: t('navigation.progressLabels.details') },
-                { step: 4, label: t('navigation.progressLabels.aiQuestions') },
-                { step: 5, label: t('navigation.progressLabels.requirements') },
-                { step: 6, label: t('navigation.progressLabels.review') }
+                { step: 1, label: 'Category' },
+                { step: 2, label: 'Service' },
+                { step: 3, label: 'Details' },
+                { step: 4, label: 'AI Questions' },
+                { step: 5, label: 'Requirements' },
+                { step: 6, label: 'Review' }
               ].map(({ step, label }, index) => (
                 <div key={step} className="flex flex-col items-center flex-1">
                   <div className="flex items-center w-full">
@@ -709,16 +710,14 @@ const PostJob: React.FC = () => {
               ))}
             </div>
             <p className="text-center text-sm text-muted-foreground">
-              {t('navigation.stepCounter', { 
-                current: state.step, 
-                total: 6, 
-                description: state.step === 1 ? t('navigation.stepDescriptions.chooseCategory') :
-                            state.step === 2 ? t('navigation.stepDescriptions.selectService') :
-                            state.step === 3 ? t('navigation.stepDescriptions.pickDetails') :
-                            state.step === 4 ? t('navigation.stepDescriptions.aiQuestionsBasicInfo') :
-                            state.step === 5 ? t('navigation.stepDescriptions.answerRequirements') :
-                            t('navigation.stepDescriptions.reviewPost')
-              })}
+              Step {state.step} of 6: {
+                state.step === 1 ? 'Choose Category' :
+                state.step === 2 ? 'Select Service' :
+                state.step === 3 ? 'Pick Details' :
+                state.step === 4 ? 'AI Questions & Basic Info' :
+                state.step === 5 ? 'Answer Requirements' :
+                'Review & Post'
+              }
             </p>
         </div>
 

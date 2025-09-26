@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,6 @@ export default function SignIn() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation('auth');
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,8 +50,8 @@ export default function SignIn() {
       if (error) throw error;
 
       toast({
-        title: t('signin.checkEmail'),
-        description: t('signin.magicLinkSent', { email }),
+        title: 'Check your email',
+        description: `We've sent you a secure sign-in link at ${email}`,
       });
       
       navigate('/auth/verify-email');
@@ -81,8 +79,8 @@ export default function SignIn() {
       if (error) throw error;
 
       toast({
-        title: t('signin.welcomeBack'),
-        description: t('signin.signInSuccess'),
+        title: 'Welcome back!',
+        description: 'You have been signed in successfully.',
       });
       
       // Navigate to redirect URL if provided, otherwise to dashboard
@@ -107,15 +105,15 @@ export default function SignIn() {
             className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {t('signin.backToRoleSelection')}
+            Back to role selection
           </Link>
         </div>
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">{t('signin.title')}</CardTitle>
+            <CardTitle className="text-2xl">Welcome back</CardTitle>
             <CardDescription>
-              {t('signin.subtitle')}
+              Sign in to your account to continue
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -130,7 +128,7 @@ export default function SignIn() {
                   onClick={() => setAuthMode('magic')}
                 >
                   <Mail className="w-4 h-4 mr-2" />
-                  {t('signin.magicLink')}
+                  Magic Link
                 </Button>
                 <Button
                   type="button"
@@ -139,20 +137,20 @@ export default function SignIn() {
                   className="flex-1"
                   onClick={() => setAuthMode('password')}
                 >
-                  {t('signin.password')}
+                  Password
                 </Button>
               </div>
             )}
 
             <form onSubmit={authMode === 'magic' ? handleMagicLink : handlePasswordSignIn} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">{t('signin.email')}</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('signin.emailPlaceholder')}
+                  placeholder="your@email.com"
                   required
                 />
               </div>
@@ -161,12 +159,12 @@ export default function SignIn() {
                 <>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="password">{t('signin.password')}</Label>
+                      <Label htmlFor="password">Password</Label>
                       <Link 
                         to="/auth/forgot-password" 
                         className="text-sm text-primary hover:underline"
                       >
-                        {t('signin.forgotPassword')}
+                        Forgot?
                       </Link>
                     </div>
                     <div className="relative">
@@ -175,7 +173,7 @@ export default function SignIn() {
                         type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder={t('signin.passwordPlaceholder')}
+                        placeholder="Enter your password"
                         required
                       />
                       <Button
@@ -197,8 +195,8 @@ export default function SignIn() {
               )}
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? t('signin.signingIn') : 
-                 authMode === 'magic' ? t('signin.sendMagicLink') : t('signin.signIn')
+                {loading ? 'Signing in...' : 
+                 authMode === 'magic' ? 'Send Magic Link' : 'Sign In'
                 }
               </Button>
             </form>
@@ -211,7 +209,7 @@ export default function SignIn() {
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">
-                      {t('signin.orContinueWith')}
+                      Or continue with
                     </span>
                   </div>
                 </div>
@@ -238,9 +236,9 @@ export default function SignIn() {
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                {t('signin.noAccount')}{' '}
+                Don't have an account?{' '}
                 <Link to="/auth/role-select" className="text-primary hover:underline">
-                  {t('signin.createOne')}
+                  Create one
                 </Link>
               </p>
             </div>

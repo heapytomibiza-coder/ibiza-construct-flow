@@ -107,8 +107,8 @@ export const useAIQuestions = () => {
         throw new Error(functionError.message || 'Failed to generate questions');
       }
 
-      if (!data?.questions || !Array.isArray(data.questions)) {
-        throw new Error('No valid questions received from AI');
+      if (!data?.questions) {
+        throw new Error('No questions received from AI');
       }
 
       console.log('Generated questions:', data.questions);
@@ -119,11 +119,13 @@ export const useAIQuestions = () => {
         saveToCache(cacheKey, data.questions);
       }
       
+      toast.success('AI-generated questions loaded');
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate questions';
       console.error('Error generating questions:', err);
       setError(errorMessage);
-      throw err; // Re-throw so useWizard can handle fallback
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

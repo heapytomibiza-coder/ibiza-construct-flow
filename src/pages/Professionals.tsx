@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useProfessionals } from '@/hooks/useProfessionals';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -20,7 +19,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 export default function Professionals() {
-  const { t } = useTranslation('pages');
   const { professionals, loading } = useProfessionals();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,12 +65,11 @@ export default function Professionals() {
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {t('professionals.hero.title').split(t('professionals.hero.titleHighlight'))[0]}
-                <span className="text-primary">{t('professionals.hero.titleHighlight')}</span>
-                {t('professionals.hero.title').split(t('professionals.hero.titleHighlight'))[1]}
+                Find <span className="text-primary">Trusted Professionals</span> Near You
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                {t('professionals.hero.subtitle')}
+                Connect with verified local experts for all your service needs. 
+                Quality work, competitive prices, and reliable service guaranteed.
               </p>
             </div>
           </div>
@@ -87,7 +84,7 @@ export default function Professionals() {
                   <Users className="w-6 h-6 text-primary" />
                 </div>
                 <div className="text-2xl font-bold">{professionals.length}</div>
-                <div className="text-sm text-muted-foreground">{t('professionals.stats.verifiedProfessionals')}</div>
+                <div className="text-sm text-muted-foreground">Verified Professionals</div>
               </div>
               
               <div className="text-center">
@@ -95,7 +92,7 @@ export default function Professionals() {
                   <Shield className="w-6 h-6 text-green-600" />
                 </div>
                 <div className="text-2xl font-bold">{professionals.reduce((sum, p) => sum + (p.total_jobs_completed || 0), 0)}</div>
-                <div className="text-sm text-muted-foreground">{t('professionals.stats.completedProjects')}</div>
+                <div className="text-sm text-muted-foreground">Completed Projects</div>
               </div>
               
               <div className="text-center">
@@ -108,7 +105,7 @@ export default function Professionals() {
                     : '4.8'
                   }
                 </div>
-                <div className="text-sm text-muted-foreground">{t('professionals.stats.averageRating')}</div>
+                <div className="text-sm text-muted-foreground">Average Rating</div>
               </div>
               
               <div className="text-center">
@@ -116,7 +113,7 @@ export default function Professionals() {
                   <Clock className="w-6 h-6 text-blue-600" />
                 </div>
                 <div className="text-2xl font-bold">24/7</div>
-                <div className="text-sm text-muted-foreground">{t('professionals.stats.safePayProtection')}</div>
+                <div className="text-sm text-muted-foreground">SafePay Protection</div>
               </div>
             </div>
           </div>
@@ -129,14 +126,14 @@ export default function Professionals() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Search className="w-5 h-5" />
-                  {t('professionals.search.title')}
+                  Find the Right Professional
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-4 gap-4">
                   <div className="md:col-span-2">
                     <Input
-                      placeholder={t('professionals.search.placeholder')}
+                      placeholder="Search by name, skills, or services..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full"
@@ -145,10 +142,10 @@ export default function Professionals() {
                   
                   <Select value={specializationFilter} onValueChange={setSpecializationFilter}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t('professionals.search.specialization')} />
+                      <SelectValue placeholder="Specialization" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">{t('professionals.search.allSpecializations')}</SelectItem>
+                      <SelectItem value="all">All Specializations</SelectItem>
                       {allSpecializations.map((spec) => (
                         <SelectItem key={spec} value={spec}>
                           {spec.charAt(0).toUpperCase() + spec.slice(1)}
@@ -159,12 +156,12 @@ export default function Professionals() {
                   
                   <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t('professionals.search.availability')} />
+                      <SelectValue placeholder="Availability" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">{t('professionals.search.allAvailability')}</SelectItem>
-                      <SelectItem value="available">{t('professionals.search.available')}</SelectItem>
-                      <SelectItem value="busy">{t('professionals.search.busy')}</SelectItem>
+                      <SelectItem value="all">All Availability</SelectItem>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="busy">Busy</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -177,10 +174,10 @@ export default function Professionals() {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-bold">{t('professionals.results.title')}</h2>
+              <h2 className="text-3xl font-bold">Available Professionals</h2>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Filter className="w-4 h-4" />
-                <span>{filteredProfessionals.length} {t('professionals.results.found')}</span>
+                <span>{filteredProfessionals.length} professionals found</span>
               </div>
             </div>
 
@@ -190,7 +187,7 @@ export default function Professionals() {
               </div>
             ) : filteredProfessionals.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">{t('professionals.results.noResults')}</p>
+                <p className="text-muted-foreground mb-4">No professionals found matching your criteria.</p>
                 <Button 
                   onClick={() => {
                     setSearchTerm('');
@@ -199,7 +196,7 @@ export default function Professionals() {
                   }}
                   variant="outline"
                 >
-                  {t('professionals.results.clearFilters')}
+                  Clear Filters
                 </Button>
               </div>
             ) : (

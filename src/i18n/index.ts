@@ -13,7 +13,7 @@ i18n
     },
     fallbackLng: 'en',
     supportedLngs: ['en', 'es'],
-    ns: ['common', 'navigation', 'services', 'auth', 'dashboard', 'hero', 'components', 'howItWorks', 'footer', 'pages', 'wizard'],
+    ns: ['common', 'navigation', 'services', 'auth', 'dashboard', 'hero', 'components', 'howItWorks', 'footer'],
     defaultNS: 'common',
     interpolation: { 
       escapeValue: false 

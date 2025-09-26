@@ -126,7 +126,7 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
     }
   };
 
-  if (!questions || !Array.isArray(questions) || questions.length === 0) {
+  if (questions.length === 0) {
     return null;
   }
 
