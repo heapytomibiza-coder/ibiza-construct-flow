@@ -102,68 +102,66 @@ export const SmartLocationSuggestions = ({
   };
 
   return (
-    <Card className={`p-6 ${className}`}>
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Navigation className="w-5 h-5 text-primary" />
-          <h3 className="font-semibold">Smart Location Suggestions</h3>
-          {selectedService && (
-            <Badge variant="secondary" className="text-xs">
-              Optimized for {selectedService}
-            </Badge>
-          )}
-        </div>
-        
-        <div className="space-y-3">
-          {suggestions.map((location) => {
-            const isPopularForService = selectedService && 
-              location.popularFor?.includes(selectedService.toLowerCase());
-            
-            return (
-              <div
-                key={location.id}
-                onClick={() => onLocationSelect(location)}
-                className={`
-                  p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md
-                  ${isPopularForService 
-                    ? 'border-primary/20 bg-primary/5' 
-                    : 'border-border hover:border-primary/20'
-                  }
-                `}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    {getLocationIcon(location.type)}
-                    <div>
-                      <h4 className="font-medium">{location.name}</h4>
-                      <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-1">
-                        <span>{location.professionalCount} professionals</span>
-                        <span>~{location.avgResponseTime} response</span>
-                      </div>
+    <div className={`space-y-4 ${className}`}>
+      <div className="flex items-center space-x-2">
+        <Navigation className="w-5 h-5 text-primary" />
+        <h3 className="font-semibold">Smart Location Suggestions</h3>
+        {selectedService && (
+          <Badge variant="secondary" className="text-xs">
+            Optimized for {selectedService}
+          </Badge>
+        )}
+      </div>
+      
+      <div className="space-y-3">
+        {suggestions.map((location) => {
+          const isPopularForService = selectedService && 
+            location.popularFor?.includes(selectedService.toLowerCase());
+          
+          return (
+            <div
+              key={location.id}
+              onClick={() => onLocationSelect(location)}
+              className={`
+                p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md
+                ${isPopularForService 
+                  ? 'border-primary/20 bg-primary/5' 
+                  : 'border-border hover:border-primary/20'
+                }
+              `}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-3">
+                  {getLocationIcon(location.type)}
+                  <div>
+                    <h4 className="font-medium">{location.name}</h4>
+                    <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-1">
+                      <span>{location.professionalCount} professionals</span>
+                      <span>~{location.avgResponseTime} response</span>
                     </div>
                   </div>
-                  
-                  {isPopularForService && (
-                    <Badge variant="default" className="text-xs">
-                      Popular for {selectedService}
-                    </Badge>
-                  )}
                 </div>
                 
-                {location.popularFor && location.popularFor.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {location.popularFor.slice(0, 3).map(service => (
-                      <Badge key={service} variant="outline" className="text-xs">
-                        {service}
-                      </Badge>
-                    ))}
-                  </div>
+                {isPopularForService && (
+                  <Badge variant="default" className="text-xs">
+                    Popular for {selectedService}
+                  </Badge>
                 )}
               </div>
-            );
-          })}
-        </div>
+              
+              {location.popularFor && location.popularFor.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {location.popularFor.slice(0, 3).map(service => (
+                    <Badge key={service} variant="outline" className="text-xs">
+                      {service}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
-    </Card>
+    </div>
   );
 };
