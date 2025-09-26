@@ -68,6 +68,9 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             <Link to="/" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               {t('home')}
             </Link>
+            <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              {t('discovery')}
+            </Link>
             <Link to="/services" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               {t('services')}
             </Link>
@@ -160,6 +163,9 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             <nav className="flex flex-col space-y-4">
               <Link to="/" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 {t('home')}
+              </Link>
+              <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                {t('discovery')}
               </Link>
               <Link to="/services" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 {t('services')}

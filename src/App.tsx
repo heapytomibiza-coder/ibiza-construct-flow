@@ -34,6 +34,7 @@ const ServicePage = React.lazy(() => import("./pages/UnifiedServicePage"));
 const ServiceDetailPage = React.lazy(() => import("./pages/UnifiedServicePage"));
 const Services = React.lazy(() => import("./pages/Services"));
 const Professionals = React.lazy(() => import("./pages/Professionals"));
+const Discovery = React.lazy(() => import("./pages/Discovery"));
 const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
 const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
 const Contact = React.lazy(() => import("./pages/Contact"));
@@ -80,6 +81,7 @@ export default function App() {
                 <Suspense fallback={<SkeletonLoader variant="card" />}>
                   <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/discovery" element={<Discovery />} />
           <Route path="/services" element={<Services />} />
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
           <Route path="/professionals" element={<Professionals />} />
