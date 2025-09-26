@@ -103,12 +103,13 @@ export const useAIQuestions = () => {
       });
 
       if (functionError) {
-        console.error('Function error:', functionError);
-        throw new Error(functionError.message || 'Failed to generate questions');
+        console.log('AI questions unavailable:', functionError.message);
+        return; // Don't throw error, gracefully return
       }
 
       if (!data?.questions || !Array.isArray(data.questions)) {
-        throw new Error('No valid questions received from AI');
+        console.log('No valid questions received from AI');
+        return; // Don't throw error, gracefully return
       }
 
       console.log('Generated questions:', data.questions);
@@ -120,10 +121,8 @@ export const useAIQuestions = () => {
       }
       
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to generate questions';
-      console.error('Error generating questions:', err);
-      setError(errorMessage);
-      throw err; // Re-throw so useWizard can handle fallback
+      console.log('AI questions unavailable, will fallback to database');
+      // Don't set error state or throw - let useWizard handle fallback gracefully
     } finally {
       setLoading(false);
     }
