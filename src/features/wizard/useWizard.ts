@@ -83,31 +83,36 @@ export const useWizard = () => {
     }
   }, []);
 
-  // Load AI-generated questions for a service
+  // Load AI-generated questions for a service with robust fallback
   const loadAIQuestions = useCallback(async (serviceId: string) => {
     const service = services.find(s => s.id === serviceId);
     if (!service) {
       console.error('Service not found:', serviceId);
-      // Fallback to database questions for this service
       await loadQuestions(serviceId);
       return;
     }
 
-    console.log('Loading AI questions for service:', service);
+    console.log('Attempting to load AI questions for service:', service);
     
+    // Try AI questions but always fallback to database
     try {
       await aiQuestions.generateQuestions(
-        service.micro,
-        service.category,
+        service.micro, 
+        service.category, 
         service.subcategory,
         state.generalAnswers
       );
+      
+      // Check if AI questions were actually loaded
+      if (!aiQuestions.questions || aiQuestions.questions.length === 0) {
+        console.log('No AI questions received, using database questions');
+        await loadQuestions(serviceId);
+      }
     } catch (error) {
-      console.log('AI questions unavailable, using database questions');
-      // Always fallback to database questions - don't treat as error
+      console.log('AI questions failed, using database questions');
       await loadQuestions(serviceId);
     }
-  }, [services, aiQuestions.generateQuestions, loadQuestions, state.generalAnswers]);
+  }, [services, aiQuestions.generateQuestions, aiQuestions.questions, loadQuestions, state.generalAnswers]);
 
   // AI-powered price estimation
   const generatePriceEstimate = useCallback(async () => {

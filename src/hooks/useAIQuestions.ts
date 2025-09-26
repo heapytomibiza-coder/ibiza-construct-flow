@@ -102,14 +102,15 @@ export const useAIQuestions = () => {
         }
       });
 
-      if (functionError) {
-        console.log('AI questions unavailable:', functionError.message);
-        return; // Don't throw error, gracefully return
+      // Check for AI service unavailable (503 status or fallback flag)
+      if (functionError || data?.fallback) {
+        console.log('AI questions unavailable, will use database fallback');
+        return; // Gracefully return to allow fallback
       }
 
       if (!data?.questions || !Array.isArray(data.questions)) {
-        console.log('No valid questions received from AI');
-        return; // Don't throw error, gracefully return
+        console.log('No valid questions received from AI, will use database fallback');
+        return; // Gracefully return to allow fallback
       }
 
       console.log('Generated questions:', data.questions);

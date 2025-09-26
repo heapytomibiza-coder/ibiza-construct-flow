@@ -23,8 +23,12 @@ serve(async (req) => {
 
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: "AI service unavailable" }), {
-        status: 500,
+      console.log("LOVABLE_API_KEY not configured, AI questions unavailable");
+      return new Response(JSON.stringify({ 
+        error: "AI service unavailable", 
+        fallback: true 
+      }), {
+        status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -82,9 +86,16 @@ Focus on questions that help professionals:
     });
 
     if (!response.ok) {
-      console.error("AI Gateway error:", await response.text());
-      return new Response(JSON.stringify({ error: "Failed to generate questions" }), {
-        status: 500,
+      const errorText = await response.text();
+      console.error("AI Gateway error:", response.status, errorText);
+      
+      // Return a structured error that indicates fallback should be used
+      return new Response(JSON.stringify({ 
+        error: "AI Gateway unavailable", 
+        fallback: true,
+        details: `Status: ${response.status}`
+      }), {
+        status: 503, // Service Unavailable - indicates temporary issue
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -94,8 +105,11 @@ Focus on questions that help professionals:
 
     if (!aiResponse) {
       console.error("No response from AI", data);
-      return new Response(JSON.stringify({ error: "No response from AI" }), {
-        status: 500,
+      return new Response(JSON.stringify({ 
+        error: "No response from AI", 
+        fallback: true 
+      }), {
+        status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -109,8 +123,11 @@ Focus on questions that help professionals:
       questions = JSON.parse(jsonString);
     } catch (parseError) {
       console.error("Failed to parse AI response:", parseError, aiResponse);
-      return new Response(JSON.stringify({ error: "Invalid AI response format" }), {
-        status: 500,
+      return new Response(JSON.stringify({ 
+        error: "Invalid AI response format", 
+        fallback: true 
+      }), {
+        status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -122,8 +139,11 @@ Focus on questions that help professionals:
     });
   } catch (error) {
     console.error("Error generating questions:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
+    return new Response(JSON.stringify({ 
+      error: "Internal server error", 
+      fallback: true 
+    }), {
+      status: 503,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
