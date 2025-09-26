@@ -12,6 +12,10 @@ import { SmartSuggestions } from '@/components/discovery/SmartSuggestions';
 import { EnhancedBookingFlow } from '@/components/discovery/EnhancedBookingFlow';
 import { AIDiscoveryAssistant } from '@/components/discovery/AIDiscoveryAssistant';
 import { AISmartRecommendations } from '@/components/discovery/AISmartRecommendations';
+import { SmartLocationSuggestions } from '@/components/smart/SmartLocationSuggestions';
+import { LocationAvailabilityTracker } from '@/components/discovery/LocationAvailabilityTracker';
+import { TravelCostCalculator } from '@/components/discovery/TravelCostCalculator';
+import { SeasonalInsights } from '@/components/discovery/SeasonalInsights';
 import { useServices } from '@/hooks/useServices';
 import { useProfessionals } from '@/hooks/useProfessionals';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -36,6 +40,7 @@ const Discovery = () => {
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [bookingItem, setBookingItem] = useState<any>(null);
   const [bookingType, setBookingType] = useState<'service' | 'professional'>('service');
+  const [selectedLocationData, setSelectedLocationData] = useState<any>(null);
   
   const { getServiceCards, loading: servicesLoading } = useServices();
   const { professionals, loading: professionalsLoading } = useProfessionals();
@@ -130,6 +135,19 @@ const Discovery = () => {
     trackLocationUse(location ? 'enabled' : 'disabled', location?.address);
   };
 
+  const handleLocationSelect = (locationData: any) => {
+    setSelectedLocationData(locationData);
+    // Convert to our expected location format
+    if (locationData.coordinates) {
+      setUserLocation({
+        lat: locationData.coordinates.lat,
+        lng: locationData.coordinates.lng,
+        address: locationData.name
+      });
+      trackLocationUse('enabled', locationData.name);
+    }
+  };
+
   const handleModeChange = (newMode: DiscoveryMode) => {
     trackModeSwitch(activeMode, newMode);
     setActiveMode(newMode);
@@ -182,6 +200,36 @@ const Discovery = () => {
         <LocationBasedDiscovery
           currentLocation={userLocation}
           onLocationChange={handleLocationChange}
+        />
+
+        {/* Smart Location Suggestions */}
+        <SmartLocationSuggestions
+          selectedService={selectedService?.category || searchTerm}
+          onLocationSelect={handleLocationSelect}
+          className="mb-6"
+        />
+
+        {/* Real-time Availability Tracking */}
+        <LocationAvailabilityTracker
+          location={userLocation}
+          selectedService={selectedService?.category || searchTerm}
+        />
+
+        {/* Travel Cost Calculator */}
+        <TravelCostCalculator
+          location={userLocation}
+          professionalLocations={enhancedProfessionals.slice(0, 5).map(prof => ({
+            id: prof.id,
+            name: prof.full_name || 'Anonymous Professional',
+            distance: (prof as any).distance || Math.random() * 15 + 1,
+            location: (prof as any).location || 'Unknown Location'
+          }))}
+        />
+
+        {/* Seasonal Insights */}
+        <SeasonalInsights
+          location={userLocation}
+          selectedService={selectedService?.category || searchTerm}
         />
 
         {/* Smart Suggestions */}
