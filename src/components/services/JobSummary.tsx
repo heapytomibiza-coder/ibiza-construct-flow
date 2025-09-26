@@ -235,10 +235,10 @@ export const JobSummary: React.FC<JobSummaryProps> = ({
                   )}
                 </>
               ) : (
-                <p className="text-sm text-charcoal">
+                <div className="text-sm text-charcoal">
                   <Badge variant="outline" className="mr-2">FLEXIBLE</Badge>
                   {data.schedule.window || 'Within 2 weeks'}
-                </p>
+                </div>
               )}
             </div>
           </div>

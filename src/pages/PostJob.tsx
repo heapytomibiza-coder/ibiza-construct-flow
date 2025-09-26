@@ -348,9 +348,9 @@ const PostJob: React.FC = () => {
           <div className="space-y-6">
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-semibold">{t('steps.subcategory.title')}</h2>
-              <p className="text-muted-foreground">
+              <div className="text-muted-foreground">
                 {t('steps.subcategory.category')} <Badge variant="secondary">{state.category}</Badge>
-              </p>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
