@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { DiscoveryTabs } from '@/components/discovery/DiscoveryTabs';
@@ -10,6 +10,8 @@ import { LocationBasedDiscovery } from '@/components/discovery/LocationBasedDisc
 import { CrossPollination } from '@/components/discovery/CrossPollination';
 import { SmartSuggestions } from '@/components/discovery/SmartSuggestions';
 import { EnhancedBookingFlow } from '@/components/discovery/EnhancedBookingFlow';
+import { AIDiscoveryAssistant } from '@/components/discovery/AIDiscoveryAssistant';
+import { AISmartRecommendations } from '@/components/discovery/AISmartRecommendations';
 import { useServices } from '@/hooks/useServices';
 import { useProfessionals } from '@/hooks/useProfessionals';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -48,19 +50,6 @@ const Discovery = () => {
   
   const services = getServiceCards();
   const loading = servicesLoading || professionalsLoading;
-
-  // Calculate distance for location-based sorting
-  const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
-    const R = 6371; // Earth's radius in kilometers
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  };
 
   // Enhanced services with location data
   const enhancedServices = useMemo(() => {
@@ -174,6 +163,21 @@ const Discovery = () => {
           </p>
         </div>
 
+        {/* AI Smart Recommendations */}
+        <AISmartRecommendations
+          searchTerm={searchTerm}
+          location={userLocation}
+          services={enhancedServices}
+          professionals={enhancedProfessionals}
+          onRecommendationClick={(item, type) => {
+            if (type === 'service') {
+              handleServiceClick(item);
+            } else {
+              handleProfessionalClick(item);
+            }
+          }}
+        />
+
         {/* Location-based Discovery */}
         <LocationBasedDiscovery
           currentLocation={userLocation}
@@ -232,6 +236,17 @@ const Discovery = () => {
       </main>
 
       <Footer />
+
+      {/* AI Discovery Assistant */}
+      <AIDiscoveryAssistant
+        searchTerm={searchTerm}
+        location={userLocation}
+        onSuggestionClick={handleSuggestionClick}
+        onServiceRecommendation={(service) => {
+          // Add recommended service to enhanced services for display
+          console.log('AI recommended service:', service);
+        }}
+      />
 
       {/* Enhanced Booking Modal */}
       <Dialog open={bookingModalOpen} onOpenChange={setBookingModalOpen}>
