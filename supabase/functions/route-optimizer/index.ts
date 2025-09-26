@@ -111,7 +111,7 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in route optimizer:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
@@ -134,8 +134,8 @@ function hasRequiredSkills(lead: any, professional: any) {
   const requiredSkills = lead.required_skills || [];
   const proSkills = professional.skills || [];
   
-  return requiredSkills.every(skill => 
-    proSkills.some(proSkill => proSkill.toLowerCase() === skill.toLowerCase())
+  return requiredSkills.every((skill: string) => 
+    proSkills.some((proSkill: string) => proSkill.toLowerCase() === skill.toLowerCase())
   );
 }
 
@@ -147,7 +147,7 @@ function fitsInTimeSlot(lead: any, slot: any) {
 
 function calculateOptimalRoute(leads: any[], baseLocation: any, slot: any, maxTravelTime: number) {
   // Simplified route optimization using greedy nearest neighbor
-  const route = [];
+  const route: any[] = [];
   let currentLocation = baseLocation;
   let remainingLeads = [...leads];
   let totalTravelTime = 0;
@@ -155,7 +155,7 @@ function calculateOptimalRoute(leads: any[], baseLocation: any, slot: any, maxTr
 
   while (remainingLeads.length > 0) {
     // Find nearest lead
-    let nearestLead = null;
+    let nearestLead: any = null;
     let nearestDistance = Infinity;
     let nearestIndex = -1;
 
@@ -170,9 +170,9 @@ function calculateOptimalRoute(leads: any[], baseLocation: any, slot: any, maxTr
 
     // Check if we can fit this lead in the remaining time
     const travelTime = nearestDistance * 2; // minutes (simplified)
-    const jobDuration = (nearestLead.estimated_duration || 2) * 60; // minutes
+    const jobDuration = nearestLead ? (nearestLead.estimated_duration || 2) * 60 : 0; // minutes
 
-    if (totalTravelTime + travelTime + jobDuration <= slot.duration * 60) {
+    if (nearestLead && totalTravelTime + travelTime + jobDuration <= slot.duration * 60) {
       route.push(nearestLead);
       totalTravelTime += travelTime;
       totalRevenue += nearestLead.total_price || 0;

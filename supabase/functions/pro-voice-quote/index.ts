@@ -174,12 +174,12 @@ Extract realistic pricing based on the description. If information is unclear, n
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in voice-to-quote function:', error);
     
     return new Response(JSON.stringify({ 
       success: false,
-      error: error.message 
+      error: error.message
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -188,7 +188,7 @@ Extract realistic pricing based on the description. If information is unclear, n
 });
 
 function getSimulatedTranscription(category: string): string {
-  const simulations = {
+  const simulations: Record<string, string> = {
     'Home Improvement': 'I need to install a new kitchen backsplash, about 15 square meters, ceramic tiles with grout. Also need to remove the old tiles first.',
     'Maintenance': 'There is a leak in the bathroom pipe behind the wall. Water is coming through and I think we need to open the wall to fix it properly.',
     'Cleaning': 'Deep clean for a 3 bedroom house, including all bathrooms, kitchen, and living areas. Need it done before weekend guests arrive.',

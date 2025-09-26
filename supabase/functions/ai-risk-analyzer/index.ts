@@ -113,7 +113,7 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in AI risk analyzer:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
@@ -170,10 +170,10 @@ function analyzePricingRisk(jobDetails: any) {
 }
 
 function getHighestSeverity(riskFlags: any[]) {
-  const severityOrder = { 'low': 1, 'medium': 2, 'high': 3, 'critical': 4 };
+  const severityOrder: Record<string, number> = { 'low': 1, 'medium': 2, 'high': 3, 'critical': 4 };
   let highest = 'low';
 
-  riskFlags.forEach(flag => {
+  riskFlags.forEach((flag: any) => {
     if (severityOrder[flag.severity] > severityOrder[highest]) {
       highest = flag.severity;
     }

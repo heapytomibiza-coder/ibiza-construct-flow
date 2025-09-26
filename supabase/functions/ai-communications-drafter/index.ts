@@ -120,12 +120,12 @@ serve(async (req) => {
     }
 
     // Parse the draft to extract subject and body (basic parsing)
-    const lines = draftContent.split('\n').filter(line => line.trim());
+    const lines = draftContent.split('\n').filter((line: string) => line.trim());
     let subject = '';
     let body = '';
     
     // Look for subject line patterns
-    const subjectLine = lines.find(line => 
+    const subjectLine = lines.find((line: string) => 
       line.toLowerCase().includes('subject:') || 
       line.toLowerCase().includes('subject line:')
     );
@@ -165,7 +165,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in AI communications drafter:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
