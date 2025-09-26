@@ -2,6 +2,39 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 
+interface Anomaly {
+  type: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  title: string;
+  description: string;
+  entityType: string;
+  entityId: string | null;
+  metadata: Record<string, any>;
+}
+
+interface AIRun {
+  id: string;
+  status: string;
+  execution_time_ms?: number;
+  [key: string]: any;
+}
+
+interface BookingRequest {
+  id: string;
+  professional_quote?: string | number;
+  created_at: string;
+  [key: string]: any;
+}
+
+interface JobLifecycleEvent {
+  id: string;
+  to_status: string;
+  from_status: string;
+  job_id: string;
+  created_at: string;
+  [key: string]: any;
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -21,7 +54,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const startTime = Date.now();
-    const anomalies = [];
+    const anomalies: Anomaly[] = [];
 
     // Analyze different types of anomalies based on analysisType
     switch (analysisType) {
@@ -93,14 +126,15 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Error in AI anomaly detector:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
 
-async function detectPricingAnomalies(supabase: any, anomalies: any[], thresholds: any) {
+async function detectPricingAnomalies(supabase: any, anomalies: Anomaly[], thresholds: any) {
   try {
     // Get recent booking requests with pricing data
     const { data: bookings } = await supabase
@@ -112,13 +146,13 @@ async function detectPricingAnomalies(supabase: any, anomalies: any[], threshold
     if (!bookings?.length) return;
 
     // Calculate pricing statistics
-    const quotes = bookings.map(b => parseFloat(b.professional_quote || 0)).filter(q => q > 0);
-    const avgQuote = quotes.reduce((sum, q) => sum + q, 0) / quotes.length;
+    const quotes = bookings.map((b: BookingRequest) => parseFloat(String(b.professional_quote) || '0')).filter((q: number) => q > 0);
+    const avgQuote = quotes.reduce((sum: number, q: number) => sum + q, 0) / quotes.length;
     const maxQuote = Math.max(...quotes);
     const minQuote = Math.min(...quotes);
 
     // Detect outliers (prices more than 3 standard deviations from mean)
-    const standardDeviation = Math.sqrt(quotes.reduce((sum, q) => sum + Math.pow(q - avgQuote, 2), 0) / quotes.length);
+    const standardDeviation = Math.sqrt(quotes.reduce((sum: number, q: number) => sum + Math.pow(q - avgQuote, 2), 0) / quotes.length);
     const outlierThreshold = standardDeviation * 3;
 
     for (const booking of bookings) {
@@ -150,7 +184,7 @@ async function detectPricingAnomalies(supabase: any, anomalies: any[], threshold
   }
 }
 
-async function detectJobFlowAnomalies(supabase: any, anomalies: any[], timeframe: string) {
+async function detectJobFlowAnomalies(supabase: any, anomalies: Anomaly[], timeframe: string) {
   try {
     const hoursBack = timeframe === '24h' ? 24 : timeframe === '7d' ? 168 : 72;
     const cutoffTime = new Date(Date.now() - hoursBack * 60 * 60 * 1000).toISOString();
@@ -164,8 +198,8 @@ async function detectJobFlowAnomalies(supabase: any, anomalies: any[], timeframe
     if (!events?.length) return;
 
     // Analyze cancellation rate
-    const cancellations = events.filter(e => e.to_status === 'cancelled').length;
-    const totalJobs = new Set(events.map(e => e.job_id)).size;
+    const cancellations = events.filter((e: JobLifecycleEvent) => e.to_status === 'cancelled').length;
+    const totalJobs = new Set(events.map((e: JobLifecycleEvent) => e.job_id)).size;
     const cancellationRate = totalJobs > 0 ? cancellations / totalJobs : 0;
 
     if (cancellationRate > 0.3) {
@@ -181,8 +215,8 @@ async function detectJobFlowAnomalies(supabase: any, anomalies: any[], timeframe
     }
 
     // Analyze conversion from open to assigned
-    const openJobs = events.filter(e => e.to_status === 'open').length;
-    const assignedJobs = events.filter(e => e.to_status === 'assigned').length;
+    const openJobs = events.filter((e: JobLifecycleEvent) => e.to_status === 'open').length;
+    const assignedJobs = events.filter((e: JobLifecycleEvent) => e.to_status === 'assigned').length;
     const conversionRate = openJobs > 0 ? assignedJobs / openJobs : 0;
 
     if (conversionRate < 0.1 && openJobs > 5) {
@@ -240,7 +274,7 @@ async function detectProfessionalBehaviorAnomalies(supabase: any, anomalies: any
   }
 }
 
-async function detectSystemPerformanceAnomalies(supabase: any, anomalies: any[], timeframe: string) {
+async function detectSystemPerformanceAnomalies(supabase: any, anomalies: Anomaly[], timeframe: string) {
   try {
     const hoursBack = timeframe === '24h' ? 24 : timeframe === '7d' ? 168 : 72;
     const cutoffTime = new Date(Date.now() - hoursBack * 60 * 60 * 1000).toISOString();
@@ -254,7 +288,7 @@ async function detectSystemPerformanceAnomalies(supabase: any, anomalies: any[],
     if (!aiRuns?.length) return;
 
     // Analyze AI performance
-    const failedRuns = aiRuns.filter(run => run.status === 'failed').length;
+    const failedRuns = aiRuns.filter((run: AIRun) => run.status === 'failed').length;
     const totalRuns = aiRuns.length;
     const failureRate = totalRuns > 0 ? failedRuns / totalRuns : 0;
 
@@ -272,12 +306,12 @@ async function detectSystemPerformanceAnomalies(supabase: any, anomalies: any[],
 
     // Analyze execution times
     const executionTimes = aiRuns
-      .filter(run => run.execution_time_ms)
-      .map(run => run.execution_time_ms);
+      .filter((run: AIRun) => run.execution_time_ms)
+      .map((run: AIRun) => run.execution_time_ms!);
 
     if (executionTimes.length > 0) {
-      const avgTime = executionTimes.reduce((sum, time) => sum + time, 0) / executionTimes.length;
-      const slowRuns = executionTimes.filter(time => time > 30000).length; // > 30 seconds
+      const avgTime = executionTimes.reduce((sum: number, time: number) => sum + time, 0) / executionTimes.length;
+      const slowRuns = executionTimes.filter((time: number) => time > 30000).length; // > 30 seconds
 
       if (slowRuns / executionTimes.length > 0.3) {
         anomalies.push({
