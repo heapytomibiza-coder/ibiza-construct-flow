@@ -13,6 +13,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import Cascader from '@/components/common/Cascader';
 
 interface JobWizardProps {
   onComplete: (jobData: any) => void;
@@ -197,33 +198,20 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {services.map((service: any) => (
-                <Card 
-                  key={service.id} 
-                  className={cn(
-                    "cursor-pointer transition-all hover:shadow-lg",
-                    selectedService?.id === service.id && "ring-2 ring-primary"
-                  )}
-                  onClick={() => handleServiceSelect(service)}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-hero rounded-lg flex items-center justify-center">
-                        <Sparkles className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-foreground">{service.category}</h4>
-                        <p className="text-sm text-muted-foreground">{service.subcategory}</p>
-                        <Badge variant="outline" className="mt-1">
-                          {service.micro}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <Cascader 
+              onChange={(selection) => {
+                if (selection) {
+                  const mockService = {
+                    id: selection.id,
+                    category: selection.category,
+                    subcategory: selection.subcategory,
+                    micro: selection.micro
+                  };
+                  setSelectedService(mockService);
+                  nextStep();
+                }
+              }}
+            />
           </div>
         );
 

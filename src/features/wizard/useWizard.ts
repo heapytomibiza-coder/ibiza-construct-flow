@@ -45,17 +45,23 @@ export const useWizard = () => {
   // AI-powered question generation
   const aiQuestions = useAIQuestions();
 
-  // Load all services
+  // Load all services from services_micro table
   const loadServices = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('services')
+        .from('services_micro')
         .select('*')
         .order('category, subcategory, micro');
       
       if (error) throw error;
-      setServices(data || []);
+      const formattedServices = (data || []).map(item => ({
+        id: item.id,
+        category: item.category,
+        subcategory: item.subcategory,
+        micro: item.micro
+      }));
+      setServices(formattedServices || []);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -63,19 +69,20 @@ export const useWizard = () => {
     }
   }, []);
 
-  // Load questions for a service
+  // Load questions for a service from services_micro table
   const loadQuestions = useCallback(async (serviceId: string) => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('service_questions')
+        .from('services_micro')
         .select('*')
-        .eq('service_id', serviceId)
-        .order('version', { ascending: false })
+        .eq('id', serviceId)
         .maybeSingle();
       
       if (error) throw error;
-      setQuestions((data?.questions as any[]) || []);
+      const microQuestions = (data?.questions_micro as any[]) || [];
+      const logisticsQuestions = (data?.questions_logistics as any[]) || [];
+      setQuestions([...microQuestions, ...logisticsQuestions]);
     } catch (err: any) {
       setError(err.message);
     } finally {
