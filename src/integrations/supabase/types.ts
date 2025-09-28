@@ -2852,6 +2852,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_professional_view_job: {
+        Args: { _job_id: string; _user_id: string }
+        Returns: boolean
+      }
       get_user_role: {
         Args: { user_id: string }
         Returns: string
