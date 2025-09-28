@@ -6,18 +6,46 @@ import {
   Plus, FileText, Clock, TrendingUp, 
   Sparkles, Zap, Target, Users
 } from 'lucide-react';
-import EnhancedJobWizard from '@/components/wizard/EnhancedJobWizard';
+import LuxuryJobWizard from '@/components/wizard/LuxuryJobWizard';
+import MobileJobWizard from '@/components/wizard/MobileJobWizard';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const PostJobView = () => {
+  const isMobile = useIsMobile();
   const [showWizard, setShowWizard] = useState(false);
   const [recentJobs, setRecentJobs] = useState([]);
   const [templates, setTemplates] = useState([]);
+  const [services, setServices] = useState([]);
+
+  React.useEffect(() => {
+    if (showWizard && isMobile) {
+      // Fetch services for mobile wizard
+      const fetchServices = async () => {
+        try {
+          const { data } = await supabase
+            .from('services_micro')
+            .select('id, category, subcategory, micro')
+            .order('category, subcategory, micro');
+          setServices(data || []);
+        } catch (error) {
+          console.error('Error fetching services:', error);
+        }
+      };
+      fetchServices();
+    }
+  }, [showWizard, isMobile]);
 
   if (showWizard) {
-    return (
-      <EnhancedJobWizard
+    return isMobile ? (
+      <MobileJobWizard
+        onComplete={handleJobComplete}
+        onCancel={() => setShowWizard(false)}
+        services={services}
+      />
+    ) : (
+      <LuxuryJobWizard
         onComplete={handleJobComplete}
         onCancel={() => setShowWizard(false)}
       />
