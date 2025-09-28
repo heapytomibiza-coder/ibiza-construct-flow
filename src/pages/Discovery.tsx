@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -21,6 +22,8 @@ import { useProfessionals } from '@/hooks/useProfessionals';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useDiscoveryAnalytics } from '@/hooks/useDiscoveryAnalytics';
+import { useMarketplaceContext } from '@/hooks/useMarketplaceContext';
+import { CrossoverBanner } from '@/components/marketplace/CrossoverBanner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export type DiscoveryMode = 'services' | 'professionals' | 'both';
@@ -28,8 +31,10 @@ export type DiscoveryMode = 'services' | 'professionals' | 'both';
 const Discovery = () => {
   const { t } = useTranslation('services');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
+  const { context, updateContext, shouldShowCrossover } = useMarketplaceContext();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [activeMode, setActiveMode] = useState<DiscoveryMode>('both');
@@ -41,6 +46,7 @@ const Discovery = () => {
   const [bookingItem, setBookingItem] = useState<any>(null);
   const [bookingType, setBookingType] = useState<'service' | 'professional'>('service');
   const [selectedLocationData, setSelectedLocationData] = useState<any>(null);
+  const [showCrossoverBanner, setShowCrossoverBanner] = useState(false);
   
   const { getServiceCards, loading: servicesLoading } = useServices();
   const { professionals, loading: professionalsLoading } = useProfessionals();
@@ -161,10 +167,76 @@ const Discovery = () => {
     }
   };
 
+  // Initialize from URL params (from marketplace context)
+  useEffect(() => {
+    const q = searchParams.get('q');
+    const category = searchParams.get('category');
+    const location = searchParams.get('location');
+    const urgency = searchParams.get('urgency');
+    
+    if (q) setSearchTerm(q);
+    if (category) {
+      // Set search term to category for filtering
+      setSearchTerm(category);
+    }
+    if (location) {
+      setUserLocation({
+        lat: 0, lng: 0, // Will be geocoded
+        address: location
+      });
+    }
+    
+    // Update context
+    updateContext({
+      searchTerm: q || category || '',
+      category: category || undefined,
+      location: location ? { lat: 0, lng: 0, address: location } : undefined,
+      urgency: urgency as any,
+      currentPath: 'browse'
+    });
+  }, [searchParams, updateContext]);
+
+  // Track results for crossover logic
+  useEffect(() => {
+    const filteredServices = enhancedServices.filter(service =>
+      !searchTerm || service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const filteredProfessionals = enhancedProfessionals.filter(professional =>
+      !searchTerm || professional.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      professional.specializations?.some((spec: string) => 
+        spec.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    
+    const totalResults = filteredServices.length + filteredProfessionals.length;
+    updateContext({ lastSearchResults: totalResults });
+    
+    // Show crossover banner if results are poor
+    if (searchTerm && totalResults < 3 && shouldShowCrossover('discovery-to-post')) {
+      setShowCrossoverBanner(true);
+    }
+  }, [enhancedServices, enhancedProfessionals, searchTerm, updateContext, shouldShowCrossover]);
+
   // Track initial page view
   React.useEffect(() => {
     trackDiscoveryView(activeMode, userLocation);
   }, [activeMode, userLocation, trackDiscoveryView]);
+
+  const handleCrossoverToPost = () => {
+    updateContext({ 
+      previousPath: 'browse',
+      crossoverCount: (context.crossoverCount || 0) + 1
+    });
+    
+    const postUrl = `/post?${new URLSearchParams({
+      ...(searchTerm && { service: searchTerm }),
+      ...(context.category && { category: context.category }),
+      ...(userLocation?.address && { location: userLocation.address })
+    }).toString()}`;
+    
+    navigate(postUrl);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -238,6 +310,20 @@ const Discovery = () => {
             searchTerm={searchTerm}
             location={userLocation}
             onSuggestionClick={handleSuggestionClick}
+          />
+        )}
+
+        {/* Crossover Banner */}
+        {showCrossoverBanner && (
+          <CrossoverBanner
+            type="discovery-to-post"
+            context={{
+              searchTerm,
+              location: userLocation?.address,
+              resultsCount: context.lastSearchResults || 0
+            }}
+            onCrossover={handleCrossoverToPost}
+            onDismiss={() => setShowCrossoverBanner(false)}
           />
         )}
 
