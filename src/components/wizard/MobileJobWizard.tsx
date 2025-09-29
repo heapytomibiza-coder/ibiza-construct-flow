@@ -44,6 +44,7 @@ const MobileJobWizard = ({
     description: '',
     location: '',
     urgency: 'flexible',
+    preferredTime: '',
     budget: '',
     requirements: ''
   });
@@ -414,6 +415,32 @@ const MobileJobWizard = ({
                       />
                     </PopoverContent>
                   </Popover>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-3">
+                    Preferred Time
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { value: 'morning', label: '🌅 Morning', desc: '8AM - 12PM' },
+                      { value: 'afternoon', label: '☀️ Afternoon', desc: '12PM - 6PM' },
+                      { value: 'evening', label: '🌙 Evening', desc: '6PM - 10PM' }
+                    ].map((option) => (
+                      <Button
+                        key={option.value}
+                        variant={formData.preferredTime === option.value ? "default" : "outline"}
+                        onClick={() => setFormData(prev => ({ ...prev, preferredTime: option.value }))}
+                        className={cn(
+                          "h-auto p-3 flex flex-col items-center",
+                          formData.preferredTime === option.value && "bg-gradient-hero text-white"
+                        )}
+                      >
+                        <span className="text-base">{option.label}</span>
+                        <span className="text-xs opacity-80 mt-1">{option.desc}</span>
+                      </Button>
+                    ))}
+                  </div>
                 </div>
 
                 <div>
