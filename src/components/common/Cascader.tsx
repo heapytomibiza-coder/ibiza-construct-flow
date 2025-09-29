@@ -51,7 +51,7 @@ export default function Cascader({ onChange, placeholder = "Select a service", c
       }
 
       const { data, error } = await supabase
-        .from('services_micro')
+        .from('services_unified_v1')
         .select('id, category, subcategory, micro')
         .order('category')
         .order('subcategory')

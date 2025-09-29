@@ -25,7 +25,7 @@ const PostJobView = () => {
       const fetchServices = async () => {
         try {
           const { data } = await supabase
-            .from('services_micro')
+            .from('services_unified_v1')
             .select('id, category, subcategory, micro')
             .order('category, subcategory, micro');
           setServices(data || []);

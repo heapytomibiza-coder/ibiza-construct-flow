@@ -31,15 +31,15 @@ export const useServices = () => {
       setLoading(true);
       setError(null);
       const { data, error } = await supabase
-        .from('services')
-        .select('*')
+        .from('services_unified_v1')
+        .select('id, category, subcategory, micro')
         .order('category, subcategory, micro');
       
       if (error) throw error;
       setServices(data || []);
       
       // Log successful load for debugging
-      console.log(`Loaded ${data?.length || 0} services from database`);
+      console.log(`Loaded ${data?.length || 0} services from unified view`);
     } catch (err: any) {
       console.error('Error loading services:', err);
       setError(err.message);
