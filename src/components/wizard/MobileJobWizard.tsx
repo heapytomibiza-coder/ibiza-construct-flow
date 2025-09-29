@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   ArrowLeft, MapPin, Camera, Target, Sparkles,
   Home, Building, Users, Wrench, Truck, Car
@@ -320,15 +321,44 @@ const MobileJobWizard = ({
                   <label className="block text-sm font-medium text-charcoal mb-2">
                     Location
                   </label>
-                  <div className="relative">
-                    <Input
-                      value={formData.location}
-                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="Enter address or area"
-                      className="mobile-optimized-input pr-10"
-                    />
-                    <MapPin className="absolute right-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                  </div>
+                  <Select
+                    value={formData.location}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                  >
+                    <SelectTrigger className="mobile-optimized-input bg-white">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <SelectValue placeholder="Select area in Ibiza" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="bg-white z-50 max-h-[300px]">
+                      <SelectItem value="Ibiza Town">Ibiza Town (Eivissa)</SelectItem>
+                      <SelectItem value="San Antonio">San Antonio (Sant Antoni)</SelectItem>
+                      <SelectItem value="Santa Eulalia">Santa Eulalia (Santa Eulària)</SelectItem>
+                      <SelectItem value="Playa d'en Bossa">Playa d'en Bossa</SelectItem>
+                      <SelectItem value="Talamanca">Talamanca</SelectItem>
+                      <SelectItem value="San Jose">San Jose (Sant Josep)</SelectItem>
+                      <SelectItem value="San Juan">San Juan (Sant Joan)</SelectItem>
+                      <SelectItem value="San Miguel">San Miguel (Sant Miquel)</SelectItem>
+                      <SelectItem value="Cala Llonga">Cala Llonga</SelectItem>
+                      <SelectItem value="Es Canar">Es Canar</SelectItem>
+                      <SelectItem value="Portinatx">Portinatx</SelectItem>
+                      <SelectItem value="San Carlos">San Carlos (Sant Carles)</SelectItem>
+                      <SelectItem value="San Lorenzo">San Lorenzo (Sant Llorenç)</SelectItem>
+                      <SelectItem value="San Rafael">San Rafael (Sant Rafel)</SelectItem>
+                      <SelectItem value="San Agustin">San Agustin (Sant Agustí)</SelectItem>
+                      <SelectItem value="Cala Bassa">Cala Bassa</SelectItem>
+                      <SelectItem value="Cala Conta">Cala Conta (Cala Comte)</SelectItem>
+                      <SelectItem value="Cala Tarida">Cala Tarida</SelectItem>
+                      <SelectItem value="Cala Vadella">Cala Vadella</SelectItem>
+                      <SelectItem value="Cala Salada">Cala Salada</SelectItem>
+                      <SelectItem value="Es Cubells">Es Cubells</SelectItem>
+                      <SelectItem value="Jesus">Jesus (Jesús)</SelectItem>
+                      <SelectItem value="San Mateo">San Mateo (Sant Mateu)</SelectItem>
+                      <SelectItem value="Santa Gertrudis">Santa Gertrudis</SelectItem>
+                      <SelectItem value="San Vicente">San Vicente (Sant Vicent)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
