@@ -2545,6 +2545,24 @@ export type Database = {
         }
         Relationships: []
       }
+      service_name_map: {
+        Row: {
+          norm_category: string
+          raw_category: string
+          source: string
+        }
+        Insert: {
+          norm_category: string
+          raw_category: string
+          source: string
+        }
+        Update: {
+          norm_category?: string
+          raw_category?: string
+          source?: string
+        }
+        Relationships: []
+      }
       service_options: {
         Row: {
           base_price: number
@@ -2849,7 +2867,20 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      services_unified_v1: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string | null
+          is_featured: boolean | null
+          micro: string | null
+          questions_logistics: Json | null
+          questions_micro: Json | null
+          source: string | null
+          subcategory: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_professional_view_job: {
