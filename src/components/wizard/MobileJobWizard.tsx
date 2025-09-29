@@ -185,7 +185,6 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
                           <div className="flex items-center justify-between">
                             <div>
                               <h4 className="font-medium text-charcoal">{service.micro}</h4>
-                              <p className="text-sm text-muted-foreground">{subcategory}</p>
                             </div>
                             <div className="w-5 h-5 rounded-full border-2 border-muted flex items-center justify-center">
                               {selectedService?.id === service.id && (
