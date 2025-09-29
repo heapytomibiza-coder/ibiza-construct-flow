@@ -11,17 +11,30 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
+import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
 
 interface MobileJobWizardProps {
   onComplete: (jobData: any) => void;
   onCancel: () => void;
   services: any[];
+  microQuestions?: any[];
+  logisticsQuestions?: any[];
+  onLoadQuestions?: (serviceId: string) => void;
 }
 
-const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProps) => {
+const MobileJobWizard = ({ 
+  onComplete, 
+  onCancel, 
+  services,
+  microQuestions = [],
+  logisticsQuestions = [],
+  onLoadQuestions
+}: MobileJobWizardProps) => {
   const [step, setStep] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>('');
   const [selectedService, setSelectedService] = useState<any>(null);
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -30,12 +43,18 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
     budget: '',
     requirements: ''
   });
+  
+  const [microAnswers, setMicroAnswers] = useState<Record<string, any>>({});
+  const [logisticsAnswers, setLogisticsAnswers] = useState<Record<string, any>>({});
 
   const steps = [
     { id: 1, title: 'Category' },
-    { id: 2, title: 'Service' },
-    { id: 3, title: 'Details' },
-    { id: 4, title: 'Review' }
+    { id: 2, title: 'Subcategory' },
+    { id: 3, title: 'Service' },
+    { id: 4, title: 'Micro Q' },
+    { id: 5, title: 'Logistics' },
+    { id: 6, title: 'Details' },
+    { id: 7, title: 'Review' }
   ];
 
   const getCategoryIcon = (category: string) => {
@@ -73,15 +92,21 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
       toast.error('Please select a category');
       return;
     }
-    if (step === 2 && !selectedService) {
+    if (step === 2 && !selectedSubcategory) {
+      toast.error('Please select a subcategory');
+      return;
+    }
+    if (step === 3 && !selectedService) {
       toast.error('Please select a service');
       return;
     }
-    if (step === 3 && (!formData.title || !formData.description)) {
-      toast.error('Please fill in title and description');
-      return;
+    
+    // Load questions when moving from step 3 to 4
+    if (step === 3 && selectedService && onLoadQuestions) {
+      onLoadQuestions(selectedService.id);
     }
-    setStep(prev => Math.min(4, prev + 1));
+    
+    setStep(prev => Math.min(7, prev + 1));
   };
 
   const prevStep = () => setStep(prev => Math.max(1, prev - 1));
@@ -91,13 +116,17 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
       ...formData,
       serviceId: selectedService?.id,
       category: selectedCategory,
-      micro: selectedService?.micro
+      subcategory: selectedSubcategory,
+      micro: selectedService?.micro,
+      microAnswers,
+      logisticsAnswers
     };
     onComplete(jobData);
   };
 
   const renderStepContent = () => {
     switch (step) {
+      // Step 1: Category Selection
       case 1:
         return (
           <div className="space-y-4">
@@ -151,7 +180,49 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
           </div>
         );
 
+      // Step 2: Subcategory Selection
       case 2:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
+                Select Subcategory
+              </h2>
+              <p className="text-muted-foreground">
+                Choose the specific type of {selectedCategory}
+              </p>
+            </div>
+            
+            <div className="space-y-3">
+              {getSubcategories(selectedCategory).map((subcategory) => (
+                <Card
+                  key={subcategory}
+                  className={cn(
+                    "cursor-pointer transition-all duration-200",
+                    selectedSubcategory === subcategory 
+                      ? "ring-2 ring-copper border-copper bg-copper/5" 
+                      : "hover:border-copper/30"
+                  )}
+                  onClick={() => setSelectedSubcategory(subcategory)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-charcoal">{subcategory}</h3>
+                      <div className="w-5 h-5 rounded-full border-2 border-muted flex items-center justify-center">
+                        {selectedSubcategory === subcategory && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-copper"></div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        );
+
+      // Step 3: Micro-service Selection
+      case 3:
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
@@ -159,65 +230,166 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
                 Which service exactly?
               </h2>
               <p className="text-muted-foreground">
-                From <span className="text-copper font-medium">{selectedCategory}</span>
+                Select from <span className="text-copper font-medium">{selectedSubcategory}</span>
               </p>
             </div>
 
-            <div className="space-y-4">
-              {getSubcategories(selectedCategory).map((subcategory) => (
-                <div key={subcategory}>
-                  <h3 className="font-medium text-charcoal mb-3 px-1">
-                    {subcategory}
-                  </h3>
-                  <div className="space-y-2">
-                    {getMicroServices(selectedCategory, subcategory).map((service) => (
-                      <Card
-                        key={service.id}
-                        className={cn(
-                          "cursor-pointer transition-all duration-200",
-                          selectedService?.id === service.id 
-                            ? "ring-2 ring-copper border-copper bg-copper/5" 
-                            : "hover:border-copper/30"
+            <div className="space-y-2">
+              {getMicroServices(selectedCategory, selectedSubcategory).map((service) => (
+                <Card
+                  key={service.id}
+                  className={cn(
+                    "cursor-pointer transition-all duration-200",
+                    selectedService?.id === service.id 
+                      ? "ring-2 ring-copper border-copper bg-copper/5" 
+                      : "hover:border-copper/30"
+                  )}
+                  onClick={() => setSelectedService(service)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-charcoal">{service.micro}</h4>
+                      <div className="w-5 h-5 rounded-full border-2 border-muted flex items-center justify-center">
+                        {selectedService?.id === service.id && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-copper"></div>
                         )}
-                        onClick={() => setSelectedService(service)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h4 className="font-medium text-charcoal">{service.micro}</h4>
-                            </div>
-                            <div className="w-5 h-5 rounded-full border-2 border-muted flex items-center justify-center">
-                              {selectedService?.id === service.id && (
-                                <div className="w-2.5 h-2.5 rounded-full bg-copper"></div>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
         );
 
-      case 3:
+      // Step 4: Service-Specific Questions
+      case 4:
         return (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
-                Project Details
+                Service Details
               </h2>
               <p className="text-muted-foreground">
-                Help professionals understand your needs
+                Tell us about your {selectedService?.micro}
               </p>
             </div>
+            
+            {microQuestions.length > 0 ? (
+              <AIQuestionRenderer
+                questions={microQuestions}
+                answers={microAnswers}
+                onAnswerChange={(questionId, value) => {
+                  setMicroAnswers(prev => ({ ...prev, [questionId]: value }));
+                }}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <div className="animate-pulse text-muted-foreground">
+                  Loading questions...
+                </div>
+              </div>
+            )}
+          </div>
+        );
 
+      // Step 5: Logistics Questions
+      case 5:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
+                Project Logistics
+              </h2>
+              <p className="text-muted-foreground">
+                When and where?
+              </p>
+            </div>
+            
+            {logisticsQuestions.length > 0 ? (
+              <AIQuestionRenderer
+                questions={logisticsQuestions}
+                answers={logisticsAnswers}
+                onAnswerChange={(questionId, value) => {
+                  setLogisticsAnswers(prev => ({ ...prev, [questionId]: value }));
+                }}
+              />
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    Location
+                  </label>
+                  <div className="relative">
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="Enter address or area"
+                      className="mobile-optimized-input pr-10"
+                    />
+                    <MapPin className="absolute right-3 top-2.5 w-4 h-4 text-muted-foreground" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-3">
+                    Timeline
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: 'urgent', label: 'Urgent' },
+                      { value: 'this_week', label: 'This week' },
+                      { value: 'this_month', label: 'This month' },
+                      { value: 'flexible', label: 'Flexible' }
+                    ].map((option) => (
+                      <Button
+                        key={option.value}
+                        variant={formData.urgency === option.value ? "default" : "outline"}
+                        onClick={() => setFormData(prev => ({ ...prev, urgency: option.value }))}
+                        className={cn(
+                          "h-auto p-3",
+                          formData.urgency === option.value && "bg-gradient-hero text-white"
+                        )}
+                      >
+                        {option.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    Budget (Optional)
+                  </label>
+                  <Input
+                    value={formData.budget}
+                    onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
+                    placeholder="e.g., €500 - €1000"
+                    className="mobile-optimized-input"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      // Step 6: Additional Details
+      case 6:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
+                Additional Details
+              </h2>
+              <p className="text-muted-foreground">
+                Any special requirements or notes?
+              </p>
+            </div>
+            
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-2">
-                  Project Title *
+                  Project Title (Optional)
                 </label>
                 <Input
                   value={formData.title}
@@ -229,66 +401,13 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
 
               <div>
                 <label className="block text-sm font-medium text-charcoal mb-2">
-                  Description *
+                  Additional Notes (Optional)
                 </label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe your project in detail..."
+                  placeholder="Any special requirements, access instructions, etc..."
                   rows={4}
-                  className="mobile-optimized-input"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
-                  Location
-                </label>
-                <div className="relative">
-                  <Input
-                    value={formData.location}
-                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                    placeholder="Enter address or area"
-                    className="mobile-optimized-input pr-10"
-                  />
-                  <MapPin className="absolute right-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-charcoal mb-3">
-                  Timeline
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: 'urgent', label: 'Urgent' },
-                    { value: 'this_week', label: 'This week' },
-                    { value: 'this_month', label: 'This month' },
-                    { value: 'flexible', label: 'Flexible' }
-                  ].map((option) => (
-                    <Button
-                      key={option.value}
-                      variant={formData.urgency === option.value ? "default" : "outline"}
-                      onClick={() => setFormData(prev => ({ ...prev, urgency: option.value }))}
-                      className={cn(
-                        "h-auto p-3",
-                        formData.urgency === option.value && "bg-gradient-hero text-white"
-                      )}
-                    >
-                      {option.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
-                  Budget (Optional)
-                </label>
-                <Input
-                  value={formData.budget}
-                  onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
-                  placeholder="e.g., €500 - €1000"
                   className="mobile-optimized-input"
                 />
               </div>
@@ -296,7 +415,8 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
           </div>
         );
 
-      case 4:
+      // Step 7: Final Review
+      case 7:
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -304,7 +424,7 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
                 Review & Post
               </h2>
               <p className="text-muted-foreground">
-                Check everything looks good
+                AI will create a professional job post
               </p>
             </div>
 
@@ -319,20 +439,40 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
                 <div>
                   <h4 className="font-medium text-charcoal mb-1">Service</h4>
                   <p className="text-muted-foreground">{selectedService?.micro}</p>
-                  <Badge variant="outline" className="mt-1 text-xs">
-                    {selectedCategory}
-                  </Badge>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium text-charcoal mb-1">Title</h4>
-                  <p className="text-muted-foreground">{formData.title}</p>
+                  <div className="flex gap-2 mt-1">
+                    <Badge variant="outline" className="text-xs">
+                      {selectedCategory}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {selectedSubcategory}
+                    </Badge>
+                  </div>
                 </div>
 
-                <div>
-                  <h4 className="font-medium text-charcoal mb-1">Description</h4>
-                  <p className="text-muted-foreground text-sm">{formData.description}</p>
-                </div>
+                {Object.keys(microAnswers).length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-charcoal mb-2">Service Details</h4>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      {Object.entries(microAnswers).slice(0, 3).map(([key, value]) => (
+                        <p key={key}>{key}: {String(value)}</p>
+                      ))}
+                      {Object.keys(microAnswers).length > 3 && (
+                        <p className="text-xs">+ {Object.keys(microAnswers).length - 3} more...</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {Object.keys(logisticsAnswers).length > 0 && (
+                  <div>
+                    <h4 className="font-medium text-charcoal mb-2">Logistics</h4>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      {Object.entries(logisticsAnswers).slice(0, 3).map(([key, value]) => (
+                        <p key={key}>{key}: {String(value)}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between pt-2 border-t">
                   <span className="text-muted-foreground">Timeline</span>
@@ -363,7 +503,7 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
                 <span className="font-medium text-charcoal">What happens next?</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Qualified professionals will review your project and send personalized quotes within 24-48 hours.
+                AI will create a professional job post from your answers. Qualified professionals will review and send personalized quotes within 24-48 hours.
               </p>
             </div>
           </div>
@@ -418,8 +558,8 @@ const MobileJobWizard = ({ onComplete, onCancel, services }: MobileJobWizardProp
       {/* Mobile CTA */}
       <StickyMobileCTA
         primaryAction={{
-          label: step === 4 ? 'Post Project' : 'Continue',
-          onClick: step === 4 ? handleSubmit : nextStep
+          label: step === 7 ? 'Post Project' : 'Continue',
+          onClick: step === 7 ? handleSubmit : nextStep
         }}
         secondaryAction={step > 1 ? {
           label: 'Back',

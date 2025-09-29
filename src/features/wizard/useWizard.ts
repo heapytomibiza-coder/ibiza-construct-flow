@@ -38,7 +38,8 @@ export const useWizard = () => {
   });
 
   const [services, setServices] = useState<Service[]>([]);
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [microQuestions, setMicroQuestions] = useState<any[]>([]);
+  const [logisticsQuestions, setLogisticsQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -80,9 +81,10 @@ export const useWizard = () => {
         .maybeSingle();
       
       if (error) throw error;
-      const microQuestions = (data?.questions_micro as any[]) || [];
-      const logisticsQuestions = (data?.questions_logistics as any[]) || [];
-      setQuestions([...microQuestions, ...logisticsQuestions]);
+      const micro = (data?.questions_micro as any[]) || [];
+      const logistics = (data?.questions_logistics as any[]) || [];
+      setMicroQuestions(micro);
+      setLogisticsQuestions(logistics);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -220,7 +222,8 @@ export const useWizard = () => {
   return {
     state,
     services,
-    questions: aiQuestions.questions.length > 0 ? aiQuestions.questions : questions,
+    microQuestions: aiQuestions.questions.length > 0 ? aiQuestions.questions : microQuestions,
+    logisticsQuestions,
     loading: loading || aiQuestions.loading,
     error: error || aiQuestions.error,
     priceEstimate: aiQuestions.priceEstimate,
