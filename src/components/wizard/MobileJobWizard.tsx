@@ -5,10 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
-  ArrowLeft, MapPin, Camera, Target, Sparkles,
+  ArrowLeft, MapPin, Camera, Target, Sparkles, CalendarIcon,
   Home, Building, Users, Wrench, Truck, Car
 } from 'lucide-react';
+import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
@@ -47,6 +50,7 @@ const MobileJobWizard = ({
   
   const [microAnswers, setMicroAnswers] = useState<Record<string, any>>({});
   const [logisticsAnswers, setLogisticsAnswers] = useState<Record<string, any>>({});
+  const [selectedDate, setSelectedDate] = useState<Date>();
 
   const steps = [
     { id: 1, title: 'Category' },
@@ -365,7 +369,7 @@ const MobileJobWizard = ({
                   <label className="block text-sm font-medium text-charcoal mb-3">
                     Timeline
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2 mb-4">
                     {[
                       { value: 'urgent', label: 'Urgent' },
                       { value: 'this_week', label: 'This week' },
@@ -385,6 +389,31 @@ const MobileJobWizard = ({
                       </Button>
                     ))}
                   </div>
+
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal bg-white",
+                          !selectedDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? format(selectedDate, "PPP") : <span>Pick a preferred date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-white z-50" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 <div>
