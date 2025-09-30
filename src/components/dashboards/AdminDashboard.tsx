@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,25 +8,34 @@ import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { InfoTip } from '@/components/ui/info-tip';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
-import AIPanel from '@/components/admin/AIPanel';
-import { CommandCenter } from '@/components/admin/workspaces/CommandCenter';
-import { ServiceCatalogue } from '@/components/admin/workspaces/ServiceCatalogue';
-import { ProfessionalHub } from '@/components/admin/workspaces/ProfessionalHub';
-import ProfessionalAnalytics from '@/components/admin/workspaces/ProfessionalAnalytics';
-import AISystemMonitor from '@/components/admin/workspaces/AISystemMonitor';
-import RiskManagement from '@/components/admin/workspaces/RiskManagement';
-import MarketIntelligence from '@/components/admin/workspaces/MarketIntelligence';
-import { AdvancedAnalyticsDashboard } from '@/components/analytics/AdvancedAnalyticsDashboard';
-import { BusinessIntelligencePanel } from '@/components/analytics/BusinessIntelligencePanel';
-import { ReportGenerator } from '@/components/analytics/ReportGenerator';
-import { AlertSystem } from '@/components/analytics/AlertSystem';
-import { SystemHealthMonitor } from '@/components/analytics/SystemHealthMonitor';
-import UserInspector from '@/components/admin/UserInspector';
-import { AdminDocumentReview } from '@/components/admin/AdminDocumentReview';
-import DatabaseStats from '@/components/admin/DatabaseStats';
-import FeatureFlagsManager from '@/components/admin/FeatureFlagsManager';
-import { AISmartMatcher } from '@/components/ai/AISmartMatcher';
-import { WorkflowAutomation } from '@/components/ai/WorkflowAutomation';
+import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
+
+// Lazy load workspaces for better code splitting
+const AIPanel = lazy(() => import('@/components/admin/AIPanel'));
+const CommandCenter = lazy(() => import('@/components/admin/workspaces/CommandCenter').then(m => ({ default: m.CommandCenter })));
+const ServiceCatalogue = lazy(() => import('@/components/admin/workspaces/ServiceCatalogue').then(m => ({ default: m.ServiceCatalogue })));
+const ProfessionalHub = lazy(() => import('@/components/admin/workspaces/ProfessionalHub').then(m => ({ default: m.ProfessionalHub })));
+const ProfessionalAnalytics = lazy(() => import('@/components/admin/workspaces/ProfessionalAnalytics'));
+const AISystemMonitor = lazy(() => import('@/components/admin/workspaces/AISystemMonitor'));
+const RiskManagement = lazy(() => import('@/components/admin/workspaces/RiskManagement'));
+const MarketIntelligence = lazy(() => import('@/components/admin/workspaces/MarketIntelligence'));
+
+// Lazy load analytics components
+const AdvancedAnalyticsDashboard = lazy(() => import('@/components/analytics/AdvancedAnalyticsDashboard').then(m => ({ default: m.AdvancedAnalyticsDashboard })));
+const BusinessIntelligencePanel = lazy(() => import('@/components/analytics/BusinessIntelligencePanel').then(m => ({ default: m.BusinessIntelligencePanel })));
+const ReportGenerator = lazy(() => import('@/components/analytics/ReportGenerator').then(m => ({ default: m.ReportGenerator })));
+const AlertSystem = lazy(() => import('@/components/analytics/AlertSystem').then(m => ({ default: m.AlertSystem })));
+const SystemHealthMonitor = lazy(() => import('@/components/analytics/SystemHealthMonitor').then(m => ({ default: m.SystemHealthMonitor })));
+
+// Lazy load admin tools
+const UserInspector = lazy(() => import('@/components/admin/UserInspector'));
+const AdminDocumentReview = lazy(() => import('@/components/admin/AdminDocumentReview').then(m => ({ default: m.AdminDocumentReview })));
+const DatabaseStats = lazy(() => import('@/components/admin/DatabaseStats'));
+const FeatureFlagsManager = lazy(() => import('@/components/admin/FeatureFlagsManager'));
+
+// Lazy load AI components
+const AISmartMatcher = lazy(() => import('@/components/ai/AISmartMatcher').then(m => ({ default: m.AISmartMatcher })));
+const WorkflowAutomation = lazy(() => import('@/components/ai/WorkflowAutomation').then(m => ({ default: m.WorkflowAutomation })));
 
 interface Profile {
   id: string;
@@ -162,43 +171,56 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   }
 
   const renderWorkspaceContent = () => {
-    switch (activeWorkspace) {
-      case 'command':
-        return <CommandCenter />;
-      case 'analytics':
-        return <ProfessionalAnalytics />;
-      case 'ai-monitor':
-        return <AISystemMonitor />;
-      case 'risk':
-        return <RiskManagement />;
-      case 'market':
-        return <MarketIntelligence />;
-      case 'professionals':
-        return <ProfessionalHub />;
-      case 'services':
-        return <ServiceCatalogue />;
-      case 'legacy':
-        return <div className="p-6 text-center text-muted-foreground">Legacy dashboard components will be available here.</div>;
-      case 'business-analytics':
-        return <AdvancedAnalyticsDashboard />;
-      case 'business-intelligence':
-        return <BusinessIntelligencePanel />;
-      case 'reports':
-        return <ReportGenerator />;
-      case 'alerts':
-        return <AlertSystem />;
-      case 'system-health':
-        return <SystemHealthMonitor />;
-      case 'ai-automation':
-        return (
-          <div className="space-y-6">
-            <AISmartMatcher jobId="sample-job-id" />
-            <WorkflowAutomation />
-          </div>
-        );
-      default:
-        return <CommandCenter />;
+    const content = (() => {
+      switch (activeWorkspace) {
+        case 'command':
+          return <CommandCenter />;
+        case 'analytics':
+          return <ProfessionalAnalytics />;
+        case 'ai-monitor':
+          return <AISystemMonitor />;
+        case 'risk':
+          return <RiskManagement />;
+        case 'market':
+          return <MarketIntelligence />;
+        case 'professionals':
+          return <ProfessionalHub />;
+        case 'services':
+          return <ServiceCatalogue />;
+        case 'legacy':
+          return <div className="p-6 text-center text-muted-foreground">Legacy dashboard components will be available here.</div>;
+        case 'business-analytics':
+          return <AdvancedAnalyticsDashboard />;
+        case 'business-intelligence':
+          return <BusinessIntelligencePanel />;
+        case 'reports':
+          return <ReportGenerator />;
+        case 'alerts':
+          return <AlertSystem />;
+        case 'system-health':
+          return <SystemHealthMonitor />;
+        case 'ai-automation':
+          return (
+            <div className="space-y-6">
+              <AISmartMatcher jobId="sample-job-id" />
+              <WorkflowAutomation />
+            </div>
+          );
+        default:
+          return <CommandCenter />;
+      }
+    })();
+
+    // Wrap all lazy-loaded components in Suspense for better UX
+    if (activeWorkspace !== 'legacy') {
+      return (
+        <Suspense fallback={<SkeletonLoader variant="dashboard" />}>
+          {content}
+        </Suspense>
+      );
     }
+    
+    return content;
   };
 
   const AppSidebar = () => (
