@@ -10,14 +10,14 @@ import {
   CarouselNext, 
   CarouselPrevious 
 } from '@/components/ui/carousel';
-import { useServices } from '@/hooks/useServices';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car, ArrowRight } from 'lucide-react';
 
 const FeaturedServicesCarousel = React.memo(() => {
   const { t } = useTranslation('components');
   const navigate = useNavigate();
-  const { getServiceCards, loading } = useServices();
+  const { getServiceCards, loading } = useServicesRegistry();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
 
   const iconMap = {

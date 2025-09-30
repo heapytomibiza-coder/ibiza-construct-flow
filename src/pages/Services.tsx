@@ -12,14 +12,14 @@ import { MobileServiceCard } from '@/components/mobile/MobileServiceCard';
 import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ServicePackages } from '@/components/services/ServicePackages';
-import { useServices } from '@/hooks/useServices';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { cn } from '@/lib/utils';
 
 const Services = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('pages');
-  const { getServiceCards, getCategories, loading } = useServices();
+  const { getServiceCards, getCategories, loading } = useServicesRegistry();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const isMobile = useIsMobile();
   

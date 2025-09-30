@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useServices } from '@/hooks/useServices';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { 
   LogOut, Plus, Clock, CheckCircle, AlertCircle, 
   Briefcase, Calendar, Euro, TrendingUp 
@@ -21,7 +21,7 @@ const ClientDashboard = ({ user, profile }: any) => {
   });
   const [loading, setLoading] = useState(true);
   const { signOut } = useAuth();
-  const { getServiceCards } = useServices();
+  const { getServiceCards } = useServicesRegistry();
 
   useEffect(() => {
     fetchBookings();

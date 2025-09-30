@@ -10,11 +10,11 @@ import {
   Camera, Clock, Euro, Sparkles, Target, Home,
   Building, Wrench, Truck, Scissors, Car, Users
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 
 interface LuxuryJobWizardProps {
   onComplete: (jobData: any) => void;
@@ -40,12 +40,12 @@ interface Service {
 const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
+  const { services, loading, getCategories, getSubcategories, getMicroServices } = useServicesRegistry();
   const [step, setStep] = useState(1);
-  const [services, setServices] = useState<Service[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('');
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -116,45 +116,6 @@ const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
     };
   };
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  const fetchServices = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('services_unified_v1')
-        .select('id, category, subcategory, micro')
-        .order('category, subcategory, micro');
-      
-      if (error) throw error;
-      setServices(data || []);
-    } catch (error) {
-      toast.error('Failed to load services');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getCategories = () => {
-    return [...new Set(services.map(s => s.category))];
-  };
-
-  const getSubcategories = (category: string) => {
-    return [...new Set(
-      services
-        .filter(s => s.category === category)
-        .map(s => s.subcategory)
-    )];
-  };
-
-  const getMicroServices = (category: string, subcategory: string) => {
-    return services.filter(s => 
-      s.category === category && s.subcategory === subcategory
-    );
-  };
-
   const nextStep = () => {
     if (step === 1 && !selectedCategory) {
       toast.error('Please select a service category');
@@ -174,7 +135,7 @@ const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
   const prevStep = () => setStep(prev => Math.max(1, prev - 1));
 
   const handleSubmit = async () => {
-    setLoading(true);
+    setSubmitting(true);
     try {
       const jobData = {
         ...formData,
@@ -188,7 +149,7 @@ const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
     } catch (error) {
       toast.error('Failed to post job');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 

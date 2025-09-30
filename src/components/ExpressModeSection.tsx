@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Clock, Zap, Wrench } from 'lucide-react';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
-import { useServices } from '@/hooks/useServices';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 
 const ExpressModeSection: React.FC = () => {
   const { t } = useTranslation('components');
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
-  const { services, loading } = useServices();
+  const { services, loading } = useServicesRegistry();
 
   // Get popular express tasks from database
   const getExpressPresets = () => {

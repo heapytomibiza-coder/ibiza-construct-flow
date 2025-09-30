@@ -26,16 +26,56 @@ const { data } = await supabase.from('services_unified_v1').select('*');
 
 ### Components Using Registry
 
+All components now use `ServicesRegistry` directly:
+
+**Wizard Components:**
 - `Cascader.tsx` - Service selection UI
 - `PostJobView.tsx` - Job creation flow
-- `EnhancedJobWizard.tsx` - Wizard interface
+- `EnhancedJobWizard.tsx` - Enhanced wizard interface
+- `LuxuryJobWizard.tsx` - Premium wizard experience
 - `useWizard.ts` - Wizard state management
+
+**Service Display:**
 - `Services.tsx` - Service listing
+- `ExpressModeSection.tsx` - Quick service access
+- `FeaturedServicesCarousel.tsx` - Featured services display
+
+**Dashboard Components:**
+- `ClientDashboard.tsx` - Client dashboard
+
+**Discovery & Pages:**
+- `Discovery.tsx` - Service discovery
+- `Services.tsx` - Services page
+- `UnifiedServicePage.tsx` - Unified service view
+
+### Deprecated (Phase 5)
+
+- ⚠️ `useServices` hook - Thin wrapper, use `useServicesRegistry` directly in new code
 
 ### Removed Files (Phase 4)
 
 - ❌ `ServicesContext.tsx` - Replaced by ServicesRegistry
 - ❌ `ServicesProvider.tsx` - Replaced by ServicesRegistry
+
+## Migration Summary
+
+### Phase 1: Create ServicesRegistry ✅
+Created unified `ServicesRegistry` with intelligent caching and question resolution
+
+### Phase 2: Migrate Core Components ✅
+Updated `PostJobView`, `EnhancedJobWizard`, `useWizard`, and `Services` to use registry
+
+### Phase 3: Centralize Role Management ✅
+Unified role logic in `lib/roles.ts` and updated `RouteGuard`, `HeaderRoleSwitcher`, and `useActiveRole`
+
+### Phase 4: Remove Redundant Contexts ✅
+Deleted duplicate `ServicesContext.tsx` and `ServicesProvider.tsx`
+
+### Phase 5: Final Migration ✅
+Migrated all remaining components from `useServices` to `useServicesRegistry`:
+- `ExpressModeSection`, `FeaturedServicesCarousel`, `ClientDashboard`
+- `Discovery`, `Services`, `UnifiedServicePage`
+- `LuxuryJobWizard` (removed direct Supabase queries)
 
 ## Role Management
 

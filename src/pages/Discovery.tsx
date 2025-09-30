@@ -17,7 +17,7 @@ import { SmartLocationSuggestions } from '@/components/smart/SmartLocationSugges
 import { LocationAvailabilityTracker } from '@/components/discovery/LocationAvailabilityTracker';
 import { TravelCostCalculator } from '@/components/discovery/TravelCostCalculator';
 import { SeasonalInsights } from '@/components/discovery/SeasonalInsights';
-import { useServices } from '@/hooks/useServices';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { useProfessionals } from '@/hooks/useProfessionals';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
@@ -48,7 +48,7 @@ const Discovery = () => {
   const [selectedLocationData, setSelectedLocationData] = useState<any>(null);
   const [showCrossoverBanner, setShowCrossoverBanner] = useState(false);
   
-  const { getServiceCards, loading: servicesLoading } = useServices();
+  const { getServiceCards, loading: servicesLoading } = useServicesRegistry();
   const { professionals, loading: professionalsLoading } = useProfessionals();
   const { 
     trackDiscoveryView, 

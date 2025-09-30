@@ -12,7 +12,7 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
-import { useServices } from '@/hooks/useServices';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { ServiceConfigurator } from '@/components/services/ServiceConfigurator';
 import { ServiceHeroSection } from '@/components/services/ServiceHeroSection';
 import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
@@ -25,7 +25,7 @@ const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
-  const { getServiceCards, getServicesByCategory, loading } = useServices();
+  const { getServiceCards, getServicesByCategory, loading } = useServicesRegistry();
 
   const iconMap = {
     'Wrench': Wrench,
