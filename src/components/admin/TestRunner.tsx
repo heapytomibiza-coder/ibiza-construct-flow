@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Play, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Loader2, Play, CheckCircle, XCircle, Clock, Languages } from 'lucide-react';
 import { executeComprehensiveTestPlan } from '@/utils/testAIFunctions';
+import i18n from '@/i18n';
 
 interface TestResult {
   test: string;
@@ -16,6 +17,48 @@ export function TestRunner() {
   const [isRunning, setIsRunning] = useState(false);
   const [results, setResults] = useState<TestResult[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
+
+  const validateI18nKeys = async () => {
+    const testResults: TestResult[] = [];
+    const requiredKeys = {
+      'services': [
+        'searchPlaceholder',
+        'categories.all',
+        'categories.cleaning',
+        'filters.title'
+      ],
+      'wizard': [
+        'steps.category.title',
+        'steps.details.title',
+        'navigation.progressLabels.category'
+      ],
+      'common': [
+        // Add common keys as needed
+      ]
+    };
+
+    for (const [namespace, keys] of Object.entries(requiredKeys)) {
+      for (const key of keys) {
+        const enExists = i18n.exists(key, { ns: namespace, lng: 'en' });
+        const esExists = i18n.exists(key, { ns: namespace, lng: 'es' });
+        
+        if (!enExists || !esExists) {
+          testResults.push({
+            test: `i18n: ${namespace}.${key}`,
+            status: 'fail',
+            message: `Missing in ${!enExists ? 'en' : 'es'}`
+          });
+        } else {
+          testResults.push({
+            test: `i18n: ${namespace}.${key}`,
+            status: 'pass'
+          });
+        }
+      }
+    }
+
+    return testResults;
+  };
 
   const handleRunTests = async () => {
     setIsRunning(true);
@@ -30,6 +73,20 @@ export function TestRunner() {
     };
 
     try {
+      // Run i18n validation
+      setLogs(prev => [...prev, '=== Running i18n validation ===']);
+      const i18nResults = await validateI18nKeys();
+      setResults(i18nResults);
+      
+      const failedI18n = i18nResults.filter(r => r.status === 'fail').length;
+      if (failedI18n > 0) {
+        setLogs(prev => [...prev, `⚠️  ${failedI18n} i18n keys missing or incomplete`]);
+      } else {
+        setLogs(prev => [...prev, '✅ All i18n keys validated']);
+      }
+
+      // Run AI function tests
+      setLogs(prev => [...prev, '\n=== Running AI function tests ===']);
       await executeComprehensiveTestPlan();
     } catch (error) {
       setLogs(prev => [...prev, `Error: ${(error as Error).message}`]);
@@ -59,7 +116,11 @@ export function TestRunner() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Play className="w-5 h-5" />
-            AI System Test Runner
+            System Test Runner
+            <Badge variant="outline" className="ml-auto">
+              <Languages className="w-3 h-3 mr-1" />
+              i18n + AI Tests
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>

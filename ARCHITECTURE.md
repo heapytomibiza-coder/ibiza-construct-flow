@@ -77,6 +77,33 @@ Migrated all remaining components from `useServices` to `useServicesRegistry`:
 - `Discovery`, `Services`, `UnifiedServicePage`
 - `LuxuryJobWizard` (removed direct Supabase queries)
 
+### Phase 6: Admin Control Plane & i18n Standardization ✅
+
+**Admin Service Catalogue Enhancement:**
+- Version Control: ServiceCatalogue displays service versions from `micro_questions_snapshot`
+- AI Question Approval: Workflow for approving AI-generated questions before publishing
+- Publishing System: Admins can publish approved versions to production
+- Integration: Full integration with `ServicesRegistry` for real-time service data
+
+**i18n Standardization:**
+- New Translation Files: Added `public/locales/en/admin.json` and `public/locales/es/admin.json`
+- Comprehensive Keys: Service catalogue, test runner, and feature flags now fully translated
+- Locale-Aware Registry: `ServicesRegistry` now responds to language changes
+
+**Test Runner Enhancement:**
+- i18n Validation: TestRunner validates that all required i18n keys exist in both EN and ES
+- Key Coverage: Validates keys across services, wizard, and common namespaces
+- Reporting: Clear pass/fail status for each validated key
+
+**Architecture Complete:**
+All 6 phases implemented. The platform now has:
+- ✅ Single source of truth for services (`ServicesRegistry`)
+- ✅ Centralized role management (`lib/roles.ts`)
+- ✅ Unified dashboard pattern
+- ✅ Admin control plane with version control
+- ✅ Complete i18n standardization
+- ✅ Automated validation testing
+
 ## Role Management
 
 ### Centralized in `lib/roles.ts`

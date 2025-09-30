@@ -1,0 +1,57 @@
+{
+  "serviceCatalogue": {
+    "title": "Catálogo de Servicios",
+    "subtitle": "Gestionar ofertas de servicios y precios",
+    "addService": "Agregar Servicio",
+    "stats": {
+      "totalServices": "Total de Servicios",
+      "active": "Activos",
+      "totalBookings": "Total de Reservas",
+      "avgRating": "Valoración Media",
+      "totalRevenue": "Ingresos Totales",
+      "topCategory": "Categoría Principal"
+    },
+    "tabs": {
+      "allServices": "Todos los Servicios",
+      "categories": "Categorías",
+      "pricingAnalysis": "Análisis de Precios",
+      "performance": "Rendimiento"
+    },
+    "search": "Buscar servicios...",
+    "allCategories": "Todas las Categorías",
+    "versions": {
+      "title": "Versiones del Servicio",
+      "version": "Versión",
+      "published": "Publicado",
+      "approved": "Aprobado",
+      "draft": "Borrador",
+      "approve": "Aprobar",
+      "publish": "Publicar",
+      "created": "Creado",
+      "viewJson": "Ver JSON de Preguntas"
+    },
+    "messages": {
+      "approveSuccess": "Preguntas aprobadas exitosamente",
+      "approveFailed": "Error al aprobar preguntas",
+      "publishSuccess": "Versión publicada exitosamente",
+      "publishFailed": "Error al publicar versión",
+      "loadFailed": "Error al cargar datos de servicio"
+    }
+  },
+  "testRunner": {
+    "title": "Ejecutor de Pruebas del Sistema",
+    "runTests": "Ejecutar Plan de Pruebas",
+    "running": "Ejecutando Pruebas Completas...",
+    "testOutput": "Salida de Pruebas",
+    "testResults": "Resultados de Pruebas",
+    "i18nTests": "Pruebas i18n + IA"
+  },
+  "featureFlags": {
+    "title": "Gestor de Feature Flags",
+    "active": "Activos",
+    "loading": "Cargando feature flags...",
+    "enableSuccess": "Función Activada",
+    "disableSuccess": "Función Desactivada",
+    "updateFailed": "Error al actualizar feature flag"
+  }
+}

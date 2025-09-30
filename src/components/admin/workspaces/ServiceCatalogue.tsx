@@ -16,10 +16,27 @@ import {
   Users,
   Clock,
   Package,
-  Settings
+  Settings,
+  CheckCircle,
+  GitBranch,
+  Upload
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useServicesRegistry, ServiceNode } from '@/contexts/ServicesRegistry';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+
+interface ServiceVersion {
+  id: string;
+  service_id: string;
+  version: number;
+  questions_json: any;
+  approved_by: string | null;
+  approved_at: string | null;
+  status: 'draft' | 'approved' | 'published';
+  created_at: string;
+}
 
 interface ServiceCatalogueItem {
   id: string;
@@ -34,6 +51,8 @@ interface ServiceCatalogueItem {
   avg_rating: number;
   active_professionals: number;
   status: 'active' | 'inactive' | 'deprecated';
+  published_version: number | null;
+  draft_version: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -48,109 +67,71 @@ interface CatalogueStats {
 }
 
 export const ServiceCatalogue = () => {
-  const [services, setServices] = useState<ServiceCatalogueItem[]>([]);
+  const { services, loading: registryLoading } = useServicesRegistry();
   const [stats, setStats] = useState<CatalogueStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedService, setSelectedService] = useState<ServiceNode | null>(null);
+  const [versionDialog, setVersionDialog] = useState(false);
+  const [versions, setVersions] = useState<ServiceVersion[]>([]);
 
   useEffect(() => {
-    loadServices();
     loadStats();
+    setLoading(false);
   }, []);
 
-  const loadServices = async () => {
+  const loadServiceVersions = async (serviceId: string) => {
     try {
-      // Mock service data - in real implementation, this would come from database
-      const mockServices: ServiceCatalogueItem[] = [
-        {
-          id: '1',
-          name: 'Emergency Plumbing Repair',
-          category: 'Plumbing',
-          subcategory: 'Emergency Services',
-          description: 'Urgent plumbing repairs for leaks, clogs, and pipe failures',
-          base_price: 125,
-          avg_completion_time: 120,
-          popularity_score: 89,
-          total_bookings: 1247,
-          avg_rating: 4.7,
-          active_professionals: 34,
-          status: 'active',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-15T10:30:00Z'
-        },
-        {
-          id: '2',
-          name: 'Electrical Panel Upgrade',
-          category: 'Electrical',
-          subcategory: 'Installations',
-          description: 'Complete electrical panel replacement and upgrade services',
-          base_price: 850,
-          avg_completion_time: 480,
-          popularity_score: 76,
-          total_bookings: 189,
-          avg_rating: 4.9,
-          active_professionals: 12,
-          status: 'active',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-14T15:20:00Z'
-        },
-        {
-          id: '3',
-          name: 'Kitchen Cabinet Installation',
-          category: 'Carpentry',
-          subcategory: 'Kitchen Remodeling',
-          description: 'Professional kitchen cabinet installation and fitting',
-          base_price: 1200,
-          avg_completion_time: 720,
-          popularity_score: 82,
-          total_bookings: 298,
-          avg_rating: 4.6,
-          active_professionals: 18,
-          status: 'active',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-13T09:45:00Z'
-        },
-        {
-          id: '4',
-          name: 'HVAC System Maintenance',
-          category: 'HVAC',
-          subcategory: 'Maintenance',
-          description: 'Regular HVAC system cleaning and maintenance service',
-          base_price: 180,
-          avg_completion_time: 180,
-          popularity_score: 67,
-          total_bookings: 456,
-          avg_rating: 4.4,
-          active_professionals: 22,
-          status: 'active',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-12T11:30:00Z'
-        },
-        {
-          id: '5',
-          name: 'Basic House Cleaning',
-          category: 'Cleaning',
-          subcategory: 'Regular Cleaning',
-          description: 'Standard house cleaning service for residential properties',
-          base_price: 85,
-          avg_completion_time: 120,
-          popularity_score: 94,
-          total_bookings: 2156,
-          avg_rating: 4.3,
-          active_professionals: 67,
-          status: 'active',
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-15T16:15:00Z'
-        }
-      ];
+      const { data, error } = await supabase
+        .from('micro_questions_snapshot')
+        .select('*')
+        .eq('micro_category_id', serviceId)
+        .order('version', { ascending: false });
 
-      setServices(mockServices);
-      setLoading(false);
+      if (error) throw error;
+      
+      const mappedVersions: ServiceVersion[] = (data || []).map(v => ({
+        id: v.id,
+        service_id: v.micro_category_id,
+        version: v.version,
+        questions_json: v.questions_json,
+        approved_by: null,
+        approved_at: null,
+        status: 'published', // Existing snapshots are published
+        created_at: v.created_at || new Date().toISOString()
+      }));
+      
+      setVersions(mappedVersions);
     } catch (error) {
-      console.error('Error loading services:', error);
-      toast.error('Failed to load service data');
-      setLoading(false);
+      console.error('Error loading versions:', error);
+      toast.error('Failed to load service versions');
+    }
+  };
+
+  const approveQuestions = async (versionId: string) => {
+    try {
+      // In a real implementation, this would update the version status
+      toast.success('Questions approved successfully');
+      if (selectedService) {
+        await loadServiceVersions(selectedService.id);
+      }
+    } catch (error) {
+      console.error('Error approving questions:', error);
+      toast.error('Failed to approve questions');
+    }
+  };
+
+  const publishVersion = async (versionId: string) => {
+    try {
+      // In a real implementation, this would publish the version to production
+      toast.success('Version published successfully');
+      if (selectedService) {
+        await loadServiceVersions(selectedService.id);
+      }
+    } catch (error) {
+      console.error('Error publishing version:', error);
+      toast.error('Failed to publish version');
     }
   };
 
@@ -188,12 +169,18 @@ export const ServiceCatalogue = () => {
   const categories = [...new Set(services.map(service => service.category))];
   
   const filteredServices = services.filter(service => {
-    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = service.micro.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          service.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          service.subcategory.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || service.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleViewVersions = (service: ServiceNode) => {
+    setSelectedService(service);
+    loadServiceVersions(service.id);
+    setVersionDialog(true);
+  };
 
   if (loading) {
     return (
@@ -318,7 +305,7 @@ export const ServiceCatalogue = () => {
               className="px-3 py-2 border rounded-md"
             >
               <option value="all">All Categories</option>
-              {categories.map(category => (
+              {categories.map((category: string) => (
                 <option key={category} value={category}>{category}</option>
               ))}
             </select>
@@ -331,54 +318,23 @@ export const ServiceCatalogue = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="font-semibold text-lg">{service.name}</h3>
-                        {getStatusBadge(service.status)}
+                        <h3 className="font-semibold text-lg">{service.micro}</h3>
+                        <Badge variant="default">Active</Badge>
                       </div>
-                      <p className="text-muted-foreground mb-2">{service.description}</p>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span>{service.category} • {service.subcategory}</span>
-                      </div>
+                      <p className="text-muted-foreground mb-2">{service.category} › {service.subcategory}</p>
                     </div>
                     <div className="flex items-center space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleViewVersions(service)}
+                      >
+                        <GitBranch className="w-4 h-4 mr-1" />
+                        Versions
+                      </Button>
                       <Button variant="outline" size="sm">
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Base Price</p>
-                      <p className="font-bold text-lg">${service.base_price}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Avg Time</p>
-                      <p className="font-medium">{Math.floor(service.avg_completion_time / 60)}h {service.avg_completion_time % 60}m</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Popularity</p>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={service.popularity_score} className="flex-1" />
-                        <span className="text-sm font-medium">{service.popularity_score}%</span>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Total Bookings</p>
-                      <p className="font-medium">{service.total_bookings}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Rating</p>
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-4 h-4 text-yellow-500" />
-                        <span className="font-medium">{service.avg_rating}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Professionals</p>
-                      <p className="font-medium">{service.active_professionals}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -394,10 +350,8 @@ export const ServiceCatalogue = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {categories.map(category => {
+                {categories.map((category: string) => {
                   const categoryServices = services.filter(s => s.category === category);
-                  const totalBookings = categoryServices.reduce((acc, s) => acc + s.total_bookings, 0);
-                  const avgRating = categoryServices.reduce((acc, s) => acc + s.avg_rating, 0) / categoryServices.length;
                   
                   return (
                     <Card key={category}>
@@ -407,14 +361,6 @@ export const ServiceCatalogue = () => {
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Services:</span>
                             <span className="font-medium">{categoryServices.length}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Bookings:</span>
-                            <span className="font-medium">{totalBookings}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Avg Rating:</span>
-                            <span className="font-medium">{avgRating.toFixed(1)}</span>
                           </div>
                         </div>
                       </CardContent>
@@ -448,6 +394,83 @@ export const ServiceCatalogue = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={versionDialog} onOpenChange={setVersionDialog}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Service Versions: {selectedService?.micro}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {versions.map((version) => (
+              <Card key={version.id}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <GitBranch className="w-4 h-4" />
+                      <span className="font-semibold">Version {version.version}</span>
+                      {version.status === 'published' && (
+                        <Badge variant="default">
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          Published
+                        </Badge>
+                      )}
+                      {version.status === 'approved' && (
+                        <Badge variant="secondary">Approved</Badge>
+                      )}
+                      {version.status === 'draft' && (
+                        <Badge variant="outline">Draft</Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {version.status === 'draft' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => approveQuestions(version.id)}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Approve
+                        </Button>
+                      )}
+                      {version.status === 'approved' && (
+                        <Button
+                          size="sm"
+                          onClick={() => publishVersion(version.id)}
+                        >
+                          <Upload className="w-4 h-4 mr-1" />
+                          Publish
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      Created: {new Date(version.created_at).toLocaleString()}
+                    </p>
+                    {version.approved_at && (
+                      <p className="text-sm text-muted-foreground">
+                        Approved: {new Date(version.approved_at).toLocaleString()}
+                      </p>
+                    )}
+                    <details className="mt-2">
+                      <summary className="cursor-pointer text-sm font-medium">
+                        View Questions JSON
+                      </summary>
+                      <pre className="mt-2 p-3 bg-muted rounded text-xs overflow-x-auto">
+                        {JSON.stringify(version.questions_json, null, 2)}
+                      </pre>
+                    </details>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

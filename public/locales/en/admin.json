@@ -1,0 +1,57 @@
+{
+  "serviceCatalogue": {
+    "title": "Service Catalogue",
+    "subtitle": "Manage service offerings and pricing",
+    "addService": "Add Service",
+    "stats": {
+      "totalServices": "Total Services",
+      "active": "Active",
+      "totalBookings": "Total Bookings",
+      "avgRating": "Avg Rating",
+      "totalRevenue": "Total Revenue",
+      "topCategory": "Top Category"
+    },
+    "tabs": {
+      "allServices": "All Services",
+      "categories": "Categories",
+      "pricingAnalysis": "Pricing Analysis",
+      "performance": "Performance"
+    },
+    "search": "Search services...",
+    "allCategories": "All Categories",
+    "versions": {
+      "title": "Service Versions",
+      "version": "Version",
+      "published": "Published",
+      "approved": "Approved",
+      "draft": "Draft",
+      "approve": "Approve",
+      "publish": "Publish",
+      "created": "Created",
+      "viewJson": "View Questions JSON"
+    },
+    "messages": {
+      "approveSuccess": "Questions approved successfully",
+      "approveFailed": "Failed to approve questions",
+      "publishSuccess": "Version published successfully",
+      "publishFailed": "Failed to publish version",
+      "loadFailed": "Failed to load service data"
+    }
+  },
+  "testRunner": {
+    "title": "System Test Runner",
+    "runTests": "Execute Test Plan",
+    "running": "Running Comprehensive Tests...",
+    "testOutput": "Test Output",
+    "testResults": "Test Results",
+    "i18nTests": "i18n + AI Tests"
+  },
+  "featureFlags": {
+    "title": "Feature Flags Manager",
+    "active": "Active",
+    "loading": "Loading feature flags...",
+    "enableSuccess": "Feature Enabled",
+    "disableSuccess": "Feature Disabled",
+    "updateFailed": "Failed to update feature flag"
+  }
+}
