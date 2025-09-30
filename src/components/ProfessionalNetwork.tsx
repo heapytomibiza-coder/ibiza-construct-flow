@@ -1,5 +1,6 @@
 import { Shield, Award, Clock, Star, Users, Briefcase } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import professionalImage from '@/assets/professional-network.jpg';
 
 const ProfessionalNetwork = () => {
@@ -81,10 +82,15 @@ const ProfessionalNetwork = () => {
 
           {/* Image & Stats */}
           <div className="relative">
-            <div 
-              className="rounded-2xl overflow-hidden shadow-elegant h-96 bg-cover bg-center"
-              style={{ backgroundImage: `url(${professionalImage})` }}
-            >
+            <div className="rounded-2xl overflow-hidden shadow-elegant h-96 relative">
+              <OptimizedImage
+                src={professionalImage}
+                alt="Professional network of verified builders and contractors in Ibiza"
+                className="w-full h-full object-cover"
+                width={800}
+                height={600}
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-transparent to-transparent"></div>
             </div>
 

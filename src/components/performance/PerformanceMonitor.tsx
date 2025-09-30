@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useWebVitals, WEB_VITALS_THRESHOLDS, getPerformanceStatus } from '@/hooks/useWebVitals';
+import { AssetOptimizationMonitor } from './AssetOptimizationMonitor';
 import { 
   Activity, 
   Zap, 
@@ -409,6 +410,9 @@ export const PerformanceMonitor = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Asset Optimization Monitor */}
+      <AssetOptimizationMonitor />
     </div>
   );
 };

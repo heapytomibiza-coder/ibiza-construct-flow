@@ -1,6 +1,7 @@
 import { ArrowRight, Star, Shield, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import heroImage from '@/assets/hero-construction.jpg';
 
 const Hero = () => {
@@ -17,11 +18,17 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
+      {/* Background Image - Optimized with priority loading */}
+      <div className="absolute inset-0">
+        <OptimizedImage
+          src={heroImage}
+          alt="Constructive Solutions Ibiza - Elite construction and building services"
+          priority={true}
+          className="w-full h-full object-cover"
+          width={1920}
+          height={1080}
+          sizes="100vw"
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-charcoal-dark/80 via-charcoal/60 to-transparent"></div>
       </div>
 
