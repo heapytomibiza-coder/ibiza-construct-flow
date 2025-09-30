@@ -13,6 +13,8 @@ import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { MobileProgressiveDisclosure } from '@/components/mobile/MobileProgressiveDisclosure';
 import { MobileOptimizedInput } from '@/components/mobile/MobileOptimizedInput';
 import { format } from 'date-fns';
+import { TimeSlotSelector } from '@/components/wizard/shared/TimeSlotSelector';
+import { LocationSelector } from '@/components/wizard/shared/LocationSelector';
 
 interface MobileCalendarWizardProps {
   onComplete: (jobData: any) => void;
@@ -199,28 +201,12 @@ export const MobileCalendarWizard = ({ onComplete, onCancel }: MobileCalendarWiz
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="grid grid-cols-1 gap-2">
-                  {[
-                    { id: 'morning', label: 'Morning', desc: '8AM - 12PM' },
-                    { id: 'afternoon', label: 'Afternoon', desc: '12PM - 5PM' },
-                    { id: 'evening', label: 'Evening', desc: '5PM - 8PM' },
-                    { id: 'flexible', label: 'Any Time', desc: 'Professional decides' }
-                  ].map((time) => (
-                    <button
-                      key={time.id}
-                      onClick={() => setFormData(prev => ({ ...prev, timePreference: time.id }))}
-                      className={cn(
-                        "p-3 rounded-lg border text-left transition-colors min-h-[56px]",
-                        formData.timePreference === time.id
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-card hover:bg-muted border-border"
-                      )}
-                    >
-                      <div className="font-medium">{time.label}</div>
-                      <div className="text-sm opacity-70">{time.desc}</div>
-                    </button>
-                  ))}
-                </div>
+                <TimeSlotSelector
+                  value={formData.timePreference}
+                  onChange={(value) => setFormData(prev => ({ ...prev, timePreference: value }))}
+                  includeFlexible
+                  layout="stack"
+                />
 
                 {/* Exact Time Input */}
                 {formData.timePreference !== 'flexible' && (
@@ -291,18 +277,15 @@ export const MobileCalendarWizard = ({ onComplete, onCancel }: MobileCalendarWiz
                   Location
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <MobileOptimizedInput
-                  type="text"
-                  label="Address or Area"
+              <CardContent className="space-y-4">
+                <LocationSelector
                   value={formData.location}
                   onChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
-                  placeholder="e.g., Ibiza Town, Santa Eulària..."
-                  autoComplete="address-line1"
+                  required
                 />
                 
                 {/* Property Type */}
-                <div className="mt-4">
+                <div>
                   <label className="block text-sm font-medium mb-2">Property Type</label>
                   <div className="flex flex-wrap gap-2">
                     {['House', 'Apartment', 'Villa', 'Office', 'Restaurant', 'Shop'].map((type) => (

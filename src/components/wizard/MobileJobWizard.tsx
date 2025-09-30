@@ -5,17 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
   ArrowLeft, MapPin, Camera, Target, Sparkles, CalendarIcon,
   Home, Building, Users, Wrench, Truck, Car
 } from 'lucide-react';
-import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
+import { LocationSelector } from './shared/LocationSelector';
+import { TimeSlotSelector } from './shared/TimeSlotSelector';
+import { DateSelector } from './shared/DateSelector';
 
 interface MobileJobWizardProps {
   onComplete: (jobData: any) => void;
@@ -322,49 +322,11 @@ const MobileJobWizard = ({
               />
             ) : (
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-charcoal mb-2">
-                    Location
-                  </label>
-                  <Select
-                    value={formData.location}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
-                  >
-                    <SelectTrigger className="mobile-optimized-input bg-white">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
-                        <SelectValue placeholder="Select area in Ibiza" />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent className="bg-white z-50 max-h-[300px]">
-                      <SelectItem value="Ibiza Town">Ibiza Town (Eivissa)</SelectItem>
-                      <SelectItem value="San Antonio">San Antonio (Sant Antoni)</SelectItem>
-                      <SelectItem value="Santa Eulalia">Santa Eulalia (Santa Eulària)</SelectItem>
-                      <SelectItem value="Playa d'en Bossa">Playa d'en Bossa</SelectItem>
-                      <SelectItem value="Talamanca">Talamanca</SelectItem>
-                      <SelectItem value="San Jose">San Jose (Sant Josep)</SelectItem>
-                      <SelectItem value="San Juan">San Juan (Sant Joan)</SelectItem>
-                      <SelectItem value="San Miguel">San Miguel (Sant Miquel)</SelectItem>
-                      <SelectItem value="Cala Llonga">Cala Llonga</SelectItem>
-                      <SelectItem value="Es Canar">Es Canar</SelectItem>
-                      <SelectItem value="Portinatx">Portinatx</SelectItem>
-                      <SelectItem value="San Carlos">San Carlos (Sant Carles)</SelectItem>
-                      <SelectItem value="San Lorenzo">San Lorenzo (Sant Llorenç)</SelectItem>
-                      <SelectItem value="San Rafael">San Rafael (Sant Rafel)</SelectItem>
-                      <SelectItem value="San Agustin">San Agustin (Sant Agustí)</SelectItem>
-                      <SelectItem value="Cala Bassa">Cala Bassa</SelectItem>
-                      <SelectItem value="Cala Conta">Cala Conta (Cala Comte)</SelectItem>
-                      <SelectItem value="Cala Tarida">Cala Tarida</SelectItem>
-                      <SelectItem value="Cala Vadella">Cala Vadella</SelectItem>
-                      <SelectItem value="Cala Salada">Cala Salada</SelectItem>
-                      <SelectItem value="Es Cubells">Es Cubells</SelectItem>
-                      <SelectItem value="Jesus">Jesus (Jesús)</SelectItem>
-                      <SelectItem value="San Mateo">San Mateo (Sant Mateu)</SelectItem>
-                      <SelectItem value="Santa Gertrudis">Santa Gertrudis</SelectItem>
-                      <SelectItem value="San Vicente">San Vicente (Sant Vicent)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <LocationSelector
+                  value={formData.location}
+                  onChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                  required
+                />
 
                 <div>
                   <label className="block text-sm font-medium text-charcoal mb-3">
@@ -391,56 +353,25 @@ const MobileJobWizard = ({
                     ))}
                   </div>
 
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal bg-white",
-                          !selectedDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP") : <span>Pick a preferred date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-white z-50" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                        className={cn("p-3 pointer-events-auto")}
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-charcoal">
+                      Select your preferred date
+                    </label>
+                    <DateSelector
+                      value={selectedDate}
+                      onChange={setSelectedDate}
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-charcoal mb-3">
                     Preferred Time
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { value: 'morning', label: '🌅 Morning', desc: '8AM - 12PM' },
-                      { value: 'afternoon', label: '☀️ Afternoon', desc: '12PM - 6PM' },
-                      { value: 'evening', label: '🌙 Evening', desc: '6PM - 10PM' }
-                    ].map((option) => (
-                      <Button
-                        key={option.value}
-                        variant={formData.preferredTime === option.value ? "default" : "outline"}
-                        onClick={() => setFormData(prev => ({ ...prev, preferredTime: option.value }))}
-                        className={cn(
-                          "h-auto p-3 flex flex-col items-center",
-                          formData.preferredTime === option.value && "bg-gradient-hero text-white"
-                        )}
-                      >
-                        <span className="text-base">{option.label}</span>
-                        <span className="text-xs opacity-80 mt-1">{option.desc}</span>
-                      </Button>
-                    ))}
-                  </div>
+                  <TimeSlotSelector
+                    value={formData.preferredTime}
+                    onChange={(value) => setFormData(prev => ({ ...prev, preferredTime: value }))}
+                  />
                 </div>
 
                 <div>

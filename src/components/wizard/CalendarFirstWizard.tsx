@@ -15,6 +15,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { TimeSlotSelector } from './shared/TimeSlotSelector';
+import { LocationSelector } from './shared/LocationSelector';
 
 interface CalendarFirstWizardProps {
   onComplete: (jobData: any) => void;
@@ -305,18 +307,12 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 gap-2">
-                        {['Morning (8-12)', 'Afternoon (12-17)', 'Evening (17-20)', 'Flexible'].map((time) => (
-                          <Button
-                            key={time}
-                            variant={formData.timePreference === time ? "default" : "outline"}
-                            onClick={() => setFormData(prev => ({ ...prev, timePreference: time }))}
-                            className="text-sm justify-start"
-                          >
-                            {time}
-                          </Button>
-                        ))}
-                      </div>
+                      <TimeSlotSelector
+                        value={formData.timePreference}
+                        onChange={(value) => setFormData(prev => ({ ...prev, timePreference: value }))}
+                        includeFlexible
+                        layout="stack"
+                      />
 
                       {formData.timePreference !== 'Flexible' && (
                         <div>

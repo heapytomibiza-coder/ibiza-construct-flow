@@ -120,9 +120,9 @@ export const generalQuestions: Question[] = [
     required: true,
     showIf: (answers) => answers.preferred_timeslot !== 'Flexible timing',
     options: [
-      'Morning (8am-12pm)',
-      'Afternoon (12pm-6pm)',
-      'Evening (6pm-8pm)',
+      'Morning (8AM - 12PM)',
+      'Afternoon (12PM - 6PM)',
+      'Evening (6PM - 10PM)',
       'Weekend only'
     ],
   },
