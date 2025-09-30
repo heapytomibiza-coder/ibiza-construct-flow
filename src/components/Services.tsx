@@ -3,13 +3,13 @@ import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car } fro
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
-import { useServices } from '@/contexts/ServicesContext';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 
 const Services = React.memo(() => {
   const navigate = useNavigate();
   const { t } = useTranslation('components');
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
-  const { getServiceCards, loading } = useServices();
+  const { getServiceCards, loading } = useServicesRegistry();
   
   const iconMap = {
     'Wrench': Wrench,

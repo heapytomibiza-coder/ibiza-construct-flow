@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { supabase } from '@/integrations/supabase/client';
 import { useAIQuestions, AIQuestion } from '@/hooks/useAIQuestions';
 import { toast } from 'sonner';
@@ -24,6 +25,7 @@ interface Service {
 }
 
 export const useWizard = () => {
+  const { services, getQuestions } = useServicesRegistry();
   const [state, setState] = useState<WizardState>({
     step: 1,
     category: '',
@@ -37,7 +39,6 @@ export const useWizard = () => {
     budgetRange: '',
   });
 
-  const [services, setServices] = useState<Service[]>([]);
   const [microQuestions, setMicroQuestions] = useState<any[]>([]);
   const [logisticsQuestions, setLogisticsQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,30 +46,6 @@ export const useWizard = () => {
   
   // AI-powered question generation
   const aiQuestions = useAIQuestions();
-
-  // Load all services from services_micro table
-  const loadServices = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('services_micro')
-        .select('*')
-        .order('category, subcategory, micro');
-      
-      if (error) throw error;
-      const formattedServices = (data || []).map(item => ({
-        id: item.id,
-        category: item.category,
-        subcategory: item.subcategory,
-        micro: item.micro
-      }));
-      setServices(formattedServices || []);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   // Load questions for a service from services_micro table
   const loadQuestions = useCallback(async (serviceId: string) => {
@@ -92,36 +69,24 @@ export const useWizard = () => {
     }
   }, []);
 
-  // Load AI-generated questions for a service with robust fallback
+  // Load AI-generated questions with strict hierarchy
   const loadAIQuestions = useCallback(async (serviceId: string) => {
-    const service = services.find(s => s.id === serviceId);
-    if (!service) {
-      console.error('Service not found:', serviceId);
-      await loadQuestions(serviceId);
-      return;
-    }
-
-    console.log('Attempting to load AI questions for service:', service);
-    
-    // Try AI questions but always fallback to database
     try {
-      await aiQuestions.generateQuestions(
-        service.micro, 
-        service.category, 
-        service.subcategory,
-        state.generalAnswers
-      );
+      setLoading(true);
+      const questionSet = await getQuestions(serviceId);
       
-      // Check if AI questions were actually loaded
-      if (!aiQuestions.questions || aiQuestions.questions.length === 0) {
-        console.log('No AI questions received, using database questions');
-        await loadQuestions(serviceId);
-      }
-    } catch (error) {
-      console.log('AI questions failed, using database questions');
-      await loadQuestions(serviceId);
+      // Use questions from registry's strict hierarchy
+      setMicroQuestions(questionSet.questions);
+      setLogisticsQuestions([]); // Logistics handled separately if needed
+      
+      console.log(`Questions loaded from ${questionSet.source} (v${questionSet.version})`);
+    } catch (err: any) {
+      setError(err.message);
+      toast.error('Failed to load questions');
+    } finally {
+      setLoading(false);
     }
-  }, [services, aiQuestions.generateQuestions, aiQuestions.questions, loadQuestions, state.generalAnswers]);
+  }, [getQuestions]);
 
   // AI-powered price estimation
   const generatePriceEstimate = useCallback(async () => {
@@ -200,17 +165,15 @@ export const useWizard = () => {
   }, [state]);
 
   const getCategories = useCallback(() => {
-    const categories = [...new Set(services.map(s => s.category))];
-    return categories;
+    return [...new Set(services.map(s => s.category))];
   }, [services]);
 
   const getSubcategories = useCallback((category: string) => {
-    const subcategories = [...new Set(
+    return [...new Set(
       services
         .filter(s => s.category === category)
         .map(s => s.subcategory)
     )];
-    return subcategories;
   }, [services]);
 
   const getMicroServices = useCallback((category: string, subcategory: string) => {
@@ -231,7 +194,6 @@ export const useWizard = () => {
     nextStep,
     prevStep,
     submitBooking,
-    loadServices,
     loadQuestions,
     loadAIQuestions,
     generatePriceEstimate,

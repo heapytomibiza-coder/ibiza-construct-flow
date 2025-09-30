@@ -9,33 +9,16 @@ import {
 import LuxuryJobWizard from '@/components/wizard/LuxuryJobWizard';
 import MobileJobWizard from '@/components/wizard/MobileJobWizard';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const PostJobView = () => {
   const isMobile = useIsMobile();
+  const { services } = useServicesRegistry();
   const [showWizard, setShowWizard] = useState(false);
   const [recentJobs, setRecentJobs] = useState([]);
   const [templates, setTemplates] = useState([]);
-  const [services, setServices] = useState([]);
-
-  React.useEffect(() => {
-    if (showWizard && isMobile) {
-      // Fetch services for mobile wizard
-      const fetchServices = async () => {
-        try {
-          const { data } = await supabase
-            .from('services_unified_v1')
-            .select('id, category, subcategory, micro')
-            .order('category, subcategory, micro');
-          setServices(data || []);
-        } catch (error) {
-          console.error('Error fetching services:', error);
-        }
-      };
-      fetchServices();
-    }
-  }, [showWizard, isMobile]);
 
   if (showWizard) {
     return isMobile ? (

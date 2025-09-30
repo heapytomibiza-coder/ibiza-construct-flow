@@ -10,6 +10,7 @@ import {
   Camera, FileText, Clock, Euro, AlertCircle, CheckCircle,
   Sparkles, Calculator, Target
 } from 'lucide-react';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -38,7 +39,7 @@ interface SelectedItem extends ServiceItem {
 
 const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
   const [step, setStep] = useState(1);
-  const [services, setServices] = useState([]);
+  const { services, loading: servicesLoading } = useServicesRegistry();
   const [selectedService, setSelectedService] = useState(null);
   const [serviceItems, setServiceItems] = useState<ServiceItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
@@ -65,26 +66,8 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
   ];
 
   useEffect(() => {
-    fetchServices();
-  }, []);
-
-  useEffect(() => {
     calculateEstimate();
   }, [selectedItems]);
-
-  const fetchServices = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .order('category', { ascending: true });
-      
-      if (error) throw error;
-      setServices(data || []);
-    } catch (error) {
-      toast.error('Failed to load services');
-    }
-  };
 
   const fetchServiceItems = async (serviceId: string) => {
     try {
