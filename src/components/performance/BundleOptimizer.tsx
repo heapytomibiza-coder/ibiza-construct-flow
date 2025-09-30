@@ -21,8 +21,8 @@ export const importUtils = {
 // Resource preloader for critical routes
 export const preloadRoute = (routePath: string) => {
   const routeMap: Record<string, () => Promise<any>> = {
-    '/dashboard/pro': () => import('@/pages/ProfessionalDashboardPage'),
-    '/dashboard/client': () => import('@/pages/ClientDashboardPage'),  
+    '/dashboard/pro': () => import('@/components/dashboards/UnifiedProfessionalDashboard'),
+    '/dashboard/client': () => import('@/components/dashboards/UnifiedClientDashboard'),  
     '/dashboard/admin': () => import('@/pages/AdminDashboardPage'),
     '/post': () => import('@/pages/PostJob'),
     '/services': () => import('@/pages/Services'),

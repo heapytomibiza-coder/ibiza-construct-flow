@@ -26,8 +26,8 @@ const AuthCallback = React.lazy(() => import("./pages/AuthCallback"));
 const QuickStart = React.lazy(() => import("./pages/QuickStart"));
 const RoleSwitcher = React.lazy(() => import("./pages/RoleSwitcher"));
 const RouteGuard = React.lazy(() => import("./components/RouteGuard"));
-const ClientDashboardPage = React.lazy(() => import("./pages/ClientDashboardPage"));
-const ProfessionalDashboardPage = React.lazy(() => import("./pages/ProfessionalDashboardPage"));
+const UnifiedClientDashboard = React.lazy(() => import("./components/dashboards/UnifiedClientDashboard"));
+const UnifiedProfessionalDashboard = React.lazy(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
 const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
 const PostJob = React.lazy(() => import("./pages/PostJob"));
 const ServicePage = React.lazy(() => import("./pages/UnifiedServicePage"));
@@ -148,19 +148,19 @@ export default function App() {
           } />
           <Route path="/dashboard/client" element={
             DISABLE_AUTH_FOR_WIREFRAME ? (
-              <ClientDashboardPage />
+              <UnifiedClientDashboard />
             ) : (
               <RouteGuard requiredRole="client">
-                <ClientDashboardPage />
+                <UnifiedClientDashboard />
               </RouteGuard>
             )
           } />
           <Route path="/dashboard/pro" element={
             DISABLE_AUTH_FOR_WIREFRAME ? (
-              <ProfessionalDashboardPage />
+              <UnifiedProfessionalDashboard />
             ) : (
               <RouteGuard requiredRole="professional">
-                <ProfessionalDashboardPage />
+                <UnifiedProfessionalDashboard />
               </RouteGuard>
             )
           } />
