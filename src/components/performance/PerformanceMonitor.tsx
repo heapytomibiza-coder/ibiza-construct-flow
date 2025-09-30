@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { useWebVitals, WEB_VITALS_THRESHOLDS, getPerformanceStatus } from '@/hooks/useWebVitals';
 import { 
   Activity, 
   Zap, 
@@ -38,90 +39,88 @@ export const PerformanceMonitor = () => {
   const [metrics, setMetrics] = useState<PerformanceMetric[]>([]);
   const [apiMetrics, setApiMetrics] = useState<APIEndpointMetric[]>([]);
   const [loading, setLoading] = useState(true);
+  const webVitals = useWebVitals();
 
   useEffect(() => {
     loadPerformanceData();
-    const interval = setInterval(loadPerformanceData, 10000); // Refresh every 10 seconds
+    const interval = setInterval(loadPerformanceData, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [webVitals]);
 
   const loadPerformanceData = async () => {
     try {
-      // Mock performance data - in real implementation, this would come from monitoring service
-      const mockMetrics: PerformanceMetric[] = [
-        {
-          name: 'Page Load Time',
-          value: 1.2,
-          unit: 's',
-          status: 'good',
-          threshold: 2.0,
-          trend: 'down',
-          change_percentage: -5.2
-        },
-        {
-          name: 'Time to Interactive',
-          value: 2.8,
-          unit: 's',
-          status: 'good',
-          threshold: 3.8,
-          trend: 'down',
-          change_percentage: -8.1
-        },
+      const getStatus = (value: number, threshold: number): PerformanceMetric['status'] => {
+        const ratio = value / threshold;
+        if (ratio < 0.5) return 'excellent';
+        if (ratio < 0.75) return 'good';
+        if (ratio < 1.0) return 'warning';
+        return 'critical';
+      };
+
+      // Build metrics from real Web Vitals
+      const realMetrics: PerformanceMetric[] = [
         {
           name: 'First Contentful Paint',
-          value: 0.9,
+          value: webVitals.FCP ? webVitals.FCP / 1000 : 0,
           unit: 's',
-          status: 'excellent',
-          threshold: 1.8,
+          status: getStatus(webVitals.FCP || 0, WEB_VITALS_THRESHOLDS.FCP.good),
+          threshold: WEB_VITALS_THRESHOLDS.FCP.good / 1000,
           trend: 'stable',
-          change_percentage: 0.3
-        },
-        {
-          name: 'Cumulative Layout Shift',
-          value: 0.05,
-          unit: '',
-          status: 'excellent',
-          threshold: 0.1,
-          trend: 'down',
-          change_percentage: -12.5
+          change_percentage: 0
         },
         {
           name: 'Largest Contentful Paint',
-          value: 1.8,
+          value: webVitals.LCP ? webVitals.LCP / 1000 : 0,
           unit: 's',
-          status: 'good',
-          threshold: 2.5,
-          trend: 'up',
-          change_percentage: 2.1
+          status: getStatus(webVitals.LCP || 0, WEB_VITALS_THRESHOLDS.LCP.good),
+          threshold: WEB_VITALS_THRESHOLDS.LCP.good / 1000,
+          trend: 'stable',
+          change_percentage: 0
         },
         {
-          name: 'CPU Usage',
-          value: 45,
-          unit: '%',
-          status: 'good',
-          threshold: 80,
-          trend: 'up',
-          change_percentage: 3.4
+          name: 'Cumulative Layout Shift',
+          value: webVitals.CLS || 0,
+          unit: '',
+          status: getStatus(webVitals.CLS || 0, WEB_VITALS_THRESHOLDS.CLS.good),
+          threshold: WEB_VITALS_THRESHOLDS.CLS.good,
+          trend: 'stable',
+          change_percentage: 0
         },
         {
-          name: 'Memory Usage',
-          value: 67,
-          unit: '%',
-          status: 'warning',
-          threshold: 85,
-          trend: 'up',
-          change_percentage: 12.7
-        },
-        {
-          name: 'Database Query Time',
-          value: 45,
+          name: 'Interaction to Next Paint',
+          value: webVitals.INP || 0,
           unit: 'ms',
-          status: 'excellent',
-          threshold: 100,
-          trend: 'down',
-          change_percentage: -7.8
+          status: getStatus(webVitals.INP || 0, WEB_VITALS_THRESHOLDS.INP.good),
+          threshold: WEB_VITALS_THRESHOLDS.INP.good,
+          trend: 'stable',
+          change_percentage: 0
+        },
+        {
+          name: 'Time to First Byte',
+          value: webVitals.TTFB || 0,
+          unit: 'ms',
+          status: getStatus(webVitals.TTFB || 0, WEB_VITALS_THRESHOLDS.TTFB.good),
+          threshold: WEB_VITALS_THRESHOLDS.TTFB.good,
+          trend: 'stable',
+          change_percentage: 0
         }
       ];
+
+      // Get browser performance data (Chrome only)
+      const perfWithMemory = performance as any;
+      if (perfWithMemory.memory) {
+        const memory = perfWithMemory.memory;
+        const memoryUsagePercent = (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100;
+        realMetrics.push({
+          name: 'Memory Usage',
+          value: Math.round(memoryUsagePercent),
+          unit: '%',
+          status: getStatus(memoryUsagePercent, 85),
+          threshold: 85,
+          trend: 'stable',
+          change_percentage: 0
+        });
+      }
 
       const mockApiMetrics: APIEndpointMetric[] = [
         {
@@ -154,7 +153,7 @@ export const PerformanceMonitor = () => {
         }
       ];
 
-      setMetrics(mockMetrics);
+      setMetrics(realMetrics);
       setApiMetrics(mockApiMetrics);
       setLoading(false);
     } catch (error) {
@@ -241,8 +240,8 @@ export const PerformanceMonitor = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {metrics.slice(0, 4).map((metric) => (
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {metrics.slice(0, 5).map((metric) => (
               <div key={metric.name} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{metric.name}</span>
@@ -282,7 +281,7 @@ export const PerformanceMonitor = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {metrics.slice(4).map((metric) => (
+            {metrics.slice(5).map((metric) => (
               <div key={metric.name} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{metric.name}</span>
@@ -377,7 +376,7 @@ export const PerformanceMonitor = () => {
                 <span className="text-sm font-medium">Optimize Images</span>
               </div>
               <p className="text-xs text-muted-foreground ml-6">
-                Convert images to WebP format to reduce load times by 25-30%
+                Monitor real Web Vitals metrics using Chrome DevTools Performance tab
               </p>
             </div>
             <div className="space-y-2">
