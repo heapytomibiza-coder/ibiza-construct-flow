@@ -2,13 +2,60 @@ import { supabase } from '@/integrations/supabase/client';
 
 export type Role = 'client' | 'professional' | 'admin';
 
-export async function getProfile() {
+export interface UserProfile {
+  id: string;
+  roles: Role[];
+  active_role: Role;
+  tasker_onboarding_status?: string;
+}
+
+/**
+ * Get active role for current user with clear precedence
+ * Priority: Admin > Professional > Client
+ */
+export async function getActiveRole(): Promise<Role> {
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('active_role, roles')
+      .single();
+    
+    if (!profile) return 'client';
+    
+    // Respect explicit active_role if set
+    if (profile.active_role) {
+      return profile.active_role as Role;
+    }
+    
+    // Otherwise apply precedence
+    const roles = Array.isArray(profile.roles) ? (profile.roles as Role[]) : ['client'];
+    if (roles.includes('admin')) return 'admin';
+    if (roles.includes('professional')) return 'professional';
+    return 'client';
+  } catch {
+    return 'client';
+  }
+}
+
+/**
+ * Get dashboard route for a given role
+ */
+export function getDashboardRoute(role: Role): string {
+  const routes: Record<Role, string> = {
+    admin: '/dashboard/admin',
+    professional: '/dashboard/pro',
+    client: '/dashboard/client'
+  };
+  return routes[role] || routes.client;
+}
+
+export async function getProfile(): Promise<UserProfile | null> {
   const { data, error } = await supabase
     .from('profiles')
     .select('id, roles, active_role, tasker_onboarding_status')
     .single();
   if (error) throw error;
-  return data;
+  return data as UserProfile;
 }
 
 export async function enableProfessionalRole() {

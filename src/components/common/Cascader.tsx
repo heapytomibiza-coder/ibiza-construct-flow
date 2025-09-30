@@ -1,16 +1,9 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
+import { useServicesRegistry, ServiceNode } from '@/contexts/ServicesRegistry';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Search, ChevronLeft } from 'lucide-react';
-
-type ServiceMicro = {
-  id: string;
-  category: string;
-  subcategory: string;
-  micro: string;
-};
 
 type CascaderOutput = {
   id: string;
@@ -27,80 +20,27 @@ interface CascaderProps {
 }
 
 export default function Cascader({ onChange, placeholder = "Select a service", className = "" }: CascaderProps) {
-  const [services, setServices] = useState<ServiceMicro[]>([]);
+  const { services, loading, getCategories, getSubcategories, getMicroServices } = useServicesRegistry();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  // Cache services in localStorage for performance
-  const cacheKey = 'cascader_services_cache';
-  const cacheTimeout = 5 * 60 * 1000; // 5 minutes
-
-  const fetchServices = async () => {
-    try {
-      // Try to load from cache first
-      const cachedData = localStorage.getItem(cacheKey);
-      if (cachedData) {
-        const { data, timestamp } = JSON.parse(cachedData);
-        if (Date.now() - timestamp < cacheTimeout) {
-          setServices(data);
-          setLoading(false);
-          return;
-        }
-      }
-
-      const { data, error } = await supabase
-        .from('services_unified_v1')
-        .select('id, category, subcategory, micro')
-        .order('category')
-        .order('subcategory')
-        .order('micro');
-
-      if (error) throw error;
-      
-      setServices(data || []);
-      
-      // Cache the data
-      localStorage.setItem(cacheKey, JSON.stringify({
-        data: data || [],
-        timestamp: Date.now()
-      }));
-    } catch (error) {
-      console.error('Error fetching services:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  const getCategories = () => {
-    const categories = [...new Set(services.map(s => s.category))];
-    return categories.filter(cat =>
+  const filteredCategories = () => {
+    return getCategories().filter(cat =>
       !searchTerm || cat.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 
-  const getSubcategories = (category: string) => {
-    const subcategories = [...new Set(
-      services
-        .filter(s => s.category === category)
-        .map(s => s.subcategory)
-    )];
-    return subcategories.filter(sub =>
+  const filteredSubcategories = (category: string) => {
+    return getSubcategories(category).filter(sub =>
       !searchTerm || sub.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 
-  const getMicroservices = (category: string, subcategory: string) => {
-    return services
-      .filter(s => s.category === category && s.subcategory === subcategory)
-      .filter(s =>
-        !searchTerm || s.micro.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const filteredMicroservices = (category: string, subcategory: string) => {
+    return getMicroServices(category, subcategory).filter(s =>
+      !searchTerm || s.micro.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   };
 
   const handleCategorySelect = (category: string) => {
@@ -114,7 +54,7 @@ export default function Cascader({ onChange, placeholder = "Select a service", c
     setSearchTerm('');
   };
 
-  const handleMicroserviceSelect = (microservice: ServiceMicro) => {
+  const handleMicroserviceSelect = (microservice: ServiceNode) => {
     onChange({
       id: microservice.id,
       category: microservice.category,
@@ -191,7 +131,7 @@ export default function Cascader({ onChange, placeholder = "Select a service", c
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-muted-foreground">Categories</h3>
           <div className="grid grid-cols-2 gap-2">
-            {getCategories().slice(0, 8).map((category) => (
+            {filteredCategories().slice(0, 8).map((category) => (
               <Button
                 key={category}
                 variant="outline"
@@ -217,7 +157,7 @@ export default function Cascader({ onChange, placeholder = "Select a service", c
             {selectedCategory} Services
           </h3>
           <div className="grid grid-cols-2 gap-2">
-            {getSubcategories(selectedCategory).map((subcategory) => (
+            {filteredSubcategories(selectedCategory).map((subcategory) => (
               <Button
                 key={subcategory}
                 variant="outline"
@@ -245,7 +185,7 @@ export default function Cascader({ onChange, placeholder = "Select a service", c
             {selectedSubcategory} Options
           </h3>
           <div className="space-y-2">
-            {getMicroservices(selectedCategory, selectedSubcategory).map((microservice) => (
+            {filteredMicroservices(selectedCategory, selectedSubcategory).map((microservice) => (
               <Button
                 key={microservice.id}
                 variant="outline"
@@ -266,7 +206,7 @@ export default function Cascader({ onChange, placeholder = "Select a service", c
 
       {/* No results */}
       {searchTerm && (
-        (selectedCategory ? getMicroservices(selectedCategory, selectedSubcategory || '') : getCategories()).length === 0 && (
+        (selectedCategory ? filteredMicroservices(selectedCategory, selectedSubcategory || '') : filteredCategories()).length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <p>No services found for "{searchTerm}"</p>
             <Button

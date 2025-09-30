@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ServicesRegistryProvider } from "./contexts/ServicesRegistry";
+import { FeatureFlagsProvider } from "./contexts/FeatureFlagsContext";
 import App from "./App";
 import "./index.css";
 import "./i18n";
-import { ServicesProvider } from "./contexts/ServicesContext";
-import { FeatureFlagsProvider } from "./contexts/FeatureFlagsContext";
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
@@ -36,9 +36,9 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={qc}>
       <FeatureFlagsProvider>
-        <ServicesProvider>
+        <ServicesRegistryProvider>
           <App />
-        </ServicesProvider>
+        </ServicesRegistryProvider>
       </FeatureFlagsProvider>
     </QueryClientProvider>
   </React.StrictMode>
