@@ -12,14 +12,29 @@ export function useActiveRole() {
     
     const fetchProfile = async () => {
       try {
+        // Check localStorage first for immediate feedback
+        const cachedRole = localStorage.getItem('active_role') as Role;
+        if (cachedRole && mounted) {
+          setActiveRole(cachedRole);
+        }
+
         const { data } = await supabase
           .from('profiles')
           .select('active_role, roles')
           .single();
         
         if (mounted && data) {
-          setActiveRole((data.active_role as Role) || 'client');
-          setRoles(Array.isArray(data.roles) ? (data.roles as Role[]) : ['client']);
+          const dbActiveRole = (data.active_role as Role) || 'client';
+          const rolesData = data.roles;
+          const dbRoles: Role[] = Array.isArray(rolesData) 
+            ? rolesData.filter((r): r is Role => ['client', 'professional', 'admin'].includes(r as string))
+            : ['client'];
+          
+          setActiveRole(dbActiveRole);
+          setRoles(dbRoles);
+          
+          // Sync localStorage with database
+          localStorage.setItem('active_role', dbActiveRole);
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -35,6 +50,7 @@ export function useActiveRole() {
 
   const updateActiveRole = (newRole: Role) => {
     setActiveRole(newRole);
+    localStorage.setItem('active_role', newRole);
   };
 
   return { activeRole, roles, setActiveRole: updateActiveRole, loading };

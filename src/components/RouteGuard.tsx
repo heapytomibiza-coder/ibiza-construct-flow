@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { getProfile, Role } from '@/lib/roles';
 
 interface RouteGuardProps {
   children: React.ReactNode;
-  requiredRole?: 'asker' | 'tasker' | 'admin' | 'client' | 'professional';
+  requiredRole?: Role;
   fallbackPath?: string;
   skipAuthInDev?: boolean;
 }
@@ -16,7 +16,7 @@ export default function RouteGuard({
   fallbackPath = '/auth/sign-in',
   skipAuthInDev = false
 }: RouteGuardProps) {
-  const { user, profile, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const location = useLocation();
   const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized'>('loading');
 
@@ -29,42 +29,28 @@ export default function RouteGuard({
           return;
         }
 
-        if (loading) return;
+        if (authLoading) return;
 
         if (!user) {
-          // Double check with Supabase
-          const { data: { user: currentUser } } = await supabase.auth.getUser();
-          if (!currentUser) {
-            setStatus('unauthorized');
-            return;
-          }
+          setStatus('unauthorized');
+          return;
         }
 
+        // No role requirement = just check authentication
         if (!requiredRole) {
           setStatus('authorized');
           return;
         }
 
-        // Get user profile with roles
-        const currentUser = user || (await supabase.auth.getUser()).data.user;
-        if (!currentUser) {
-          setStatus('unauthorized');
-          return;
-        }
-
-        const { data: userProfile, error } = await supabase
-          .from('profiles')
-          .select('roles')
-          .eq('id', currentUser.id)
-          .single();
-
-        if (error || !userProfile) {
+        // Check role using centralized profile function
+        const profile = await getProfile();
+        if (!profile) {
           setStatus('unauthorized');
           return;
         }
 
         // Check if user has required role
-        const userRoles = userProfile.roles as string[];
+        const userRoles = Array.isArray(profile.roles) ? profile.roles as Role[] : ['client'];
         const hasRequiredRole = userRoles.includes(requiredRole);
         
         setStatus(hasRequiredRole ? 'authorized' : 'unauthorized');
@@ -75,9 +61,9 @@ export default function RouteGuard({
     };
 
     checkAuth();
-  }, [user, profile, loading, requiredRole, skipAuthInDev]);
+  }, [user, authLoading, requiredRole, skipAuthInDev]);
 
-  if (loading || status === 'loading') {
+  if (authLoading || status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
