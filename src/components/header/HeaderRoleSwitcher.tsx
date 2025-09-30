@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useActiveRole } from '@/hooks/useActiveRole';
-import { switchActiveRole, Role } from '@/lib/roles';
+import { switchActiveRole, Role, getDashboardRoute } from '@/lib/roles';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { User, Briefcase, Shield } from 'lucide-react';
 
 export default function HeaderRoleSwitcher() {
-  const { activeRole, roles, setActiveRole, loading } = useActiveRole();
+  const { activeRole, roles, loading } = useActiveRole();
   const [switching, setSwitching] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -18,11 +18,8 @@ export default function HeaderRoleSwitcher() {
     
     setSwitching(true);
     try {
-      // Update in database (single source of truth)
+      // Update in database (emits to all listeners automatically)
       await switchActiveRole(newRole);
-      
-      // Update local state
-      setActiveRole(newRole);
       
       toast({
         title: "Role switched",
@@ -30,13 +27,8 @@ export default function HeaderRoleSwitcher() {
       });
       
       // Navigate to appropriate dashboard
-      if (newRole === 'admin') {
-        navigate('/dashboard/admin');
-      } else if (newRole === 'professional') {
-        navigate('/dashboard/pro');
-      } else {
-        navigate('/dashboard/client');
-      }
+      const dashboardRoute = getDashboardRoute(newRole);
+      navigate(dashboardRoute);
     } catch (error: any) {
       toast({
         title: "Error switching role",

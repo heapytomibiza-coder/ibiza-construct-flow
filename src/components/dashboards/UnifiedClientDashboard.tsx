@@ -22,20 +22,20 @@ const UnifiedClientDashboard: React.FC<UnifiedClientDashboardProps> = ({
   const user = propUser || authUser;
   const profile = propProfile || authProfile;
 
-  const { dashboardMode, updateDashboardMode } = useDashboardPreference({
-    userId: user?.id,
-    preferenceKey: 'client_dashboard_mode',
+  const { dashboardMode, updateMode } = useDashboardPreference({
+    scope: 'client',
     defaultMode: enhancedDashboardEnabled ? 'enhanced' : 'simple'
   });
 
   const handleModeToggle = () => {
     const newMode = dashboardMode === 'simple' ? 'enhanced' : 'simple';
-    updateDashboardMode(newMode);
+    updateMode(newMode);
   };
 
   const handleClassicMode = () => {
-    updateDashboardMode('classic');
+    updateMode('classic');
   };
+
   if (!user || !profile) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

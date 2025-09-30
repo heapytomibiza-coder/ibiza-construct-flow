@@ -2,19 +2,21 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
-import { getActiveRole, getDashboardRoute } from '@/lib/roles';
+import { useActiveRole } from '@/hooks/useActiveRole';
+import { getDashboardRoute } from '@/lib/roles';
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation('dashboard');
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
+  const { activeRole, loading: roleLoading } = useActiveRole();
 
   useEffect(() => {
     const checkUserAndRedirect = async () => {
-      // Wait for auth to load
-      if (authLoading) return;
+      // Wait for auth and role to load
+      if (roleLoading) return;
       
       try {
         if (!user) {
@@ -29,10 +31,11 @@ const Dashboard = () => {
           return;
         }
 
-        // Get active role and redirect to appropriate dashboard
-        const activeRole = await getActiveRole();
-        const dashboardRoute = getDashboardRoute(activeRole);
-        navigate(dashboardRoute);
+        // Redirect to appropriate dashboard based on active role
+        if (activeRole) {
+          const dashboardRoute = getDashboardRoute(activeRole);
+          navigate(dashboardRoute);
+        }
       } catch (error) {
         console.error('Error checking user role:', error);
         navigate('/auth/sign-in');
@@ -42,9 +45,9 @@ const Dashboard = () => {
     };
 
     checkUserAndRedirect();
-  }, [navigate, searchParams, user, authLoading]);
+  }, [navigate, searchParams, user, activeRole, roleLoading]);
 
-  if (loading) {
+  if (loading || roleLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

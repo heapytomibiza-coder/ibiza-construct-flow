@@ -21,15 +21,14 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
   const user = propUser || authUser;
   const profile = propProfile || authProfile;
 
-  const { dashboardMode, updateDashboardMode } = useDashboardPreference({
-    userId: user?.id,
-    preferenceKey: 'professional_dashboard_mode',
+  const { dashboardMode, updateMode } = useDashboardPreference({
+    scope: 'professional',
     defaultMode: enhancedDashboardEnabled ? 'enhanced' : 'simple'
   });
 
   const handleModeToggle = () => {
     const newMode = dashboardMode === 'simple' ? 'enhanced' : 'simple';
-    updateDashboardMode(newMode);
+    updateMode(newMode);
   };
 
   // Show loading if no user data

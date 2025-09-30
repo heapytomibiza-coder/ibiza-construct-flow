@@ -1,88 +1,54 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
 
 type DashboardMode = 'simple' | 'enhanced' | 'classic';
 
+interface Preferences {
+  mode?: DashboardMode;
+  widgets?: string[];
+  layout?: 'compact' | 'comfortable';
+  hiddenCards?: string[];
+}
+
+const STORAGE_KEY = 'dashboard_prefs_v2';
+
 interface UseDashboardPreferenceProps {
-  userId: string;
-  preferenceKey: string; // e.g., 'client_dashboard_mode' or 'professional_dashboard_mode'
+  scope: 'client' | 'professional';
   defaultMode?: DashboardMode;
 }
 
-export function useDashboardPreference({ 
-  userId, 
-  preferenceKey, 
-  defaultMode = 'enhanced' 
-}: UseDashboardPreferenceProps) {
-  const [dashboardMode, setDashboardMode] = useState<DashboardMode>(defaultMode);
-  const [userPreference, setUserPreference] = useState<string | null>(null);
+export function useDashboardPreference({ scope, defaultMode = 'enhanced' }: UseDashboardPreferenceProps) {
+  const [prefs, setPrefs] = useState<Preferences>({ mode: defaultMode });
 
   useEffect(() => {
-    loadUserPreference();
-  }, [userId]);
-
-  const loadUserPreference = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('preferences')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-
-      const preferences = data?.preferences as any || {};
-      const savedMode = preferences[preferenceKey];
-      
-      if (savedMode && ['simple', 'enhanced', 'classic'].includes(savedMode)) {
-        setUserPreference(savedMode);
-        setDashboardMode(savedMode as DashboardMode);
+    const key = `${STORAGE_KEY}:${scope}`;
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        setPrefs({ mode: defaultMode, ...parsed });
+      } catch {
+        setPrefs({ mode: defaultMode });
       }
-    } catch (error) {
-      console.error('Error loading dashboard preference:', error);
     }
+  }, [scope, defaultMode]);
+
+  const updatePrefs = (patch: Partial<Preferences>) => {
+    setPrefs(prev => {
+      const next = { ...prev, ...patch };
+      const key = `${STORAGE_KEY}:${scope}`;
+      localStorage.setItem(key, JSON.stringify(next));
+      return next;
+    });
   };
 
-  const updateDashboardMode = async (newMode: DashboardMode) => {
-    try {
-      // Get current preferences
-      const { data: currentData, error: fetchError } = await supabase
-        .from('profiles')
-        .select('preferences')
-        .eq('id', userId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      const currentPreferences = (currentData?.preferences as any) || {};
-      const updatedPreferences = {
-        ...currentPreferences,
-        [preferenceKey]: newMode
-      };
-
-      // Update with new mode
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ preferences: updatedPreferences })
-        .eq('id', userId);
-
-      if (updateError) throw updateError;
-
-      setDashboardMode(newMode);
-      setUserPreference(newMode);
-
-      toast.success(`Dashboard mode set to ${newMode}`);
-    } catch (error) {
-      console.error('Error updating dashboard preference:', error);
-      toast.error('Failed to update dashboard preference');
-    }
+  const updateMode = (mode: DashboardMode) => {
+    updatePrefs({ mode });
   };
 
-  return {
-    dashboardMode,
-    userPreference,
-    updateDashboardMode,
-    setDashboardMode
+  return { 
+    dashboardMode: prefs.mode ?? defaultMode,
+    preferences: prefs,
+    updateMode,
+    updatePrefs
   };
 }
