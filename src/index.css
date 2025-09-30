@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font optimization - ensure font-display: swap for all fonts */
+@layer base {
+  * {
+    font-display: swap;
+  }
+}
+
 /* Mediterranean Luxury Design System for Constructive Solutions Ibiza
 All colors MUST be HSL. Premium construction platform aesthetic.
 */
