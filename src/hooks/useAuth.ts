@@ -23,11 +23,11 @@ export const useAuth = () => {
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Fetch profile when user logs in
+        // Defer profile fetch to avoid blocking auth state changes
         if (session?.user) {
           setTimeout(() => {
             fetchProfile(session.user.id);
@@ -109,10 +109,6 @@ export const useAuth = () => {
   const isAdmin = (): boolean => hasRole('admin');
   const isProfessional = (): boolean => hasRole('professional');
   const isClient = (): boolean => hasRole('client');
-  
-  // New methods for active role
-  const getActiveRole = (): string => profile?.active_role || 'client';
-  const isActiveRole = (role: string): boolean => getActiveRole() === role;
 
   return {
     user,
@@ -125,8 +121,6 @@ export const useAuth = () => {
     hasRole,
     isAdmin,
     isProfessional,
-    isClient,
-    getActiveRole,
-    isActiveRole
+    isClient
   };
 };

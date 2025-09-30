@@ -148,20 +148,43 @@ UnifiedProfessionalDashboard
 
 User preferences are persisted per user and respect feature flags.
 
+## Conflict Resolutions (Latest)
+
+### Role Management
+- **Single Source**: `lib/roles.ts` is the authoritative source for role operations
+- **Removed Duplicates**: Eliminated `getActiveRole()` from `useAuth` hook
+- **Centralized Persistence**: `switchActiveRole()` handles both DB and localStorage updates
+- **No Manual Cache**: Components never write to localStorage directly
+
+### Authentication
+- **Fixed Auth Listener**: Removed `async` from `onAuthStateChange` callback in `useAuth`
+- **Single Listener**: Dashboard uses `useAuth` hook instead of separate listener
+- **Proper Deferral**: Profile fetching uses `setTimeout(0)` to avoid blocking
+
+### Dashboard Preferences
+- **Shared Hook**: `useDashboardPreference` eliminates duplicate logic
+- **Unified Pattern**: Both client and professional dashboards use same preference system
+- **Type-Safe**: Proper TypeScript interfaces for dashboard modes
+
 ## Best Practices
 
 ### ✅ DO
 
 - Use `useServicesRegistry()` for all service data
-- Use `getActiveRole()` for role checks
+- Use `getActiveRole()` from `lib/roles.ts` for role checks
+- Use `useDashboardPreference()` for dashboard mode management
 - Implement RLS policies on new tables
 - Cache data at the context level
 - Use semantic tokens from design system
+- Defer Supabase calls in auth listeners with `setTimeout(0)`
 
 ### ❌ DON'T
 
 - Query `services_unified_v1` directly from components
-- Check roles with localStorage only
+- Check roles with localStorage only (always use `lib/roles.ts`)
 - Duplicate service data logic
 - Use direct colors in components
 - Create multiple sources of truth
+- Use `async` in `onAuthStateChange` callbacks
+- Write to localStorage manually (let role functions handle it)
+- Duplicate dashboard preference logic

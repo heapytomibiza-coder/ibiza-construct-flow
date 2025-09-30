@@ -18,14 +18,11 @@ export default function HeaderRoleSwitcher() {
     
     setSwitching(true);
     try {
-      // Update in database
+      // Update in database (single source of truth)
       await switchActiveRole(newRole);
       
       // Update local state
       setActiveRole(newRole);
-      
-      // Persist to localStorage for consistency
-      localStorage.setItem('active_role', newRole);
       
       toast({
         title: "Role switched",

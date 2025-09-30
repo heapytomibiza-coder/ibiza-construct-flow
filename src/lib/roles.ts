@@ -93,6 +93,9 @@ export async function switchActiveRole(nextRole: Role) {
     .update({ active_role: nextRole })
     .eq('id', profile.id);
   if (error) throw error;
+  
+  // Update localStorage cache for immediate UI feedback
+  localStorage.setItem('active_role', nextRole);
 }
 
 export async function updateOnboardingStatus(status: 'not_started' | 'in_progress' | 'complete') {

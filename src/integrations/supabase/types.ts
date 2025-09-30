@@ -2314,6 +2314,7 @@ export type Database = {
           display_name: string | null
           full_name: string | null
           id: string
+          preferences: Json | null
           preferred_language: string | null
           roles: Json | null
           service_radius: number | null
@@ -2331,6 +2332,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id: string
+          preferences?: Json | null
           preferred_language?: string | null
           roles?: Json | null
           service_radius?: number | null
@@ -2348,6 +2350,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
+          preferences?: Json | null
           preferred_language?: string | null
           roles?: Json | null
           service_radius?: number | null

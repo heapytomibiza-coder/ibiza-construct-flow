@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { getActiveRole, getDashboardRoute } from '@/lib/roles';
 
 const Dashboard = () => {
@@ -9,12 +9,15 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation('dashboard');
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const checkUserAndRedirect = async () => {
+      // Wait for auth to load
+      if (authLoading) return;
+      
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
+        if (!user) {
           navigate('/auth/sign-in');
           return;
         }
@@ -39,16 +42,7 @@ const Dashboard = () => {
     };
 
     checkUserAndRedirect();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate('/auth/sign-in');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate, searchParams]);
+  }, [navigate, searchParams, user, authLoading]);
 
   if (loading) {
     return (

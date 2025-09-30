@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { useDashboardPreference } from '@/hooks/useDashboardPreference';
 import SimpleProfessionalDashboard from './SimpleProfessionalDashboard';
 import ProfessionalDashboard from './ProfessionalDashboard';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 interface UnifiedProfessionalDashboardProps {
   user?: any;
@@ -17,55 +16,20 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
 }) => {
   const { user: authUser, profile: authProfile } = useAuth();
   const enhancedDashboardEnabled = useFeature('enhanced_professional_dashboard');
-  const [dashboardMode, setDashboardMode] = useState<'simple' | 'enhanced'>('enhanced');
-  const [userPreference, setUserPreference] = useState<string | null>(null);
   
   // Use props if provided, otherwise use auth context
   const user = propUser || authUser;
   const profile = propProfile || authProfile;
 
-  useEffect(() => {
-    loadUserPreference();
-  }, [user]);
-
-  const loadUserPreference = async () => {
-    if (!user) return;
-    
-    try {
-      // For now, just store preference in localStorage since professional_profiles doesn't have preferences column
-      const savedPreference = localStorage.getItem(`professional_dashboard_mode_${user.id}`);
-      if (savedPreference && (savedPreference === 'simple' || savedPreference === 'enhanced')) {
-        setUserPreference(savedPreference);
-        setDashboardMode(savedPreference as 'simple' | 'enhanced');
-      } else if (enhancedDashboardEnabled) {
-        setDashboardMode('enhanced');
-      } else {
-        setDashboardMode('simple');
-      }
-    } catch (error) {
-      console.error('Error loading professional dashboard preference:', error);
-      // Fallback to feature flag or enhanced mode (professionals get enhanced by default)
-      setDashboardMode(enhancedDashboardEnabled ? 'enhanced' : 'simple');
-    }
-  };
-
-  const saveDashboardPreference = async (mode: string) => {
-    if (!user) return;
-    
-    try {
-      // Store preference in localStorage for now
-      localStorage.setItem(`professional_dashboard_mode_${user.id}`, mode);
-      toast.success(`Switched to ${mode} dashboard`);
-    } catch (error) {
-      console.error('Error saving professional dashboard preference:', error);
-      toast.error('Failed to save dashboard preference');
-    }
-  };
+  const { dashboardMode, updateDashboardMode } = useDashboardPreference({
+    userId: user?.id,
+    preferenceKey: 'professional_dashboard_mode',
+    defaultMode: enhancedDashboardEnabled ? 'enhanced' : 'simple'
+  });
 
   const handleModeToggle = () => {
     const newMode = dashboardMode === 'simple' ? 'enhanced' : 'simple';
-    setDashboardMode(newMode);
-    saveDashboardPreference(newMode);
+    updateDashboardMode(newMode);
   };
 
   // Show loading if no user data
