@@ -60,9 +60,9 @@ const PostJobView = () => {
         // Structured answers (sanitized)
         micro_q_answers: validationResult.data.microAnswers || {},
         general_answers: validationResult.data.generalAnswers || {},
-        // Additional fields
-        selected_items: validationResult.data.selectedItems || [],
-        total_estimated_price: validationResult.data.totalEstimate || 0,
+        // Project requirements (client describes needs)
+        special_requirements: JSON.stringify(validationResult.data.requirements || {}),
+        budget_range: validationResult.data.requirements?.budgetRange || '',
         location_details: validationResult.data.location || '',
         status: 'draft' as const
       };

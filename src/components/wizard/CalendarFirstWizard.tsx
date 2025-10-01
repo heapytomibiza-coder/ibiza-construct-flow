@@ -3,13 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { 
-  ArrowLeft, ArrowRight, Plus, Minus, MapPin, Calendar as CalendarIcon,
-  Camera, FileText, Clock, Euro, AlertCircle, CheckCircle,
-  Sparkles, Calculator, Target, ChevronDown, Settings, X
+  ArrowLeft, ArrowRight, MapPin, Calendar as CalendarIcon,
+  Clock, AlertCircle, CheckCircle, Sparkles
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -17,40 +14,20 @@ import { cn } from '@/lib/utils';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { TimeSlotSelector } from './shared/TimeSlotSelector';
 import { LocationSelector } from './shared/LocationSelector';
+import { RequirementsGathering } from './RequirementsGathering';
 
 interface CalendarFirstWizardProps {
   onComplete: (jobData: any) => void;
   onCancel: () => void;
 }
 
-interface ServiceItem {
-  id: string;
-  name: string;
-  description: string;
-  basePrice: number;
-  unit: string;
-  category: 'labor' | 'material' | 'equipment';
-  estimatedDuration: number;
-  image?: string;
-}
-
-interface SelectedItem extends ServiceItem {
-  quantity: number;
-  notes?: string;
-}
-
 const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps) => {
   const [step, setStep] = useState(1);
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
-  const [serviceItems, setServiceItems] = useState<ServiceItem[]>([]);
-  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
-  const [totalEstimate, setTotalEstimate] = useState(0);
-  const [confidence, setConfidence] = useState(85);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [isFlexible, setIsFlexible] = useState(false);
-  const [matchingQualityOpen, setMatchingQualityOpen] = useState(false);
 
   const calendarFirstEnabled = useFeature('wizard_calendar_first');
 
@@ -59,23 +36,31 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
     description: '',
     location: '',
     urgency: 'flexible',
-    budget: '',
     preferredDates: [],
-    requirements: [],
     photos: [],
     timePreference: 'flexible',
     exactTime: ''
   });
 
+  const [requirements, setRequirements] = useState({
+    scope: '',
+    timeline: '',
+    budgetRange: '',
+    constraints: '',
+    materials: '',
+    specifications: {},
+    referenceImages: []
+  });
+
   const steps = calendarFirstEnabled ? [
     { id: 1, title: 'Schedule', desc: 'When do you need this?' },
     { id: 2, title: 'Service Selection', desc: 'What do you need?' },
-    { id: 3, title: 'Configuration', desc: 'Configure your project' },
-    { id: 4, title: 'Details', desc: 'Location & requirements' },
+    { id: 3, title: 'Requirements', desc: 'Describe your needs' },
+    { id: 4, title: 'Details', desc: 'Location & specifics' },
     { id: 5, title: 'Review', desc: 'Confirm & post' }
   ] : [
     { id: 1, title: 'Service Selection', desc: 'What do you need?' },
-    { id: 2, title: 'Configuration', desc: 'Configure your project' },
+    { id: 2, title: 'Requirements', desc: 'Describe your needs' },
     { id: 3, title: 'Details', desc: 'Location & schedule' },
     { id: 4, title: 'Review', desc: 'Confirm & post' }
   ];
@@ -83,10 +68,6 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
   useEffect(() => {
     fetchServices();
   }, []);
-
-  useEffect(() => {
-    calculateEstimate();
-  }, [selectedItems]);
 
   const fetchServices = async () => {
     try {
@@ -99,63 +80,6 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
       setServices(data || []);
     } catch (error) {
       toast.error('Failed to load services');
-    }
-  };
-
-  const fetchServiceItems = async (serviceId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('service_options')
-        .select('*')
-        .eq('service_id', serviceId)
-        .order('display_order', { ascending: true });
-      
-      if (error) throw error;
-      
-      const items: ServiceItem[] = (data || []).map(item => ({
-        id: item.id,
-        name: item.name,
-        description: item.description || '',
-        basePrice: item.base_price || 0,
-        unit: 'item',
-        category: item.category as 'labor' | 'material' | 'equipment',
-        estimatedDuration: 60
-      }));
-      
-      setServiceItems(items);
-    } catch (error) {
-      toast.error('Failed to load service items');
-    }
-  };
-
-  const calculateEstimate = () => {
-    const total = selectedItems.reduce((sum, item) => 
-      sum + (item.basePrice * item.quantity), 0
-    );
-    setTotalEstimate(total);
-    
-    const completeness = selectedItems.length > 0 ? 85 + (selectedItems.length * 2) : 70;
-    setConfidence(Math.min(95, completeness));
-  };
-
-  const addItem = (item: ServiceItem) => {
-    const existing = selectedItems.find(s => s.id === item.id);
-    if (existing) {
-      setSelectedItems(prev => prev.map(s => 
-        s.id === item.id ? { ...s, quantity: s.quantity + 1 } : s
-      ));
-    } else {
-      setSelectedItems(prev => [...prev, { ...item, quantity: 1 }]);
-    }
-  };
-
-  const updateItemQuantity = (itemId: string, quantity: number) => {
-    if (quantity <= 0) {
-      setSelectedItems(prev => prev.filter(s => s.id !== itemId));
-    } else {
-      setSelectedItems(prev => prev.map(s => 
-        s.id === itemId ? { ...s, quantity } : s
-      ));
     }
   };
 
@@ -173,8 +97,8 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
       }
     }
     if ((calendarFirstEnabled && step === 3) || (!calendarFirstEnabled && step === 2)) {
-      if (selectedItems.length === 0) {
-        toast.error('Please select at least one service item');
+      if (!requirements.timeline || !requirements.budgetRange) {
+        toast.error('Please provide timeline and budget information');
         return;
       }
     }
@@ -186,7 +110,11 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
 
   const handleServiceSelect = (service: any) => {
     setSelectedService(service);
-    fetchServiceItems(service.id);
+    setFormData(prev => ({
+      ...prev,
+      title: `${service.category} - ${service.subcategory}`,
+      description: service.micro
+    }));
     nextStep();
   };
 
@@ -196,9 +124,11 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
       const jobData = {
         ...formData,
         serviceId: selectedService?.id,
-        selectedItems,
-        totalEstimate,
-        confidence,
+        microSlug: selectedService?.slug || `${selectedService?.category}-${selectedService?.subcategory}`.toLowerCase().replace(/\s+/g, '-'),
+        category: selectedService?.category,
+        subcategory: selectedService?.subcategory,
+        micro: selectedService?.micro,
+        requirements,
         scheduledDate: selectedDate,
         isFlexible
       };
@@ -381,296 +311,103 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
 
       case 3:
         return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-2xl font-display font-bold text-foreground mb-2">
-                Configure Your Project
-              </h3>
-              <p className="text-muted-foreground">
-                Select what you need and quantities for accurate pricing
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Service Items */}
-              <div className="lg:col-span-2 space-y-4">
-                <h4 className="font-semibold text-foreground">Available Services</h4>
-                {serviceItems.map((item) => (
-                  <Card key={item.id} className="border">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h5 className="font-medium text-foreground">{item.name}</h5>
-                          <p className="text-sm text-muted-foreground">{item.description}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline">{item.category}</Badge>
-                            <span className="text-sm text-muted-foreground">
-                              €{item.basePrice} per {item.unit}
-                            </span>
-                          </div>
-                        </div>
-                        <Button 
-                          onClick={() => addItem(item)}
-                          size="sm"
-                          className="bg-gradient-hero text-white"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Selected Items & Estimate + Matching Quality */}
-              <div className="space-y-4">
-                <Card className="sticky top-4">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calculator className="w-5 h-5" />
-                      Your Configuration
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {selectedItems.length === 0 ? (
-                      <p className="text-muted-foreground text-sm">
-                        No items selected yet
-                      </p>
-                    ) : (
-                      selectedItems.map((item) => (
-                        <div key={item.id} className="border rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-sm">{item.name}</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
-                              >
-                                <Minus className="w-3 h-3" />
-                              </Button>
-                              <span className="text-sm">{item.quantity}</span>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
-                              >
-                                <Plus className="w-3 h-3" />
-                              </Button>
-                            </div>
-                            <span className="font-medium text-sm">
-                              €{(item.basePrice * item.quantity).toFixed(2)}
-                            </span>
-                          </div>
-                        </div>
-                      ))
-                    )}
-
-                    {selectedItems.length > 0 && (
-                      <>
-                        <div className="border-t pt-4">
-                          <div className="flex justify-between items-center">
-                            <span className="font-semibold">Total Estimate</span>
-                            <span className="font-bold text-lg">€{totalEstimate.toFixed(2)}</span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Target className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">
-                              {confidence}% confidence
-                            </span>
-                          </div>
-                        </div>
-                        <div className="bg-muted/50 rounded-lg p-3">
-                          <p className="text-xs text-muted-foreground">
-                            This is a guided estimate. Final price may change after onsite assessment.
-                          </p>
-                        </div>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Collapsible Matching Quality Section */}
-                <Collapsible open={matchingQualityOpen} onOpenChange={setMatchingQualityOpen}>
-                  <Card>
-                    <CollapsibleTrigger asChild>
-                      <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                        <CardTitle className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Settings className="w-5 h-5" />
-                            <span className="text-base">Improve Matching</span>
-                          </div>
-                          <ChevronDown className={cn(
-                            "w-4 h-4 transition-transform",
-                            matchingQualityOpen && "rotate-180"
-                          )} />
-                        </CardTitle>
-                      </CardHeader>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <CardContent className="pt-0">
-                        <div className="space-y-3">
-                          <p className="text-sm text-muted-foreground">
-                            Optional settings to help us find the best professionals for your project.
-                          </p>
-                          <div className="space-y-2">
-                            <label className="flex items-center space-x-2 text-sm">
-                              <input type="checkbox" className="rounded" />
-                              <span>Prioritize highly-rated professionals</span>
-                            </label>
-                            <label className="flex items-center space-x-2 text-sm">
-                              <input type="checkbox" className="rounded" />
-                              <span>Only show available this week</span>
-                            </label>
-                            <label className="flex items-center space-x-2 text-sm">
-                              <input type="checkbox" className="rounded" />
-                              <span>Include premium service providers</span>
-                            </label>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
-                  </Card>
-                </Collapsible>
-              </div>
-            </div>
-          </div>
+          <RequirementsGathering
+            requirements={requirements}
+            onUpdate={setRequirements}
+          />
         );
 
       case 4:
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-2xl font-display font-bold text-foreground mb-2">
-                Project Details
-              </h3>
-              <p className="text-muted-foreground">
-                Help professionals understand your requirements
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Project Title</label>
-                  <Input
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="e.g., Kitchen renovation"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Description</label>
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Describe your project in detail..."
-                    rows={4}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Address</label>
-                  <div className="relative">
-                    <Input
-                      value={formData.location}
-                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="Enter your address"
-                    />
-                    <MapPin className="absolute right-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Manual address entry only - no automatic location detection
-                  </p>
-                </div>
+        // Case 4 is details step in both modes
+        // calendar-first: step 4 is details, non-calendar: step 3 is details
+        if ((calendarFirstEnabled && step === 4) || (!calendarFirstEnabled && step === 4)) {
+          return (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-2xl font-display font-bold text-foreground mb-2">
+                  Location & Additional Details
+                </h3>
+                <p className="text-muted-foreground">
+                  Help professionals understand your project location and specifics
+                </p>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Access & Parking Instructions</label>
-                  <Textarea
-                    placeholder="Parking info, building access codes, special instructions..."
-                    rows={3}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5" />
+                    Project Location
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <LocationSelector
+                    value={formData.location}
+                    onChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
                   />
-                </div>
+                </CardContent>
+              </Card>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">Special Requirements</label>
-                  <Textarea
-                    placeholder="Allergies, pet considerations, material preferences..."
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Photos (Optional)</label>
-                  <div className="border-2 border-dashed border-muted rounded-lg p-6 text-center">
-                    <Camera className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      Upload photos to help professionals understand your project
-                    </p>
-                    <Button variant="outline" size="sm" className="mt-2">
-                      Choose Files
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              {!calendarFirstEnabled && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CalendarIcon className="w-5 h-5" />
+                      Scheduling
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        disabled={(date) => date < new Date()}
+                        className="rounded-md border"
+                      />
+                      
+                      <TimeSlotSelector
+                        value={formData.timePreference}
+                        onChange={(value) => setFormData(prev => ({ ...prev, timePreference: value }))}
+                        includeFlexible
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
-          </div>
-        );
+          );
+        }
 
       case 5:
         return (
           <div className="space-y-6">
             <div>
               <h3 className="text-2xl font-display font-bold text-foreground mb-2">
-                Review & Post
+                Review Your Project
               </h3>
               <p className="text-muted-foreground">
-                Double-check everything before posting your job
+                Make sure everything looks correct before posting
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Project Summary</CardTitle>
+                  <CardTitle>Service</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Schedule</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedDate ? selectedDate.toLocaleDateString() : 'Flexible timing'} 
-                      {formData.timePreference !== 'Flexible' && ` - ${formData.timePreference}`}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium mb-2">Service</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedService?.category} - {selectedService?.subcategory}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium mb-2">Selected Items</h4>
-                    <div className="space-y-2">
-                      {selectedItems.map((item) => (
-                        <div key={item.id} className="flex justify-between text-sm">
-                          <span>{item.name} x{item.quantity}</span>
-                          <span>€{(item.basePrice * item.quantity).toFixed(2)}</span>
-                        </div>
-                      ))}
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Category:</span>
+                      <span className="font-medium">{selectedService?.category}</span>
                     </div>
-                  </div>
-
-                  <div className="border-t pt-2">
-                    <div className="flex justify-between font-semibold">
-                      <span>Total Estimate</span>
-                      <span>€{totalEstimate.toFixed(2)}</span>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Type:</span>
+                      <span className="font-medium">{selectedService?.subcategory}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Service:</span>
+                      <span className="font-medium">{selectedService?.micro}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -678,31 +415,52 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Contact Details</CardTitle>
+                  <CardTitle>Project Requirements</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Location</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {formData.location || 'Not specified'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium mb-2">Project Description</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {formData.description || 'No description provided'}
-                    </p>
-                  </div>
-
-                  <div className="bg-muted/50 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span className="font-medium">Ready to Post</span>
+                <CardContent className="space-y-3">
+                  {requirements.scope && (
+                    <div>
+                      <span className="text-sm font-medium text-muted-foreground">Scope:</span>
+                      <p className="text-foreground">{requirements.scope}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      Your job will be visible to matched professionals. You'll receive quotes within 24 hours.
-                    </p>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Timeline:</span>
+                    <span className="font-medium">{requirements.timeline}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Budget Range:</span>
+                    <span className="font-medium">{requirements.budgetRange}</span>
+                  </div>
+                  {requirements.constraints && (
+                    <div>
+                      <span className="text-sm font-medium text-muted-foreground">Constraints:</span>
+                      <p className="text-foreground">{requirements.constraints}</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Schedule & Location</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Date:</span>
+                      <span className="font-medium">
+                        {isFlexible ? 'Flexible' : selectedDate?.toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Time:</span>
+                      <span className="font-medium">{formData.timePreference}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Location:</span>
+                      <span className="font-medium">{formData.location || 'Not specified'}</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -715,38 +473,54 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
     }
   };
 
+  const maxSteps = calendarFirstEnabled ? 5 : 4;
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Progress Header */}
+    <div className="min-h-screen bg-background p-4 md:p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold">Post a Job</h1>
-            <Button variant="ghost" onClick={onCancel}>
-              <X className="w-4 h-4 mr-2" />
-              Cancel
-            </Button>
-          </div>
+          <Button variant="ghost" onClick={onCancel} className="mb-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
           
-          <div className="flex items-center space-x-4">
-            {steps.map((s, index) => (
-              <div key={s.id} className="flex items-center">
-                <div className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-                  step >= s.id 
-                    ? "bg-primary text-primary-foreground" 
-                    : "bg-muted text-muted-foreground"
-                )}>
-                  {s.id}
+          {/* Progress Steps */}
+          <div className="flex items-center justify-between mb-6">
+            {steps.map((s, idx) => (
+              <React.Fragment key={s.id}>
+                <div className="flex flex-col items-center">
+                  <div 
+                    className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all",
+                      step >= s.id 
+                        ? "bg-gradient-hero text-white" 
+                        : "bg-muted text-muted-foreground"
+                    )}
+                  >
+                    {step > s.id ? <CheckCircle className="w-5 h-5" /> : s.id}
+                  </div>
+                  <div className="mt-2 text-center">
+                    <div className={cn(
+                      "text-sm font-medium",
+                      step >= s.id ? "text-foreground" : "text-muted-foreground"
+                    )}>
+                      {s.title}
+                    </div>
+                    <div className="text-xs text-muted-foreground hidden md:block">
+                      {s.desc}
+                    </div>
+                  </div>
                 </div>
-                <div className="ml-2 hidden sm:block">
-                  <div className="text-sm font-medium">{s.title}</div>
-                  <div className="text-xs text-muted-foreground">{s.desc}</div>
-                </div>
-                {index < steps.length - 1 && (
-                  <ArrowRight className="w-4 h-4 text-muted-foreground mx-4" />
+                {idx < steps.length - 1 && (
+                  <div 
+                    className={cn(
+                      "flex-1 h-1 mx-2 rounded transition-all",
+                      step > s.id ? "bg-gradient-hero" : "bg-muted"
+                    )}
+                  />
                 )}
-              </div>
+              </React.Fragment>
             ))}
           </div>
         </div>
@@ -758,22 +532,29 @@ const CalendarFirstWizard = ({ onComplete, onCancel }: CalendarFirstWizardProps)
 
         {/* Navigation */}
         <div className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={prevStep} 
+          <Button
+            variant="outline"
+            onClick={prevStep}
             disabled={step === 1}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Previous
           </Button>
-          
-          {step < steps.length ? (
-            <Button onClick={nextStep}>
+
+          {step < maxSteps ? (
+            <Button
+              onClick={nextStep}
+              className="bg-gradient-hero text-white"
+            >
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           ) : (
-            <Button onClick={handleSubmit} disabled={loading}>
+            <Button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="bg-gradient-hero text-white"
+            >
               {loading ? 'Posting...' : 'Post Job'}
               <CheckCircle className="w-4 h-4 ml-2" />
             </Button>

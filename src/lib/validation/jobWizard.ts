@@ -60,15 +60,19 @@ const answersSchema = z
   .record(z.string(), answerValueSchema)
   .optional();
 
-// Selected items validation
-const selectedItemSchema = z.object({
-  id: z.string(),
-  name: z.string().max(200),
-  basePrice: z.number().min(0).max(1000000),
-  quantity: z.number().int().min(1).max(1000),
-  unit: z.string().max(50).optional(),
-  category: z.enum(['labor', 'material', 'equipment']).optional()
-});
+// Requirements validation schema
+const requirementsSchema = z.object({
+  scope: z.string().trim().max(5000).optional(),
+  timeline: z.string().trim().max(500).optional(),
+  budgetRange: z.string().trim().max(100).optional(),
+  constraints: z.string().trim().max(2000).optional(),
+  materials: z.string().trim().max(2000).optional(),
+  specifications: z.record(z.string(), answerValueSchema).optional(),
+  referenceImages: z.array(z.object({
+    name: z.string().max(255),
+    url: z.string().url().max(1000)
+  })).max(10).optional()
+}).optional();
 
 // Main wizard payload validation
 export const wizardCompletePayloadSchema = z.object({
@@ -87,10 +91,8 @@ export const wizardCompletePayloadSchema = z.object({
   subcategory: z.string().trim().max(100).optional(),
   micro: z.string().trim().max(100).optional(),
   
-  // Menu selections
-  selectedItems: z.array(selectedItemSchema).max(50).optional(),
-  totalEstimate: z.number().min(0).max(10000000).optional(),
-  confidence: z.number().min(0).max(100).optional(),
+  // Project requirements (client describes needs)
+  requirements: requirementsSchema,
   
   // Structured answers
   microAnswers: answersSchema,
@@ -113,11 +115,10 @@ export const bookingInsertSchema = z.object({
   
   // Job details
   status: z.enum(['draft', 'posted', 'matched', 'in_progress', 'completed', 'cancelled']).optional(),
-  selected_items: z.any().optional(),
-  total_estimated_price: z.number().min(0).max(10000000).optional(),
   preferred_dates: z.any().optional(),
   location_details: locationSchema,
-  special_requirements: descriptionSchema,
+  special_requirements: z.string().max(10000).optional(),
+  budget_range: z.string().max(100).optional(),
   
   // Answers
   micro_q_answers: z.record(z.string(), answerValueSchema).optional(),
