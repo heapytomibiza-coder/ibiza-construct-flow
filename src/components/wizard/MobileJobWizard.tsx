@@ -155,9 +155,6 @@ const MobileJobWizard = ({
       micro: selectedService.micro.trim().slice(0, 100),
       microAnswers,
       logisticsAnswers,
-      selectedItems: [],
-      totalEstimate: undefined,
-      confidence: undefined,
       generalAnswers: {
         microAnswers,
         logisticsAnswers,

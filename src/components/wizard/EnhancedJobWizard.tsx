@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,117 +6,43 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { 
-  ArrowLeft, ArrowRight, Plus, Minus, MapPin, Calendar,
-  Camera, FileText, Clock, Euro, AlertCircle, CheckCircle,
-  Sparkles, Calculator, Target, X
+  ArrowLeft, ArrowRight, MapPin, AlertCircle, CheckCircle, Sparkles, Camera
 } from 'lucide-react';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import Cascader from '@/components/common/Cascader';
 import { useWizard } from '@/features/wizard/useWizard';
 import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
 import { WizardCompletePayload } from '@/lib/contracts';
+import { RequirementsGathering } from './RequirementsGathering';
 
 interface JobWizardProps {
   onComplete: (jobData: any) => void;
   onCancel: () => void;
 }
 
-interface ServiceItem {
-  id: string;
-  name: string;
-  description: string;
-  basePrice: number;
-  unit: string;
-  category: 'labor' | 'material' | 'equipment';
-  estimatedDuration: number;
-  image?: string;
-}
-
-interface SelectedItem extends ServiceItem {
-  quantity: number;
-  notes?: string;
-}
-
 const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
   const wizard = useWizard();
   const { services } = useServicesRegistry();
-  const [serviceItems, setServiceItems] = useState<ServiceItem[]>([]);
-  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
-  const [totalEstimate, setTotalEstimate] = useState(0);
-  const [confidence, setConfidence] = useState(85);
+  const [requirements, setRequirements] = useState({
+    scope: '',
+    timeline: '',
+    budgetRange: '',
+    constraints: '',
+    materials: '',
+    specifications: {},
+    referenceImages: []
+  });
 
   const steps = [
     { id: 1, title: 'Service Selection', desc: 'Choose your service' },
     { id: 2, title: 'Micro Questions', desc: 'Service-specific details' },
-    { id: 3, title: 'Menu Board', desc: 'Configure items & pricing' },
+    { id: 3, title: 'Requirements', desc: 'Project scope & details' },
     { id: 4, title: 'Details', desc: 'Location & logistics' },
     { id: 5, title: 'Review', desc: 'Confirm & post' }
   ];
 
-  useEffect(() => {
-    calculateEstimate();
-  }, [selectedItems]);
-
-  const fetchServiceItems = async (serviceId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('service_options')
-        .select('*')
-        .eq('service_id', serviceId)
-        .order('display_order', { ascending: true });
-      
-      if (error) throw error;
-      
-      const items: ServiceItem[] = (data || []).map(item => ({
-        id: item.id,
-        name: item.name,
-        description: item.description || '',
-        basePrice: item.base_price || 0,
-        unit: 'item',
-        category: item.category as 'labor' | 'material' | 'equipment',
-        estimatedDuration: 60 // Default 1 hour
-      }));
-      
-      setServiceItems(items);
-    } catch (error) {
-      toast.error('Failed to load service items');
-    }
-  };
-
-  const calculateEstimate = () => {
-    const total = selectedItems.reduce((sum, item) => 
-      sum + (item.basePrice * item.quantity), 0
-    );
-    setTotalEstimate(total);
-    
-    // Simulate confidence calculation based on completeness
-    const completeness = selectedItems.length > 0 ? 85 + (selectedItems.length * 2) : 70;
-    setConfidence(Math.min(95, completeness));
-  };
-
-  const addItem = (item: ServiceItem) => {
-    const existing = selectedItems.find(s => s.id === item.id);
-    if (existing) {
-      setSelectedItems(prev => prev.map(s => 
-        s.id === item.id ? { ...s, quantity: s.quantity + 1 } : s
-      ));
-    } else {
-      setSelectedItems(prev => [...prev, { ...item, quantity: 1 }]);
-    }
-  };
-
-  const updateItemQuantity = (itemId: string, quantity: number) => {
-    if (quantity <= 0) {
-      setSelectedItems(prev => prev.filter(s => s.id !== itemId));
-    } else {
-      setSelectedItems(prev => prev.map(s => 
-        s.id === itemId ? { ...s, quantity } : s
-      ));
-    }
-  };
 
   const nextStep = () => {
     if (wizard.state.step === 1 && !wizard.state.serviceId) {
@@ -127,8 +53,8 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
       toast.error('Please answer the service-specific questions');
       return;
     }
-    if (wizard.state.step === 3 && selectedItems.length === 0) {
-      toast.error('Please select at least one service item');
+    if (wizard.state.step === 3 && !requirements.timeline && !requirements.budgetRange) {
+      toast.error('Please provide timeline and budget range');
       return;
     }
     if (wizard.state.step === 4 && !wizard.state.title) {
@@ -164,9 +90,6 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
     // Load AI questions for this service
     await wizard.loadAIQuestions(selectedService.id);
     
-    // Also fetch service items for menu board
-    await fetchServiceItems(selectedService.id);
-    
     wizard.nextStep();
   };
 
@@ -199,17 +122,8 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
         subcategory: selectedService.subcategory,
         micro: selectedService.micro,
         
-        // Menu board selections
-        selectedItems: selectedItems.map(item => ({
-          id: item.id,
-          name: item.name,
-          basePrice: item.basePrice,
-          quantity: item.quantity,
-          unit: item.unit,
-          category: item.category
-        })),
-        totalEstimate,
-        confidence,
+        // Project requirements (replaces menu board)
+        requirements,
         
         // Structured answers
         microAnswers: wizard.state.microAnswers,
@@ -290,115 +204,17 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
           <div className="space-y-6">
             <div>
               <h3 className="text-2xl font-display font-bold text-foreground mb-2">
-                Configure Your Project
+                Project Requirements
               </h3>
               <p className="text-muted-foreground">
-                Select what you need and quantities for accurate pricing
+                Help professionals understand exactly what you need
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Service Items */}
-              <div className="lg:col-span-2 space-y-4">
-                <h4 className="font-semibold text-foreground">Available Services</h4>
-                {serviceItems.map((item) => (
-                  <Card key={item.id} className="border">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h5 className="font-medium text-foreground">{item.name}</h5>
-                          <p className="text-sm text-muted-foreground">{item.description}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline">{item.category}</Badge>
-                            <span className="text-sm text-muted-foreground">
-                              €{item.basePrice} per {item.unit}
-                            </span>
-                          </div>
-                        </div>
-                        <Button 
-                          onClick={() => addItem(item)}
-                          size="sm"
-                          className="bg-gradient-hero text-white"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Selected Items & Estimate */}
-              <div className="space-y-4">
-                <Card className="sticky top-4">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calculator className="w-5 h-5" />
-                      Your Configuration
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {selectedItems.length === 0 ? (
-                      <p className="text-muted-foreground text-sm">
-                        No items selected yet
-                      </p>
-                    ) : (
-                      selectedItems.map((item) => (
-                        <div key={item.id} className="border rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-sm">{item.name}</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
-                              >
-                                <Minus className="w-3 h-3" />
-                              </Button>
-                              <span className="text-sm">{item.quantity}</span>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
-                              >
-                                <Plus className="w-3 h-3" />
-                              </Button>
-                            </div>
-                            <span className="font-medium text-sm">
-                              €{(item.basePrice * item.quantity).toFixed(2)}
-                            </span>
-                          </div>
-                        </div>
-                      ))
-                    )}
-
-                    {selectedItems.length > 0 && (
-                      <>
-                        <div className="border-t pt-4">
-                          <div className="flex justify-between items-center">
-                            <span className="font-semibold">Total Estimate</span>
-                            <span className="font-bold text-lg">€{totalEstimate.toFixed(2)}</span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Target className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">
-                              {confidence}% confidence
-                            </span>
-                          </div>
-                        </div>
-                        <div className="bg-muted/50 rounded-lg p-3">
-                          <p className="text-xs text-muted-foreground">
-                            This is a guided estimate. Final price may change after onsite assessment.
-                          </p>
-                        </div>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+            <RequirementsGathering
+              requirements={requirements}
+              onUpdate={setRequirements}
+            />
           </div>
         );
 
@@ -520,7 +336,7 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                   </div>
                   
                   <div>
-                    <h4 className="font-medium mb-2">Micro Questions Answered</h4>
+                    <h4 className="font-medium mb-2">Service Questions</h4>
                     <div className="space-y-1">
                       {Object.entries(wizard.state.microAnswers).map(([key, value]) => (
                         <div key={key} className="text-sm">
@@ -532,27 +348,24 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                   </div>
                   
                   <div>
-                    <h4 className="font-medium mb-2">Selected Items</h4>
-                    <div className="space-y-2">
-                      {selectedItems.map((item) => (
-                        <div key={item.id} className="flex justify-between text-sm">
-                          <span>{item.name} x{item.quantity}</span>
-                          <span>€{(item.basePrice * item.quantity).toFixed(2)}</span>
+                    <h4 className="font-medium mb-2">Requirements</h4>
+                    <div className="space-y-2 text-sm">
+                      {requirements.scope && (
+                        <div>
+                          <span className="text-muted-foreground">Scope: </span>
+                          <span>{requirements.scope}</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-4">
-                    <div className="flex justify-between font-semibold">
-                      <span>Total Estimate</span>
-                      <span>€{totalEstimate.toFixed(2)}</span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-sm text-muted-foreground">
-                        {confidence}% confidence
-                      </span>
+                      )}
+                      {requirements.timeline && (
+                        <div>
+                          <Badge variant="outline">{requirements.timeline}</Badge>
+                        </div>
+                      )}
+                      {requirements.budgetRange && (
+                        <div>
+                          <Badge variant="outline">{requirements.budgetRange}</Badge>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>

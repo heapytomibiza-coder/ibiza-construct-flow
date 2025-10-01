@@ -10,17 +10,16 @@ export type WizardCompletePayload = {
   location?: string;
   urgency?: string;
 
-  // Menu-board selections (from luxury wizard)
-  selectedItems?: Array<{
-    id: string;
-    name: string;
-    basePrice: number;
-    quantity: number;
-    unit?: string;
-    category?: 'labor' | 'material' | 'equipment';
-  }>;
-  totalEstimate?: number;
-  confidence?: number;
+  // Project requirements (replaces menu-board)
+  requirements?: {
+    scope?: string;
+    timeline?: string;
+    budgetRange?: string;
+    constraints?: string;
+    materials?: string;
+    specifications?: Record<string, any>;
+    referenceImages?: Array<{ name: string; url: string }>;
+  };
 
   // Critical identifiers (for audit & matching)
   serviceId?: string;      // UUID of the services_micro row

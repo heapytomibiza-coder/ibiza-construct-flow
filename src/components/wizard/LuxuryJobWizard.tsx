@@ -163,9 +163,6 @@ const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
         category: selectedCategory.trim().slice(0, 100),
         subcategory: selectedSubcategory.trim().slice(0, 100),
         micro: selectedService.micro.trim().slice(0, 100),
-        selectedItems: [],
-        totalEstimate: undefined,
-        confidence: undefined,
         generalAnswers: {
           budget: formData.budget?.trim().slice(0, 100) || null,
           requirements: formData.requirements?.trim().slice(0, 5000) || null,
