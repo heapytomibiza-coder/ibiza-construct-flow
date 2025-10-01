@@ -4,6 +4,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -184,9 +185,9 @@ export function PackBrowser() {
                     variant="ghost"
                     asChild
                   >
-                    <a href={`/admin/questions/compare/${pack.micro_slug}`}>
+                    <Link to={`/admin/questions/compare/${pack.micro_slug}`}>
                       Compare
-                    </a>
+                    </Link>
                   </Button>
                 </div>
               </div>

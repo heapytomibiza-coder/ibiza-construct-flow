@@ -190,3 +190,67 @@ export async function getPackMetrics(packId: string) {
 
   return data || [];
 }
+
+/**
+ * Get comprehensive comparison data for a microservice slug
+ * Returns active approved pack, latest draft, and detailed comparison metrics
+ */
+export async function getPackComparison(slug: string): Promise<any> {
+  // Fetch active approved pack
+  const { data: activePack } = await supabase
+    .from('question_packs')
+    .select('*')
+    .eq('micro_slug', slug)
+    .eq('status', 'approved' as any)
+    .eq('is_active', true)
+    .maybeSingle();
+
+  // Fetch latest draft pack
+  const { data: draftPack } = await supabase
+    .from('question_packs')
+    .select('*')
+    .eq('micro_slug', slug)
+    .eq('status', 'draft' as any)
+    .order('version', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  // Fetch version history
+  const { data: versionHistory } = await supabase
+    .from('question_packs')
+    .select('version, status, created_at, approved_at')
+    .eq('micro_slug', slug)
+    .order('version', { ascending: false })
+    .limit(10);
+
+  // Fetch metrics for active pack if exists
+  let activeMetrics = null;
+  if (activePack) {
+    const { data: perfData } = await supabase
+      .from('pack_performance')
+      .select('*')
+      .eq('pack_id', activePack.pack_id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (perfData) {
+      activeMetrics = {
+        pack_id: activePack.pack_id,
+        period: '30d',
+        completionRate: perfData.completion_rate || 0,
+        medianDurationS: perfData.median_duration_s || 0,
+        dropoffsByStep: {},
+        answerDistribution: {},
+      };
+    }
+  }
+
+  return {
+    slug,
+    active: activePack,
+    draft: draftPack,
+    activeMetrics,
+    versionHistory: versionHistory || [],
+  };
+}

@@ -30,6 +30,7 @@ const UnifiedClientDashboard = React.lazy(() => import("./components/dashboards/
 const UnifiedProfessionalDashboard = React.lazy(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
 const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
 const AdminQuestions = React.lazy(() => import("./pages/AdminQuestions"));
+const PackCompareView = React.lazy(() => import("./components/admin/packs/PackCompareView").then(m => ({ default: m.PackCompareView })));
 const PostJob = React.lazy(() => import("./pages/PostJob"));
 const ServicePage = React.lazy(() => import("./pages/UnifiedServicePage"));
 const ServiceDetailPage = React.lazy(() => import("./pages/UnifiedServicePage"));
@@ -180,6 +181,15 @@ export default function App() {
             ) : (
               <RouteGuard requiredRole="admin">
                 <AdminQuestions />
+              </RouteGuard>
+            )
+          } />
+          <Route path="/admin/questions/compare/:slug" element={
+            DISABLE_AUTH_FOR_WIREFRAME ? (
+              <PackCompareView />
+            ) : (
+              <RouteGuard requiredRole="admin">
+                <PackCompareView />
               </RouteGuard>
             )
           } />
