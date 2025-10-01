@@ -8,7 +8,8 @@ const corsHeaders = {
 };
 
 interface ChatRequest {
-  message: string;
+  message?: string; // For simple chat
+  messages?: Array<{ role: string; content: string }>; // For custom conversation
   conversation_id?: string;
   user_id?: string;
   context?: {
@@ -34,65 +35,81 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
     );
 
-    const { message, conversation_id, user_id, context = {} }: ChatRequest = await req.json();
+    const { message, messages, conversation_id, user_id, context = {} }: ChatRequest = await req.json();
 
-    // Generate or use existing session ID
-    const sessionId = conversation_id || `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-    // Get or create conversation
+    // Handle two modes: Simple chat (message) or Custom conversation (messages array)
+    const isCustomConversation = messages && Array.isArray(messages);
+    
+    let aiMessages;
     let conversationRecord;
-    if (conversation_id) {
-      const { data } = await supabaseClient
-        .from('ai_conversations')
-        .select('*')
-        .eq('id', conversation_id)
-        .single();
-      conversationRecord = data;
-    }
 
-    if (!conversationRecord) {
-      const { data, error } = await supabaseClient
-        .from('ai_conversations')
-        .insert({
-          session_id: sessionId,
-          user_id: user_id || null,
-          conversation_type: 'support',
-          context: context,
-          status: 'active'
-        })
-        .select()
-        .single();
+    if (isCustomConversation) {
+      // Custom conversation mode - use provided messages directly
+      aiMessages = messages;
+    } else {
+      // Standard chat mode - use conversation history
+      const sessionId = conversation_id || `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      if (error) {
-        console.error('Error creating conversation:', error);
-        throw new Error('Failed to create conversation');
+      // Get or create conversation
+      if (conversation_id) {
+        const { data } = await supabaseClient
+          .from('ai_conversations')
+          .select('*')
+          .eq('id', conversation_id)
+          .single();
+        conversationRecord = data;
       }
-      conversationRecord = data;
+
+      if (!conversationRecord) {
+        const { data, error } = await supabaseClient
+          .from('ai_conversations')
+          .insert({
+            session_id: sessionId,
+            user_id: user_id || null,
+            conversation_type: 'support',
+            context: context,
+            status: 'active'
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error creating conversation:', error);
+          throw new Error('Failed to create conversation');
+        }
+        conversationRecord = data;
+      }
+
+      // Get conversation history
+      const { data: messageHistory } = await supabaseClient
+        .from('ai_chat_messages')
+        .select('*')
+        .eq('conversation_id', conversationRecord.id)
+        .order('created_at', { ascending: true })
+        .limit(10);
+
+      // Build context for AI
+      const systemPrompt = buildSystemPrompt(context, conversationRecord);
+      const conversationMessages = messageHistory?.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      })) || [];
+
+      // Add current user message to history
+      await supabaseClient
+        .from('ai_chat_messages')
+        .insert({
+          conversation_id: conversationRecord.id,
+          role: 'user',
+          content: message
+        });
+
+      aiMessages = [
+        { role: 'system', content: systemPrompt },
+        ...conversationMessages,
+        { role: 'user', content: message }
+      ];
     }
-
-    // Get conversation history
-    const { data: messageHistory } = await supabaseClient
-      .from('ai_chat_messages')
-      .select('*')
-      .eq('conversation_id', conversationRecord.id)
-      .order('created_at', { ascending: true })
-      .limit(10);
-
-    // Build context for AI
-    const systemPrompt = buildSystemPrompt(context, conversationRecord);
-    const conversationMessages = messageHistory?.map(msg => ({
-      role: msg.role,
-      content: msg.content
-    })) || [];
-
-    // Add current user message to history
-    await supabaseClient
-      .from('ai_chat_messages')
-      .insert({
-        conversation_id: conversationRecord.id,
-        role: 'user',
-        content: message
-      });
 
     // Call Lovable AI Gateway
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -103,12 +120,8 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...conversationMessages,
-          { role: 'user', content: message }
-        ],
-        max_completion_tokens: 500,
+        messages: aiMessages,
+        max_completion_tokens: 800,
         stream: false
       }),
     });
@@ -120,28 +133,37 @@ serve(async (req) => {
     const aiData = await aiResponse.json();
     const botResponse = aiData.choices?.[0]?.message?.content || 'I apologize, but I encountered an issue processing your request.';
 
-    // Save AI response to conversation
-    await supabaseClient
-      .from('ai_chat_messages')
-      .insert({
+    // Save AI response to conversation (only in standard chat mode)
+    if (!isCustomConversation && conversationRecord) {
+      await supabaseClient
+        .from('ai_chat_messages')
+        .insert({
+          conversation_id: conversationRecord.id,
+          role: 'assistant',
+          content: botResponse,
+          metadata: {
+            model_used: 'google/gemini-2.5-flash',
+            tokens_used: aiData.usage?.total_tokens || 0
+          }
+        });
+
+      // Generate quick actions based on context and response
+      const quickActions = generateQuickActions(message || '', botResponse, context);
+
+      return new Response(JSON.stringify({
+        response: botResponse,
         conversation_id: conversationRecord.id,
-        role: 'assistant',
-        content: botResponse,
-        metadata: {
-          model_used: 'google/gemini-2.5-flash',
-          tokens_used: aiData.usage?.total_tokens || 0
-        }
+        session_id: conversationRecord.session_id,
+        quick_actions: quickActions,
+        context_understood: true
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
 
-    // Generate quick actions based on context and response
-    const quickActions = generateQuickActions(message, botResponse, context);
-
+    // For custom conversations, just return the response
     return new Response(JSON.stringify({
-      response: botResponse,
-      conversation_id: conversationRecord.id,
-      session_id: sessionId,
-      quick_actions: quickActions,
-      context_understood: true
+      response: botResponse
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

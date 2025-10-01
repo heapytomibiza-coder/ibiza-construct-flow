@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
   Package, Home, ShoppingCart, Wrench, Sparkles, 
-  Truck, Dog, Heart, Briefcase, Search, ArrowRight 
+  Truck, Dog, Heart, Briefcase, Search, ArrowRight, Loader2 
 } from 'lucide-react';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { cn } from '@/lib/utils';
@@ -43,7 +43,7 @@ const VisualCategoryStep: React.FC<VisualCategoryStepProps> = ({
   onNext
 }) => {
   const { t } = useTranslation();
-  const { services, getCategories, getSubcategories, getMicroServices } = useServicesRegistry();
+  const { services, getCategories, getSubcategories, getMicroServices, loading: servicesLoading } = useServicesRegistry();
   const [searchTerm, setSearchTerm] = useState('');
 
   const categories = useMemo(() => getCategories(), [getCategories]);
@@ -67,6 +67,17 @@ const VisualCategoryStep: React.FC<VisualCategoryStepProps> = ({
       s.micro.toLowerCase().includes(term)
     );
   }, [services, searchTerm]);
+
+  if (servicesLoading) {
+    return (
+      <div className="max-w-6xl mx-auto flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Loading services...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleCategorySelect = (category: string) => {
     onSelect(category, '', '', '');

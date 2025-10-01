@@ -105,17 +105,42 @@ Keep it under 250 words, use bullet points where appropriate, and make it scan-f
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('AI generation error:', error);
+        throw error;
+      }
 
-      const description = data?.response || 'Unable to generate description. Please try again.';
+      const description = data?.response || generateFallbackDescription();
       setAiDescription(description);
       onDescriptionGenerated(description);
     } catch (error) {
       console.error('Error generating description:', error);
-      setAiDescription('Failed to generate description. Your job details have been saved.');
+      const fallback = generateFallbackDescription();
+      setAiDescription(fallback);
+      onDescriptionGenerated(fallback);
     } finally {
       setGeneratingDescription(false);
     }
+  };
+
+  const generateFallbackDescription = () => {
+    const answers = Object.entries(wizardState.aiAnswers)
+      .map(([key, value]) => `• ${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`)
+      .join('\n');
+
+    return `**${wizardState.selectedMicro} Service Needed**
+
+I'm looking for a professional to help with ${wizardState.selectedMicro.toLowerCase()} at ${wizardState.location}.
+
+**Timeline:** ${urgencyLabels[wizardState.urgency]}
+${wizardState.preferredDate ? `**Preferred Date:** ${format(new Date(wizardState.preferredDate), 'PPP')}` : ''}
+
+**Requirements:**
+${answers || 'Please contact me for more details about the requirements.'}
+
+**Location:** ${wizardState.location}
+
+I'm looking forward to receiving offers from qualified professionals. Please reach out if you have experience with this type of work!`;
   };
 
   return (

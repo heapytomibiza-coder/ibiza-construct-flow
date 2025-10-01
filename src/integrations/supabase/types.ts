@@ -2721,6 +2721,33 @@ export type Database = {
         }
         Relationships: []
       }
+      services_unified_v1: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          micro: string
+          subcategory: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          micro: string
+          subcategory: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          micro?: string
+          subcategory?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       smart_matches: {
         Row: {
           availability_score: number | null
@@ -2885,20 +2912,7 @@ export type Database = {
       }
     }
     Views: {
-      services_unified_v1: {
-        Row: {
-          category: string | null
-          created_at: string | null
-          id: string | null
-          is_featured: boolean | null
-          micro: string | null
-          questions_logistics: Json | null
-          questions_micro: Json | null
-          source: string | null
-          subcategory: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       can_professional_view_job: {

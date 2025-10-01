@@ -15,6 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { cn } from '@/lib/utils';
 
@@ -64,8 +65,14 @@ const AIQuestionsStep: React.FC<AIQuestionsStepProps> = ({
     try {
       const questionSet = await getQuestions(microId);
       setQuestions(questionSet.questions || []);
+      
+      // If no questions, auto-generate job title
+      if (!jobTitle && microName) {
+        onTitleChange(`${microName} Service Needed`);
+      }
     } catch (error) {
       console.error('Error loading questions:', error);
+      toast.error('Failed to load questions. Please try again.');
     } finally {
       setLoading(false);
     }
