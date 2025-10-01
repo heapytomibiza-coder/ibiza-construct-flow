@@ -30,28 +30,68 @@ function validateQuestions(questions: any): boolean {
   );
 }
 
+// Expert building trade prompts by category
+const EXPERT_PROMPTS: Record<string, string> = {
+  'Electricians': `You are an expert electrical contractor with 20+ years experience in Ibiza and Spain. You understand Spanish electrical codes (REBT), Ibiza's salt air corrosion issues, ICP power capacity problems, solar integration, smart home systems, and boletín eléctrico requirements. Ask technical questions about circuits, voltage, safety compliance, existing conditions, property specifics, and Ibiza challenges.`,
+
+  'Plumbers': `You are a master plumber expert in Mediterranean systems and Ibiza's challenges. You know Spanish codes (CTE DB HS), hard water/calcification issues, water pressure in hill properties, cistern systems, pool plumbing, septic tanks, and solar water heaters. Ask about water source, system age, pressure, hot water needs, outdoor plumbing, and elevation.`,
+
+  'HVAC': `You are an HVAC specialist for Mediterranean climate and Ibiza. You understand Spanish RITE regulations, cooling priorities, salt air impact, energy efficiency (A+++ ratings), VRF systems, humidity control for coastal properties. Ask about property size, existing system, cooling/heating priorities, outdoor unit placement, and energy budget.`,
+
+  'Carpenters': `You are a master carpenter specializing in Mediterranean construction. You know traditional Ibiza sabina wood, moisture/salt resistance, custom work for old fincas, outdoor carpentry, termite prevention. Ask about project scope, wood preferences, indoor/outdoor, structural vs decorative, property style, budget, timeline.`,
+
+  'Painters': `You are a professional painter expert in Mediterranean challenges. You understand Spanish VOC regulations, UV-resistant paints, traditional Ibiza lime wash, exterior preparation, humidity/mold treatments. Ask about interior/exterior, surface condition, property age, sun exposure, previous issues, color preferences, finish type.`,
+
+  'Roofers': `You are a roofing expert specializing in Ibiza's systems. You know traditional flat roofs (azoteas), Spanish waterproofing (CTE DB HS 1), terrace impermeabilization, solar integration, insulation requirements, salt/UV damage. Ask about roof type, drainage, leaks, terrace usage, insulation, solar plans, property age.`,
+
+  'Masons': `You are a master mason understanding traditional Ibiza construction. You know dry stone walls (marès), Spanish structural codes (CTE DB SE), coastal rendering, pool construction, retaining walls for hillsides, crack repair. Ask about project type, structural vs cosmetic, property age, materials, outdoor exposure, load-bearing needs.`,
+
+  'Flooring': `You are a flooring specialist for Ibiza's climate and style. You know traditional mosaic tiles (hidráulico), underfloor heating, moisture barriers, salt resistance, natural stone maintenance, microcement, acoustic insulation. Ask about room type, existing flooring, moisture, heating systems, traffic levels, maintenance preferences.`,
+
+  'Landscaping': `You are a Mediterranean landscaping expert for Ibiza. You know native drought-resistant plants, irrigation/water conservation, salt-tolerant species, rock gardens, terracing, pool area landscaping, maintenance for seasonal residents. Ask about property size, sun exposure, water source, maintenance capability, existing vegetation, soil, aesthetic goals.`,
+
+  'Pool Services': `You are a pool specialist expert in Ibiza. You know Spanish pool safety regulations, salt vs chlorine systems, infinity edge pools, heating solutions, winter maintenance, water chemistry for hard water, equipment rooms. Ask about pool size/type, existing equipment, heating, usage patterns, water source, equipment location, budget.`,
+
+  'Cleaning': `You are a professional cleaning expert for Ibiza properties. You understand rental turnover cleaning, salt/dust in coastal areas, mold prevention, pool/outdoor furniture care, marble/stone cleaning, seasonal deep cleaning, luxury villa standards. Ask about property size, type (rental/private), frequency, special materials, outdoor areas, turnover needs.`,
+
+  'Pest Control': `You are a pest control expert for Mediterranean and Ibiza. You know common pests (processionary caterpillar, termites, mosquitoes), eco-friendly treatments, termite inspection (critical), rodent control, preventive treatments for seasonal properties, Spanish regulations. Ask about pest type, location, severity, previous treatments, pets/children, organic preferences.`,
+
+  'Architects': `You are an architect licensed in Spain, expert in Ibiza planning. You understand Ibiza's strict planning rules (Plan General), protected rural land, heritage property regulations, energy certificates, building permits, tourist rental restrictions, coastal setbacks. Ask about project scope, property classification, permissions, heritage status, intended use, budget, regulatory concerns.`,
+
+  'Interior Designers': `You are an interior designer specializing in Mediterranean and Ibiza style. You know traditional aesthetic (white walls, natural materials), modern luxury villa design, space planning, lighting for Mediterranean sun, indoor-outdoor living, materials for coastal climate, local artisan sourcing. Ask about property style, rooms, budget level, existing furniture, lifestyle, entertaining, aesthetic preferences.`,
+
+  'Engineers': `You are a structural engineer licensed in Spain for Ibiza construction. You understand Spanish structural codes (CTE DB SE), old finca assessment, hillside foundation issues, expansion projects, load calculations, pool engineering, retaining walls, tourist rental requirements. Ask about project type, property age, existing issues, structural changes, soil conditions, permits, timeline.`,
+
+  'Legal': `You are a Spanish property lawyer expert in Ibiza real estate and building law. You know Spanish property law, building permits, tourist rental licenses, escritura issues, boundary disputes, community of owners, inheritance law, construction contracts. Ask about legal issue type, property status, documentation, urgency, complexity, Ibiza jurisdiction concerns.`,
+
+  'Real Estate': `You are a real estate agent specialized in Ibiza market. You understand Ibiza property dynamics, seasonal fluctuations, tourist rental potential/restrictions, location analysis, valuation factors, buyer profiles, foreign buyer documentation, market trends. Ask about transaction type, property type, location preferences, budget, timeline, residency status, investment goals.`,
+
+  'Property Management': `You are a property manager expert in Ibiza's vacation rental and residential market. You know tourist rental regulations, seasonal management, maintenance coordination, rental marketing, guest services, emergency response, financial reporting, security. Ask about property type, rental model, services needed, owner presence, guest capacity, existing systems, budget, management goals.`
+};
+
 async function getMinimalFallback(serviceType: string): Promise<any[]> {
   return [
     {
-      id: "description",
-      type: "text",
-      label: `Describe your ${serviceType} needs`,
+      id: 'scope',
+      type: 'textarea',
+      label: 'Please describe what you need in detail',
       required: true,
-      options: []
+      options: [],
+      placeholder: `Describe your ${serviceType} needs...`
     },
     {
-      id: "timeline",
-      type: "radio",
-      label: "When do you need this completed?",
+      id: 'timeline',
+      type: 'select',
+      label: 'When do you need this completed?',
       required: true,
-      options: ["ASAP", "Within 1 week", "Within 1 month", "Flexible"]
+      options: ['As soon as possible', 'Within 1 week', 'Within 1 month', 'Flexible timing']
     },
     {
-      id: "budget",
-      type: "radio", 
-      label: "What's your budget range?",
+      id: 'budget',
+      type: 'select',
+      label: 'What is your budget range?',
       required: false,
-      options: ["Under €100", "€100-€500", "€500-€1000", "€1000+"]
+      options: ['Under €500', '€500-€1,500', '€1,500-€5,000', '€5,000-€15,000', 'Over €15,000']
     }
   ];
 }
@@ -106,34 +146,48 @@ serve(async (req) => {
       });
     }
 
-    // Create context-aware prompt for question generation
-    const prompt = `Generate 3-5 specific, actionable multiple choice questions for a ${serviceType} service in ${category} > ${subcategory}.
+    // Get expert prompt for this category
+    const expertContext = EXPERT_PROMPTS[category] || EXPERT_PROMPTS['Electricians'];
+    
+    // Create expert-level prompt for question generation
+    const prompt = `${expertContext}
 
-Context: ${existingAnswers ? `User has already answered: ${JSON.stringify(existingAnswers)}` : 'This is the initial set of questions.'}
+Based on your deep professional expertise, generate 6-10 highly specific, technical questions for this exact service:
 
-Requirements:
-1. Questions should be specific to this exact service type
-2. Each question should have 3-5 realistic options
-3. Focus on details that affect pricing, timeline, and professional requirements
-4. Avoid generic questions - be service-specific
-5. Include technical specifications, materials, scope, or complexity as relevant
+Service Type: ${serviceType}
+Category: ${category}
+Subcategory: ${subcategory}
+${existingAnswers ? `\nContext: User has already answered: ${JSON.stringify(existingAnswers)}` : ''}
+
+Your questions must demonstrate expert-level knowledge and should:
+1. Show deep technical understanding of this specific trade
+2. Include Ibiza/Spain-specific considerations (regulations, climate, local challenges)
+3. Uncover critical details professionals need for accurate quotes
+4. Follow a logical flow from general scope to technical specifics
+5. Ask about materials, existing conditions, and potential complications
+6. Consider safety, compliance, and quality standards
+7. Include access, timing, and logistical constraints specific to Ibiza properties
+8. Use terminology professionals would use (be technical but clear)
+
+Question types to use strategically:
+- "radio": For exclusive choices (yes/no, property type, single option)
+- "select": For single selection from many options (timeline, budget ranges)
+- "checkbox": For multiple selections with limited options (up to 5-6 options)
+- "multiple-choice": For selecting multiple from many options (specify maxSelections: 3-5)
 
 Return a JSON array with this exact structure:
 [
   {
-    "id": "unique_question_id",
-    "type": "radio",
-    "label": "Question text?",
-    "required": true,
-    "options": ["Option 1", "Option 2", "Option 3", "Option 4"]
+    "id": "descriptive_technical_id",
+    "type": "radio|select|checkbox|multiple-choice",
+    "label": "Professional, specific question demonstrating expertise",
+    "required": true|false,
+    "options": ["detailed_technical_option1", "detailed_option2", ...],
+    "maxSelections": number (ONLY for multiple-choice, typically 3-5)
   }
 ]
 
-Focus on questions that help professionals:
-- Understand the scope and complexity
-- Estimate time and materials needed
-- Determine if they have the right expertise
-- Quote accurately and competitively`;
+CRITICAL: Ask questions that a seasoned professional with 20+ years experience would ask. Show mastery of the trade, local regulations, and Ibiza-specific challenges.`;
 
     console.log("Attempting AI generation for:", { serviceType, category, subcategory });
 
@@ -155,7 +209,7 @@ Focus on questions that help professionals:
           messages: [
             {
               role: "system",
-              content: "You are an expert at generating contextual, professional service questions. Always return valid JSON arrays with the exact structure requested. Be specific and actionable.",
+              content: "You are an expert building trade professional with 20+ years experience in Ibiza and Spain. Generate highly specific, technical questions that demonstrate deep domain knowledge. Include local regulations, climate considerations, and professional best practices. Use appropriate technical terminology while keeping questions clear. Always return valid JSON arrays with the exact structure requested.",
             },
             {
               role: "user",
