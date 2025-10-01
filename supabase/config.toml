@@ -2,3 +2,9 @@ project_id = "kcncrtayycwdwrxcgler"
 
 [functions.ai-chatbot]
 verify_jwt = false
+
+[functions.generate-questions]
+verify_jwt = false
+
+[functions.estimate-price]
+verify_jwt = false

@@ -4,167 +4,145 @@ export class AISystemTester {
   private results: Array<{ test: string; status: 'pass' | 'fail' | 'pending'; message?: string; duration?: number }> = [];
 
   async runComprehensiveTest(): Promise<void> {
-    console.log('🚀 Starting AI System Comprehensive Test...\n');
+    console.log('🚀 Starting PHASE 4 Wizard Comprehensive Test...\n');
     
-    // Phase 1: Test AI Edge Functions
-    await this.testAIEdgeFunctions();
-    
-    // Phase 2: Test Database Infrastructure
+    // Phase 1: Test Database & Services
     await this.testDatabaseInfrastructure();
     
-    // Phase 3: Test Integration Flows
-    await this.testIntegrationFlows();
+    // Phase 2: Test Edge Functions (Questions & Price Estimation)
+    await this.testWizardEdgeFunctions();
+    
+    // Phase 3: Test Storage (Photo Upload)
+    await this.testStorageInfrastructure();
+    
+    // Phase 4: Test Job Templates
+    await this.testJobTemplates();
     
     // Report Results
     this.reportResults();
   }
 
-  private async testAIEdgeFunctions(): Promise<void> {
-    console.log('📡 Testing AI Edge Functions...');
+  private async testWizardEdgeFunctions(): Promise<void> {
+    console.log('\n📡 Testing Wizard Edge Functions...');
 
-    // Test 1: Professional Matcher
+    // Test 1: Generate Questions
     await this.testFunction(
-      'AI Professional Matcher',
-      'ai-professional-matcher',
+      'Generate Questions (Plumbing)',
+      'generate-questions',
       {
-        jobTitle: 'Kitchen Sink Leak Repair',
-        jobDescription: 'Need urgent repair of leaking kitchen sink',
-        location: 'London, UK',
-        budget: '$200',
-        urgency: 'high'
-      }
-    );
-
-    // Test 2: Communications Drafter  
-    await this.testFunction(
-      'AI Communications Drafter',
-      'ai-communications-drafter',
-      {
-        type: 'job_broadcast',
-        context: {
-          jobTitle: 'Kitchen Sink Leak Repair',
-          urgency: 'high'
-        },
-        recipient: 'professionals',
-        tone: 'professional',
-        keyPoints: ['Urgent repair needed', 'Competitive pay', 'Local area']
-      }
-    );
-
-    // Test 3: Price Validator
-    await this.testFunction(
-      'AI Price Validator',
-      'ai-price-validator',
-      {
-        serviceType: 'plumbing',
-        location: 'London, UK',
-        pricingData: {
-          hourlyRate: 45,
-          estimatedHours: 2,
-          materials: 50
-        },
+        serviceType: 'Kitchen Sink Leak Repair',
         category: 'Home Services',
         subcategory: 'Plumbing'
       }
     );
 
-    // Test 4: Question Logic Tester
+    // Test 2: Price Estimation
     await this.testFunction(
-      'AI Question Tester',
-      'ai-question-tester',
+      'Price Estimation',
+      'estimate-price',
       {
-        serviceType: 'plumbing',
+        serviceType: 'Kitchen Sink Leak Repair',
         category: 'Home Services',
         subcategory: 'Plumbing',
-        questions: [
-          { id: 1, type: 'choice', label: 'What type of leak?', options: ['Kitchen sink', 'Bathroom', 'Pipe'] },
-          { id: 2, type: 'text', label: 'Describe the problem' }
-        ]
+        answers: {
+          'leak_severity': 'moderate',
+          'access': 'easy',
+          'urgency': 'high'
+        },
+        location: 'Ibiza, Spain'
       }
     );
   }
 
-  private async testDatabaseInfrastructure(): Promise<void> {
-    console.log('\n🗄️ Testing Database Infrastructure...');
+  private async testStorageInfrastructure(): Promise<void> {
+    console.log('\n📦 Testing Storage Infrastructure...');
     
     try {
-      // Test AI Prompts
-      const { data: prompts, error: promptsError } = await supabase
-        .from('ai_prompts')
-        .select('*')
-        .eq('is_active', true);
+      // Test Storage Bucket Access
+      const { data: buckets, error: bucketsError } = await supabase
+        .storage
+        .listBuckets();
       
-      this.logResult('AI Prompts Active', prompts && prompts.length === 4 ? 'pass' : 'fail', 
-        prompts ? `Found ${prompts.length} active prompts` : promptsError?.message);
-
-      // Test Jobs Data
-      const { data: jobs, error: jobsError } = await supabase
-        .from('jobs')
-        .select('*, services(category, subcategory, micro)')
-        .limit(10);
+      const serviceImagesBucket = buckets?.find(b => b.name === 'service-images');
       
-      this.logResult('Jobs Data Loading', jobs && jobs.length > 0 ? 'pass' : 'fail',
-        jobs ? `Found ${jobs.length} jobs` : jobsError?.message);
+      this.logResult(
+        'Service Images Bucket', 
+        serviceImagesBucket ? 'pass' : 'fail',
+        serviceImagesBucket ? 'Bucket exists and is accessible' : bucketsError?.message || 'Bucket not found'
+      );
 
-      // Test AI Runs Logging
-      const { data: aiRuns, error: aiRunsError } = await supabase
-        .from('ai_runs')
+    } catch (error) {
+      this.logResult('Storage Infrastructure', 'fail', (error as Error).message);
+    }
+  }
+
+  private async testJobTemplates(): Promise<void> {
+    console.log('\n📋 Testing Job Templates System...');
+    
+    try {
+      // Test job_templates table access
+      const { data: templates, error: templatesError } = await supabase
+        .from('job_templates')
         .select('*')
-        .order('created_at', { ascending: false })
         .limit(5);
       
-      this.logResult('AI Runs Tracking', !aiRunsError ? 'pass' : 'fail',
-        aiRuns ? `AI runs table accessible` : aiRunsError?.message);
+      this.logResult(
+        'Job Templates Table', 
+        !templatesError ? 'pass' : 'fail',
+        templates ? `Templates table accessible (${templates.length} templates)` : templatesError?.message
+      );
+
+    } catch (error) {
+      this.logResult('Job Templates System', 'fail', (error as Error).message);
+    }
+  }
+
+
+  private async testDatabaseInfrastructure(): Promise<void> {
+    console.log('\n🗄️ Testing Database & Services Infrastructure...');
+    
+    try {
+      // Test Services Unified V1 Data
+      const { data: services, error: servicesError } = await supabase
+        .from('services_unified_v1')
+        .select('*')
+        .limit(10);
+      
+      this.logResult(
+        'Services Data (services_unified_v1)', 
+        services && services.length > 0 ? 'pass' : 'fail',
+        services ? `Found ${services.length} services` : servicesError?.message
+      );
+
+      // Test Bookings Table
+      const { data: bookings, error: bookingsError } = await supabase
+        .from('bookings')
+        .select('*')
+        .limit(5);
+      
+      this.logResult(
+        'Bookings Table Access', 
+        !bookingsError ? 'pass' : 'fail',
+        bookings ? `Bookings table accessible (${bookings.length} records)` : bookingsError?.message
+      );
+
+      // Test Micro Questions Snapshot
+      const { data: snapshot, error: snapshotError } = await supabase
+        .from('micro_questions_snapshot')
+        .select('*')
+        .limit(5);
+      
+      this.logResult(
+        'Questions Snapshot Cache', 
+        !snapshotError ? 'pass' : 'fail',
+        snapshot ? `Snapshot table accessible (${snapshot.length} cached)` : snapshotError?.message
+      );
 
     } catch (error) {
       this.logResult('Database Connection', 'fail', (error as Error).message);
     }
   }
 
-  private async testIntegrationFlows(): Promise<void> {
-    console.log('\n🔄 Testing Integration Flows...');
-    
-    // Test end-to-end: Job → Professional Matching → Communication
-    try {
-      // Step 1: Get a job
-      const { data: job } = await supabase
-        .from('jobs')
-        .select('*, services(category, subcategory, micro)')
-        .eq('status', 'open')
-        .limit(1)
-        .single();
-
-      if (job) {
-        // Step 2: Find professionals for the job
-        const matchResult = await this.callAIFunction('ai-professional-matcher', {
-          jobTitle: job.title,
-          jobDescription: job.description,
-          location: 'London, UK',
-          budget: job.budget_value?.toString(),
-          urgency: 'medium'
-        });
-
-        // Step 3: Draft communication based on matches
-        if (matchResult.success) {
-          const commResult = await this.callAIFunction('ai-communications-drafter', {
-            type: 'professional_invitation',
-            context: {
-              jobTitle: job.title,
-              professionalName: 'Test Professional'
-            },
-            recipient: 'professional',
-            tone: 'friendly_professional',
-            keyPoints: ['Great match for skills', 'Competitive rate', 'Local project']
-          });
-
-          this.logResult('End-to-End Workflow', commResult.success ? 'pass' : 'fail',
-            'Job → Match → Communication flow completed');
-        }
-      }
-    } catch (error) {
-      this.logResult('Integration Flow', 'fail', (error as Error).message);
-    }
-  }
 
   private async testFunction(name: string, functionName: string, payload: any): Promise<void> {
     const result = await this.callAIFunction(functionName, payload);
