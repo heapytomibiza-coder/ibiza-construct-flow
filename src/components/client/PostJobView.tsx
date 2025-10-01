@@ -6,9 +6,7 @@ import {
   Plus, FileText, Clock, TrendingUp, 
   Sparkles, Zap, Target, Users
 } from 'lucide-react';
-import LuxuryJobWizard from '@/components/wizard/LuxuryJobWizard';
-import MobileJobWizard from '@/components/wizard/MobileJobWizard';
-import { useIsMobile } from '@/hooks/use-mobile';
+import EnhancedJobWizard from '@/components/wizard/EnhancedJobWizard';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { useLanguage } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,7 +15,6 @@ import { WizardCompletePayload } from '@/lib/contracts';
 import { safeValidateWizardPayload, safeValidateBookingInsert } from '@/lib/validation/jobWizard';
 
 const PostJobView = () => {
-  const isMobile = useIsMobile();
   const { services } = useServicesRegistry();
   const { currentLanguage } = useLanguage();
   const [showWizard, setShowWizard] = useState(false);
@@ -25,14 +22,8 @@ const PostJobView = () => {
   const [templates, setTemplates] = useState([]);
 
   if (showWizard) {
-    return isMobile ? (
-      <MobileJobWizard
-        onComplete={handleJobComplete}
-        onCancel={() => setShowWizard(false)}
-        services={services}
-      />
-    ) : (
-      <LuxuryJobWizard
+    return (
+      <EnhancedJobWizard
         onComplete={handleJobComplete}
         onCancel={() => setShowWizard(false)}
       />
@@ -65,7 +56,7 @@ const PostJobView = () => {
         micro_slug: validationResult.data.microSlug,
         catalogue_version_used: 1,
         locale: currentLanguage,
-        origin: (isMobile ? 'mobile' : 'web') as 'mobile' | 'web',
+        origin: 'web' as const,
         // Structured answers (sanitized)
         micro_q_answers: validationResult.data.microAnswers || {},
         general_answers: validationResult.data.generalAnswers || {},

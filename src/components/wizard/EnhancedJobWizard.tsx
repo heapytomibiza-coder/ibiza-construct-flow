@@ -8,13 +8,16 @@ import { Progress } from '@/components/ui/progress';
 import { 
   ArrowLeft, ArrowRight, Plus, Minus, MapPin, Calendar,
   Camera, FileText, Clock, Euro, AlertCircle, CheckCircle,
-  Sparkles, Calculator, Target
+  Sparkles, Calculator, Target, X
 } from 'lucide-react';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import Cascader from '@/components/common/Cascader';
+import { useWizard } from '@/features/wizard/useWizard';
+import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
+import { WizardCompletePayload } from '@/lib/contracts';
 
 interface JobWizardProps {
   onComplete: (jobData: any) => void;
@@ -38,31 +41,19 @@ interface SelectedItem extends ServiceItem {
 }
 
 const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
-  const [step, setStep] = useState(1);
-  const { services, loading: servicesLoading } = useServicesRegistry();
-  const [selectedService, setSelectedService] = useState(null);
+  const wizard = useWizard();
+  const { services } = useServicesRegistry();
   const [serviceItems, setServiceItems] = useState<ServiceItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [totalEstimate, setTotalEstimate] = useState(0);
   const [confidence, setConfidence] = useState(85);
-  const [loading, setLoading] = useState(false);
-
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    location: '',
-    urgency: 'flexible',
-    budget: '',
-    preferredDates: [],
-    requirements: [],
-    photos: []
-  });
 
   const steps = [
-    { id: 1, title: 'Service Selection', desc: 'What do you need?' },
-    { id: 2, title: 'Menu Board', desc: 'Configure your project' },
-    { id: 3, title: 'Details', desc: 'Location & schedule' },
-    { id: 4, title: 'Review', desc: 'Confirm & post' }
+    { id: 1, title: 'Service Selection', desc: 'Choose your service' },
+    { id: 2, title: 'Micro Questions', desc: 'Service-specific details' },
+    { id: 3, title: 'Menu Board', desc: 'Configure items & pricing' },
+    { id: 4, title: 'Details', desc: 'Location & logistics' },
+    { id: 5, title: 'Review', desc: 'Confirm & post' }
   ];
 
   useEffect(() => {
@@ -128,47 +119,113 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
   };
 
   const nextStep = () => {
-    if (step === 1 && !selectedService) {
-      toast.error('Please select a service category');
+    if (wizard.state.step === 1 && !wizard.state.serviceId) {
+      toast.error('Please select a service');
       return;
     }
-    if (step === 2 && selectedItems.length === 0) {
+    if (wizard.state.step === 2 && Object.keys(wizard.state.microAnswers).length === 0) {
+      toast.error('Please answer the service-specific questions');
+      return;
+    }
+    if (wizard.state.step === 3 && selectedItems.length === 0) {
       toast.error('Please select at least one service item');
       return;
     }
-    setStep(prev => Math.min(4, prev + 1));
+    if (wizard.state.step === 4 && !wizard.state.title) {
+      toast.error('Please provide a project title');
+      return;
+    }
+    wizard.nextStep();
   };
 
-  const prevStep = () => setStep(prev => Math.max(1, prev - 1));
+  const prevStep = () => wizard.prevStep();
 
-  const handleServiceSelect = (service: any) => {
-    setSelectedService(service);
-    fetchServiceItems(service.id);
-    nextStep();
+  const handleServiceSelect = async (selection: any) => {
+    if (!selection) return;
+    
+    const selectedService = services.find(s => 
+      s.category === selection.category &&
+      s.subcategory === selection.subcategory &&
+      s.micro === selection.micro
+    );
+
+    if (!selectedService) {
+      toast.error('Service not found');
+      return;
+    }
+
+    wizard.updateState({
+      category: selection.category,
+      subcategory: selection.subcategory,
+      microService: selection.micro,
+      serviceId: selectedService.id
+    });
+
+    // Load AI questions for this service
+    await wizard.loadAIQuestions(selectedService.id);
+    
+    // Also fetch service items for menu board
+    await fetchServiceItems(selectedService.id);
+    
+    wizard.nextStep();
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
     try {
-      const jobData = {
-        ...formData,
-        serviceId: selectedService?.id,
-        selectedItems,
+      // Generate price estimate before submitting
+      await wizard.generatePriceEstimate();
+
+      const selectedService = services.find(s => s.id === wizard.state.serviceId);
+      if (!selectedService) {
+        toast.error('Service not found');
+        return;
+      }
+
+      // Prepare complete payload matching WizardCompletePayload contract
+      const jobData: WizardCompletePayload = {
+        title: wizard.state.title,
+        description: wizard.state.description,
+        location: wizard.state.generalAnswers?.location || '',
+        urgency: wizard.state.generalAnswers?.urgency || 'flexible',
+        
+        // Service identifiers
+        serviceId: wizard.state.serviceId,
+        microSlug: `${selectedService.category}-${selectedService.subcategory}-${selectedService.micro}`
+          .toLowerCase()
+          .replace(/\s+/g, '-'),
+        
+        // Taxonomies for display
+        category: selectedService.category,
+        subcategory: selectedService.subcategory,
+        micro: selectedService.micro,
+        
+        // Menu board selections
+        selectedItems: selectedItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          basePrice: item.basePrice,
+          quantity: item.quantity,
+          unit: item.unit,
+          category: item.category
+        })),
         totalEstimate,
-        confidence
+        confidence,
+        
+        // Structured answers
+        microAnswers: wizard.state.microAnswers,
+        logisticsAnswers: wizard.state.generalAnswers,
+        generalAnswers: wizard.state.generalAnswers
       };
       
       onComplete(jobData);
-      toast.success('Job posted successfully!');
     } catch (error) {
+      console.error('Submission error:', error);
       toast.error('Failed to post job');
-    } finally {
-      setLoading(false);
     }
   };
 
   const renderStepContent = () => {
-    switch (step) {
+    switch (wizard.state.step) {
       case 1:
         return (
           <div className="space-y-6">
@@ -177,28 +234,58 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                 What service do you need?
               </h3>
               <p className="text-muted-foreground">
-                Choose the category that best matches your project
+                Select from our 12 main trades or 6 specialist categories
               </p>
             </div>
             
             <Cascader 
-              onChange={(selection) => {
-                if (selection) {
-                  const mockService = {
-                    id: selection.id,
-                    category: selection.category,
-                    subcategory: selection.subcategory,
-                    micro: selection.micro
-                  };
-                  setSelectedService(mockService);
-                  nextStep();
-                }
-              }}
+              onChange={handleServiceSelect}
             />
           </div>
         );
 
       case 2:
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-2xl font-display font-bold text-foreground mb-2">
+                Service-Specific Questions
+              </h3>
+              <p className="text-muted-foreground">
+                Help us understand your {wizard.state.microService} needs
+              </p>
+            </div>
+
+            {wizard.loading ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <Sparkles className="w-8 h-8 text-copper mx-auto mb-2 animate-pulse" />
+                  <p className="text-muted-foreground">Loading AI-powered questions...</p>
+                </CardContent>
+              </Card>
+            ) : wizard.microQuestions.length > 0 ? (
+              <AIQuestionRenderer
+                questions={wizard.microQuestions}
+                answers={wizard.state.microAnswers}
+                onAnswerChange={(questionId, answer) => {
+                  wizard.updateState({ 
+                    microAnswers: { ...wizard.state.microAnswers, [questionId]: answer }
+                  });
+                }}
+              />
+            ) : (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-muted-foreground">No specific questions for this service</p>
+                  <Button onClick={nextStep} className="mt-4">Continue</Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        );
+
+      case 3:
         return (
           <div className="space-y-6">
             <div>
@@ -315,7 +402,7 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6">
             <div>
@@ -332,8 +419,8 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                 <div>
                   <label className="block text-sm font-medium mb-2">Project Title</label>
                   <Input
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    value={wizard.state.title}
+                    onChange={(e) => wizard.updateState({ title: e.target.value })}
                     placeholder="e.g., Kitchen renovation"
                   />
                 </div>
@@ -341,8 +428,8 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                 <div>
                   <label className="block text-sm font-medium mb-2">Description</label>
                   <Textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    value={wizard.state.description}
+                    onChange={(e) => wizard.updateState({ description: e.target.value })}
                     placeholder="Describe your project in detail..."
                     rows={4}
                   />
@@ -352,8 +439,10 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                   <label className="block text-sm font-medium mb-2">Location</label>
                   <div className="relative">
                     <Input
-                      value={formData.location}
-                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                      value={wizard.state.generalAnswers?.location || ''}
+                      onChange={(e) => wizard.updateState({ 
+                        generalAnswers: { ...wizard.state.generalAnswers, location: e.target.value }
+                      })}
                       placeholder="Enter address or area"
                     />
                     <MapPin className="absolute right-3 top-2.5 w-4 h-4 text-muted-foreground" />
@@ -368,8 +457,10 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                     {['Urgent', 'This week', 'This month', 'Flexible'].map((option) => (
                       <Button
                         key={option}
-                        variant={formData.urgency === option.toLowerCase() ? "default" : "outline"}
-                        onClick={() => setFormData(prev => ({ ...prev, urgency: option.toLowerCase() }))}
+                        variant={wizard.state.generalAnswers?.urgency === option.toLowerCase() ? "default" : "outline"}
+                        onClick={() => wizard.updateState({ 
+                          generalAnswers: { ...wizard.state.generalAnswers, urgency: option.toLowerCase() }
+                        })}
                         className="text-sm"
                       >
                         {option}
@@ -403,7 +494,7 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div className="space-y-6">
             <div>
@@ -424,8 +515,20 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                   <div>
                     <h4 className="font-medium mb-2">Service</h4>
                     <p className="text-sm text-muted-foreground">
-                      {selectedService?.category} - {selectedService?.subcategory}
+                      {wizard.state.category} → {wizard.state.subcategory} → {wizard.state.microService}
                     </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2">Micro Questions Answered</h4>
+                    <div className="space-y-1">
+                      {Object.entries(wizard.state.microAnswers).map(([key, value]) => (
+                        <div key={key} className="text-sm">
+                          <span className="text-muted-foreground">{key}: </span>
+                          <span>{String(value)}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   
                   <div>
@@ -462,25 +565,23 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
                 <CardContent className="space-y-4">
                   <div>
                     <h4 className="font-medium mb-1">Title</h4>
-                    <p className="text-sm text-muted-foreground">{formData.title || 'Not specified'}</p>
+                    <p className="text-sm text-muted-foreground">{wizard.state.title}</p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-1">Description</h4>
+                    <p className="text-sm text-muted-foreground">{wizard.state.description}</p>
                   </div>
                   
                   <div>
                     <h4 className="font-medium mb-1">Location</h4>
-                    <p className="text-sm text-muted-foreground">{formData.location || 'Not specified'}</p>
+                    <p className="text-sm text-muted-foreground">{wizard.state.generalAnswers?.location}</p>
                   </div>
                   
                   <div>
                     <h4 className="font-medium mb-1">Timeline</h4>
-                    <Badge variant="outline">{formData.urgency}</Badge>
+                    <Badge variant="outline">{wizard.state.generalAnswers?.urgency || 'Flexible'}</Badge>
                   </div>
-
-                  {formData.description && (
-                    <div>
-                      <h4 className="font-medium mb-1">Description</h4>
-                      <p className="text-sm text-muted-foreground">{formData.description}</p>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             </div>
@@ -525,13 +626,13 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
 
           {/* Progress */}
           <div className="space-y-4">
-            <Progress value={(step / 4) * 100} className="w-full" />
+            <Progress value={(wizard.state.step / 5) * 100} className="w-full" />
             <div className="flex justify-between">
               {steps.map((s) => (
                 <div key={s.id} className="flex items-center gap-2">
                   <div className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-                    step >= s.id 
+                    wizard.state.step >= s.id 
                       ? "bg-primary text-primary-foreground" 
                       : "bg-muted text-muted-foreground"
                   )}>
@@ -557,13 +658,13 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
           <Button 
             variant="outline" 
             onClick={prevStep}
-            disabled={step === 1}
+            disabled={wizard.state.step === 1}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Previous
           </Button>
           
-          {step < 4 ? (
+          {wizard.state.step < 5 ? (
             <Button onClick={nextStep}>
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -571,10 +672,10 @@ const EnhancedJobWizard = ({ onComplete, onCancel }: JobWizardProps) => {
           ) : (
             <Button 
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={wizard.loading}
               className="bg-gradient-hero text-white"
             >
-              {loading ? 'Posting...' : 'Post Job'}
+              {wizard.loading ? 'Posting...' : 'Post Job'}
               <CheckCircle className="w-4 h-4 ml-2" />
             </Button>
           )}
