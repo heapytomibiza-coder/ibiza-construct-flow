@@ -9,9 +9,10 @@ import { offers } from './offers';
 import { contracts } from './contracts';
 import { payments } from './payments';
 import { aiTesting } from './ai-testing';
+import { professionalMatching } from './professional-matching';
 
 // Re-export modules for direct access
-export { auth, services, jobs, offers, contracts, payments, aiTesting };
+export { auth, services, jobs, offers, contracts, payments, aiTesting, professionalMatching };
 
 // Re-export existing hooks for backward compatibility
 export { useAuth } from '@/hooks/useAuth';
@@ -65,6 +66,12 @@ export const api = {
     generateQuestions: aiTesting.generateQuestions,
     estimatePrice: aiTesting.estimatePrice,
     executeTests: aiTesting.executeTests
+  },
+  professionalMatching: {
+    matchProfessionals: professionalMatching.matchProfessionals,
+    rankMatches: professionalMatching.rankMatches,
+    checkAvailability: professionalMatching.checkAvailability,
+    submitMatchFeedback: professionalMatching.submitMatchFeedback
   }
 };
 

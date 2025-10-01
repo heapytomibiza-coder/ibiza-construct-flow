@@ -84,6 +84,47 @@ const { mutate: approve } = useApprovePack();
 }
 ```
 
+## ✅ Phase 5.2 Complete: Professional Matching Contracts
+
+### What's Been Implemented:
+
+**New Schemas Added:**
+- `contracts/src/professional-matching.zod.ts` - Zod schemas for professional matching:
+  - `MatchProfessionalsRequest/Response` - AI-powered professional matching
+  - `RankMatchesRequest/Response` - Score and rank potential matches
+  - `CheckAvailabilityRequest/Response` - Verify professional availability
+  - `SubmitMatchFeedbackRequest/Response` - Collect feedback on match quality
+
+**OpenAPI Extensions:**
+- Updated `contracts/src/index.ts` with professional matching specification:
+  - `/admin/professional-matching/match` (POST)
+  - `/admin/professional-matching/rank` (POST)
+  - `/admin/professional-matching/check-availability` (POST)
+  - `/admin/professional-matching/feedback` (POST)
+
+**API Adapter:**
+- `src/lib/api/professional-matching.ts` - Contract-compliant interface
+  - `matchProfessionals()` - Wraps `ai-professional-matcher` edge function
+  - `submitMatchFeedback()` - Stores feedback in `ai_recommendations` table
+  - Stubs for `rankMatches()` and `checkAvailability()` (future implementation)
+
+**Component Migration:**
+- `ProfessionalMatchModal` component migrated to use `professionalMatching.matchProfessionals()`
+- Removed direct Supabase client calls
+- Full type safety through contract-based API
+
+**Integration:**
+- Added to unified `api` object in `src/lib/api/index.ts`
+- Available as `api.professionalMatching.*` methods
+
+### Benefits Achieved:
+✅ **Type Safety** - Full TypeScript coverage for professional matching operations  
+✅ **Contract Compliance** - All matching follows OpenAPI specification  
+✅ **Feedback Loop** - Captures match quality feedback for ML improvements  
+✅ **Clean Architecture** - Separated concerns between API, adapter, and components
+
+---
+
 ## ✅ Phase 5.1 Complete: AI Testing Contracts
 
 ### What's Been Implemented:

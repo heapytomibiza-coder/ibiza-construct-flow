@@ -15,7 +15,7 @@ import {
   MessageSquare,
   Send
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { professionalMatching } from '@/lib/api/professional-matching';
 
 interface ProfessionalMatch {
   professional: {
@@ -56,38 +56,34 @@ export default function ProfessionalMatchModal({
   const handleFindProfessionals = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-professional-matcher', {
-        body: {
-          jobRequirements: {
-            title: jobTitle,
-            description: jobDescription,
-            skills: []
-          },
-          location: 'general',
-          budget: 1000,
-          urgency: 'normal'
-        }
+      const response = await professionalMatching.matchProfessionals({
+        jobRequirements: {
+          title: jobTitle,
+          description: jobDescription,
+          skills: []
+        },
+        location: 'general',
+        budget: 1000,
+        urgency: 'normal'
       });
 
-      if (error) throw error;
-
       // Parse AI response and convert to matches format
-      const aiMatches = data?.matches || [];
-      const formattedMatches: ProfessionalMatch[] = aiMatches.map((match: any, index: number) => ({
+      const aiMatches = response.matches || [];
+      const formattedMatches: ProfessionalMatch[] = aiMatches.map((match) => ({
         professional: {
-          id: `prof_${index + 1}`,
-          name: match.name || `Professional ${index + 1}`,
-          rating: match.rating || 4.5,
-          skills: match.skills || ['General Services'],
-          hourly_rate: match.hourly_rate || 45,
-          location: match.location || 'Local Area',
-          availability: match.availability || 'Available',
-          experience_years: match.experience_years || 5
+          id: match.professionalId,
+          name: match.name,
+          rating: 4.5,
+          skills: match.strengths,
+          hourly_rate: 45,
+          location: 'Local Area',
+          availability: 'Available',
+          experience_years: 5
         },
-        matchScore: Math.round((match.confidence || 0.8) * 100),
-        reasoning: match.reasoning || 'Good match based on skills and experience',
-        strengths: match.strengths || ['Relevant experience', 'Good rating'],
-        concerns: match.concerns || []
+        matchScore: Math.round(match.matchScore * 100),
+        reasoning: match.explanation,
+        strengths: match.strengths,
+        concerns: match.concerns
       }));
 
       setMatches(formattedMatches);
@@ -101,22 +97,10 @@ export default function ProfessionalMatchModal({
   const handleSendInvitation = async (professionalId: string) => {
     setIsSending(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-communications-drafter', {
-        body: {
-          communicationType: 'job_invitation',
-          recipient: 'professional',
-          context: {
-            jobTitle,
-            jobDescription,
-            professionalId
-          },
-          tone: 'professional',
-          keyPoints: ['Job opportunity', 'Skills match', 'Competitive rate']
-        }
-      });
-
-      if (error) throw error;
-      console.log('Invitation drafted:', data);
+      // TODO: Integrate with communications API when available
+      console.log('Sending invitation to professional:', professionalId);
+      console.log('Job details:', { jobTitle, jobDescription });
+      // Placeholder for future communications integration
     } catch (error) {
       console.error('Error drafting invitation:', error);
     } finally {

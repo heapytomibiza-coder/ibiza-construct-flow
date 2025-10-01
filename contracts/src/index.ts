@@ -23,6 +23,16 @@ import {
   TestExecutionRequestSchema,
   TestExecutionResponseSchema,
 } from './ai-testing.zod';
+import {
+  MatchProfessionalsRequestSchema,
+  MatchProfessionalsResponseSchema,
+  RankMatchesRequestSchema,
+  RankMatchesResponseSchema,
+  CheckAvailabilityRequestSchema,
+  CheckAvailabilityResponseSchema,
+  SubmitMatchFeedbackRequestSchema,
+  SubmitMatchFeedbackResponseSchema,
+} from './professional-matching.zod';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);
@@ -42,6 +52,14 @@ registry.register('EstimatePriceRequest', EstimatePriceRequestSchema);
 registry.register('EstimatePriceResponse', EstimatePriceResponseSchema);
 registry.register('TestExecutionRequest', TestExecutionRequestSchema);
 registry.register('TestExecutionResponse', TestExecutionResponseSchema);
+registry.register('MatchProfessionalsRequest', MatchProfessionalsRequestSchema);
+registry.register('MatchProfessionalsResponse', MatchProfessionalsResponseSchema);
+registry.register('RankMatchesRequest', RankMatchesRequestSchema);
+registry.register('RankMatchesResponse', RankMatchesResponseSchema);
+registry.register('CheckAvailabilityRequest', CheckAvailabilityRequestSchema);
+registry.register('CheckAvailabilityResponse', CheckAvailabilityResponseSchema);
+registry.register('SubmitMatchFeedbackRequest', SubmitMatchFeedbackRequestSchema);
+registry.register('SubmitMatchFeedbackResponse', SubmitMatchFeedbackResponseSchema);
 
 // Register paths
 registry.registerPath({
@@ -263,6 +281,111 @@ registry.registerPath({
       content: {
         'application/json': {
           schema: TestExecutionResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+// Professional Matching Endpoints
+registry.registerPath({
+  method: 'post',
+  path: '/admin/professional-matching/match',
+  summary: 'Find matching professionals for a job',
+  tags: ['Professional Matching'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: MatchProfessionalsRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'List of matched professionals',
+      content: {
+        'application/json': {
+          schema: MatchProfessionalsResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/admin/professional-matching/rank',
+  summary: 'Rank and score professional matches',
+  tags: ['Professional Matching'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: RankMatchesRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Ranked matches with scores',
+      content: {
+        'application/json': {
+          schema: RankMatchesResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/admin/professional-matching/check-availability',
+  summary: 'Check professional availability',
+  tags: ['Professional Matching'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: CheckAvailabilityRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Availability status',
+      content: {
+        'application/json': {
+          schema: CheckAvailabilityResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/admin/professional-matching/feedback',
+  summary: 'Submit feedback on match quality',
+  tags: ['Professional Matching'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: SubmitMatchFeedbackRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Feedback recorded',
+      content: {
+        'application/json': {
+          schema: SubmitMatchFeedbackResponseSchema,
         },
       },
     },
