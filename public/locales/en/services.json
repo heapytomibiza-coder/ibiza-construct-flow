@@ -1,127 +1,88 @@
 {
-  "searchPlaceholder": "Search for services...",
+  "searchPlaceholder": "Search for a service...",
   "categories": {
-    "all": "All Services",
-    "cleaning": "Cleaning",
-    "maintenance": "Maintenance",
-    "gardening": "Gardening",
-    "repairs": "Repairs",
-    "construction": "Construction",
-    "technology": "Technology",
-    "home-services": {
-      "name": "Home Services",
-      "description": "Home repairs, maintenance, and improvements"
+    "Builder": {
+      "name": "Builder",
+      "description": "General building, renovations, extensions"
     },
-    "construction": {
-      "name": "Construction",
-      "description": "Building, renovation, and construction work"
+    "Plumber": {
+      "name": "Plumber", 
+      "description": "Repairs, installations, bathrooms, heating"
     },
-    "professional-services": {
-      "name": "Professional Services",
-      "description": "Business and professional expertise"
+    "Electrician": {
+      "name": "Electrician",
+      "description": "Rewires, sockets, lighting, fuse boxes"
     },
-    "maintenance-repair": {
-      "name": "Maintenance & Repair",
-      "description": "Fix, maintain, and service equipment"
+    "Carpenter": {
+      "name": "Carpenter / Joiner",
+      "description": "Doors, kitchens, wardrobes, timber structures"
     },
-    "transport-delivery": {
-      "name": "Transport & Delivery",
-      "description": "Moving, delivery, and transportation"
+    "Handyman": {
+      "name": "Handyman / Odd Jobs",
+      "description": "Small repairs, furniture assembly, minor fixes"
     },
-    "automotive": {
-      "name": "Automotive",
-      "description": "Vehicle services and repairs"
-    }
-  },
-  "subcategories": {
-    "moving-help": {
-      "name": "Moving & Help",
-      "description": "Professional moving and assistance services"
+    "Painter": {
+      "name": "Painter & Decorator",
+      "description": "Walls, ceilings, exterior, finishes"
     },
-    "cleaning": {
-      "name": "Cleaning",
-      "description": "Professional cleaning services for homes and offices"
+    "Tiler": {
+      "name": "Tiler",
+      "description": "Bathrooms, kitchens, floors"
     },
-    "errands": {
-      "name": "Errands",
-      "description": "Personal shopping, delivery, and task services"
+    "Plasterer": {
+      "name": "Plasterer",
+      "description": "Plastering, skimming, drywall"
     },
-    "assembly": {
-      "name": "Assembly & Installation",
-      "description": "Furniture assembly and home installation services"
+    "Roofer": {
+      "name": "Roofer",
+      "description": "Tile roofs, leaks, waterproofing, replacements"
     },
-    "outdoor": {
-      "name": "Outdoor Services",
-      "description": "Exterior maintenance and seasonal services"
-    }
-  },
-  "micro": {
-    "help-moving": {
-      "name": "Help Moving",
-      "description": "Professional moving assistance and heavy lifting",
-      "priceRange": "€80 - €200"
+    "Landscaper": {
+      "name": "Landscaper / Gardener",
+      "description": "Gardens, patios, driveways, irrigation"
     },
-    "truck-assisted-moving": {
-      "name": "Truck Assisted Moving",
-      "description": "Full-service moving with truck and crew",
-      "priceRange": "€200 - €600"
+    "Pool Builder": {
+      "name": "Pool Builder / Maintenance",
+      "description": "Construction, repairs, servicing"
     },
-    "heavy-lifting-loading": {
-      "name": "Heavy Lifting & Loading",
-      "description": "Safe handling of heavy furniture and appliances",
-      "priceRange": "€60 - €150"
+    "HVAC": {
+      "name": "Aircon / HVAC",
+      "description": "Air conditioning, heating, ventilation"
     },
-    "packing-services": {
-      "name": "Packing Services",
-      "description": "Professional packing with quality materials",
-      "priceRange": "€100 - €300"
+    "Architects & Design": {
+      "name": "Architects & Design",
+      "description": "Professional design, engineering, surveying"
     },
-    "house-cleaning": {
-      "name": "House Cleaning",
-      "description": "Regular or one-time house cleaning service",
-      "priceRange": "€50 - €150"
+    "Structural Works": {
+      "name": "Builders & Structural Works",
+      "description": "Groundworks, foundations, masonry, steel"
     },
-    "deep-cleaning": {
-      "name": "Deep Cleaning",
-      "description": "Thorough deep cleaning for every room",
-      "priceRange": "€100 - €250"
+    "Floors, Doors & Windows": {
+      "name": "Floors, Doors & Windows",
+      "description": "Flooring, door fitting, window installation"
     },
-    "ikea-furniture-assembly": {
-      "name": "IKEA Furniture Assembly",
-      "description": "Expert IKEA furniture assembly",
-      "priceRange": "€40 - €120"
+    "Kitchen & Bathroom": {
+      "name": "Kitchen & Bathroom Fitter",
+      "description": "Complete kitchen and bathroom installations"
     },
-    "general-furniture-assembly": {
-      "name": "General Furniture Assembly",
-      "description": "Assembly of any furniture pieces",
-      "priceRange": "€50 - €150"
+    "Commercial Projects": {
+      "name": "Commercial Projects",
+      "description": "Design, management, large-scale projects"
     },
-    "tv-mounting": {
-      "name": "TV Mounting",
-      "description": "Professional TV wall mounting service",
-      "priceRange": "€60 - €150"
-    },
-    "pressure-washing": {
-      "name": "Pressure Washing",
-      "description": "High-pressure cleaning for exteriors",
-      "priceRange": "€80 - €200"
-    },
-    "gutter-cleaning": {
-      "name": "Gutter Cleaning",
-      "description": "Professional gutter cleaning and maintenance",
-      "priceRange": "€60 - €150"
+    "Legal & Regulatory": {
+      "name": "Legal & Regulatory Services",
+      "description": "Compliance, permits, inspections"
     }
   },
   "filters": {
-    "title": "Filters",
     "priceRange": "Price Range",
     "location": "Location",
     "availability": "Availability",
     "rating": "Rating"
   },
   "hero": {
-    "title": "Find Expert Services in Ibiza",
-    "subtitle": "Connect with trusted local professionals for all your home and business needs",
+    "title": "Find the Right Professional for Any Job",
+    "subtitle": "Browse services, compare professionals, and get quotes",
     "searchPlaceholder": "What service do you need?",
     "cta": "Get Started"
   }

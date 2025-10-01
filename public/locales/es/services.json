@@ -1,92 +1,88 @@
 {
-  "searchPlaceholder": "Buscar servicios...",
+  "searchPlaceholder": "Buscar un servicio...",
   "categories": {
-    "all": "Todos los Servicios",
-    "cleaning": "Limpieza",
-    "maintenance": "Mantenimiento",
-    "gardening": "Jardinería",
-    "repairs": "Reparaciones",
-    "construction": "Construcción",
-    "technology": "Tecnología",
-    "home-services": {
-      "name": "Servicios del Hogar",
-      "description": "Reparaciones, mantenimiento y mejoras del hogar"
+    "Builder": {
+      "name": "Constructor",
+      "description": "Construcción general, reformas, ampliaciones"
     },
-    "construction": {
-      "name": "Construcción",
-      "description": "Construcción, renovación y obras"
+    "Plumber": {
+      "name": "Fontanero",
+      "description": "Reparaciones, instalaciones, baños, calefacción"
     },
-    "professional-services": {
-      "name": "Servicios Profesionales",
-      "description": "Experiencia empresarial y profesional"
+    "Electrician": {
+      "name": "Electricista",
+      "description": "Cableado, enchufes, iluminación, cuadros eléctricos"
     },
-    "maintenance-repair": {
-      "name": "Mantenimiento y Reparación",
-      "description": "Reparar, mantener y dar servicio a equipos"
+    "Carpenter": {
+      "name": "Carpintero / Ebanista",
+      "description": "Puertas, cocinas, armarios, estructuras de madera"
     },
-    "transport-delivery": {
-      "name": "Transporte y Entrega",
-      "description": "Mudanzas, entregas y transporte"
+    "Handyman": {
+      "name": "Manitas / Trabajos Varios",
+      "description": "Reparaciones pequeñas, montaje de muebles, arreglos"
     },
-    "automotive": {
-      "name": "Automotriz",
-      "description": "Servicios y reparaciones de vehículos"
-    }
-  },
-  "subcategories": {
-    "moving-help": {
-      "name": "Mudanzas y Ayuda",
-      "description": "Servicios profesionales de mudanza y asistencia"
+    "Painter": {
+      "name": "Pintor y Decorador",
+      "description": "Paredes, techos, exteriores, acabados"
     },
-    "cleaning": {
-      "name": "Limpieza",
-      "description": "Servicios profesionales de limpieza"
+    "Tiler": {
+      "name": "Alicatador",
+      "description": "Baños, cocinas, suelos"
     },
-    "errands": {
-      "name": "Recados",
-      "description": "Compras y servicios de tareas"
+    "Plasterer": {
+      "name": "Yesero",
+      "description": "Enlucido, alisado, pladur"
     },
-    "assembly": {
-      "name": "Montaje e Instalación",
-      "description": "Montaje de muebles e instalación"
+    "Roofer": {
+      "name": "Techador",
+      "description": "Tejados, goteras, impermeabilización, reemplazos"
     },
-    "outdoor": {
-      "name": "Servicios Exteriores",
-      "description": "Mantenimiento exterior"
-    }
-  },
-  "micro": {
-    "help-moving": {
-      "name": "Ayuda para Mudanzas",
-      "description": "Asistencia profesional para mudanzas",
-      "priceRange": "€80 - €200"
+    "Landscaper": {
+      "name": "Paisajista / Jardinero",
+      "description": "Jardines, patios, caminos, riego"
     },
-    "truck-assisted-moving": {
-      "name": "Mudanza con Camión",
-      "description": "Servicio completo con camión",
-      "priceRange": "€200 - €600"
+    "Pool Builder": {
+      "name": "Constructor de Piscinas / Mantenimiento",
+      "description": "Construcción, reparaciones, mantenimiento"
     },
-    "house-cleaning": {
-      "name": "Limpieza de Casa",
-      "description": "Servicio de limpieza profesional",
-      "priceRange": "€50 - €150"
+    "HVAC": {
+      "name": "Aire Acondicionado / Climatización",
+      "description": "Aire acondicionado, calefacción, ventilación"
     },
-    "ikea-furniture-assembly": {
-      "name": "Montaje IKEA",
-      "description": "Montaje experto de muebles IKEA",
-      "priceRange": "€40 - €120"
+    "Architects & Design": {
+      "name": "Arquitectos y Diseño",
+      "description": "Diseño profesional, ingeniería, topografía"
+    },
+    "Structural Works": {
+      "name": "Constructores y Obras Estructurales",
+      "description": "Movimiento de tierras, cimientos, albañilería, acero"
+    },
+    "Floors, Doors & Windows": {
+      "name": "Suelos, Puertas y Ventanas",
+      "description": "Suelos, instalación de puertas y ventanas"
+    },
+    "Kitchen & Bathroom": {
+      "name": "Instalador de Cocinas y Baños",
+      "description": "Instalaciones completas de cocinas y baños"
+    },
+    "Commercial Projects": {
+      "name": "Proyectos Comerciales",
+      "description": "Diseño, gestión, proyectos a gran escala"
+    },
+    "Legal & Regulatory": {
+      "name": "Servicios Legales y Regulatorios",
+      "description": "Cumplimiento, permisos, inspecciones"
     }
   },
   "filters": {
-    "title": "Filtros",
-    "priceRange": "Rango de Precios",
+    "priceRange": "Rango de Precio",
     "location": "Ubicación",
     "availability": "Disponibilidad",
     "rating": "Valoración"
   },
   "hero": {
-    "title": "Encuentra Servicios Expertos en Ibiza",
-    "subtitle": "Conéctate con profesionales locales de confianza",
+    "title": "Encuentra el Profesional Adecuado para Cualquier Trabajo",
+    "subtitle": "Explora servicios, compara profesionales y obtén presupuestos",
     "searchPlaceholder": "¿Qué servicio necesitas?",
     "cta": "Comenzar"
   }

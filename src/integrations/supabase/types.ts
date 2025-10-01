@@ -2688,6 +2688,7 @@ export type Database = {
       services_micro: {
         Row: {
           category: string
+          category_type: string | null
           created_at: string
           id: string
           micro: string
@@ -2698,6 +2699,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          category_type?: string | null
           created_at?: string
           id?: string
           micro: string
@@ -2708,6 +2710,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          category_type?: string | null
           created_at?: string
           id?: string
           micro?: string

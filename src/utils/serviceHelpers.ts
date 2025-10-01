@@ -1,14 +1,25 @@
-// Service utility functions
+// Service utility functions for the 12+6 category system
 
 export const getServiceSlugByCategory = (category: string): string => {
   const slugMap: Record<string, string> = {
+    'Builder': 'builder',
+    'Plumber': 'plumber',
+    'Electrician': 'electrician',
+    'Carpenter': 'carpenter',
     'Handyman': 'handyman',
-    'Construction': 'construction', 
-    'Electrical': 'electrical',
-    'Painting': 'painting',
-    'Plumbing': 'plumbing',
+    'Painter': 'painter',
+    'Tiler': 'tiler',
+    'Plasterer': 'plasterer',
+    'Roofer': 'roofer',
+    'Landscaper': 'landscaper',
+    'Pool Builder': 'pool-builder',
     'HVAC': 'hvac',
-    'Outdoor': 'outdoor'
+    'Architects & Design': 'architects-design',
+    'Structural Works': 'structural-works',
+    'Floors, Doors & Windows': 'floors-doors-windows',
+    'Kitchen & Bathroom': 'kitchen-bathroom',
+    'Commercial Projects': 'commercial-projects',
+    'Legal & Regulatory': 'legal-regulatory'
   };
   
   return slugMap[category] || category.toLowerCase().replace(/\s+/g, '-');
@@ -16,14 +27,24 @@ export const getServiceSlugByCategory = (category: string): string => {
 
 export const getCategoryBySlug = (slug: string): string => {
   const categoryMap: Record<string, string> = {
+    'builder': 'Builder',
+    'plumber': 'Plumber',
+    'electrician': 'Electrician',
+    'carpenter': 'Carpenter',
     'handyman': 'Handyman',
-    'construction': 'Construction',
-    'renovation': 'Construction', // alias
-    'electrical': 'Electrical', 
-    'painting': 'Painting',
-    'plumbing': 'Plumbing',
+    'painter': 'Painter',
+    'tiler': 'Tiler',
+    'plasterer': 'Plasterer',
+    'roofer': 'Roofer',
+    'landscaper': 'Landscaper',
+    'pool-builder': 'Pool Builder',
     'hvac': 'HVAC',
-    'outdoor': 'Outdoor'
+    'architects-design': 'Architects & Design',
+    'structural-works': 'Structural Works',
+    'floors-doors-windows': 'Floors, Doors & Windows',
+    'kitchen-bathroom': 'Kitchen & Bathroom',
+    'commercial-projects': 'Commercial Projects',
+    'legal-regulatory': 'Legal & Regulatory'
   };
   
   return categoryMap[slug] || 'Handyman';
@@ -46,80 +67,84 @@ export const formatServicePrice = (min: number, max?: number): string => {
 
 export const getServiceIconName = (category: string): string => {
   const iconMap: Record<string, string> = {
+    'Builder': 'Hammer',
+    'Plumber': 'Droplets',
+    'Electrician': 'Zap',
+    'Carpenter': 'Wrench',
     'Handyman': 'Wrench',
-    'Construction': 'Hammer',
-    'Electrical': 'Zap',
-    'Painting': 'Paintbrush', 
-    'Plumbing': 'Droplets',
-    'HVAC': 'Thermometer',
-    'Outdoor': 'Car',
-    'Moving': 'Truck',
-    'Cleaning': 'Sparkles',
-    'Delivery': 'Package',
-    'Personal': 'User'
+    'Painter': 'Paintbrush',
+    'Tiler': 'Grid3x3',
+    'Plasterer': 'Layers',
+    'Roofer': 'Home',
+    'Landscaper': 'Trees',
+    'Pool Builder': 'Waves',
+    'HVAC': 'Wind',
+    'Architects & Design': 'Ruler',
+    'Structural Works': 'HardHat',
+    'Floors, Doors & Windows': 'DoorOpen',
+    'Kitchen & Bathroom': 'Bath',
+    'Commercial Projects': 'Building2',
+    'Legal & Regulatory': 'FileText'
   };
   
   return iconMap[category] || 'Wrench';
 };
 
+export const isMainCategory = (category: string): boolean => {
+  const mainCategories = [
+    'Builder', 'Plumber', 'Electrician', 'Carpenter', 
+    'Handyman', 'Painter', 'Tiler', 'Plasterer',
+    'Roofer', 'Landscaper', 'Pool Builder', 'HVAC'
+  ];
+  return mainCategories.includes(category);
+};
+
+export const isSpecialistCategory = (category: string): boolean => {
+  const specialistCategories = [
+    'Architects & Design',
+    'Structural Works',
+    'Floors, Doors & Windows',
+    'Kitchen & Bathroom',
+    'Commercial Projects',
+    'Legal & Regulatory'
+  ];
+  return specialistCategories.includes(category);
+};
+
+export const getMainCategories = (): string[] => {
+  return [
+    'Builder', 'Plumber', 'Electrician', 'Carpenter',
+    'Handyman', 'Painter', 'Tiler', 'Plasterer',
+    'Roofer', 'Landscaper', 'Pool Builder', 'HVAC'
+  ];
+};
+
+export const getSpecialistCategories = (): string[] => {
+  return [
+    'Architects & Design',
+    'Structural Works',
+    'Floors, Doors & Windows',
+    'Kitchen & Bathroom',
+    'Commercial Projects',
+    'Legal & Regulatory'
+  ];
+};
+
+// Legacy functions for backward compatibility
 export const getMicroServiceIconName = (micro: string, category: string): string => {
-  const microIconMap: Record<string, string> = {
-    // Moving services
-    'Help Moving': 'Truck',
-    'Truck Assisted Moving': 'Truck',
-    'Heavy Lifting & Loading': 'Package2',
-    'Packing Services': 'Package',
-    'Unpacking Services': 'PackageOpen',
-    
-    // Cleaning services
-    'House Cleaning': 'Sparkles',
-    'Deep Cleaning': 'Sparkles',
-    'Post-Party Cleanup': 'Broom',
-    'Carpet Cleaning': 'Waves',
-    'Window Cleaning': 'Square',
-    
-    // Delivery services
-    'Grocery Shopping': 'ShoppingCart',
-    'Personal Shopping': 'ShoppingBag',
-    'Same Day Delivery': 'Zap',
-    'Furniture Delivery': 'Armchair',
-    'Package Pickup': 'Package',
-    
-    // Personal services
-    'Home Organization': 'Home',
-    'Office Organization': 'Building',
-    'Personal Assistant Tasks': 'User',
-    'Wait in Line Service': 'Clock',
-    'Dog Walking': 'Dog',
-    'Pet Sitting': 'Heart',
-    
-    // Handyman services
-    'IKEA Furniture Assembly': 'Wrench',
-    'General Furniture Assembly': 'Hammer',
-    'TV Mounting': 'Monitor',
-    'Picture & Artwork Hanging': 'Image',
-    'Smart Home Installation': 'Smartphone',
-    
-    // Outdoor services
-    'Christmas Lights Installation': 'Lightbulb',
-    'Holiday Decorating': 'Star',
-    'Pressure Washing': 'Droplets',
-    'Gutter Cleaning': 'Home'
-  };
-  
-  return microIconMap[micro] || getServiceIconName(category);
+  return getServiceIconName(category);
 };
 
 export const isPopularService = (category: string): boolean => {
-  const popularCategories = ['Handyman', 'Painting', 'Plumbing'];
+  // Popular main trades
+  const popularCategories = ['Handyman', 'Plumber', 'Electrician', 'Painter'];
   return popularCategories.includes(category);
 };
 
 export const isPopularMicroService = (micro: string): boolean => {
   const popularMicroServices = [
-    'Help Moving', 'House Cleaning', 'IKEA Furniture Assembly', 
-    'TV Mounting', 'General Furniture Assembly', 'Deep Cleaning',
-    'Grocery Shopping', 'Dog Walking', 'Same Day Delivery'
+    'General Repairs', 'Leak Repairs', 'Socket Installation',
+    'Wall Painting', 'IKEA Assembly', 'TV Mounting'
   ];
   return popularMicroServices.includes(micro);
 };
