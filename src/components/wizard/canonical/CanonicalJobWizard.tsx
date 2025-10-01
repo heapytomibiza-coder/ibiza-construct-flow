@@ -31,8 +31,6 @@ interface WizardState {
     preferredDate?: Date;
     datePreset?: string;
     timeWindow?: string;
-    contactName?: string;
-    contactPhone?: string;
     accessDetails?: string[];
     budgetRange?: string;
   };
@@ -99,11 +97,10 @@ export const CanonicalJobWizard: React.FC = () => {
           micro_q_answers: wizardState.answers,
           general_answers: {
             location: wizardState.logistics.location,
+            customLocation: wizardState.logistics.customLocation,
             preferredDate: wizardState.logistics.preferredDate?.toISOString(),
             datePreset: wizardState.logistics.datePreset,
             timeWindow: wizardState.logistics.timeWindow,
-            contactName: wizardState.logistics.contactName,
-            contactPhone: wizardState.logistics.contactPhone,
             accessDetails: wizardState.logistics.accessDetails,
             budgetRange: wizardState.logistics.budgetRange,
             photos: wizardState.extras.photos,

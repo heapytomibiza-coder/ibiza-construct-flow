@@ -23,8 +23,6 @@ interface LogisticsStepProps {
     customLocation?: string;
     preferredDate?: Date;
     timeWindow?: string;
-    contactName?: string;
-    contactPhone?: string;
     accessDetails?: string[];
     budgetRange?: string;
   };
@@ -213,29 +211,8 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
         {/* Contact & Access */}
         <Card className="p-6 space-y-4">
-          <Label className="text-base font-medium text-charcoal">On-site Contact & Access</Label>
+          <Label className="text-base font-medium text-charcoal">Site Access</Label>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm">Contact Name</Label>
-              <Input
-                value={logistics.contactName || ''}
-                onChange={(e) => handleUpdate('contactName', e.target.value)}
-                placeholder="Your name..."
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-sm">Phone Number</Label>
-              <Input
-                value={logistics.contactPhone || ''}
-                onChange={(e) => handleUpdate('contactPhone', e.target.value)}
-                placeholder="+34..."
-                className="mt-1"
-              />
-            </div>
-          </div>
-
           <div>
             <Label className="text-sm text-muted-foreground mb-2 block">Access & Parking</Label>
             <div className="flex flex-wrap gap-2">
