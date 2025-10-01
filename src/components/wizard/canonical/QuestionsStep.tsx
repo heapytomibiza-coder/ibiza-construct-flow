@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
@@ -40,20 +40,56 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const loadQuestions = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // First try to get questions from database
+      const { data: dbData, error: dbError } = await supabase
         .from('service_questions')
         .select('questions')
         .eq('service_id', microId)
         .maybeSingle();
 
-      if (error) throw error;
+      if (!dbError && dbData) {
+        const questionsData = dbData.questions as any;
+        if (questionsData?.questions) {
+          setQuestions(questionsData.questions);
+          setLoading(false);
+          return;
+        }
+      }
 
-      // questions is nested: data.questions.questions is the array
-      const serviceData = data as any;
-      const allQuestions = serviceData?.questions?.questions || [];
-      setQuestions(allQuestions);
+      // If no database questions, generate with AI
+      const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-questions', {
+        body: { 
+          microServiceId: microId,
+          microServiceName: microName,
+          locale: 'en'
+        }
+      });
+
+      if (aiError) throw aiError;
+
+      const generatedQuestions = aiData?.questions || [];
+      setQuestions(generatedQuestions);
+      
     } catch (error) {
       console.error('Error loading questions:', error);
+      // Provide basic fallback questions
+      setQuestions([
+        {
+          id: 'scope',
+          type: 'single',
+          label: 'What is the scope of work?',
+          required: true,
+          options: ['Small job', 'Medium project', 'Large project']
+        },
+        {
+          id: 'urgency',
+          type: 'single',
+          label: 'How urgent is this?',
+          required: true,
+          options: ['Emergency', 'Urgent (this week)', 'Normal', 'Flexible timing']
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -65,44 +101,51 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
   const renderQuestion = (q: any) => {
     const answer = answers[q.id];
+    const questionType = q.type === 'multiple_choice' ? 'single' : q.type;
 
-    switch (q.type) {
+    switch (questionType) {
       case 'single':
       case 'multi':
         return (
           <div className="space-y-2">
-            <Label className="text-base font-medium text-charcoal">{q.label}</Label>
+            <Label className="text-base font-medium text-charcoal">{q.question || q.label}</Label>
             {q.helper_text && (
               <p className="text-sm text-muted-foreground">{q.helper_text}</p>
             )}
             <div className="flex flex-wrap gap-2 mt-3">
-              {q.options?.map((opt: string) => (
-                <Badge
-                  key={opt}
-                  variant={answer === opt || answer?.includes?.(opt) ? "default" : "outline"}
-                  className={cn(
-                    "cursor-pointer px-4 py-2 text-sm transition-all hover:scale-105",
-                    answer === opt || answer?.includes?.(opt) 
-                      ? "bg-copper text-white" 
-                      : "hover:border-copper"
-                  )}
-                  onClick={() => {
-                    if (q.type === 'multi') {
-                      const current = answer || [];
-                      handleAnswer(
-                        q.id,
-                        current.includes(opt)
-                          ? current.filter((v: string) => v !== opt)
-                          : [...current, opt]
-                      );
-                    } else {
-                      handleAnswer(q.id, opt);
-                    }
-                  }}
-                >
-                  {opt}
-                </Badge>
-              ))}
+              {(q.options || []).map((opt: any) => {
+                const optionValue = typeof opt === 'string' ? opt : opt.value;
+                const optionLabel = typeof opt === 'string' ? opt : opt.label;
+                const isSelected = answer === optionValue || answer?.includes?.(optionValue);
+                
+                return (
+                  <Badge
+                    key={optionValue}
+                    variant={isSelected ? "default" : "outline"}
+                    className={cn(
+                      "cursor-pointer px-4 py-2 text-sm transition-all hover:scale-105",
+                      isSelected 
+                        ? "bg-copper text-white" 
+                        : "hover:border-copper"
+                    )}
+                    onClick={() => {
+                      if (questionType === 'multi') {
+                        const current = answer || [];
+                        handleAnswer(
+                          q.id,
+                          current.includes(optionValue)
+                            ? current.filter((v: string) => v !== optionValue)
+                            : [...current, optionValue]
+                        );
+                      } else {
+                        handleAnswer(q.id, optionValue);
+                      }
+                    }}
+                  >
+                    {optionLabel}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
         );
@@ -110,7 +153,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       case 'range':
         return (
           <div className="space-y-2">
-            <Label className="text-base font-medium text-charcoal">{q.label}</Label>
+            <Label className="text-base font-medium text-charcoal">{q.question || q.label}</Label>
             {q.helper_text && (
               <p className="text-sm text-muted-foreground">{q.helper_text}</p>
             )}
@@ -137,7 +180,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       case 'number':
         return (
           <div className="space-y-2">
-            <Label className="text-base font-medium text-charcoal">{q.label}</Label>
+            <Label className="text-base font-medium text-charcoal">{q.question || q.label}</Label>
             {q.helper_text && (
               <p className="text-sm text-muted-foreground">{q.helper_text}</p>
             )}
@@ -156,7 +199,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       case 'boolean':
         return (
           <div className="space-y-2">
-            <Label className="text-base font-medium text-charcoal">{q.label}</Label>
+            <Label className="text-base font-medium text-charcoal">{q.question || q.label}</Label>
             {q.helper_text && (
               <p className="text-sm text-muted-foreground">{q.helper_text}</p>
             )}
@@ -219,9 +262,10 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
       {loading ? (
         <div className="space-y-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-32 bg-muted/30 animate-pulse rounded-lg" />
-          ))}
+          <div className="flex flex-col items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-copper mb-4" />
+            <p className="text-muted-foreground">Generating personalized questions...</p>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
