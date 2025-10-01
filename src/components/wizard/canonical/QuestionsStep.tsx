@@ -41,16 +41,16 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('services_unified_v1')
-        .select('*')
-        .eq('id', microId)
-        .single();
+        .from('service_questions')
+        .select('questions')
+        .eq('service_id', microId)
+        .maybeSingle();
 
       if (error) throw error;
 
-      // questions is a JSONB array on services_unified_v1
+      // questions is nested: data.questions.questions is the array
       const serviceData = data as any;
-      const allQuestions = serviceData?.questions || [];
+      const allQuestions = serviceData?.questions?.questions || [];
       setQuestions(allQuestions);
     } catch (error) {
       console.error('Error loading questions:', error);
