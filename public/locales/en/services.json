@@ -7,7 +7,110 @@
     "gardening": "Gardening",
     "repairs": "Repairs",
     "construction": "Construction",
-    "technology": "Technology"
+    "technology": "Technology",
+    "home-services": {
+      "name": "Home Services",
+      "description": "Home repairs, maintenance, and improvements"
+    },
+    "construction": {
+      "name": "Construction",
+      "description": "Building, renovation, and construction work"
+    },
+    "professional-services": {
+      "name": "Professional Services",
+      "description": "Business and professional expertise"
+    },
+    "maintenance-repair": {
+      "name": "Maintenance & Repair",
+      "description": "Fix, maintain, and service equipment"
+    },
+    "transport-delivery": {
+      "name": "Transport & Delivery",
+      "description": "Moving, delivery, and transportation"
+    },
+    "automotive": {
+      "name": "Automotive",
+      "description": "Vehicle services and repairs"
+    }
+  },
+  "subcategories": {
+    "moving-help": {
+      "name": "Moving & Help",
+      "description": "Professional moving and assistance services"
+    },
+    "cleaning": {
+      "name": "Cleaning",
+      "description": "Professional cleaning services for homes and offices"
+    },
+    "errands": {
+      "name": "Errands",
+      "description": "Personal shopping, delivery, and task services"
+    },
+    "assembly": {
+      "name": "Assembly & Installation",
+      "description": "Furniture assembly and home installation services"
+    },
+    "outdoor": {
+      "name": "Outdoor Services",
+      "description": "Exterior maintenance and seasonal services"
+    }
+  },
+  "micro": {
+    "help-moving": {
+      "name": "Help Moving",
+      "description": "Professional moving assistance and heavy lifting",
+      "priceRange": "€80 - €200"
+    },
+    "truck-assisted-moving": {
+      "name": "Truck Assisted Moving",
+      "description": "Full-service moving with truck and crew",
+      "priceRange": "€200 - €600"
+    },
+    "heavy-lifting-loading": {
+      "name": "Heavy Lifting & Loading",
+      "description": "Safe handling of heavy furniture and appliances",
+      "priceRange": "€60 - €150"
+    },
+    "packing-services": {
+      "name": "Packing Services",
+      "description": "Professional packing with quality materials",
+      "priceRange": "€100 - €300"
+    },
+    "house-cleaning": {
+      "name": "House Cleaning",
+      "description": "Regular or one-time house cleaning service",
+      "priceRange": "€50 - €150"
+    },
+    "deep-cleaning": {
+      "name": "Deep Cleaning",
+      "description": "Thorough deep cleaning for every room",
+      "priceRange": "€100 - €250"
+    },
+    "ikea-furniture-assembly": {
+      "name": "IKEA Furniture Assembly",
+      "description": "Expert IKEA furniture assembly",
+      "priceRange": "€40 - €120"
+    },
+    "general-furniture-assembly": {
+      "name": "General Furniture Assembly",
+      "description": "Assembly of any furniture pieces",
+      "priceRange": "€50 - €150"
+    },
+    "tv-mounting": {
+      "name": "TV Mounting",
+      "description": "Professional TV wall mounting service",
+      "priceRange": "€60 - €150"
+    },
+    "pressure-washing": {
+      "name": "Pressure Washing",
+      "description": "High-pressure cleaning for exteriors",
+      "priceRange": "€80 - €200"
+    },
+    "gutter-cleaning": {
+      "name": "Gutter Cleaning",
+      "description": "Professional gutter cleaning and maintenance",
+      "priceRange": "€60 - €150"
+    }
   },
   "filters": {
     "title": "Filters",

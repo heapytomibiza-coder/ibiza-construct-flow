@@ -526,12 +526,16 @@ export type Database = {
       bookings: {
         Row: {
           budget_range: string | null
+          catalogue_version_used: number | null
           client_id: string | null
           created_at: string | null
           description: string | null
           general_answers: Json | null
           id: string
+          locale: string | null
           micro_q_answers: Json | null
+          micro_slug: string | null
+          origin: string | null
           service_id: string | null
           status: Database["public"]["Enums"]["booking_status"] | null
           title: string
@@ -539,12 +543,16 @@ export type Database = {
         }
         Insert: {
           budget_range?: string | null
+          catalogue_version_used?: number | null
           client_id?: string | null
           created_at?: string | null
           description?: string | null
           general_answers?: Json | null
           id?: string
+          locale?: string | null
           micro_q_answers?: Json | null
+          micro_slug?: string | null
+          origin?: string | null
           service_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"] | null
           title: string
@@ -552,12 +560,16 @@ export type Database = {
         }
         Update: {
           budget_range?: string | null
+          catalogue_version_used?: number | null
           client_id?: string | null
           created_at?: string | null
           description?: string | null
           general_answers?: Json | null
           id?: string
+          locale?: string | null
           micro_q_answers?: Json | null
+          micro_slug?: string | null
+          origin?: string | null
           service_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"] | null
           title?: string

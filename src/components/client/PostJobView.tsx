@@ -10,12 +10,15 @@ import LuxuryJobWizard from '@/components/wizard/LuxuryJobWizard';
 import MobileJobWizard from '@/components/wizard/MobileJobWizard';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
+import { useLanguage } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { WizardCompletePayload } from '@/lib/contracts';
 
 const PostJobView = () => {
   const isMobile = useIsMobile();
   const { services } = useServicesRegistry();
+  const { currentLanguage } = useLanguage();
   const [showWizard, setShowWizard] = useState(false);
   const [recentJobs, setRecentJobs] = useState([]);
   const [templates, setTemplates] = useState([]);
@@ -35,22 +38,33 @@ const PostJobView = () => {
     );
   }
 
-  async function handleJobComplete(jobData: any) {
+  async function handleJobComplete(jobData: WizardCompletePayload) {
     try {
-      // Create the job
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('You must be logged in to create a job');
+        return;
+      }
+
+      // Create the booking with complete audit trail
       const { data, error } = await supabase
         .from('bookings')
         .insert({
+          client_id: user.id,
           title: jobData.title,
           description: jobData.description,
           service_id: jobData.serviceId,
-          general_answers: {
-            location: jobData.location,
-            urgency: jobData.urgency,
-            selectedItems: jobData.selectedItems,
-            totalEstimate: jobData.totalEstimate,
-            confidence: jobData.confidence
-          },
+          // Audit tracking
+          micro_slug: jobData.microSlug,
+          catalogue_version_used: 1,
+          locale: currentLanguage,
+          origin: isMobile ? 'mobile' : 'web',
+          // Structured answers
+          micro_q_answers: jobData.microAnswers || {},
+          general_answers: jobData.generalAnswers || {},
+          // Additional fields
+          selected_items: jobData.selectedItems || [],
+          total_estimated_price: jobData.totalEstimate || 0,
           status: 'draft'
         })
         .select()

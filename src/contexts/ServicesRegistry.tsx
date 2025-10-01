@@ -10,6 +10,7 @@ export interface ServiceNode {
   category: string;
   subcategory: string;
   micro: string;
+  slug?: string; // Stable micro-service slug for deterministic lookups
 }
 
 export interface ServiceWithMetadata extends ServiceNode {
@@ -150,8 +151,12 @@ const getServiceSlug = (category: string): string => {
 export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { currentLanguage, changeLanguage } = useLanguage();
   
+  // Helper to generate stable slug
+  const toSlug = (s: string) =>
+    s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
   // Fetch services from unified view (single source of truth)
-  const { data: services = [], isLoading: loading, error, refetch } = useQuery<ServiceNode[]>({
+  const { data: rawServices = [], isLoading: loading, error, refetch } = useQuery<ServiceNode[]>({
     queryKey: ['services-registry', 'v1'],
     queryFn: async (): Promise<ServiceNode[]> => {
       const { data, error } = await supabase
@@ -165,6 +170,12 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
     staleTime: 1000 * 60 * 10, // 10 minutes
     gcTime: 1000 * 60 * 30, // 30 minutes
   });
+
+  // Enhance services with stable slugs
+  const services = rawServices.map(svc => ({
+    ...svc,
+    slug: toSlug(`${svc.category}-${svc.subcategory}-${svc.micro}`)
+  }));
 
   // Data access methods
   const getCategories = useCallback((): string[] => {

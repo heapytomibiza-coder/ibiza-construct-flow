@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  ArrowLeft, MapPin, Camera, Target, Sparkles, CalendarIcon,
+  ArrowLeft, MapPin, Camera, Target, Sparkles,
   Home, Building, Users, Wrench, Truck, Car
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -16,15 +15,27 @@ import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
 import { LocationSelector } from './shared/LocationSelector';
 import { TimeSlotSelector } from './shared/TimeSlotSelector';
 import { DateSelector } from './shared/DateSelector';
+import { WizardCompletePayload } from '@/lib/contracts';
+
+type ServiceInput = {
+  id: string;
+  category: string;
+  subcategory: string;
+  micro: string;
+  slug?: string;
+};
 
 interface MobileJobWizardProps {
-  onComplete: (jobData: any) => void;
+  onComplete: (jobData: WizardCompletePayload) => void;
   onCancel: () => void;
-  services: any[];
+  services: ServiceInput[];
   microQuestions?: any[];
   logisticsQuestions?: any[];
-  onLoadQuestions?: (serviceId: string) => void;
+  onLoadQuestions?: (args: { microSlug: string; serviceId?: string }) => void;
 }
+
+const toSlug = (s: string) =>
+  s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
 const MobileJobWizard = ({ 
   onComplete, 
@@ -37,8 +48,8 @@ const MobileJobWizard = ({
   const [step, setStep] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('');
-  const [selectedService, setSelectedService] = useState<any>(null);
-  
+  const [selectedService, setSelectedService] = useState<ServiceInput | null>(null);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -48,7 +59,7 @@ const MobileJobWizard = ({
     budget: '',
     requirements: ''
   });
-  
+
   const [microAnswers, setMicroAnswers] = useState<Record<string, any>>({});
   const [logisticsAnswers, setLogisticsAnswers] = useState<Record<string, any>>({});
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -75,22 +86,24 @@ const MobileJobWizard = ({
     return icons[category] || Wrench;
   };
 
-  const getCategories = () => {
-    return [...new Set(services.map(s => s.category))];
-  };
+  const categories = useMemo(
+    () => Array.from(new Set(services.map(s => s.category))),
+    [services]
+  );
 
   const getSubcategories = (category: string) => {
-    return [...new Set(
-      services
-        .filter(s => s.category === category)
-        .map(s => s.subcategory)
-    )];
+    return Array.from(
+      new Set(services.filter(s => s.category === category).map(s => s.subcategory))
+    );
   };
 
   const getMicroServices = (category: string, subcategory: string) => {
-    return services.filter(s => 
-      s.category === category && s.subcategory === subcategory
-    );
+    return services.filter(s => s.category === category && s.subcategory === subcategory);
+  };
+
+  const currentMicroSlug = (svc: ServiceInput | null) => {
+    if (!svc) return '';
+    return svc.slug || toSlug(`${svc.category}-${svc.subcategory}-${svc.micro}`);
   };
 
   const nextStep = () => {
@@ -106,33 +119,57 @@ const MobileJobWizard = ({
       toast.error('Please select a service');
       return;
     }
-    
-    // Load questions when moving from step 3 to 4
     if (step === 3 && selectedService && onLoadQuestions) {
-      onLoadQuestions(selectedService.id);
+      onLoadQuestions({
+        microSlug: currentMicroSlug(selectedService),
+        serviceId: selectedService.id
+      });
     }
-    
     setStep(prev => Math.min(7, prev + 1));
   };
 
   const prevStep = () => setStep(prev => Math.max(1, prev - 1));
 
+  const handleMicroSelect = (service: ServiceInput) => {
+    setSelectedService(service);
+    setMicroAnswers({});
+    setLogisticsAnswers({});
+  };
+
   const handleSubmit = () => {
-    const jobData = {
-      ...formData,
-      serviceId: selectedService?.id,
+    if (!selectedService) {
+      toast.error('Please select a service');
+      return;
+    }
+    const jobData: WizardCompletePayload = {
+      title: formData.title || `${selectedService.micro} Service`,
+      description: formData.description,
+      location: formData.location,
+      urgency: formData.urgency,
+      serviceId: selectedService.id,
+      microSlug: currentMicroSlug(selectedService),
       category: selectedCategory,
       subcategory: selectedSubcategory,
-      micro: selectedService?.micro,
+      micro: selectedService.micro,
       microAnswers,
-      logisticsAnswers
+      logisticsAnswers,
+      selectedItems: [],
+      totalEstimate: undefined,
+      confidence: undefined,
+      generalAnswers: {
+        microAnswers,
+        logisticsAnswers,
+        selectedDate: selectedDate ? selectedDate.toISOString() : null,
+        preferredTime: formData.preferredTime || null,
+        budget: formData.budget || null,
+        requirements: formData.requirements || null
+      }
     };
     onComplete(jobData);
   };
 
   const renderStepContent = () => {
     switch (step) {
-      // Step 1: Category Selection
       case 1:
         return (
           <div className="space-y-4">
@@ -140,16 +177,13 @@ const MobileJobWizard = ({
               <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
                 What do you need help with?
               </h2>
-              <p className="text-muted-foreground">
-                Choose your project category
-              </p>
+              <p className="text-muted-foreground">Choose your project category</p>
             </div>
 
             <div className="space-y-3">
-              {getCategories().map((category) => {
+              {categories.map((category) => {
                 const IconComponent = getCategoryIcon(category);
                 const count = services.filter(s => s.category === category).length;
-                
                 return (
                   <Card
                     key={category}
@@ -159,7 +193,13 @@ const MobileJobWizard = ({
                         ? "ring-2 ring-copper border-copper bg-copper/5" 
                         : "hover:border-copper/30"
                     )}
-                    onClick={() => setSelectedCategory(category)}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setSelectedSubcategory('');
+                      setSelectedService(null);
+                      setMicroAnswers({});
+                      setLogisticsAnswers({});
+                    }}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
@@ -173,9 +213,7 @@ const MobileJobWizard = ({
                           </div>
                         </div>
                         <div className="w-5 h-5 rounded-full border-2 border-muted flex items-center justify-center">
-                          {selectedCategory === category && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-copper"></div>
-                          )}
+                          {selectedCategory === category && <div className="w-2.5 h-2.5 rounded-full bg-copper" />}
                         </div>
                       </div>
                     </CardContent>
@@ -186,19 +224,14 @@ const MobileJobWizard = ({
           </div>
         );
 
-      // Step 2: Subcategory Selection
       case 2:
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
-                Select Subcategory
-              </h2>
-              <p className="text-muted-foreground">
-                Choose the specific type of {selectedCategory}
-              </p>
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">Select Subcategory</h2>
+              <p className="text-muted-foreground">Choose the specific type of {selectedCategory}</p>
             </div>
-            
+
             <div className="space-y-3">
               {getSubcategories(selectedCategory).map((subcategory) => (
                 <Card
@@ -209,15 +242,18 @@ const MobileJobWizard = ({
                       ? "ring-2 ring-copper border-copper bg-copper/5" 
                       : "hover:border-copper/30"
                   )}
-                  onClick={() => setSelectedSubcategory(subcategory)}
+                  onClick={() => {
+                    setSelectedSubcategory(subcategory);
+                    setSelectedService(null);
+                    setMicroAnswers({});
+                    setLogisticsAnswers({});
+                  }}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <h3 className="font-medium text-charcoal">{subcategory}</h3>
                       <div className="w-5 h-5 rounded-full border-2 border-muted flex items-center justify-center">
-                        {selectedSubcategory === subcategory && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-copper"></div>
-                        )}
+                        {selectedSubcategory === subcategory && <div className="w-2.5 h-2.5 rounded-full bg-copper" />}
                       </div>
                     </div>
                   </CardContent>
@@ -227,38 +263,33 @@ const MobileJobWizard = ({
           </div>
         );
 
-      // Step 3: Micro-service Selection
       case 3:
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
-                Which service exactly?
-              </h2>
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">Which service exactly?</h2>
               <p className="text-muted-foreground">
                 Select from <span className="text-copper font-medium">{selectedSubcategory}</span>
               </p>
             </div>
 
             <div className="space-y-2">
-              {getMicroServices(selectedCategory, selectedSubcategory).map((service) => (
+              {getMicroServices(selectedCategory, selectedSubcategory).map((svc) => (
                 <Card
-                  key={service.id}
+                  key={svc.id}
                   className={cn(
                     "cursor-pointer transition-all duration-200",
-                    selectedService?.id === service.id 
+                    selectedService?.id === svc.id 
                       ? "ring-2 ring-copper border-copper bg-copper/5" 
                       : "hover:border-copper/30"
                   )}
-                  onClick={() => setSelectedService(service)}
+                  onClick={() => handleMicroSelect(svc)}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-charcoal">{service.micro}</h4>
+                      <h4 className="font-medium text-charcoal">{svc.micro}</h4>
                       <div className="w-5 h-5 rounded-full border-2 border-muted flex items-center justify-center">
-                        {selectedService?.id === service.id && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-copper"></div>
-                        )}
+                        {selectedService?.id === svc.id && <div className="w-2.5 h-2.5 rounded-full bg-copper" />}
                       </div>
                     </div>
                   </CardContent>
@@ -268,19 +299,14 @@ const MobileJobWizard = ({
           </div>
         );
 
-      // Step 4: Service-Specific Questions
       case 4:
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
-                Service Details
-              </h2>
-              <p className="text-muted-foreground">
-                Tell us about your {selectedService?.micro}
-              </p>
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">Service Details</h2>
+              <p className="text-muted-foreground">Tell us about your {selectedService?.micro}</p>
             </div>
-            
+
             {microQuestions.length > 0 ? (
               <AIQuestionRenderer
                 questions={microQuestions}
@@ -291,27 +317,20 @@ const MobileJobWizard = ({
               />
             ) : (
               <div className="text-center py-12">
-                <div className="animate-pulse text-muted-foreground">
-                  Loading questions...
-                </div>
+                <div className="animate-pulse text-muted-foreground">Loading questions...</div>
               </div>
             )}
           </div>
         );
 
-      // Step 5: Logistics Questions
       case 5:
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
-                Project Logistics
-              </h2>
-              <p className="text-muted-foreground">
-                When and where?
-              </p>
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">Project Logistics</h2>
+              <p className="text-muted-foreground">When and where?</p>
             </div>
-            
+
             {logisticsQuestions.length > 0 ? (
               <AIQuestionRenderer
                 questions={logisticsQuestions}
@@ -329,9 +348,7 @@ const MobileJobWizard = ({
                 />
 
                 <div>
-                  <label className="block text-sm font-medium text-charcoal mb-3">
-                    Timeline
-                  </label>
+                  <label className="block text-sm font-medium text-charcoal mb-3">Timeline</label>
                   <div className="grid grid-cols-2 gap-2 mb-4">
                     {[
                       { value: 'urgent', label: 'Urgent' },
@@ -343,10 +360,7 @@ const MobileJobWizard = ({
                         key={option.value}
                         variant={formData.urgency === option.value ? "default" : "outline"}
                         onClick={() => setFormData(prev => ({ ...prev, urgency: option.value }))}
-                        className={cn(
-                          "h-auto p-3",
-                          formData.urgency === option.value && "bg-gradient-hero text-white"
-                        )}
+                        className={cn("h-auto p-3", formData.urgency === option.value && "bg-gradient-hero text-white")}
                       >
                         {option.label}
                       </Button>
@@ -354,20 +368,13 @@ const MobileJobWizard = ({
                   </div>
 
                   <div className="space-y-3">
-                    <label className="block text-sm font-medium text-charcoal">
-                      Select your preferred date
-                    </label>
-                    <DateSelector
-                      value={selectedDate}
-                      onChange={setSelectedDate}
-                    />
+                    <label className="block text-sm font-medium text-charcoal">Select your preferred date</label>
+                    <DateSelector value={selectedDate} onChange={setSelectedDate} />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-charcoal mb-3">
-                    Preferred Time
-                  </label>
+                  <label className="block text-sm font-medium text-charcoal mb-3">Preferred Time</label>
                   <TimeSlotSelector
                     value={formData.preferredTime}
                     onChange={(value) => setFormData(prev => ({ ...prev, preferredTime: value }))}
@@ -375,9 +382,7 @@ const MobileJobWizard = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-charcoal mb-2">
-                    Budget (Optional)
-                  </label>
+                  <label className="block text-sm font-medium text-charcoal mb-2">Budget (Optional)</label>
                   <Input
                     value={formData.budget}
                     onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
@@ -390,36 +395,27 @@ const MobileJobWizard = ({
           </div>
         );
 
-      // Step 6: Additional Details
       case 6:
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
-                Additional Details
-              </h2>
-              <p className="text-muted-foreground">
-                Any special requirements or notes?
-              </p>
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">Additional Details</h2>
+              <p className="text-muted-foreground">Any special requirements or notes?</p>
             </div>
-            
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
-                  Project Title (Optional)
-                </label>
+                <label className="block text-sm font-medium text-charcoal mb-2">Project Title (Optional)</label>
                 <Input
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="e.g., Kitchen renovation"
+                  placeholder={`e.g., ${selectedService?.micro || 'Kitchen renovation'}`}
                   className="mobile-optimized-input"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-charcoal mb-2">
-                  Additional Notes (Optional)
-                </label>
+                <label className="block text-sm font-medium text-charcoal mb-2">Additional Notes (Optional)</label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
@@ -432,17 +428,12 @@ const MobileJobWizard = ({
           </div>
         );
 
-      // Step 7: Final Review
       case 7:
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">
-                Review & Post
-              </h2>
-              <p className="text-muted-foreground">
-                AI will create a professional job post
-              </p>
+              <h2 className="text-2xl font-display font-bold text-charcoal mb-2">Review & Post</h2>
+              <p className="text-muted-foreground">AI will create a professional job post</p>
             </div>
 
             <Card className="card-luxury">
@@ -457,12 +448,8 @@ const MobileJobWizard = ({
                   <h4 className="font-medium text-charcoal mb-1">Service</h4>
                   <p className="text-muted-foreground">{selectedService?.micro}</p>
                   <div className="flex gap-2 mt-1">
-                    <Badge variant="outline" className="text-xs">
-                      {selectedCategory}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {selectedSubcategory}
-                    </Badge>
+                    <Badge variant="outline" className="text-xs">{selectedCategory}</Badge>
+                    <Badge variant="outline" className="text-xs">{selectedSubcategory}</Badge>
                   </div>
                 </div>
 
@@ -474,7 +461,7 @@ const MobileJobWizard = ({
                         <p key={key}>{key}: {String(value)}</p>
                       ))}
                       {Object.keys(microAnswers).length > 3 && (
-                        <p className="text-xs">+ {Object.keys(microAnswers).length - 3} more...</p>
+                        <p className="text-xs">+ {Object.keys(microAnswers).length - 3} more…</p>
                       )}
                     </div>
                   </div>
@@ -493,10 +480,24 @@ const MobileJobWizard = ({
 
                 <div className="flex items-center justify-between pt-2 border-t">
                   <span className="text-muted-foreground">Timeline</span>
-                  <Badge variant="outline">
-                    {formData.urgency.replace('_', ' ')}
-                  </Badge>
+                  <Badge variant="outline">{formData.urgency.replace('_', ' ')}</Badge>
                 </div>
+
+                {selectedDate && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Preferred Date</span>
+                    <span className="text-charcoal text-sm">
+                      {selectedDate.toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
+
+                {formData.preferredTime && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Preferred Time</span>
+                    <span className="text-charcoal text-sm">{formData.preferredTime}</span>
+                  </div>
+                )}
 
                 {formData.location && (
                   <div className="flex items-center justify-between">
@@ -520,7 +521,7 @@ const MobileJobWizard = ({
                 <span className="font-medium text-charcoal">What happens next?</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                AI will create a professional job post from your answers. Qualified professionals will review and send personalized quotes within 24-48 hours.
+                AI will create a professional job post from your answers. Qualified professionals will review and send personalized quotes within 24–48 hours.
               </p>
             </div>
           </div>
@@ -533,7 +534,6 @@ const MobileJobWizard = ({
 
   return (
     <div className="min-h-screen bg-gradient-subtle pb-20">
-      {/* Mobile Header */}
       <div className="sticky-header bg-white/95 backdrop-blur-sm border-b border-sand/20">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
@@ -552,7 +552,7 @@ const MobileJobWizard = ({
                 {step} of {steps.length}
               </span>
               <div className="flex gap-1">
-                {steps.map((s, index) => (
+                {steps.map((s) => (
                   <div
                     key={s.id}
                     className={cn(
@@ -567,21 +567,14 @@ const MobileJobWizard = ({
         </div>
       </div>
 
-      {/* Content */}
-      <div className="px-4 py-6">
-        {renderStepContent()}
-      </div>
+      <div className="px-4 py-6">{renderStepContent()}</div>
 
-      {/* Mobile CTA */}
       <StickyMobileCTA
         primaryAction={{
           label: step === 7 ? 'Post Project' : 'Continue',
           onClick: step === 7 ? handleSubmit : nextStep
         }}
-        secondaryAction={step > 1 ? {
-          label: 'Back',
-          onClick: prevStep
-        } : undefined}
+        secondaryAction={step > 1 ? { label: 'Back', onClick: prevStep } : undefined}
       />
     </div>
   );

@@ -15,9 +15,10 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
+import { WizardCompletePayload } from '@/lib/contracts';
 
 interface LuxuryJobWizardProps {
-  onComplete: (jobData: any) => void;
+  onComplete: (jobData: WizardCompletePayload) => void;
   onCancel: () => void;
 }
 
@@ -35,6 +36,7 @@ interface Service {
   category: string;
   subcategory: string;
   micro: string;
+  slug?: string;
 }
 
 const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
@@ -134,15 +136,40 @@ const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
 
   const prevStep = () => setStep(prev => Math.max(1, prev - 1));
 
+  const toSlug = (s: string) =>
+    s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  const currentMicroSlug = (svc: Service | null) => {
+    if (!svc) return '';
+    return svc.slug || toSlug(`${svc.category}-${svc.subcategory}-${svc.micro}`);
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const jobData = {
-        ...formData,
-        serviceId: selectedService?.id,
+      if (!selectedService) {
+        toast.error('Please select a service');
+        return;
+      }
+
+      const jobData: WizardCompletePayload = {
+        title: formData.title,
+        description: formData.description,
+        location: formData.location,
+        urgency: formData.urgency,
+        serviceId: selectedService.id,
+        microSlug: currentMicroSlug(selectedService),
         category: selectedCategory,
         subcategory: selectedSubcategory,
-        micro: selectedService?.micro
+        micro: selectedService.micro,
+        selectedItems: [],
+        totalEstimate: undefined,
+        confidence: undefined,
+        generalAnswers: {
+          budget: formData.budget || null,
+          requirements: formData.requirements || null,
+          photos: formData.photos || []
+        }
       };
       
       onComplete(jobData);

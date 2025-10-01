@@ -7,7 +7,75 @@
     "gardening": "Jardinería",
     "repairs": "Reparaciones",
     "construction": "Construcción",
-    "technology": "Tecnología"
+    "technology": "Tecnología",
+    "home-services": {
+      "name": "Servicios del Hogar",
+      "description": "Reparaciones, mantenimiento y mejoras del hogar"
+    },
+    "construction": {
+      "name": "Construcción",
+      "description": "Construcción, renovación y obras"
+    },
+    "professional-services": {
+      "name": "Servicios Profesionales",
+      "description": "Experiencia empresarial y profesional"
+    },
+    "maintenance-repair": {
+      "name": "Mantenimiento y Reparación",
+      "description": "Reparar, mantener y dar servicio a equipos"
+    },
+    "transport-delivery": {
+      "name": "Transporte y Entrega",
+      "description": "Mudanzas, entregas y transporte"
+    },
+    "automotive": {
+      "name": "Automotriz",
+      "description": "Servicios y reparaciones de vehículos"
+    }
+  },
+  "subcategories": {
+    "moving-help": {
+      "name": "Mudanzas y Ayuda",
+      "description": "Servicios profesionales de mudanza y asistencia"
+    },
+    "cleaning": {
+      "name": "Limpieza",
+      "description": "Servicios profesionales de limpieza"
+    },
+    "errands": {
+      "name": "Recados",
+      "description": "Compras y servicios de tareas"
+    },
+    "assembly": {
+      "name": "Montaje e Instalación",
+      "description": "Montaje de muebles e instalación"
+    },
+    "outdoor": {
+      "name": "Servicios Exteriores",
+      "description": "Mantenimiento exterior"
+    }
+  },
+  "micro": {
+    "help-moving": {
+      "name": "Ayuda para Mudanzas",
+      "description": "Asistencia profesional para mudanzas",
+      "priceRange": "€80 - €200"
+    },
+    "truck-assisted-moving": {
+      "name": "Mudanza con Camión",
+      "description": "Servicio completo con camión",
+      "priceRange": "€200 - €600"
+    },
+    "house-cleaning": {
+      "name": "Limpieza de Casa",
+      "description": "Servicio de limpieza profesional",
+      "priceRange": "€50 - €150"
+    },
+    "ikea-furniture-assembly": {
+      "name": "Montaje IKEA",
+      "description": "Montaje experto de muebles IKEA",
+      "priceRange": "€40 - €120"
+    }
   },
   "filters": {
     "title": "Filtros",
@@ -18,7 +86,7 @@
   },
   "hero": {
     "title": "Encuentra Servicios Expertos en Ibiza",
-    "subtitle": "Conéctate con profesionales locales de confianza para todas tus necesidades del hogar y negocio",
+    "subtitle": "Conéctate con profesionales locales de confianza",
     "searchPlaceholder": "¿Qué servicio necesitas?",
     "cta": "Comenzar"
   }
