@@ -1,60 +1,34 @@
 /**
  * Browse and manage question packs
+ * Phase 2: Uses Zustand for UI state + standardized React Query hooks
  */
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { listPacks, approvePack, activatePack, retirePack } from '@/lib/api/questionPacks';
-import { Check, X, Play, Archive, Search } from 'lucide-react';
-import { toast } from 'sonner';
+import { Check, Play, Archive, Search } from 'lucide-react';
+import { useAdminUi } from '@/stores/adminUi';
+import {
+  useListPacks,
+  useApprovePack,
+  useActivatePack,
+  useRetirePack,
+} from '@/hooks/usePacksQuery';
 
 export function PackBrowser() {
-  const [filters, setFilters] = useState({ status: '', source: '', slug: '' });
-  const queryClient = useQueryClient();
+  // UI state from Zustand (filters, selections, modals)
+  const { filters, setFilters } = useAdminUi();
 
-  const { data: packs = [], isLoading } = useQuery({
-    queryKey: ['question-packs', filters],
-    queryFn: () => listPacks(filters),
-  });
+  // Server state from React Query (packs data)
+  const { data: packs = [], isLoading } = useListPacks(filters);
 
-  const approveMutation = useMutation({
-    mutationFn: approvePack,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['question-packs'] });
-      toast.success('Pack approved successfully');
-    },
-    onError: (error: any) => {
-      toast.error(`Failed to approve: ${error.message}`);
-    },
-  });
-
-  const activateMutation = useMutation({
-    mutationFn: activatePack,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['question-packs'] });
-      toast.success('Pack activated successfully');
-    },
-    onError: (error: any) => {
-      toast.error(`Failed to activate: ${error.message}`);
-    },
-  });
-
-  const retireMutation = useMutation({
-    mutationFn: retirePack,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['question-packs'] });
-      toast.success('Pack retired successfully');
-    },
-    onError: (error: any) => {
-      toast.error(`Failed to retire: ${error.message}`);
-    },
-  });
+  // Mutations with automatic invalidation & toasts
+  const approveMutation = useApprovePack();
+  const activateMutation = useActivatePack();
+  const retireMutation = useRetirePack();
 
   return (
     <div className="space-y-4">
@@ -67,8 +41,8 @@ export function PackBrowser() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="tiler-floor-tiling..."
-                value={filters.slug}
-                onChange={(e) => setFilters(f => ({ ...f, slug: e.target.value }))}
+                value={filters.slug || ''}
+                onChange={(e) => setFilters({ slug: e.target.value || undefined })}
                 className="pl-10"
               />
             </div>
@@ -76,7 +50,10 @@ export function PackBrowser() {
           
           <div className="w-48">
             <label className="text-sm font-medium mb-2 block">Status</label>
-            <Select value={filters.status} onValueChange={(v) => setFilters(f => ({ ...f, status: v }))}>
+            <Select 
+              value={filters.status || ''} 
+              onValueChange={(v) => setFilters({ status: v ? (v as any) : undefined })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
@@ -91,7 +68,10 @@ export function PackBrowser() {
 
           <div className="w-48">
             <label className="text-sm font-medium mb-2 block">Source</label>
-            <Select value={filters.source} onValueChange={(v) => setFilters(f => ({ ...f, source: v }))}>
+            <Select 
+              value={filters.source || ''} 
+              onValueChange={(v) => setFilters({ source: v ? (v as any) : undefined })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All sources" />
               </SelectTrigger>
