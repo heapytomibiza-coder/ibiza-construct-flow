@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Play, CheckCircle, XCircle, Clock, Languages } from 'lucide-react';
-import { executeComprehensiveTestPlan } from '@/utils/testAIFunctions';
+import { aiTesting } from '@/lib/api/ai-testing';
 import i18n from '@/i18n';
 
 interface TestResult {
@@ -76,7 +76,6 @@ export function TestRunner() {
       // Run i18n validation
       setLogs(prev => [...prev, '=== Running i18n validation ===']);
       const i18nResults = await validateI18nKeys();
-      setResults(i18nResults);
       
       const failedI18n = i18nResults.filter(r => r.status === 'fail').length;
       if (failedI18n > 0) {
@@ -85,9 +84,21 @@ export function TestRunner() {
         setLogs(prev => [...prev, '✅ All i18n keys validated']);
       }
 
-      // Run AI function tests
-      setLogs(prev => [...prev, '\n=== Running AI function tests ===']);
-      await executeComprehensiveTestPlan();
+      // Run comprehensive AI tests via contract-based API
+      setLogs(prev => [...prev, '\n=== Running comprehensive test suite ===']);
+      const testResponse = await aiTesting.executeTests({
+        testSuites: ['database', 'edge-functions', 'storage', 'templates'],
+        includeI18n: false, // We already ran i18n tests above
+      });
+
+      // Merge results
+      setResults([...i18nResults, ...testResponse.results]);
+      
+      // Add backend logs
+      testResponse.logs.forEach(log => {
+        setLogs(prev => [...prev, log]);
+      });
+
     } catch (error) {
       setLogs(prev => [...prev, `Error: ${(error as Error).message}`]);
     } finally {

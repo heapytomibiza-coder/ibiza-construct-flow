@@ -158,6 +158,60 @@ paths:
             application/json:
               schema:
                 type: object
+  /admin/ai-testing/generate-questions:
+    post:
+      summary: Generate AI questions for a service type
+      tags:
+        - AI Testing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateQuestionsRequest'
+      responses:
+        '200':
+          description: Generated questions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateQuestionsResponse'
+  /admin/ai-testing/estimate-price:
+    post:
+      summary: Estimate price for a service via AI
+      tags:
+        - AI Testing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstimatePriceRequest'
+      responses:
+        '200':
+          description: Price estimation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimatePriceResponse'
+  /admin/ai-testing/execute:
+    post:
+      summary: Execute comprehensive test suite
+      tags:
+        - AI Testing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestExecutionRequest'
+      responses:
+        '200':
+          description: Test execution results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestExecutionResponse'
 components:
   schemas:
     Pack:
@@ -379,3 +433,184 @@ components:
         updated_at:
           type: string
           format: date-time
+    GenerateQuestionsRequest:
+      type: object
+      required:
+        - serviceType
+        - category
+        - subcategory
+      properties:
+        serviceType:
+          type: string
+          example: Kitchen Sink Leak Repair
+        category:
+          type: string
+          example: Home Services
+        subcategory:
+          type: string
+          example: Plumbing
+    GenerateQuestionsResponse:
+      type: object
+      required:
+        - questions
+      properties:
+        questions:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - label
+              - type
+              - required
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+              type:
+                type: string
+                enum:
+                  - text
+                  - number
+                  - select
+                  - multi
+                  - file
+                  - date
+                  - boolean
+              required:
+                type: boolean
+              options:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - value
+                    - label
+                  properties:
+                    value:
+                      type: string
+                    label:
+                      type: string
+        metadata:
+          type: object
+          properties:
+            serviceType:
+              type: string
+            category:
+              type: string
+            subcategory:
+              type: string
+    EstimatePriceRequest:
+      type: object
+      required:
+        - serviceType
+        - category
+        - subcategory
+        - answers
+      properties:
+        serviceType:
+          type: string
+          example: Kitchen Sink Leak Repair
+        category:
+          type: string
+          example: Home Services
+        subcategory:
+          type: string
+          example: Plumbing
+        answers:
+          type: object
+          example:
+            leak_severity: moderate
+            access: easy
+        location:
+          type: string
+          example: Ibiza, Spain
+    EstimatePriceResponse:
+      type: object
+      required:
+        - estimatedPrice
+        - currency
+      properties:
+        estimatedPrice:
+          type: number
+        currency:
+          type: string
+          default: EUR
+        breakdown:
+          type: object
+          properties:
+            labor:
+              type: number
+            materials:
+              type: number
+            additional:
+              type: number
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+    TestExecutionRequest:
+      type: object
+      properties:
+        testSuites:
+          type: array
+          items:
+            type: string
+            enum:
+              - database
+              - edge-functions
+              - storage
+              - templates
+        includeI18n:
+          type: boolean
+          default: true
+    TestResult:
+      type: object
+      required:
+        - test
+        - status
+      properties:
+        test:
+          type: string
+        status:
+          type: string
+          enum:
+            - pass
+            - fail
+            - pending
+        message:
+          type: string
+        duration:
+          type: number
+    TestExecutionResponse:
+      type: object
+      required:
+        - results
+        - summary
+        - logs
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestResult'
+        summary:
+          type: object
+          required:
+            - passed
+            - failed
+            - total
+            - successRate
+          properties:
+            passed:
+              type: integer
+            failed:
+              type: integer
+            total:
+              type: integer
+            successRate:
+              type: number
+        logs:
+          type: array
+          items:
+            type: string

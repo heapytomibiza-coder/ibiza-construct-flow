@@ -52,9 +52,12 @@ export async function estimatePrice(request: EstimatePriceRequest) {
  * Execute comprehensive test suite
  */
 export async function executeTests(request: TestExecutionRequest = {}) {
-  // This would be implemented as an edge function that orchestrates all tests
-  // For now, we return a structured format that matches the contract
-  throw new Error('Not implemented - requires backend test orchestration endpoint');
+  const { data, error } = await supabase.functions.invoke('ai-test-orchestrator', {
+    body: request,
+  });
+
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export const aiTesting = {
