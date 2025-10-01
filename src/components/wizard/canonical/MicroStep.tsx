@@ -41,7 +41,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       setLoading(true);
       const { data, error } = await supabase
         .from('services_unified_v1')
-        .select('id, micro, description')
+        .select('id, micro')
         .eq('category', mainCategory.replace(/-/g, ' '))
         .eq('subcategory', subcategory)
         .order('micro');
@@ -103,14 +103,9 @@ export const MicroStep: React.FC<MicroStepProps> = ({
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-charcoal mb-1">
+                    <h3 className="font-semibold text-charcoal">
                       {micro.micro}
                     </h3>
-                    {micro.description && (
-                      <p className="text-sm text-muted-foreground">
-                        {micro.description}
-                      </p>
-                    )}
                   </div>
                   {isSelected && (
                     <CheckCircle2 className="w-6 h-6 text-copper flex-shrink-0" />
