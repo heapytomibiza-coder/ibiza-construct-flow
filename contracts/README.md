@@ -84,6 +84,48 @@ const { mutate: approve } = useApprovePack();
 }
 ```
 
+## ✅ Phase 5.3 Complete: Discovery Analytics Contracts
+
+### What's Been Implemented:
+
+**New Schemas Added:**
+- `contracts/src/discovery-analytics.zod.ts` - Zod schemas for analytics:
+  - `TrackEventRequest/Response` - Track discovery analytics events
+  - `GetMetricsRequest/Response` - Retrieve performance metrics
+  - `GetConversionFunnelRequest/Response` - Analyze conversion funnels
+  - `GetABTestResultsRequest/Response` - Get A/B test performance data
+  - `GetTopSearchesRequest/Response` - Get top search queries
+
+**OpenAPI Extensions:**
+- Updated `contracts/src/index.ts` with discovery analytics specification:
+  - `/admin/discovery-analytics/track` (POST)
+  - `/admin/discovery-analytics/metrics` (POST)
+  - `/admin/discovery-analytics/conversion-funnel` (POST)
+  - `/admin/discovery-analytics/ab-tests` (POST)
+  - `/admin/discovery-analytics/top-searches` (POST)
+
+**API Adapter:**
+- `src/lib/api/discovery-analytics.ts` - Contract-compliant interface
+  - `trackEvent()` - Store events in `conversion_analytics` table
+  - `getMetrics()` - Aggregate analytics metrics with date filtering
+  - `getConversionFunnel()` - Calculate multi-step conversion funnels
+  - `getABTestResults()` - Analyze variant performance
+  - `getTopSearches()` - Get most popular search queries
+
+**Integration:**
+- Added to unified `api` object in `src/lib/api/index.ts`
+- Available as `api.discoveryAnalytics.*` methods
+- Integrates with existing `conversion_analytics` table
+
+### Benefits Achieved:
+✅ **Type Safety** - Full TypeScript coverage for all analytics operations  
+✅ **Contract Compliance** - All analytics follow OpenAPI specification  
+✅ **Database Integration** - Uses Supabase `conversion_analytics` table  
+✅ **Comprehensive Tracking** - Covers searches, clicks, mode switches, bookings  
+✅ **Analytics Depth** - Funnels, A/B tests, search analytics, metrics
+
+---
+
 ## ✅ Phase 5.2 Complete: Professional Matching Contracts
 
 ### What's Been Implemented:

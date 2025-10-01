@@ -33,6 +33,18 @@ import {
   SubmitMatchFeedbackRequestSchema,
   SubmitMatchFeedbackResponseSchema,
 } from './professional-matching.zod';
+import {
+  TrackEventRequestSchema,
+  TrackEventResponseSchema,
+  GetMetricsRequestSchema,
+  GetMetricsResponseSchema,
+  GetConversionFunnelRequestSchema,
+  GetConversionFunnelResponseSchema,
+  GetABTestResultsRequestSchema,
+  GetABTestResultsResponseSchema,
+  GetTopSearchesRequestSchema,
+  GetTopSearchesResponseSchema,
+} from './discovery-analytics.zod';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);
@@ -60,6 +72,16 @@ registry.register('CheckAvailabilityRequest', CheckAvailabilityRequestSchema);
 registry.register('CheckAvailabilityResponse', CheckAvailabilityResponseSchema);
 registry.register('SubmitMatchFeedbackRequest', SubmitMatchFeedbackRequestSchema);
 registry.register('SubmitMatchFeedbackResponse', SubmitMatchFeedbackResponseSchema);
+registry.register('TrackEventRequest', TrackEventRequestSchema);
+registry.register('TrackEventResponse', TrackEventResponseSchema);
+registry.register('GetMetricsRequest', GetMetricsRequestSchema);
+registry.register('GetMetricsResponse', GetMetricsResponseSchema);
+registry.register('GetConversionFunnelRequest', GetConversionFunnelRequestSchema);
+registry.register('GetConversionFunnelResponse', GetConversionFunnelResponseSchema);
+registry.register('GetABTestResultsRequest', GetABTestResultsRequestSchema);
+registry.register('GetABTestResultsResponse', GetABTestResultsResponseSchema);
+registry.register('GetTopSearchesRequest', GetTopSearchesRequestSchema);
+registry.register('GetTopSearchesResponse', GetTopSearchesResponseSchema);
 
 // Register paths
 registry.registerPath({
@@ -386,6 +408,137 @@ registry.registerPath({
       content: {
         'application/json': {
           schema: SubmitMatchFeedbackResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+// Discovery Analytics Endpoints
+registry.registerPath({
+  method: 'post',
+  path: '/admin/discovery-analytics/track',
+  summary: 'Track analytics event',
+  tags: ['Discovery Analytics'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: TrackEventRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Event tracked',
+      content: {
+        'application/json': {
+          schema: TrackEventResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/admin/discovery-analytics/metrics',
+  summary: 'Get analytics metrics',
+  tags: ['Discovery Analytics'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: GetMetricsRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Analytics metrics',
+      content: {
+        'application/json': {
+          schema: GetMetricsResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/admin/discovery-analytics/conversion-funnel',
+  summary: 'Get conversion funnel data',
+  tags: ['Discovery Analytics'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: GetConversionFunnelRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Conversion funnel data',
+      content: {
+        'application/json': {
+          schema: GetConversionFunnelResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/admin/discovery-analytics/ab-tests',
+  summary: 'Get A/B test results',
+  tags: ['Discovery Analytics'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: GetABTestResultsRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'A/B test results',
+      content: {
+        'application/json': {
+          schema: GetABTestResultsResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/admin/discovery-analytics/top-searches',
+  summary: 'Get top search queries',
+  tags: ['Discovery Analytics'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: GetTopSearchesRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Top search queries',
+      content: {
+        'application/json': {
+          schema: GetTopSearchesResponseSchema,
         },
       },
     },

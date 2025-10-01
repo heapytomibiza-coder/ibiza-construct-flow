@@ -10,9 +10,10 @@ import { contracts } from './contracts';
 import { payments } from './payments';
 import { aiTesting } from './ai-testing';
 import { professionalMatching } from './professional-matching';
+import { discoveryAnalytics } from './discovery-analytics';
 
 // Re-export modules for direct access
-export { auth, services, jobs, offers, contracts, payments, aiTesting, professionalMatching };
+export { auth, services, jobs, offers, contracts, payments, aiTesting, professionalMatching, discoveryAnalytics };
 
 // Re-export existing hooks for backward compatibility
 export { useAuth } from '@/hooks/useAuth';
@@ -72,6 +73,13 @@ export const api = {
     rankMatches: professionalMatching.rankMatches,
     checkAvailability: professionalMatching.checkAvailability,
     submitMatchFeedback: professionalMatching.submitMatchFeedback
+  },
+  discoveryAnalytics: {
+    trackEvent: discoveryAnalytics.trackEvent,
+    getMetrics: discoveryAnalytics.getMetrics,
+    getConversionFunnel: discoveryAnalytics.getConversionFunnel,
+    getABTestResults: discoveryAnalytics.getABTestResults,
+    getTopSearches: discoveryAnalytics.getTopSearches
   }
 };
 
