@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/hooks/useLanguage';
 import { AIQuestion } from '@/hooks/useAIQuestions';
+import { getActiveApprovedPack } from '@/lib/questionPacks';
 
 // Types
 export interface ServiceNode {
@@ -272,8 +273,40 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
     }));
   }, [services]);
 
-  // Question resolution with strict hierarchy
+  // Question resolution: NEW priority: approved packs > legacy snapshot > AI > fallback
   const getQuestions = useCallback(async (microId: string): Promise<QuestionSet> => {
+    const service = services.find(s => s.id === microId);
+    if (!service) {
+      console.warn('[ServicesRegistry] Service not found:', microId);
+      return {
+        microId,
+        locale: currentLanguage,
+        questions: [],
+        source: 'fallback',
+        version: 0
+      };
+    }
+
+    const slug = toSlug(`${service.category}-${service.subcategory}-${service.micro}`);
+    
+    try {
+      // NEW: Priority 1 - Check for active approved question pack
+      const packQuestions = await getActiveApprovedPack(slug);
+      if (packQuestions && packQuestions.questions) {
+        console.log('[ServicesRegistry] Using active approved pack for', slug);
+        return {
+          microId,
+          locale: currentLanguage,
+          questions: packQuestions.questions as unknown as AIQuestion[],
+          source: 'snapshot', // Treat as snapshot for now
+          version: 1
+        };
+      }
+    } catch (error) {
+      console.error('[ServicesRegistry] Pack resolution error:', error);
+    }
+
+    // Legacy fallback continues below
     try {
       // 1. Try approved snapshot first
       const { data: snapshot } = await supabase
@@ -343,7 +376,7 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
         version: 0
       };
     }
-  }, [currentLanguage]);
+  }, [services, currentLanguage, toSlug]);
 
   const getPricing = useCallback((microId: string): { min: number; max: number; currency: string } => {
     const service = services.find(s => s.id === microId);

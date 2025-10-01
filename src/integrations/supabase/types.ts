@@ -1314,6 +1314,42 @@ export type Database = {
           },
         ]
       }
+      job_question_snapshot: {
+        Row: {
+          created_at: string
+          job_id: string
+          pack_id: string
+          snapshot: Json
+        }
+        Insert: {
+          created_at?: string
+          job_id: string
+          pack_id: string
+          snapshot: Json
+        }
+        Update: {
+          created_at?: string
+          job_id?: string
+          pack_id?: string
+          snapshot?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_question_snapshot_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: true
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_question_snapshot_pack_id_fkey"
+            columns: ["pack_id"]
+            isOneToOne: false
+            referencedRelation: "question_packs"
+            referencedColumns: ["pack_id"]
+          },
+        ]
+      }
       job_status_updates: {
         Row: {
           created_at: string
@@ -1642,6 +1678,41 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      pack_performance: {
+        Row: {
+          completion_rate: number
+          created_at: string
+          id: string
+          median_duration_s: number
+          pack_id: string
+          slug: string
+        }
+        Insert: {
+          completion_rate?: number
+          created_at?: string
+          id?: string
+          median_duration_s?: number
+          pack_id: string
+          slug: string
+        }
+        Update: {
+          completion_rate?: number
+          created_at?: string
+          id?: string
+          median_duration_s?: number
+          pack_id?: string
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pack_performance_pack_id_fkey"
+            columns: ["pack_id"]
+            isOneToOne: true
+            referencedRelation: "question_packs"
+            referencedColumns: ["pack_id"]
+          },
+        ]
       }
       payment_methods: {
         Row: {
@@ -2408,6 +2479,155 @@ export type Database = {
         }
         Relationships: []
       }
+      question_metrics: {
+        Row: {
+          answers: number
+          avg_time_ms: number
+          dropoffs: number
+          id: string
+          pack_id: string
+          question_key: string
+          slug: string
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          answers?: number
+          avg_time_ms?: number
+          dropoffs?: number
+          id?: string
+          pack_id: string
+          question_key: string
+          slug: string
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          answers?: number
+          avg_time_ms?: number
+          dropoffs?: number
+          id?: string
+          pack_id?: string
+          question_key?: string
+          slug?: string
+          updated_at?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_metrics_pack_id_fkey"
+            columns: ["pack_id"]
+            isOneToOne: false
+            referencedRelation: "question_packs"
+            referencedColumns: ["pack_id"]
+          },
+        ]
+      }
+      question_pack_audit: {
+        Row: {
+          actor: string | null
+          at: string
+          event: string
+          id: string
+          meta: Json | null
+          pack_id: string
+        }
+        Insert: {
+          actor?: string | null
+          at?: string
+          event: string
+          id?: string
+          meta?: Json | null
+          pack_id: string
+        }
+        Update: {
+          actor?: string | null
+          at?: string
+          event?: string
+          id?: string
+          meta?: Json | null
+          pack_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_pack_audit_actor_fkey"
+            columns: ["actor"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_pack_audit_pack_id_fkey"
+            columns: ["pack_id"]
+            isOneToOne: false
+            referencedRelation: "question_packs"
+            referencedColumns: ["pack_id"]
+          },
+        ]
+      }
+      question_packs: {
+        Row: {
+          ab_test_id: string | null
+          approved_at: string | null
+          approved_by: string | null
+          content: Json
+          created_at: string
+          created_by: string | null
+          is_active: boolean
+          micro_slug: string
+          pack_id: string
+          prompt_hash: string | null
+          source: Database["public"]["Enums"]["pack_source"]
+          status: Database["public"]["Enums"]["pack_status"]
+          version: number
+        }
+        Insert: {
+          ab_test_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          content: Json
+          created_at?: string
+          created_by?: string | null
+          is_active?: boolean
+          micro_slug: string
+          pack_id?: string
+          prompt_hash?: string | null
+          source: Database["public"]["Enums"]["pack_source"]
+          status?: Database["public"]["Enums"]["pack_status"]
+          version: number
+        }
+        Update: {
+          ab_test_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          is_active?: boolean
+          micro_slug?: string
+          pack_id?: string
+          prompt_hash?: string | null
+          source?: Database["public"]["Enums"]["pack_source"]
+          status?: Database["public"]["Enums"]["pack_status"]
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_packs_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_packs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quote_requests: {
         Row: {
           created_at: string
@@ -2690,8 +2910,11 @@ export type Database = {
           category: string
           category_type: string | null
           created_at: string
+          ibiza_specific: boolean | null
           id: string
           micro: string
+          priority_level: string | null
+          question_source: string | null
           questions_logistics: Json
           questions_micro: Json
           subcategory: string
@@ -2701,8 +2924,11 @@ export type Database = {
           category: string
           category_type?: string | null
           created_at?: string
+          ibiza_specific?: boolean | null
           id?: string
           micro: string
+          priority_level?: string | null
+          question_source?: string | null
           questions_logistics?: Json
           questions_micro?: Json
           subcategory: string
@@ -2712,8 +2938,11 @@ export type Database = {
           category?: string
           category_type?: string | null
           created_at?: string
+          ibiza_specific?: boolean | null
           id?: string
           micro?: string
+          priority_level?: string | null
+          question_source?: string | null
           questions_logistics?: Json
           questions_micro?: Json
           subcategory?: string
@@ -2951,6 +3180,8 @@ export type Database = {
         | "completed"
         | "cancelled"
       milestone_status: "pending" | "completed" | "disputed"
+      pack_source: "manual" | "ai" | "hybrid"
+      pack_status: "draft" | "approved" | "retired"
       payment_status: "pending" | "completed" | "refunded" | "disputed"
       tasker_onboarding_status: "not_started" | "in_progress" | "complete"
     }
@@ -3090,6 +3321,8 @@ export const Constants = {
         "cancelled",
       ],
       milestone_status: ["pending", "completed", "disputed"],
+      pack_source: ["manual", "ai", "hybrid"],
+      pack_status: ["draft", "approved", "retired"],
       payment_status: ["pending", "completed", "refunded", "disputed"],
       tasker_onboarding_status: ["not_started", "in_progress", "complete"],
     },

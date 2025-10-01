@@ -29,6 +29,7 @@ const RouteGuard = React.lazy(() => import("./components/RouteGuard"));
 const UnifiedClientDashboard = React.lazy(() => import("./components/dashboards/UnifiedClientDashboard"));
 const UnifiedProfessionalDashboard = React.lazy(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
 const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
+const AdminQuestions = React.lazy(() => import("./pages/AdminQuestions"));
 const PostJob = React.lazy(() => import("./pages/PostJob"));
 const ServicePage = React.lazy(() => import("./pages/UnifiedServicePage"));
 const ServiceDetailPage = React.lazy(() => import("./pages/UnifiedServicePage"));
@@ -170,6 +171,15 @@ export default function App() {
             ) : (
               <RouteGuard requiredRole="admin">
                 <AdminDashboardPage />
+              </RouteGuard>
+            )
+          } />
+          <Route path="/admin/questions" element={
+            DISABLE_AUTH_FOR_WIREFRAME ? (
+              <AdminQuestions />
+            ) : (
+              <RouteGuard requiredRole="admin">
+                <AdminQuestions />
               </RouteGuard>
             )
           } />
