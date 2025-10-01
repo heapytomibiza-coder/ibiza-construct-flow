@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, CalendarIcon, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -19,6 +20,7 @@ interface LogisticsStepProps {
   microName: string;
   logistics: {
     location: string;
+    customLocation?: string;
     preferredDate?: Date;
     timeWindow?: string;
     contactName?: string;
@@ -34,6 +36,28 @@ interface LogisticsStepProps {
 const TIME_WINDOWS = ['Morning (8-12)', 'Afternoon (12-17)', 'Evening (17-20)', 'Flexible'];
 const BUDGET_RANGES = ['€0-500', '€500-1,000', '€1,000-2,500', '€2,500-5,000', '€5,000+', 'Unsure'];
 const DATE_PRESETS = ['ASAP', 'This Week', 'Within 2 Weeks', 'Within a Month'];
+const IBIZA_LOCATIONS = [
+  'Ibiza Town (Eivissa)',
+  'San Antonio (Sant Antoni)',
+  'Santa Eulalia (Santa Eulària)',
+  'Playa d\'en Bossa',
+  'Talamanca',
+  'Figueretas',
+  'San José (Sant Josep)',
+  'San Juan (Sant Joan)',
+  'San Miguel (Sant Miquel)',
+  'San Rafael (Sant Rafel)',
+  'San Lorenzo (Sant Llorenç)',
+  'Santa Gertrudis',
+  'Jesus (Jesús)',
+  'Portinatx',
+  'Cala Llonga',
+  'Es Canar',
+  'Cala de Sant Vicent',
+  'San Carlos (Sant Carles)',
+  'San Agustin (Sant Agustí)',
+  'Other'
+];
 
 export const LogisticsStep: React.FC<LogisticsStepProps> = ({
   microName,
@@ -77,17 +101,31 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
       <div className="space-y-6">
         {/* Location */}
-        <Card className="p-6">
+        <Card className="p-6 space-y-3">
           <Label className="text-base font-medium text-charcoal flex items-center gap-2">
             <MapPin className="w-4 h-4" />
-            Location
+            Location in Ibiza
           </Label>
-          <Input
-            value={logistics.location || ''}
-            onChange={(e) => handleUpdate('location', e.target.value)}
-            placeholder="Enter address or area..."
-            className="mt-3"
-          />
+          <Select value={logistics.location || ''} onValueChange={(value) => handleUpdate('location', value)}>
+            <SelectTrigger className="w-full bg-background">
+              <SelectValue placeholder="Select your location in Ibiza..." />
+            </SelectTrigger>
+            <SelectContent className="bg-background border shadow-lg max-h-[300px] z-50">
+              {IBIZA_LOCATIONS.map((location) => (
+                <SelectItem key={location} value={location} className="cursor-pointer hover:bg-accent">
+                  {location}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {logistics.location === 'Other' && (
+            <Input
+              value={logistics.customLocation || ''}
+              onChange={(e) => handleUpdate('customLocation', e.target.value)}
+              placeholder="Enter specific address..."
+              className="mt-2"
+            />
+          )}
         </Card>
 
         {/* Preferred Date */}
