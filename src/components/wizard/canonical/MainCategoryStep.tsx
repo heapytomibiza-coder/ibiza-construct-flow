@@ -63,14 +63,18 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
   // Map category names to icons
   const getCategoryIcon = (category: string): keyof typeof ICON_MAP => {
     const iconMap: Record<string, keyof typeof ICON_MAP> = {
-      'Handyman': 'Wrench',
-      'Home Services': 'Home',
-      'Moving & Delivery': 'Truck',
-      'Construction': 'HardHat',
-      'Electrical': 'Zap',
-      'Plumbing': 'Droplet',
-      'Painting': 'Paintbrush',
-      'Carpentry': 'Hammer',
+      'Architects & Design': 'Lightbulb',
+      'Builders & Structural Works': 'HardHat',
+      'Plumbing & Heating': 'Droplet',
+      'Electrical & Smart Home': 'Zap',
+      'Air Conditioning & Ventilation': 'Sun',
+      'Kitchens & Bathrooms': 'Home',
+      'Painting & Decorating': 'Paintbrush',
+      'Floors, Doors & Windows': 'Package',
+      'Roofing & Exteriors': 'Building',
+      'Landscaping & Pools': 'TreePine',
+      'Handyman & Small Jobs': 'Wrench',
+      'Commercial Projects': 'Building',
     };
     return iconMap[category] || 'Wrench';
   };
