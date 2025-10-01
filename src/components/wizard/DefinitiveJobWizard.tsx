@@ -113,7 +113,7 @@ export const DefinitiveJobWizard: React.FC<JobWizardProps> = ({ onComplete, onCa
       // Create job posting
       const { data: job, error } = await supabase
         .from('bookings')
-        .insert({
+        .insert([{
           client_id: user.id,
           service_id: wizardState.selectedMicroId,
           title: wizardState.jobTitle,
@@ -124,14 +124,14 @@ export const DefinitiveJobWizard: React.FC<JobWizardProps> = ({ onComplete, onCa
             preferred_date: wizardState.preferredDate,
             location: wizardState.location
           },
-          status: 'open',
+          status: 'posted',
           micro_slug: `${wizardState.selectedCategory}-${wizardState.selectedSubcategory}-${wizardState.selectedMicro}`
             .toLowerCase()
             .replace(/\s+/g, '-'),
           catalogue_version_used: 1,
           locale: 'en',
           origin: 'web'
-        })
+        }])
         .select()
         .single();
 
