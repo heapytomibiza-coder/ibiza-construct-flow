@@ -152,22 +152,23 @@ const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
         return;
       }
 
+      // Sanitize and prepare data
       const jobData: WizardCompletePayload = {
-        title: formData.title,
-        description: formData.description,
-        location: formData.location,
+        title: formData.title.trim().slice(0, 200),
+        description: formData.description?.trim().slice(0, 5000),
+        location: formData.location?.trim().slice(0, 500),
         urgency: formData.urgency,
         serviceId: selectedService.id,
         microSlug: currentMicroSlug(selectedService),
-        category: selectedCategory,
-        subcategory: selectedSubcategory,
-        micro: selectedService.micro,
+        category: selectedCategory.trim().slice(0, 100),
+        subcategory: selectedSubcategory.trim().slice(0, 100),
+        micro: selectedService.micro.trim().slice(0, 100),
         selectedItems: [],
         totalEstimate: undefined,
         confidence: undefined,
         generalAnswers: {
-          budget: formData.budget || null,
-          requirements: formData.requirements || null,
+          budget: formData.budget?.trim().slice(0, 100) || null,
+          requirements: formData.requirements?.trim().slice(0, 5000) || null,
           photos: formData.photos || []
         }
       };
@@ -321,9 +322,10 @@ const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
                       </label>
                       <Input
                         value={formData.title}
-                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value.slice(0, 200) }))}
                         placeholder="e.g., Kitchen renovation with new tiles"
                         className="mobile-optimized-input"
+                        maxLength={200}
                       />
                     </div>
 
@@ -333,10 +335,11 @@ const LuxuryJobWizard = ({ onComplete, onCancel }: LuxuryJobWizardProps) => {
                       </label>
                       <Textarea
                         value={formData.description}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value.slice(0, 5000) }))}
                         placeholder="Describe your project in detail. Include materials, size, and any specific requirements..."
                         rows={4}
                         className="mobile-optimized-input"
+                        maxLength={5000}
                       />
                     </div>
 

@@ -14,6 +14,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { WizardCompletePayload } from '@/lib/contracts';
+import { safeValidateWizardPayload, safeValidateBookingInsert } from '@/lib/validation/jobWizard';
 
 const PostJobView = () => {
   const isMobile = useIsMobile();
@@ -40,43 +41,68 @@ const PostJobView = () => {
 
   async function handleJobComplete(jobData: WizardCompletePayload) {
     try {
+      // Validate wizard payload
+      const validationResult = safeValidateWizardPayload(jobData);
+      if (!validationResult.success) {
+        console.error('Validation failed:', validationResult.error.issues);
+        toast.error('Invalid form data. Please check your inputs.');
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You must be logged in to create a job');
         return;
       }
 
+      // Prepare booking data with validation
+      const bookingData = {
+        client_id: user.id,
+        title: validationResult.data.title,
+        description: validationResult.data.description || '',
+        service_id: validationResult.data.serviceId,
+        // Audit tracking
+        micro_slug: validationResult.data.microSlug,
+        catalogue_version_used: 1,
+        locale: currentLanguage,
+        origin: (isMobile ? 'mobile' : 'web') as 'mobile' | 'web',
+        // Structured answers (sanitized)
+        micro_q_answers: validationResult.data.microAnswers || {},
+        general_answers: validationResult.data.generalAnswers || {},
+        // Additional fields
+        selected_items: validationResult.data.selectedItems || [],
+        total_estimated_price: validationResult.data.totalEstimate || 0,
+        location_details: validationResult.data.location || '',
+        status: 'draft' as const
+      };
+
+      // Validate booking insert
+      const insertValidation = safeValidateBookingInsert(bookingData);
+      if (!insertValidation.success) {
+        console.error('Insert validation failed:', insertValidation.error.issues);
+        toast.error('Failed to prepare job data');
+        return;
+      }
+
       // Create the booking with complete audit trail
       const { data, error } = await supabase
         .from('bookings')
-        .insert({
-          client_id: user.id,
-          title: jobData.title,
-          description: jobData.description,
-          service_id: jobData.serviceId,
-          // Audit tracking
-          micro_slug: jobData.microSlug,
-          catalogue_version_used: 1,
-          locale: currentLanguage,
-          origin: isMobile ? 'mobile' : 'web',
-          // Structured answers
-          micro_q_answers: jobData.microAnswers || {},
-          general_answers: jobData.generalAnswers || {},
-          // Additional fields
-          selected_items: jobData.selectedItems || [],
-          total_estimated_price: jobData.totalEstimate || 0,
-          status: 'draft'
-        })
+        .insert([insertValidation.data])
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+
+      if (!data) {
+        toast.error('Failed to create job - no data returned');
+        return;
+      }
 
       toast.success('Job created successfully!');
       setShowWizard(false);
     } catch (error) {
       console.error('Error creating job:', error);
-      toast.error('Failed to create job');
+      toast.error('Failed to create job. Please try again.');
     }
   }
 

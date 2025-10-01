@@ -141,16 +141,18 @@ const MobileJobWizard = ({
       toast.error('Please select a service');
       return;
     }
+
+    // Sanitize and prepare data
     const jobData: WizardCompletePayload = {
-      title: formData.title || `${selectedService.micro} Service`,
-      description: formData.description,
-      location: formData.location,
+      title: (formData.title || `${selectedService.micro} Service`).trim().slice(0, 200),
+      description: formData.description?.trim().slice(0, 5000),
+      location: formData.location?.trim().slice(0, 500),
       urgency: formData.urgency,
       serviceId: selectedService.id,
       microSlug: currentMicroSlug(selectedService),
-      category: selectedCategory,
-      subcategory: selectedSubcategory,
-      micro: selectedService.micro,
+      category: selectedCategory.trim().slice(0, 100),
+      subcategory: selectedSubcategory.trim().slice(0, 100),
+      micro: selectedService.micro.trim().slice(0, 100),
       microAnswers,
       logisticsAnswers,
       selectedItems: [],
@@ -160,11 +162,12 @@ const MobileJobWizard = ({
         microAnswers,
         logisticsAnswers,
         selectedDate: selectedDate ? selectedDate.toISOString() : null,
-        preferredTime: formData.preferredTime || null,
-        budget: formData.budget || null,
-        requirements: formData.requirements || null
+        preferredTime: formData.preferredTime?.trim() || null,
+        budget: formData.budget?.trim().slice(0, 100) || null,
+        requirements: formData.requirements?.trim().slice(0, 5000) || null
       }
     };
+
     onComplete(jobData);
   };
 
@@ -408,9 +411,10 @@ const MobileJobWizard = ({
                 <label className="block text-sm font-medium text-charcoal mb-2">Project Title (Optional)</label>
                 <Input
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value.slice(0, 200) }))}
                   placeholder={`e.g., ${selectedService?.micro || 'Kitchen renovation'}`}
                   className="mobile-optimized-input"
+                  maxLength={200}
                 />
               </div>
 
@@ -418,10 +422,11 @@ const MobileJobWizard = ({
                 <label className="block text-sm font-medium text-charcoal mb-2">Additional Notes (Optional)</label>
                 <Textarea
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value.slice(0, 5000) }))}
                   placeholder="Any special requirements, access instructions, etc..."
                   rows={4}
                   className="mobile-optimized-input"
+                  maxLength={5000}
                 />
               </div>
             </div>
