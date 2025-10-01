@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import PostJobView from '@/components/client/PostJobView';
 import { useMarketplaceContext } from '@/hooks/useMarketplaceContext';
@@ -8,22 +8,37 @@ const PostJob: React.FC = () => {
   const navigate = useNavigate();
   const { context, updateContext } = useMarketplaceContext();
 
+  // Extract params once to prevent re-renders
+  const urlParams = useMemo(() => ({
+    service: searchParams.get('service'),
+    category: searchParams.get('category'),
+    location: searchParams.get('location'),
+    budget: searchParams.get('budget')
+  }), [searchParams]);
+
   // Handle URL params from marketplace context
   useEffect(() => {
-    const service = searchParams.get('service');
-    const category = searchParams.get('category');
-    const location = searchParams.get('location');
-    const budget = searchParams.get('budget');
+    // Only update if there are actual URL params to process
+    if (!urlParams.service && !urlParams.category && !urlParams.location && !urlParams.budget) {
+      // Just ensure currentPath is set
+      if (context.currentPath !== 'post') {
+        updateContext({ currentPath: 'post' });
+      }
+      return;
+    }
+
+    // Build updates only for params that exist
+    const updates: any = { currentPath: 'post' };
     
-    // Update context with URL params
-    updateContext({
-      searchTerm: service || context.searchTerm,
-      category: category || context.category,
-      location: location ? { lat: 0, lng: 0, address: location } : context.location,
-      budget: budget as any || context.budget,
-      currentPath: 'post'
-    });
-  }, [searchParams, updateContext, context]);
+    if (urlParams.service) updates.searchTerm = urlParams.service;
+    if (urlParams.category) updates.category = urlParams.category;
+    if (urlParams.location) {
+      updates.location = { lat: 0, lng: 0, address: urlParams.location };
+    }
+    if (urlParams.budget) updates.budget = urlParams.budget;
+    
+    updateContext(updates);
+  }, [urlParams, updateContext]);
 
   const handleCrossoverToDiscovery = () => {
     updateContext({
