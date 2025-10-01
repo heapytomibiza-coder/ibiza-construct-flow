@@ -25,7 +25,7 @@ interface LogisticsStepProps {
     timeWindow?: string;
     contactName?: string;
     contactPhone?: string;
-    accessDetails?: string;
+    accessDetails?: string[];
     budgetRange?: string;
   };
   onLogisticsChange: (logistics: any) => void;
@@ -36,6 +36,18 @@ interface LogisticsStepProps {
 const TIME_WINDOWS = ['Morning (8-12)', 'Afternoon (12-17)', 'Evening (17-20)', 'Flexible'];
 const BUDGET_RANGES = ['€0-500', '€500-1,000', '€1,000-2,500', '€2,500-5,000', '€5,000+', 'Unsure'];
 const DATE_PRESETS = ['ASAP', 'This Week', 'Within 2 Weeks', 'Within a Month'];
+const ACCESS_OPTIONS = [
+  'Street level parking',
+  'Underground parking',
+  'No parking nearby',
+  'Elevator available',
+  'Stairs only',
+  'Gated community',
+  'Code/keys needed',
+  'Building reception',
+  'Easy access',
+  'Limited access'
+];
 const IBIZA_LOCATIONS = [
   'Ibiza Town (Eivissa)',
   'San Antonio (Sant Antoni)',
@@ -225,14 +237,31 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           </div>
 
           <div>
-            <Label className="text-sm">Access Details</Label>
-            <Textarea
-              value={logistics.accessDetails || ''}
-              onChange={(e) => handleUpdate('accessDetails', e.target.value)}
-              placeholder="Parking, floor, lift access, gate codes, etc..."
-              className="mt-1"
-              rows={3}
-            />
+            <Label className="text-sm text-muted-foreground mb-2 block">Access & Parking</Label>
+            <div className="flex flex-wrap gap-2">
+              {ACCESS_OPTIONS.map((option) => {
+                const isSelected = logistics.accessDetails?.includes(option);
+                return (
+                  <Badge
+                    key={option}
+                    variant={isSelected ? "default" : "outline"}
+                    className={cn(
+                      "cursor-pointer px-4 py-2 transition-all hover:scale-105",
+                      isSelected ? "bg-copper text-white" : "hover:border-copper"
+                    )}
+                    onClick={() => {
+                      const current = logistics.accessDetails || [];
+                      const updated = isSelected
+                        ? current.filter((item) => item !== option)
+                        : [...current, option];
+                      handleUpdate('accessDetails', updated);
+                    }}
+                  >
+                    {option}
+                  </Badge>
+                );
+              })}
+            </div>
           </div>
         </Card>
 

@@ -27,12 +27,13 @@ interface WizardState {
   answers: Record<string, any>;
   logistics: {
     location: string;
+    customLocation?: string;
     preferredDate?: Date;
     datePreset?: string;
     timeWindow?: string;
     contactName?: string;
     contactPhone?: string;
-    accessDetails?: string;
+    accessDetails?: string[];
     budgetRange?: string;
   };
   extras: {
