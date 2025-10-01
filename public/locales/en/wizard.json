@@ -3,6 +3,7 @@
     "category": {
       "title": "What type of work do you need?",
       "subtitle": "Choose the category that best fits your project",
+      "search": "Search for a service...",
       "professionalServices": "Professional services",
       "transportDeliveries": "Transport & Deliveries",
       "movingDeliveryServices": "Moving and delivery services",
@@ -15,8 +16,16 @@
       "specializedWork": "Specialized work"
     },
     "microservice": {
-      "title": "Exactly what needs to be done?",
+      "title": "What specific task do you need?",
       "back": "Back"
+    },
+    "aiQuestions": {
+      "title": "Tell Us More",
+      "subtitle": "Answer a few quick questions"
+    },
+    "location": {
+      "title": "Location & Timing",
+      "subtitle": "Where and when?"
     },
     "details": {
       "title": "Tell us more about your {{service}}",

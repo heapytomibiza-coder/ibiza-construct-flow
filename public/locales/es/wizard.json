@@ -3,6 +3,7 @@
     "category": {
       "title": "¿Qué tipo de trabajo necesitas?",
       "subtitle": "Elige la categoría que mejor se adapte a tu proyecto",
+      "search": "Buscar un servicio...",
       "professionalServices": "Servicios profesionales",
       "transportDeliveries": "Transporte y Entregas",
       "movingDeliveryServices": "Servicios de mudanza y entrega",
@@ -15,8 +16,16 @@
       "specializedWork": "Trabajo especializado"
     },
     "microservice": {
-      "title": "¿Exactamente qué hay que hacer?",
+      "title": "¿Qué tarea específica necesitas?",
       "back": "Atrás"
+    },
+    "aiQuestions": {
+      "title": "Cuéntanos Más",
+      "subtitle": "Responde algunas preguntas rápidas"
+    },
+    "location": {
+      "title": "Ubicación y Tiempo",
+      "subtitle": "¿Dónde y cuándo?"
     },
     "details": {
       "title": "Cuéntanos más sobre tu {{service}}",

@@ -6,7 +6,7 @@ import {
   Plus, FileText, Clock, TrendingUp, 
   Sparkles, Zap, Target, Users
 } from 'lucide-react';
-import EnhancedJobWizard from '@/components/wizard/EnhancedJobWizard';
+import DefinitiveJobWizard from '@/components/wizard/DefinitiveJobWizard';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { useLanguage } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,8 +23,8 @@ const PostJobView = () => {
 
   if (showWizard) {
     return (
-      <EnhancedJobWizard
-        onComplete={handleJobComplete}
+      <DefinitiveJobWizard
+        onComplete={() => setShowWizard(false)}
         onCancel={() => setShowWizard(false)}
       />
     );
