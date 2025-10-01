@@ -11,8 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
   Home, Wrench, Paintbrush, Zap, Droplet, Hammer,
-  TreePine, Car, Lightbulb, Package, Truck, Sun,
-  HardHat, ShieldCheck, Building, Sparkles, Camera, Microscope
+  TreePine, Trees, Waves, Wind, Lightbulb, Sun,
+  HardHat, Building, Building2, DoorOpen, Bath, FileText,
+  Grid3X3, Layers
 } from 'lucide-react';
 
 interface MainCategoryStepProps {
@@ -23,8 +24,9 @@ interface MainCategoryStepProps {
 
 const ICON_MAP: Record<string, any> = {
   Home, Wrench, Paintbrush, Zap, Droplet, Hammer,
-  TreePine, Car, Lightbulb, Package, Truck, Sun,
-  HardHat, ShieldCheck, Building, Sparkles, Camera, Microscope
+  TreePine, Trees, Waves, Wind, Lightbulb, Sun,
+  HardHat, Building, Building2, DoorOpen, Bath, FileText,
+  Grid3X3, Layers
 };
 
 export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
@@ -60,21 +62,29 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
     }
   };
 
-  // Map category names to icons
+  // Map category names to icons (12 Main + 6 Specialist)
   const getCategoryIcon = (category: string): keyof typeof ICON_MAP => {
     const iconMap: Record<string, keyof typeof ICON_MAP> = {
+      // 12 Main Construction Categories
+      'Builder': 'HardHat',
+      'Plumber': 'Droplet',
+      'Electrician': 'Zap',
+      'Carpenter': 'Hammer',
+      'Handyman': 'Wrench',
+      'Painter': 'Paintbrush',
+      'Tiler': 'Grid3X3',
+      'Plasterer': 'Layers',
+      'Roofer': 'Home',
+      'Landscaper': 'Trees',
+      'Pool Builder': 'Waves',
+      'HVAC': 'Wind',
+      // 6 Specialist Categories
       'Architects & Design': 'Lightbulb',
-      'Builders & Structural Works': 'HardHat',
-      'Plumbing & Heating': 'Droplet',
-      'Electrical & Smart Home': 'Zap',
-      'Air Conditioning & Ventilation': 'Sun',
-      'Kitchens & Bathrooms': 'Home',
-      'Painting & Decorating': 'Paintbrush',
-      'Floors, Doors & Windows': 'Package',
-      'Roofing & Exteriors': 'Building',
-      'Landscaping & Pools': 'TreePine',
-      'Handyman & Small Jobs': 'Wrench',
+      'Structural Works': 'Building2',
+      'Floors, Doors & Windows': 'DoorOpen',
+      'Kitchen & Bathroom': 'Bath',
       'Commercial Projects': 'Building',
+      'Legal & Regulatory': 'FileText',
     };
     return iconMap[category] || 'Wrench';
   };
