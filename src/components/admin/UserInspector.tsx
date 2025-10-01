@@ -3,16 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Shield, Eye } from 'lucide-react';
-
-interface UserProfile {
-  id: string;
-  full_name: string | null;
-  roles: string[];
-  created_at: string;
-}
+import { Users, Shield } from 'lucide-react';
+import { api } from '@/lib/api';
+import type { UserProfile } from '../../../contracts/src/user-inspector.zod';
 
 const UserInspector = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -22,16 +16,13 @@ const UserInspector = () => {
   useEffect(() => {
     const loadUsers = async () => {
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id, full_name, roles, created_at')
-          .order('created_at', { ascending: false });
+        const response = await api.userInspector.listUsers({ limit: 100 });
         
-        if (error) throw error;
-        setUsers((data || []).map(user => ({
-          ...user,
-          roles: user.roles as string[],
-        })));
+        if (!response.success || !response.data) {
+          throw new Error(response.error || 'Failed to load users');
+        }
+        
+        setUsers(response.data);
       } catch (error) {
         console.error('Error loading users:', error);
         toast({
@@ -45,21 +36,6 @@ const UserInspector = () => {
     };
 
     loadUsers();
-
-    // Listen for real-time updates to profiles
-    const channel = supabase
-      .channel('profiles_changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'profiles' },
-        () => {
-          loadUsers(); // Reload when profiles change
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [toast]);
 
   const promoteToAdmin = async (userId: string, currentRoles: string[]) => {
@@ -69,12 +45,14 @@ const UserInspector = () => {
         updatedRoles.push('admin');
       }
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({ roles: updatedRoles })
-        .eq('id', userId);
+      const response = await api.userInspector.updateUserStatus({
+        userId,
+        roles: updatedRoles,
+      });
 
-      if (error) throw error;
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to update user');
+      }
 
       toast({
         title: "User Promoted",
@@ -83,7 +61,7 @@ const UserInspector = () => {
 
       // Update local state
       setUsers(prev => prev.map(user => 
-        user.id === userId ? { ...user, roles: updatedRoles } : user
+        user.id === userId ? response.data! : user
       ));
     } catch (error) {
       console.error('Error promoting user:', error);

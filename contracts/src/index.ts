@@ -45,6 +45,19 @@ import {
   GetTopSearchesRequestSchema,
   GetTopSearchesResponseSchema,
 } from './discovery-analytics.zod';
+import {
+  UserProfileSchema,
+  GetUserProfileRequestSchema,
+  GetUserProfileResponseSchema,
+  ListUsersRequestSchema,
+  ListUsersResponseSchema,
+  GetUserActivityRequestSchema,
+  GetUserActivityResponseSchema,
+  GetUserJobsRequestSchema,
+  GetUserJobsResponseSchema,
+  UpdateUserStatusRequestSchema,
+  UpdateUserStatusResponseSchema,
+} from './user-inspector.zod';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);
@@ -82,6 +95,17 @@ registry.register('GetABTestResultsRequest', GetABTestResultsRequestSchema);
 registry.register('GetABTestResultsResponse', GetABTestResultsResponseSchema);
 registry.register('GetTopSearchesRequest', GetTopSearchesRequestSchema);
 registry.register('GetTopSearchesResponse', GetTopSearchesResponseSchema);
+registry.register('UserProfile', UserProfileSchema);
+registry.register('GetUserProfileRequest', GetUserProfileRequestSchema);
+registry.register('GetUserProfileResponse', GetUserProfileResponseSchema);
+registry.register('ListUsersRequest', ListUsersRequestSchema);
+registry.register('ListUsersResponse', ListUsersResponseSchema);
+registry.register('GetUserActivityRequest', GetUserActivityRequestSchema);
+registry.register('GetUserActivityResponse', GetUserActivityResponseSchema);
+registry.register('GetUserJobsRequest', GetUserJobsRequestSchema);
+registry.register('GetUserJobsResponse', GetUserJobsResponseSchema);
+registry.register('UpdateUserStatusRequest', UpdateUserStatusRequestSchema);
+registry.register('UpdateUserStatusResponse', UpdateUserStatusResponseSchema);
 
 // Register paths
 registry.registerPath({
@@ -545,22 +569,140 @@ registry.registerPath({
   },
 });
 
+// User Inspector Endpoints
+registry.registerPath({
+  method: 'get',
+  path: '/admin/user-inspector/users',
+  summary: 'List all users',
+  tags: ['User Inspector'],
+  request: {
+    query: ListUsersRequestSchema,
+  },
+  responses: {
+    200: {
+      description: 'Users retrieved successfully',
+      content: {
+        'application/json': {
+          schema: ListUsersResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/admin/user-inspector/profile/{userId}',
+  summary: 'Get user profile',
+  tags: ['User Inspector'],
+  request: {
+    params: z.object({
+      userId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'User profile retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetUserProfileResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/admin/user-inspector/activity/{userId}',
+  summary: 'Get user activity log',
+  tags: ['User Inspector'],
+  request: {
+    params: z.object({
+      userId: z.string().uuid(),
+    }),
+    query: z.object({
+      limit: z.number().optional(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'User activity retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetUserActivityResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/admin/user-inspector/jobs/{userId}',
+  summary: 'Get user jobs',
+  tags: ['User Inspector'],
+  request: {
+    params: z.object({
+      userId: z.string().uuid(),
+    }),
+    query: z.object({
+      limit: z.number().optional(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'User jobs retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetUserJobsResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'put',
+  path: '/admin/user-inspector/status',
+  summary: 'Update user status/roles',
+  tags: ['User Inspector'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: UpdateUserStatusRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'User status updated successfully',
+      content: {
+        'application/json': {
+          schema: UpdateUserStatusResponseSchema,
+        },
+      },
+    },
+  },
+});
+
 // Generate OpenAPI document
 const generator = new OpenApiGeneratorV3(registry.definitions);
-
 const document = generator.generateDocument({
   openapi: '3.1.0',
   info: {
     title: 'Question Packs API',
     version: '1.0.0',
-    description: 'Contract-first API for question packs management across Asker, Tasker, and Website admin',
+    description: 'Contract-first API for question pack management and AI testing'
   },
   servers: [
     {
-      url: '/api/v1',
-      description: 'API v1',
-    },
-  ],
+      url: '/api',
+      description: 'API server'
+    }
+  ]
 });
 
 // Output JSON

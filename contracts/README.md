@@ -252,6 +252,25 @@ const { mutate: approve } = useApprovePack();
 ✅ **Clean Codebase** - No duplicate manual/generated implementations  
 ✅ **Auto Cache Management** - Generated hooks handle invalidation automatically
 
+---
+
+## Phase 5.4: User Inspector Contracts ✅
+
+**Status**: Complete
+
+### Implementation
+- Zod schemas for user profiles, activity, jobs, and role management
+- 5 OpenAPI endpoints under `/admin/user-inspector/`
+- API adapter with type-safe Supabase wrappers
+- UserInspector component migrated to contract-based APIs
+
+### Benefits
+- Admin security with contract-enforced role management
+- Complete contract-first coverage for all admin features
+- Full type safety across user operations
+
+---
+
 ### Next Steps:
 
 1. Manually add the scripts above to your `package.json`

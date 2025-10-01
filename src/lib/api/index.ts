@@ -11,9 +11,10 @@ import { payments } from './payments';
 import { aiTesting } from './ai-testing';
 import { professionalMatching } from './professional-matching';
 import { discoveryAnalytics } from './discovery-analytics';
+import { userInspector } from './user-inspector';
 
 // Re-export modules for direct access
-export { auth, services, jobs, offers, contracts, payments, aiTesting, professionalMatching, discoveryAnalytics };
+export { auth, services, jobs, offers, contracts, payments, aiTesting, professionalMatching, discoveryAnalytics, userInspector };
 
 // Re-export existing hooks for backward compatibility
 export { useAuth } from '@/hooks/useAuth';
@@ -80,6 +81,13 @@ export const api = {
     getConversionFunnel: discoveryAnalytics.getConversionFunnel,
     getABTestResults: discoveryAnalytics.getABTestResults,
     getTopSearches: discoveryAnalytics.getTopSearches
+  },
+  userInspector: {
+    getUserProfile: userInspector.getUserProfile,
+    listUsers: userInspector.listUsers,
+    getUserActivity: userInspector.getUserActivity,
+    getUserJobs: userInspector.getUserJobs,
+    updateUserStatus: userInspector.updateUserStatus
   }
 };
 
