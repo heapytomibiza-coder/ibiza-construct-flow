@@ -1,6 +1,6 @@
 /**
  * Browse and manage question packs
- * Phase 2: Uses Zustand for UI state + standardized React Query hooks
+ * Phase 4: Uses generated contract clients from @contracts/clients/packs
  */
 
 import { Link } from 'react-router-dom';
@@ -12,23 +12,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Check, Play, Archive, Search } from 'lucide-react';
 import { useAdminUi } from '@/stores/adminUi';
 import {
-  useListPacks,
-  useApprovePack,
-  useActivatePack,
-  useRetirePack,
-} from '@/hooks/usePacksQuery';
+  useGetAdminPacks,
+  usePostAdminPacksApprove,
+  usePostAdminPacksActivate,
+  usePostAdminPacksRetire,
+} from '../../../../packages/@contracts/clients/packs';
 
 export function PackBrowser() {
   // UI state from Zustand (filters, selections, modals)
   const { filters, setFilters } = useAdminUi();
 
-  // Server state from React Query (packs data)
-  const { data: packs = [], isLoading } = useListPacks(filters);
+  // Server state from generated contract client
+  const { data: packs = [], isLoading } = useGetAdminPacks(filters);
 
-  // Mutations with automatic invalidation & toasts
-  const approveMutation = useApprovePack();
-  const activateMutation = useActivatePack();
-  const retireMutation = useRetirePack();
+  // Mutations from generated contract client (automatic invalidation built-in)
+  const approveMutation = usePostAdminPacksApprove();
+  const activateMutation = usePostAdminPacksActivate();
+  const retireMutation = usePostAdminPacksRetire();
 
   return (
     <div className="space-y-4">
@@ -128,7 +128,7 @@ export function PackBrowser() {
                   {pack.status === 'draft' && (
                     <Button
                       size="sm"
-                      onClick={() => approveMutation.mutate(pack.pack_id)}
+                      onClick={() => approveMutation.mutate({ packId: pack.pack_id })}
                       disabled={approveMutation.isPending}
                     >
                       <Check className="h-4 w-4 mr-1" />
@@ -140,7 +140,7 @@ export function PackBrowser() {
                     <Button
                       size="sm"
                       variant="default"
-                      onClick={() => activateMutation.mutate(pack.pack_id)}
+                      onClick={() => activateMutation.mutate({ packId: pack.pack_id })}
                       disabled={activateMutation.isPending}
                     >
                       <Play className="h-4 w-4 mr-1" />
@@ -152,7 +152,7 @@ export function PackBrowser() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => retireMutation.mutate(pack.pack_id)}
+                      onClick={() => retireMutation.mutate({ packId: pack.pack_id })}
                       disabled={retireMutation.isPending}
                     >
                       <Archive className="h-4 w-4 mr-1" />

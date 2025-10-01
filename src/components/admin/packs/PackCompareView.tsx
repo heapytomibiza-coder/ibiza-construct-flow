@@ -1,10 +1,9 @@
 /**
  * Comprehensive Pack Comparison View
- * Shows content diff, health checks, usage metrics, and approval actions
+ * Phase 4: Uses generated contract clients from @contracts/clients/packs
  */
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, AlertTriangle, XCircle, Download, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,25 +11,25 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { getPackComparison, approvePack, activatePack } from '@/lib/api/questionPacks';
 import { calculateContentDiff, performHealthCheck, calculateRiskFlags } from '@/lib/packComparison';
 import { ContentDiffPanel } from './compare/ContentDiffPanel';
 import { HealthCheckPanel } from './compare/HealthCheckPanel';
 import { MetricsPanel } from './compare/MetricsPanel';
 import { useToast } from '@/hooks/use-toast';
+import {
+  useGetAdminPacksComparison,
+  usePostAdminPacksApprove,
+  usePostAdminPacksActivate,
+} from '../../../../packages/@contracts/clients/packs';
 
 export function PackCompareView() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('diff');
 
-  const { data: comparison, isLoading } = useQuery({
-    queryKey: ['pack-comparison', slug],
-    queryFn: () => getPackComparison(slug!),
-    enabled: !!slug,
-  });
+  // Use generated contract client
+  const { data: comparison, isLoading } = useGetAdminPacksComparison(slug!);
 
   // Calculate derived data
   const contentDiff = comparison?.active || comparison?.draft 
@@ -49,22 +48,19 @@ export function PackCompareView() {
     ? calculateRiskFlags(comparison.draft.content, draftHealth, contentDiff)
     : null;
 
-  const approveMutation = useMutation({
-    mutationFn: (packId: string) => approvePack(packId),
+  // Use generated contract clients (automatic cache invalidation)
+  const approveMutation = usePostAdminPacksApprove({
     onSuccess: () => {
       toast({ title: 'Pack approved', description: 'Draft has been approved successfully' });
-      queryClient.invalidateQueries({ queryKey: ['pack-comparison', slug] });
     },
     onError: (error: Error) => {
       toast({ title: 'Approval failed', description: error.message, variant: 'destructive' });
     },
   });
 
-  const activateMutation = useMutation({
-    mutationFn: (packId: string) => activatePack(packId),
+  const activateMutation = usePostAdminPacksActivate({
     onSuccess: () => {
       toast({ title: 'Pack activated', description: 'Pack is now live for users' });
-      queryClient.invalidateQueries({ queryKey: ['pack-comparison', slug] });
     },
     onError: (error: Error) => {
       toast({ title: 'Activation failed', description: error.message, variant: 'destructive' });
@@ -182,7 +178,7 @@ export function PackCompareView() {
         </TabsContent>
 
         <TabsContent value="metrics">
-          <MetricsPanel metrics={comparison.activeMetrics} />
+          <MetricsPanel metrics={comparison.metrics} />
         </TabsContent>
 
         <TabsContent value="history">
@@ -240,7 +236,7 @@ export function PackCompareView() {
               <div className="flex items-center gap-2">
                 {canApprove && (
                   <Button
-                    onClick={() => approveMutation.mutate(comparison.draft.pack_id)}
+                    onClick={() => approveMutation.mutate({ packId: comparison.draft.pack_id })}
                     disabled={approveMutation.isPending || riskFlags?.severity === 'high'}
                     className="gap-2"
                   >
@@ -251,7 +247,7 @@ export function PackCompareView() {
                 
                 {canActivate && (
                   <Button
-                    onClick={() => activateMutation.mutate(comparison.draft.pack_id)}
+                    onClick={() => activateMutation.mutate({ packId: comparison.draft.pack_id })}
                     disabled={activateMutation.isPending}
                     variant="default"
                     className="gap-2"

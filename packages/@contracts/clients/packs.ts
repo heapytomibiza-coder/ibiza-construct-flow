@@ -7,7 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
 import { customInstance } from '@/lib/api';
-import type { Pack, PackFilters, ImportPackPayload, PackComparison } from '../../types';
+import type { Pack, PackFilters, ImportPackPayload, PackComparison } from '../types';
 
 // Query keys factory
 export const packsKeys = {

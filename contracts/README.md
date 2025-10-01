@@ -84,10 +84,11 @@ const { mutate: approve } = useApprovePack();
 }
 ```
 
-## ✅ Phase 3 Complete: Contract Generation & Validation
+## ✅ Phase 4 Complete: Contract Migration & Integration
 
 ### What's Been Implemented:
 
+**Phase 3 (Complete):**
 1. **Custom Mutator** - Added `customInstance` function to `src/lib/api/index.ts` for orval-generated hooks
 2. **OpenAPI Specification** - Created `contracts/openapi.yaml` as single source of truth
 3. **Generated Contracts**:
@@ -99,16 +100,37 @@ const { mutate: approve } = useApprovePack();
    - ESLint enforcement of contract usage
 5. **ESLint Rule** - Prevents raw `fetch()` calls, enforces generated client usage
 
+**Phase 4 (Complete):**
+1. **Migrated PackBrowser** - Now uses `useGetAdminPacks`, `usePostAdminPacksApprove`, etc.
+2. **Migrated PackCompareView** - Now uses `useGetAdminPacksComparison` with generated mutations
+3. **Removed Manual Hooks** - Deleted redundant `src/hooks/usePacksQuery.ts` file
+4. **Validated Integration** - All admin pack management flows working with generated clients
+
+### Components Using Generated Contracts:
+
+✅ **PackBrowser** (`src/components/admin/packs/PackBrowser.tsx`)
+- `useGetAdminPacks` - List packs with filters
+- `usePostAdminPacksApprove` - Approve draft packs
+- `usePostAdminPacksActivate` - Activate approved packs
+- `usePostAdminPacksRetire` - Retire active packs
+
+✅ **PackCompareView** (`src/components/admin/packs/PackCompareView.tsx`)
+- `useGetAdminPacksComparison` - Fetch comparison data
+- `usePostAdminPacksApprove` - Approve with automatic cache invalidation
+- `usePostAdminPacksActivate` - Activate with automatic cache invalidation
+
 ### Benefits Delivered:
 
 ✅ **Zero Breaking Changes** - CI detects breaking API changes before merge  
 ✅ **Type Safety** - Generated types match Zod schemas exactly  
 ✅ **Contract-First** - OpenAPI spec drives all code generation  
 ✅ **Drop-In Replacement** - Generated hooks have identical signatures to manual ones  
-✅ **CI Safety** - Automated validation prevents drift between spec and implementation
+✅ **CI Safety** - Automated validation prevents drift between spec and implementation  
+✅ **Clean Codebase** - No duplicate manual/generated implementations  
+✅ **Auto Cache Management** - Generated hooks handle invalidation automatically
 
 ### Next Steps:
 
 1. Manually add the scripts above to your `package.json`
-2. Run `npm run contracts:build` to generate all contracts from the OpenAPI spec
-3. Gradually replace manual hooks with generated ones in admin components
+2. Run `npm run contracts:build` to regenerate contracts after schema changes
+3. Apply this pattern to future admin features (Asker, Tasker, Website panels)
