@@ -84,6 +84,31 @@ const { mutate: approve } = useApprovePack();
 }
 ```
 
+## 🚧 Phase 5.1 In Progress: AI Testing Contracts
+
+### What's Being Implemented:
+
+**New Schemas Added:**
+- `contracts/src/ai-testing.zod.ts` - Zod schemas for AI testing endpoints:
+  - `GenerateQuestionsRequest/Response` - AI question generation
+  - `EstimatePriceRequest/Response` - AI price estimation
+  - `TestExecutionRequest/Response` - Comprehensive test suite execution
+
+**OpenAPI Extensions:**
+- Added `/admin/ai-testing/generate-questions` endpoint
+- Added `/admin/ai-testing/estimate-price` endpoint  
+- Added `/admin/ai-testing/execute` endpoint
+
+**API Adapter:**
+- `src/lib/api/ai-testing.ts` - Wraps Supabase Edge Functions in contract-compliant interface
+
+### Next Steps:
+1. Generate updated contracts: `npm run contracts:build`
+2. Migrate `TestRunner` component to use generated hooks
+3. Create backend orchestration endpoint for test execution
+
+---
+
 ## ✅ Phase 4 Complete: Contract Migration & Integration
 
 ### What's Been Implemented:

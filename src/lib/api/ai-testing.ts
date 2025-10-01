@@ -1,0 +1,64 @@
+/**
+ * AI Testing API Adapter
+ * Adapts Supabase Edge Functions to contract-first API
+ */
+
+import { supabase } from '@/integrations/supabase/client';
+
+export interface GenerateQuestionsRequest {
+  serviceType: string;
+  category: string;
+  subcategory: string;
+}
+
+export interface EstimatePriceRequest {
+  serviceType: string;
+  category: string;
+  subcategory: string;
+  answers: Record<string, any>;
+  location?: string;
+}
+
+export interface TestExecutionRequest {
+  testSuites?: Array<'database' | 'edge-functions' | 'storage' | 'templates'>;
+  includeI18n?: boolean;
+}
+
+/**
+ * Generate questions for a service type via AI
+ */
+export async function generateQuestions(request: GenerateQuestionsRequest) {
+  const { data, error } = await supabase.functions.invoke('generate-questions', {
+    body: request,
+  });
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+/**
+ * Estimate price for a service via AI
+ */
+export async function estimatePrice(request: EstimatePriceRequest) {
+  const { data, error } = await supabase.functions.invoke('estimate-price', {
+    body: request,
+  });
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+/**
+ * Execute comprehensive test suite
+ */
+export async function executeTests(request: TestExecutionRequest = {}) {
+  // This would be implemented as an edge function that orchestrates all tests
+  // For now, we return a structured format that matches the contract
+  throw new Error('Not implemented - requires backend test orchestration endpoint');
+}
+
+export const aiTesting = {
+  generateQuestions,
+  estimatePrice,
+  executeTests,
+};
