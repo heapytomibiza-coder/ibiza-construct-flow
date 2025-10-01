@@ -21,6 +21,11 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      // Enforce contract-first development: prevent direct API calls
+      "no-restricted-globals": ["error", {
+        name: "fetch",
+        message: "Use generated contract clients from packages/@contracts instead of raw fetch()"
+      }],
     },
   },
 );

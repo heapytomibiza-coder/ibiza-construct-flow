@@ -1,0 +1,381 @@
+openapi: 3.1.0
+info:
+  title: Question Packs API
+  version: 1.0.0
+  description: Contract-first API for question packs management across Asker, Tasker, and Website admin
+servers:
+  - url: /api/v1
+    description: API v1
+paths:
+  /admin/packs:
+    get:
+      summary: List question packs
+      tags:
+        - Packs
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum:
+              - draft
+              - approved
+              - retired
+        - in: query
+          name: source
+          schema:
+            type: string
+            enum:
+              - manual
+              - ai
+              - hybrid
+        - in: query
+          name: slug
+          schema:
+            type: string
+        - in: query
+          name: ibizaSpecific
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of question packs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pack'
+  /admin/packs/import:
+    post:
+      summary: Import a new question pack
+      tags:
+        - Packs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportPackPayload'
+      responses:
+        '200':
+          description: Imported pack
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pack'
+  /admin/packs/{packId}/approve:
+    post:
+      summary: Approve a draft pack
+      tags:
+        - Packs
+      parameters:
+        - in: path
+          name: packId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Approved pack
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pack'
+  /admin/packs/{packId}/activate:
+    post:
+      summary: Activate an approved pack
+      tags:
+        - Packs
+      parameters:
+        - in: path
+          name: packId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Activated pack
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pack'
+  /admin/packs/{packId}/retire:
+    post:
+      summary: Retire a pack
+      tags:
+        - Packs
+      parameters:
+        - in: path
+          name: packId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Retired pack
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pack'
+  /admin/packs/comparison/{slug}:
+    get:
+      summary: Get pack comparison data
+      tags:
+        - Packs
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pack comparison data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackComparison'
+  /admin/packs/{packId}/metrics:
+    get:
+      summary: Get pack performance metrics
+      tags:
+        - Packs
+      parameters:
+        - in: path
+          name: packId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Pack metrics
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  schemas:
+    Pack:
+      type: object
+      required:
+        - pack_id
+        - micro_slug
+        - version
+        - status
+        - source
+        - content
+        - created_at
+        - is_active
+      properties:
+        pack_id:
+          type: string
+          format: uuid
+        micro_slug:
+          type: string
+        version:
+          type: integer
+        status:
+          type: string
+          enum:
+            - draft
+            - approved
+            - retired
+        source:
+          type: string
+          enum:
+            - manual
+            - ai
+            - hybrid
+        prompt_hash:
+          type: string
+          nullable: true
+        content:
+          $ref: '#/components/schemas/MicroserviceDef'
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        approved_by:
+          type: string
+          format: uuid
+          nullable: true
+        is_active:
+          type: boolean
+        ab_test_id:
+          type: string
+          format: uuid
+          nullable: true
+    MicroserviceDef:
+      type: object
+      required:
+        - id
+        - category
+        - name
+        - slug
+        - i18nPrefix
+        - questions
+      properties:
+        id:
+          type: string
+          format: uuid
+        category:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        i18nPrefix:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionDef'
+    QuestionDef:
+      type: object
+      required:
+        - key
+        - type
+        - i18nKey
+      properties:
+        key:
+          type: string
+        type:
+          type: string
+          enum:
+            - single
+            - multi
+            - scale
+            - text
+            - number
+            - yesno
+        i18nKey:
+          type: string
+        required:
+          type: boolean
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOption'
+        visibility:
+          $ref: '#/components/schemas/VisibilityRule'
+        aiHint:
+          type: string
+    QuestionOption:
+      type: object
+      required:
+        - i18nKey
+        - value
+        - order
+      properties:
+        i18nKey:
+          type: string
+        value:
+          type: string
+        order:
+          type: integer
+    VisibilityRule:
+      type: object
+      properties:
+        anyOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/VisibilityCondition'
+        allOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/VisibilityCondition'
+        not:
+          $ref: '#/components/schemas/VisibilityRule'
+    VisibilityCondition:
+      type: object
+      required:
+        - questionKey
+        - equals
+      properties:
+        questionKey:
+          type: string
+        equals:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+    ImportPackPayload:
+      type: object
+      required:
+        - slug
+        - content
+        - source
+      properties:
+        slug:
+          type: string
+        content:
+          $ref: '#/components/schemas/MicroserviceDef'
+        source:
+          type: string
+          enum:
+            - manual
+            - ai
+            - hybrid
+        status:
+          type: string
+          enum:
+            - draft
+            - approved
+    PackComparison:
+      type: object
+      properties:
+        active:
+          $ref: '#/components/schemas/Pack'
+          nullable: true
+        draft:
+          $ref: '#/components/schemas/Pack'
+          nullable: true
+        versionHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pack'
+        metrics:
+          type: object
+          nullable: true
+    QuestionMetrics:
+      type: object
+      required:
+        - slug
+        - pack_id
+        - question_key
+        - views
+        - answers
+        - dropoffs
+        - avg_time_ms
+        - updated_at
+      properties:
+        slug:
+          type: string
+        pack_id:
+          type: string
+          format: uuid
+        question_key:
+          type: string
+        views:
+          type: integer
+        answers:
+          type: integer
+        dropoffs:
+          type: integer
+        avg_time_ms:
+          type: number
+        updated_at:
+          type: string
+          format: date-time

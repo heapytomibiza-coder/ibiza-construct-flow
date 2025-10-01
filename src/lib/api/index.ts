@@ -77,4 +77,37 @@ export const integrationStatus = {
   testing: 'ready-for-integration'
 };
 
+// Custom mutator for orval-generated React Query hooks
+export const customInstance = async <T>(config: {
+  url: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  params?: Record<string, any>;
+  data?: any;
+  headers?: Record<string, string>;
+  signal?: AbortSignal;
+}): Promise<T> => {
+  const { url, method, params, data, headers, signal } = config;
+
+  // Build query string from params
+  const queryString = params 
+    ? '?' + new URLSearchParams(params).toString() 
+    : '';
+
+  const response = await fetch(`${url}${queryString}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    body: data ? JSON.stringify(data) : undefined,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
 console.log('🚀 Integration playbook complete! Full API layer is now live and ready for frontend integration.');

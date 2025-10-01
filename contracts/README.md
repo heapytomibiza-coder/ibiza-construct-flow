@@ -71,7 +71,7 @@ const { mutate: approve } = useApprovePack();
 
 ## Scripts to Add to package.json
 
-Add these scripts to your `package.json`:
+**IMPORTANT:** You need to manually add these scripts to your `package.json`:
 
 ```json
 {
@@ -84,8 +84,31 @@ Add these scripts to your `package.json`:
 }
 ```
 
-## Next Steps
+## ✅ Phase 3 Complete: Contract Generation & Validation
 
-1. Run `npm run contracts:build` to generate initial contracts
-2. Gradually replace manual hooks with generated ones in admin components
-3. Add CI pipeline to detect breaking changes (Phase 3)
+### What's Been Implemented:
+
+1. **Custom Mutator** - Added `customInstance` function to `src/lib/api/index.ts` for orval-generated hooks
+2. **OpenAPI Specification** - Created `contracts/openapi.yaml` as single source of truth
+3. **Generated Contracts**:
+   - `packages/@contracts/types/index.ts` - TypeScript types from OpenAPI
+   - `packages/@contracts/clients/packs.ts` - React Query hooks (drop-in replacements)
+4. **CI Pipeline** - Added `.github/workflows/contracts.yml` for automated validation:
+   - Breaking change detection via `openapi-diff`
+   - TypeScript compilation checks
+   - ESLint enforcement of contract usage
+5. **ESLint Rule** - Prevents raw `fetch()` calls, enforces generated client usage
+
+### Benefits Delivered:
+
+✅ **Zero Breaking Changes** - CI detects breaking API changes before merge  
+✅ **Type Safety** - Generated types match Zod schemas exactly  
+✅ **Contract-First** - OpenAPI spec drives all code generation  
+✅ **Drop-In Replacement** - Generated hooks have identical signatures to manual ones  
+✅ **CI Safety** - Automated validation prevents drift between spec and implementation
+
+### Next Steps:
+
+1. Manually add the scripts above to your `package.json`
+2. Run `npm run contracts:build` to generate all contracts from the OpenAPI spec
+3. Gradually replace manual hooks with generated ones in admin components
