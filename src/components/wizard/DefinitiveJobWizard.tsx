@@ -48,6 +48,7 @@ interface WizardState {
   // Step 2: AI Questions
   jobTitle: string;
   aiAnswers: Record<string, any>;
+  photos: string[];
   
   // Step 3: Location & Timing
   location: string;
@@ -75,6 +76,7 @@ export const DefinitiveJobWizard: React.FC<JobWizardProps> = ({ onComplete, onCa
     microName: '',
     jobTitle: '',
     aiAnswers: {},
+    photos: [],
     location: '',
     urgency: 'flexible'
   });
@@ -184,10 +186,15 @@ export const DefinitiveJobWizard: React.FC<JobWizardProps> = ({ onComplete, onCa
           <AIQuestionsStep
             microId={wizardState.selectedMicroId}
             microName={wizardState.selectedMicro}
+            category={wizardState.selectedCategory}
+            subcategory={wizardState.selectedSubcategory}
             jobTitle={wizardState.jobTitle}
             answers={wizardState.aiAnswers}
+            photos={wizardState.photos}
+            location={wizardState.location}
             onTitleChange={(title) => updateState({ jobTitle: title })}
             onAnswersChange={(answers) => updateState({ aiAnswers: answers })}
+            onPhotosChange={(photos) => updateState({ photos })}
             onNext={handleNext}
             onBack={handleBack}
           />

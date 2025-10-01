@@ -15,6 +15,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { ProfessionalMatcher } from '../ProfessionalMatcher';
 
 interface WizardState {
   selectedCategory: string;
@@ -299,6 +300,12 @@ ${answers || 'Contact for details.'}`;
           </div>
         </div>
       </Card>
+
+      {/* Professional Matcher Preview */}
+      <ProfessionalMatcher
+        microId={wizardState.selectedMicroId}
+        location={wizardState.location}
+      />
 
       {/* What Happens Next */}
       <Card className="overflow-hidden border-2">

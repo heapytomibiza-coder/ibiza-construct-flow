@@ -17,14 +17,22 @@ import { Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { cn } from '@/lib/utils';
+import { PhotoUpload } from '../PhotoUpload';
+import { PriceEstimator } from '../PriceEstimator';
+import { JobTemplates } from '../JobTemplates';
 
 interface AIQuestionsStepProps {
   microId: string;
   microName: string;
+  category: string;
+  subcategory: string;
   jobTitle: string;
   answers: Record<string, any>;
+  photos: string[];
+  location?: string;
   onTitleChange: (title: string) => void;
   onAnswersChange: (answers: Record<string, any>) => void;
+  onPhotosChange: (photos: string[]) => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -32,10 +40,15 @@ interface AIQuestionsStepProps {
 const AIQuestionsStep: React.FC<AIQuestionsStepProps> = ({
   microId,
   microName,
+  category,
+  subcategory,
   jobTitle,
   answers,
+  photos,
+  location,
   onTitleChange,
   onAnswersChange,
+  onPhotosChange,
   onNext,
   onBack
 }) => {
@@ -77,6 +90,12 @@ const AIQuestionsStep: React.FC<AIQuestionsStepProps> = ({
 
   const handleAnswerChange = (questionId: string, value: any) => {
     onAnswersChange({ ...answers, [questionId]: value });
+  };
+
+  const handleUseTemplate = (templateData: any) => {
+    if (templateData.jobTitle) onTitleChange(templateData.jobTitle);
+    if (templateData.answers) onAnswersChange(templateData.answers);
+    if (templateData.photos) onPhotosChange(templateData.photos);
   };
 
   const renderQuestion = (question: any) => {
@@ -215,6 +234,14 @@ const AIQuestionsStep: React.FC<AIQuestionsStepProps> = ({
         </Card>
       ) : (
         <div className="space-y-6">
+          {/* Job Templates */}
+          <JobTemplates
+            category={category}
+            subcategory={subcategory}
+            microService={microName}
+            onUseTemplate={handleUseTemplate}
+          />
+
           {/* Job Title */}
           <Card className="p-6 border-2 border-primary/10 bg-gradient-to-br from-primary/5 to-accent/5">
             <div className="space-y-4">
@@ -289,6 +316,24 @@ const AIQuestionsStep: React.FC<AIQuestionsStepProps> = ({
                 </p>
               </div>
             </Card>
+          )}
+
+          {/* Photo Upload */}
+          <PhotoUpload
+            photos={photos}
+            onPhotosChange={onPhotosChange}
+            maxPhotos={5}
+          />
+
+          {/* Real-time Price Estimation */}
+          {Object.keys(answers).length >= 2 && (
+            <PriceEstimator
+              microId={microId}
+              category={category}
+              subcategory={subcategory}
+              answers={answers}
+              location={location}
+            />
           )}
         </div>
       )}
