@@ -33,28 +33,28 @@ const urgencyOptions = [
     label: 'Flexible',
     description: 'No rush, anytime works',
     icon: Clock,
-    color: 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+    color: 'bg-primary/5 text-primary border-primary/10 hover:bg-primary/10'
   },
   {
     value: 'within_week' as const,
     label: 'Within a Week',
     description: 'Next 7 days preferred',
     icon: CalendarIcon,
-    color: 'bg-green-500/10 text-green-500 border-green-500/20'
+    color: 'bg-accent/10 text-accent border-accent/20 hover:bg-accent/15'
   },
   {
     value: 'urgent' as const,
     label: 'Urgent',
     description: 'Within 2-3 days',
     icon: Zap,
-    color: 'bg-orange-500/10 text-orange-500 border-orange-500/20'
+    color: 'bg-accent/20 text-accent-foreground border-accent/30 hover:bg-accent/25'
   },
   {
     value: 'asap' as const,
     label: 'ASAP',
     description: 'Need it done today',
     icon: Zap,
-    color: 'bg-red-500/10 text-red-500 border-red-500/20'
+    color: 'bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/15'
   }
 ];
 

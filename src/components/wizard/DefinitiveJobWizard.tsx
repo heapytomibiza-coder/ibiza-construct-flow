@@ -42,6 +42,8 @@ interface WizardState {
   selectedSubcategory: string;
   selectedMicro: string;
   selectedMicroId: string;
+  categoryName: string;
+  microName: string;
   
   // Step 2: AI Questions
   jobTitle: string;
@@ -69,6 +71,8 @@ export const DefinitiveJobWizard: React.FC<JobWizardProps> = ({ onComplete, onCa
     selectedSubcategory: '',
     selectedMicro: '',
     selectedMicroId: '',
+    categoryName: '',
+    microName: '',
     jobTitle: '',
     aiAnswers: {},
     location: '',
@@ -166,6 +170,8 @@ export const DefinitiveJobWizard: React.FC<JobWizardProps> = ({ onComplete, onCa
                 selectedSubcategory: subcategory,
                 selectedMicro: micro,
                 selectedMicroId: microId,
+                categoryName: category,
+                microName: micro,
                 jobTitle: micro // Auto-set title from micro
               });
             }}

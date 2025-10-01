@@ -1,6 +1,6 @@
 /**
  * Step 4: Professional Review
- * AI-generated professional job card with all details
+ * Premium AI-enhanced job card preview with semantic design tokens
  */
 
 import React, { useEffect, useState } from 'react';
@@ -8,10 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { 
-  Sparkles, MapPin, Calendar, Clock, 
-  FileText, Loader2, CheckCircle2, AlertCircle 
+  Sparkles, MapPin, Calendar, FileText, Loader2, 
+  CheckCircle2, Zap
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -22,6 +21,8 @@ interface WizardState {
   selectedSubcategory: string;
   selectedMicro: string;
   selectedMicroId: string;
+  categoryName: string;
+  microName: string;
   jobTitle: string;
   aiAnswers: Record<string, any>;
   location: string;
@@ -40,17 +41,10 @@ interface ProfessionalReviewStepProps {
 }
 
 const urgencyLabels = {
-  flexible: 'Flexible',
-  within_week: 'Within a Week',
-  urgent: 'Urgent (2-3 days)',
-  asap: 'ASAP (Today)'
-};
-
-const urgencyColors = {
-  flexible: 'bg-blue-500/10 text-blue-500',
-  within_week: 'bg-green-500/10 text-green-500',
-  urgent: 'bg-orange-500/10 text-orange-500',
-  asap: 'bg-red-500/10 text-red-500'
+  flexible: { label: 'Flexible', className: 'border-primary/30 text-primary' },
+  within_week: { label: 'Within a Week', className: 'border-accent/30 text-accent' },
+  urgent: { label: 'Urgent', className: 'border-accent text-accent' },
+  asap: { label: 'ASAP', className: 'border-destructive/30 text-destructive' }
 };
 
 const ProfessionalReviewStep: React.FC<ProfessionalReviewStepProps> = ({
@@ -71,45 +65,33 @@ const ProfessionalReviewStep: React.FC<ProfessionalReviewStepProps> = ({
   const generateProfessionalDescription = async () => {
     setGeneratingDescription(true);
     try {
-      // Call AI to generate professional description
       const { data, error } = await supabase.functions.invoke('ai-chatbot', {
         body: {
           messages: [
             {
               role: 'system',
-              content: 'You are a professional job description writer. Create clear, professional job descriptions that help service providers understand exactly what needs to be done. Be concise but thorough.'
+              content: 'You are a professional job description writer. Create clear, professional job descriptions that help service providers understand exactly what needs to be done.'
             },
             {
               role: 'user',
-              content: `Create a professional job description for this job posting:
+              content: `Create a professional job description:
 
-Service: ${wizardState.selectedMicro}
-Category: ${wizardState.selectedCategory} > ${wizardState.selectedSubcategory}
-Job Title: ${wizardState.jobTitle}
+Service: ${wizardState.microName}
+Category: ${wizardState.categoryName}
+Title: ${wizardState.jobTitle}
 Location: ${wizardState.location}
-Urgency: ${urgencyLabels[wizardState.urgency]}
-${wizardState.preferredDate ? `Preferred Date: ${format(new Date(wizardState.preferredDate), 'PPP')}` : ''}
+Urgency: ${urgencyLabels[wizardState.urgency].label}
 
-User Answers:
+User Requirements:
 ${Object.entries(wizardState.aiAnswers).map(([key, value]) => `- ${key}: ${value}`).join('\n')}
 
-Write a professional, easy-to-read description that includes:
-1. Overview of what needs to be done
-2. Key requirements based on the answers
-3. Location and timing details
-4. Any special considerations
-
-Keep it under 250 words, use bullet points where appropriate, and make it scan-friendly for busy professionals.`
+Write a clear, scan-friendly description (under 200 words).`
             }
           ]
         }
       });
 
-      if (error) {
-        console.error('AI generation error:', error);
-        throw error;
-      }
-
+      if (error) throw error;
       const description = data?.response || generateFallbackDescription();
       setAiDescription(description);
       onDescriptionGenerated(description);
@@ -128,155 +110,243 @@ Keep it under 250 words, use bullet points where appropriate, and make it scan-f
       .map(([key, value]) => `• ${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`)
       .join('\n');
 
-    return `**${wizardState.selectedMicro} Service Needed**
+    return `**${wizardState.microName} Service**
 
-I'm looking for a professional to help with ${wizardState.selectedMicro.toLowerCase()} at ${wizardState.location}.
+Professional ${wizardState.microName.toLowerCase()} needed at ${wizardState.location}.
 
-**Timeline:** ${urgencyLabels[wizardState.urgency]}
-${wizardState.preferredDate ? `**Preferred Date:** ${format(new Date(wizardState.preferredDate), 'PPP')}` : ''}
+**Timeline:** ${urgencyLabels[wizardState.urgency].label}
+${wizardState.preferredDate ? `**Date:** ${format(new Date(wizardState.preferredDate), 'PPP')}` : ''}
 
 **Requirements:**
-${answers || 'Please contact me for more details about the requirements.'}
-
-**Location:** ${wizardState.location}
-
-I'm looking forward to receiving offers from qualified professionals. Please reach out if you have experience with this type of work!`;
+${answers || 'Contact for details.'}`;
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       {/* Header */}
       <div className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
-          <Sparkles className="w-5 h-5" />
-          <span className="font-medium">AI-Enhanced Review</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent mb-4">
+          <Sparkles className="w-4 h-4" />
+          <span className="text-sm font-medium">AI-Enhanced Preview</span>
         </div>
         <h1 className="text-4xl font-bold">Review Your Job Post</h1>
         <p className="text-muted-foreground text-lg">
-          Here's how your job will appear to professionals
+          This is how qualified professionals will see your request
         </p>
       </div>
 
-      {/* Professional Job Card Preview */}
-      <Card className="overflow-hidden border-2">
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8">
-          <div className="space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-2 flex-1">
-                <h2 className="text-3xl font-bold">{wizardState.jobTitle}</h2>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Badge variant="secondary" className="text-sm">
-                    {wizardState.selectedCategory}
+      {/* Premium Professional Job Card */}
+      <Card className="overflow-hidden border-2 shadow-luxury hover:shadow-elegant transition-all duration-300">
+        {/* Hero Section with Gradient */}
+        <div className="bg-gradient-to-r from-primary via-charcoal-light to-primary p-8 text-primary-foreground">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <Badge className="bg-accent text-accent-foreground px-3 py-1 text-sm font-semibold">
+                  {wizardState.categoryName}
+                </Badge>
+                {urgencyLabels[wizardState.urgency] && (
+                  <Badge 
+                    variant="outline" 
+                    className={cn(
+                      "border-2 bg-background/10 backdrop-blur-sm px-3 py-1",
+                      urgencyLabels[wizardState.urgency].className
+                    )}
+                  >
+                    <Zap className="w-3 h-3 mr-1" />
+                    {urgencyLabels[wizardState.urgency].label}
                   </Badge>
-                  <span>•</span>
-                  <span>{wizardState.selectedSubcategory}</span>
-                  <span>•</span>
-                  <span className="font-medium">{wizardState.selectedMicro}</span>
-                </div>
+                )}
               </div>
-              <Badge 
-                variant="outline" 
-                className={cn("text-sm px-3 py-1", urgencyColors[wizardState.urgency])}
-              >
-                {urgencyLabels[wizardState.urgency]}
-              </Badge>
-            </div>
-
-            {/* Quick Info */}
-            <div className="flex flex-wrap gap-4 pt-2">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="w-4 h-4" />
-                <span className="text-sm">{wizardState.location}</span>
-              </div>
-              {wizardState.preferredDate && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm">
-                    {format(new Date(wizardState.preferredDate), 'MMM d, yyyy')}
-                  </span>
+              <h2 className="text-3xl font-bold leading-tight">
+                {wizardState.jobTitle || 'Professional Service Request'}
+              </h2>
+              <div className="flex items-center gap-4 text-sm opacity-90">
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>{wizardState.location || 'Location TBD'}</span>
                 </div>
-              )}
+                {wizardState.preferredDate && (
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    <span>{format(new Date(wizardState.preferredDate), 'MMM d, yyyy')}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        <Separator />
-
-        {/* Description Section */}
-        <div className="p-8 space-y-6">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <FileText className="w-5 h-5 text-primary" />
-              <h3 className="text-xl font-semibold">Job Description</h3>
+        {/* Content Section */}
+        <div className="p-8 space-y-8">
+          {/* AI-Generated Description */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold">Project Description</h3>
+                <p className="text-sm text-muted-foreground">AI-enhanced for clarity</p>
+              </div>
             </div>
-
             {generatingDescription ? (
-              <Card className="p-8 bg-muted/50">
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  <p className="text-muted-foreground">AI is crafting your professional description...</p>
-                </div>
-              </Card>
+              <div className="flex items-center gap-3 p-6 bg-muted/30 rounded-xl">
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                <span className="text-muted-foreground">Crafting professional description...</span>
+              </div>
             ) : (
               <div className="prose prose-sm max-w-none">
-                <div className="bg-muted/50 rounded-lg p-6 whitespace-pre-wrap">
+                <p className="text-foreground leading-relaxed whitespace-pre-wrap bg-muted/20 p-6 rounded-xl border border-border">
                   {aiDescription}
-                </div>
+                </p>
               </div>
             )}
           </div>
 
-          {/* Requirements Answered */}
-          {Object.keys(wizardState.aiAnswers).length > 0 && (
-            <>
-              <Separator />
-              <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  Questions Answered
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {Object.entries(wizardState.aiAnswers).map(([key, value]) => (
-                    <Card key={key} className="p-4 bg-muted/30">
-                      <div className="text-sm font-medium text-muted-foreground mb-1">
-                        {key.replace(/_/g, ' ')}
-                      </div>
-                      <div className="text-sm">
-                        {Array.isArray(value) ? value.join(', ') : String(value)}
-                      </div>
-                    </Card>
-                  ))}
+          {/* Key Details Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="p-6 border-2 border-primary/10 bg-primary/5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Location</p>
+                  <p className="text-base font-semibold text-foreground truncate">
+                    {wizardState.location || 'Not specified'}
+                  </p>
                 </div>
               </div>
-            </>
+            </Card>
+            
+            <Card className="p-6 border-2 border-accent/10 bg-accent/5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                  <Calendar className="w-5 h-5 text-accent" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Timeline</p>
+                  <p className="text-base font-semibold text-foreground">
+                    {wizardState.preferredDate 
+                      ? format(new Date(wizardState.preferredDate), 'MMM d, yyyy')
+                      : urgencyLabels[wizardState.urgency]?.label || 'Flexible'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6 border-2 border-accent/10 bg-accent/5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-5 h-5 text-accent" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Service Type</p>
+                  <p className="text-base font-semibold text-foreground truncate">
+                    {wizardState.microName}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Project Requirements */}
+          {Object.keys(wizardState.aiAnswers).length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold">Project Requirements</h3>
+                  <p className="text-sm text-muted-foreground">Key details for professionals</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(wizardState.aiAnswers).map(([key, value]) => (
+                  <Card 
+                    key={key} 
+                    className="p-5 bg-muted/20 border-2 hover:border-primary/20 transition-colors"
+                  >
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                        {key.replace(/_/g, ' ')}
+                      </p>
+                      <p className="text-base text-foreground font-medium">
+                        {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
+                      </p>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 
-        {/* What Happens Next */}
-        <div className="bg-primary/5 p-8 border-t">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-primary" />
-            What Happens Next?
-          </h3>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-              <span>Your job will be posted and visible to qualified professionals</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-              <span>You'll receive offers from interested professionals</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-              <span>Review their profiles, ratings, and pricing</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-              <span>Choose your preferred professional and get started!</span>
-            </li>
-          </ul>
+        {/* CTA Footer */}
+        <div className="px-8 pb-8">
+          <div className="bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 p-6 rounded-xl border-2 border-accent/20">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-accent">Ready to Connect</p>
+                <p className="text-sm text-muted-foreground">Post this job to qualified professionals</p>
+              </div>
+              <Badge className="bg-accent text-accent-foreground px-4 py-2">
+                Free to Post
+              </Badge>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* What Happens Next */}
+      <Card className="overflow-hidden border-2">
+        <div className="bg-gradient-to-r from-primary/5 to-accent/5 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold">What Happens Next?</h3>
+              <p className="text-sm text-muted-foreground">Your journey to completion</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="flex gap-4 items-start group">
+              <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0 group-hover:scale-110 transition-transform">
+                1
+              </div>
+              <div className="flex-1 pt-2">
+                <p className="text-base font-semibold mb-1">Instant Professional Matching</p>
+                <p className="text-sm text-muted-foreground">
+                  Your job is immediately visible to verified professionals in your area with matching expertise
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4 items-start group">
+              <div className="w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold flex-shrink-0 group-hover:scale-110 transition-transform">
+                2
+              </div>
+              <div className="flex-1 pt-2">
+                <p className="text-base font-semibold mb-1">Receive Competitive Offers</p>
+                <p className="text-sm text-muted-foreground">
+                  Qualified professionals review your request and submit detailed offers with pricing and timelines
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4 items-start group">
+              <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0 group-hover:scale-110 transition-transform">
+                3
+              </div>
+              <div className="flex-1 pt-2">
+                <p className="text-base font-semibold mb-1">Compare & Choose</p>
+                <p className="text-sm text-muted-foreground">
+                  Review profiles, ratings, and offers in your dashboard to select the perfect professional
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </Card>
 
@@ -297,7 +367,7 @@ I'm looking forward to receiving offers from qualified professionals. Please rea
               Posting...
             </>
           ) : (
-            <>Post My Job</>
+            <>Post My Job →</>
           )}
         </Button>
       </div>
