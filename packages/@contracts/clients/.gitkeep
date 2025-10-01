@@ -1,0 +1,9 @@
+# Generated React Query hooks will be placed here
+# Run: npm run contracts:build
+
+# Expected files:
+# - packs.ts
+# - ai-testing.ts
+# - professional-matching.ts
+# - discovery-analytics.ts
+# - user-inspector.ts
