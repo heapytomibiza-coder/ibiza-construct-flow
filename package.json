@@ -53,6 +53,8 @@
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
+    "openapi-typescript": "^7.9.1",
+    "orval": "^7.13.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -66,9 +68,11 @@
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "vaul": "^0.9.9",
     "web-vitals": "^4.2.4",
-    "zod": "^4.1.11"
+    "zod": "^4.1.11",
+    "zod-to-openapi": "^0.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
