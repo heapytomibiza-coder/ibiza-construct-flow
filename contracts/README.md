@@ -271,8 +271,77 @@ const { mutate: approve } = useApprovePack();
 
 ---
 
+## Phase 6: Frontend Contract Generation ✅
+
+**Status**: Complete
+
+Auto-generates type-safe React Query hooks from OpenAPI specifications, eliminating manual API calls.
+
+### Implementation
+
+1. **Extended Orval Configuration** (`contracts/orval.config.cjs`):
+   - Configured 5 API modules: packs, ai-testing, professional-matching, discovery-analytics, user-inspector
+   - Each generates dedicated React Query hooks in `packages/@contracts/clients/`
+   - Tag-based filtering ensures clean separation of concerns
+
+2. **Generation Scripts**:
+   - `contracts/generate.sh` - Creates OpenAPI YAML from Zod schemas
+   - `contracts/build.sh` - Generates React Query hooks from OpenAPI spec
+   - Automated workflow: Schema → OpenAPI → React Query hooks
+
+3. **Generated Clients** (`packages/@contracts/clients/`):
+   - Type-safe hooks for all API operations
+   - Automatic React Query cache management
+   - Consistent naming and interface patterns
+   - Full TypeScript inference
+
+### Usage Example
+
+```typescript
+// Before: Manual API calls
+const [loading, setLoading] = useState(false);
+const response = await api.userInspector.listUsers({ limit: 50 });
+
+// After: Generated hooks
+const { data, isLoading } = useGetAdminUserInspectorUsers({
+  query: { limit: 50 }
+});
+```
+
+### Generated Clients
+
+- `@contracts/clients/packs` - Question pack management hooks
+- `@contracts/clients/ai-testing` - AI testing operation hooks
+- `@contracts/clients/professional-matching` - Professional matching hooks
+- `@contracts/clients/discovery-analytics` - Analytics tracking hooks
+- `@contracts/clients/user-inspector` - User management hooks
+
+### Benefits
+
+- **Zero Manual Maintenance**: Hooks regenerate from schemas automatically
+- **Type Consistency**: Frontend/backend types always synchronized
+- **Developer Experience**: Full IntelliSense for all API operations
+- **React Query Integration**: Automatic caching, refetching, optimistic updates
+- **CI/CD Ready**: Validation scripts prevent contract drift
+
+### Required package.json Scripts
+
+Add these to your `package.json`:
+
+```json
+{
+  "scripts": {
+    "contracts:generate": "bash contracts/generate.sh",
+    "contracts:build": "bash contracts/build.sh",
+    "contracts:watch": "nodemon --watch contracts/src --ext ts --exec 'npm run contracts:generate && npm run contracts:build'"
+  }
+}
+```
+
 ### Next Steps:
 
-1. Manually add the scripts above to your `package.json`
-2. Run `npm run contracts:build` to regenerate contracts after schema changes
-3. Apply this pattern to future admin features (Asker, Tasker, Website panels)
+1. Add the scripts above to your `package.json` manually
+2. Run `npm run contracts:generate` to create OpenAPI spec
+3. Run `npm run contracts:build` to generate React Query hooks
+4. Migrate components to use generated hooks instead of manual API calls
+5. Set up CI workflow to validate contracts on every push
