@@ -32,15 +32,32 @@ import { z } from 'zod';
 export const PackFiltersSchema = z.object({
   status: z.enum(['draft', 'approved', 'retired']).optional(),
   source: z.enum(['manual', 'ai', 'hybrid']).optional(),
-  slug: z.string().optional(),
+  slug: z.string().regex(/^[a-z0-9-]+$/).optional(),
   ibizaSpecific: z.boolean().optional(),
 });
 
 export const ImportPackPayloadSchema = z.object({
-  slug: z.string().min(1),
+  slug: z.string().regex(/^[a-z0-9-]+$/, 'Slug must be kebab-case'),
   content: MicroserviceDefSchema,
   source: z.enum(['manual', 'ai', 'hybrid']),
   status: z.enum(['draft', 'approved']).optional(),
+}).superRefine((data, ctx) => {
+  // Business rule: 4-12 questions typical, warn outside this range
+  const qCount = data.content.questions.length;
+  if (qCount < 4) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Only ${qCount} questions provided. Recommended minimum is 4 for meaningful discovery.`,
+      path: ['content', 'questions'],
+    });
+  }
+  if (qCount > 12) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${qCount} questions may overwhelm users. Recommended maximum is 12.`,
+      path: ['content', 'questions'],
+    });
+  }
 });
 
 export const PackIdParamSchema = z.object({
@@ -48,7 +65,7 @@ export const PackIdParamSchema = z.object({
 });
 
 export const SlugParamSchema = z.object({
-  slug: z.string().min(1),
+  slug: z.string().regex(/^[a-z0-9-]+$/),
 });
 
 export const PackComparisonResponseSchema = z.object({
