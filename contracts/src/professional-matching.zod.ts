@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { extendZodWithOpenApi } from '@anatine/zod-to-openapi';
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
 extendZodWithOpenApi(z);
 

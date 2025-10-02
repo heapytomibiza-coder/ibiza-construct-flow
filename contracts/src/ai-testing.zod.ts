@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { extendZodWithOpenApi } from '@anatine/zod-to-openapi';
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
 extendZodWithOpenApi(z);
 
@@ -38,7 +38,7 @@ export const EstimatePriceRequestSchema = z.object({
   serviceType: z.string().openapi({ example: 'Kitchen Sink Leak Repair' }),
   category: z.string().openapi({ example: 'Home Services' }),
   subcategory: z.string().openapi({ example: 'Plumbing' }),
-  answers: z.record(z.any()).openapi({ example: { leak_severity: 'moderate', access: 'easy' } }),
+  answers: z.record(z.string(), z.any()).openapi({ example: { leak_severity: 'moderate', access: 'easy' } }),
   location: z.string().optional().openapi({ example: 'Ibiza, Spain' }),
 }).openapi('EstimatePriceRequest');
 

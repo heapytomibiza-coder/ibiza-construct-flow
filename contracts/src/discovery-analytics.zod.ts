@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { extendZodWithOpenApi } from '@anatine/zod-to-openapi';
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
 extendZodWithOpenApi(z);
 
@@ -19,7 +19,7 @@ export const TrackEventRequestSchema = z.object({
     'discovery_booking_start',
     'discovery_filter_change',
   ]).openapi({ example: 'discovery_search' }),
-  properties: z.record(z.any()).openapi({ 
+  properties: z.record(z.string(), z.any()).openapi({ 
     example: { 
       query: 'plumber',
       location: 'Ibiza',
@@ -51,7 +51,7 @@ export const MetricDataPointSchema = z.object({
   eventType: z.string().optional().openapi({ example: 'discovery_search' }),
   count: z.number().openapi({ example: 125 }),
   uniqueSessions: z.number().optional().openapi({ example: 87 }),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 }).openapi('MetricDataPoint');
 
 export const GetMetricsResponseSchema = z.object({
