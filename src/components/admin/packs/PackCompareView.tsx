@@ -178,7 +178,7 @@ export function PackCompareView() {
         </TabsContent>
 
         <TabsContent value="metrics">
-          <MetricsPanel metrics={comparison.metrics} />
+          <MetricsPanel metrics={comparison.activeMetrics} />
         </TabsContent>
 
         <TabsContent value="history">

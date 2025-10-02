@@ -88,7 +88,7 @@ export function TestRunner() {
       setLogs(prev => [...prev, '\n=== Running comprehensive test suite ===']);
       const testResponse = await aiTesting.executeTests({
         testSuites: ['database', 'edge-functions', 'storage', 'templates'],
-        includeI18n: false, // We already ran i18n tests above
+        includeI18n: false,
       });
 
       // Merge results
