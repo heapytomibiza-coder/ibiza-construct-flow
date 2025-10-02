@@ -1,17 +1,15 @@
 /**
  * Step 4: Micro-Specific Questions
- * Dynamic, tap-based questions (no long typing)
+ * Now powered by enhanced AIQuestionRenderer with pack support
  */
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { cn } from '@/lib/utils';
+import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
+import { AIQuestion } from '@/hooks/useAIQuestions';
 
 interface QuestionsStepProps {
   microId: string;
@@ -30,8 +28,11 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   onNext,
   onBack
 }) => {
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<AIQuestion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [invalidRequired, setInvalidRequired] = useState<string[]>([]);
+  const [packSource, setPackSource] = useState<'pack' | 'ai' | 'fallback'>('fallback');
 
   useEffect(() => {
     loadQuestions();
@@ -40,8 +41,29 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const loadQuestions = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      // First try to get questions from database
+      // First try to get questions from question_packs (new system)
+      const { data: packData, error: packError } = await supabase
+        .from('question_packs')
+        .select('content, pack_id, version')
+        .eq('is_active', true)
+        .ilike('micro_slug', `%${microName.toLowerCase().replace(/\s+/g, '-')}%`)
+        .order('version', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!packError && packData?.content) {
+        const packQuestions = transformPackToAIQuestions(packData.content);
+        if (packQuestions.length > 0) {
+          setQuestions(packQuestions);
+          setPackSource('pack');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Fallback to legacy service_questions table
       const { data: dbData, error: dbError } = await supabase
         .from('service_questions')
         .select('questions')
@@ -51,13 +73,15 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       if (!dbError && dbData) {
         const questionsData = dbData.questions as any;
         if (questionsData?.questions) {
-          setQuestions(questionsData.questions);
+          const legacyQuestions = transformLegacyToAIQuestions(questionsData.questions);
+          setQuestions(legacyQuestions);
+          setPackSource('ai');
           setLoading(false);
           return;
         }
       }
 
-      // If no database questions, generate with AI
+      // Generate with AI if no stored questions
       const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-questions', {
         body: { 
           microServiceId: microId,
@@ -68,174 +92,125 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
       if (aiError) throw aiError;
 
-      const generatedQuestions = aiData?.questions || [];
+      const generatedQuestions = transformLegacyToAIQuestions(aiData?.questions || []);
       setQuestions(generatedQuestions);
+      setPackSource('ai');
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading questions:', error);
+      setError(error.message || 'Failed to load questions');
+      
       // Provide basic fallback questions
       setQuestions([
         {
           id: 'scope',
-          type: 'single',
+          type: 'radio',
           label: 'What is the scope of work?',
           required: true,
-          options: ['Small job', 'Medium project', 'Large project']
+          options: [
+            { label: 'Small job', value: 'small' },
+            { label: 'Medium project', value: 'medium' },
+            { label: 'Large project', value: 'large' }
+          ]
         },
         {
           id: 'urgency',
-          type: 'single',
+          type: 'radio',
           label: 'How urgent is this?',
           required: true,
-          options: ['Emergency', 'Urgent (this week)', 'Normal', 'Flexible timing']
+          options: [
+            { label: 'Emergency', value: 'emergency' },
+            { label: 'Urgent (this week)', value: 'urgent' },
+            { label: 'Normal', value: 'normal' },
+            { label: 'Flexible timing', value: 'flexible' }
+          ]
         }
       ]);
+      setPackSource('fallback');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAnswer = (questionId: string, value: any) => {
-    onAnswersChange({ ...answers, [questionId]: value });
+  const transformPackToAIQuestions = (packContent: any): AIQuestion[] => {
+    const microDef = packContent;
+    if (!microDef?.questions || !Array.isArray(microDef.questions)) return [];
+
+    return microDef.questions.map((q: any) => ({
+      id: q.key,
+      type: mapPackTypeToAIType(q.type),
+      label: q.i18nKey, // TODO: Resolve i18n
+      required: q.required ?? false,
+      options: q.options?.map((opt: any) => ({
+        label: opt.i18nKey, // TODO: Resolve i18n
+        value: opt.value
+      })),
+      min: q.min,
+      max: q.max,
+      step: q.step,
+      meta: {
+        priority: 'core',
+        hint: q.aiHint,
+        show_if: q.visibility?.allOf?.map((cond: any) => ({
+          question: cond.questionKey,
+          equals_any: [String(cond.equals)]
+        }))
+      }
+    }));
   };
 
-  const renderQuestion = (q: any) => {
-    const answer = answers[q.id];
-    const questionType = q.type === 'multiple_choice' ? 'single' : q.type;
-
-    switch (questionType) {
-      case 'single':
-      case 'multi':
-        return (
-          <div className="space-y-2">
-            <Label className="text-base font-medium text-charcoal">{q.question || q.label}</Label>
-            {q.helper_text && (
-              <p className="text-sm text-muted-foreground">{q.helper_text}</p>
-            )}
-            <div className="flex flex-wrap gap-2 mt-3">
-              {(q.options || []).map((opt: any) => {
-                const optionValue = typeof opt === 'string' ? opt : opt.value;
-                const optionLabel = typeof opt === 'string' ? opt : opt.label;
-                const isSelected = answer === optionValue || answer?.includes?.(optionValue);
-                
-                return (
-                  <Badge
-                    key={optionValue}
-                    variant={isSelected ? "default" : "outline"}
-                    className={cn(
-                      "cursor-pointer px-4 py-2 text-sm transition-all hover:scale-105",
-                      isSelected 
-                        ? "bg-copper text-white" 
-                        : "hover:border-copper"
-                    )}
-                    onClick={() => {
-                      if (questionType === 'multi') {
-                        const current = answer || [];
-                        handleAnswer(
-                          q.id,
-                          current.includes(optionValue)
-                            ? current.filter((v: string) => v !== optionValue)
-                            : [...current, optionValue]
-                        );
-                      } else {
-                        handleAnswer(q.id, optionValue);
-                      }
-                    }}
-                  >
-                    {optionLabel}
-                  </Badge>
-                );
-              })}
-            </div>
-          </div>
-        );
-
-      case 'range':
-        return (
-          <div className="space-y-2">
-            <Label className="text-base font-medium text-charcoal">{q.question || q.label}</Label>
-            {q.helper_text && (
-              <p className="text-sm text-muted-foreground">{q.helper_text}</p>
-            )}
-            <div className="space-y-4 mt-4">
-              <Slider
-                value={[answer || q.min || 0]}
-                onValueChange={([value]) => handleAnswer(q.id, value)}
-                min={q.min || 0}
-                max={q.max || 100}
-                step={q.step || 1}
-                className="mt-2"
-              />
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>{q.min || 0}</span>
-                <span className="font-medium text-copper">
-                  {answer || q.min || 0} {q.unit || ''}
-                </span>
-                <span>{q.max || 100}</span>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'number':
-        return (
-          <div className="space-y-2">
-            <Label className="text-base font-medium text-charcoal">{q.question || q.label}</Label>
-            {q.helper_text && (
-              <p className="text-sm text-muted-foreground">{q.helper_text}</p>
-            )}
-            <Input
-              type="number"
-              value={answer || ''}
-              onChange={(e) => handleAnswer(q.id, e.target.value)}
-              placeholder="Enter value..."
-              min={q.min}
-              max={q.max}
-              className="mt-2"
-            />
-          </div>
-        );
-
-      case 'boolean':
-        return (
-          <div className="space-y-2">
-            <Label className="text-base font-medium text-charcoal">{q.question || q.label}</Label>
-            {q.helper_text && (
-              <p className="text-sm text-muted-foreground">{q.helper_text}</p>
-            )}
-            <div className="flex gap-3 mt-3">
-              <Badge
-                variant={answer === true ? "default" : "outline"}
-                className={cn(
-                  "cursor-pointer px-6 py-2 transition-all hover:scale-105",
-                  answer === true ? "bg-copper text-white" : "hover:border-copper"
-                )}
-                onClick={() => handleAnswer(q.id, true)}
-              >
-                Yes
-              </Badge>
-              <Badge
-                variant={answer === false ? "default" : "outline"}
-                className={cn(
-                  "cursor-pointer px-6 py-2 transition-all hover:scale-105",
-                  answer === false ? "bg-copper text-white" : "hover:border-copper"
-                )}
-                onClick={() => handleAnswer(q.id, false)}
-              >
-                No
-              </Badge>
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
+  const mapPackTypeToAIType = (packType: string): AIQuestion['type'] => {
+    const typeMap: Record<string, AIQuestion['type']> = {
+      'single': 'radio',
+      'multi': 'checkbox',
+      'scale': 'scale',
+      'text': 'text',
+      'number': 'number',
+      'yesno': 'yesno',
+      'file': 'file'
+    };
+    return typeMap[packType] || 'radio';
   };
 
-  const requiredAnswered = questions
-    .filter(q => q.required)
-    .every(q => answers[q.id] !== undefined && answers[q.id] !== '');
+  const transformLegacyToAIQuestions = (legacyQuestions: any[]): AIQuestion[] => {
+    return legacyQuestions.map((q: any) => ({
+      id: q.id || q.key,
+      type: mapLegacyTypeToAIType(q.type),
+      label: q.question || q.label,
+      required: q.required ?? false,
+      options: q.options?.map((opt: any) => 
+        typeof opt === 'string' 
+          ? { label: opt, value: opt }
+          : { label: opt.label || opt.value, value: opt.value }
+      ),
+      min: q.min,
+      max: q.max,
+      step: q.step,
+    }));
+  };
+
+  const mapLegacyTypeToAIType = (legacyType: string): AIQuestion['type'] => {
+    const typeMap: Record<string, AIQuestion['type']> = {
+      'single': 'radio',
+      'multiple_choice': 'radio',
+      'multi': 'checkbox',
+      'range': 'scale',
+      'number': 'number',
+      'boolean': 'yesno',
+      'text': 'text'
+    };
+    return typeMap[legacyType] || 'radio';
+  };
+
+  const handleAnswerChange = (questionId: string, answer: any) => {
+    onAnswersChange({ ...answers, [questionId]: answer });
+  };
+
+  const handleValidationChange = (missing: string[]) => {
+    setInvalidRequired(missing);
+  };
+
+  const canProceed = invalidRequired.length === 0 && !loading;
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -264,27 +239,41 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         <div className="space-y-4">
           <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-copper mb-4" />
-            <p className="text-muted-foreground">Generating personalized questions...</p>
+            <p className="text-muted-foreground">Loading questions...</p>
           </div>
         </div>
+      ) : error ? (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       ) : (
-        <div className="space-y-6">
-          {questions.map((q, idx) => (
-            <Card key={q.id || idx} className="p-6">
-              {renderQuestion(q)}
-            </Card>
-          ))}
-        </div>
+        <>
+          {packSource === 'pack' && (
+            <Alert className="bg-green-50 border-green-200">
+              <AlertDescription className="text-green-800">
+                Using optimized question pack for {microName}
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <AIQuestionRenderer
+            questions={questions}
+            answers={answers}
+            onAnswerChange={handleAnswerChange}
+            onValidationChange={handleValidationChange}
+          />
+        </>
       )}
 
       <div className="flex justify-end pt-6">
         <Button
           size="lg"
           onClick={onNext}
-          disabled={!requiredAnswered || loading}
+          disabled={!canProceed}
           className="bg-gradient-hero text-white px-8"
         >
-          Continue
+          Continue {invalidRequired.length > 0 && `(${invalidRequired.length} required)`}
         </Button>
       </div>
     </div>
