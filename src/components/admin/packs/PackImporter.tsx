@@ -11,6 +11,7 @@ import { Upload, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useImportPack } from '../../../../packages/@contracts/clients/packs';
 import type { MicroserviceDef } from '../../../../packages/@contracts/clients/types';
+import { convertAuthoringPackToMicroserviceDef } from '@/lib/packFormatConverter';
 
 export function PackImporter() {
   const [logs, setLogs] = useState<Array<{ type: 'success' | 'error'; message: string }>>([]);
@@ -28,8 +29,16 @@ export function PackImporter() {
         const text = await file.text();
         const json = JSON.parse(text);
         
-        // Validate structure
-        const microserviceDef = MicroserviceDefSchema.parse(json) as MicroserviceDef;
+        let microserviceDef: MicroserviceDef;
+        
+        // Auto-detect format: authoring vs. DB-ready
+        if (json.pack_slug || json.applies_to) {
+          // Authoring format - convert it
+          microserviceDef = convertAuthoringPackToMicroserviceDef(json) as MicroserviceDef;
+        } else {
+          // DB-ready format - validate directly
+          microserviceDef = MicroserviceDefSchema.parse(json) as MicroserviceDef;
+        }
         
         // Import as approved manual pack
         await importPack({

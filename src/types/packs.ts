@@ -5,7 +5,7 @@
 
 export type PackStatus = 'draft' | 'approved' | 'retired';
 export type PackSource = 'manual' | 'ai' | 'hybrid';
-export type QuestionType = 'single' | 'multi' | 'scale' | 'text' | 'number' | 'yesno';
+export type QuestionType = 'single' | 'multi' | 'scale' | 'text' | 'number' | 'yesno' | 'file';
 
 export interface QuestionOption {
   i18nKey: string;      // 'tiler.floor.q1.options.kitchen'

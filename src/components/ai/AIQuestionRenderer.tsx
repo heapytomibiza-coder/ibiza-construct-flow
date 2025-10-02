@@ -66,8 +66,8 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
     const value = answers[question.id] || '';
     const questionLabel = question.meta?.label || question.label;
 
-    // Handle file upload (asset_upload type)
-    if (question.meta?.authoring_type === 'asset_upload') {
+    // Handle file upload (check both 'file' type from packs and authoring_type metadata)
+    if ((question as any).type === 'file' || question.meta?.authoring_type === 'asset_upload') {
       const accept = question.meta?.accept?.join(',') || 'image/*';
       const maxFiles = question.meta?.max_files ?? 3;
       

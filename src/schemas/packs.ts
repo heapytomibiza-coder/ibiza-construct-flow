@@ -26,7 +26,7 @@ export const VisibilityRuleSchema: z.ZodType<any> = z.lazy(() =>
 
 export const QuestionDefSchema = z.object({
   key: z.string().min(1),
-  type: z.enum(['single', 'multi', 'scale', 'text', 'number', 'yesno']),
+  type: z.enum(['single', 'multi', 'scale', 'text', 'number', 'yesno', 'file']),
   i18nKey: z.string().min(1),
   required: z.boolean().optional(),
   options: z.array(QuestionOptionSchema).optional(),

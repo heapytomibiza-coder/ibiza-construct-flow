@@ -1,0 +1,446 @@
+[
+  {
+    "pack_slug": "finishes-microcement-installation-v1",
+    "version": 1,
+    "status": "approved",
+    "is_active": true,
+    "question_source": "manual",
+    "priority_level": "high",
+    "ibiza_specific": true,
+    "applies_to": {
+      "category": "Builder",
+      "subcategory": "Flooring & Finishes",
+      "microservice": "Microcement Installation",
+      "micro_slug": "finishes-microcement-installation"
+    },
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single_select",
+        "label": "Where is the microcement being applied?",
+        "options": [
+          { "value": "floor", "label": "Floor(s)" },
+          { "value": "wall", "label": "Wall(s)" },
+          { "value": "bathroom", "label": "Bathroom/Wet room" },
+          { "value": "kitchen", "label": "Kitchen surfaces" },
+          { "value": "stairs", "label": "Stairs" },
+          { "value": "pool_surround", "label": "Pool surround/Outdoor terrace" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q2",
+        "type": "multi_select",
+        "label": "Substrate (existing surface)",
+        "options": [
+          { "value": "tile", "label": "Tile" },
+          { "value": "concrete", "label": "Concrete/screed" },
+          { "value": "render", "label": "Render/plaster" },
+          { "value": "wood", "label": "Wood/Plywood" },
+          { "value": "unknown", "label": "Unsure" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q3",
+        "type": "single_select",
+        "label": "Approximate area",
+        "options": [
+          { "value": "<10m2", "label": "Under 10 m²" },
+          { "value": "10-30m2", "label": "10–30 m²" },
+          { "value": "30-60m2", "label": "30–60 m²" },
+          { "value": ">60m2", "label": "Over 60 m²" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q4",
+        "type": "single_select",
+        "label": "Colour/tone preference",
+        "options": [
+          { "value": "light", "label": "Light/White sands" },
+          { "value": "neutral", "label": "Neutral/Beige" },
+          { "value": "grey", "label": "Grey/Cement look" },
+          { "value": "dark", "label": "Dark/Charcoal" },
+          { "value": "tbd", "label": "Not decided" }
+        ],
+        "priority": "supporting"
+      },
+      {
+        "id": "q5",
+        "type": "single_select",
+        "label": "Finish texture",
+        "options": [
+          { "value": "smooth", "label": "Smooth" },
+          { "value": "satin", "label": "Satin" },
+          { "value": "anti-slip", "label": "Anti-slip (outdoor/wet areas)" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q6",
+        "type": "single_select",
+        "label": "Moisture exposure",
+        "options": [
+          { "value": "dry", "label": "Dry interior" },
+          { "value": "wet", "label": "Wet room/shower" },
+          { "value": "exterior", "label": "Exterior exposure (sun/salt air)" }
+        ],
+        "required": true,
+        "priority": "supporting"
+      },
+      {
+        "id": "q7",
+        "type": "asset_upload",
+        "label": "Upload reference photos/area pictures",
+        "accept": ["image/*"],
+        "max_files": 5,
+        "priority": "core"
+      }
+    ]
+  },
+  {
+    "pack_slug": "glazier-glass-balustrades-v1",
+    "version": 1,
+    "status": "approved",
+    "is_active": true,
+    "question_source": "manual",
+    "priority_level": "high",
+    "ibiza_specific": true,
+    "applies_to": {
+      "category": "Glazier",
+      "subcategory": "Architectural Glass",
+      "microservice": "Glass Balustrades / Railings",
+      "micro_slug": "glazier-glass-balustrades"
+    },
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single_select",
+        "label": "Installation type",
+        "options": [
+          { "value": "stair", "label": "Stair balustrade" },
+          { "value": "balcony", "label": "Balcony/terrace" },
+          { "value": "pool", "label": "Pool fence" },
+          { "value": "mezz", "label": "Mezzanine/landing" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q2",
+        "type": "single_select",
+        "label": "Mounting style",
+        "options": [
+          { "value": "frameless", "label": "Frameless channel" },
+          { "value": "spigots", "label": "Spigots/posts" },
+          { "value": "handrail", "label": "With handrail" },
+          { "value": "unknown", "label": "Unsure—advise me" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q3",
+        "type": "single_select",
+        "label": "Glass preference",
+        "options": [
+          { "value": "10t", "label": "10mm toughened" },
+          { "value": "12t", "label": "12mm toughened" },
+          { "value": "laminated", "label": "Laminated (recommended for fall protection)" },
+          { "value": "advise", "label": "Need recommendation" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q4",
+        "type": "single_select",
+        "label": "Approximate linear metres",
+        "options": [
+          { "value": "<5m", "label": "Under 5 m" },
+          { "value": "5-12m", "label": "5–12 m" },
+          { "value": "12-25m", "label": "12–25 m" },
+          { "value": ">25m", "label": "Over 25 m" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q5",
+        "type": "single_select",
+        "label": "Site wind/salt exposure",
+        "options": [
+          { "value": "low", "label": "Low" },
+          { "value": "medium", "label": "Medium" },
+          { "value": "high", "label": "High (cliff/coastline)" }
+        ],
+        "required": true,
+        "priority": "supporting"
+      },
+      {
+        "id": "q6",
+        "type": "asset_upload",
+        "label": "Upload plans/photos of the edge/area",
+        "accept": ["image/*", "application/pdf"],
+        "max_files": 6,
+        "priority": "core"
+      }
+    ]
+  },
+  {
+    "pack_slug": "electrician-new-circuit-sockets-v1",
+    "version": 1,
+    "status": "approved",
+    "is_active": true,
+    "question_source": "manual",
+    "priority_level": "high",
+    "ibiza_specific": false,
+    "applies_to": {
+      "category": "Electrician",
+      "subcategory": "Installations",
+      "microservice": "New Sockets / Circuits",
+      "micro_slug": "electrician-new-circuits"
+    },
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single_select",
+        "label": "Property type",
+        "options": [
+          { "value": "apartment", "label": "Apartment" },
+          { "value": "villa", "label": "Villa/house" },
+          { "value": "commercial", "label": "Commercial" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q2",
+        "type": "single_select",
+        "label": "Number of new points",
+        "options": [
+          { "value": "1-2", "label": "1–2" },
+          { "value": "3-6", "label": "3–6" },
+          { "value": "7-12", "label": "7–12" },
+          { "value": ">12", "label": "More than 12" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q3",
+        "type": "single_select",
+        "label": "Finish preference",
+        "options": [
+          { "value": "standard", "label": "Standard white" },
+          { "value": "premium", "label": "Premium/metal finish" },
+          { "value": "match", "label": "Match existing" }
+        ],
+        "priority": "supporting"
+      },
+      {
+        "id": "q4",
+        "type": "single_select",
+        "label": "Chasing required (new channels)?",
+        "options": [
+          { "value": "no", "label": "No" },
+          { "value": "some", "label": "Some walls" },
+          { "value": "extensive", "label": "Extensive" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q5",
+        "type": "single_select",
+        "label": "Consumer unit capacity known?",
+        "options": [
+          { "value": "ok", "label": "Yes—spare ways available" },
+          { "value": "unknown", "label": "Not sure" },
+          { "value": "upgrade", "label": "Needs upgrade" }
+        ],
+        "required": true,
+        "priority": "supporting"
+      },
+      {
+        "id": "q6",
+        "type": "asset_upload",
+        "label": "Upload a photo of your consumer unit and area",
+        "accept": ["image/*"],
+        "max_files": 4,
+        "priority": "core"
+      }
+    ]
+  },
+  {
+    "pack_slug": "plumber-leak-diagnosis-repair-v1",
+    "version": 1,
+    "status": "approved",
+    "is_active": true,
+    "question_source": "manual",
+    "applies_to": {
+      "category": "Plumber",
+      "subcategory": "Repairs",
+      "microservice": "Leak Diagnosis & Repair",
+      "micro_slug": "plumber-leak-diagnosis-repair"
+    },
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single_select",
+        "label": "Leak location",
+        "options": [
+          { "value": "kitchen", "label": "Kitchen" },
+          { "value": "bath", "label": "Bathroom" },
+          { "value": "boiler", "label": "Boiler/plant" },
+          { "value": "outdoor", "label": "Outdoor" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q2",
+        "type": "single_select",
+        "label": "Leak severity",
+        "options": [
+          { "value": "slow", "label": "Slow drip" },
+          { "value": "intermittent", "label": "Intermittent" },
+          { "value": "constant", "label": "Constant flow" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q3",
+        "type": "single_select",
+        "label": "Pipe material (if known)",
+        "options": [
+          { "value": "pex", "label": "PEX" },
+          { "value": "copper", "label": "Copper" },
+          { "value": "galv", "label": "Galvanised/other" },
+          { "value": "unknown", "label": "Unknown" }
+        ],
+        "priority": "supporting"
+      },
+      {
+        "id": "q4",
+        "type": "asset_upload",
+        "label": "Upload photos/video of the leak area",
+        "accept": ["image/*", "video/*"],
+        "max_files": 5,
+        "priority": "core"
+      }
+    ]
+  },
+  {
+    "pack_slug": "painter-interior-repaint-v1",
+    "version": 1,
+    "status": "approved",
+    "is_active": true,
+    "question_source": "manual",
+    "applies_to": {
+      "category": "Painter",
+      "subcategory": "Interior",
+      "microservice": "Interior Repaint",
+      "micro_slug": "painter-interior-repaint"
+    },
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single_select",
+        "label": "Rooms to paint",
+        "options": [
+          { "value": "single", "label": "1 room" },
+          { "value": "few", "label": "2–3 rooms" },
+          { "value": "whole", "label": "Whole property" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q2",
+        "type": "single_select",
+        "label": "Condition",
+        "options": [
+          { "value": "sound", "label": "Sound—minor marks" },
+          { "value": "prep", "label": "Needs filling/sanding" },
+          { "value": "repair", "label": "Cracks/repairs required" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q3",
+        "type": "single_select",
+        "label": "Ceilings included?",
+        "options": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "no", "label": "No" }
+        ],
+        "priority": "supporting"
+      },
+      {
+        "id": "q4",
+        "type": "asset_upload",
+        "label": "Upload current room photos",
+        "accept": ["image/*"],
+        "max_files": 8,
+        "priority": "core"
+      }
+    ]
+  },
+  {
+    "pack_slug": "tiler-bathroom-tiling-v1",
+    "version": 1,
+    "status": "approved",
+    "is_active": true,
+    "question_source": "manual",
+    "applies_to": {
+      "category": "Tiler",
+      "subcategory": "Bathrooms",
+      "microservice": "Wall & Floor Tiling",
+      "micro_slug": "tiler-bathroom-wall-floor"
+    },
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single_select",
+        "label": "Tile type/size",
+        "options": [
+          { "value": "small", "label": "Small (≤150mm)" },
+          { "value": "metro", "label": "Metro/rectangular" },
+          { "value": "large", "label": "Large format (600mm+)" },
+          { "value": "stone", "label": "Natural stone" }
+        ],
+        "required": true,
+        "priority": "core"
+      },
+      {
+        "id": "q2",
+        "type": "single_select",
+        "label": "Under-tile features",
+        "options": [
+          { "value": "none", "label": "None" },
+          { "value": "ufh", "label": "Underfloor heating" },
+          { "value": "acoustic", "label": "Acoustic matting" },
+          { "value": "waterproof", "label": "Waterproofing/decoupling" }
+        ],
+        "required": true,
+        "priority": "supporting"
+      },
+      {
+        "id": "q3",
+        "type": "asset_upload",
+        "label": "Upload room layout/photos",
+        "accept": ["image/*", "application/pdf"],
+        "max_files": 6,
+        "priority": "core"
+      }
+    ]
+  }
+]
