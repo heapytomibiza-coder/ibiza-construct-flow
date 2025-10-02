@@ -2,13 +2,34 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+export interface QuestionMeta {
+  priority?: 'core' | 'supporting';
+  show_if?: Array<{ question: string; equals_any: string[] }>;
+  accept?: string[];
+  max_files?: number;
+  authoring_type?: string;
+  label?: string;
+  hint?: string;
+  always_show_core?: boolean;
+  order?: number;
+}
+
+export interface OptionLike {
+  label?: string;
+  value?: string;
+}
+
 export interface AIQuestion {
   id: string;
-  type: 'radio' | 'select' | 'checkbox' | 'multiple-choice';
-  label: string;
-  required: boolean;
-  options: string[];
-  maxSelections?: number; // For multiple-choice type
+  type: 'radio' | 'select' | 'checkbox' | 'multiple-choice' | 'file' | 'text' | 'number' | 'yesno' | 'scale';
+  label?: string;
+  required?: boolean;
+  options?: Array<string | OptionLike>;
+  maxSelections?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  meta?: QuestionMeta;
 }
 
 export interface PriceEstimate {
