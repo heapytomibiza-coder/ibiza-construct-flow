@@ -273,7 +273,7 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
     }));
   }, [services]);
 
-  // Question resolution: NEW priority: approved packs > legacy snapshot > AI > fallback
+  // Question resolution: NEW priority: approved packs > AI generation > legacy snapshot > fallback
   const getQuestions = useCallback(async (microId: string): Promise<QuestionSet> => {
     const service = services.find(s => s.id === microId);
     if (!service) {
@@ -290,67 +290,110 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
     const slug = toSlug(`${service.category}-${service.subcategory}-${service.micro}`);
     
     try {
-      // NEW: Priority 1 - Check for active approved question pack
+      // Priority 1: Check for active approved question pack
       const packQuestions = await getActiveApprovedPack(slug);
-      if (packQuestions && packQuestions.questions) {
+      if (packQuestions?.questions && Array.isArray(packQuestions.questions) && packQuestions.questions.length > 0) {
         console.log('[ServicesRegistry] Using active approved pack for', slug);
         return {
           microId,
           locale: currentLanguage,
           questions: packQuestions.questions as unknown as AIQuestion[],
-          source: 'snapshot', // Treat as snapshot for now
+          source: 'snapshot',
           version: 1
         };
       }
-    } catch (error) {
-      console.error('[ServicesRegistry] Pack resolution error:', error);
-    }
 
-    // Legacy fallback continues below
-    try {
-      // 1. Try approved snapshot first
+      // Priority 2: No approved pack found - Generate with AI and save as draft
+      console.log('[ServicesRegistry] No approved pack, generating questions for', slug);
+      
+      const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-questions', {
+        body: { 
+          serviceType: service.micro,
+          category: service.category,
+          subcategory: service.subcategory,
+          slug: slug
+        }
+      });
+
+      if (!aiError && aiData?.questions && Array.isArray(aiData.questions) && aiData.questions.length > 0) {
+        console.log('[ServicesRegistry] AI generated questions, saving to question_packs');
+        
+        // Transform AI questions to QuestionDef format and save to question_packs
+        const questionDefs = aiData.questions.map((q: any, idx: number) => ({
+          key: q.id || `q${idx + 1}`,
+          type: q.type === 'select' ? 'single' : q.type === 'checkbox' ? 'multi' : q.type,
+          i18nKey: `${slug}.${q.id || `q${idx + 1}`}.title`,
+          required: q.required || false,
+          options: (q.options || []).map((opt: string, optIdx: number) => ({
+            i18nKey: `${slug}.${q.id || `q${idx + 1}`}.options.${opt.toLowerCase().replace(/\s+/g, '_')}`,
+            value: opt.toLowerCase().replace(/\s+/g, '_'),
+            order: optIdx
+          })),
+          aiHint: q.label
+        }));
+
+        // Save as draft pack for admin review
+        try {
+          // Check if a pack already exists for this slug
+          const { data: existingPacks } = await supabase
+            .from('question_packs')
+            .select('version')
+            .eq('micro_slug', slug)
+            .order('version', { ascending: false })
+            .limit(1);
+
+          const nextVersion = existingPacks && existingPacks.length > 0 
+            ? (existingPacks[0].version || 0) + 1 
+            : 1;
+
+          await supabase.from('question_packs').insert({
+            micro_slug: slug,
+            status: 'draft',
+            source: 'ai',
+            version: nextVersion,
+            content: {
+              id: microId,
+              category: service.category,
+              name: service.micro,
+              slug: slug,
+              i18nPrefix: slug,
+              questions: questionDefs
+            }
+          });
+          console.log('[ServicesRegistry] Saved AI questions as draft pack v' + nextVersion);
+        } catch (saveError) {
+          console.error('[ServicesRegistry] Failed to save draft pack:', saveError);
+        }
+
+        return {
+          microId,
+          locale: currentLanguage,
+          questions: aiData.questions,
+          source: 'ai_generated',
+          version: 1
+        };
+      }
+
+      // Priority 3: Legacy snapshot fallback
       const { data: snapshot } = await supabase
         .from('micro_questions_snapshot')
         .select('questions_json, version')
         .eq('micro_category_id', microId)
         .single();
 
-      if (snapshot?.questions_json) {
-        const questions = Array.isArray(snapshot.questions_json) 
-          ? snapshot.questions_json as unknown as AIQuestion[]
-          : [];
+      if (snapshot?.questions_json && Array.isArray(snapshot.questions_json) && snapshot.questions_json.length > 0) {
+        console.log('[ServicesRegistry] Using legacy snapshot');
         return {
           microId,
           locale: currentLanguage,
-          questions,
+          questions: snapshot.questions_json as unknown as AIQuestion[],
           source: 'snapshot',
           version: snapshot.version || 1
         };
       }
 
-      // 2. Check AI-generated with approved status
-      const { data: aiRuns } = await supabase
-        .from('micro_questions_ai_runs')
-        .select('raw_response, created_at')
-        .eq('micro_category_id', microId)
-        .eq('status', 'approved')
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (aiRuns && aiRuns.length > 0 && aiRuns[0].raw_response) {
-        const response = aiRuns[0].raw_response as any;
-        if (response.questions && Array.isArray(response.questions)) {
-          return {
-            microId,
-            locale: currentLanguage,
-            questions: response.questions,
-            source: 'ai_generated',
-            version: 1
-          };
-        }
-      }
-
-      // 3. Generic fallback from generalQuestions.ts
+      // Priority 4: Generic fallback from generalQuestions.ts
+      console.log('[ServicesRegistry] Using generic fallback questions');
       const { generalQuestions } = await import('@/features/wizard/generalQuestions');
       return {
         microId,
@@ -366,12 +409,18 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
         version: 0
       };
     } catch (error) {
-      console.error('Error resolving questions:', error);
+      console.error('[ServicesRegistry] Error resolving questions:', error);
       // Return minimal fallback
       return {
         microId,
         locale: currentLanguage,
-        questions: [],
+        questions: [{
+          id: 'scope',
+          type: 'text' as any,
+          label: 'Please describe what you need',
+          required: true,
+          options: []
+        }],
         source: 'fallback',
         version: 0
       };

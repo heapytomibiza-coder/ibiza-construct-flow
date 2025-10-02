@@ -1,0 +1,232 @@
+[
+  {
+    "slug": "electrician-installation-full-house-rewire",
+    "source": "manual",
+    "status": "approved",
+    "content": {
+      "id": "electrician-full-rewire",
+      "category": "Electrician",
+      "name": "Full House Rewire",
+      "slug": "electrician-installation-full-house-rewire",
+      "i18nPrefix": "electrician.fullRewire",
+      "questions": [
+        {
+          "key": "q1",
+          "type": "single",
+          "i18nKey": "electrician.fullRewire.q1.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "electrician.fullRewire.q1.options.apartment", "value": "apartment", "order": 0},
+            {"i18nKey": "electrician.fullRewire.q1.options.villa", "value": "villa", "order": 1},
+            {"i18nKey": "electrician.fullRewire.q1.options.townhouse", "value": "townhouse", "order": 2},
+            {"i18nKey": "electrician.fullRewire.q1.options.finca", "value": "finca", "order": 3}
+          ],
+          "aiHint": "What type of property needs rewiring?"
+        },
+        {
+          "key": "q2",
+          "type": "number",
+          "i18nKey": "electrician.fullRewire.q2.title",
+          "required": true,
+          "aiHint": "Total property size in square meters"
+        },
+        {
+          "key": "q3",
+          "type": "single",
+          "i18nKey": "electrician.fullRewire.q3.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "electrician.fullRewire.q3.options.single", "value": "single_phase", "order": 0},
+            {"i18nKey": "electrician.fullRewire.q3.options.three", "value": "three_phase", "order": 1},
+            {"i18nKey": "electrician.fullRewire.q3.options.unknown", "value": "unknown", "order": 2}
+          ],
+          "aiHint": "Current electrical system type"
+        },
+        {
+          "key": "q4",
+          "type": "multi",
+          "i18nKey": "electrician.fullRewire.q4.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "electrician.fullRewire.q4.options.consumer_unit", "value": "consumer_unit", "order": 0},
+            {"i18nKey": "electrician.fullRewire.q4.options.new_sockets", "value": "new_sockets", "order": 1},
+            {"i18nKey": "electrician.fullRewire.q4.options.lighting", "value": "lighting", "order": 2},
+            {"i18nKey": "electrician.fullRewire.q4.options.outdoor", "value": "outdoor", "order": 3},
+            {"i18nKey": "electrician.fullRewire.q4.options.ev_charger", "value": "ev_charger", "order": 4},
+            {"i18nKey": "electrician.fullRewire.q4.options.smart_home", "value": "smart_home", "order": 5}
+          ],
+          "aiHint": "Additional work required"
+        },
+        {
+          "key": "q5",
+          "type": "yesno",
+          "i18nKey": "electrician.fullRewire.q5.title",
+          "required": true,
+          "aiHint": "Is the property currently occupied?"
+        },
+        {
+          "key": "q6",
+          "type": "single",
+          "i18nKey": "electrician.fullRewire.q6.title",
+          "required": false,
+          "options": [
+            {"i18nKey": "electrician.fullRewire.q6.options.asap", "value": "asap", "order": 0},
+            {"i18nKey": "electrician.fullRewire.q6.options.one_month", "value": "one_month", "order": 1},
+            {"i18nKey": "electrician.fullRewire.q6.options.three_months", "value": "three_months", "order": 2},
+            {"i18nKey": "electrician.fullRewire.q6.options.flexible", "value": "flexible", "order": 3}
+          ],
+          "aiHint": "Timeline for completion"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "plumber-installation-bathroom-installation",
+    "source": "manual",
+    "status": "approved",
+    "content": {
+      "id": "plumber-bathroom-install",
+      "category": "Plumber",
+      "name": "Bathroom Installation",
+      "slug": "plumber-installation-bathroom-installation",
+      "i18nPrefix": "plumber.bathroomInstall",
+      "questions": [
+        {
+          "key": "q1",
+          "type": "single",
+          "i18nKey": "plumber.bathroomInstall.q1.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "plumber.bathroomInstall.q1.options.new", "value": "new_construction", "order": 0},
+            {"i18nKey": "plumber.bathroomInstall.q1.options.renovation", "value": "full_renovation", "order": 1},
+            {"i18nKey": "plumber.bathroomInstall.q1.options.upgrade", "value": "partial_upgrade", "order": 2}
+          ],
+          "aiHint": "Type of bathroom project"
+        },
+        {
+          "key": "q2",
+          "type": "multi",
+          "i18nKey": "plumber.bathroomInstall.q2.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "plumber.bathroomInstall.q2.options.toilet", "value": "toilet", "order": 0},
+            {"i18nKey": "plumber.bathroomInstall.q2.options.sink", "value": "sink", "order": 1},
+            {"i18nKey": "plumber.bathroomInstall.q2.options.shower", "value": "shower", "order": 2},
+            {"i18nKey": "plumber.bathroomInstall.q2.options.bathtub", "value": "bathtub", "order": 3},
+            {"i18nKey": "plumber.bathroomInstall.q2.options.bidet", "value": "bidet", "order": 4}
+          ],
+          "aiHint": "Fixtures to be installed"
+        },
+        {
+          "key": "q3",
+          "type": "yesno",
+          "i18nKey": "plumber.bathroomInstall.q3.title",
+          "required": true,
+          "aiHint": "Does existing plumbing need modification?"
+        },
+        {
+          "key": "q4",
+          "type": "single",
+          "i18nKey": "plumber.bathroomInstall.q4.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "plumber.bathroomInstall.q4.options.mains", "value": "mains_water", "order": 0},
+            {"i18nKey": "plumber.bathroomInstall.q4.options.cistern", "value": "cistern", "order": 1},
+            {"i18nKey": "plumber.bathroomInstall.q4.options.well", "value": "well", "order": 2},
+            {"i18nKey": "plumber.bathroomInstall.q4.options.unknown", "value": "unknown", "order": 3}
+          ],
+          "aiHint": "Water supply type"
+        },
+        {
+          "key": "q5",
+          "type": "yesno",
+          "i18nKey": "plumber.bathroomInstall.q5.title",
+          "required": false,
+          "aiHint": "Include underfloor heating?"
+        },
+        {
+          "key": "q6",
+          "type": "number",
+          "i18nKey": "plumber.bathroomInstall.q6.title",
+          "required": true,
+          "aiHint": "Bathroom size in square meters"
+        }
+      ]
+    }
+  },
+  {
+    "slug": "builder-renovation-room-addition",
+    "source": "manual",
+    "status": "approved",
+    "content": {
+      "id": "builder-room-addition",
+      "category": "Builder",
+      "name": "Room Addition",
+      "slug": "builder-renovation-room-addition",
+      "i18nPrefix": "builder.roomAddition",
+      "questions": [
+        {
+          "key": "q1",
+          "type": "single",
+          "i18nKey": "builder.roomAddition.q1.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "builder.roomAddition.q1.options.bedroom", "value": "bedroom", "order": 0},
+            {"i18nKey": "builder.roomAddition.q1.options.bathroom", "value": "bathroom", "order": 1},
+            {"i18nKey": "builder.roomAddition.q1.options.kitchen", "value": "kitchen_extension", "order": 2},
+            {"i18nKey": "builder.roomAddition.q1.options.living", "value": "living_space", "order": 3},
+            {"i18nKey": "builder.roomAddition.q1.options.office", "value": "home_office", "order": 4}
+          ],
+          "aiHint": "Type of room being added"
+        },
+        {
+          "key": "q2",
+          "type": "number",
+          "i18nKey": "builder.roomAddition.q2.title",
+          "required": true,
+          "aiHint": "Planned size in square meters"
+        },
+        {
+          "key": "q3",
+          "type": "single",
+          "i18nKey": "builder.roomAddition.q3.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "builder.roomAddition.q3.options.ground", "value": "ground_floor", "order": 0},
+            {"i18nKey": "builder.roomAddition.q3.options.first", "value": "first_floor", "order": 1},
+            {"i18nKey": "builder.roomAddition.q3.options.basement", "value": "basement", "order": 2}
+          ],
+          "aiHint": "Floor level for addition"
+        },
+        {
+          "key": "q4",
+          "type": "yesno",
+          "i18nKey": "builder.roomAddition.q4.title",
+          "required": true,
+          "aiHint": "Do you have planning permission?"
+        },
+        {
+          "key": "q5",
+          "type": "multi",
+          "i18nKey": "builder.roomAddition.q5.title",
+          "required": true,
+          "options": [
+            {"i18nKey": "builder.roomAddition.q5.options.foundation", "value": "foundation", "order": 0},
+            {"i18nKey": "builder.roomAddition.q5.options.roof", "value": "roof", "order": 1},
+            {"i18nKey": "builder.roomAddition.q5.options.windows", "value": "windows_doors", "order": 2},
+            {"i18nKey": "builder.roomAddition.q5.options.plumbing", "value": "plumbing", "order": 3},
+            {"i18nKey": "builder.roomAddition.q5.options.electrical", "value": "electrical", "order": 4}
+          ],
+          "aiHint": "Work included in project"
+        },
+        {
+          "key": "q6",
+          "type": "text",
+          "i18nKey": "builder.roomAddition.q6.title",
+          "required": false,
+          "aiHint": "Additional details or special requirements"
+        }
+      ]
+    }
+  }
+]
