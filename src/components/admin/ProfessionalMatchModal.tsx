@@ -15,7 +15,7 @@ import {
   MessageSquare,
   Send
 } from 'lucide-react';
-import { professionalMatching } from '@/lib/api/professional-matching';
+import { useMatchProfessionals } from '../../../packages/@contracts/clients/professional-matching';
 
 interface ProfessionalMatch {
   professional: {
@@ -50,13 +50,12 @@ export default function ProfessionalMatchModal({
   jobDescription 
 }: ProfessionalMatchModalProps) {
   const [matches, setMatches] = useState<ProfessionalMatch[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const { mutateAsync: matchProfessionals, isPending: isLoading } = useMatchProfessionals();
 
   const handleFindProfessionals = async () => {
-    setIsLoading(true);
     try {
-      const response = await professionalMatching.matchProfessionals({
+      const response = await matchProfessionals({
         jobRequirements: {
           title: jobTitle,
           description: jobDescription,
@@ -89,8 +88,6 @@ export default function ProfessionalMatchModal({
       setMatches(formattedMatches);
     } catch (error) {
       console.error('Error finding professionals:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

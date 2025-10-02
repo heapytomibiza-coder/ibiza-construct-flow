@@ -6,19 +6,19 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { importPack } from '@/lib/api/questionPacks';
 import { MicroserviceDefSchema } from '@/schemas/packs';
 import { Upload, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useImportPack } from '../../../../packages/@contracts/clients/packs';
+import type { MicroserviceDef } from '../../../../packages/@contracts/clients/types';
 
 export function PackImporter() {
   const [logs, setLogs] = useState<Array<{ type: 'success' | 'error'; message: string }>>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const { mutateAsync: importPack, isPending } = useImportPack();
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
-    setIsProcessing(true);
     setLogs([]);
     
     const fileArray = Array.from(files);
@@ -29,14 +29,13 @@ export function PackImporter() {
         const json = JSON.parse(text);
         
         // Validate structure
-        const microserviceDef = MicroserviceDefSchema.parse(json);
+        const microserviceDef = MicroserviceDefSchema.parse(json) as MicroserviceDef;
         
         // Import as approved manual pack
         await importPack({
           slug: microserviceDef.slug,
           content: microserviceDef,
           source: 'manual',
-          status: 'approved',
         });
         
         setLogs(prev => [...prev, {
@@ -51,7 +50,6 @@ export function PackImporter() {
       }
     }
     
-    setIsProcessing(false);
     toast.success(`Processed ${fileArray.length} files`);
   };
 
@@ -68,8 +66,8 @@ export function PackImporter() {
         <Upload className="h-12 w-12 mx-auto text-muted-foreground" />
         <div>
           <label htmlFor="file-upload" className="cursor-pointer">
-            <Button type="button" disabled={isProcessing} onClick={() => document.getElementById('file-upload')?.click()}>
-              {isProcessing ? 'Processing...' : 'Choose Files'}
+            <Button type="button" disabled={isPending} onClick={() => document.getElementById('file-upload')?.click()}>
+              {isPending ? 'Processing...' : 'Choose Files'}
             </Button>
           </label>
           <Input
