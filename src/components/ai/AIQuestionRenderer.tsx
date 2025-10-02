@@ -33,6 +33,7 @@ interface AIQuestionRendererProps {
   answers: AnswerMap;
   onAnswerChange: (questionId: string, answer: any) => void;
   onValidationChange?: (invalidRequired: string[]) => void;
+  onAutoAdvance?: () => void;
 }
 
 /** Normalize an option to { label, value } */
@@ -72,6 +73,7 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
   answers,
   onAnswerChange,
   onValidationChange,
+  onAutoAdvance,
 }) => {
   /** Compute visible questions with progressive disclosure */
   const visibleQuestions = useMemo(() => {
@@ -105,7 +107,15 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
 
   React.useEffect(() => {
     onValidationChange?.(invalidRequired);
-  }, [invalidRequired, onValidationChange]);
+    
+    // Auto-advance when all required questions are answered
+    if (invalidRequired.length === 0 && onAutoAdvance && visibleQuestions.length > 0) {
+      const timer = setTimeout(() => {
+        onAutoAdvance();
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [invalidRequired, onValidationChange, onAutoAdvance, visibleQuestions.length]);
 
   if (!questions || questions.length === 0) return null;
 
@@ -332,12 +342,12 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full animate-fade-in">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">
-          <span className="animate-fade-in">Your specialised questions</span>
+          <span>Your specialised questions</span>
         </CardTitle>
-        <p className="text-sm text-muted-foreground animate-fade-in">
+        <p className="text-sm text-muted-foreground">
           Answer core questions first, then we'll show relevant follow-ups
         </p>
         {invalidRequired.length > 0 && (

@@ -206,6 +206,12 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     onAnswersChange({ ...answers, [questionId]: answer });
   };
 
+  const handleAutoAdvance = () => {
+    if (canProceed) {
+      onNext();
+    }
+  };
+
   const handleValidationChange = (missing: string[]) => {
     setInvalidRequired(missing);
   };
@@ -262,6 +268,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
             answers={answers}
             onAnswerChange={handleAnswerChange}
             onValidationChange={handleValidationChange}
+            onAutoAdvance={handleAutoAdvance}
           />
         </>
       )}

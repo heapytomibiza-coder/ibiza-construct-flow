@@ -75,8 +75,15 @@ export const CanonicalJobWizard: React.FC = () => {
 
   const progress = (currentStep / 8) * 100;
 
-  const handleNext = () => setCurrentStep(prev => Math.min(prev + 1, 8));
-  const handleBack = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+  const handleNext = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setCurrentStep(prev => Math.min(prev + 1, 8));
+  };
+  
+  const handleBack = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
 
   const handleSubmit = async () => {
     if (!user) {
