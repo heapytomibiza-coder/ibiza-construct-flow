@@ -178,7 +178,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   {logistics.startDate ? format(logistics.startDate, 'PPP') : 'Pick a start date'}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={logistics.startDate}
@@ -188,7 +188,6 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   }}
                   disabled={(date) => date < new Date()}
                   initialFocus
-                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
@@ -215,7 +214,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                 {logistics.completionDate ? format(logistics.completionDate, 'PPP') : 'Pick ideal completion date'}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+            <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={logistics.completionDate}
@@ -225,7 +224,6 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   return date < minDate;
                 }}
                 initialFocus
-                className="pointer-events-auto"
               />
             </PopoverContent>
           </Popover>
@@ -284,14 +282,13 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                     {logistics.consultationDate ? format(logistics.consultationDate, 'PPP') : 'Pick consultation date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={logistics.consultationDate}
                     onSelect={(date) => handleUpdate('consultationDate', date)}
                     disabled={(date) => date < new Date()}
                     initialFocus
-                    className="pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
