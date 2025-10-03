@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, CalendarIcon, MapPin } from 'lucide-react';
+import { ArrowLeft, CalendarIcon, MapPin, PlayCircle, CheckCircle, Phone, Video, Home } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -21,8 +21,12 @@ interface LogisticsStepProps {
   logistics: {
     location: string;
     customLocation?: string;
-    preferredDate?: Date;
-    timeWindow?: string;
+    startDate?: Date;
+    startDatePreset?: string;
+    completionDate?: Date;
+    consultationType?: 'site_visit' | 'phone_call' | 'video_call';
+    consultationDate?: Date;
+    consultationTime?: string;
     accessDetails?: string[];
     budgetRange?: string;
   };
@@ -31,9 +35,9 @@ interface LogisticsStepProps {
   onBack: () => void;
 }
 
-const TIME_WINDOWS = ['Morning (8-12)', 'Afternoon (12-17)', 'Evening (17-20)', 'Flexible'];
+const START_DATE_PRESETS = ['Start ASAP', 'This Week', 'Next Week', 'Within 2 Weeks', 'Within a Month', 'Flexible'];
+const CONSULTATION_TIMES = ['Morning (8-12)', 'Afternoon (12-17)', 'Evening (17-20)', 'Flexible'];
 const BUDGET_RANGES = ['€0-500', '€500-1,000', '€1,000-2,500', '€2,500-5,000', '€5,000+', 'Unsure'];
-const DATE_PRESETS = ['ASAP', 'This Week', 'Within 2 Weeks', 'Within a Month'];
 const ACCESS_OPTIONS = [
   'Street level parking',
   'Underground parking',
@@ -76,19 +80,19 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
   onNext,
   onBack
 }) => {
-  const [datePreset, setDatePreset] = useState('');
-
   const handleUpdate = (field: string, value: any) => {
     onLogisticsChange({ ...logistics, [field]: value });
   };
 
-  const handleDatePreset = (preset: string) => {
-    setDatePreset(preset);
-    handleUpdate('datePreset', preset);
-    handleUpdate('preferredDate', undefined);
+  const handleStartDatePreset = (preset: string) => {
+    handleUpdate('startDatePreset', preset);
+    handleUpdate('startDate', undefined);
   };
 
-  const isComplete = logistics.location && (logistics.preferredDate || datePreset) && logistics.budgetRange;
+  const isComplete = logistics.location && 
+                     (logistics.startDate || logistics.startDatePreset) && 
+                     logistics.consultationType &&
+                     logistics.budgetRange;
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -101,10 +105,10 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         <div>
           <Badge variant="outline" className="mb-4">{microName}</Badge>
           <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
-            Location & Timing
+            Location & Timeline
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
-            Where and when do you need this done?
+            Let's plan the details of your project
           </p>
         </div>
       </div>
@@ -138,24 +142,26 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           )}
         </Card>
 
-        {/* Preferred Date */}
+        {/* 1. Job Start Date */}
         <Card className="p-6 space-y-4">
-          <Label className="text-base font-medium text-charcoal flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4" />
-            When would you like this done?
-          </Label>
+          <div className="flex items-center gap-2">
+            <PlayCircle className="w-5 h-5 text-copper" />
+            <Label className="text-base font-medium text-charcoal">
+              When do you want this work to begin?
+            </Label>
+          </div>
           
           {/* Quick presets */}
           <div className="flex flex-wrap gap-2">
-            {DATE_PRESETS.map((preset) => (
+            {START_DATE_PRESETS.map((preset) => (
               <Badge
                 key={preset}
-                variant={datePreset === preset ? "default" : "outline"}
+                variant={logistics.startDatePreset === preset ? "default" : "outline"}
                 className={cn(
                   "cursor-pointer px-4 py-2 transition-all hover:scale-105",
-                  datePreset === preset ? "bg-copper text-white" : "hover:border-copper"
+                  logistics.startDatePreset === preset ? "bg-copper text-white" : "hover:border-copper"
                 )}
-                onClick={() => handleDatePreset(preset)}
+                onClick={() => handleStartDatePreset(preset)}
               >
                 {preset}
               </Badge>
@@ -164,21 +170,21 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
           {/* Or specific date */}
           <div className="pt-2">
-            <Label className="text-sm text-muted-foreground mb-2 block">Or choose a specific date</Label>
+            <Label className="text-sm text-muted-foreground mb-2 block">Or choose a specific start date</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start text-left">
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {logistics.preferredDate ? format(logistics.preferredDate, 'PPP') : 'Pick a date'}
+                  {logistics.startDate ? format(logistics.startDate, 'PPP') : 'Pick a start date'}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={logistics.preferredDate}
+                  selected={logistics.startDate}
                   onSelect={(date) => {
-                    handleUpdate('preferredDate', date);
-                    setDatePreset('');
+                    handleUpdate('startDate', date);
+                    handleUpdate('startDatePreset', '');
                   }}
                   disabled={(date) => date < new Date()}
                   initialFocus
@@ -187,26 +193,129 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
               </PopoverContent>
             </Popover>
           </div>
+        </Card>
 
-          {/* Time window */}
-          <div>
-            <Label className="text-sm text-muted-foreground mb-2 block">Preferred time window</Label>
-            <div className="flex flex-wrap gap-2">
-              {TIME_WINDOWS.map((window) => (
-                <Badge
-                  key={window}
-                  variant={logistics.timeWindow === window ? "default" : "outline"}
-                  className={cn(
-                    "cursor-pointer px-4 py-2 transition-all",
-                    logistics.timeWindow === window ? "bg-copper text-white" : "hover:border-copper"
-                  )}
-                  onClick={() => handleUpdate('timeWindow', window)}
-                >
-                  {window}
-                </Badge>
-              ))}
-            </div>
+        {/* 2. Ideal Completion Date (Optional) */}
+        <Card className="p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-5 h-5 text-copper" />
+            <Label className="text-base font-medium text-charcoal">
+              When would you like this completed?
+            </Label>
+            <Badge variant="secondary" className="ml-2">Optional</Badge>
           </div>
+          <p className="text-sm text-muted-foreground">
+            This helps professionals understand your timeline expectations
+          </p>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="w-full justify-start text-left">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {logistics.completionDate ? format(logistics.completionDate, 'PPP') : 'Pick ideal completion date'}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={logistics.completionDate}
+                onSelect={(date) => handleUpdate('completionDate', date)}
+                disabled={(date) => {
+                  const minDate = logistics.startDate || new Date();
+                  return date < minDate;
+                }}
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </Card>
+
+        {/* 3. Consultation Booking */}
+        <Card className="p-6 space-y-4">
+          <Label className="text-base font-medium text-charcoal">
+            Book a consultation
+          </Label>
+          <p className="text-sm text-muted-foreground">
+            Schedule a site visit or call to discuss your project
+          </p>
+
+          {/* Consultation Type */}
+          <div className="grid grid-cols-3 gap-3">
+            <Card
+              className={cn(
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                logistics.consultationType === 'site_visit' && "ring-2 ring-copper bg-copper/5"
+              )}
+              onClick={() => handleUpdate('consultationType', 'site_visit')}
+            >
+              <Home className="w-6 h-6 mx-auto mb-2 text-copper" />
+              <p className="text-sm font-medium">Site Visit</p>
+            </Card>
+            <Card
+              className={cn(
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                logistics.consultationType === 'phone_call' && "ring-2 ring-copper bg-copper/5"
+              )}
+              onClick={() => handleUpdate('consultationType', 'phone_call')}
+            >
+              <Phone className="w-6 h-6 mx-auto mb-2 text-copper" />
+              <p className="text-sm font-medium">Phone Call</p>
+            </Card>
+            <Card
+              className={cn(
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                logistics.consultationType === 'video_call' && "ring-2 ring-copper bg-copper/5"
+              )}
+              onClick={() => handleUpdate('consultationType', 'video_call')}
+            >
+              <Video className="w-6 h-6 mx-auto mb-2 text-copper" />
+              <p className="text-sm font-medium">Video Call</p>
+            </Card>
+          </div>
+
+          {/* Consultation Date & Time */}
+          {logistics.consultationType && (
+            <div className="space-y-3 pt-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {logistics.consultationDate ? format(logistics.consultationDate, 'PPP') : 'Pick consultation date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={logistics.consultationDate}
+                    onSelect={(date) => handleUpdate('consultationDate', date)}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <div>
+                <Label className="text-sm text-muted-foreground mb-2 block">Preferred time</Label>
+                <div className="flex flex-wrap gap-2">
+                  {CONSULTATION_TIMES.map((time) => (
+                    <Badge
+                      key={time}
+                      variant={logistics.consultationTime === time ? "default" : "outline"}
+                      className={cn(
+                        "cursor-pointer px-4 py-2 transition-all",
+                        logistics.consultationTime === time ? "bg-copper text-white" : "hover:border-copper"
+                      )}
+                      onClick={() => handleUpdate('consultationTime', time)}
+                    >
+                      {time}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* Contact & Access */}

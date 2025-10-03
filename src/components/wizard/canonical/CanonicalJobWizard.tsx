@@ -28,9 +28,12 @@ interface WizardState {
   logistics: {
     location: string;
     customLocation?: string;
-    preferredDate?: Date;
-    datePreset?: string;
-    timeWindow?: string;
+    startDate?: Date;
+    startDatePreset?: string;
+    completionDate?: Date;
+    consultationType?: 'site_visit' | 'phone_call' | 'video_call';
+    consultationDate?: Date;
+    consultationTime?: string;
     accessDetails?: string[];
     budgetRange?: string;
   };
@@ -66,7 +69,8 @@ export const CanonicalJobWizard: React.FC = () => {
     answers: {},
     logistics: {
       location: '',
-      budgetRange: ''
+      budgetRange: '',
+      consultationType: undefined,
     },
     extras: {
       photos: []
@@ -105,9 +109,12 @@ export const CanonicalJobWizard: React.FC = () => {
           general_answers: {
             location: wizardState.logistics.location,
             customLocation: wizardState.logistics.customLocation,
-            preferredDate: wizardState.logistics.preferredDate?.toISOString(),
-            datePreset: wizardState.logistics.datePreset,
-            timeWindow: wizardState.logistics.timeWindow,
+            startDate: wizardState.logistics.startDate?.toISOString(),
+            startDatePreset: wizardState.logistics.startDatePreset,
+            completionDate: wizardState.logistics.completionDate?.toISOString(),
+            consultationType: wizardState.logistics.consultationType,
+            consultationDate: wizardState.logistics.consultationDate?.toISOString(),
+            consultationTime: wizardState.logistics.consultationTime,
             accessDetails: wizardState.logistics.accessDetails,
             budgetRange: wizardState.logistics.budgetRange,
             photos: wizardState.extras.photos,
