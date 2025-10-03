@@ -199,7 +199,12 @@ export const CanonicalJobWizard: React.FC = () => {
           <LogisticsStep
             microName={wizardState.microName}
             logistics={wizardState.logistics}
-            onLogisticsChange={(logistics) => setWizardState(prev => ({ ...prev, logistics }))}
+            onLogisticsChange={(newLogistics) => {
+              setWizardState(prev => ({ 
+                ...prev, 
+                logistics: { ...prev.logistics, ...newLogistics }
+              }));
+            }}
             onNext={handleNext}
             onBack={handleBack}
           />
