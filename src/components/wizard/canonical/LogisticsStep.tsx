@@ -81,10 +81,12 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
   onBack
 }) => {
   const handleUpdate = (field: string, value: any) => {
+    console.log('LogisticsStep - handleUpdate:', field, value);
     onLogisticsChange({ ...logistics, [field]: value });
   };
 
   const handleStartDatePreset = (preset: string) => {
+    console.log('LogisticsStep - Start date preset clicked:', preset);
     handleUpdate('startDatePreset', preset);
     handleUpdate('startDate', undefined);
   };
@@ -143,7 +145,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 1. Job Start Date */}
-        <Card className="p-6 space-y-4">
+        <Card className="relative z-10 p-6 space-y-4">
           <div className="flex items-center gap-2">
             <PlayCircle className="w-5 h-5 text-copper" />
             <Label className="text-base font-medium text-charcoal">
@@ -201,7 +203,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 2. Ideal Completion Date (Optional) */}
-        <Card className="p-6 space-y-4 animate-fade-in">
+        <Card className="relative z-10 p-6 space-y-4">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-copper" />
             <Label className="text-base font-medium text-charcoal">
@@ -215,7 +217,11 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left pointer-events-auto">
+              <Button 
+                type="button"
+                variant="outline" 
+                className="w-full justify-start text-left"
+              >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {logistics.completionDate ? format(logistics.completionDate, 'PPP') : 'Pick ideal completion date'}
               </Button>
@@ -236,7 +242,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 3. Consultation Booking */}
-        <Card className="p-6 space-y-4 animate-fade-in">
+        <Card className="relative z-10 p-6 space-y-4">
           <Label className="text-base font-medium text-charcoal">
             Book a consultation
           </Label>
@@ -248,7 +254,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           <div className="grid grid-cols-3 gap-3">
             <Card
               className={cn(
-                "p-4 cursor-pointer transition-all hover:shadow-md text-center pointer-events-auto",
+                "relative z-20 p-4 cursor-pointer transition-all hover:shadow-md text-center",
                 logistics.consultationType === 'site_visit' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'site_visit')}
@@ -258,7 +264,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             </Card>
             <Card
               className={cn(
-                "p-4 cursor-pointer transition-all hover:shadow-md text-center pointer-events-auto",
+                "relative z-20 p-4 cursor-pointer transition-all hover:shadow-md text-center",
                 logistics.consultationType === 'phone_call' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'phone_call')}
@@ -268,7 +274,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             </Card>
             <Card
               className={cn(
-                "p-4 cursor-pointer transition-all hover:shadow-md text-center pointer-events-auto",
+                "relative z-20 p-4 cursor-pointer transition-all hover:shadow-md text-center",
                 logistics.consultationType === 'video_call' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'video_call')}
@@ -283,7 +289,11 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             <div className="space-y-3 pt-2 animate-fade-in">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left pointer-events-auto">
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="w-full justify-start text-left"
+                  >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {logistics.consultationDate ? format(logistics.consultationDate, 'PPP') : 'Pick consultation date'}
                   </Button>
@@ -303,17 +313,19 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                 <Label className="text-sm text-muted-foreground mb-2 block">Preferred time</Label>
                 <div className="flex flex-wrap gap-2">
                   {CONSULTATION_TIMES.map((time) => (
-                    <Badge
+                    <button
                       key={time}
-                      variant={logistics.consultationTime === time ? "default" : "outline"}
-                      className={cn(
-                        "cursor-pointer px-4 py-2 transition-all pointer-events-auto",
-                        logistics.consultationTime === time ? "bg-copper text-white" : "hover:border-copper"
-                      )}
+                      type="button"
                       onClick={() => handleUpdate('consultationTime', time)}
+                      className={cn(
+                        "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
+                        logistics.consultationTime === time 
+                          ? "bg-copper text-white border-copper" 
+                          : "border-gray-300 hover:border-copper hover:bg-copper/5"
+                      )}
                     >
                       {time}
-                    </Badge>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -322,7 +334,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* Contact & Access */}
-        <Card className="p-6 space-y-4">
+        <Card className="relative z-10 p-6 space-y-4">
           <Label className="text-base font-medium text-charcoal">Site Access</Label>
           
           <div>
@@ -331,13 +343,9 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
               {ACCESS_OPTIONS.map((option) => {
                 const isSelected = logistics.accessDetails?.includes(option);
                 return (
-                  <Badge
+                  <button
                     key={option}
-                    variant={isSelected ? "default" : "outline"}
-                    className={cn(
-                      "cursor-pointer px-4 py-2 transition-all hover:scale-105",
-                      isSelected ? "bg-copper text-white" : "hover:border-copper"
-                    )}
+                    type="button"
                     onClick={() => {
                       const current = logistics.accessDetails || [];
                       const updated = isSelected
@@ -345,9 +353,15 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                         : [...current, option];
                       handleUpdate('accessDetails', updated);
                     }}
+                    className={cn(
+                      "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
+                      isSelected 
+                        ? "bg-copper text-white border-copper" 
+                        : "border-gray-300 hover:border-copper hover:bg-copper/5"
+                    )}
                   >
                     {option}
-                  </Badge>
+                  </button>
                 );
               })}
             </div>
@@ -355,22 +369,24 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* Budget Range */}
-        <Card className="p-6 space-y-3">
+        <Card className="relative z-10 p-6 space-y-3">
           <Label className="text-base font-medium text-charcoal">Budget Range</Label>
           <p className="text-sm text-muted-foreground">Select a budget range or choose "Unsure" to get quotes first</p>
           <div className="flex flex-wrap gap-2">
             {BUDGET_RANGES.map((range) => (
-              <Badge
+              <button
                 key={range}
-                variant={logistics.budgetRange === range ? "default" : "outline"}
-                className={cn(
-                  "cursor-pointer px-4 py-2 transition-all hover:scale-105",
-                  logistics.budgetRange === range ? "bg-copper text-white" : "hover:border-copper"
-                )}
+                type="button"
                 onClick={() => handleUpdate('budgetRange', range)}
+                className={cn(
+                  "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
+                  logistics.budgetRange === range 
+                    ? "bg-copper text-white border-copper" 
+                    : "border-gray-300 hover:border-copper hover:bg-copper/5"
+                )}
               >
                 {range}
-              </Badge>
+              </button>
             ))}
           </div>
         </Card>
