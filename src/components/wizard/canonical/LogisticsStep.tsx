@@ -143,7 +143,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 1. Job Start Date */}
-        <Card className="p-6 space-y-4">
+        <Card className="p-6 space-y-4 animate-fade-in">
           <div className="flex items-center gap-2">
             <PlayCircle className="w-5 h-5 text-copper" />
             <Label className="text-base font-medium text-charcoal">
@@ -158,7 +158,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                 key={preset}
                 variant={logistics.startDatePreset === preset ? "default" : "outline"}
                 className={cn(
-                  "cursor-pointer px-4 py-2 transition-all hover:scale-105",
+                  "cursor-pointer px-4 py-2 transition-all hover:scale-105 pointer-events-auto",
                   logistics.startDatePreset === preset ? "bg-copper text-white" : "hover:border-copper"
                 )}
                 onClick={() => handleStartDatePreset(preset)}
@@ -173,12 +173,12 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             <Label className="text-sm text-muted-foreground mb-2 block">Or choose a specific start date</Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start text-left">
+                <Button variant="outline" className="w-full justify-start text-left pointer-events-auto">
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {logistics.startDate ? format(logistics.startDate, 'PPP') : 'Pick a start date'}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
                 <Calendar
                   mode="single"
                   selected={logistics.startDate}
@@ -196,7 +196,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 2. Ideal Completion Date (Optional) */}
-        <Card className="p-6 space-y-4">
+        <Card className="p-6 space-y-4 animate-fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-copper" />
             <Label className="text-base font-medium text-charcoal">
@@ -210,12 +210,12 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left">
+              <Button variant="outline" className="w-full justify-start text-left pointer-events-auto">
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {logistics.completionDate ? format(logistics.completionDate, 'PPP') : 'Pick ideal completion date'}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
               <Calendar
                 mode="single"
                 selected={logistics.completionDate}
@@ -232,7 +232,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 3. Consultation Booking */}
-        <Card className="p-6 space-y-4">
+        <Card className="p-6 space-y-4 animate-fade-in">
           <Label className="text-base font-medium text-charcoal">
             Book a consultation
           </Label>
@@ -244,7 +244,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           <div className="grid grid-cols-3 gap-3">
             <Card
               className={cn(
-                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center pointer-events-auto",
                 logistics.consultationType === 'site_visit' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'site_visit')}
@@ -254,7 +254,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             </Card>
             <Card
               className={cn(
-                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center pointer-events-auto",
                 logistics.consultationType === 'phone_call' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'phone_call')}
@@ -264,7 +264,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             </Card>
             <Card
               className={cn(
-                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center pointer-events-auto",
                 logistics.consultationType === 'video_call' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'video_call')}
@@ -276,15 +276,15 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
           {/* Consultation Date & Time */}
           {logistics.consultationType && (
-            <div className="space-y-3 pt-2">
+            <div className="space-y-3 pt-2 animate-fade-in">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left">
+                  <Button variant="outline" className="w-full justify-start text-left pointer-events-auto">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {logistics.consultationDate ? format(logistics.consultationDate, 'PPP') : 'Pick consultation date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
                   <Calendar
                     mode="single"
                     selected={logistics.consultationDate}
@@ -304,7 +304,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                       key={time}
                       variant={logistics.consultationTime === time ? "default" : "outline"}
                       className={cn(
-                        "cursor-pointer px-4 py-2 transition-all",
+                        "cursor-pointer px-4 py-2 transition-all pointer-events-auto",
                         logistics.consultationTime === time ? "bg-copper text-white" : "hover:border-copper"
                       )}
                       onClick={() => handleUpdate('consultationTime', time)}
