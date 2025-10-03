@@ -36,6 +36,16 @@ export const MicroStep: React.FC<MicroStepProps> = ({
     loadMicros();
   }, [subcategory]);
 
+  // Auto-advance after selection
+  useEffect(() => {
+    if (selectedMicroId && !loading) {
+      const timer = setTimeout(() => {
+        onNext();
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedMicroId, loading, onNext]);
+
   const loadMicros = async () => {
     try {
       setLoading(true);

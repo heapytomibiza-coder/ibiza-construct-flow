@@ -32,6 +32,16 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
     loadSubcategories();
   }, [mainCategory]);
 
+  // Auto-advance after selection
+  useEffect(() => {
+    if (selectedSubcategory && !loading) {
+      const timer = setTimeout(() => {
+        onNext();
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedSubcategory, loading, onNext]);
+
   const loadSubcategories = async () => {
     try {
       setLoading(true);

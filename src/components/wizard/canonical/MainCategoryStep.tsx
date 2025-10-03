@@ -41,6 +41,16 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
     loadCategories();
   }, []);
 
+  // Auto-advance after selection
+  useEffect(() => {
+    if (selectedCategory && !loading) {
+      const timer = setTimeout(() => {
+        onNext();
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedCategory, loading, onNext]);
+
   const loadCategories = async () => {
     setLoading(true);
     try {
