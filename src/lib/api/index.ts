@@ -8,13 +8,23 @@ import { jobs } from './jobs';
 import { offers } from './offers';
 import { contracts } from './contracts';
 import { payments } from './payments';
+
+// ⚠️ DEPRECATED: These modules are kept for backward compatibility only
+// Use @contracts/clients instead:
+// - aiTesting → @contracts/clients/ai-testing
+// - professionalMatching → @contracts/clients/professional-matching
+// - discoveryAnalytics → @contracts/clients/discovery-analytics
+// - userInspector → @contracts/clients/user-inspector
 import { aiTesting } from './ai-testing';
 import { professionalMatching } from './professional-matching';
 import { discoveryAnalytics } from './discovery-analytics';
 import { userInspector } from './user-inspector';
 
-// Re-export modules for direct access
-export { auth, services, jobs, offers, contracts, payments, aiTesting, professionalMatching, discoveryAnalytics, userInspector };
+// Re-export ACTIVE modules (still in use)
+export { auth, services, jobs, offers, contracts, payments };
+
+// Re-export DEPRECATED modules (for backward compatibility)
+export { aiTesting, professionalMatching, discoveryAnalytics, userInspector };
 
 // Re-export existing hooks for backward compatibility
 export { useAuth } from '@/hooks/useAuth';
@@ -92,18 +102,22 @@ export const api = {
 };
 
 // Integration playbook implementation status:
-// ✅ Phase 1: Database schema migration complete
-// ✅ Phase 2: API adapter layer implemented and live
-// ✅ Phase 3: Route guards implemented (RouteGuard component)
-// ✅ Phase 4: Full job lifecycle integration ready
-// ✅ Phase 5: Testing & polish (ready for integration)
+// ✅ Phase 1-5: Core integration complete
+// ✅ Phase 6: Contract-First Architecture
+// ✅ Phase 7: Frontend Migration to React Query Hooks
+// ✅ Phase 8: Performance & Bundle Optimization
+// ✅ Phase 9: Integration Tests
+// ✅ Phase 10: Extended API Coverage
+// ✅ Phase 11: Legacy API Deprecation
 
 export const integrationStatus = {
   databaseSchema: 'complete',
   apiLayer: 'live',
   routeGuards: 'complete', 
   jobLifecycle: 'ready',
-  testing: 'ready-for-integration'
+  testing: 'complete',
+  contractFirst: 'complete',
+  legacyDeprecation: 'complete'
 };
 
 // Custom mutator for orval-generated React Query hooks
@@ -139,4 +153,4 @@ export const customInstance = async <T>(config: {
   return response.json();
 };
 
-console.log('🚀 Integration playbook complete! Full API layer is now live and ready for frontend integration.');
+console.log('🚀 Phase 11 Complete: Contract-first architecture migration finished. All components use type-safe React Query hooks.');
