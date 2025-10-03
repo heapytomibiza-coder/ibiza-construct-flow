@@ -90,15 +90,20 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         }
       });
 
-      if (aiError) throw aiError;
+      if (!aiError && aiData?.questions) {
+        const generatedQuestions = transformLegacyToAIQuestions(aiData.questions);
+        setQuestions(generatedQuestions);
+        setPackSource('ai');
+        setLoading(false);
+        return;
+      }
 
-      const generatedQuestions = transformLegacyToAIQuestions(aiData?.questions || []);
-      setQuestions(generatedQuestions);
-      setPackSource('ai');
+      // If AI generation fails, use fallback questions without throwing error
+      console.warn('AI question generation unavailable, using fallback questions');
       
     } catch (error: any) {
-      console.error('Error loading questions:', error);
-      setError(error.message || 'Failed to load questions');
+      console.warn('Error loading questions, using fallback:', error.message);
+      // Don't set error state, just use fallback questions
       
       // Provide basic fallback questions
       setQuestions([
@@ -248,11 +253,6 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
             <p className="text-muted-foreground">Loading questions...</p>
           </div>
         </div>
-      ) : error ? (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
       ) : (
         <>
           {packSource === 'pack' && (
