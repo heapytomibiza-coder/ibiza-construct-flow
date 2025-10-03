@@ -95,7 +95,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                      logistics.budgetRange;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8 pointer-events-auto">
       <div className="space-y-4">
         <Button variant="ghost" onClick={onBack} className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />
