@@ -143,7 +143,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 1. Job Start Date */}
-        <Card className="p-6 space-y-4 animate-fade-in">
+        <Card className="p-6 space-y-4">
           <div className="flex items-center gap-2">
             <PlayCircle className="w-5 h-5 text-copper" />
             <Label className="text-base font-medium text-charcoal">
@@ -154,17 +154,19 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           {/* Quick presets */}
           <div className="flex flex-wrap gap-2">
             {START_DATE_PRESETS.map((preset) => (
-              <Badge
+              <button
                 key={preset}
-                variant={logistics.startDatePreset === preset ? "default" : "outline"}
-                className={cn(
-                  "cursor-pointer px-4 py-2 transition-all hover:scale-105 pointer-events-auto",
-                  logistics.startDatePreset === preset ? "bg-copper text-white" : "hover:border-copper"
-                )}
+                type="button"
                 onClick={() => handleStartDatePreset(preset)}
+                className={cn(
+                  "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
+                  logistics.startDatePreset === preset 
+                    ? "bg-copper text-white border-copper" 
+                    : "border-gray-300 hover:border-copper hover:bg-copper/5"
+                )}
               >
                 {preset}
-              </Badge>
+              </button>
             ))}
           </div>
 
@@ -173,7 +175,11 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             <Label className="text-sm text-muted-foreground mb-2 block">Or choose a specific start date</Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start text-left pointer-events-auto">
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  className="w-full justify-start text-left"
+                >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {logistics.startDate ? format(logistics.startDate, 'PPP') : 'Pick a start date'}
                 </Button>
