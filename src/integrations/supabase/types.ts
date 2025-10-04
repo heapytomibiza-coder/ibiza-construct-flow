@@ -2336,6 +2336,50 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_services: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          micro_service_id: string
+          portfolio_urls: string[] | null
+          pricing_structure: Json | null
+          professional_id: string
+          service_areas: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          micro_service_id: string
+          portfolio_urls?: string[] | null
+          pricing_structure?: Json | null
+          professional_id: string
+          service_areas?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          micro_service_id?: string
+          portfolio_urls?: string[] | null
+          pricing_structure?: Json | null
+          professional_id?: string
+          service_areas?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_services_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professional_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       professional_stats: {
         Row: {
           average_rating: number
