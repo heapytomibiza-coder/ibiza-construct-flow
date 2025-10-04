@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useBookingCart } from '@/contexts/BookingCartContext';
-import { Star, Clock, MapPin, ShoppingCart, MessageSquare, Plus, Minus } from 'lucide-react';
+import { Star, Clock, MapPin, MessageSquare, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -35,8 +35,6 @@ interface DiscoveryServiceCardProps {
 
 export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCardProps) => {
   const navigate = useNavigate();
-  const { addItem } = useBookingCart();
-  const [quantity, setQuantity] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
 
   const formatPrice = () => {
@@ -61,30 +59,19 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
     return 'outline';
   };
 
-  const handleAddToCart = () => {
-    if (item.pricing_type === 'quote_required') {
-      navigate(`/professional/${item.professional_id}?service=${item.id}&action=quote`);
-      return;
+  const handleViewDetails = () => {
+    if (onViewDetails) {
+      onViewDetails();
+    } else {
+      // Navigate to professional's profile with service highlighted
+      navigate(`/professional/${item.professional_id}?service=${item.id}`);
     }
-
-    addItem({
-      id: item.id,
-      professionalId: item.professional_id,
-      professionalName: item.professional?.full_name || 'Professional',
-      serviceName: item.name,
-      quantity,
-      pricePerUnit: item.base_price,
-      pricingType: item.pricing_type,
-      unitType: item.unit_type,
-      imageUrl: item.images?.[0],
-    });
-
-    toast.success(`Added ${item.name} to cart`);
-    setQuantity(1);
   };
 
-  const handleRequestQuote = () => {
-    navigate(`/professional/${item.professional_id}?service=${item.id}&action=quote`);
+  const handleContactNow = () => {
+    // Navigate to professional's profile with contact/quote action
+    navigate(`/professional/${item.professional_id}?service=${item.id}&action=contact`);
+    toast.success('Opening professional profile...');
   };
 
   return (
@@ -178,14 +165,15 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
           <Button
-            onClick={() => onViewDetails?.()}
+            onClick={handleViewDetails}
             className="flex-1"
             variant="outline"
           >
+            <Info className="h-4 w-4 mr-2" />
             View Details
           </Button>
           <Button
-            onClick={handleRequestQuote}
+            onClick={handleContactNow}
             className="flex-1"
             variant="default"
           >
