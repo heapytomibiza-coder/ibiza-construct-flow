@@ -11,142 +11,100 @@ import { OfferCard } from './OfferCard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
-import { offers } from '@/lib/api/offers';
+import { 
+  useGetOffersByTasker, 
+  useListOffersForJob, 
+  useAcceptOffer, 
+  useDeclineOffer 
+} from '../../../packages/@contracts/clients/offers';
 
 export const OffersList: React.FC = () => {
   const { user } = useAuth();
-  const [userOffers, setUserOffers] = useState<any[]>([]);
-  const [jobOffers, setJobOffers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [userJobs, setUserJobs] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('sent');
-
+  
+  // Fetch offers sent by this user
+  const { data: sentOffersData, isLoading: sentLoading } = useGetOffersByTasker(user?.id || '');
+  
+  // Fetch user's jobs to get received offers
   useEffect(() => {
     if (user) {
-      loadOffers();
-    }
-  }, [user]);
-
-  const loadOffers = async () => {
-    if (!user) return;
-    
-    try {
-      setLoading(true);
-      
-      // Load offers sent by this user (if professional)
-      const { data: sentOffers } = await offers.getOffersByTasker(user.id);
-      if (sentOffers) {
-        // Get job details for each offer
-        const offersWithJobs = await Promise.all(
-          sentOffers.map(async (offer) => {
-            const { data: job } = await supabase
-              .from('jobs')
-              .select('*')
-              .eq('id', offer.jobId)
-              .single();
-            
-            // Get client profile separately
-            let clientProfile = null;
-            if (job?.client_id) {
-              const { data: profile } = await supabase
-                .from('profiles')
-                .select('full_name')
-                .eq('id', job.client_id)
-                .single();
-              clientProfile = profile;
-            }
-            
-            return {
-              ...offer,
-              job,
-              client: {
-                name: clientProfile?.full_name || 'Anonymous Client',
-                avatar: null
-              }
-            };
-          })
-        );
-        setUserOffers(offersWithJobs);
-      }
-
-      // Load offers received for user's jobs (if client)
-      const { data: userJobs } = await supabase
+      supabase
         .from('jobs')
         .select('id')
-        .eq('client_id', user.id);
-
-      if (userJobs && userJobs.length > 0) {
-        const jobIds = userJobs.map(job => job.id);
-        const receivedOffersPromises = jobIds.map(async (jobId) => {
-          const { data: jobOffers } = await offers.listOffersForJob(jobId);
-          return jobOffers || [];
+        .eq('client_id', user.id)
+        .then(({ data }) => {
+          if (data) setUserJobs(data.map(job => job.id));
         });
-        
-        const allReceivedOffers = (await Promise.all(receivedOffersPromises)).flat();
-        
-        // Get professional details for each offer
-        const offersWithProfessionals = await Promise.all(
-          allReceivedOffers.map(async (offer) => {
-            const { data: professional } = await supabase
+    }
+  }, [user]);
+  
+  const acceptOfferMutation = useAcceptOffer();
+  const declineOfferMutation = useDeclineOffer();
+  
+  // Enrich sent offers with job details
+  const [enrichedSentOffers, setEnrichedSentOffers] = useState<any[]>([]);
+  
+  useEffect(() => {
+    if (sentOffersData?.data) {
+      Promise.all(
+        sentOffersData.data.map(async (offer) => {
+          const { data: job } = await supabase
+            .from('jobs')
+            .select('*')
+            .eq('id', offer.jobId)
+            .single();
+          
+          let clientProfile = null;
+          if (job?.client_id) {
+            const { data: profile } = await supabase
               .from('profiles')
               .select('full_name')
-              .eq('id', offer.taskerId)
+              .eq('id', job.client_id)
               .single();
-            
-            const { data: job } = await supabase
-              .from('jobs')
-              .select('title, description')
-              .eq('id', offer.jobId)
-              .single();
-            
-            return {
-              ...offer,
-              taskerName: professional?.full_name || 'Anonymous Professional',
-              taskerAvatar: null,
-              taskerRating: 4.5, // Mock rating
-              taskerReviews: Math.floor(Math.random() * 50) + 1,
-              job
-            };
-          })
-        );
-        
-        setJobOffers(offersWithProfessionals);
+            clientProfile = profile;
+          }
+          
+          return {
+            ...offer,
+            job,
+            client: {
+              name: clientProfile?.full_name || 'Anonymous Client',
+              avatar: null
+            }
+          };
+        })
+      ).then(setEnrichedSentOffers);
+    }
+  }, [sentOffersData]);
+
+  const handleAcceptOffer = (offerId: string) => {
+    acceptOfferMutation.mutate(offerId, {
+      onSuccess: () => {
+        toast.success('Offer accepted successfully!');
+      },
+      onError: (error: any) => {
+        toast.error('Failed to accept offer: ' + error.message);
       }
-    } catch (error: any) {
-      toast.error('Failed to load offers: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
-  const handleAcceptOffer = async (offerId: string) => {
-    try {
-      const { error } = await offers.acceptOffer(offerId);
-      if (error) throw new Error(error);
-      
-      toast.success('Offer accepted successfully!');
-      loadOffers(); // Reload offers
-    } catch (error: any) {
-      toast.error('Failed to accept offer: ' + error.message);
-    }
-  };
-
-  const handleDeclineOffer = async (offerId: string) => {
-    try {
-      const { error } = await offers.declineOffer(offerId);
-      if (error) throw new Error(error);
-      
-      toast.success('Offer declined');
-      loadOffers(); // Reload offers
-    } catch (error: any) {
-      toast.error('Failed to decline offer: ' + error.message);
-    }
+  const handleDeclineOffer = (offerId: string) => {
+    declineOfferMutation.mutate(offerId, {
+      onSuccess: () => {
+        toast.success('Offer declined');
+      },
+      onError: (error: any) => {
+        toast.error('Failed to decline offer: ' + error.message);
+      }
+    });
   };
 
   const handleMessage = (offerId: string) => {
     toast.info('Messaging feature coming soon');
   };
 
-  if (loading) {
+  if (sentLoading) {
     return (
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
@@ -170,8 +128,9 @@ export const OffersList: React.FC = () => {
     );
   }
 
-  const sentOffers = userOffers;
-  const receivedOffers = jobOffers;
+  const sentOffers = enrichedSentOffers;
+  // For now, we'll handle received offers separately per job
+  const receivedOffers: any[] = [];
 
   return (
     <div className="space-y-6">

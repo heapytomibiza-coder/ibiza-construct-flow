@@ -18,7 +18,7 @@ import { Euro, Clock, MapPin, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
-import { offers } from '@/lib/api/offers';
+import { useSendOffer } from '../../../packages/@contracts/clients/offers';
 
 interface SendOfferModalProps {
   jobId: string;
@@ -33,13 +33,14 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
 }) => {
   const { user } = useAuth();
   const [job, setJob] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     amount: '',
     type: 'fixed' as 'fixed' | 'hourly',
     message: '',
     estimatedDuration: ''
   });
+  
+  const sendOfferMutation = useSendOffer();
 
   useEffect(() => {
     loadJobDetails();
@@ -101,26 +102,24 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
       toast.error('Please enter a valid amount');
       return;
     }
-
-    setLoading(true);
     
-    try {
-      const { error } = await offers.sendOffer(
+    sendOfferMutation.mutate(
+      {
         jobId,
-        parseFloat(formData.amount),
-        formData.type,
-        formData.message
-      );
-
-      if (error) throw new Error(error);
-
-      toast.success('Offer sent successfully!');
-      onOfferSent();
-    } catch (error: any) {
-      toast.error('Failed to send offer: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
+        amount: parseFloat(formData.amount),
+        type: formData.type,
+        message: formData.message
+      },
+      {
+        onSuccess: () => {
+          toast.success('Offer sent successfully!');
+          onOfferSent();
+        },
+        onError: (error: any) => {
+          toast.error('Failed to send offer: ' + error.message);
+        }
+      }
+    );
   };
 
   if (!job) {
@@ -296,9 +295,9 @@ export const SendOfferModal: React.FC<SendOfferModalProps> = ({
             <Button 
               type="submit" 
               className="bg-gradient-hero text-white"
-              disabled={loading || !formData.amount}
+              disabled={sendOfferMutation.isPending || !formData.amount}
             >
-              {loading ? 'Sending...' : 'Send Offer'}
+              {sendOfferMutation.isPending ? 'Sending...' : 'Send Offer'}
             </Button>
           </DialogFooter>
         </form>

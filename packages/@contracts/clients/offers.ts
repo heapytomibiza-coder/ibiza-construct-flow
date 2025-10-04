@@ -99,7 +99,7 @@ export const useAcceptOffer = () => {
       // Invalidate the job itself (status changes)
       queryClient.invalidateQueries({ queryKey: jobsKeys.job(data.data.jobId) });
       // Invalidate open jobs list
-      queryClient.invalidateQueries({ queryKey: jobsKeys.openJobs() });
+      queryClient.invalidateQueries({ queryKey: jobsKeys.open() });
     },
   });
 };
