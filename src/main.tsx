@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ServicesRegistryProvider } from "./contexts/ServicesRegistry";
 import { FeatureFlagsProvider } from "./contexts/FeatureFlagsContext";
+import { BookingCartProvider } from "./contexts/BookingCartContext";
 import App from "./App";
 import "./index.css";
 import "./i18n";
@@ -37,7 +38,9 @@ root.render(
     <QueryClientProvider client={qc}>
       <FeatureFlagsProvider>
         <ServicesRegistryProvider>
-          <App />
+          <BookingCartProvider>
+            <App />
+          </BookingCartProvider>
         </ServicesRegistryProvider>
       </FeatureFlagsProvider>
     </QueryClientProvider>

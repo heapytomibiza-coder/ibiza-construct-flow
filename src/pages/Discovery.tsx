@@ -1,398 +1,190 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { DiscoveryTabs } from '@/components/discovery/DiscoveryTabs';
 import { UnifiedSearchBar } from '@/components/discovery/UnifiedSearchBar';
-import { HybridResultsGrid } from '@/components/discovery/HybridResultsGrid';
-import { LocationBasedDiscovery } from '@/components/discovery/LocationBasedDiscovery';
-import { CrossPollination } from '@/components/discovery/CrossPollination';
-import { SmartSuggestions } from '@/components/discovery/SmartSuggestions';
-import { EnhancedBookingFlow } from '@/components/discovery/EnhancedBookingFlow';
-import { AIDiscoveryAssistant } from '@/components/discovery/AIDiscoveryAssistant';
-import { AISmartRecommendations } from '@/components/discovery/AISmartRecommendations';
-import { SmartLocationSuggestions } from '@/components/smart/SmartLocationSuggestions';
-import { LocationAvailabilityTracker } from '@/components/discovery/LocationAvailabilityTracker';
-import { TravelCostCalculator } from '@/components/discovery/TravelCostCalculator';
-import { SeasonalInsights } from '@/components/discovery/SeasonalInsights';
-import { useServicesRegistry } from '@/contexts/ServicesRegistry';
-import { useProfessionals } from '@/hooks/useProfessionals';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useFeature } from '@/contexts/FeatureFlagsContext';
+import { DiscoveryServiceCard } from '@/components/discovery/DiscoveryServiceCard';
+import { BookingCart } from '@/components/discovery/BookingCart';
+import { GlobalAIChatBot } from '@/components/layout/GlobalAIChatBot';
+import { useDiscoveryServices } from '@/hooks/useDiscoveryServices';
 import { useDiscoveryAnalytics } from '@/hooks/useDiscoveryAnalytics';
-import { useMarketplaceContext } from '@/hooks/useMarketplaceContext';
-import { CrossoverBanner } from '@/components/marketplace/CrossoverBanner';
+import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
+import { ServiceConfigurator } from '@/components/services/ServiceConfigurator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-
-export type DiscoveryMode = 'services' | 'professionals' | 'both';
+import { Button } from '@/components/ui/button';
+import { Sparkles } from 'lucide-react';
 
 const Discovery = () => {
   const { t } = useTranslation('services');
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const isMobile = useIsMobile();
-  const jobWizardEnabled = useFeature('ff.jobWizardV2');
-  const { context, updateContext, shouldShowCrossover } = useMarketplaceContext();
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeMode, setActiveMode] = useState<DiscoveryMode>('both');
-  const [showFilters, setShowFilters] = useState(false);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; address: string } | null>(null);
-  const [selectedService, setSelectedService] = useState<any>(null);
-  const [selectedProfessional, setSelectedProfessional] = useState<any>(null);
-  const [bookingModalOpen, setBookingModalOpen] = useState(false);
-  const [bookingItem, setBookingItem] = useState<any>(null);
-  const [bookingType, setBookingType] = useState<'service' | 'professional'>('service');
-  const [selectedLocationData, setSelectedLocationData] = useState<any>(null);
-  const [showCrossoverBanner, setShowCrossoverBanner] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedServiceItem, setSelectedServiceItem] = useState<any>(null);
+  const [configuratorOpen, setConfiguratorOpen] = useState(false);
   
-  const { getServiceCards, loading: servicesLoading } = useServicesRegistry();
-  const { professionals, loading: professionalsLoading } = useProfessionals();
-  const { 
-    trackDiscoveryView, 
-    trackSearch, 
-    trackModeSwitch, 
-    trackItemClick,
-    trackLocationUse,
-    trackSuggestionClick 
-  } = useDiscoveryAnalytics();
-  
-  const services = getServiceCards();
-  const loading = servicesLoading || professionalsLoading;
+  const { services, loading } = useDiscoveryServices(selectedCategory, searchTerm);
+  const { trackDiscoveryView, trackSearch, trackItemClick } = useDiscoveryAnalytics();
 
-  // Enhanced services with location data
-  const enhancedServices = useMemo(() => {
-    if (!userLocation) return services;
-    
-    return services.map(service => ({
-      ...service,
-      distance: Math.random() * 10 + 1 // Mock distance for demo
-    })).sort((a, b) => (a.distance || 0) - (b.distance || 0));
-  }, [services, userLocation]);
+  // Track page view
+  useEffect(() => {
+    trackDiscoveryView('services', undefined);
+  }, [trackDiscoveryView]);
 
-  // Enhanced professionals with location data  
-  const enhancedProfessionals = useMemo(() => {
-    if (!userLocation) return professionals;
-    
-    return professionals.map(professional => ({
-      ...professional,
-      distance: Math.random() * 10 + 1 // Mock distance for demo
-    })).sort((a, b) => (a.distance || 0) - (b.distance || 0));
-  }, [professionals, userLocation]);
-
-  // Cross-pollination: Find professionals offering selected service
-  const relatedProfessionals = useMemo(() => {
-    if (!selectedService) return [];
-    
-    return enhancedProfessionals.filter(professional => {
-      const specializations = professional.specializations || [];
-      return specializations.some(spec => 
-        spec.toLowerCase().includes(selectedService.category.toLowerCase()) ||
-        spec.toLowerCase().includes(selectedService.title.toLowerCase())
-      );
-    });
-  }, [selectedService, enhancedProfessionals]);
-
-  // Cross-pollination: Find services offered by selected professional
-  const relatedServices = useMemo(() => {
-    if (!selectedProfessional) return [];
-    
-    const specializations = selectedProfessional.specializations || [];
-    return enhancedServices.filter(service =>
-      specializations.some(spec =>
-        service.category.toLowerCase().includes(spec.toLowerCase()) ||
-        service.title.toLowerCase().includes(spec.toLowerCase())
-      )
-    );
-  }, [selectedProfessional, enhancedServices]);
-
-  const handleServiceClick = (service: any, position?: number) => {
-    trackItemClick('service', service.id, position || 0, searchTerm);
-    setSelectedService(service);
-    setSelectedProfessional(null);
-    
-    // Open booking modal instead of direct navigation
-    setBookingItem(service);
-    setBookingType('service');
-    setBookingModalOpen(true);
-  };
-
-  const handleProfessionalClick = (professional: any, position?: number) => {
-    trackItemClick('professional', professional.id, position || 0, searchTerm);
-    setSelectedProfessional(professional);
-    setSelectedService(null);
-    
-    // Open booking modal for professionals too
-    setBookingItem(professional);
-    setBookingType('professional');
-    setBookingModalOpen(true);
-  };
-
-  const handleSuggestionClick = (suggestion: any) => {
-    trackSuggestionClick('smart', suggestion.title);
-    setSearchTerm(suggestion.title);
-    setActiveMode('services');
-  };
-
-  const handleLocationChange = (location: { lat: number; lng: number; address: string } | null) => {
-    setUserLocation(location);
-    trackLocationUse(location ? 'enabled' : 'disabled', location?.address);
-  };
-
-  const handleLocationSelect = (locationData: any) => {
-    setSelectedLocationData(locationData);
-    // Convert to our expected location format
-    if (locationData.coordinates) {
-      setUserLocation({
-        lat: locationData.coordinates.lat,
-        lng: locationData.coordinates.lng,
-        address: locationData.name
-      });
-      trackLocationUse('enabled', locationData.name);
-    }
-  };
-
-  const handleModeChange = (newMode: DiscoveryMode) => {
-    trackModeSwitch(activeMode, newMode);
-    setActiveMode(newMode);
-  };
-
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-    if (term.length > 2) {
-      const resultsCount = enhancedServices.length + enhancedProfessionals.length;
-      trackSearch(term, activeMode, resultsCount);
-    }
-  };
-
-  // Initialize from URL params (from marketplace context)
+  // Initialize from URL params
   useEffect(() => {
     const q = searchParams.get('q');
     const category = searchParams.get('category');
-    const location = searchParams.get('location');
-    const urgency = searchParams.get('urgency');
     
     if (q) setSearchTerm(q);
-    if (category) {
-      // Set search term to category for filtering
-      setSearchTerm(category);
-    }
-    if (location) {
-      setUserLocation({
-        lat: 0, lng: 0, // Will be geocoded
-        address: location
-      });
-    }
-    
-    // Update context
-    updateContext({
-      searchTerm: q || category || '',
-      category: category || undefined,
-      location: location ? { lat: 0, lng: 0, address: location } : undefined,
-      urgency: urgency as any,
-      currentPath: 'browse'
-    });
-  }, [searchParams, updateContext]);
+    if (category) setSelectedCategory(category);
+  }, [searchParams]);
 
-  // Track results for crossover logic
-  useEffect(() => {
-    const filteredServices = enhancedServices.filter(service =>
-      !searchTerm || service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    const filteredProfessionals = enhancedProfessionals.filter(professional =>
-      !searchTerm || professional.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      professional.specializations?.some((spec: string) => 
-        spec.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-    
-    const totalResults = filteredServices.length + filteredProfessionals.length;
-    updateContext({ lastSearchResults: totalResults });
-    
-    // Show crossover banner if results are poor
-    if (searchTerm && totalResults < 3 && shouldShowCrossover('discovery-to-post')) {
-      setShowCrossoverBanner(true);
-    }
-  }, [enhancedServices, enhancedProfessionals, searchTerm, updateContext, shouldShowCrossover]);
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    if (value) trackSearch(value, 'services', services.length);
+  };
 
-  // Track initial page view
-  React.useEffect(() => {
-    trackDiscoveryView(activeMode, userLocation);
-  }, [activeMode, userLocation, trackDiscoveryView]);
-
-  const handleCrossoverToPost = () => {
-    updateContext({ 
-      previousPath: 'browse',
-      crossoverCount: (context.crossoverCount || 0) + 1
-    });
-    
-    const postUrl = `/post?${new URLSearchParams({
-      ...(searchTerm && { service: searchTerm }),
-      ...(context.category && { category: context.category }),
-      ...(userLocation?.address && { location: userLocation.address })
-    }).toString()}`;
-    
-    navigate(postUrl);
+  const handleServiceClick = (item: any) => {
+    setSelectedServiceItem(item);
+    setConfiguratorOpen(true);
+    trackItemClick('service', item.id, 0);
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-dark to-copper bg-clip-text text-transparent">
-            {t('hero.title')}
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary-dark to-copper bg-clip-text text-transparent">
+            Find the Perfect Service
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            {t('hero.subtitle')}
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Browse our menu of professional services with transparent pricing and instant booking
           </p>
         </div>
 
-        {/* AI Smart Recommendations */}
-        <AISmartRecommendations
-          searchTerm={searchTerm}
-          location={userLocation}
-          services={enhancedServices}
-          professionals={enhancedProfessionals}
-          onRecommendationClick={(item, type) => {
-            if (type === 'service') {
-              handleServiceClick(item);
-            } else {
-              handleProfessionalClick(item);
-            }
-          }}
-        />
-
-        {/* Location-based Discovery */}
-        <LocationBasedDiscovery
-          currentLocation={userLocation}
-          onLocationChange={handleLocationChange}
-        />
-
-        {/* Smart Location Suggestions */}
-        <SmartLocationSuggestions
-          selectedService={selectedService?.category || searchTerm}
-          onLocationSelect={handleLocationSelect}
-          className="mb-6"
-        />
-
-        {/* Real-time Availability Tracking */}
-        <LocationAvailabilityTracker
-          location={userLocation}
-          selectedService={selectedService?.category || searchTerm}
-        />
-
-        {/* Travel Cost Calculator */}
-        <TravelCostCalculator
-          location={userLocation}
-          professionalLocations={enhancedProfessionals.slice(0, 5).map(prof => ({
-            id: prof.id,
-            name: prof.full_name || 'Anonymous Professional',
-            distance: (prof as any).distance || Math.random() * 15 + 1,
-            location: (prof as any).location || 'Unknown Location'
-          }))}
-        />
-
-        {/* Seasonal Insights */}
-        <SeasonalInsights
-          location={userLocation}
-          selectedService={selectedService?.category || searchTerm}
-        />
-
-        {/* Smart Suggestions */}
-        {!searchTerm && (
-          <SmartSuggestions
-            searchTerm={searchTerm}
-            location={userLocation}
-            onSuggestionClick={handleSuggestionClick}
-          />
-        )}
-
-        {/* Crossover Banner */}
-        {showCrossoverBanner && (
-          <CrossoverBanner
-            type="discovery-to-post"
-            context={{
-              searchTerm,
-              location: userLocation?.address,
-              resultsCount: context.lastSearchResults || 0
-            }}
-            onCrossover={handleCrossoverToPost}
-            onDismiss={() => setShowCrossoverBanner(false)}
-          />
-        )}
-
-        {/* Unified Search */}
+        {/* Search Bar */}
         <UnifiedSearchBar
           searchTerm={searchTerm}
           onSearchChange={handleSearchChange}
-          onFilterToggle={() => setShowFilters(!showFilters)}
-          showFilters={showFilters}
+          onFilterToggle={() => {}}
+          showFilters={false}
         />
 
-        {/* Discovery Tabs */}
-        <DiscoveryTabs
-          activeMode={activeMode}
-          onModeChange={handleModeChange}
-          className="mb-8"
-        />
+        {/* AI Suggestions Banner */}
+        {!searchTerm && (
+          <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-copper/10 rounded-lg p-6 border border-primary/20">
+            <div className="flex items-center gap-3 mb-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold">Popular Services</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Start with these commonly requested services
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchTerm('electrical')}
+              >
+                ⚡ Electrical Work
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchTerm('plumbing')}
+              >
+                🔧 Plumbing
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchTerm('painting')}
+              >
+                🎨 Painting
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchTerm('carpentry')}
+              >
+                🪚 Carpentry
+              </Button>
+            </div>
+          </div>
+        )}
 
-        {/* Cross-pollination: Professionals for selected service */}
-        <CrossPollination
-          type="service"
-          selectedItem={selectedService}
-          relatedItems={relatedProfessionals}
-          onItemClick={handleProfessionalClick}
-        />
+        {/* Results Count */}
+        {!loading && services.length > 0 && (
+          <div className="flex items-center justify-between">
+            <p className="text-muted-foreground">
+              {services.length} service{services.length !== 1 ? 's' : ''} available
+            </p>
+          </div>
+        )}
 
-        {/* Cross-pollination: Services by selected professional */}
-        <CrossPollination
-          type="professional"
-          selectedItem={selectedProfessional}
-          relatedItems={relatedServices}
-          onItemClick={handleServiceClick}
-        />
-
-        {/* Results Grid */}
-        <HybridResultsGrid
-          mode={activeMode}
-          searchTerm={searchTerm}
-          services={enhancedServices}
-          professionals={enhancedProfessionals}
-          loading={loading}
-          showFilters={showFilters}
-        />
+        {/* Services Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <SkeletonLoader key={i} variant="card" />
+            ))}
+          </div>
+        ) : services.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-lg text-muted-foreground">
+              {searchTerm
+                ? `No services found for "${searchTerm}"`
+                : 'No services available'}
+            </p>
+            <Button
+              variant="link"
+              onClick={() => setSearchTerm('')}
+              className="mt-4"
+            >
+              Clear search
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service) => (
+              <DiscoveryServiceCard
+                key={service.id}
+                item={service}
+                onViewDetails={() => handleServiceClick(service)}
+              />
+            ))}
+          </div>
+        )}
       </main>
 
       <Footer />
 
-      {/* AI Discovery Assistant */}
-      <AIDiscoveryAssistant
-        searchTerm={searchTerm}
-        location={userLocation}
-        onSuggestionClick={handleSuggestionClick}
-        onServiceRecommendation={(service) => {
-          // Add recommended service to enhanced services for display
-          console.log('AI recommended service:', service);
-        }}
-      />
+      {/* Floating AI Chat */}
+      <GlobalAIChatBot />
 
-      {/* Enhanced Booking Modal */}
-      <Dialog open={bookingModalOpen} onOpenChange={setBookingModalOpen}>
-        <DialogContent className="max-w-md">
+      {/* Floating Booking Cart */}
+      <BookingCart />
+
+      {/* Service Configurator Modal */}
+      <Dialog open={configuratorOpen} onOpenChange={setConfiguratorOpen}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Book Service</DialogTitle>
+            <DialogTitle>Configure Your Service</DialogTitle>
           </DialogHeader>
-          {bookingItem && (
-            <EnhancedBookingFlow
-              type={bookingType}
-              item={bookingItem}
-              onClose={() => setBookingModalOpen(false)}
+          {selectedServiceItem && (
+            <ServiceConfigurator
+              service={{
+                id: selectedServiceItem.service_id,
+                name: selectedServiceItem.name,
+                description: selectedServiceItem.description,
+                category: selectedServiceItem.category,
+              }}
+              professionalId={selectedServiceItem.professional_id}
             />
           )}
         </DialogContent>
