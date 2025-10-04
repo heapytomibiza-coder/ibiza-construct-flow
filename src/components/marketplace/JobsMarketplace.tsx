@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { JobListingCard } from './JobListingCard';
 import { SendOfferModal } from './SendOfferModal';
+import { SubscriptionUpsellBanner } from './SubscriptionUpsellBanner';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -33,11 +34,35 @@ export const JobsMarketplace: React.FC = () => {
   const loadJobs = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Get professional's subscription tier if logged in
+      let subscriptionTier = 'basic';
+      if (user) {
+        const { data: profile } = await supabase
+          .from('professional_profiles')
+          .select('subscription_tier')
+          .eq('user_id', user.id)
+          .single();
+        
+        subscriptionTier = profile?.subscription_tier || 'basic';
+      }
+      
+      // Calculate visibility cutoff for basic users (24 hours ago)
+      const cutoffDate = subscriptionTier === 'basic' 
+        ? new Date(Date.now() - 24 * 60 * 60 * 1000) 
+        : null;
+
+      let query = supabase
         .from('jobs')
         .select('*')
-        .eq('status', 'open')
-        .order(sortBy, { ascending: false });
+        .eq('status', 'open');
+
+      // Basic users only see jobs older than 24hrs
+      if (cutoffDate) {
+        query = query.lt('created_at', cutoffDate.toISOString());
+      }
+
+      const { data, error } = await query.order(sortBy, { ascending: false });
 
       if (error) throw error;
 
@@ -210,6 +235,9 @@ export const JobsMarketplace: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Subscription Upsell Banner */}
+      <SubscriptionUpsellBanner />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
