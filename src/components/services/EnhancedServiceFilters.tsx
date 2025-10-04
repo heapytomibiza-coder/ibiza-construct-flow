@@ -4,14 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Filter, X, MapPin } from 'lucide-react';
+import { Filter, X, ChevronRight } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import Cascader from '@/components/common/Cascader';
 
 interface FilterProps {
   filters: {
-    categories: string[];
-    subcategories: string[];
+    selectedTaxonomy: {
+      category: string;
+      subcategory: string;
+      micro: string;
+    } | null;
     specialists: string[];
     priceRange: [number, number];
     availability: string[];
@@ -94,8 +97,13 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
   // Load filters from URL on mount
   useEffect(() => {
     const urlFilters = {
-      categories: searchParams.get('cat')?.split(',').filter(Boolean) || [],
-      subcategories: searchParams.get('sub')?.split(',').filter(Boolean) || [],
+      selectedTaxonomy: searchParams.get('cat') || searchParams.get('sub') || searchParams.get('micro') 
+        ? {
+            category: searchParams.get('cat') || '',
+            subcategory: searchParams.get('sub') || '',
+            micro: searchParams.get('micro') || ''
+          }
+        : null,
       specialists: searchParams.get('spec')?.split(',').filter(Boolean) || [],
       priceRange: [
         parseInt(searchParams.get('minPrice') || '0'),
@@ -116,8 +124,11 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
 
     // Update URL parameters
     const params = new URLSearchParams();
-    if (newFilters.categories.length > 0) params.set('cat', newFilters.categories.join(','));
-    if (newFilters.subcategories.length > 0) params.set('sub', newFilters.subcategories.join(','));
+    if (newFilters.selectedTaxonomy) {
+      if (newFilters.selectedTaxonomy.category) params.set('cat', newFilters.selectedTaxonomy.category);
+      if (newFilters.selectedTaxonomy.subcategory) params.set('sub', newFilters.selectedTaxonomy.subcategory);
+      if (newFilters.selectedTaxonomy.micro) params.set('micro', newFilters.selectedTaxonomy.micro);
+    }
     if (newFilters.specialists.length > 0) params.set('spec', newFilters.specialists.join(','));
     if (newFilters.priceRange[0] > 0) params.set('minPrice', newFilters.priceRange[0].toString());
     if (newFilters.priceRange[1] < 100000) params.set('maxPrice', newFilters.priceRange[1].toString());
@@ -127,12 +138,19 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
     setSearchParams(params);
   };
 
-  const toggleCategory = (category: string) => {
-    const newCategories = localFilters.categories.includes(category)
-      ? localFilters.categories.filter(c => c !== category)
-      : [...localFilters.categories, category];
-    
-    updateFilters({ ...localFilters, categories: newCategories });
+  const handleTaxonomySelect = (selection: any) => {
+    updateFilters({ 
+      ...localFilters, 
+      selectedTaxonomy: {
+        category: selection.category,
+        subcategory: selection.subcategory,
+        micro: selection.micro
+      }
+    });
+  };
+
+  const clearTaxonomy = () => {
+    updateFilters({ ...localFilters, selectedTaxonomy: null });
   };
 
   const toggleSpecialist = (specialist: string) => {
@@ -153,8 +171,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
 
   const clearAllFilters = () => {
     const emptyFilters = {
-      categories: [],
-      subcategories: [],
+      selectedTaxonomy: null,
       specialists: [],
       priceRange: [0, 100000] as [number, number],
       availability: [],
@@ -165,7 +182,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
   };
 
   const getActiveFilterCount = () => {
-    return localFilters.categories.length + 
+    return (localFilters.selectedTaxonomy ? 1 : 0) +
            localFilters.specialists.length + 
            localFilters.availability.length +
            (localFilters.location ? 1 : 0) +
@@ -199,27 +216,51 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
         </CardHeader>
       </Card>
 
-      {/* Service Categories */}
+      {/* Service Taxonomy Cascader */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Service Categories</CardTitle>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">Browse by Category</CardTitle>
+            {localFilters.selectedTaxonomy && (
+              <Button variant="ghost" size="sm" onClick={clearTaxonomy}>
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {categories.map((category) => (
-            <div key={category} className="flex items-center space-x-2">
-              <Checkbox
-                id={`category-${category}`}
-                checked={localFilters.categories.includes(category)}
-                onCheckedChange={() => toggleCategory(category)}
-              />
-              <label
-                htmlFor={`category-${category}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+        <CardContent>
+          {localFilters.selectedTaxonomy ? (
+            <div className="space-y-2">
+              <div className="p-3 bg-primary/10 rounded-lg">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-medium text-primary">
+                    {localFilters.selectedTaxonomy.category}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">
+                    {localFilters.selectedTaxonomy.subcategory}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-foreground font-medium">
+                    {localFilters.selectedTaxonomy.micro}
+                  </span>
+                </div>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={clearTaxonomy}
+                className="w-full"
               >
-                {category}
-              </label>
+                Change Selection
+              </Button>
             </div>
-          ))}
+          ) : (
+            <Cascader 
+              onChange={handleTaxonomySelect}
+              placeholder="Select category → subcategory → service"
+            />
+          )}
         </CardContent>
       </Card>
 

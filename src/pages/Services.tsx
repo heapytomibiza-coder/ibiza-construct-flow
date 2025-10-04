@@ -24,8 +24,11 @@ const Services = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    categories: [],
-    subcategories: [],
+    selectedTaxonomy: null as {
+      category: string;
+      subcategory: string;
+      micro: string;
+    } | null,
     specialists: [],
     location: '',
     priceRange: [0, 100000] as [number, number],
@@ -57,14 +60,17 @@ const Services = () => {
                          service.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          service.category.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = filters.categories.length === 0 || 
-                           filters.categories.includes(service.category);
+    const matchesTaxonomy = !filters.selectedTaxonomy || (
+      (!filters.selectedTaxonomy.category || service.category === filters.selectedTaxonomy.category) &&
+      (!filters.selectedTaxonomy.subcategory || service.subcategory === filters.selectedTaxonomy.subcategory) &&
+      (!filters.selectedTaxonomy.micro || service.micro === filters.selectedTaxonomy.micro)
+    );
     
     const matchesSpecialist = filters.specialists.length === 0 ||
                              filters.specialists.some(specialist => 
                                service.category.toLowerCase().includes(specialist.toLowerCase()));
     
-    return matchesSearch && matchesCategory && matchesSpecialist;
+    return matchesSearch && matchesTaxonomy && matchesSpecialist;
   });
 
   const handleServiceClick = (service: any) => {
@@ -402,8 +408,7 @@ const Services = () => {
             label: "Clear Filters",
             onClick: () => {
               setFilters({
-                categories: [],
-                subcategories: [],
+                selectedTaxonomy: null,
                 specialists: [],
                 location: '',
                 priceRange: [0, 100000],
