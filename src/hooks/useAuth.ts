@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { useSignIn, useSignUp, useSignOut } from '../../packages/@contracts/clients/auth';
 
 interface Profile {
   id: string;
@@ -19,6 +20,10 @@ export const useAuth = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const signInMutation = useSignIn();
+  const signUpMutation = useSignUp();
+  const signOutMutation = useSignOut();
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -71,32 +76,39 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
+    return new Promise<{ error: any }>((resolve) => {
+      signInMutation.mutate(
+        { email, password },
+        {
+          onSuccess: () => resolve({ error: null }),
+          onError: (error) => resolve({ error })
+        }
+      );
     });
-    return { error };
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName
+    return new Promise<{ error: any }>((resolve) => {
+      signUpMutation.mutate(
+        { email, password, fullName },
+        {
+          onSuccess: () => resolve({ error: null }),
+          onError: (error) => resolve({ error })
         }
-      }
+      );
     });
-    return { error };
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    return new Promise<{ error: any }>((resolve) => {
+      signOutMutation.mutate(
+        undefined,
+        {
+          onSuccess: () => resolve({ error: null }),
+          onError: (error) => resolve({ error })
+        }
+      );
+    });
   };
 
   const hasRole = (role: string): boolean => {

@@ -8,6 +8,33 @@
  */
 
 module.exports = {
+  // Auth API
+  'auth': {
+    input: {
+      target: './contracts/openapi.yaml',
+      filters: {
+        tags: ['Auth'],
+      },
+    },
+    output: {
+      target: './packages/@contracts/clients/auth.ts',
+      client: 'react-query',
+      mode: 'tags-split',
+      mock: false,
+      override: {
+        mutator: {
+          path: './src/lib/api/index.ts',
+          name: 'customInstance',
+        },
+        query: {
+          useQuery: true,
+          useMutation: true,
+          signal: true,
+        },
+      },
+    },
+  },
+
   // Question Packs API
   'question-packs': {
     input: {

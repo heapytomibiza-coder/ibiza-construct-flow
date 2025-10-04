@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
+import { useSignIn } from '../../packages/@contracts/clients/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
@@ -25,6 +26,8 @@ export default function SignIn() {
   const redirectTo = searchParams.get('redirect');
   const magicLinkEnabled = useFeature('ff.magicLink', true);
   const socialAuthEnabled = useFeature('ff.socialAuth', true);
+  
+  const signInMutation = useSignIn();
 
   // Redirect if user is already authenticated
   useEffect(() => {
@@ -70,32 +73,26 @@ export default function SignIn() {
 
   const handlePasswordSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: t('signin.welcomeBack'),
-        description: t('signin.signInSuccess'),
-      });
-      
-      // Navigate to redirect URL if provided, otherwise to dashboard
-      navigate(redirectTo || '/dashboard');
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message,
-      });
-    } finally {
-      setLoading(false);
-    }
+    signInMutation.mutate(
+      { email, password },
+      {
+        onSuccess: () => {
+          toast({
+            title: t('signin.welcomeBack'),
+            description: t('signin.signInSuccess'),
+          });
+          navigate(redirectTo || '/dashboard');
+        },
+        onError: (error: any) => {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: error.message,
+          });
+        }
+      }
+    );
   };
 
   return (
@@ -196,8 +193,8 @@ export default function SignIn() {
                 </>
               )}
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? t('signin.signingIn') : 
+              <Button type="submit" className="w-full" disabled={loading || signInMutation.isPending}>
+                {loading || signInMutation.isPending ? t('signin.signingIn') : 
                  authMode === 'magic' ? t('signin.sendMagicLink') : t('signin.signIn')
                 }
               </Button>

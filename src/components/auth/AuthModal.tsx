@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
+import { useSignIn, useSignUp } from '../../../packages/@contracts/clients/auth';
 import { enableProfessionalRole } from '@/lib/roles';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Lock } from 'lucide-react';
@@ -24,6 +25,9 @@ export default function AuthModal({ open, onClose, defaultTab = 'signin' }: Auth
   const [signUpAsProfessional, setSignUpAsProfessional] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  
+  const signInMutation = useSignIn();
+  const signUpMutation = useSignUp();
 
   async function handleMagicLink() {
     if (!email) {
@@ -69,69 +73,57 @@ export default function AuthModal({ open, onClose, defaultTab = 'signin' }: Auth
       });
       return;
     }
-
-    setLoading(true);
     
     if (tab === 'signup') {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            full_name: fullName,
-            intent_role: signUpAsProfessional ? 'professional' : 'client'
+      signUpMutation.mutate(
+        { email, password, fullName },
+        {
+          onSuccess: (data) => {
+            if (signUpAsProfessional) {
+              setTimeout(async () => {
+                try {
+                  await enableProfessionalRole();
+                } catch (err) {
+                  console.error('Error enabling professional role:', err);
+                }
+              }, 1000);
+            }
+            
+            toast({
+              title: "Account created",
+              description: "Please check your email to confirm your account"
+            });
+            onClose();
+          },
+          onError: (error: any) => {
+            toast({
+              title: "Sign up failed",
+              description: error.message,
+              variant: "destructive"
+            });
           }
         }
-      });
-      
-      if (!error && data.user && signUpAsProfessional) {
-        // Enable professional role for the new user
-        setTimeout(async () => {
-          try {
-            await enableProfessionalRole();
-          } catch (err) {
-            console.error('Error enabling professional role:', err);
-          }
-        }, 1000);
-      }
-      
-      setLoading(false);
-      
-      if (error) {
-        toast({
-          title: "Sign up failed",
-          description: error.message,
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Account created",
-          description: "Please check your email to confirm your account"
-        });
-        onClose();
-      }
+      );
     } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      setLoading(false);
-      
-      if (error) {
-        toast({
-          title: "Sign in failed",
-          description: error.message,
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Welcome back",
-          description: "You've been signed in successfully"
-        });
-        onClose();
-      }
+      signInMutation.mutate(
+        { email, password },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Welcome back",
+              description: "You've been signed in successfully"
+            });
+            onClose();
+          },
+          onError: (error: any) => {
+            toast({
+              title: "Sign in failed",
+              description: error.message,
+              variant: "destructive"
+            });
+          }
+        }
+      );
     }
   }
 
@@ -192,7 +184,7 @@ export default function AuthModal({ open, onClose, defaultTab = 'signin' }: Auth
               <Button 
                 onClick={handlePasswordAuth} 
                 className="w-full"
-                disabled={loading}
+                disabled={signInMutation.isPending}
               >
                 Sign In
               </Button>
@@ -265,7 +257,7 @@ export default function AuthModal({ open, onClose, defaultTab = 'signin' }: Auth
               <Button 
                 onClick={handlePasswordAuth} 
                 className="w-full"
-                disabled={loading}
+                disabled={signUpMutation.isPending}
               >
                 Create Account
               </Button>
