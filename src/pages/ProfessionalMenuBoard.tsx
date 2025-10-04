@@ -83,9 +83,11 @@ const ProfessionalMenuBoard = () => {
   }, [id]);
 
   const handleAddToCart = (service: ServiceItem) => {
-    const unit = selectedUnits[service.id] || 'hours';
-    const quantity = quantities[service.id] || 1;
-    const serviceName = `${service.name} (${quantity} ${unit})`;
+    const unit = selectedUnits[service.id] || 'fixed';
+    const quantity = unit === 'fixed' ? 1 : (quantities[service.id] || 1);
+    const serviceName = unit === 'fixed' 
+      ? `${service.name} (Fixed Rate)` 
+      : `${service.name} (${quantity} ${unit})`;
     
     addItem({
       id: service.id,
@@ -97,7 +99,11 @@ const ProfessionalMenuBoard = () => {
       quantity: quantity,
       unitType: unit,
     });
-    toast.success(`Added ${quantity} ${unit} to request`);
+    
+    const message = unit === 'fixed' 
+      ? 'Added fixed rate service to request'
+      : `Added ${quantity} ${unit} to request`;
+    toast.success(message);
   };
 
   const handleUnitChange = (serviceId: string, unit: string) => {
@@ -255,38 +261,41 @@ const ProfessionalMenuBoard = () => {
                       </div>
 
                       <div className="flex gap-2">
-                        {/* Quantity Controls */}
-                        <div className="flex items-center border rounded-md">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-9 w-9 p-0"
-                            onClick={() => handleQuantityChange(service.id, -1)}
-                          >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="px-3 text-sm font-medium min-w-[2rem] text-center">
-                            {quantities[service.id] || 1}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-9 w-9 p-0"
-                            onClick={() => handleQuantityChange(service.id, 1)}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
+                        {/* Quantity Controls - Hidden for Fixed Rate */}
+                        {(selectedUnits[service.id] !== 'fixed') && (
+                          <div className="flex items-center border rounded-md">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-9 w-9 p-0"
+                              onClick={() => handleQuantityChange(service.id, -1)}
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <span className="px-3 text-sm font-medium min-w-[2rem] text-center">
+                              {quantities[service.id] || 1}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-9 w-9 p-0"
+                              onClick={() => handleQuantityChange(service.id, 1)}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
 
                         {/* Unit Selector */}
                         <Select 
-                          value={selectedUnits[service.id] || 'hours'}
+                          value={selectedUnits[service.id] || 'fixed'}
                           onValueChange={(value) => handleUnitChange(service.id, value)}
                         >
-                          <SelectTrigger className="w-28">
+                          <SelectTrigger className={selectedUnits[service.id] === 'fixed' ? 'flex-1' : 'w-32'}>
                             <SelectValue placeholder="Unit" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="fixed">Fixed Rate</SelectItem>
                             <SelectItem value="hours">Hours</SelectItem>
                             <SelectItem value="days">Days</SelectItem>
                             <SelectItem value="weeks">Weeks</SelectItem>
