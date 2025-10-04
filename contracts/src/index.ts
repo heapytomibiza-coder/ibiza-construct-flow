@@ -69,6 +69,48 @@ import {
   GetJobsByClientResponseSchema,
   GetOpenJobsResponseSchema,
 } from './jobs.zod';
+import {
+  ServiceMicroSchema,
+  GetServiceMicrosResponseSchema,
+  GetServiceMicroByIdResponseSchema,
+  GetServicesByCategoryResponseSchema,
+  GetCategoriesResponseSchema,
+  GetSubcategoriesResponseSchema,
+} from './services.zod';
+import {
+  OfferSchema,
+  SendOfferRequestSchema,
+  SendOfferResponseSchema,
+  ListOffersForJobResponseSchema,
+  AcceptOfferResponseSchema,
+  DeclineOfferResponseSchema,
+  GetOffersByTaskerResponseSchema,
+} from './offers.zod';
+import {
+  ContractSchema,
+  CreateFromOfferRequestSchema,
+  CreateFromOfferResponseSchema,
+  GetContractResponseSchema,
+  GetContractsByUserResponseSchema,
+  MarkInProgressResponseSchema,
+  SubmitCompletionResponseSchema,
+} from './contracts.zod';
+import {
+  FundEscrowResponseSchema,
+  ReleaseEscrowResponseSchema,
+  RefundEscrowResponseSchema,
+  GetEscrowBalanceResponseSchema,
+  GetPendingPaymentsResponseSchema,
+} from './payments.zod';
+import {
+  UserSessionSchema,
+  SignInRequestSchema,
+  SignInResponseSchema,
+  SignUpRequestSchema,
+  SignUpResponseSchema,
+  GetSessionResponseSchema,
+  SignOutResponseSchema,
+} from './auth.zod';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);
@@ -126,6 +168,38 @@ registry.register('PublishJobResponse', PublishJobResponseSchema);
 registry.register('GetJobResponse', GetJobResponseSchema);
 registry.register('GetJobsByClientResponse', GetJobsByClientResponseSchema);
 registry.register('GetOpenJobsResponse', GetOpenJobsResponseSchema);
+registry.register('ServiceMicro', ServiceMicroSchema);
+registry.register('GetServiceMicrosResponse', GetServiceMicrosResponseSchema);
+registry.register('GetServiceMicroByIdResponse', GetServiceMicroByIdResponseSchema);
+registry.register('GetServicesByCategoryResponse', GetServicesByCategoryResponseSchema);
+registry.register('GetCategoriesResponse', GetCategoriesResponseSchema);
+registry.register('GetSubcategoriesResponse', GetSubcategoriesResponseSchema);
+registry.register('Offer', OfferSchema);
+registry.register('SendOfferRequest', SendOfferRequestSchema);
+registry.register('SendOfferResponse', SendOfferResponseSchema);
+registry.register('ListOffersForJobResponse', ListOffersForJobResponseSchema);
+registry.register('AcceptOfferResponse', AcceptOfferResponseSchema);
+registry.register('DeclineOfferResponse', DeclineOfferResponseSchema);
+registry.register('GetOffersByTaskerResponse', GetOffersByTaskerResponseSchema);
+registry.register('Contract', ContractSchema);
+registry.register('CreateFromOfferRequest', CreateFromOfferRequestSchema);
+registry.register('CreateFromOfferResponse', CreateFromOfferResponseSchema);
+registry.register('GetContractResponse', GetContractResponseSchema);
+registry.register('GetContractsByUserResponse', GetContractsByUserResponseSchema);
+registry.register('MarkInProgressResponse', MarkInProgressResponseSchema);
+registry.register('SubmitCompletionResponse', SubmitCompletionResponseSchema);
+registry.register('FundEscrowResponse', FundEscrowResponseSchema);
+registry.register('ReleaseEscrowResponse', ReleaseEscrowResponseSchema);
+registry.register('RefundEscrowResponse', RefundEscrowResponseSchema);
+registry.register('GetEscrowBalanceResponse', GetEscrowBalanceResponseSchema);
+registry.register('GetPendingPaymentsResponse', GetPendingPaymentsResponseSchema);
+registry.register('UserSession', UserSessionSchema);
+registry.register('SignInRequest', SignInRequestSchema);
+registry.register('SignInResponse', SignInResponseSchema);
+registry.register('SignUpRequest', SignUpRequestSchema);
+registry.register('SignUpResponse', SignUpResponseSchema);
+registry.register('GetSessionResponse', GetSessionResponseSchema);
+registry.register('SignOutResponse', SignOutResponseSchema);
 
 // Register paths
 registry.registerPath({
@@ -816,6 +890,535 @@ registry.registerPath({
       content: {
         'application/json': {
           schema: GetOpenJobsResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+// Services Endpoints
+registry.registerPath({
+  method: 'get',
+  path: '/services/micros',
+  summary: 'Get all service micros',
+  tags: ['Services'],
+  responses: {
+    200: {
+      description: 'Service micros retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetServiceMicrosResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/services/micros/{id}',
+  summary: 'Get service micro by ID',
+  tags: ['Services'],
+  request: {
+    params: z.object({
+      id: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Service micro retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetServiceMicroByIdResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/services/category/{category}',
+  summary: 'Get services by category',
+  tags: ['Services'],
+  request: {
+    params: z.object({
+      category: z.string(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Services retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetServicesByCategoryResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/services/categories',
+  summary: 'Get all categories',
+  tags: ['Services'],
+  responses: {
+    200: {
+      description: 'Categories retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetCategoriesResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/services/categories/{category}/subcategories',
+  summary: 'Get subcategories for a category',
+  tags: ['Services'],
+  request: {
+    params: z.object({
+      category: z.string(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Subcategories retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetSubcategoriesResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+// Offers Endpoints
+registry.registerPath({
+  method: 'post',
+  path: '/offers',
+  summary: 'Send a new offer',
+  tags: ['Offers'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: SendOfferRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Offer sent successfully',
+      content: {
+        'application/json': {
+          schema: SendOfferResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/offers/job/{jobId}',
+  summary: 'List offers for a job',
+  tags: ['Offers'],
+  request: {
+    params: z.object({
+      jobId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Offers retrieved successfully',
+      content: {
+        'application/json': {
+          schema: ListOffersForJobResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/offers/{offerId}/accept',
+  summary: 'Accept an offer',
+  tags: ['Offers'],
+  request: {
+    params: z.object({
+      offerId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Offer accepted successfully',
+      content: {
+        'application/json': {
+          schema: AcceptOfferResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/offers/{offerId}/decline',
+  summary: 'Decline an offer',
+  tags: ['Offers'],
+  request: {
+    params: z.object({
+      offerId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Offer declined successfully',
+      content: {
+        'application/json': {
+          schema: DeclineOfferResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/offers/tasker/{taskerId}',
+  summary: 'Get offers by tasker',
+  tags: ['Offers'],
+  request: {
+    params: z.object({
+      taskerId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Offers retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetOffersByTaskerResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+// Contracts Endpoints
+registry.registerPath({
+  method: 'post',
+  path: '/contracts/from-offer',
+  summary: 'Create contract from accepted offer',
+  tags: ['Contracts'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: CreateFromOfferRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Contract created successfully',
+      content: {
+        'application/json': {
+          schema: CreateFromOfferResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/contracts/{contractId}',
+  summary: 'Get contract by ID',
+  tags: ['Contracts'],
+  request: {
+    params: z.object({
+      contractId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Contract retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetContractResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/contracts/user/{userId}',
+  summary: 'Get contracts by user',
+  tags: ['Contracts'],
+  request: {
+    params: z.object({
+      userId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Contracts retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetContractsByUserResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/contracts/{contractId}/in-progress',
+  summary: 'Mark contract as in progress',
+  tags: ['Contracts'],
+  request: {
+    params: z.object({
+      contractId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Contract marked as in progress',
+      content: {
+        'application/json': {
+          schema: MarkInProgressResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/contracts/{contractId}/complete',
+  summary: 'Submit contract completion',
+  tags: ['Contracts'],
+  request: {
+    params: z.object({
+      contractId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Contract completion submitted',
+      content: {
+        'application/json': {
+          schema: SubmitCompletionResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+// Payments Endpoints
+registry.registerPath({
+  method: 'post',
+  path: '/payments/escrow/{contractId}/fund',
+  summary: 'Fund escrow for contract',
+  tags: ['Payments'],
+  request: {
+    params: z.object({
+      contractId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Escrow funded successfully',
+      content: {
+        'application/json': {
+          schema: FundEscrowResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/payments/escrow/{contractId}/release',
+  summary: 'Release escrow payment',
+  tags: ['Payments'],
+  request: {
+    params: z.object({
+      contractId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Escrow released successfully',
+      content: {
+        'application/json': {
+          schema: ReleaseEscrowResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/payments/escrow/{contractId}/refund',
+  summary: 'Refund escrow',
+  tags: ['Payments'],
+  request: {
+    params: z.object({
+      contractId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Escrow refunded successfully',
+      content: {
+        'application/json': {
+          schema: RefundEscrowResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/payments/escrow/balance/{userId}',
+  summary: 'Get escrow balance',
+  tags: ['Payments'],
+  request: {
+    params: z.object({
+      userId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Escrow balance retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetEscrowBalanceResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/payments/pending/{userId}',
+  summary: 'Get pending payments',
+  tags: ['Payments'],
+  request: {
+    params: z.object({
+      userId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Pending payments retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetPendingPaymentsResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+// Auth Endpoints
+registry.registerPath({
+  method: 'get',
+  path: '/auth/session',
+  summary: 'Get current session',
+  tags: ['Auth'],
+  responses: {
+    200: {
+      description: 'Session retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetSessionResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/auth/signin',
+  summary: 'Sign in',
+  tags: ['Auth'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: SignInRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Signed in successfully',
+      content: {
+        'application/json': {
+          schema: SignInResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/auth/signup',
+  summary: 'Sign up',
+  tags: ['Auth'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: SignUpRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Signed up successfully',
+      content: {
+        'application/json': {
+          schema: SignUpResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/auth/signout',
+  summary: 'Sign out',
+  tags: ['Auth'],
+  responses: {
+    200: {
+      description: 'Signed out successfully',
+      content: {
+        'application/json': {
+          schema: SignOutResponseSchema,
         },
       },
     },

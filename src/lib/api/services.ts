@@ -1,3 +1,20 @@
+/**
+ * @deprecated This file is deprecated. Use contract-first hooks instead.
+ * 
+ * Migration guide:
+ * ```typescript
+ * // Old:
+ * import { services } from '@/lib/api/services';
+ * const result = await services.getServiceMicros();
+ * 
+ * // New:
+ * import { useGetServiceMicros } from '@contracts/clients/services';
+ * const { data, isLoading } = useGetServiceMicros();
+ * ```
+ * 
+ * @see packages/@contracts/clients/services.ts for new implementation
+ */
+
 import { supabase } from '@/integrations/supabase/client';
 import type { ServiceMicro, Question, ApiResponse } from './types';
 

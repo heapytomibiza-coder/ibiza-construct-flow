@@ -1,3 +1,21 @@
+/**
+ * @deprecated This file is deprecated. Use contract-first hooks instead.
+ * 
+ * Migration guide:
+ * ```typescript
+ * // Old:
+ * import { contracts } from '@/lib/api/contracts';
+ * const result = await contracts.createFromOffer(offerId);
+ * 
+ * // New:
+ * import { useCreateFromOffer } from '@contracts/clients/contracts';
+ * const { mutate: createContract } = useCreateFromOffer();
+ * createContract({ offerId });
+ * ```
+ * 
+ * @see packages/@contracts/clients/contracts.ts for new implementation
+ */
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Contract, ApiResponse } from './types';
 

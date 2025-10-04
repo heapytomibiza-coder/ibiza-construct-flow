@@ -1,3 +1,21 @@
+/**
+ * @deprecated This file is deprecated. Use contract-first hooks instead.
+ * 
+ * Migration guide:
+ * ```typescript
+ * // Old:
+ * import { offers } from '@/lib/api/offers';
+ * const result = await offers.sendOffer(jobId, amount, type);
+ * 
+ * // New:
+ * import { useSendOffer } from '@contracts/clients/offers';
+ * const { mutate: sendOffer } = useSendOffer();
+ * sendOffer({ jobId, amount, type });
+ * ```
+ * 
+ * @see packages/@contracts/clients/offers.ts for new implementation
+ */
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Offer, ApiResponse } from './types';
 

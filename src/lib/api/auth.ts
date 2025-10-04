@@ -1,3 +1,20 @@
+/**
+ * @deprecated This file is deprecated. Use contract-first hooks instead.
+ * 
+ * Migration guide:
+ * ```typescript
+ * // Old:
+ * import { auth } from '@/lib/api/auth';
+ * const result = await auth.getCurrentSession();
+ * 
+ * // New:
+ * import { useCurrentSession } from '@contracts/clients/auth';
+ * const { data: session, isLoading } = useCurrentSession();
+ * ```
+ * 
+ * @see packages/@contracts/clients/auth.ts for new implementation
+ */
+
 import { supabase } from '@/integrations/supabase/client';
 import type { UserSession, ApiResponse } from './types';
 

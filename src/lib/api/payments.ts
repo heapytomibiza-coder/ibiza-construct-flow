@@ -1,3 +1,21 @@
+/**
+ * @deprecated This file is deprecated. Use contract-first hooks instead.
+ * 
+ * Migration guide:
+ * ```typescript
+ * // Old:
+ * import { payments } from '@/lib/api/payments';
+ * const result = await payments.fundEscrow(contractId);
+ * 
+ * // New:
+ * import { useFundEscrow } from '@contracts/clients/payments';
+ * const { mutate: fundEscrow } = useFundEscrow();
+ * fundEscrow(contractId);
+ * ```
+ * 
+ * @see packages/@contracts/clients/payments.ts for new implementation
+ */
+
 import { supabase } from '@/integrations/supabase/client';
 import type { Contract, ApiResponse } from './types';
 
