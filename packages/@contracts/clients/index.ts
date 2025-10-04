@@ -8,4 +8,5 @@ export * from './ai-testing';
 export * from './professional-matching';
 export * from './discovery-analytics';
 export * from './user-inspector';
+export * from './jobs';
 export * from './types';

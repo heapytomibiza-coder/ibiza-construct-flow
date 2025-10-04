@@ -58,6 +58,17 @@ import {
   UpdateUserStatusRequestSchema,
   UpdateUserStatusResponseSchema,
 } from './user-inspector.zod';
+import {
+  DraftJobSchema,
+  JobSchema,
+  SaveDraftRequestSchema,
+  SaveDraftResponseSchema,
+  PublishJobRequestSchema,
+  PublishJobResponseSchema,
+  GetJobResponseSchema,
+  GetJobsByClientResponseSchema,
+  GetOpenJobsResponseSchema,
+} from './jobs.zod';
 
 // Extend Zod with OpenAPI
 extendZodWithOpenApi(z);
@@ -106,6 +117,15 @@ registry.register('GetUserJobsRequest', GetUserJobsRequestSchema);
 registry.register('GetUserJobsResponse', GetUserJobsResponseSchema);
 registry.register('UpdateUserStatusRequest', UpdateUserStatusRequestSchema);
 registry.register('UpdateUserStatusResponse', UpdateUserStatusResponseSchema);
+registry.register('DraftJob', DraftJobSchema);
+registry.register('Job', JobSchema);
+registry.register('SaveDraftRequest', SaveDraftRequestSchema);
+registry.register('SaveDraftResponse', SaveDraftResponseSchema);
+registry.register('PublishJobRequest', PublishJobRequestSchema);
+registry.register('PublishJobResponse', PublishJobResponseSchema);
+registry.register('GetJobResponse', GetJobResponseSchema);
+registry.register('GetJobsByClientResponse', GetJobsByClientResponseSchema);
+registry.register('GetOpenJobsResponse', GetOpenJobsResponseSchema);
 
 // Register paths
 registry.registerPath({
@@ -682,6 +702,120 @@ registry.registerPath({
       content: {
         'application/json': {
           schema: UpdateUserStatusResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+// Jobs Endpoints
+registry.registerPath({
+  method: 'post',
+  path: '/jobs/draft',
+  summary: 'Save job draft',
+  tags: ['Jobs'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: SaveDraftRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Draft saved successfully',
+      content: {
+        'application/json': {
+          schema: SaveDraftResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/jobs/publish',
+  summary: 'Publish a job',
+  tags: ['Jobs'],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: PublishJobRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Job published successfully',
+      content: {
+        'application/json': {
+          schema: PublishJobResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/jobs/{jobId}',
+  summary: 'Get job by ID',
+  tags: ['Jobs'],
+  request: {
+    params: z.object({
+      jobId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Job retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetJobResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/jobs/client/{clientId}',
+  summary: 'Get jobs by client',
+  tags: ['Jobs'],
+  request: {
+    params: z.object({
+      clientId: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Jobs retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetJobsByClientResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/jobs/open',
+  summary: 'Get all open jobs',
+  tags: ['Jobs'],
+  responses: {
+    200: {
+      description: 'Open jobs retrieved successfully',
+      content: {
+        'application/json': {
+          schema: GetOpenJobsResponseSchema,
         },
       },
     },
