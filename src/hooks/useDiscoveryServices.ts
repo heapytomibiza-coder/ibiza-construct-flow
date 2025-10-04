@@ -1,6 +1,18 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+interface Filters {
+  selectedTaxonomy: {
+    category: string;
+    subcategory: string;
+    micro: string;
+  } | null;
+  specialists: string[];
+  priceRange: [number, number];
+  availability: string[];
+  location: string;
+}
+
 interface DiscoveryServiceItem {
   id: string;
   professional_id: string;
@@ -23,7 +35,7 @@ interface DiscoveryServiceItem {
   };
 }
 
-export const useDiscoveryServices = (category?: string, searchTerm?: string) => {
+export const useDiscoveryServices = (searchTerm?: string, filters?: Filters) => {
   const [services, setServices] = useState<DiscoveryServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,8 +54,20 @@ export const useDiscoveryServices = (category?: string, searchTerm?: string) => 
           .order('created_at', { ascending: false })
           .limit(50);
 
-        if (category) {
-          serviceQuery = serviceQuery.eq('category', category);
+        // Apply price filter
+        if (filters?.priceRange) {
+          const [min, max] = filters.priceRange;
+          if (min > 0) {
+            serviceQuery = serviceQuery.gte('base_price', min);
+          }
+          if (max < 10000) {
+            serviceQuery = serviceQuery.lte('base_price', max);
+          }
+        }
+
+        // Apply taxonomy category filter
+        if (filters?.selectedTaxonomy?.category) {
+          serviceQuery = serviceQuery.eq('category', filters.selectedTaxonomy.category);
         }
 
         const { data: servicesData, error: servicesError } = await serviceQuery;
@@ -65,7 +89,7 @@ export const useDiscoveryServices = (category?: string, searchTerm?: string) => 
         }, {});
 
         // Transform data
-        const transformedData = (servicesData || []).map((item: any) => ({
+        let transformedData = (servicesData || []).map((item: any) => ({
           ...item,
           images: item.images || [],
           professional: profilesMap[item.professional_id] ? {
@@ -75,19 +99,45 @@ export const useDiscoveryServices = (category?: string, searchTerm?: string) => 
           } : undefined,
         }));
 
+        // Apply client-side filters
+        
+        // Filter by subcategory
+        if (filters?.selectedTaxonomy?.subcategory) {
+          transformedData = transformedData.filter((item: any) => 
+            item.subcategory === filters.selectedTaxonomy?.subcategory
+          );
+        }
+
+        // Filter by micro
+        if (filters?.selectedTaxonomy?.micro) {
+          transformedData = transformedData.filter((item: any) => 
+            item.micro === filters.selectedTaxonomy?.micro ||
+            item.name === filters.selectedTaxonomy?.micro
+          );
+        }
+
         // Filter by search term if provided
         if (searchTerm && searchTerm.trim()) {
           const lowerSearch = searchTerm.toLowerCase();
-          const filtered = transformedData.filter((item: any) =>
+          transformedData = transformedData.filter((item: any) =>
             item.name.toLowerCase().includes(lowerSearch) ||
             item.description?.toLowerCase().includes(lowerSearch) ||
             item.category.toLowerCase().includes(lowerSearch) ||
             item.professional?.full_name.toLowerCase().includes(lowerSearch)
           );
-          setServices(filtered);
-        } else {
-          setServices(transformedData);
         }
+
+        // Filter by specialists (match against category/subcategory)
+        if (filters?.specialists && filters.specialists.length > 0) {
+          transformedData = transformedData.filter((item: any) =>
+            filters.specialists.some(specialist =>
+              item.category?.toLowerCase().includes(specialist.toLowerCase()) ||
+              item.subcategory?.toLowerCase().includes(specialist.toLowerCase())
+            )
+          );
+        }
+
+        setServices(transformedData);
       } catch (err: any) {
         setError(err.message);
         console.error('Error fetching discovery services:', err);
@@ -97,7 +147,7 @@ export const useDiscoveryServices = (category?: string, searchTerm?: string) => 
     };
 
     fetchServices();
-  }, [category, searchTerm]);
+  }, [searchTerm, filters]);
 
   return {
     services,

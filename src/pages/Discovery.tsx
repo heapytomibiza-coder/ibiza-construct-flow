@@ -13,18 +13,44 @@ import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Sparkles, Store, Users } from 'lucide-react';
+import EnhancedServiceFilters from '@/components/services/EnhancedServiceFilters';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
+import { useServicesRegistry } from '@/contexts/ServicesRegistry';
+
+interface Filters {
+  selectedTaxonomy: {
+    category: string;
+    subcategory: string;
+    micro: string;
+  } | null;
+  specialists: string[];
+  priceRange: [number, number];
+  availability: string[];
+  location: string;
+}
 
 const Discovery = () => {
   const { t } = useTranslation('services');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { getCategories } = useServicesRegistry();
   
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>();
   const [viewMode, setViewMode] = useState<'services' | 'professionals'>('services');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<Filters>({
+    selectedTaxonomy: null,
+    specialists: [],
+    priceRange: [0, 10000],
+    availability: [],
+    location: '',
+  });
   
-  const { services, loading } = useDiscoveryServices(selectedCategory, searchTerm);
+  const { services, loading } = useDiscoveryServices(searchTerm, filters);
   const { trackDiscoveryView, trackSearch, trackItemClick } = useDiscoveryAnalytics();
+  
+  const categories = getCategories();
 
   // Track page view
   useEffect(() => {
@@ -34,15 +60,26 @@ const Discovery = () => {
   // Initialize from URL params
   useEffect(() => {
     const q = searchParams.get('q');
-    const category = searchParams.get('category');
-    
     if (q) setSearchTerm(q);
-    if (category) setSelectedCategory(category);
   }, [searchParams]);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
     if (value) trackSearch(value, 'services', services.length);
+  };
+
+  const handleFiltersChange = (newFilters: Filters) => {
+    setFilters(newFilters);
+  };
+
+  const getActiveFilterCount = () => {
+    let count = 0;
+    if (filters.selectedTaxonomy) count++;
+    if (filters.specialists.length > 0) count += filters.specialists.length;
+    if (filters.availability.length > 0) count += filters.availability.length;
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 10000) count++;
+    if (filters.location) count++;
+    return count;
   };
 
   const handleServiceClick = (item: any) => {
@@ -84,12 +121,31 @@ const Discovery = () => {
         </div>
 
         {/* Search Bar */}
-        <UnifiedSearchBar
-          searchTerm={searchTerm}
-          onSearchChange={handleSearchChange}
-          onFilterToggle={() => {}}
-          showFilters={false}
-        />
+        <div className="relative">
+          <UnifiedSearchBar
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
+            onFilterToggle={() => setShowFilters(!showFilters)}
+            showFilters={showFilters}
+          />
+          {getActiveFilterCount() > 0 && (
+            <Badge className="absolute -top-2 right-12 z-10" variant="default">
+              {getActiveFilterCount()}
+            </Badge>
+          )}
+        </div>
+
+        {/* Filter Sheet */}
+        <Sheet open={showFilters} onOpenChange={setShowFilters}>
+          <SheetContent side="left" className="w-80 overflow-y-auto">
+            <EnhancedServiceFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              categories={categories}
+              visible={showFilters}
+            />
+          </SheetContent>
+        </Sheet>
 
         {/* View Mode Tabs */}
         <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-full">
