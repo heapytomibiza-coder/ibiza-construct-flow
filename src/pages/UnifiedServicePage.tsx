@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,14 +17,18 @@ import { ServiceConfigurator } from '@/components/services/ServiceConfigurator';
 import { ServiceHeroSection } from '@/components/services/ServiceHeroSection';
 import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
 import { PortfolioGallery } from '@/components/services/PortfolioGallery';
+import { BookingWizard } from '@/components/booking/BookingWizard';
 
 interface UnifiedServicePageProps {}
 
 const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
   const { slug, micro } = useParams<{ slug: string; micro?: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const proInboxEnabled = useFeature('ff.proInboxV1');
   const { getServiceCards, getServicesByCategory, loading } = useServicesRegistry();
+  
+  const isBookingMode = searchParams.get('action') === 'book';
 
   const iconMap = {
     'Wrench': Wrench,
@@ -145,6 +149,20 @@ const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
         </main>
         <Footer />
       </div>
+    );
+  }
+
+  // Render booking wizard if in booking mode
+  if (isBookingMode) {
+    return (
+      <>
+        <Header proInboxEnabled={proInboxEnabled} />
+        <BookingWizard 
+          professionalId={slug || ''}
+          serviceId={currentServiceCard?.id}
+        />
+        <Footer />
+      </>
     );
   }
 
