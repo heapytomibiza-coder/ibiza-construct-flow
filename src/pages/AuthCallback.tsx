@@ -25,8 +25,13 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
+          // Determine redirect destination
           const redirectTo = searchParams.get('redirect');
-          
+          if (redirectTo) {
+            navigate(decodeURIComponent(redirectTo));
+            return;
+          }
+
           // Wait for profile to be created by trigger
           let retries = 0;
           let profile = null;

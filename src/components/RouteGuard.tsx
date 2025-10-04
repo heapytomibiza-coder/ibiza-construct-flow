@@ -4,7 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 interface RouteGuardProps {
   children: React.ReactNode;
-  requiredRole?: 'asker' | 'tasker' | 'admin';
+  requiredRole?: 'client' | 'professional' | 'admin';
   fallbackPath?: string;
   skipAuthInDev?: boolean;
 }
@@ -44,6 +44,10 @@ export default function RouteGuard({
 
         // Check if user has required role
         const hasRequiredRole = session.roles.includes(requiredRole);
+        
+        if (!hasRequiredRole) {
+          console.warn(`Access denied: User roles [${session.roles.join(', ')}] do not include required role '${requiredRole}'`);
+        }
         
         setStatus(hasRequiredRole ? 'authorized' : 'unauthorized');
       } catch (error) {

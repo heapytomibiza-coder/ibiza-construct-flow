@@ -120,7 +120,7 @@ function AppContent() {
               DISABLE_AUTH_FOR_WIREFRAME ? (
               <PostJob />
             ) : (
-              <RouteGuard requiredRole="asker">
+              <RouteGuard requiredRole="client">
                 <PostJob />
               </RouteGuard>
             )
@@ -132,7 +132,7 @@ function AppContent() {
           DISABLE_AUTH_FOR_WIREFRAME ? (
             <Templates />
           ) : (
-            <RouteGuard requiredRole="asker">
+            <RouteGuard requiredRole="client">
               <Templates />
             </RouteGuard>
           )
@@ -155,7 +155,7 @@ function AppContent() {
           DISABLE_AUTH_FOR_WIREFRAME ? (
             <UnifiedClientDashboard />
           ) : (
-            <RouteGuard requiredRole="asker">
+            <RouteGuard requiredRole="client">
               <UnifiedClientDashboard />
             </RouteGuard>
           )
@@ -164,7 +164,7 @@ function AppContent() {
           DISABLE_AUTH_FOR_WIREFRAME ? (
             <UnifiedProfessionalDashboard />
           ) : (
-            <RouteGuard requiredRole="tasker">
+            <RouteGuard requiredRole="professional">
               <UnifiedProfessionalDashboard />
             </RouteGuard>
           )

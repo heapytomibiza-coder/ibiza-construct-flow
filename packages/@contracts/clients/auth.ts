@@ -10,9 +10,14 @@ import { customInstance } from '@/lib/api/index';
 export interface UserSession {
   userId: string;
   email: string;
-  roles: ('asker' | 'tasker' | 'admin')[];
+  roles: ('client' | 'professional' | 'admin')[];
   verified: boolean;
-  activeRole?: string;
+  activeRole?: 'client' | 'professional' | 'admin' | null;
+  profile?: {
+    display_name: string | null;
+    preferred_language: string | null;
+    onboarding_status: string | null;
+  };
 }
 
 export interface SignInRequest {

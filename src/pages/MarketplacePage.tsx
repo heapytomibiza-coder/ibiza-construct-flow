@@ -22,7 +22,7 @@ export default function MarketplacePage() {
   const [recommendationResult, setRecommendationResult] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<string>('');
   
-  const { isTasker: isProfessional, isAsker: isClient } = useRole();
+  const { isClient, isProfessional } = useRole();
 
   // Initialize from URL params or show questionnaire for first-time clients
   useEffect(() => {

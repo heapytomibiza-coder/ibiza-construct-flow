@@ -30,25 +30,16 @@ serve(async (req) => {
     return json({ error: rolesErr.message }, 500);
   }
 
-  // Map DB roles to frontend terminology
-  const rolesNorm = (roles ?? []).map(r =>
-    r.role === 'client' ? 'asker'
-    : r.role === 'professional' ? 'tasker'
-    : 'admin'
-  );
-
-  const activeNorm =
-    profile?.active_role === 'client' ? 'asker'
-    : profile?.active_role === 'professional' ? 'tasker'
-    : profile?.active_role ?? null;
+  // Return database roles directly (client, professional, admin)
+  const userRoles = (roles ?? []).map(r => r.role);
 
   return json({
     data: {
       userId: user.id,
       email: user.email ?? null,
-      roles: rolesNorm,
+      roles: userRoles,
       verified: !!user.email_confirmed_at,
-      activeRole: activeNorm,
+      activeRole: profile?.active_role ?? null,
       profile: {
         display_name: profile?.display_name ?? null,
         preferred_language: profile?.preferred_language ?? null,

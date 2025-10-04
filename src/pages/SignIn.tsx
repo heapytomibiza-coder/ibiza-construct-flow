@@ -22,7 +22,6 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [authMode, setAuthMode] = useState<'magic' | 'password'>('magic');
   
-  const role = searchParams.get('role') as 'client' | 'professional' || 'client';
   const redirectTo = searchParams.get('redirect');
   const magicLinkEnabled = useFeature('ff.magicLink', true);
   const socialAuthEnabled = useFeature('ff.socialAuth', true);
@@ -48,7 +47,7 @@ export default function SignIn() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?role=${role}${redirectTo ? `&redirect=${encodeURIComponent(redirectTo)}` : ''}`,
+          emailRedirectTo: `${window.location.origin}/auth/callback${redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`,
         }
       });
 

@@ -1,32 +1,10 @@
-import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, RefreshCw } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 export default function VerifyEmail() {
-  const [resending, setResending] = useState(false);
   const { toast } = useToast();
-
-  const handleResend = async () => {
-    setResending(true);
-    try {
-      // This would need the user's email from local storage or similar
-      toast({
-        title: 'Resend functionality',
-        description: 'Please go back to sign up/sign in to resend the email.',
-      });
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message,
-      });
-    } finally {
-      setResending(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background flex items-center justify-center p-4">
@@ -56,27 +34,17 @@ export default function VerifyEmail() {
                   <br />
                   • Make sure the email address is correct
                   <br />
-                  • Try resending the link
+                  • Return to sign in to request a new link
                 </p>
               </div>
 
               <Button 
-                onClick={handleResend} 
-                variant="outline" 
-                disabled={resending}
+                onClick={() => window.location.href = '/auth/sign-in'} 
+                variant="outline"
                 className="w-full"
               >
-                {resending ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    Resending...
-                  </>
-                ) : (
-                  <>
-                    <Mail className="w-4 h-4 mr-2" />
-                    Resend email
-                  </>
-                )}
+                <Mail className="w-4 h-4 mr-2" />
+                Back to Sign In
               </Button>
             </div>
           </CardContent>

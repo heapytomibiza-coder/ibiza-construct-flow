@@ -12,8 +12,14 @@ extendZodWithOpenApi(z);
 export const UserSessionSchema = z.object({
   userId: z.string().uuid(),
   email: z.string().email(),
-  roles: z.array(z.enum(['asker', 'tasker', 'admin'])),
+  roles: z.array(z.enum(['client', 'professional', 'admin'])),
   verified: z.boolean(),
+  activeRole: z.enum(['client', 'professional', 'admin']).nullable().optional(),
+  profile: z.object({
+    display_name: z.string().nullable().optional(),
+    preferred_language: z.string().nullable().optional(),
+    onboarding_status: z.string().nullable().optional(),
+  }).optional(),
 }).openapi('UserSession');
 
 // Sign In Request/Response

@@ -1,6 +1,6 @@
 import { useCurrentSession } from '../../packages/@contracts/clients';
 
-export type UnifiedRole = 'asker' | 'tasker' | 'admin';
+export type UnifiedRole = 'client' | 'professional' | 'admin';
 
 export function useRole() {
   const { data: sessionData } = useCurrentSession();
@@ -8,8 +8,8 @@ export function useRole() {
   
   return {
     active: session?.activeRole ?? null,
-    isAsker: session?.roles?.includes('asker') ?? false,
-    isTasker: session?.roles?.includes('tasker') ?? false,
+    isClient: session?.roles?.includes('client') ?? false,
+    isProfessional: session?.roles?.includes('professional') ?? false,
     isAdmin: session?.roles?.includes('admin') ?? false,
     roles: session?.roles ?? [],
   };

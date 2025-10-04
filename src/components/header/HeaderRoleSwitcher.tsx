@@ -15,22 +15,20 @@ export default function HeaderRoleSwitcher() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleRoleSwitch = async (newRole: 'asker' | 'tasker' | 'admin') => {
+  const handleRoleSwitch = async (newRole: 'client' | 'professional' | 'admin') => {
     if (activeRole === newRole || switching) return;
     
     setSwitching(true);
     try {
-      // Map to DB role terminology
-      const dbRole = newRole === 'asker' ? 'client' : newRole === 'tasker' ? 'professional' : 'admin';
-      await switchActiveRole(dbRole as any);
+      await switchActiveRole(newRole);
       
       toast({
         title: "Role switched",
-        description: `You're now in ${newRole} mode`
+        description: `You're now in ${newRole === 'client' ? 'client' : newRole === 'professional' ? 'professional' : 'admin'} mode`
       });
       
       // Navigate to appropriate dashboard
-      const dashboardRoute = getDashboardRoute(dbRole as any);
+      const dashboardRoute = getDashboardRoute(newRole);
       navigate(dashboardRoute);
     } catch (error: any) {
       toast({
@@ -56,7 +54,7 @@ export default function HeaderRoleSwitcher() {
             <Shield className="h-3 w-3" />
             Admin
           </>
-        ) : activeRole === 'tasker' ? (
+        ) : activeRole === 'professional' ? (
           <>
             <Briefcase className="h-3 w-3" />
             Professional
@@ -74,11 +72,11 @@ export default function HeaderRoleSwitcher() {
   // If user has multiple roles, show segmented control
   return (
     <div className="inline-flex rounded-full bg-muted p-1">
-      {roles.includes('asker') && (
+      {roles.includes('client') && (
         <Button
-          variant={activeRole === 'asker' ? 'default' : 'ghost'}
+          variant={activeRole === 'client' ? 'default' : 'ghost'}
           size="sm"
-          onClick={() => handleRoleSwitch('asker')}
+          onClick={() => handleRoleSwitch('client')}
           disabled={switching}
           className="rounded-full h-8 px-3 text-xs"
         >
@@ -86,11 +84,11 @@ export default function HeaderRoleSwitcher() {
           Client
         </Button>
       )}
-      {roles.includes('tasker') && (
+      {roles.includes('professional') && (
         <Button
-          variant={activeRole === 'tasker' ? 'default' : 'ghost'}
+          variant={activeRole === 'professional' ? 'default' : 'ghost'}
           size="sm"
-          onClick={() => handleRoleSwitch('tasker')}
+          onClick={() => handleRoleSwitch('professional')}
           disabled={switching}
           className="rounded-full h-8 px-3 text-xs"
         >
