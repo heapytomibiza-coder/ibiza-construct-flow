@@ -133,9 +133,9 @@ export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed'
 
   if (viewMode === 'visual') {
     return (
-      <Card className="card-luxury hover:shadow-lg transition-all duration-300 group overflow-hidden">
-        {/* Hero Image Section */}
-        <div className="relative">
+      <Card className="card-luxury hover:shadow-elegant transition-all duration-300 group overflow-hidden relative">
+        {/* Compact Image Section */}
+        <div className="relative h-40 overflow-hidden">
           <ImageCarousel
             images={item.gallery_images || []}
             primaryImage={item.primary_image_url}
@@ -143,68 +143,73 @@ export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed'
             altText={item.image_alt_text || item.name}
             aspectRatio="video"
             showThumbnails={false}
-            className="rounded-none"
+            className="rounded-none h-full"
           />
           
-          {/* Floating Price Badge */}
-          <div className="absolute top-3 right-3">
-            <Badge className="bg-white/90 text-charcoal border-0 font-bold text-lg px-3 py-1">
-              {formatPrice(totalPrice() || item.base_price)}
+          {/* Price Badge Overlay */}
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-white/95 backdrop-blur-sm text-charcoal border-0 font-bold shadow-lg">
+              {formatPrice(item.base_price)}
             </Badge>
           </div>
           
-          {/* Difficulty Badge */}
-          {item.difficulty_level && (
-            <Badge 
-              variant="outline" 
-              className={`absolute top-3 left-3 bg-white/90 border-0 ${getDifficultyColor()}`}
+          {/* Quick Add Overlay on Hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
+            <Button 
+              size="sm"
+              onClick={() => handleQuantityChange(1)}
+              className="btn-premium shadow-xl"
             >
-              {item.difficulty_level}
-            </Badge>
-          )}
+              <Plus className="w-4 h-4 mr-1" />
+              Quick Add
+            </Button>
+          </div>
         </div>
 
-        <div className="p-4">
-          <div className="space-y-3">
-            <div>
-              <h4 className="font-semibold text-charcoal group-hover:text-primary transition-colors text-lg">
+        {/* Compact Content */}
+        <div className="p-3">
+          <div className="space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <h4 className="font-semibold text-charcoal text-sm line-clamp-1 group-hover:text-primary transition-colors">
                 {item.name}
               </h4>
-              {item.description && (
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                  {item.description}
-                </p>
+              {item.difficulty_level && (
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs px-1.5 py-0 shrink-0 ${getDifficultyColor()}`}
+                >
+                  {item.difficulty_level}
+                </Badge>
               )}
             </div>
 
-            {/* Duration Info */}
-            {item.estimated_duration_minutes && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="w-4 h-4" />
-                <span>{formatDuration(item.estimated_duration_minutes)}</span>
-                <span>•</span>
-                <span>{getPricingTypeLabel()}</span>
-              </div>
-            )}
+            {/* Compact Metadata */}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {item.estimated_duration_minutes && (
+                <>
+                  <Clock className="w-3 h-3" />
+                  <span>{formatDuration(item.estimated_duration_minutes)}</span>
+                  <span>•</span>
+                </>
+              )}
+              <span className="line-clamp-1">{getPricingTypeLabel()}</span>
+            </div>
 
-            {/* Quantity Selector */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-3">
+            {/* Compact Quantity Selector */}
+            {quantity > 0 && (
+              <div className="flex items-center gap-2 pt-1 animate-fade-in">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuantityChange(Math.max(0, quantity - 1))}
-                  disabled={quantity <= 0}
-                  className="h-9 w-9 p-0 rounded-full"
+                  className="h-7 w-7 p-0 rounded-full"
                 >
-                  <Minus className="w-4 h-4" />
+                  <Minus className="w-3 h-3" />
                 </Button>
                 
-                <div className="text-center min-w-[3rem]">
-                  <div className="font-bold text-lg">{quantity}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {getUnitLabel()}
-                  </div>
+                <div className="flex-1 text-center">
+                  <span className="font-bold text-sm">{quantity}</span>
+                  <span className="text-xs text-muted-foreground ml-1">{getUnitLabel()}</span>
                 </div>
                 
                 <Button
@@ -212,30 +217,13 @@ export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed'
                   size="sm"
                   onClick={() => handleQuantityChange(quantity + 1)}
                   disabled={item.max_quantity && quantity >= item.max_quantity}
-                  className="h-9 w-9 p-0 rounded-full"
+                  className="h-7 w-7 p-0 rounded-full"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3 h-3" />
                 </Button>
-              </div>
-
-              {/* Add to Selection Button */}
-              <Button 
-                variant={quantity > 0 ? "default" : "outline"}
-                size="sm"
-                className="ml-4"
-              >
-                {quantity > 0 ? `Added (${quantity})` : 'Add'}
-              </Button>
-            </div>
-
-            {/* Minimum Quantity Warning */}
-            {item.min_quantity > 1 && quantity > 0 && quantity < item.min_quantity && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-amber-800">
-                    Minimum quantity: {item.min_quantity} {getUnitLabel()}
-                  </p>
+                
+                <div className="text-xs font-bold text-copper">
+                  {formatPrice(totalPrice())}
                 </div>
               </div>
             )}
@@ -245,11 +233,11 @@ export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed'
     );
   }
 
-  // Detailed view with images
+  // Detailed view with full information
   return (
-    <Card className="card-luxury overflow-hidden">
-      {/* Image Section */}
-      <div className="relative">
+    <Card className="card-luxury overflow-hidden hover:shadow-elegant transition-shadow">
+      {/* Full Image Gallery */}
+      <div className="relative h-64">
         <ImageCarousel
           images={item.gallery_images || []}
           primaryImage={item.primary_image_url}
@@ -257,99 +245,165 @@ export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed'
           altText={item.image_alt_text || item.name}
           aspectRatio="video"
           showThumbnails={true}
-          className="rounded-none"
+          className="rounded-none h-full"
         />
       </div>
       
       <div className="p-6">
-        <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-3">
-            <h4 className="font-semibold text-charcoal text-lg">{item.name}</h4>
-            {item.difficulty_level && (
-              <Badge 
-                variant="outline" 
-                className={`text-xs px-2 py-1 ${getDifficultyColor()}`}
-              >
-                {item.difficulty_level}
-              </Badge>
-            )}
-          </div>
-          
-          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-            {item.description}
-          </p>
-
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-            {item.estimated_duration_minutes && (
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                <span>{formatDuration(item.estimated_duration_minutes)}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-1">
-              <span>Per {getUnitLabel()}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-right min-w-[140px]">
-          <div className="mb-4">
-            <div className="text-right">
-              <span className="text-copper font-bold text-xl">
-                {formatPrice(item.base_price)}
-              </span>
-              <div className="text-xs text-muted-foreground mt-1">
-                {getPricingTypeLabel()}
+        <div className="flex items-start justify-between gap-6">
+          <div className="flex-1 space-y-4">
+            {/* Header with Badges */}
+            <div className="space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <h4 className="font-bold text-charcoal text-xl">{item.name}</h4>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {item.difficulty_level && (
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs ${getDifficultyColor()}`}
+                    >
+                      {item.difficulty_level}
+                    </Badge>
+                  )}
+                  <Badge variant="secondary" className="text-xs">
+                    {item.category}
+                  </Badge>
+                </div>
               </div>
             </div>
             
+            {/* Full Description */}
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {item.description || 'No description available'}
+            </p>
+
+            {/* Detailed Metadata Grid */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              {item.estimated_duration_minutes && (
+                <div className="flex items-center gap-2 p-3 bg-sand/30 rounded-lg">
+                  <Clock className="w-4 h-4 text-primary" />
+                  <div>
+                    <div className="text-xs text-muted-foreground">Duration</div>
+                    <div className="font-medium text-sm">{formatDuration(item.estimated_duration_minutes)}</div>
+                  </div>
+                </div>
+              )}
+              <div className="flex items-center gap-2 p-3 bg-sand/30 rounded-lg">
+                <div className="w-4 h-4 text-primary">📦</div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Unit</div>
+                  <div className="font-medium text-sm">{getUnitLabel()}</div>
+                </div>
+              </div>
+              {item.min_quantity > 1 && (
+                <div className="flex items-center gap-2 p-3 bg-sand/30 rounded-lg">
+                  <div className="w-4 h-4 text-primary">⚠️</div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Min Order</div>
+                    <div className="font-medium text-sm">{item.min_quantity} {getUnitLabel()}</div>
+                  </div>
+                </div>
+              )}
+              {item.max_quantity && (
+                <div className="flex items-center gap-2 p-3 bg-sand/30 rounded-lg">
+                  <div className="w-4 h-4 text-primary">📊</div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Max Order</div>
+                    <div className="font-medium text-sm">{item.max_quantity} {getUnitLabel()}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Bulk Discount Info */}
             {item.bulk_discount_threshold && item.bulk_discount_price && (
-              <div className="text-xs text-green-600 mt-1">
-                {formatPrice(item.bulk_discount_price!)} each after {item.bulk_discount_threshold}
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline" 
-                size="sm"
-                onClick={() => handleQuantityChange(Math.max(0, quantity - 1))}
-                disabled={quantity <= 0}
-                className="w-8 h-8 p-0"
-              >
-                <Minus className="w-3 h-3" />
-              </Button>
-              <span className="w-12 text-center font-medium">{quantity}</span>
-              <Button
-                variant="outline" 
-                size="sm"
-                onClick={() => handleQuantityChange(quantity + 1)}
-                disabled={item.max_quantity && quantity >= item.max_quantity}
-                className="w-8 h-8 p-0"
-              >
-                <Plus className="w-3 h-3" />
-              </Button>
-            </div>
-            
-            {quantity > 0 && (
-              <div className="text-center">
-                <div className="text-sm font-semibold text-charcoal">
-                  Total: {formatPrice(totalPrice())}
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">💰</span>
+                  <div>
+                    <div className="text-sm font-medium text-green-800">Bulk Discount Available</div>
+                    <div className="text-xs text-green-600">
+                      Save {formatPrice(item.base_price - item.bulk_discount_price)} per unit when ordering {item.bulk_discount_threshold}+ units
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
+
+          {/* Pricing & Selection Panel */}
+          <div className="min-w-[180px] space-y-4">
+            {/* Price Display */}
+            <div className="p-4 bg-gradient-subtle rounded-xl border border-sand">
+              <div className="text-center space-y-1">
+                <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                  {getPricingTypeLabel()}
+                </div>
+                <div className="text-3xl font-bold text-copper">
+                  {formatPrice(item.base_price)}
+                </div>
+                {quantity > 0 && (
+                  <div className="text-xs text-muted-foreground pt-2 border-t border-sand mt-2">
+                    Subtotal: <span className="font-bold text-charcoal">{formatPrice(totalPrice())}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Large Quantity Controls */}
+            <div className="space-y-3">
+              <div className="text-xs text-muted-foreground text-center uppercase tracking-wide">
+                Quantity
+              </div>
+              <div className="flex items-center gap-3 justify-center">
+                <Button
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => handleQuantityChange(Math.max(0, quantity - 1))}
+                  disabled={quantity <= 0}
+                  className="w-12 h-12 p-0 rounded-full"
+                >
+                  <Minus className="w-5 h-5" />
+                </Button>
+                <div className="w-16 text-center">
+                  <div className="text-2xl font-bold">{quantity}</div>
+                  <div className="text-xs text-muted-foreground">{getUnitLabel()}</div>
+                </div>
+                <Button
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => handleQuantityChange(quantity + 1)}
+                  disabled={item.max_quantity && quantity >= item.max_quantity}
+                  className="w-12 h-12 p-0 rounded-full"
+                >
+                  <Plus className="w-5 h-5" />
+                </Button>
+              </div>
+              
+              {quantity > 0 && (
+                <Button className="w-full btn-premium" size="lg">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add to Request
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-      
-      {item.min_quantity > 1 && quantity > 0 && quantity < item.min_quantity && (
-        <div className="mx-6 mb-6 text-xs text-orange-600 bg-orange-50 p-2 rounded">
-          Minimum quantity: {item.min_quantity} {getUnitLabel()}
-        </div>
-      )}
+        
+        {/* Validation Warnings */}
+        {item.min_quantity > 1 && quantity > 0 && quantity < item.min_quantity && (
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <div className="text-sm font-medium text-amber-800">Minimum order not met</div>
+                <div className="text-xs text-amber-600 mt-1">
+                  This service requires a minimum order of {item.min_quantity} {getUnitLabel()}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   );

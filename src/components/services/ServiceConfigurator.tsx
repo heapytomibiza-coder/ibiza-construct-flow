@@ -6,6 +6,8 @@ import { ServiceBenefits } from './ServiceBenefits';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useServiceOptions } from '@/hooks/useServiceOptions';
+import { Grid3x3, List } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ServiceConfiguratorProps {
   service: any;
@@ -114,28 +116,47 @@ export const ServiceConfigurator = ({ service, professionalId }: ServiceConfigur
           <h2 className="text-display text-2xl font-semibold text-charcoal">
             Configure Your Service
           </h2>
-          <div className="flex bg-sand/50 rounded-lg p-1 border">
-            <button
-              onClick={() => setViewMode('visual')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                viewMode === 'visual' 
-                  ? 'bg-white text-charcoal shadow-md border border-white/20 font-semibold' 
-                  : 'text-muted-foreground hover:text-charcoal hover:bg-white/50'
-              }`}
-            >
-              📱 Visual Mode
-            </button>
-            <button
-              onClick={() => setViewMode('detailed')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                viewMode === 'detailed' 
-                  ? 'bg-white text-charcoal shadow-md border border-white/20 font-semibold' 
-                  : 'text-muted-foreground hover:text-charcoal hover:bg-white/50'
-              }`}
-            >
-              📋 Detailed View
-            </button>
-          </div>
+          <TooltipProvider>
+            <div className="flex bg-white rounded-lg p-1 border-2 border-sand shadow-sm">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setViewMode('visual')}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                      viewMode === 'visual' 
+                        ? 'bg-gradient-hero text-white shadow-md' 
+                        : 'text-muted-foreground hover:text-charcoal hover:bg-sand/30'
+                    }`}
+                  >
+                    <Grid3x3 className="w-4 h-4" />
+                    <span className="hidden sm:inline">Visual</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Compact card view - perfect for browsing</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setViewMode('detailed')}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                      viewMode === 'detailed' 
+                        ? 'bg-gradient-hero text-white shadow-md' 
+                        : 'text-muted-foreground hover:text-charcoal hover:bg-sand/30'
+                    }`}
+                  >
+                    <List className="w-4 h-4" />
+                    <span className="hidden sm:inline">Detailed</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Full information view - see all details</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         </div>
 
         {/* Professional Service Catalog */}
