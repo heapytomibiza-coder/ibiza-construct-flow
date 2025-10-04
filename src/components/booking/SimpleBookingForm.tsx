@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
@@ -160,14 +161,33 @@ export const SimpleBookingForm = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="address">Service Address *</Label>
-            <Input
-              id="address"
+            <Label htmlFor="address">Service Area in Ibiza *</Label>
+            <Select
               value={formData.address}
-              onChange={(e) => updateFormField('address', e.target.value)}
-              placeholder="123 Main St, City, State 12345"
+              onValueChange={(value) => updateFormField('address', value)}
               required
-            />
+            >
+              <SelectTrigger id="address" className="bg-background">
+                <SelectValue placeholder="Select area in Ibiza" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                <SelectItem value="Ibiza Town (Eivissa)">Ibiza Town (Eivissa)</SelectItem>
+                <SelectItem value="San Antonio (Sant Antoni)">San Antonio (Sant Antoni)</SelectItem>
+                <SelectItem value="Santa Eulalia (Santa Eulària)">Santa Eulalia (Santa Eulària)</SelectItem>
+                <SelectItem value="Playa d'en Bossa">Playa d'en Bossa</SelectItem>
+                <SelectItem value="San Jose (Sant Josep)">San Jose (Sant Josep)</SelectItem>
+                <SelectItem value="San Juan (Sant Joan)">San Juan (Sant Joan)</SelectItem>
+                <SelectItem value="San Miguel (Sant Miquel)">San Miguel (Sant Miquel)</SelectItem>
+                <SelectItem value="Santa Gertrudis">Santa Gertrudis</SelectItem>
+                <SelectItem value="Es Canar">Es Canar</SelectItem>
+                <SelectItem value="Portinatx">Portinatx</SelectItem>
+                <SelectItem value="Cala Llonga">Cala Llonga</SelectItem>
+                <SelectItem value="Talamanca">Talamanca</SelectItem>
+                <SelectItem value="Jesus (Jesús)">Jesus (Jesús)</SelectItem>
+                <SelectItem value="San Rafael (Sant Rafel)">San Rafael (Sant Rafel)</SelectItem>
+                <SelectItem value="Cala Vadella">Cala Vadella</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
