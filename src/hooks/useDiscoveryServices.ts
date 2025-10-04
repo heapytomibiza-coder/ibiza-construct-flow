@@ -34,35 +34,44 @@ export const useDiscoveryServices = (category?: string, searchTerm?: string) => 
         setLoading(true);
         setError(null);
 
-        let query = supabase
+        // Fetch services
+        let serviceQuery = supabase
           .from('professional_service_items')
-          .select(`
-            *,
-            professional:profiles!professional_service_items_professional_id_fkey (
-              full_name,
-              avatar_url
-            )
-          `)
+          .select('*')
           .eq('is_active', true)
           .order('created_at', { ascending: false })
           .limit(50);
 
         if (category) {
-          query = query.eq('category', category);
+          serviceQuery = serviceQuery.eq('category', category);
         }
 
-        const { data, error: fetchError } = await query;
+        const { data: servicesData, error: servicesError } = await serviceQuery;
+        if (servicesError) throw servicesError;
 
-        if (fetchError) throw fetchError;
+        // Get unique professional IDs
+        const professionalIds = [...new Set(servicesData?.map((s: any) => s.professional_id).filter(Boolean))];
+        
+        // Fetch professional profiles
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', professionalIds);
 
-        // Transform data and add mock ratings/distance
-        const transformedData = (data || []).map((item: any) => ({
+        // Create a map of profiles
+        const profilesMap = (profilesData || []).reduce((acc: any, profile: any) => {
+          acc[profile.id] = profile;
+          return acc;
+        }, {});
+
+        // Transform data
+        const transformedData = (servicesData || []).map((item: any) => ({
           ...item,
           images: item.images || [],
-          professional: item.professional ? {
-            ...item.professional,
-            rating: 4.5 + Math.random() * 0.5, // Mock rating
-            distance: Math.random() * 15 + 1, // Mock distance
+          professional: profilesMap[item.professional_id] ? {
+            ...profilesMap[item.professional_id],
+            rating: 4.5 + Math.random() * 0.5,
+            distance: Math.random() * 15 + 1,
           } : undefined,
         }));
 

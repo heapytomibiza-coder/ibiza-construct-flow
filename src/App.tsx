@@ -38,10 +38,9 @@ const PackCompareView = React.lazy(() => import("./components/admin/packs/PackCo
 const PostJob = React.lazy(() => import("./pages/PostJob"));
 const ServicePage = React.lazy(() => import("./pages/UnifiedServicePage"));
 const ServiceDetailPage = React.lazy(() => import("./pages/UnifiedServicePage"));
-const Services = React.lazy(() => import("./pages/Services"));
-const Professionals = React.lazy(() => import("./pages/Professionals"));
 const Discovery = React.lazy(() => import("./pages/Discovery"));
-const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
+const ProfessionalMenuBoard = React.lazy(() => import("./pages/ProfessionalMenuBoard"));
+const BookingPage = React.lazy(() => import("./pages/BookingPage"));
 const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
 const Contact = React.lazy(() => import("./pages/Contact"));
 const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategories"));
@@ -94,10 +93,9 @@ function AppContent() {
                   <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/discovery" element={<Discovery />} />
-          <Route path="/services" element={<Services />} />
+          <Route path="/professional/:id" element={<ProfessionalMenuBoard />} />
+          <Route path="/book" element={<BookingPage />} />
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
-          <Route path="/professionals" element={<Professionals />} />
-          <Route path="/professional/:id" element={<ProfessionalProfile />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
           

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { UnifiedSearchBar } from '@/components/discovery/UnifiedSearchBar';
@@ -10,19 +10,18 @@ import { GlobalAIChatBot } from '@/components/layout/GlobalAIChatBot';
 import { useDiscoveryServices } from '@/hooks/useDiscoveryServices';
 import { useDiscoveryAnalytics } from '@/hooks/useDiscoveryAnalytics';
 import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
-import { ServiceConfigurator } from '@/components/services/ServiceConfigurator';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Sparkles, Store, Users } from 'lucide-react';
 
 const Discovery = () => {
   const { t } = useTranslation('services');
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>();
-  const [selectedServiceItem, setSelectedServiceItem] = useState<any>(null);
-  const [configuratorOpen, setConfiguratorOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'services' | 'professionals'>('services');
   
   const { services, loading } = useDiscoveryServices(selectedCategory, searchTerm);
   const { trackDiscoveryView, trackSearch, trackItemClick } = useDiscoveryAnalytics();
@@ -47,10 +46,27 @@ const Discovery = () => {
   };
 
   const handleServiceClick = (item: any) => {
-    setSelectedServiceItem(item);
-    setConfiguratorOpen(true);
     trackItemClick('service', item.id, 0);
+    navigate(`/professional/${item.professional_id}`);
   };
+
+  // Group services by professional for professionals view
+  const professionalGroups = services.reduce((acc, service) => {
+    const profId = service.professional_id;
+    if (!acc[profId]) {
+      acc[profId] = {
+        id: profId,
+        name: service.professional?.full_name || 'Professional',
+        servicesCount: 0,
+        services: [],
+      };
+    }
+    acc[profId].servicesCount++;
+    acc[profId].services.push(service);
+    return acc;
+  }, {} as Record<string, any>);
+
+  const professionals = Object.values(professionalGroups);
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,6 +90,20 @@ const Discovery = () => {
           onFilterToggle={() => {}}
           showFilters={false}
         />
+
+        {/* View Mode Tabs */}
+        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-full">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="services" className="flex items-center gap-2">
+              <Store className="w-4 h-4" />
+              Browse Services
+            </TabsTrigger>
+            <TabsTrigger value="professionals" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Browse Professionals
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* AI Suggestions Banner */}
         {!searchTerm && (
@@ -127,38 +157,69 @@ const Discovery = () => {
           </div>
         )}
 
-        {/* Services Grid */}
+        {/* Results */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 9 }).map((_, i) => (
               <SkeletonLoader key={i} variant="card" />
             ))}
           </div>
-        ) : services.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-lg text-muted-foreground">
-              {searchTerm
-                ? `No services found for "${searchTerm}"`
-                : 'No services available'}
-            </p>
-            <Button
-              variant="link"
-              onClick={() => setSearchTerm('')}
-              className="mt-4"
-            >
-              Clear search
-            </Button>
-          </div>
+        ) : viewMode === 'services' ? (
+          services.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-lg text-muted-foreground">
+                {searchTerm ? `No services found for "${searchTerm}"` : 'No services available'}
+              </p>
+              <Button variant="link" onClick={() => setSearchTerm('')} className="mt-4">
+                Clear search
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {services.map((service) => (
+                <DiscoveryServiceCard
+                  key={service.id}
+                  item={service}
+                  onViewDetails={() => handleServiceClick(service)}
+                />
+              ))}
+            </div>
+          )
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <DiscoveryServiceCard
-                key={service.id}
-                item={service}
-                onViewDetails={() => handleServiceClick(service)}
-              />
-            ))}
-          </div>
+          professionals.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-lg text-muted-foreground">No professionals found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {professionals.map((prof) => (
+                <div
+                  key={prof.id}
+                  onClick={() => navigate(`/professional/${prof.id}`)}
+                  className="cursor-pointer group"
+                >
+                  <div className="bg-card rounded-lg border p-6 hover:shadow-lg transition-shadow">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
+                        {prof.name[0]}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                          {prof.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {prof.servicesCount} service{prof.servicesCount !== 1 ? 's' : ''} available
+                        </p>
+                      </div>
+                    </div>
+                    <Button className="w-full" variant="outline">
+                      View Menu
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
         )}
       </main>
 
@@ -169,26 +230,6 @@ const Discovery = () => {
 
       {/* Floating Booking Cart */}
       <BookingCart />
-
-      {/* Service Configurator Modal */}
-      <Dialog open={configuratorOpen} onOpenChange={setConfiguratorOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Configure Your Service</DialogTitle>
-          </DialogHeader>
-          {selectedServiceItem && (
-            <ServiceConfigurator
-              service={{
-                id: selectedServiceItem.service_id,
-                name: selectedServiceItem.name,
-                description: selectedServiceItem.description,
-                category: selectedServiceItem.category,
-              }}
-              professionalId={selectedServiceItem.professional_id}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

@@ -74,12 +74,11 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
     is_active: true
   });
   
-  const [pricingTiers, setPricingTiers] = useState<PricingTier[]>(defaultTiers);
-  const [usePackagePricing, setUsePackagePricing] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [primaryImage, setPrimaryImage] = useState<string>('');
   const [videoUrl, setVideoUrl] = useState('');
   const [saving, setSaving] = useState(false);
+  const [quoteRequired, setQuoteRequired] = useState(false);
 
   const handleServiceSelect = (service: any) => {
     setSelectedService(service);
@@ -92,39 +91,6 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
 
   const updateFormField = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const updatePricingTier = (index: number, field: keyof PricingTier, value: any) => {
-    setPricingTiers(prev => prev.map((tier, i) => 
-      i === index ? { ...tier, [field]: value } : tier
-    ));
-  };
-
-  const addInclude = (tierIndex: number) => {
-    setPricingTiers(prev => prev.map((tier, i) => 
-      i === tierIndex ? { ...tier, includes: [...tier.includes, ''] } : tier
-    ));
-  };
-
-  const removeInclude = (tierIndex: number, includeIndex: number) => {
-    setPricingTiers(prev => prev.map((tier, i) => 
-      i === tierIndex 
-        ? { ...tier, includes: tier.includes.filter((_, idx) => idx !== includeIndex) }
-        : tier
-    ));
-  };
-
-  const updateInclude = (tierIndex: number, includeIndex: number, value: string) => {
-    setPricingTiers(prev => prev.map((tier, i) => 
-      i === tierIndex 
-        ? { 
-            ...tier, 
-            includes: tier.includes.map((include, idx) => 
-              idx === includeIndex ? value : include
-            )
-          }
-        : tier
-    ));
   };
 
   const handleSave = async () => {
@@ -140,64 +106,30 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
 
     setSaving(true);
     try {
-      if (usePackagePricing) {
-        // Create multiple service items for each pricing tier
-        for (const tier of pricingTiers) {
-          const { error } = await supabase
-            .from('professional_service_items')
-            .insert({
-              professional_id: professionalId,
-              service_id: selectedService.id,
-              name: `${formData.name} - ${tier.name}`,
-              description: `${tier.description}\n\nIncludes: ${tier.includes.join(', ')}`,
-              base_price: tier.price,
-              pricing_type: formData.pricing_type,
-              unit_type: formData.unit_type,
-              min_quantity: formData.min_quantity,
-              max_quantity: formData.max_quantity,
-              difficulty_level: formData.difficulty_level,
-              estimated_duration_minutes: formData.estimated_duration_minutes,
-              is_active: formData.is_active,
-              primary_image_url: primaryImage,
-              gallery_images: images,
-              video_url: videoUrl,
-              display_order: pricingTiers.indexOf(tier),
-              // Taxonomy fields for filtering/matching
-              category: selectedService.category,
-              subcategory: selectedService.subcategory,
-              micro: selectedService.micro,
-            });
+      const { error } = await supabase
+        .from('professional_service_items')
+        .insert({
+          professional_id: professionalId,
+          service_id: selectedService.id,
+          name: formData.name,
+          description: formData.description,
+          base_price: quoteRequired ? null : formData.base_price,
+          pricing_type: quoteRequired ? 'quote_required' : formData.pricing_type,
+          unit_type: formData.unit_type,
+          min_quantity: formData.min_quantity,
+          max_quantity: formData.max_quantity,
+          difficulty_level: formData.difficulty_level,
+          estimated_duration_minutes: formData.estimated_duration_minutes,
+          is_active: formData.is_active,
+          primary_image_url: primaryImage,
+          gallery_images: images,
+          video_url: videoUrl,
+          category: selectedService.category,
+          subcategory: selectedService.subcategory,
+          micro: selectedService.micro,
+        });
 
-          if (error) throw error;
-        }
-      } else {
-        // Create single service item
-        const { error } = await supabase
-          .from('professional_service_items')
-          .insert({
-            professional_id: professionalId,
-            service_id: selectedService.id,
-            name: formData.name,
-            description: formData.description,
-            base_price: formData.base_price,
-            pricing_type: formData.pricing_type,
-            unit_type: formData.unit_type,
-            min_quantity: formData.min_quantity,
-            max_quantity: formData.max_quantity,
-            difficulty_level: formData.difficulty_level,
-            estimated_duration_minutes: formData.estimated_duration_minutes,
-            is_active: formData.is_active,
-            primary_image_url: primaryImage,
-            gallery_images: images,
-            video_url: videoUrl,
-            // Taxonomy fields for filtering/matching
-            category: selectedService.category,
-            subcategory: selectedService.subcategory,
-            micro: selectedService.micro,
-          });
-
-        if (error) throw error;
-      }
+      if (error) throw error;
 
       toast.success('Service created successfully!');
       onServiceCreated?.(selectedService.id);
@@ -254,179 +186,81 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
             )}
           </div>
 
-          {/* Pricing Strategy */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label className="text-base font-medium">Pricing Strategy</Label>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="package-pricing" className="text-sm">
-                  Package Pricing
-                </Label>
-                <Switch
-                  id="package-pricing"
-                  checked={usePackagePricing}
-                  onCheckedChange={setUsePackagePricing}
-                />
-              </div>
+          {/* Service Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Service Name *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => updateFormField('name', e.target.value)}
+                placeholder="e.g., Kitchen Cabinet Installation"
+              />
             </div>
 
-            {usePackagePricing ? (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Create Good/Better/Best pricing tiers to increase conversion
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {pricingTiers.map((tier, tierIndex) => (
-                    <Card key={tierIndex} className="relative">
-                      {tierIndex === 1 && (
-                        <Badge className="absolute -top-2 left-1/2 -translate-x-1/2">
-                          <Star className="w-3 h-3 mr-1" />
-                          Most Popular
-                        </Badge>
-                      )}
-                      <CardHeader className="pb-3">
-                        <div className="space-y-2">
-                          <Input
-                            value={tier.name}
-                            onChange={(e) => updatePricingTier(tierIndex, 'name', e.target.value)}
-                            className="font-medium text-center"
-                          />
-                          <div className="flex items-center justify-center gap-1">
-                            <DollarSign className="w-4 h-4" />
-                            <Input
-                              type="number"
-                              value={tier.price}
-                              onChange={(e) => updatePricingTier(tierIndex, 'price', Number(e.target.value))}
-                              className="w-20 text-center font-bold"
-                            />
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <Textarea
-                          value={tier.description}
-                          onChange={(e) => updatePricingTier(tierIndex, 'description', e.target.value)}
-                          placeholder="Package description..."
-                          rows={2}
-                        />
-                        
-                        <div className="space-y-2">
-                          <Label className="text-sm">What's included:</Label>
-                          {tier.includes.map((include, includeIndex) => (
-                            <div key={includeIndex} className="flex items-center gap-2">
-                              <Input
-                                value={include}
-                                onChange={(e) => updateInclude(tierIndex, includeIndex, e.target.value)}
-                                placeholder="Feature or benefit..."
-                                className="text-sm"
-                              />
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removeInclude(tierIndex, includeIndex)}
-                              >
-                                <Minus className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          ))}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => addInclude(tierIndex)}
-                            className="w-full"
-                          >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Add feature
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+            <div className="space-y-2">
+              <Label>Pricing</Label>
+              <div className="flex items-center gap-3 mb-2">
+                <Switch
+                  id="quote-required"
+                  checked={quoteRequired}
+                  onCheckedChange={setQuoteRequired}
+                />
+                <Label htmlFor="quote-required" className="cursor-pointer">
+                  Quote Required (No Fixed Price)
+                </Label>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Service Name *</Label>
+              {!quoteRequired && (
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4" />
                   <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => updateFormField('name', e.target.value)}
-                    placeholder="e.g., Kitchen Cabinet Installation"
+                    type="number"
+                    value={formData.base_price}
+                    onChange={(e) => updateFormField('base_price', Number(e.target.value))}
+                    placeholder="0"
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="base_price">Base Price *</Label>
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4" />
-                    <Input
-                      id="base_price"
-                      type="number"
-                      value={formData.base_price}
-                      onChange={(e) => updateFormField('base_price', Number(e.target.value))}
-                      placeholder="0"
-                    />
-                    <Select
-                      value={formData.pricing_type}
-                      onValueChange={(value) => updateFormField('pricing_type', value)}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="flat_rate">Fixed</SelectItem>
-                        <SelectItem value="hourly">Per Hour</SelectItem>
-                        <SelectItem value="per_unit">Per Unit</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="description">Service Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => updateFormField('description', e.target.value)}
-                    placeholder="Describe your service in detail..."
-                    rows={3}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="duration">Estimated Duration</Label>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    <Input
-                      id="duration"
-                      type="number"
-                      value={formData.estimated_duration_minutes}
-                      onChange={(e) => updateFormField('estimated_duration_minutes', Number(e.target.value))}
-                    />
-                    <span className="text-sm text-muted-foreground">minutes</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="difficulty">Difficulty Level</Label>
                   <Select
-                    value={formData.difficulty_level}
-                    onValueChange={(value) => updateFormField('difficulty_level', value)}
+                    value={formData.pricing_type}
+                    onValueChange={(value) => updateFormField('pricing_type', value)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="easy">Easy</SelectItem>
-                      <SelectItem value="standard">Standard</SelectItem>
-                      <SelectItem value="complex">Complex</SelectItem>
-                      <SelectItem value="expert">Expert Level</SelectItem>
+                      <SelectItem value="flat_rate">Fixed</SelectItem>
+                      <SelectItem value="per_hour">Per Hour</SelectItem>
+                      <SelectItem value="per_unit">Per Unit</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+              )}
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="description">Service Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => updateFormField('description', e.target.value)}
+                placeholder="Describe your service in detail..."
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="duration">Estimated Duration (optional)</Label>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <Input
+                  id="duration"
+                  type="number"
+                  value={formData.estimated_duration_minutes}
+                  onChange={(e) => updateFormField('estimated_duration_minutes', Number(e.target.value))}
+                  placeholder="60"
+                />
+                <span className="text-sm text-muted-foreground">minutes</span>
               </div>
-            )}
+            </div>
           </div>
         </CardContent>
       </Card>
