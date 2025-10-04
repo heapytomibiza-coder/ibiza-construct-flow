@@ -47,6 +47,8 @@ const Contact = React.lazy(() => import("./pages/Contact"));
 const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategories"));
 const PaymentSuccess = React.lazy(() => import("./pages/PaymentSuccess"));
 const PaymentCanceled = React.lazy(() => import("./pages/PaymentCanceled"));
+const SubscriptionSuccess = React.lazy(() => import("./pages/SubscriptionSuccess"));
+const SubscriptionCanceled = React.lazy(() => import("./pages/SubscriptionCanceled"));
 const Templates = React.lazy(() => import("./pages/Templates"));
 const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
 
@@ -118,6 +120,8 @@ function AppContent() {
           {/* Payment Pages */}
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-canceled" element={<PaymentCanceled />} />
+          <Route path="/subscription-success" element={<SubscriptionSuccess />} />
+          <Route path="/subscription-canceled" element={<SubscriptionCanceled />} />
           
           {/* Job Wizard - Feature Flagged */}
           {jobWizardEnabled && (

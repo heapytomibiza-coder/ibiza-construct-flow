@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   MapPin, Clock, Euro, User, Calendar, 
-  MessageSquare, Heart, Share2 
+  MessageSquare, Heart, Share2, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -45,7 +45,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   className,
   viewMode = 'card'
 }) => {
-  const isUrgent = new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const isNew = new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
   
   if (viewMode === 'compact') {
     return (
@@ -55,7 +55,12 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="font-semibold text-foreground truncate">{job.title}</h3>
-                {isUrgent && <Badge variant="destructive" className="text-xs">Urgent</Badge>}
+                {isNew && (
+                  <Badge className="bg-gradient-to-r from-copper to-copper-dark text-white text-xs">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    NEW
+                  </Badge>
+                )}
                 <Badge variant="outline" className="text-xs">{job.status}</Badge>
               </div>
               
@@ -108,10 +113,10 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <CardTitle className="text-lg">{job.title}</CardTitle>
-              {isUrgent && (
-                <Badge variant="destructive" className="text-xs">
-                  <Clock className="w-3 h-3 mr-1" />
-                  Urgent
+              {isNew && (
+                <Badge className="bg-gradient-to-r from-copper to-copper-dark text-white text-xs animate-pulse">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  NEW
                 </Badge>
               )}
             </div>

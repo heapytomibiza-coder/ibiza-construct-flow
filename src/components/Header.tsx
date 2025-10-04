@@ -16,6 +16,7 @@ import AuthModal from '@/components/auth/AuthModal';
 import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
 import { LanguageSwitcher } from '@/components/header/LanguageSwitcher';
 import { MobileOptimizedHeader } from '@/components/mobile/MobileOptimizedHeader';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -87,6 +88,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             <LanguageSwitcher />
             {user ? (
               <>
+                {isProfessional() && <NotificationBell />}
                 <HeaderRoleSwitcher />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
