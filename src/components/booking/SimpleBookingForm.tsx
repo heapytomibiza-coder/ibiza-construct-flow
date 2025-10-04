@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,12 +17,38 @@ import { format } from 'date-fns';
 import { CalendarIcon, Trash2, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Input validation schema
+const bookingFormSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters")
+    .regex(/^[a-zA-Z\s'-]+$/, "Name can only contain letters, spaces, hyphens, and apostrophes"),
+  phone: z.string()
+    .trim()
+    .regex(/^\+?[0-9\s\-()]{10,20}$/, "Please enter a valid phone number"),
+  email: z.string()
+    .trim()
+    .email("Please enter a valid email address")
+    .max(255, "Email must be less than 255 characters"),
+  address: z.string()
+    .min(1, "Please select a service area"),
+  notes: z.string()
+    .trim()
+    .max(2000, "Notes must be less than 2000 characters")
+    .optional(),
+  consultationType: z.string().optional(),
+  timeSlot: z.string().optional(),
+});
+
+type BookingFormData = z.infer<typeof bookingFormSchema>;
+
 export const SimpleBookingForm = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { items, removeItem, clearCart } = useBookingCart();
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BookingFormData>({
     name: '',
     phone: '',
     email: '',
@@ -32,12 +59,25 @@ export const SimpleBookingForm = () => {
   });
   const [preferredDate, setPreferredDate] = useState<Date>();
   const [submitting, setSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.phone || !formData.email || !formData.address) {
-      toast.error('Please fill in all required fields');
+    // Clear previous validation errors
+    setValidationErrors({});
+
+    // Validate form data
+    const validation = bookingFormSchema.safeParse(formData);
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      validation.error.issues.forEach((issue) => {
+        if (issue.path[0]) {
+          errors[issue.path[0] as string] = issue.message;
+        }
+      });
+      setValidationErrors(errors);
+      toast.error('Please fix the errors in the form');
       return;
     }
 
@@ -51,18 +91,34 @@ export const SimpleBookingForm = () => {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       
+      if (!user) {
+        toast.error('You must be logged in to submit a booking request');
+        return;
+      }
+
+      // Sanitize and encode data for external API calls
+      const sanitizedData = {
+        name: validation.data.name.substring(0, 100),
+        phone: validation.data.phone.substring(0, 20),
+        email: validation.data.email.substring(0, 255),
+        address: validation.data.address,
+        notes: validation.data.notes?.substring(0, 2000) || '',
+        consultationType: validation.data.consultationType || '',
+        timeSlot: validation.data.timeSlot || '',
+      };
+      
       // Create booking requests for each service
       for (const item of items) {
         const { error } = await supabase
           .from('booking_requests')
           .insert({
-            client_id: user?.id || null,
+            client_id: user.id,
             professional_id: item.professionalId,
             service_id: item.id,
             title: item.serviceName,
-            description: formData.notes,
-            location_details: formData.address,
-            special_requirements: `Contact: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}\nConsultation Type: ${formData.consultationType}\nPreferred Time: ${formData.timeSlot}`,
+            description: sanitizedData.notes,
+            location_details: sanitizedData.address,
+            special_requirements: `Contact: ${sanitizedData.name}\nPhone: ${sanitizedData.phone}\nEmail: ${sanitizedData.email}\nConsultation Type: ${sanitizedData.consultationType}\nPreferred Time: ${sanitizedData.timeSlot}`,
             preferred_dates: preferredDate ? [format(preferredDate, 'yyyy-MM-dd')] : [],
             status: 'pending',
             total_estimated_price: item.pricePerUnit,
@@ -83,8 +139,16 @@ export const SimpleBookingForm = () => {
     }
   };
 
-  const updateFormField = (field: string, value: string) => {
+  const updateFormField = (field: keyof BookingFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear validation error for this field when user types
+    if (validationErrors[field]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   };
 
   return (
@@ -134,7 +198,12 @@ export const SimpleBookingForm = () => {
                 onChange={(e) => updateFormField('name', e.target.value)}
                 placeholder="John Doe"
                 required
+                className={validationErrors.name ? 'border-destructive' : ''}
+                maxLength={100}
               />
+              {validationErrors.name && (
+                <p className="text-sm text-destructive">{validationErrors.name}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -144,9 +213,14 @@ export const SimpleBookingForm = () => {
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => updateFormField('phone', e.target.value)}
-                placeholder="(555) 123-4567"
+                placeholder="+34 971 123 456"
                 required
+                className={validationErrors.phone ? 'border-destructive' : ''}
+                maxLength={20}
               />
+              {validationErrors.phone && (
+                <p className="text-sm text-destructive">{validationErrors.phone}</p>
+              )}
             </div>
           </div>
 
@@ -159,7 +233,12 @@ export const SimpleBookingForm = () => {
               onChange={(e) => updateFormField('email', e.target.value)}
               placeholder="john@example.com"
               required
+              className={validationErrors.email ? 'border-destructive' : ''}
+              maxLength={255}
             />
+            {validationErrors.email && (
+              <p className="text-sm text-destructive">{validationErrors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -169,7 +248,10 @@ export const SimpleBookingForm = () => {
               onValueChange={(value) => updateFormField('address', value)}
               required
             >
-              <SelectTrigger id="address" className="bg-background">
+              <SelectTrigger 
+                id="address" 
+                className={cn("bg-background", validationErrors.address && 'border-destructive')}
+              >
                 <SelectValue placeholder="Select area in Ibiza" />
               </SelectTrigger>
               <SelectContent className="bg-popover z-50">
@@ -190,6 +272,9 @@ export const SimpleBookingForm = () => {
                 <SelectItem value="Cala Vadella">Cala Vadella</SelectItem>
               </SelectContent>
             </Select>
+            {validationErrors.address && (
+              <p className="text-sm text-destructive">{validationErrors.address}</p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -272,7 +357,12 @@ export const SimpleBookingForm = () => {
               onChange={(e) => updateFormField('notes', e.target.value)}
               placeholder="Any additional information the professional should know..."
               rows={4}
+              maxLength={2000}
+              className={validationErrors.notes ? 'border-destructive' : ''}
             />
+            {validationErrors.notes && (
+              <p className="text-sm text-destructive">{validationErrors.notes}</p>
+            )}
           </div>
         </CardContent>
       </Card>

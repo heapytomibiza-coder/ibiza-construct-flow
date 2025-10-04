@@ -7,11 +7,30 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Simple in-memory rate limiter
+const rateLimiter = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const limit = rateLimiter.get(ip);
+  
+  if (!limit || now > limit.resetAt) {
+    rateLimiter.set(ip, { count: 1, resetAt: now + 60000 }); // 1 minute window
+    return true;
+  }
+  
+  if (limit.count >= 20) { // 20 requests per minute
+    return false;
+  }
+  
+  limit.count++;
+  return true;
+}
+
 interface ChatRequest {
   message?: string; // For simple chat
   messages?: Array<{ role: string; content: string }>; // For custom conversation
   conversation_id?: string;
-  user_id?: string;
   context?: {
     page?: string;
     user_role?: string;
@@ -25,17 +44,59 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limiting check
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     req.headers.get('cf-connecting-ip') || 'unknown';
+    if (!checkRateLimit(clientIp)) {
+      console.warn('Rate limit exceeded for IP:', clientIp);
+      return new Response(JSON.stringify({ 
+        error: 'Rate limit exceeded. Please try again later.',
+        response: 'I apologize, but you\'re making too many requests. Please wait a moment and try again.'
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ 
+        error: 'Authentication required',
+        response: 'Please sign in to use the chat assistant.'
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!lovableApiKey) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
+    // Create Supabase client with auth header to verify user
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { message, messages, conversation_id, user_id, context = {} }: ChatRequest = await req.json();
+    // Verify the authenticated user
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      console.error('Authentication failed:', authError);
+      return new Response(JSON.stringify({ 
+        error: 'Invalid authentication',
+        response: 'Your session has expired. Please sign in again.'
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const authenticatedUserId = user.id;
+    const { message, messages, conversation_id, context = {} }: ChatRequest = await req.json();
 
     // Handle two modes: Simple chat (message) or Custom conversation (messages array)
     const isCustomConversation = messages && Array.isArray(messages);
@@ -65,7 +126,7 @@ serve(async (req) => {
           .from('ai_conversations')
           .insert({
             session_id: sessionId,
-            user_id: user_id || null,
+            user_id: authenticatedUserId,
             conversation_type: 'support',
             context: context,
             status: 'active'
@@ -88,8 +149,8 @@ serve(async (req) => {
         .order('created_at', { ascending: true })
         .limit(10);
 
-      // Build context for AI
-      const systemPrompt = buildSystemPrompt(context, conversationRecord);
+      // Build context for AI with authenticated user info
+      const systemPrompt = buildSystemPrompt({ ...context, authenticated_user_id: authenticatedUserId }, conversationRecord);
       const conversationMessages = messageHistory?.map(msg => ({
         role: msg.role,
         content: msg.content
@@ -147,8 +208,8 @@ serve(async (req) => {
           }
         });
 
-      // Generate quick actions based on context and response
-      const quickActions = generateQuickActions(message || '', botResponse, context);
+      // Generate quick actions based on context and response with authenticated user
+      const quickActions = generateQuickActions(message || '', botResponse, { ...context, authenticated_user_id: authenticatedUserId });
 
       return new Response(JSON.stringify({
         response: botResponse,

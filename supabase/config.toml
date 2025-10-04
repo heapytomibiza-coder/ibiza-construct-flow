@@ -1,7 +1,7 @@
 project_id = "kcncrtayycwdwrxcgler"
 
 [functions.ai-chatbot]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-questions]
 verify_jwt = false
