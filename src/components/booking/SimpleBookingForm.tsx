@@ -27,6 +27,8 @@ export const SimpleBookingForm = () => {
     email: '',
     address: '',
     notes: '',
+    consultationType: '',
+    timeSlot: '',
   });
   const [preferredDate, setPreferredDate] = useState<Date>();
   const [submitting, setSubmitting] = useState(false);
@@ -60,7 +62,7 @@ export const SimpleBookingForm = () => {
             title: item.serviceName,
             description: formData.notes,
             location_details: formData.address,
-            special_requirements: `Contact: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}`,
+            special_requirements: `Contact: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}\nConsultation Type: ${formData.consultationType}\nPreferred Time: ${formData.timeSlot}`,
             preferred_dates: preferredDate ? [format(preferredDate, 'yyyy-MM-dd')] : [],
             status: 'pending',
             total_estimated_price: item.pricePerUnit,
@@ -223,6 +225,43 @@ export const SimpleBookingForm = () => {
                 />
               </PopoverContent>
             </Popover>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="timeSlot">Preferred Time Slot</Label>
+            <Select
+              value={formData.timeSlot}
+              onValueChange={(value) => updateFormField('timeSlot', value)}
+            >
+              <SelectTrigger id="timeSlot" className="bg-background">
+                <SelectValue placeholder="Select time slot" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                <SelectItem value="morning-8-10">Morning (8:00 AM - 10:00 AM)</SelectItem>
+                <SelectItem value="morning-10-12">Late Morning (10:00 AM - 12:00 PM)</SelectItem>
+                <SelectItem value="afternoon-12-2">Early Afternoon (12:00 PM - 2:00 PM)</SelectItem>
+                <SelectItem value="afternoon-2-4">Afternoon (2:00 PM - 4:00 PM)</SelectItem>
+                <SelectItem value="afternoon-4-6">Late Afternoon (4:00 PM - 6:00 PM)</SelectItem>
+                <SelectItem value="evening-6-8">Evening (6:00 PM - 8:00 PM)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="consultationType">How would you prefer to be contacted?</Label>
+            <Select
+              value={formData.consultationType}
+              onValueChange={(value) => updateFormField('consultationType', value)}
+            >
+              <SelectTrigger id="consultationType" className="bg-background">
+                <SelectValue placeholder="Select consultation type" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                <SelectItem value="site-visit">Site Visit (In-person)</SelectItem>
+                <SelectItem value="phone-call">Phone Call</SelectItem>
+                <SelectItem value="video-call">Video Call</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
