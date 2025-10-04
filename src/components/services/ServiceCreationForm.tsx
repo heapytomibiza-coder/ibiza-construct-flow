@@ -155,14 +155,17 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
               unit_type: formData.unit_type,
               min_quantity: formData.min_quantity,
               max_quantity: formData.max_quantity,
-              category: formData.category,
               difficulty_level: formData.difficulty_level,
               estimated_duration_minutes: formData.estimated_duration_minutes,
               is_active: formData.is_active,
               primary_image_url: primaryImage,
               gallery_images: images,
               video_url: videoUrl,
-              display_order: pricingTiers.indexOf(tier)
+              display_order: pricingTiers.indexOf(tier),
+              // Taxonomy fields for filtering/matching
+              category: selectedService.category,
+              subcategory: selectedService.subcategory,
+              micro: selectedService.micro,
             });
 
           if (error) throw error;
@@ -181,13 +184,16 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
             unit_type: formData.unit_type,
             min_quantity: formData.min_quantity,
             max_quantity: formData.max_quantity,
-            category: formData.category,
             difficulty_level: formData.difficulty_level,
             estimated_duration_minutes: formData.estimated_duration_minutes,
             is_active: formData.is_active,
             primary_image_url: primaryImage,
             gallery_images: images,
-            video_url: videoUrl
+            video_url: videoUrl,
+            // Taxonomy fields for filtering/matching
+            category: selectedService.category,
+            subcategory: selectedService.subcategory,
+            micro: selectedService.micro,
           });
 
         if (error) throw error;

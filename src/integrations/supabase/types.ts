@@ -2274,12 +2274,14 @@ export type Database = {
           image_alt_text: string | null
           is_active: boolean | null
           max_quantity: number | null
+          micro: string | null
           min_quantity: number | null
           name: string
           pricing_type: string
           primary_image_url: string | null
           professional_id: string
           service_id: string
+          subcategory: string | null
           unit_type: string | null
           updated_at: string
           video_url: string | null
@@ -2299,12 +2301,14 @@ export type Database = {
           image_alt_text?: string | null
           is_active?: boolean | null
           max_quantity?: number | null
+          micro?: string | null
           min_quantity?: number | null
           name: string
           pricing_type?: string
           primary_image_url?: string | null
           professional_id: string
           service_id: string
+          subcategory?: string | null
           unit_type?: string | null
           updated_at?: string
           video_url?: string | null
@@ -2324,12 +2328,14 @@ export type Database = {
           image_alt_text?: string | null
           is_active?: boolean | null
           max_quantity?: number | null
+          micro?: string | null
           min_quantity?: number | null
           name?: string
           pricing_type?: string
           primary_image_url?: string | null
           professional_id?: string
           service_id?: string
+          subcategory?: string | null
           unit_type?: string | null
           updated_at?: string
           video_url?: string | null
