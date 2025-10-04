@@ -19,9 +19,6 @@ import { useBookingCart } from '@/contexts/BookingCartContext';
 interface Professional {
   id: string;
   full_name: string;
-  avatar_url?: string;
-  bio?: string;
-  location?: string;
 }
 
 interface ServiceItem {
@@ -53,7 +50,7 @@ const ProfessionalMenuBoard = () => {
         // Fetch professional profile
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('id, full_name, avatar_url, bio')
+          .select('id, full_name')
           .eq('id', id)
           .single();
 
@@ -87,7 +84,7 @@ const ProfessionalMenuBoard = () => {
       professionalId: id!,
       professionalName: professional?.full_name || 'Professional',
       serviceName: service.name,
-      price: service.base_price,
+      pricePerUnit: service.base_price || 0,
       pricingType: service.pricing_type as any,
       quantity: 1,
     });
@@ -140,8 +137,7 @@ const ProfessionalMenuBoard = () => {
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-6 items-start">
               <Avatar className="w-24 h-24">
-                <AvatarImage src={professional.avatar_url} />
-                <AvatarFallback>{professional.full_name?.[0]}</AvatarFallback>
+                <AvatarFallback className="text-3xl">{professional.full_name?.[0]}</AvatarFallback>
               </Avatar>
               
               <div className="flex-1 space-y-4">
@@ -161,14 +157,10 @@ const ProfessionalMenuBoard = () => {
                       <MapPin className="w-4 h-4" />
                       <span>Local area</span>
                     </div>
-                  </div>
                 </div>
-                
-                {professional.bio && (
-                  <p className="text-muted-foreground">{professional.bio}</p>
-                )}
-                
-                <div className="flex gap-3">
+              </div>
+              
+              <div className="flex gap-3">
                   <Button variant="outline" size="sm">
                     <Phone className="w-4 h-4 mr-2" />
                     Call

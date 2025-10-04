@@ -2340,7 +2340,15 @@ export type Database = {
           updated_at?: string
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "professional_service_items_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       professional_services: {
         Row: {

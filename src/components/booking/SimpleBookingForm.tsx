@@ -62,7 +62,7 @@ export const SimpleBookingForm = () => {
             special_requirements: `Contact: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}`,
             preferred_dates: preferredDate ? [format(preferredDate, 'yyyy-MM-dd')] : [],
             status: 'pending',
-            total_estimated_price: item.price,
+            total_estimated_price: item.pricePerUnit,
           });
 
         if (error) throw error;
@@ -100,7 +100,7 @@ export const SimpleBookingForm = () => {
               </div>
               <div className="flex items-center gap-3">
                 <span className="font-semibold">
-                  {item.price ? `$${item.price}` : 'Quote'}
+                  {item.pricingType === 'quote_required' ? 'Quote' : `$${item.pricePerUnit}`}
                 </span>
                 <Button
                   type="button"
