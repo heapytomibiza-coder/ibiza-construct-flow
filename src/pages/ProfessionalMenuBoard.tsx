@@ -11,9 +11,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
   MapPin, Star, Clock, CheckCircle, Phone, Mail, 
-  ShoppingCart, Plus, DollarSign
+  ShoppingCart, Plus, DollarSign, Minus
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
 import { useBookingCart } from '@/contexts/BookingCartContext';
 
@@ -43,6 +44,7 @@ const ProfessionalMenuBoard = () => {
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUnits, setSelectedUnits] = useState<Record<string, string>>({});
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,7 +84,8 @@ const ProfessionalMenuBoard = () => {
 
   const handleAddToCart = (service: ServiceItem) => {
     const unit = selectedUnits[service.id] || 'hours';
-    const serviceName = `${service.name} (${unit})`;
+    const quantity = quantities[service.id] || 1;
+    const serviceName = `${service.name} (${quantity} ${unit})`;
     
     addItem({
       id: service.id,
@@ -91,14 +94,22 @@ const ProfessionalMenuBoard = () => {
       serviceName: serviceName,
       pricePerUnit: service.base_price || 0,
       pricingType: service.pricing_type as any,
-      quantity: 1,
+      quantity: quantity,
       unitType: unit,
     });
-    toast.success(`Added to request: ${unit}`);
+    toast.success(`Added ${quantity} ${unit} to request`);
   };
 
   const handleUnitChange = (serviceId: string, unit: string) => {
     setSelectedUnits(prev => ({ ...prev, [serviceId]: unit }));
+  };
+
+  const handleQuantityChange = (serviceId: string, delta: number) => {
+    setQuantities(prev => {
+      const current = prev[serviceId] || 1;
+      const newValue = Math.max(1, current + delta);
+      return { ...prev, [serviceId]: newValue };
+    });
   };
 
   const formatPrice = (service: ServiceItem) => {
@@ -244,12 +255,36 @@ const ProfessionalMenuBoard = () => {
                       </div>
 
                       <div className="flex gap-2">
+                        {/* Quantity Controls */}
+                        <div className="flex items-center border rounded-md">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 w-9 p-0"
+                            onClick={() => handleQuantityChange(service.id, -1)}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="px-3 text-sm font-medium min-w-[2rem] text-center">
+                            {quantities[service.id] || 1}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 w-9 p-0"
+                            onClick={() => handleQuantityChange(service.id, 1)}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+
+                        {/* Unit Selector */}
                         <Select 
                           value={selectedUnits[service.id] || 'hours'}
                           onValueChange={(value) => handleUnitChange(service.id, value)}
                         >
-                          <SelectTrigger className="flex-1">
-                            <SelectValue placeholder="Select unit" />
+                          <SelectTrigger className="w-28">
+                            <SelectValue placeholder="Unit" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="hours">Hours</SelectItem>
@@ -258,10 +293,11 @@ const ProfessionalMenuBoard = () => {
                           </SelectContent>
                         </Select>
                         
+                        {/* Add Button */}
                         <Button 
                           onClick={() => handleAddToCart(service)}
                           size="sm"
-                          className="px-6"
+                          className="px-4"
                         >
                           <Plus className="w-4 h-4 mr-1" />
                           Add
