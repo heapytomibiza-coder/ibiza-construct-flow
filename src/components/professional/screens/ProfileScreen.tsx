@@ -5,6 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { EnhancedProfileCard } from '@/components/professional/EnhancedProfileCard';
+import { ServiceManagementPanel } from '@/components/professional/ServiceManagementPanel';
+import { useProfessionalServices } from '@/hooks/useProfessionalServices';
+import { useProfessionalStats } from '@/hooks/useProfessionalStats';
+import { useSubscription } from '@/hooks/useSubscription';
 import { 
   User, MapPin, DollarSign, Settings, 
   Camera, Plus, Edit, Save, AlertTriangle
@@ -18,11 +23,10 @@ interface ProfileScreenProps {
 
 export const ProfileScreen = ({ user, profile }: ProfileScreenProps) => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
-  const [serviceMenu, setServiceMenu] = useState([
-    { id: '1', name: 'Bathroom Installation', basePrice: 150, unit: 'hour', category: 'Plumbing' },
-    { id: '2', name: 'Kitchen Cabinets', basePrice: 85, unit: 'hour', category: 'Carpentry' },
-    { id: '3', name: 'Tile Work', basePrice: 45, unit: 'sqm', category: 'Flooring' }
-  ]);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const { services, loading, addService, updateService, deleteService, toggleActive } = useProfessionalServices(user?.id);
+  const stats = useProfessionalStats(user?.id);
+  const { createCheckout } = useSubscription();
 
   const [coverageMap, setCoverageMap] = useState({
     center: 'Dublin City Centre',
@@ -40,101 +44,6 @@ export const ProfileScreen = ({ user, profile }: ProfileScreenProps) => {
     toast.success(`${section} updated successfully`);
     setEditingSection(null);
   };
-
-  const handleAddService = () => {
-    const newService = {
-      id: Date.now().toString(),
-      name: 'New Service',
-      basePrice: 50,
-      unit: 'hour',
-      category: 'General'
-    };
-    setServiceMenu([...serviceMenu, newService]);
-  };
-
-  const handleUpdateService = (id: string, field: string, value: any) => {
-    setServiceMenu(services => 
-      services.map(service => 
-        service.id === id ? { ...service, [field]: value } : service
-      )
-    );
-  };
-
-  const renderServiceMenuBuilder = () => (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Service Menu</CardTitle>
-          <Button size="sm" onClick={handleAddService}>
-            <Plus className="w-3 h-3 mr-1" />
-            Add Service
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {serviceMenu.map((service) => (
-          <div key={service.id} className="border rounded-lg p-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-muted-foreground">Service Name</label>
-                <Input 
-                  value={service.name}
-                  onChange={(e) => handleUpdateService(service.id, 'name', e.target.value)}
-                  className="h-8 text-sm"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">Category</label>
-                <Input 
-                  value={service.category}
-                  onChange={(e) => handleUpdateService(service.id, 'category', e.target.value)}
-                  className="h-8 text-sm"
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              <div>
-                <label className="text-xs text-muted-foreground">Base Price (€)</label>
-                <div className="mt-1">
-                  <Slider
-                    value={[service.basePrice]}
-                    onValueChange={([value]) => handleUpdateService(service.id, 'basePrice', value)}
-                    max={200}
-                    min={20}
-                    step={5}
-                    className="mb-2"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>€20</span>
-                    <span className="font-medium">€{service.basePrice}</span>
-                    <span>€200</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">Unit</label>
-                <select 
-                  value={service.unit}
-                  onChange={(e) => handleUpdateService(service.id, 'unit', e.target.value)}
-                  className="w-full h-8 px-2 border rounded text-sm"
-                >
-                  <option value="hour">per hour</option>
-                  <option value="sqm">per sqm</option>
-                  <option value="item">per item</option>
-                  <option value="project">per project</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
-              <strong>AI Suggestion:</strong> Similar services in your area charge €{service.basePrice - 10}-€{service.basePrice + 15}/{service.unit}
-            </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
 
   const renderCoverageMap = () => (
     <Card>
@@ -231,27 +140,48 @@ export const ProfileScreen = ({ user, profile }: ProfileScreenProps) => {
 
   return (
     <div className="p-4 space-y-6">
-      {/* Profile Header */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <User className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold">{profile.full_name || 'Professional Name'}</h2>
-              <p className="text-sm text-muted-foreground">Verified Professional</p>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="default">Active</Badge>
-                <Badge variant="outline">4.8★ (47 reviews)</Badge>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
+      {/* Enhanced Profile Card */}
+      <EnhancedProfileCard
+        profile={{
+          user_id: user?.id,
+          business_name: profile.full_name || 'Professional',
+          bio: profile.bio,
+          service_categories: services.map(s => s.micro_service_id),
+          verification_status: profile.verification_status || 'pending',
+          is_active: true
+        }}
+        stats={{
+          completed_jobs: stats.performance?.stats.completed_bookings || 0,
+          average_rating: stats.performance?.stats.average_rating || 0,
+          response_time_hours: 24
+        }}
+        onUpgrade={async () => {
+          await createCheckout('price_abc123'); // Replace with actual Pro price ID
+        }}
+        onManageServices={() => setShowServiceModal(true)}
+      />
 
-      {/* Service Menu Builder */}
-      {renderServiceMenuBuilder()}
+      {/* Service Management */}
+      <ServiceManagementPanel
+        services={services.map(s => ({
+          id: s.id,
+          micro_service_id: s.micro_service_id,
+          service_name: s.micro_service_id, // Should be enriched with actual name
+          is_active: s.is_active,
+          service_areas: (Array.isArray(s.service_areas) ? s.service_areas : []) as string[],
+          pricing_structure: s.pricing_structure as any
+        }))}
+        onAddService={() => setShowServiceModal(true)}
+        onEditService={(serviceId) => {
+          toast.info('Edit service modal coming soon');
+        }}
+        onDeleteService={async (serviceId) => {
+          await deleteService(serviceId);
+        }}
+        onToggleActive={async (serviceId, isActive) => {
+          await toggleActive(serviceId, isActive);
+        }}
+      />
 
       {/* Coverage Map */}
       {renderCoverageMap()}

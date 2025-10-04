@@ -30,23 +30,34 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 2. Find matching professionals with subscription tiers
+    // 2. Find matching professionals based on their services
     // Priority: premium > pro > basic
-    const { data: professionals, error: proError } = await supabase
-      .from('professional_profiles')
-      .select('user_id, subscription_tier, service_areas')
+    const { data: matchingProfessionals, error: proError } = await supabase
+      .from('professional_services')
+      .select(`
+        professional_id,
+        is_active,
+        professional_profiles!inner(user_id, subscription_tier)
+      `)
       .eq('is_active', true)
-      .order('subscription_tier', { ascending: false }); // premium first
+      .eq('micro_service_id', job.micro_id)
+      .order('professional_profiles.subscription_tier', { ascending: false }); // premium first
 
     if (proError) {
       console.error('[notify-job-broadcast] Error fetching professionals:', proError);
       throw proError;
     }
 
-    console.log(`[notify-job-broadcast] Found ${professionals?.length || 0} active professionals`);
+    // Extract unique professionals with their tier
+    const professionals = (matchingProfessionals || []).map((item: any) => ({
+      user_id: item.professional_profiles.user_id,
+      subscription_tier: item.professional_profiles.subscription_tier
+    }));
+
+    console.log(`[notify-job-broadcast] Found ${professionals.length} matching professionals`);
 
     // 3. Create notifications for all qualified professionals
-    const notifications = (professionals || []).map((pro) => {
+    const notifications = professionals.map((pro) => {
       const priority = 
         pro.subscription_tier === 'premium' ? 'high' : 
         pro.subscription_tier === 'pro' ? 'medium' : 'normal';
@@ -54,14 +65,15 @@ Deno.serve(async (req) => {
       return {
         user_id: pro.user_id,
         title: '🔔 New Job Available',
-        message: `New ${job.title} job posted in your area`,
+        message: `New ${job.title} job posted - matches your services`,
         type: 'job_match',
         action_url: `/marketplace?job=${jobId}`,
         metadata: {
           jobId: job.id,
           priority,
           subscriptionTier: pro.subscription_tier,
-          jobTitle: job.title
+          jobTitle: job.title,
+          microServiceId: job.micro_id
         }
       };
     });
