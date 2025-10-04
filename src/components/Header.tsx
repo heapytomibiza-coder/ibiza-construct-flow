@@ -72,12 +72,6 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               {t('discovery')}
             </Link>
-            <Link to="/services" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('services')}
-            </Link>
-            <Link to="/professionals" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('professionals')}
-            </Link>
             <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               {t('howItWorks')}
             </Link>
@@ -168,12 +162,6 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
               </Link>
               <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 {t('discovery')}
-              </Link>
-              <Link to="/services" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('services')}
-              </Link>
-              <Link to="/professionals" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('professionals')}
               </Link>
               <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 {t('howItWorks')}

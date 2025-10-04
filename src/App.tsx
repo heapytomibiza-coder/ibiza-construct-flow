@@ -36,8 +36,6 @@ const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage")
 const AdminQuestions = React.lazy(() => import("./pages/AdminQuestions"));
 const PackCompareView = React.lazy(() => import("./components/admin/packs/PackCompareView").then(m => ({ default: m.PackCompareView })));
 const PostJob = React.lazy(() => import("./pages/PostJob"));
-const ServicePage = React.lazy(() => import("./pages/UnifiedServicePage"));
-const ServiceDetailPage = React.lazy(() => import("./pages/UnifiedServicePage"));
 const Discovery = React.lazy(() => import("./pages/Discovery"));
 const ProfessionalMenuBoard = React.lazy(() => import("./pages/ProfessionalMenuBoard"));
 const BookingPage = React.lazy(() => import("./pages/BookingPage"));
@@ -107,13 +105,8 @@ function AppContent() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth/quick-start" element={<QuickStart />} />
           
-          
           {/* Role Switcher */}
           <Route path="/role-switcher" element={<RoleSwitcher />} />
-          
-          {/* Service Pages */}
-          <Route path="/service/:slug" element={<ServicePage />} />
-          <Route path="/service/:micro/:slug" element={<ServiceDetailPage />} />
           
           {/* Payment Pages */}
           <Route path="/payment-success" element={<PaymentSuccess />} />

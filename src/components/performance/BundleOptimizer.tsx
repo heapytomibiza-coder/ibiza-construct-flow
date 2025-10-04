@@ -25,7 +25,7 @@ export const preloadRoute = (routePath: string) => {
     '/dashboard/client': () => import('@/components/dashboards/UnifiedClientDashboard'),  
     '/dashboard/admin': () => import('@/pages/AdminDashboardPage'),
     '/post': () => import('@/pages/PostJob'),
-    '/services': () => import('@/pages/Services'),
+    '/discovery': () => import('@/pages/Discovery'),
   };
 
   const loader = routeMap[routePath];
