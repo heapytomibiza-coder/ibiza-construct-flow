@@ -177,50 +177,21 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
-          {item.pricing_type === 'quote_required' ? (
-            <Button
-              onClick={handleRequestQuote}
-              className="flex-1"
-              variant="default"
-            >
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Request Quote
-            </Button>
-          ) : (
-            <>
-              {item.pricing_type !== 'flat_rate' && (
-                <div className="flex items-center border rounded-md">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 w-9 p-0"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <span className="px-3 text-sm font-medium min-w-[2rem] text-center">
-                    {quantity}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 w-9 p-0"
-                    onClick={() => setQuantity(quantity + 1)}
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
-              <Button
-                onClick={handleAddToCart}
-                className="flex-1"
-                variant="default"
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Add to Cart
-              </Button>
-            </>
-          )}
+          <Button
+            onClick={() => onViewDetails?.()}
+            className="flex-1"
+            variant="outline"
+          >
+            View Details
+          </Button>
+          <Button
+            onClick={handleRequestQuote}
+            className="flex-1"
+            variant="default"
+          >
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Contact Now
+          </Button>
         </div>
       </div>
     </Card>
