@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTour } from '@/components/common/Tour';
 import { useAuth } from '@/hooks/useAuth';
+import { SubscriptionStatusWidget } from '@/components/marketplace/SubscriptionStatusWidget';
 import { 
   Home, Briefcase, Euro, LogOut, Play, Clock, 
   CheckCircle, Star, TrendingUp, Users, Calendar,
@@ -174,6 +175,9 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
 // Today Tab Component
 const TodayTab = ({ stats, profile }: any) => (
   <div className="space-y-6">
+    {/* Subscription Status */}
+    <SubscriptionStatusWidget />
+    
     {/* Quick Actions */}
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-tour="quick-actions">
       <Button className="h-auto p-4 flex flex-col gap-2 bg-gradient-hero hover:bg-copper text-white">
