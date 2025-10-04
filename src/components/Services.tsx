@@ -2,13 +2,11 @@ import React from 'react';
 import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 
 const Services = React.memo(() => {
   const navigate = useNavigate();
   const { t } = useTranslation('components');
-  const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const { getServiceCards, loading } = useServicesRegistry();
   
   const iconMap = {
@@ -30,18 +28,12 @@ const Services = React.memo(() => {
   );
 
   const handleServiceClick = React.useCallback((service: any) => {
-    if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(service.category)}`);
-    } else {
-      navigate(`/service/${service.slug}`);
-    }
-  }, [jobWizardEnabled, navigate]);
+    navigate(`/service/${service.slug}`);
+  }, [navigate]);
 
   const handleGetQuoteClick = React.useCallback(() => {
-    if (jobWizardEnabled) {
-      navigate('/post');
-    }
-  }, [jobWizardEnabled, navigate]);
+    navigate('/professionals');
+  }, [navigate]);
 
   return (
     <section className="py-20 bg-background">

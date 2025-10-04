@@ -13,14 +13,12 @@ import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ServicePackages } from '@/components/services/ServicePackages';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
-import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { cn } from '@/lib/utils';
 
 const Services = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('pages');
   const { getServiceCards, getCategories, loading } = useServicesRegistry();
-  const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const isMobile = useIsMobile();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,17 +76,8 @@ const Services = () => {
       });
     }
     
-    if (jobWizardEnabled) {
-      // Pass more context to wizard for better pre-filling
-      const wizardParams = new URLSearchParams({
-        category: service.category,
-        preset: service.title,
-        source: 'services'
-      });
-      navigate(`/post?${wizardParams.toString()}`);
-    } else {
-      navigate(`/service/${service.slug}`);
-    }
+    // Navigate to service detail page
+    navigate(`/service/${service.slug}`);
   };
 
   const handleBookNow = (service: any) => {
@@ -101,24 +90,13 @@ const Services = () => {
       });
     }
     
-    if (jobWizardEnabled) {
-      // Use calendar-first wizard for booking
-      const wizardParams = new URLSearchParams({
-        category: service.category,
-        preset: service.title,
-        calendar: 'true',
-        source: 'booking'
-      });
-      navigate(`/post?${wizardParams.toString()}`);
-    } else {
-      navigate(`/service/${service.slug}?book=true`);
-    }
+    // Navigate to service detail page with booking action
+    navigate(`/service/${service.slug}?action=book`);
   };
 
   const handlePackageSelect = (packageId: string) => {
-    if (jobWizardEnabled) {
-      navigate(`/post?package=${packageId}`);
-    }
+    // Navigate to professionals search filtered by package type
+    navigate(`/professionals?package=${packageId}`);
   };
 
   // Sample packages for demonstration
@@ -417,17 +395,11 @@ const Services = () => {
       {isMobile && filteredServices.length > 0 && (
         <StickyMobileCTA
           primaryAction={{
-            label: "Post Your Job",
-            onClick: () => {
-              if (jobWizardEnabled) {
-                navigate('/post?calendar=true&source=services_cta');
-              } else {
-                navigate('/post');
-              }
-            }
+            label: "Browse Professionals",
+            onClick: () => navigate('/professionals')
           }}
           secondaryAction={{
-            label: "Browse All",
+            label: "Clear Filters",
             onClick: () => {
               setFilters({
                 categories: [],

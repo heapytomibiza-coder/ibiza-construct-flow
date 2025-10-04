@@ -23,7 +23,6 @@ interface UnifiedServicePageProps {}
 const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
   const { slug, micro } = useParams<{ slug: string; micro?: string }>();
   const navigate = useNavigate();
-  const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
   const { getServiceCards, getServicesByCategory, loading } = useServicesRegistry();
 
@@ -105,27 +104,24 @@ const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
   };
 
   const handleTaskClick = (task: string) => {
-    if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(currentCategory)}&preset=${encodeURIComponent(task)}`);
-    }
+    // Navigate to professionals search filtered by category and task
+    navigate(`/professionals?category=${encodeURIComponent(currentCategory)}&task=${encodeURIComponent(task)}`);
   };
 
   const handlePackageClick = (packageName: string) => {
-    if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(currentCategory)}&package=${encodeURIComponent(packageName)}`);
-    }
+    // Navigate to professionals search filtered by category and package
+    navigate(`/professionals?category=${encodeURIComponent(currentCategory)}&package=${encodeURIComponent(packageName)}`);
   };
 
   const handleGetQuoteClick = () => {
-    if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(currentCategory)}`);
-    }
+    // Navigate to professionals search filtered by category
+    navigate(`/professionals?category=${encodeURIComponent(currentCategory)}`);
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
+        <Header proInboxEnabled={proInboxEnabled} />
         <main className="pt-20">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
@@ -142,7 +138,7 @@ const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
   if (!currentServiceCard) {
     return (
       <div className="min-h-screen bg-background">
-        <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
+        <Header proInboxEnabled={proInboxEnabled} />
         <main className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Service Not Found</h1>
           <p className="text-muted-foreground">The service you're looking for doesn't exist.</p>
@@ -156,7 +152,7 @@ const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
   if (isDetailedView) {
     return (
       <div className="min-h-screen bg-background">
-        <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
+        <Header proInboxEnabled={proInboxEnabled} />
         
         {/* Hero Section for detailed view */}
         <ServiceHeroSection 
@@ -257,7 +253,7 @@ const UnifiedServicePage: React.FC<UnifiedServicePageProps> = () => {
   // Render general service category view
   return (
     <div className="min-h-screen bg-background">
-      <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
+      <Header proInboxEnabled={proInboxEnabled} />
       
       <main className="pt-20">
         {/* Hero Section */}
