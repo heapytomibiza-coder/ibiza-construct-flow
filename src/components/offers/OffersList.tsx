@@ -16,7 +16,7 @@ import {
   useListOffersForJob, 
   useAcceptOffer, 
   useDeclineOffer 
-} from '../../../packages/@contracts/clients/offers';
+} from '../../../packages/@contracts/clients';
 
 export const OffersList: React.FC = () => {
   const { user } = useAuth();

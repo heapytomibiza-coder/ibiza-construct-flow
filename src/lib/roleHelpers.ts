@@ -1,4 +1,4 @@
-import { useCurrentSession } from '../../packages/@contracts/clients/auth';
+import { useCurrentSession } from '../../packages/@contracts/clients';
 
 export type UnifiedRole = 'asker' | 'tasker' | 'admin';
 

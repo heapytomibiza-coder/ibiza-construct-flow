@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
-import { useSignIn, useSignUp } from '../../../packages/@contracts/clients/auth';
+import { useSignIn, useSignUp } from '../../../packages/@contracts/clients';
 import { enableProfessionalRole } from '@/lib/roles';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, Lock } from 'lucide-react';

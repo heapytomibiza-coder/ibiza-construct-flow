@@ -65,7 +65,7 @@ export const useCreateFromOffer = () => {
     onSuccess: (data) => {
       // Invalidate related job queries
       queryClient.invalidateQueries({ queryKey: jobsKeys.job(data.data.jobId) });
-      queryClient.invalidateQueries({ queryKey: jobsKeys.openJobs() });
+      queryClient.invalidateQueries({ queryKey: jobsKeys.open() });
       // Invalidate user contracts
       queryClient.invalidateQueries({ queryKey: contractsKeys.byUser(data.data.clientId) });
       queryClient.invalidateQueries({ queryKey: contractsKeys.byUser(data.data.taskerId) });
