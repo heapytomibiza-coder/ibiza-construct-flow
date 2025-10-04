@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useCurrentSession } from '../../packages/@contracts/clients/auth';
 import { Navigate, useLocation } from 'react-router-dom';
-import { getProfile, Role } from '@/lib/roles';
 
 interface RouteGuardProps {
   children: React.ReactNode;
-  requiredRole?: Role;
+  requiredRole?: 'asker' | 'tasker' | 'admin';
   fallbackPath?: string;
   skipAuthInDev?: boolean;
 }
@@ -16,7 +15,8 @@ export default function RouteGuard({
   fallbackPath = '/auth/sign-in',
   skipAuthInDev = false
 }: RouteGuardProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { data: sessionData, isLoading: authLoading } = useCurrentSession();
+  const session = sessionData?.data;
   const location = useLocation();
   const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized'>('loading');
 
@@ -31,7 +31,7 @@ export default function RouteGuard({
 
         if (authLoading) return;
 
-        if (!user) {
+        if (!session?.userId) {
           setStatus('unauthorized');
           return;
         }
@@ -42,16 +42,8 @@ export default function RouteGuard({
           return;
         }
 
-        // Check role using centralized profile function
-        const profile = await getProfile();
-        if (!profile) {
-          setStatus('unauthorized');
-          return;
-        }
-
         // Check if user has required role
-        const userRoles = Array.isArray(profile.roles) ? profile.roles as Role[] : ['client'];
-        const hasRequiredRole = userRoles.includes(requiredRole);
+        const hasRequiredRole = session.roles.includes(requiredRole);
         
         setStatus(hasRequiredRole ? 'authorized' : 'unauthorized');
       } catch (error) {
@@ -61,7 +53,7 @@ export default function RouteGuard({
     };
 
     checkAuth();
-  }, [user, authLoading, requiredRole, skipAuthInDev]);
+  }, [session, authLoading, requiredRole, skipAuthInDev]);
 
   if (authLoading || status === 'loading') {
     return (

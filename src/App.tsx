@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +13,10 @@ import MobileAppWrapper from "./components/app/MobileAppWrapper";
 import { SkeletonLoader } from "./components/loading/SkeletonLoader";
 import { useFeature } from "./contexts/FeatureFlagsContext";
 import { BundleAnalyzer, preloadRoute } from "./components/performance/BundleOptimizer";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { initRealtime } from "./lib/realtimeSync";
+
+const queryClient = new QueryClient();
 
 // Lazy load components for better performance
 const Index = React.lazy(() => import("./pages/Index"));
@@ -46,23 +50,27 @@ const PaymentCanceled = React.lazy(() => import("./pages/PaymentCanceled"));
 const Templates = React.lazy(() => import("./pages/Templates"));
 const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
 
-export default function App() {
+function AppContent() {
   // Initialize Web Vitals monitoring
   useWebVitals();
   
   // Initialize language management for SEO
   useLanguage();
   
-  // Enable auth for production
-  const DISABLE_AUTH_FOR_WIREFRAME = true;
+  // Enable auth for production (set to false to enforce authentication)
+  const DISABLE_AUTH_FOR_WIREFRAME = false;
   
   // Enable job wizard for implementation
   const jobWizardEnabled = useFeature('ff.jobWizardV2', true);
   
-  // Preload critical routes on app start
-  React.useEffect(() => {
+  // Preload critical routes and initialize realtime on app start
+  useEffect(() => {
     preloadRoute('/dashboard/pro');
     preloadRoute('/post');
+    
+    // Initialize realtime sync for cross-tab updates
+    const cleanup = initRealtime(queryClient);
+    return cleanup;
   }, []);
   
   return (
@@ -115,57 +123,57 @@ export default function App() {
           {jobWizardEnabled && (
             <Route path="/post" element={
               DISABLE_AUTH_FOR_WIREFRAME ? (
+              <PostJob />
+            ) : (
+              <RouteGuard requiredRole="asker">
                 <PostJob />
-              ) : (
-                <RouteGuard requiredRole="client">
-                  <PostJob />
-                </RouteGuard>
-              )
-            } />
-          )}
-          
-          {/* Templates Page */}
-          <Route path="/templates" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+              </RouteGuard>
+            )
+          } />
+        )}
+        
+        {/* Templates Page */}
+        <Route path="/templates" element={
+          DISABLE_AUTH_FOR_WIREFRAME ? (
+            <Templates />
+          ) : (
+            <RouteGuard requiredRole="asker">
               <Templates />
-            ) : (
-              <RouteGuard requiredRole="client">
-                <Templates />
-              </RouteGuard>
-            )
-          } />
-          
-          {/* Color Preview Page */}
-          <Route path="/color-preview" element={<ColorPreview />} />
-          
-          {/* Protected Dashboard Routes */}
-          <Route path="/dashboard" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            </RouteGuard>
+          )
+        } />
+        
+        {/* Color Preview Page */}
+        <Route path="/color-preview" element={<ColorPreview />} />
+        
+        {/* Protected Dashboard Routes */}
+        <Route path="/dashboard" element={
+          DISABLE_AUTH_FOR_WIREFRAME ? (
+            <Dashboard />
+          ) : (
+            <RouteGuard>
               <Dashboard />
-            ) : (
-              <RouteGuard>
-                <Dashboard />
-              </RouteGuard>
-            )
-          } />
-          <Route path="/dashboard/client" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            </RouteGuard>
+          )
+        } />
+        <Route path="/dashboard/client" element={
+          DISABLE_AUTH_FOR_WIREFRAME ? (
+            <UnifiedClientDashboard />
+          ) : (
+            <RouteGuard requiredRole="asker">
               <UnifiedClientDashboard />
-            ) : (
-              <RouteGuard requiredRole="client">
-                <UnifiedClientDashboard />
-              </RouteGuard>
-            )
-          } />
-          <Route path="/dashboard/pro" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            </RouteGuard>
+          )
+        } />
+        <Route path="/dashboard/pro" element={
+          DISABLE_AUTH_FOR_WIREFRAME ? (
+            <UnifiedProfessionalDashboard />
+          ) : (
+            <RouteGuard requiredRole="tasker">
               <UnifiedProfessionalDashboard />
-            ) : (
-              <RouteGuard requiredRole="professional">
-                <UnifiedProfessionalDashboard />
-              </RouteGuard>
-            )
-          } />
+            </RouteGuard>
+          )
+        } />
           <Route path="/dashboard/admin" element={
             DISABLE_AUTH_FOR_WIREFRAME ? (
               <AdminDashboardPage />
@@ -204,6 +212,14 @@ export default function App() {
           </BrowserRouter>
         </SafeAreaProvider>
       </TooltipProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+  );
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+    </QueryClientProvider>
   );
 }

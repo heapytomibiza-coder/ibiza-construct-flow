@@ -4,14 +4,26 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from './_http';
+import { createClient } from '@supabase/supabase-js';
 
-// Types matching contracts/src/auth.zod.ts
+// Initialize Supabase client for Edge Function calls
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+);
+
+// Types matching contracts/src/auth.zod.ts with extended profile
 export interface UserSession {
   userId: string;
-  email: string;
+  email: string | null;
   roles: Array<'asker' | 'tasker' | 'admin'>;
   verified: boolean;
+  activeRole: 'asker' | 'tasker' | 'admin' | null;
+  profile: {
+    display_name: string | null;
+    preferred_language: string | null;
+    onboarding_status: string | null;
+  };
 }
 
 export interface SignInRequest {
@@ -34,7 +46,7 @@ export interface SignUpResponse {
 }
 
 export interface GetSessionResponse {
-  data?: UserSession;
+  data: UserSession | null;
 }
 
 export interface SignOutResponse {
@@ -50,15 +62,27 @@ export const authKeys = {
 // Hooks
 
 /**
- * Get current user session
+ * Get current user session via auth-session Edge Function
  * Uses long stale time (5 minutes) and cached data while revalidating
  */
 export const useCurrentSession = () => {
   return useQuery({
     queryKey: authKeys.session(),
-    queryFn: () => apiFetch<GetSessionResponse>('/api/auth/session', { method: 'GET' }),
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('auth-session', {
+        body: {}
+      });
+
+      if (error) {
+        console.error('Error fetching session:', error);
+        throw error;
+      }
+
+      return data as GetSessionResponse;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: false,
   });
 };
 
@@ -69,8 +93,15 @@ export const useSignIn = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (request: SignInRequest) =>
-      apiFetch<SignInResponse>('/api/auth/signin', { method: 'POST', body: request }),
+    mutationFn: async (request: SignInRequest) => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: request.email,
+        password: request.password,
+      });
+
+      if (error) throw error;
+      return data;
+    },
     onSuccess: () => {
       // Invalidate session to refetch with new user
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
@@ -85,8 +116,21 @@ export const useSignUp = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (request: SignUpRequest) =>
-      apiFetch<SignUpResponse>('/api/auth/signup', { method: 'POST', body: request }),
+    mutationFn: async (request: SignUpRequest) => {
+      const { data, error } = await supabase.auth.signUp({
+        email: request.email,
+        password: request.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            full_name: request.fullName
+          }
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    },
     onSuccess: () => {
       // Invalidate session to fetch new user
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
@@ -102,7 +146,11 @@ export const useSignOut = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => apiFetch<SignOutResponse>('/api/auth/signout', { method: 'POST' }),
+    mutationFn: async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      return { success: true };
+    },
     onSuccess: () => {
       // Clear entire cache on sign out
       queryClient.clear();

@@ -1,25 +1,28 @@
 import { useState } from 'react';
-import { useActiveRole } from '@/hooks/useActiveRole';
-import { switchActiveRole, Role, getDashboardRoute } from '@/lib/roles';
+import { useRole } from '@/lib/roleHelpers';
+import { switchActiveRole, getDashboardRoute } from '@/lib/roles';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { User, Briefcase, Shield } from 'lucide-react';
+import { useCurrentSession } from '../../../packages/@contracts/clients/auth';
 
 export default function HeaderRoleSwitcher() {
-  const { activeRole, roles, loading } = useActiveRole();
+  const { active: activeRole, roles } = useRole();
+  const { isLoading: loading } = useCurrentSession();
   const [switching, setSwitching] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleRoleSwitch = async (newRole: Role) => {
+  const handleRoleSwitch = async (newRole: 'asker' | 'tasker' | 'admin') => {
     if (activeRole === newRole || switching) return;
     
     setSwitching(true);
     try {
-      // Update in database (emits to all listeners automatically)
-      await switchActiveRole(newRole);
+      // Map to DB role terminology
+      const dbRole = newRole === 'asker' ? 'client' : newRole === 'tasker' ? 'professional' : 'admin';
+      await switchActiveRole(dbRole as any);
       
       toast({
         title: "Role switched",
@@ -27,7 +30,7 @@ export default function HeaderRoleSwitcher() {
       });
       
       // Navigate to appropriate dashboard
-      const dashboardRoute = getDashboardRoute(newRole);
+      const dashboardRoute = getDashboardRoute(dbRole as any);
       navigate(dashboardRoute);
     } catch (error: any) {
       toast({
@@ -53,7 +56,7 @@ export default function HeaderRoleSwitcher() {
             <Shield className="h-3 w-3" />
             Admin
           </>
-        ) : activeRole === 'professional' ? (
+        ) : activeRole === 'tasker' ? (
           <>
             <Briefcase className="h-3 w-3" />
             Professional
@@ -71,11 +74,11 @@ export default function HeaderRoleSwitcher() {
   // If user has multiple roles, show segmented control
   return (
     <div className="inline-flex rounded-full bg-muted p-1">
-      {roles.includes('client') && (
+      {roles.includes('asker') && (
         <Button
-          variant={activeRole === 'client' ? 'default' : 'ghost'}
+          variant={activeRole === 'asker' ? 'default' : 'ghost'}
           size="sm"
-          onClick={() => handleRoleSwitch('client')}
+          onClick={() => handleRoleSwitch('asker')}
           disabled={switching}
           className="rounded-full h-8 px-3 text-xs"
         >
@@ -83,11 +86,11 @@ export default function HeaderRoleSwitcher() {
           Client
         </Button>
       )}
-      {roles.includes('professional') && (
+      {roles.includes('tasker') && (
         <Button
-          variant={activeRole === 'professional' ? 'default' : 'ghost'}
+          variant={activeRole === 'tasker' ? 'default' : 'ghost'}
           size="sm"
-          onClick={() => handleRoleSwitch('professional')}
+          onClick={() => handleRoleSwitch('tasker')}
           disabled={switching}
           className="rounded-full h-8 px-3 text-xs"
         >
