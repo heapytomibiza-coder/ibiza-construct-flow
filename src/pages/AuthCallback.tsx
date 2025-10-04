@@ -34,7 +34,7 @@ export default function AuthCallback() {
           while (retries < 5 && !profile) {
             const { data: profileData } = await supabase
               .from('profiles')
-              .select('roles, active_role, full_name')
+              .select('active_role, full_name')
               .eq('id', data.session.user.id)
               .maybeSingle();
             
@@ -59,11 +59,17 @@ export default function AuthCallback() {
             return;
           }
 
-          // Handle redirect or role-based navigation
+          // Handle redirect or navigate based on roles
           if (redirectTo) {
             navigate(redirectTo);
           } else {
-            const roles = Array.isArray(profile.roles) ? profile.roles : JSON.parse(profile.roles || '[]');
+            // Get roles from user_roles table for navigation
+            const { data: rolesData } = await supabase
+              .from('user_roles')
+              .select('role')
+              .eq('user_id', data.session.user.id);
+            
+            const roles = rolesData?.map(r => r.role) || [];
             
             if (roles.includes('admin')) {
               navigate('/dashboard/admin');

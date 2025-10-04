@@ -6,7 +6,6 @@ interface Professional {
   full_name: string | null;
   display_name: string | null;
   preferred_language: string | null;
-  roles: any;
   created_at: string | null;
   updated_at: string | null;
   // Professional-specific fields (may be null if not set)
@@ -32,10 +31,27 @@ export const useProfessionals = () => {
   const loadProfessionals = async () => {
     try {
       setLoading(true);
+      
+      // Get user IDs with professional role from user_roles table
+      const { data: userRoleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'professional');
+      
+      if (roleError) throw roleError;
+      
+      if (!userRoleData || userRoleData.length === 0) {
+        setProfessionals([]);
+        return;
+      }
+      
+      const professionalIds = userRoleData.map(r => r.user_id);
+      
+      // Get profiles for those users
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .contains('roles', ['professional']);
+        .in('id', professionalIds);
 
       if (error) throw error;
       setProfessionals(data || []);
@@ -48,11 +64,23 @@ export const useProfessionals = () => {
 
   const getProfessionalById = async (id: string): Promise<Professional | null> => {
     try {
+      // First check if user has professional role
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', id)
+        .eq('role', 'professional')
+        .maybeSingle();
+      
+      if (roleError || !roleData) {
+        return null;
+      }
+      
+      // Then get their profile
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', id)
-        .contains('roles', ['professional'])
         .single();
 
       if (error) throw error;

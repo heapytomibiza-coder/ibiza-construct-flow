@@ -25,5 +25,5 @@ export default function AdminDashboardPage() {
     );
   }
 
-  return <AdminDashboard user={user} profile={profile} />;
+  return <AdminDashboard user={user} profile={profile as any} />;
 }

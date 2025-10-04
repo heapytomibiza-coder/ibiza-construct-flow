@@ -24,11 +24,19 @@ export const userInspector = {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, roles, active_role, created_at, updated_at')
+        .select('id, full_name, active_role, created_at, updated_at')
         .eq('id', request.userId)
         .single();
 
       if (error) throw error;
+
+      // Get roles from user_roles table
+      const { data: rolesData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', request.userId);
+      
+      const roles = rolesData?.map(r => r.role) || [];
 
       // Get email from auth.users metadata if needed
       const { data: authData } = await supabase.auth.admin.getUserById(request.userId);
@@ -38,7 +46,7 @@ export const userInspector = {
         data: data ? {
           ...data,
           email: authData?.user?.email || null,
-          roles: data.roles as string[],
+          roles,
         } : null,
       };
     } catch (error) {
@@ -58,28 +66,53 @@ export const userInspector = {
     try {
       const { limit = 50, offset = 0, role } = request;
 
+      // Get user IDs filtered by role if specified
+      let userIds: string[] | undefined;
+      if (role) {
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', role as any);
+        
+        userIds = roleData?.map(r => r.user_id) || [];
+        if (userIds.length === 0) {
+          return { success: true, data: [], total: 0 };
+        }
+      }
+
       let query = supabase
         .from('profiles')
-        .select('id, full_name, roles, active_role, created_at, updated_at', { count: 'exact' })
+        .select('id, full_name, active_role, created_at, updated_at', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-      // Filter by role if provided
-      if (role) {
-        query = query.contains('roles', [role]);
+      if (userIds) {
+        query = query.in('id', userIds);
       }
 
       const { data, error, count } = await query;
 
       if (error) throw error;
 
+      // Get roles for all users
+      const usersWithRoles = await Promise.all(
+        (data || []).map(async (user) => {
+          const { data: rolesData } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', user.id);
+          
+          return {
+            ...user,
+            email: null,
+            roles: rolesData?.map(r => r.role) as ('admin' | 'client' | 'professional')[] || [],
+          };
+        })
+      );
+
       return {
         success: true,
-        data: data ? data.map(user => ({
-          ...user,
-          email: null, // Email fetched separately if needed
-          roles: user.roles as string[],
-        })) : null,
+        data: usersWithRoles,
         total: count || 0,
       };
     } catch (error) {
@@ -160,11 +193,29 @@ export const userInspector = {
     try {
       const { userId, roles } = request;
 
+      // First, delete all existing roles for this user
+      await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId);
+      
+      // Then insert the new roles
+      if (roles && roles.length > 0) {
+        const roleInserts = roles.map(role => ({
+          user_id: userId,
+          role: role as any,
+        }));
+        
+        await supabase
+          .from('user_roles')
+          .insert(roleInserts);
+      }
+
+      // Get updated profile
       const { data, error } = await supabase
         .from('profiles')
-        .update({ roles, updated_at: new Date().toISOString() })
+        .select('id, full_name, active_role, created_at, updated_at')
         .eq('id', userId)
-        .select('id, full_name, roles, active_role, created_at, updated_at')
         .single();
 
       if (error) throw error;
@@ -173,8 +224,8 @@ export const userInspector = {
         success: true,
         data: data ? {
           ...data,
-          email: null, // Email not updated here
-          roles: data.roles as string[],
+          email: null,
+          roles,
         } : null,
       };
     } catch (error) {

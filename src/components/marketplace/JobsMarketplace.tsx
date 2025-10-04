@@ -115,11 +115,25 @@ export const JobsMarketplace: React.FC = () => {
     return matchesSearch && matchesLocation && matchesBudget;
   });
 
-  const handleSendOffer = (jobId: string) => {
-    if (!user || !profile?.roles?.includes('professional')) {
+  const handleSendOffer = async (jobId: string) => {
+    if (!user) {
+      toast.error('You need to be logged in to send offers');
+      return;
+    }
+    
+    // Check if user has professional role
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'professional')
+      .maybeSingle();
+    
+    if (!roleData) {
       toast.error('You need to be a professional to send offers');
       return;
     }
+    
     setSelectedJobForOffer(jobId);
   };
 

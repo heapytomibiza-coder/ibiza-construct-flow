@@ -8,6 +8,7 @@ import { QuickQuestionnaire } from '@/components/marketplace/QuickQuestionnaire'
 import { PathRecommendation } from '@/components/marketplace/PathRecommendation';
 import { useAuth } from '@/hooks/useAuth';
 import { useMarketplaceContext } from '@/hooks/useMarketplaceContext';
+import { useRole } from '@/lib/roleHelpers';
 import { Briefcase, Users, Sparkles } from 'lucide-react';
 
 export default function MarketplacePage() {
@@ -21,8 +22,7 @@ export default function MarketplacePage() {
   const [recommendationResult, setRecommendationResult] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<string>('');
   
-  const isProfessional = profile?.roles?.includes('professional');
-  const isClient = profile?.roles?.includes('client');
+  const { isTasker: isProfessional, isAsker: isClient } = useRole();
 
   // Initialize from URL params or show questionnaire for first-time clients
   useEffect(() => {

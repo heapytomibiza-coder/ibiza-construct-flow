@@ -47,7 +47,7 @@ export async function getActiveRole(): Promise<Role> {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('active_role, roles')
+      .select('active_role')
       .eq('id', user.id)
       .single();
     
@@ -56,11 +56,14 @@ export async function getActiveRole(): Promise<Role> {
       return 'client';
     }
     
+    // Get roles from user_roles table
+    const { data: rolesData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id);
+    
     const dbActiveRole = (profile.active_role as Role) || 'client';
-    const rolesData = profile.roles;
-    const dbRoles: Role[] = Array.isArray(rolesData) 
-      ? rolesData.filter((r): r is Role => ['client', 'professional', 'admin'].includes(r as string))
-      : ['client'];
+    const dbRoles: Role[] = rolesData?.map(r => r.role as Role) || ['client'];
     
     emit(dbActiveRole, dbRoles);
     return dbActiveRole;
@@ -77,15 +80,15 @@ export async function switchActiveRole(nextRole: Role) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
-  const { data: profile, error: e1 } = await supabase
-    .from('profiles')
-    .select('id, roles')
-    .eq('id', user.id)
-    .single();
+  // Get roles from user_roles table
+  const { data: rolesData, error: e1 } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id);
   
   if (e1) throw e1;
   
-  const roles = Array.isArray(profile?.roles) ? profile.roles : [];
+  const roles = rolesData?.map(r => r.role) || [];
   if (!roles.includes(nextRole)) {
     throw new Error('Role not enabled for this user');
   }
@@ -93,7 +96,7 @@ export async function switchActiveRole(nextRole: Role) {
   const { error } = await supabase
     .from('profiles')
     .update({ active_role: nextRole })
-    .eq('id', profile.id);
+    .eq('id', user.id);
   
   if (error) throw error;
   
@@ -145,28 +148,49 @@ export function getDashboardRoute(role: Role): string {
 }
 
 export async function getProfile(): Promise<UserProfile | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, roles, active_role, tasker_onboarding_status')
+    .select('id, active_role, tasker_onboarding_status')
+    .eq('id', user.id)
     .single();
+  
   if (error) throw error;
-  return data as UserProfile;
+  
+  // Get roles from user_roles table
+  const { data: rolesData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id);
+  
+  return {
+    id: data.id,
+    roles: (rolesData?.map(r => r.role) || ['client']) as Role[],
+    active_role: (data.active_role || 'client') as Role,
+    tasker_onboarding_status: data.tasker_onboarding_status,
+  };
 }
 
 export async function enableProfessionalRole() {
-  const { data: profile, error: e1 } = await supabase
-    .from('profiles')
-    .select('id, roles')
-    .single();
-  if (e1) throw e1;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
   
-  const roles = Array.isArray(profile?.roles) ? profile.roles : [];
-  if (!roles.includes('professional')) {
-    roles.push('professional');
+  // Check if user already has professional role
+  const { data: existingRole } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .eq('role', 'professional')
+    .maybeSingle();
+  
+  if (!existingRole) {
+    // Add professional role
     const { error } = await supabase
-      .from('profiles')
-      .update({ roles })
-      .eq('id', profile.id);
+      .from('user_roles')
+      .insert({ user_id: user.id, role: 'professional' });
+    
     if (error) throw error;
   }
 }

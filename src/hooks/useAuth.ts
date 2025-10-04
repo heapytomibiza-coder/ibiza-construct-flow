@@ -6,7 +6,6 @@ interface Profile {
   id: string;
   full_name: string | null;
   display_name: string | null;
-  roles: any; // JSON field from database
   active_role: string;
   tasker_onboarding_status: string;
   preferred_language: string;
@@ -99,16 +98,26 @@ export const useAuth = () => {
     return { error };
   };
 
-  const hasRole = (role: string): boolean => {
-    if (!profile?.roles) return false;
-    // Handle both string[] and JSON formats
-    const roles = Array.isArray(profile.roles) ? profile.roles : JSON.parse(profile.roles || '[]');
-    return roles.includes(role);
+  const hasRole = async (role: 'admin' | 'client' | 'professional'): Promise<boolean> => {
+    if (!user?.id) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', role)
+        .maybeSingle();
+      
+      return !error && data !== null;
+    } catch {
+      return false;
+    }
   };
 
-  const isAdmin = (): boolean => hasRole('admin');
-  const isProfessional = (): boolean => hasRole('professional');
-  const isClient = (): boolean => hasRole('client');
+  const isAdmin = async (): Promise<boolean> => await hasRole('admin');
+  const isProfessional = async (): Promise<boolean> => await hasRole('professional');
+  const isClient = async (): Promise<boolean> => await hasRole('client');
 
   return {
     user,

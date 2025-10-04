@@ -13,13 +13,16 @@ import { PackImporter } from '@/components/admin/packs/PackImporter';
 import { PackAnalytics } from '@/components/admin/packs/PackAnalytics';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
+import { useRole } from '@/lib/roleHelpers';
 
 export default function AdminQuestions() {
   const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('browser');
 
-  // Check admin access
-  if (!profile?.roles?.includes('admin')) {
+  // Check admin access using useRole hook from contracts
+  const { isAdmin } = useRole();
+  
+  if (!isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 

@@ -19,14 +19,14 @@ export default function RoleSwitcher() {
           return;
         }
 
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('roles')
-          .eq('id', user.id)
-          .single();
+        // Get roles from user_roles table
+        const { data: rolesData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id);
 
-        if (profile) {
-          const roles = profile.roles as string[];
+        if (rolesData) {
+          const roles = rolesData.map(r => r.role);
           setUserRoles(roles);
           
           // If user only has one role, redirect directly

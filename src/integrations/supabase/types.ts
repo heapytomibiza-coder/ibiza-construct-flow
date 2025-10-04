@@ -2460,7 +2460,6 @@ export type Database = {
           id: string
           preferences: Json | null
           preferred_language: string | null
-          roles: Json | null
           service_radius: number | null
           simple_mode: boolean | null
           tasker_onboarding_status:
@@ -2478,7 +2477,6 @@ export type Database = {
           id: string
           preferences?: Json | null
           preferred_language?: string | null
-          roles?: Json | null
           service_radius?: number | null
           simple_mode?: boolean | null
           tasker_onboarding_status?:
@@ -2496,7 +2494,6 @@ export type Database = {
           id?: string
           preferences?: Json | null
           preferred_language?: string | null
-          roles?: Json | null
           service_radius?: number | null
           simple_mode?: boolean | null
           tasker_onboarding_status?:
