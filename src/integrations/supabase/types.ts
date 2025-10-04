@@ -2140,6 +2140,7 @@ export type Database = {
           portfolio_images: Json | null
           primary_trade: string | null
           skills: Json | null
+          subscription_tier: string | null
           updated_at: string | null
           user_id: string
           verification_status: string | null
@@ -2155,6 +2156,7 @@ export type Database = {
           portfolio_images?: Json | null
           primary_trade?: string | null
           skills?: Json | null
+          subscription_tier?: string | null
           updated_at?: string | null
           user_id: string
           verification_status?: string | null
@@ -2170,6 +2172,7 @@ export type Database = {
           portfolio_images?: Json | null
           primary_trade?: string | null
           skills?: Json | null
+          subscription_tier?: string | null
           updated_at?: string | null
           user_id?: string
           verification_status?: string | null

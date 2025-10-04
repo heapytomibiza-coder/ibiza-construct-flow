@@ -96,44 +96,52 @@ export const CanonicalJobWizard: React.FC = () => {
       return;
     }
 
+    if (!wizardState.microId) {
+      toast.error('Please select a service before submitting');
+      return;
+    }
+
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('bookings')
+      const { data: newJob, error } = await supabase
+        .from('jobs')
         .insert([{
           client_id: user.id,
-          service_id: wizardState.microId,
+          micro_id: wizardState.microId,
           title: wizardState.microName,
-          description: wizardState.extras.notes || 'Job description',
-          micro_q_answers: wizardState.answers,
-          general_answers: {
-            location: wizardState.logistics.location,
+          description: wizardState.extras.notes || `${wizardState.microName} - ${wizardState.mainCategory} / ${wizardState.subcategory}`,
+          answers: {
+            microAnswers: wizardState.answers,
+            logistics: {
+              ...wizardState.logistics,
+              startDate: wizardState.logistics.startDate?.toISOString(),
+              completionDate: wizardState.logistics.completionDate?.toISOString(),
+              consultationDate: wizardState.logistics.consultationDate?.toISOString()
+            },
+            extras: {
+              photos: wizardState.extras.photos,
+              permitsConcern: wizardState.extras.permitsConcern
+            }
+          },
+          budget_type: wizardState.logistics.budgetRange ? 'fixed' : 'hourly',
+          budget_value: null,
+          location: {
+            address: wizardState.logistics.location,
             customLocation: wizardState.logistics.customLocation,
             startDate: wizardState.logistics.startDate?.toISOString(),
-            startDatePreset: wizardState.logistics.startDatePreset,
-            completionDate: wizardState.logistics.completionDate?.toISOString(),
-            consultationType: wizardState.logistics.consultationType,
-            consultationDate: wizardState.logistics.consultationDate?.toISOString(),
-            consultationTime: wizardState.logistics.consultationTime,
-            accessDetails: wizardState.logistics.accessDetails,
-            budgetRange: wizardState.logistics.budgetRange,
-            photos: wizardState.extras.photos,
-            permitsConcern: wizardState.extras.permitsConcern
+            completionDate: wizardState.logistics.completionDate?.toISOString()
           },
-          location_details: wizardState.logistics.location,
-          budget_range: wizardState.logistics.budgetRange,
-          status: 'posted',
-          micro_slug: `${wizardState.mainCategory}-${wizardState.subcategory}-${wizardState.microName}`
-            .toLowerCase()
-            .replace(/\s+/g, '-'),
-          catalogue_version_used: 1,
-          locale: 'en',
-          origin: 'web'
+          status: 'open'
         }])
         .select()
         .single();
 
       if (error) throw error;
+
+      // Trigger professional notifications (non-blocking)
+      supabase.functions.invoke('notify-job-broadcast', {
+        body: { jobId: newJob.id }
+      }).catch(err => console.warn('Notification dispatch failed:', err));
 
       toast.success('Job posted successfully! Professionals will start submitting quotes soon.');
       navigate('/dashboard');
