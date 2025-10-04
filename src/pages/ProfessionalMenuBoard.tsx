@@ -13,6 +13,7 @@ import {
   MapPin, Star, Clock, CheckCircle, Phone, Mail, 
   ShoppingCart, Plus, DollarSign
 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
 import { useBookingCart } from '@/contexts/BookingCartContext';
 
@@ -41,6 +42,7 @@ const ProfessionalMenuBoard = () => {
   const [professional, setProfessional] = useState<Professional | null>(null);
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUnits, setSelectedUnits] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,16 +81,24 @@ const ProfessionalMenuBoard = () => {
   }, [id]);
 
   const handleAddToCart = (service: ServiceItem) => {
+    const unit = selectedUnits[service.id] || 'hours';
+    const serviceName = `${service.name} (${unit})`;
+    
     addItem({
       id: service.id,
       professionalId: id!,
       professionalName: professional?.full_name || 'Professional',
-      serviceName: service.name,
+      serviceName: serviceName,
       pricePerUnit: service.base_price || 0,
       pricingType: service.pricing_type as any,
       quantity: 1,
+      unitType: unit,
     });
-    toast.success('Added to request');
+    toast.success(`Added to request: ${unit}`);
+  };
+
+  const handleUnitChange = (serviceId: string, unit: string) => {
+    setSelectedUnits(prev => ({ ...prev, [serviceId]: unit }));
   };
 
   const formatPrice = (service: ServiceItem) => {
@@ -217,27 +227,46 @@ const ProfessionalMenuBoard = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1 text-lg font-bold text-primary">
-                          {service.base_price && <DollarSign className="w-4 h-4" />}
-                          {formatPrice(service)}
-                        </div>
-                        {service.estimated_duration_minutes && (
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="w-3 h-3" />
-                            {service.estimated_duration_minutes} min
+                    <div className="space-y-3 pt-2 border-t">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1 text-lg font-bold text-primary">
+                            {service.base_price && <DollarSign className="w-4 h-4" />}
+                            {formatPrice(service)}
                           </div>
-                        )}
+                          {service.estimated_duration_minutes && (
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="w-3 h-3" />
+                              {service.estimated_duration_minutes} min
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      
-                      <Button 
-                        onClick={() => handleAddToCart(service)}
-                        size="sm"
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add
-                      </Button>
+
+                      <div className="flex gap-2">
+                        <Select 
+                          value={selectedUnits[service.id] || 'hours'}
+                          onValueChange={(value) => handleUnitChange(service.id, value)}
+                        >
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Select unit" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="hours">Hours</SelectItem>
+                            <SelectItem value="days">Days</SelectItem>
+                            <SelectItem value="weeks">Weeks</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        
+                        <Button 
+                          onClick={() => handleAddToCart(service)}
+                          size="sm"
+                          className="px-6"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
