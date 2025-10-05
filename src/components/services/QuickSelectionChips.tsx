@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Check, MapPin, Clock, Home, Users } from 'lucide-react';
 
 interface ChipOption {
@@ -30,16 +28,20 @@ export const QuickSelectionChips = ({
   multiSelect = true,
   maxSelection
 }: QuickSelectionChipsProps) => {
-  const handleValueChange = (value: string) => {
-    if (!multiSelect) {
-      onSelectionChange([value]);
+  const handleToggle = (optionId: string) => {
+    if (multiSelect) {
+      if (selectedOptions.includes(optionId)) {
+        onSelectionChange(selectedOptions.filter(id => id !== optionId));
+      } else {
+        if (maxSelection && selectedOptions.length >= maxSelection) {
+          return; // Don't allow more selections than max
+        }
+        onSelectionChange([...selectedOptions, optionId]);
+      }
+    } else {
+      onSelectionChange([optionId]);
     }
   };
-
-  const selectedLabels = selectedOptions
-    .map(id => options.find(opt => opt.id === id)?.label)
-    .filter(Boolean)
-    .join(', ');
 
   return (
     <Card className="p-6 card-luxury">
@@ -59,18 +61,15 @@ export const QuickSelectionChips = ({
         )}
       </div>
 
-      <Select value={selectedOptions[0] || ""} onValueChange={handleValueChange}>
-        <SelectTrigger className="w-full bg-background">
-          <SelectValue placeholder={`Select ${title.toLowerCase()}...`}>
-            {selectedLabels || `Select ${title.toLowerCase()}...`}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent className="bg-background border border-border z-50">
-          {options.map((option) => (
-            <SelectItem 
-              key={option.id} 
-              value={option.id}
-              className="hover:bg-muted focus:bg-muted"
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => {
+          const isSelected = selectedOptions.includes(option.id);
+          return (
+            <Badge
+              key={option.id}
+              variant={isSelected ? 'default' : 'outline'}
+              className="cursor-pointer hover:opacity-80 transition-all px-3 py-2 text-sm"
+              onClick={() => handleToggle(option.id)}
             >
               <div className="flex items-center gap-2">
                 {option.icon && (
@@ -79,24 +78,19 @@ export const QuickSelectionChips = ({
                   </span>
                 )}
                 <span>{option.label}</span>
-                {option.popular && (
-                  <Badge variant="secondary" className="bg-copper/20 text-copper text-xs px-1 py-0 ml-2">
+                {option.popular && !isSelected && (
+                  <Badge variant="secondary" className="bg-copper/20 text-copper text-xs px-1 py-0 ml-1">
                     Popular
                   </Badge>
                 )}
+                {isSelected && (
+                  <Check className="w-3 h-3 ml-1" />
+                )}
               </div>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {selectedOptions.length > 0 && (
-        <div className="mt-4 p-3 bg-gradient-card rounded-lg">
-          <p className="text-sm text-charcoal">
-            <strong>Selected:</strong> {selectedLabels}
-          </p>
-        </div>
-      )}
+            </Badge>
+          );
+        })}
+      </div>
     </Card>
   );
 };

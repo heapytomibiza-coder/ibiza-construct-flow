@@ -106,7 +106,7 @@ function AppContent() {
           <Route path="/contact" element={<Contact />} />
           
           {/* Auth Flow Routes */}
-          <Route path="/auth" element={<UnifiedAuth />} />
+          <Route path="/auth" element={<Navigate to="/auth/sign-in" replace />} />
           <Route path="/auth/role-select" element={<Navigate to="/auth?tab=signup" replace />} />
           <Route path="/auth/sign-up" element={<Navigate to="/auth?tab=signup" replace />} />
           <Route path="/auth/sign-in" element={<Navigate to="/auth?tab=signin" replace />} />

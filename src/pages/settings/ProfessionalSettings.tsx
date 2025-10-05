@@ -1,27 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Briefcase, Building, Upload, Save } from 'lucide-react';
+import { Briefcase, Building, Upload, Save, X, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ServiceManagementPanel } from '@/components/professional/ServiceManagementPanel';
+import { ServiceManagementModal } from '@/components/professional/ServiceManagementModal';
 import { useProfessionalServices } from '@/hooks/useProfessionalServices';
+import { useDropzone } from 'react-dropzone';
 
 export default function ProfessionalSettings() {
   const { user } = useAuth();
   const { services, addService, updateService, deleteService, toggleActive } = useProfessionalServices(user?.id);
   
   const [loading, setLoading] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [editingService, setEditingService] = useState<any>(null);
   const [profile, setProfile] = useState({
     bio: '',
     hourly_rate: 0,
     business_name: '',
     vat_number: '',
-    skills: [] as string[]
+    skills: [] as string[],
+    portfolio_images: [] as string[]
   });
 
   useEffect(() => {
@@ -33,7 +39,7 @@ export default function ProfessionalSettings() {
 
     const { data, error } = await supabase
       .from('professional_profiles')
-      .select('bio, hourly_rate, business_name, vat_number, skills')
+      .select('bio, hourly_rate, business_name, vat_number, skills, portfolio_images')
       .eq('user_id', user.id)
       .single();
 
@@ -43,7 +49,8 @@ export default function ProfessionalSettings() {
         hourly_rate: data.hourly_rate || 0,
         business_name: data.business_name || '',
         vat_number: data.vat_number || '',
-        skills: Array.isArray(data.skills) ? data.skills as string[] : []
+        skills: Array.isArray(data.skills) ? data.skills as string[] : [],
+        portfolio_images: Array.isArray(data.portfolio_images) ? data.portfolio_images as string[] : []
       });
     }
   };
@@ -62,6 +69,7 @@ export default function ProfessionalSettings() {
           business_name: profile.business_name,
           vat_number: profile.vat_number,
           skills: profile.skills,
+          portfolio_images: profile.portfolio_images,
           updated_at: new Date().toISOString()
         });
 
@@ -72,6 +80,110 @@ export default function ProfessionalSettings() {
       toast.error(error.message || 'Failed to update profile');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = useCallback(async (acceptedFiles: File[]) => {
+    if (!user) return;
+    
+    setUploadingImages(true);
+    try {
+      const uploadedUrls: string[] = [];
+
+      for (const file of acceptedFiles) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Math.random()}.${fileExt}`;
+
+        const { error: uploadError, data } = await supabase.storage
+          .from('professional-documents')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('professional-documents')
+          .getPublicUrl(fileName);
+
+        uploadedUrls.push(publicUrl);
+      }
+
+      const newImages = [...profile.portfolio_images, ...uploadedUrls];
+      setProfile({ ...profile, portfolio_images: newImages });
+
+      // Save to database
+      const { error } = await supabase
+        .from('professional_profiles')
+        .upsert({
+          user_id: user.id,
+          portfolio_images: newImages,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      toast.success(`${acceptedFiles.length} image(s) uploaded successfully`);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to upload images');
+    } finally {
+      setUploadingImages(false);
+    }
+  }, [user, profile]);
+
+  const handleRemoveImage = async (imageUrl: string) => {
+    if (!user) return;
+
+    try {
+      const newImages = profile.portfolio_images.filter(url => url !== imageUrl);
+      setProfile({ ...profile, portfolio_images: newImages });
+
+      const { error } = await supabase
+        .from('professional_profiles')
+        .upsert({
+          user_id: user.id,
+          portfolio_images: newImages,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      toast.success('Image removed');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to remove image');
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { 'image/*': ['.jpg', '.jpeg', '.png', '.webp'] },
+    maxFiles: 20,
+    onDrop: handleImageUpload
+  });
+
+  const handleAddService = () => {
+    setEditingService(null);
+    setShowServiceModal(true);
+  };
+
+  const handleEditService = (id: string) => {
+    const service = services.find(s => s.id === id);
+    if (service) {
+      setEditingService(service);
+      setShowServiceModal(true);
+    }
+  };
+
+  const handleSaveService = async (serviceData: any) => {
+    if (!user) return;
+
+    try {
+      if (editingService) {
+        await updateService(editingService.id, serviceData);
+        toast.success('Service updated successfully');
+      } else {
+        await addService(serviceData);
+        toast.success('Service added successfully');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to save service');
     }
   };
 
@@ -100,10 +212,17 @@ export default function ProfessionalSettings() {
               service_areas: (Array.isArray(s.service_areas) ? s.service_areas : []) as string[],
               pricing_structure: s.pricing_structure
             }))}
-            onAddService={() => toast.info('Service creation coming soon')}
-            onEditService={(id) => toast.info('Service editing coming soon')}
+            onAddService={handleAddService}
+            onEditService={handleEditService}
             onDeleteService={deleteService}
             onToggleActive={toggleActive}
+          />
+
+          <ServiceManagementModal
+            open={showServiceModal}
+            onClose={() => setShowServiceModal(false)}
+            onSave={handleSaveService}
+            editingService={editingService}
           />
         </CardContent>
       </Card>
@@ -210,22 +329,61 @@ export default function ProfessionalSettings() {
             <div>
               <CardTitle>Portfolio</CardTitle>
               <CardDescription>
-                Showcase your work with photos and case studies
+                Showcase your work with photos (minimum 3 recommended)
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Upload photos of your completed projects to build trust with clients
-          </p>
-          <Button variant="outline">
-            <Upload className="h-4 w-4 mr-2" />
-            Upload Photos
-          </Button>
-          <p className="text-xs text-muted-foreground mt-2">
-            Portfolio upload functionality coming soon
-          </p>
+        <CardContent className="space-y-4">
+          {/* Upload Area */}
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+              isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+            }`}
+          >
+            <input {...getInputProps()} />
+            <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <p className="text-sm font-medium mb-2">
+              {isDragActive ? 'Drop images here...' : 'Drag & drop images here'}
+            </p>
+            <p className="text-xs text-muted-foreground mb-4">
+              or click to select files (JPG, PNG, WEBP)
+            </p>
+            <Button type="button" variant="outline" disabled={uploadingImages}>
+              {uploadingImages ? 'Uploading...' : 'Select Images'}
+            </Button>
+          </div>
+
+          {/* Image Grid */}
+          {profile.portfolio_images.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {profile.portfolio_images.map((imageUrl, index) => (
+                <div key={index} className="relative group aspect-square">
+                  <img
+                    src={imageUrl}
+                    alt={`Portfolio ${index + 1}`}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <button
+                    onClick={() => handleRemoveImage(imageUrl)}
+                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {profile.portfolio_images.length === 0 && (
+            <div className="text-center py-8 bg-muted/50 rounded-lg">
+              <ImageIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                No portfolio images yet. Upload at least 3 images to complete your profile.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
