@@ -13,6 +13,7 @@ import { useEscrowRelease } from '@/hooks/useEscrowRelease';
 import { Upload, FileText, Download, MessageSquare, User, Star, Clock, MapPin, DollarSign, Calendar, CheckCircle, XCircle, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { MilestoneReviewDialog } from '@/components/reviews/MilestoneReviewDialog';
 
 interface Job {
   id: string;
@@ -57,6 +58,9 @@ export default function JobDetailPage() {
   const [escrowMilestones, setEscrowMilestones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [selectedMilestone, setSelectedMilestone] = useState<any>(null);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const { applicants, loading: applicantsLoading, updateApplicantStatus } = useApplicantTracking(id);
   const { releaseMilestone, isReleasing } = useEscrowRelease();
@@ -67,7 +71,18 @@ export default function JobDetailPage() {
     fetchLifecycleEvents();
     fetchClientFiles();
     fetchEscrowMilestones();
-  }, [id]);
+    
+    // Check admin status
+    const checkAdminStatus = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase.rpc('has_role', {
+        p_user: user.id,
+        p_role: 'admin'
+      });
+      setIsAdmin(!!data);
+    };
+    checkAdminStatus();
+  }, [id, user?.id]);
 
   const fetchJobData = async () => {
     try {
@@ -458,7 +473,10 @@ export default function JobDetailPage() {
                             </div>
                             {milestone.status === 'pending' && (
                               <Button
-                                onClick={() => releaseMilestone({ milestoneId: milestone.id })}
+                                onClick={() => {
+                                  setSelectedMilestone(milestone);
+                                  setReviewDialogOpen(true);
+                                }}
                                 disabled={isReleasing}
                                 className="ml-4"
                               >
@@ -653,6 +671,45 @@ export default function JobDetailPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Milestone Review Dialog */}
+      {selectedMilestone && (
+        <MilestoneReviewDialog
+          open={reviewDialogOpen}
+          onOpenChange={setReviewDialogOpen}
+          milestone={{
+            id: selectedMilestone.id,
+            title: selectedMilestone.title,
+            amount: selectedMilestone.amount,
+          }}
+          professional={{
+            id: selectedMilestone.professional_id || '',
+            name: selectedMilestone.professional_name || 'Professional',
+            avatar: selectedMilestone.professional_avatar,
+          }}
+          isAdmin={isAdmin}
+          onSubmit={async (reviewData) => {
+            try {
+              await releaseMilestone({
+                milestoneId: selectedMilestone.id,
+                notes: '',
+                review: reviewData.override ? undefined : {
+                  rating: reviewData.rating!,
+                  title: reviewData.title,
+                  comment: reviewData.comment,
+                },
+                override: reviewData.override || false,
+              });
+              setReviewDialogOpen(false);
+              setSelectedMilestone(null);
+              fetchEscrowMilestones(); // Refresh milestones
+            } catch (error) {
+              console.error('Release error:', error);
+            }
+          }}
+          isSubmitting={isReleasing}
+        />
+      )}
     </div>
   );
 }

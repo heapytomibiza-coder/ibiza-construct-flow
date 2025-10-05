@@ -5,19 +5,25 @@ import { useToast } from '@/hooks/use-toast';
 interface ReleaseMilestoneParams {
   milestoneId: string;
   notes?: string;
+  review?: {
+    rating: number;
+    title?: string;
+    comment?: string;
+  };
+  override?: boolean;
 }
 
 export const useEscrowRelease = () => {
   const { toast } = useToast();
   const [isReleasing, setIsReleasing] = useState(false);
 
-  const releaseMilestone = async ({ milestoneId, notes }: ReleaseMilestoneParams) => {
+  const releaseMilestone = async ({ milestoneId, notes, review, override }: ReleaseMilestoneParams) => {
     setIsReleasing(true);
     
     try {
       // Call the edge function to release escrow
       const { data, error } = await supabase.functions.invoke('release-escrow', {
-        body: { milestoneId, notes }
+        body: { milestoneId, notes, review, override }
       });
 
       if (error) throw error;

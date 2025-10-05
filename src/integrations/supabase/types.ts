@@ -1296,6 +1296,48 @@ export type Database = {
           },
         ]
       }
+      escrow_release_overrides: {
+        Row: {
+          admin_id: string
+          created_at: string
+          id: string
+          milestone_id: string
+          reason: string
+          released_at: string
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          id?: string
+          milestone_id: string
+          reason: string
+          released_at?: string
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          id?: string
+          milestone_id?: string
+          reason?: string
+          released_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_release_overrides_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_release_overrides_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_milestones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escrow_releases: {
         Row: {
           amount: number
@@ -2877,10 +2919,13 @@ export type Database = {
           booking_id: string | null
           client_id: string
           comment: string | null
+          contract_id: string | null
           created_at: string
           id: string
           is_featured: boolean
           is_verified: boolean
+          job_id: string | null
+          milestone_id: string | null
           professional_id: string
           rating: number
           responded_at: string | null
@@ -2892,10 +2937,13 @@ export type Database = {
           booking_id?: string | null
           client_id: string
           comment?: string | null
+          contract_id?: string | null
           created_at?: string
           id?: string
           is_featured?: boolean
           is_verified?: boolean
+          job_id?: string | null
+          milestone_id?: string | null
           professional_id: string
           rating: number
           responded_at?: string | null
@@ -2907,10 +2955,13 @@ export type Database = {
           booking_id?: string | null
           client_id?: string
           comment?: string | null
+          contract_id?: string | null
           created_at?: string
           id?: string
           is_featured?: boolean
           is_verified?: boolean
+          job_id?: string | null
+          milestone_id?: string | null
           professional_id?: string
           rating?: number
           responded_at?: string | null
@@ -2931,6 +2982,27 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_reviews_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_reviews_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_reviews_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_milestones"
             referencedColumns: ["id"]
           },
           {

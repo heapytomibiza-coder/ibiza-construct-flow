@@ -23,8 +23,8 @@ serve(async (req) => {
       throw new Error("Not authenticated");
     }
 
-    const { milestoneId, notes } = await req.json();
-    console.log("[release-escrow] Request:", { milestoneId, userId: user.id });
+    const { milestoneId, notes, review, override = false } = await req.json();
+    console.log("[release-escrow] Request:", { milestoneId, userId: user.id, hasReview: !!review, override });
 
     if (!milestoneId) {
       throw new Error("Missing milestoneId");
@@ -58,6 +58,72 @@ serve(async (req) => {
     // Verify milestone is pending
     if (milestone.status !== "pending") {
       throw new Error(`Cannot release milestone with status: ${milestone.status}`);
+    }
+
+    // Admin override path
+    if (override === true) {
+      const { data: isAdmin } = await supabase.rpc('has_role', {
+        p_user: user.id,
+        p_role: 'admin'
+      });
+      
+      if (!isAdmin) {
+        throw new Error("Unauthorized: Admin override requires admin role");
+      }
+      
+      console.log("[release-escrow] Admin override activated by:", user.id);
+      
+      // Create override audit record
+      await supabase.from('escrow_release_overrides').insert({
+        milestone_id: milestoneId,
+        admin_id: user.id,
+        reason: notes || 'Admin override - no review required'
+      });
+    }
+    
+    // Non-admin path: require review
+    if (!override) {
+      // Check if review already exists
+      const { data: existingReview } = await supabase
+        .from('professional_reviews')
+        .select('id')
+        .eq('client_id', user.id)
+        .eq('milestone_id', milestoneId)
+        .maybeSingle();
+      
+      if (!existingReview) {
+        // No existing review - one must be provided
+        if (!review || !review.rating) {
+          throw new Error("Review required: Please rate the work before releasing funds");
+        }
+        
+        // Validate rating
+        if (review.rating < 1 || review.rating > 5) {
+          throw new Error("Invalid rating: Must be between 1 and 5");
+        }
+        
+        // Insert review atomically
+        const { error: reviewError } = await supabase
+          .from('professional_reviews')
+          .insert({
+            professional_id: milestone.payment.professional_id,
+            client_id: user.id,
+            job_id: milestone.payment.job_id,
+            contract_id: milestone.payment.contract_id || null,
+            milestone_id: milestoneId,
+            rating: review.rating,
+            title: review.title || null,
+            comment: review.comment || null,
+            is_verified: true
+          });
+        
+        if (reviewError) {
+          console.error("[release-escrow] Review insert error:", reviewError);
+          throw new Error("Failed to save review: " + reviewError.message);
+        }
+        
+        console.log("[release-escrow] Review saved for milestone:", milestoneId);
+      }
     }
 
     console.log("[release-escrow] Releasing milestone:", milestone.id);
@@ -177,7 +243,9 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Escrow released successfully",
+        message: override 
+          ? "Escrow released (admin override)" 
+          : "Funds released. Thanks for your review!",
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
