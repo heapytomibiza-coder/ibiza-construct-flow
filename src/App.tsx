@@ -2,7 +2,7 @@ import React, { Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SafeAreaProvider } from "@/components/mobile/SafeAreaProvider";
 import { MobileGestures } from "@/components/mobile/MobileGestures";
 import { OfflineIndicator } from "@/components/common/OfflineIndicator";
@@ -22,9 +22,6 @@ const queryClient = new QueryClient();
 const Index = React.lazy(() => import("./pages/Index"));
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
-const RoleSelect = React.lazy(() => import("./pages/RoleSelect"));
-const SignUp = React.lazy(() => import("./pages/SignUp"));
-const SignIn = React.lazy(() => import("./pages/SignIn"));
 const UnifiedAuth = React.lazy(() => import("./pages/UnifiedAuth"));
 const VerifyEmail = React.lazy(() => import("./pages/VerifyEmail"));
 const AuthCallback = React.lazy(() => import("./pages/AuthCallback"));
@@ -98,11 +95,11 @@ function AppContent() {
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
           
-          {/* New Auth Flow Routes */}
+          {/* Auth Flow Routes */}
           <Route path="/auth" element={<UnifiedAuth />} />
-          <Route path="/auth/role-select" element={<RoleSelect />} />
-          <Route path="/auth/sign-up" element={<SignUp />} />
-          <Route path="/auth/sign-in" element={<SignIn />} />
+          <Route path="/auth/role-select" element={<Navigate to="/auth?tab=signup" replace />} />
+          <Route path="/auth/sign-up" element={<Navigate to="/auth?tab=signup" replace />} />
+          <Route path="/auth/sign-in" element={<Navigate to="/auth?tab=signin" replace />} />
           <Route path="/auth/verify-email" element={<VerifyEmail />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth/quick-start" element={<QuickStart />} />

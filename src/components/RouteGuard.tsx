@@ -11,9 +11,9 @@ interface RouteGuardProps {
 
 export default function RouteGuard({ 
   children, 
-  requiredRole,
-  fallbackPath = '/auth/sign-in',
-  skipAuthInDev = false
+  requiredRole, 
+  fallbackPath = '/auth',
+  skipAuthInDev = false 
 }: RouteGuardProps) {
   const { data: sessionData, isLoading: authLoading } = useCurrentSession();
   const session = sessionData?.data;
