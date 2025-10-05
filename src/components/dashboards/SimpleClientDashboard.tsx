@@ -391,7 +391,11 @@ const JobsTab = ({ bookings, loading }: any) => {
                   }>
                     {booking.status}
                   </Badge>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate(`/job/${booking.id}`)}
+                  >
                     View
                   </Button>
                 </div>
