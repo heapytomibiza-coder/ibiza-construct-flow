@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist';
+import { useOnboardingChecklist } from '@/hooks/useOnboardingChecklist';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -176,6 +178,9 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
 // Today Tab Component
 const TodayTab = ({ stats, profile }: any) => (
   <div className="space-y-6">
+    {/* Onboarding Checklist */}
+    <OnboardingChecklist compact />
+    
     {/* Profile Completion */}
     <ProfileCompletionTracker profile={profile} />
     

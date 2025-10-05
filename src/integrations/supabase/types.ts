@@ -2209,6 +2209,63 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_checklist: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          professional_id: string
+          skipped: boolean
+          started_at: string | null
+          step: Database["public"]["Enums"]["app_onboarding_step"]
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          professional_id: string
+          skipped?: boolean
+          started_at?: string | null
+          step: Database["public"]["Enums"]["app_onboarding_step"]
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          professional_id?: string
+          skipped?: boolean
+          started_at?: string | null
+          step?: Database["public"]["Enums"]["app_onboarding_step"]
+        }
+        Relationships: []
+      }
+      onboarding_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          professional_id: string
+          step: Database["public"]["Enums"]["app_onboarding_step"] | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          professional_id: string
+          step?: Database["public"]["Enums"]["app_onboarding_step"] | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          professional_id?: string
+          step?: Database["public"]["Enums"]["app_onboarding_step"] | null
+        }
+        Relationships: []
+      }
       pack_performance: {
         Row: {
           completion_rate: number
@@ -4194,6 +4251,13 @@ export type Database = {
       }
     }
     Enums: {
+      app_onboarding_step:
+        | "profile_basic"
+        | "verification"
+        | "services"
+        | "availability"
+        | "portfolio"
+        | "payment_setup"
       app_role: "admin" | "client" | "professional"
       booking_status:
         | "draft"
@@ -4334,6 +4398,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_onboarding_step: [
+        "profile_basic",
+        "verification",
+        "services",
+        "availability",
+        "portfolio",
+        "payment_setup",
+      ],
       app_role: ["admin", "client", "professional"],
       booking_status: [
         "draft",

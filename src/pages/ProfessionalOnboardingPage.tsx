@@ -71,6 +71,35 @@ export default function ProfessionalOnboardingPage() {
 
       if (professionalProfileError) throw professionalProfileError;
 
+      // Mark profile_basic step as complete in checklist
+      const { error: checklistError } = await supabase
+        .from('onboarding_checklist')
+        .update({ 
+          completed_at: new Date().toISOString(),
+          started_at: new Date().toISOString()
+        })
+        .eq('professional_id', user.id)
+        .eq('step', 'profile_basic');
+
+      if (checklistError) {
+        console.error('Checklist update error:', checklistError);
+        // Don't throw - checklist is optional
+      }
+
+      // Mark availability as complete too since it's in the onboarding flow
+      const { error: availabilityChecklistError } = await supabase
+        .from('onboarding_checklist')
+        .update({ 
+          completed_at: new Date().toISOString(),
+          started_at: new Date().toISOString()
+        })
+        .eq('professional_id', user.id)
+        .eq('step', 'availability');
+
+      if (availabilityChecklistError) {
+        console.error('Availability checklist update error:', availabilityChecklistError);
+      }
+
       toast.success('Profile created! Welcome to the network 🎉');
       navigate('/dashboard/pro');
     } catch (error: any) {
