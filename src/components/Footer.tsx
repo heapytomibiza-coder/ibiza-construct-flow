@@ -1,8 +1,12 @@
 import { Home, Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const Footer = () => {
   const { t } = useTranslation('footer');
+  const { value: brand } = useSiteSettings('footer', 'brand');
+  const { value: contact } = useSiteSettings('footer', 'contact');
+  const { value: social } = useSiteSettings('footer', 'social');
   
   return (
     <footer className="bg-charcoal text-white">
@@ -15,21 +19,21 @@ const Footer = () => {
                 <Home className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-display font-semibold text-white text-lg">{t('brand.name')}</h3>
-                <p className="text-xs text-white/70 -mt-1">{t('brand.tagline')}</p>
+                <h3 className="text-display font-semibold text-white text-lg">{brand?.name || t('brand.name')}</h3>
+                <p className="text-xs text-white/70 -mt-1">{brand?.tagline || t('brand.tagline')}</p>
               </div>
             </div>
             <p className="text-body text-white/80 mb-6 leading-relaxed">
-              {t('brand.description')}
+              {brand?.description || t('brand.description')}
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-copper transition-all duration-300">
+              <a href={social?.facebook || '#'} className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-copper transition-all duration-300">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-copper transition-all duration-300">
+              <a href={social?.instagram || '#'} className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-copper transition-all duration-300">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-copper transition-all duration-300">
+              <a href={social?.linkedin || '#'} className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-copper transition-all duration-300">
                 <Linkedin className="w-5 h-5" />
               </a>
             </div>
@@ -61,22 +65,22 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <MapPin className="w-5 h-5 text-copper flex-shrink-0" />
-                <span className="text-body text-white/80">{t('sections.contact.address')}</span>
+                <span className="text-body text-white/80">{contact?.address || t('sections.contact.address')}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-copper flex-shrink-0" />
-                <span className="text-body text-white/80">{t('sections.contact.phone')}</span>
+                <span className="text-body text-white/80">{contact?.phone || t('sections.contact.phone')}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-copper flex-shrink-0" />
-                <span className="text-body text-white/80">{t('sections.contact.email')}</span>
+                <span className="text-body text-white/80">{contact?.email || t('sections.contact.email')}</span>
               </div>
             </div>
 
             <div className="mt-6">
-              <h5 className="text-display font-medium text-white mb-3">{t('sections.contact.emergency.title')}</h5>
-              <p className="text-body text-white/80 text-sm">{t('sections.contact.emergency.description')}</p>
-              <p className="text-copper font-semibold">{t('sections.contact.emergency.phone')}</p>
+              <h5 className="text-display font-medium text-white mb-3">{contact?.emergency?.title || t('sections.contact.emergency.title')}</h5>
+              <p className="text-body text-white/80 text-sm">{contact?.emergency?.description || t('sections.contact.emergency.description')}</p>
+              <p className="text-copper font-semibold">{contact?.emergency?.phone || t('sections.contact.emergency.phone')}</p>
             </div>
           </div>
         </div>

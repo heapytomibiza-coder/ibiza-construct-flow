@@ -10,7 +10,8 @@ import Footer from '@/components/Footer';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const Index = () => {
   const { t } = useTranslation('components');
@@ -18,6 +19,7 @@ const Index = () => {
   const proInboxEnabled = useFeature('ff.proInboxV1');
   const featuredCarouselEnabled = useFeature('enable_featured_services_carousel');
   const benefitsStripEnabled = useFeature('enable_home_benefits_strip');
+  const { value: layout } = useSiteSettings('homepage', 'layout');
   
   return (
     <div className="min-h-screen">
@@ -27,24 +29,26 @@ const Index = () => {
         <Hero />
         
         {/* Testing Section - Remove in production */}
-        <div className="bg-yellow-50 border-b border-yellow-200 p-4">
-          <div className="container mx-auto">
-            <h3 className="text-sm font-medium text-yellow-800 mb-2">{t('testing.title')}</h3>
-            <div className="flex gap-2">
-              <Button asChild variant="outline" size="sm">
-                <Link to="/dashboard/pro">{t('testing.professionalDashboard')}</Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link to="/dashboard/admin">{t('testing.adminDashboard')}</Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link to="/dashboard/client">{t('testing.clientDashboard')}</Link>
-              </Button>
+        {(layout?.showTestingBanner ?? true) && (
+          <div className="bg-yellow-50 border-b border-yellow-200 p-4">
+            <div className="container mx-auto">
+              <h3 className="text-sm font-medium text-yellow-800 mb-2">{t('testing.title')}</h3>
+              <div className="flex gap-2">
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/dashboard/pro">{t('testing.professionalDashboard')}</Link>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/dashboard/admin">{t('testing.adminDashboard')}</Link>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/dashboard/client">{t('testing.clientDashboard')}</Link>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        {benefitsStripEnabled && <BenefitsStrip />}
-        {featuredCarouselEnabled ? <FeaturedServicesCarousel /> : <Services />}
+        )}
+        {(layout?.showBenefitsStrip ?? benefitsStripEnabled) && <BenefitsStrip />}
+        {(layout?.showCarousel ?? featuredCarouselEnabled) ? <FeaturedServicesCarousel /> : <Services />}
         <ExpressModeSection />
         <HowItWorks />
         <ProfessionalNetwork />

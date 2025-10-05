@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { User, Shield, Bell, Home, Briefcase } from 'lucide-react';
+import { User, Shield, Bell, Home, Briefcase, Globe } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useRole } from '@/lib/roleHelpers';
 
@@ -15,6 +15,7 @@ export default function SettingsLayout() {
     // Role-specific
     { to: "/settings/client", label: "Client", icon: Home, roles: ['client'] },
     { to: "/settings/professional", label: "Professional", icon: Briefcase, roles: ['professional'] },
+    { to: "/admin/website-settings", label: "Website Content", icon: Globe, roles: ['admin'] },
   ];
   
   // Filter links based on user's roles

@@ -3,10 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import heroImage from '@/assets/hero-construction.jpg';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const Hero = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('hero');
+  const { value: stats } = useSiteSettings('hero', 'stats');
+  const { value: badge } = useSiteSettings('hero', 'badge');
+  const { value: title } = useSiteSettings('hero', 'title');
+  const { value: subtitle } = useSiteSettings('hero', 'subtitle');
+  const { value: description } = useSiteSettings('hero', 'description');
 
   const handlePostProject = () => {
     navigate('/post');
@@ -41,17 +47,17 @@ const Hero = () => {
                 <Star key={i} className="w-5 h-5 text-copper fill-current" />
               ))}
             </div>
-            <span className="text-white/90 text-sm font-medium">{t('badge')}</span>
+            <span className="text-white/90 text-sm font-medium">{(badge as unknown as string) || t('badge')}</span>
           </div>
 
           <h1 className="text-display text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            {t('title')}<br />
-            {t('subtitle')}<br />
+            {(title as unknown as string) || t('title')}<br />
+            {(subtitle as unknown as string) || t('subtitle')}<br />
             <span className="text-copper">{t('highlight')}</span>
           </h1>
 
           <p className="text-body text-xl md:text-2xl text-white/90 mb-8 max-w-2xl leading-relaxed">
-            {t('description')}
+            {(description as unknown as string) || t('description')}
           </p>
 
           {/* Trust Indicators */}
@@ -90,15 +96,15 @@ const Hero = () => {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-white/20">
             <div>
-              <div className="text-3xl font-bold text-white text-display">500+</div>
+              <div className="text-3xl font-bold text-white text-display">{stats?.pros || '500+'}</div>
               <div className="text-white/70 text-sm">{t('stats.pros')}</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-white text-display">2,000+</div>
+              <div className="text-3xl font-bold text-white text-display">{stats?.projects || '2,000+'}</div>
               <div className="text-white/70 text-sm">{t('stats.projects')}</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-white text-display">€20M+</div>
+              <div className="text-3xl font-bold text-white text-display">{stats?.protected || '€20M+'}</div>
               <div className="text-white/70 text-sm">{t('stats.protected')}</div>
             </div>
           </div>
