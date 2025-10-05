@@ -2894,6 +2894,51 @@ export type Database = {
           },
         ]
       }
+      professional_portfolio: {
+        Row: {
+          category: string | null
+          client_name: string | null
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          is_featured: boolean
+          professional_id: string
+          project_date: string | null
+          skills_used: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          client_name?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_featured?: boolean
+          professional_id: string
+          project_date?: string | null
+          skills_used?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          client_name?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_featured?: boolean
+          professional_id?: string
+          project_date?: string | null
+          skills_used?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       professional_profiles: {
         Row: {
           availability: Json | null
