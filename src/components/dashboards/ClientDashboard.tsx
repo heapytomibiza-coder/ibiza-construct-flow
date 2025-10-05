@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
+import { ClientPaymentSection } from '@/components/payment/ClientPaymentSection';
+import { MessagesTab } from '@/components/messaging/MessagesTab';
 import { 
   LogOut, Plus, Clock, CheckCircle, AlertCircle, 
-  Briefcase, Calendar, Euro, TrendingUp 
+  Briefcase, Calendar, Euro, TrendingUp, MessageSquare,
+  Home
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -111,128 +115,200 @@ const ClientDashboard = ({ user, profile }: any) => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
-              <Clock className="h-4 w-4 text-copper" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-charcoal">{stats.active}</div>
-              <p className="text-xs text-muted-foreground">Jobs in progress</p>
-            </CardContent>
-          </Card>
+      <main className="max-w-7xl mx-auto p-6">
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <Home className="w-4 h-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="jobs" className="flex items-center gap-2">
+              <Briefcase className="w-4 h-4" />
+              My Jobs
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center gap-2">
+              <Euro className="w-4 h-4" />
+              Payments
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              Messages
+            </TabsTrigger>
+          </TabsList>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed</CardTitle>
-              <CheckCircle className="h-4 w-4 text-copper" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-charcoal">{stats.completed}</div>
-              <p className="text-xs text-muted-foreground">Finished projects</p>
-            </CardContent>
-          </Card>
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
+                  <Clock className="h-4 w-4 text-copper" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-charcoal">{stats.active}</div>
+                  <p className="text-xs text-muted-foreground">Jobs in progress</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending</CardTitle>
-              <AlertCircle className="h-4 w-4 text-copper" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-charcoal">{stats.pending}</div>
-              <p className="text-xs text-muted-foreground">Awaiting matches</p>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-copper" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-charcoal">{stats.completed}</div>
+                  <p className="text-xs text-muted-foreground">Finished projects</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">This Month</CardTitle>
-              <TrendingUp className="h-4 w-4 text-copper" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-charcoal">€{stats.totalSpent}</div>
-              <p className="text-xs text-muted-foreground">Total invested</p>
-            </CardContent>
-          </Card>
-        </div>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Pending</CardTitle>
+                  <AlertCircle className="h-4 w-4 text-copper" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-charcoal">{stats.pending}</div>
+                  <p className="text-xs text-muted-foreground">Awaiting matches</p>
+                </CardContent>
+              </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Recent Jobs
-                <Button size="sm" className="bg-gradient-hero hover:bg-copper">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Post Job
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {bookings.length > 0 ? (
-                <div className="space-y-4">
-                  {bookings.slice(0, 3).map((booking: any) => (
-                    <div key={booking.id} className="flex items-center justify-between p-4 border border-sand-dark/20 rounded-lg">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-charcoal">{booking.title}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {booking.services?.category} • {booking.services?.micro}
-                        </p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge variant={
-                            booking.status === 'completed' ? 'default' :
-                            booking.status === 'in_progress' ? 'secondary' : 'outline'
-                          } className="text-xs">
-                            {booking.status}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(booking.created_at).toLocaleDateString()}
-                          </span>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">This Month</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-copper" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-charcoal">€{stats.totalSpent}</div>
+                  <p className="text-xs text-muted-foreground">Total invested</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    Recent Jobs
+                    <Button size="sm" className="bg-gradient-hero hover:bg-copper">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Post Job
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {bookings.length > 0 ? (
+                    <div className="space-y-4">
+                      {bookings.slice(0, 3).map((booking: any) => (
+                        <div key={booking.id} className="flex items-center justify-between p-4 border border-sand-dark/20 rounded-lg">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-charcoal">{booking.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {booking.services?.category} • {booking.services?.micro}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Badge variant={
+                                booking.status === 'completed' ? 'default' :
+                                booking.status === 'in_progress' ? 'secondary' : 'outline'
+                              } className="text-xs">
+                                {booking.status}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(booking.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            {booking.budget_range && (
+                              <div className="text-sm font-medium text-copper">
+                                {booking.budget_range}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Briefcase className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+                      <h3 className="text-lg font-medium mb-2">No jobs yet</h3>
+                      <p className="mb-4">Get started by posting your first job</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <Button className="w-full justify-start bg-gradient-hero hover:bg-copper" size="lg">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Post New Job
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" size="lg">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Schedule Consultation
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" size="lg">
+                      <Euro className="w-4 h-4 mr-2" />
+                      View Invoices
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="jobs">
+            <Card>
+              <CardHeader>
+                <CardTitle>All Jobs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {bookings.length > 0 ? (
+                  <div className="space-y-3">
+                    {bookings.map((booking: any) => (
+                      <div key={booking.id} className="flex items-center justify-between p-4 border border-sand-dark/20 rounded-lg">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-charcoal">{booking.title}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {booking.services?.category} • {booking.services?.micro}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant={
+                              booking.status === 'completed' ? 'default' :
+                              booking.status === 'in_progress' ? 'secondary' : 'outline'
+                            } className="text-xs">
+                              {booking.status}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(booking.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        {booking.budget_range && (
-                          <div className="text-sm font-medium text-copper">
-                            {booking.budget_range}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Briefcase className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                  <h3 className="text-lg font-medium mb-2">No jobs yet</h3>
-                  <p className="mb-4">Get started by posting your first job</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Briefcase className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+                    <h3 className="text-lg font-medium mb-2">No jobs yet</h3>
+                    <p className="mb-4">Get started by posting your first job</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Button className="w-full justify-start bg-gradient-hero hover:bg-copper" size="lg">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Post New Job
-                </Button>
-                <Button variant="outline" className="w-full justify-start" size="lg">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Consultation
-                </Button>
-                <Button variant="outline" className="w-full justify-start" size="lg">
-                  <Euro className="w-4 h-4 mr-2" />
-                  View Invoices
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          <TabsContent value="payments">
+            <ClientPaymentSection userId={user.id} />
+          </TabsContent>
+
+          <TabsContent value="messages">
+            <MessagesTab />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

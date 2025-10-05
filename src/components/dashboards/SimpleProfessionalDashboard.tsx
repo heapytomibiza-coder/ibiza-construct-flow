@@ -96,7 +96,8 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
     { id: 'jobs', label: 'My Jobs', icon: Briefcase },
     { id: 'quotes', label: 'Quotes', icon: FileText },
     { id: 'earnings', label: 'Earnings', icon: Euro },
-    { id: 'reviews', label: 'Reviews', icon: Star }
+    { id: 'reviews', label: 'Reviews', icon: Star },
+    { id: 'messages', label: 'Messages', icon: MessageSquare }
   ];
 
   const renderTabContent = () => {
@@ -111,6 +112,8 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
         return <EarningsTab userId={user.id} />;
       case 'reviews':
         return <ReviewsTab userId={user.id} />;
+      case 'messages':
+        return <MessagesTabContent />;
       default:
         return <TodayTab stats={stats} profile={profile} />;
     }
@@ -398,5 +401,60 @@ const ReviewsTab = ({ userId }: { userId: string }) => (
     <ProfessionalReviewsManagement professionalId={userId} />
   </div>
 );
+
+// Messages Tab Component
+const MessagesTabContent = () => {
+  const { useAuth } = require('@/hooks/useAuth');
+  const { user } = useAuth();
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const { useConversationList } = require('@/hooks/useConversationList');
+  const { conversations, loading } = useConversationList(user?.id);
+  const ConversationsList = require('@/components/collaboration/ConversationsList').default;
+  const { MessagingPanel } = require('@/components/collaboration/MessagingPanel');
+
+  const selectedConversation = conversations.find((c: any) => c.id === selectedConversationId);
+  const otherUserId = selectedConversation?.participants.find((p: string) => p !== user?.id);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-copper"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-20rem)]">
+      <Card className="lg:col-span-1 p-4 overflow-hidden flex flex-col">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <MessageSquare className="w-5 h-5" />
+          Messages
+        </h2>
+        <div className="flex-1 overflow-hidden">
+          <ConversationsList
+            onConversationSelect={setSelectedConversationId}
+          />
+        </div>
+      </Card>
+
+      <Card className="lg:col-span-2 p-0 overflow-hidden flex flex-col">
+        {selectedConversationId && user ? (
+          <MessagingPanel
+            conversationId={selectedConversationId}
+            currentUserId={user.id}
+            otherUser={otherUserId ? { id: otherUserId, name: 'User' } : undefined}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            <div className="text-center">
+              <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <p className="text-lg">Select a conversation to start messaging</p>
+            </div>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+};
 
 export default SimpleProfessionalDashboard;

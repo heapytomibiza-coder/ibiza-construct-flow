@@ -4319,6 +4319,10 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_unread_message_count: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
       get_user_role: {
         Args: { user_id: string }
         Returns: string
