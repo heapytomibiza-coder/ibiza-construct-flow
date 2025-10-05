@@ -11,6 +11,10 @@ interface Applicant {
   applied_at: string;
   viewed_at: string | null;
   updated_at: string;
+  rating?: number | null;
+  tags?: string[] | null;
+  interview_scheduled_at?: string | null;
+  interview_notes?: string | null;
   professional?: {
     id: string;
     full_name: string | null;

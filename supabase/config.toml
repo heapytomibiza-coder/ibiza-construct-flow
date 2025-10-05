@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.estimate-price]
 verify_jwt = false
+
+[functions.extract-image-text]
+verify_jwt = true
+
+[functions.generate-job-description]
+verify_jwt = true
