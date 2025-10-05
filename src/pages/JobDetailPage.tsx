@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useApplicantTracking } from '@/hooks/useApplicantTracking';
-import { Upload, FileText, Download, MessageSquare, User, Star, Clock, MapPin, DollarSign, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { useEscrowRelease } from '@/hooks/useEscrowRelease';
+import { Upload, FileText, Download, MessageSquare, User, Star, Clock, MapPin, DollarSign, Calendar, CheckCircle, XCircle, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -53,16 +54,19 @@ export default function JobDetailPage() {
   const [job, setJob] = useState<Job | null>(null);
   const [lifecycleEvents, setLifecycleEvents] = useState<LifecycleEvent[]>([]);
   const [clientFiles, setClientFiles] = useState<ClientFile[]>([]);
+  const [escrowMilestones, setEscrowMilestones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
 
   const { applicants, loading: applicantsLoading, updateApplicantStatus } = useApplicantTracking(id);
+  const { releaseMilestone, isReleasing } = useEscrowRelease();
 
   useEffect(() => {
     if (!id) return;
     fetchJobData();
     fetchLifecycleEvents();
     fetchClientFiles();
+    fetchEscrowMilestones();
   }, [id]);
 
   const fetchJobData = async () => {
@@ -118,6 +122,32 @@ export default function JobDetailPage() {
       setClientFiles(data || []);
     } catch (error: any) {
       console.error('Error fetching files:', error);
+    }
+  };
+
+  const fetchEscrowMilestones = async () => {
+    try {
+      // Get contract for this job
+      const { data: contract, error: contractError } = await supabase
+        .from('contracts')
+        .select('id')
+        .eq('job_id', id)
+        .maybeSingle();
+
+      if (contractError) throw contractError;
+      
+      if (contract) {
+        const { data, error } = await supabase
+          .from('escrow_milestones')
+          .select('*')
+          .eq('contract_id', contract.id)
+          .order('milestone_number', { ascending: true });
+
+        if (error) throw error;
+        setEscrowMilestones(data || []);
+      }
+    } catch (error: any) {
+      console.error('Error fetching escrow milestones:', error);
     }
   };
 
@@ -270,6 +300,7 @@ export default function JobDetailPage() {
         <Tabs defaultValue="applicants" className="space-y-6">
           <TabsList>
             <TabsTrigger value="applicants">Applicants ({applicants.length})</TabsTrigger>
+            <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="files">Files ({clientFiles.length})</TabsTrigger>
             <TabsTrigger value="details">Job Details</TabsTrigger>
@@ -374,6 +405,91 @@ export default function JobDetailPage() {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          {/* Payments Tab */}
+          <TabsContent value="payments" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-copper" />
+                      Escrow Milestones
+                    </CardTitle>
+                    <CardDescription>Track and release payments for project milestones</CardDescription>
+                  </div>
+                  <Button onClick={() => navigate('/payments')}>
+                    View All Payments
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {escrowMilestones.length > 0 ? (
+                  <div className="space-y-4">
+                    {escrowMilestones.map((milestone) => (
+                      <Card key={milestone.id} className="border-l-4 border-l-copper">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <Badge variant="secondary">Milestone {milestone.milestone_number}</Badge>
+                                <Badge className={cn(
+                                  milestone.status === 'completed' && 'bg-green-500',
+                                  milestone.status === 'pending' && 'bg-orange-500'
+                                )}>
+                                  {milestone.status}
+                                </Badge>
+                              </div>
+                              <h4 className="font-semibold text-charcoal mb-1">{milestone.title}</h4>
+                              <p className="text-sm text-muted-foreground mb-2">{milestone.description}</p>
+                              <div className="flex items-center gap-4 text-sm">
+                                <span className="flex items-center gap-1 text-muted-foreground">
+                                  <DollarSign className="w-4 h-4" />
+                                  ${milestone.amount.toFixed(2)}
+                                </span>
+                                {milestone.due_date && (
+                                  <span className="flex items-center gap-1 text-muted-foreground">
+                                    <Calendar className="w-4 h-4" />
+                                    Due: {new Date(milestone.due_date).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {milestone.status === 'pending' && (
+                              <Button
+                                onClick={() => releaseMilestone({ milestoneId: milestone.id })}
+                                disabled={isReleasing}
+                                className="ml-4"
+                              >
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Release Funds
+                              </Button>
+                            )}
+                            {milestone.status === 'completed' && milestone.completed_date && (
+                              <div className="text-sm text-muted-foreground ml-4">
+                                Released: {new Date(milestone.completed_date).toLocaleDateString()}
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Shield className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-charcoal mb-2">No payment milestones</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Payment milestones will appear here once a contract is established
+                    </p>
+                    <Button onClick={() => navigate('/payments')}>
+                      Manage Payments
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Timeline Tab */}

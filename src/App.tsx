@@ -51,6 +51,7 @@ const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const ConversationPage = React.lazy(() => import("./pages/ConversationPage"));
 const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
+const PaymentsPage = React.lazy(() => import("./pages/PaymentsPage"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -184,6 +185,17 @@ function AppContent() {
           ) : (
             <RouteGuard requiredRole="client">
               <JobDetailPage />
+            </RouteGuard>
+          )
+        } />
+        
+        {/* Payments Page */}
+        <Route path="/payments" element={
+          DISABLE_AUTH_FOR_WIREFRAME ? (
+            <PaymentsPage />
+          ) : (
+            <RouteGuard>
+              <PaymentsPage />
             </RouteGuard>
           )
         } />

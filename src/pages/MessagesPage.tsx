@@ -9,14 +9,18 @@ import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MessageSquare } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export const MessagesPage = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const conversationParam = searchParams.get('conversation');
+  const professionalParam = searchParams.get('professional');
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(conversationParam);
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   
   const { conversations, loading } = useConversationList(user?.id);
 
@@ -26,6 +30,56 @@ export const MessagesPage = () => {
       setSelectedConversationId(conversationParam);
     }
   }, [conversationParam]);
+
+  // Handle professional parameter - create or find conversation
+  useEffect(() => {
+    const handleProfessionalParam = async () => {
+      if (!professionalParam || !user?.id || isCreatingConversation) return;
+      
+      setIsCreatingConversation(true);
+      
+      try {
+        // Check if conversation exists
+        const { data: existing } = await supabase
+          .from('conversations')
+          .select('*')
+          .contains('participants', [user.id, professionalParam])
+          .maybeSingle();
+
+        if (existing) {
+          // Conversation exists, select it
+          setSelectedConversationId(existing.id);
+          navigate(`/messages?conversation=${existing.id}`, { replace: true });
+        } else {
+          // Create new conversation
+          const { data: newConv, error } = await supabase
+            .from('conversations')
+            .insert({
+              participants: [user.id, professionalParam],
+              metadata: { created_from: 'job_applicant' }
+            })
+            .select()
+            .single();
+
+          if (error) throw error;
+          
+          setSelectedConversationId(newConv.id);
+          navigate(`/messages?conversation=${newConv.id}`, { replace: true });
+        }
+      } catch (error) {
+        console.error('Failed to create conversation:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to start conversation. Please try again."
+        });
+      } finally {
+        setIsCreatingConversation(false);
+      }
+    };
+
+    handleProfessionalParam();
+  }, [professionalParam, user?.id, navigate, isCreatingConversation, toast]);
 
   // Find the selected conversation
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
@@ -65,7 +119,7 @@ export const MessagesPage = () => {
     }
   };
 
-  if (loading) {
+  if (loading || isCreatingConversation) {
     return (
       <div className="min-h-screen bg-sand pt-20 pb-20">
         <div className="container mx-auto px-4 py-8">
@@ -78,7 +132,9 @@ export const MessagesPage = () => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4 animate-pulse" />
-              <p className="text-muted-foreground">Loading conversations...</p>
+              <p className="text-muted-foreground">
+                {isCreatingConversation ? 'Starting conversation...' : 'Loading conversations...'}
+              </p>
             </div>
           </div>
         </div>
