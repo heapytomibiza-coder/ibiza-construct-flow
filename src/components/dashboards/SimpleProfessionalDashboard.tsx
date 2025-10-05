@@ -8,6 +8,7 @@ import { useTour } from '@/components/common/Tour';
 import { useAuth } from '@/hooks/useAuth';
 import { SubscriptionStatusWidget } from '@/components/marketplace/SubscriptionStatusWidget';
 import { ProfileCompletionTracker } from '@/components/professional/ProfileCompletionTracker';
+import { VerificationStatusCard } from '@/components/professional/VerificationStatusCard';
 import { 
   Home, Briefcase, Euro, LogOut, Play, Clock, 
   CheckCircle, Star, TrendingUp, Users, Calendar,
@@ -180,6 +181,9 @@ const TodayTab = ({ stats, profile }: any) => (
   <div className="space-y-6">
     {/* Onboarding Checklist */}
     <OnboardingChecklist compact />
+    
+    {/* Verification Status */}
+    <VerificationStatusCard userId={profile?.id} />
     
     {/* Profile Completion */}
     <ProfileCompletionTracker profile={profile} />

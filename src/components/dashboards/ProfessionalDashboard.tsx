@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist';
+import { VerificationStatusCard } from '@/components/professional/VerificationStatusCard';
 import { 
   LogOut, Briefcase, Star, MapPin, DollarSign, 
   Clock, CheckCircle, TrendingUp, Bell, Plus, 
@@ -202,6 +203,9 @@ const ProfessionalDashboard = ({ user, profile }: any) => {
           <>
             {/* Onboarding Checklist */}
             <OnboardingChecklist />
+            
+            {/* Verification Status */}
+            <VerificationStatusCard userId={user.id} />
             
             <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
               <Card>

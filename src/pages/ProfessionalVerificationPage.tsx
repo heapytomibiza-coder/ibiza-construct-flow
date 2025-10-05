@@ -6,6 +6,7 @@ import { VerificationForm } from '@/components/professional/verification/Verific
 import { DocumentUpload } from '@/components/documents/DocumentUpload';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Breadcrumbs } from '@/components/common/Breadcrumbs';
 import { AlertCircle } from 'lucide-react';
 
 export default function ProfessionalVerificationPage() {
@@ -26,9 +27,10 @@ export default function ProfessionalVerificationPage() {
         return;
       }
 
+      // Check if professional profile exists
       const { data: profile, error } = await supabase
-        .from('professional_profiles' as any)
-        .select('id')
+        .from('professional_profiles')
+        .select('user_id')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -37,8 +39,8 @@ export default function ProfessionalVerificationPage() {
         return;
       }
 
-      if (profile && (profile as any).id) {
-        setProfessionalId((profile as any).id);
+      if (profile) {
+        setProfessionalId(profile.user_id);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -71,6 +73,14 @@ export default function ProfessionalVerificationPage() {
   return (
     <div className="container max-w-6xl py-8">
       <div className="space-y-6">
+        {/* Breadcrumbs */}
+        <Breadcrumbs 
+          items={[
+            { label: 'Professional Dashboard', href: '/dashboard/pro' },
+            { label: 'Verification' }
+          ]}
+        />
+
         <div>
           <h1 className="text-3xl font-bold">Professional Verification</h1>
           <p className="text-muted-foreground mt-2">

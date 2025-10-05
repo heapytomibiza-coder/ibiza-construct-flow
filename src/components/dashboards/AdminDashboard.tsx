@@ -3,12 +3,14 @@ import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity } from 'lucide-react';
+import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity, FileCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { InfoTip } from '@/components/ui/info-tip';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
+import { usePendingVerifications } from '@/hooks/usePendingVerifications';
+import { useNavigate } from 'react-router-dom';
 
 // Lazy load workspaces for better code splitting
 const AIPanel = lazy(() => import('@/components/admin/AIPanel'));
@@ -54,10 +56,12 @@ interface AdminDashboardProps {
 
 const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeWorkspace, setActiveWorkspace] = useState('command');
   const [selectedView, setSelectedView] = useState('overview');
   const [aiContext, setAiContext] = useState<{ type: 'job' | 'professional' | 'service' | 'review' | 'overview' }>({ type: 'overview' });
   const infoTipsEnabled = useFeature('admin_info_tips');
+  const { pendingCount } = usePendingVerifications();
 
   const workspaces = [
     { 
@@ -101,6 +105,14 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       icon: Users, 
       description: 'Professional management',
       tooltip: 'Manage professional profiles, verification status, skills, availability, and performance reviews.'
+    },
+    { 
+      id: 'verifications', 
+      name: 'Verifications', 
+      icon: FileCheck, 
+      description: 'Verify professionals',
+      tooltip: 'Review and approve professional verification requests. Manage verification documents and status.',
+      badge: pendingCount > 0 ? pendingCount : undefined
     },
     { 
       id: 'services', 
@@ -185,6 +197,10 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
           return <MarketIntelligence />;
         case 'professionals':
           return <ProfessionalHub />;
+        case 'verifications':
+          // Navigate to dedicated verifications page
+          navigate('/admin/verifications');
+          return null;
         case 'services':
           return <ServiceCatalogue />;
         case 'legacy':
@@ -256,8 +272,15 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
                     className={activeWorkspace === workspace.id ? 'bg-primary text-primary-foreground' : ''}
                   >
                     <workspace.icon className="h-4 w-4" />
-                    <div className="flex flex-col items-start">
-                      <span className="text-sm font-medium">{workspace.name}</span>
+                    <div className="flex flex-col items-start flex-1">
+                      <div className="flex items-center gap-2 w-full">
+                        <span className="text-sm font-medium">{workspace.name}</span>
+                        {workspace.badge && (
+                          <Badge variant="destructive" className="h-5 px-1.5 text-xs">
+                            {workspace.badge}
+                          </Badge>
+                        )}
+                      </div>
                       <span className="text-xs text-muted-foreground">{workspace.description}</span>
                     </div>
                   </SidebarMenuButton>

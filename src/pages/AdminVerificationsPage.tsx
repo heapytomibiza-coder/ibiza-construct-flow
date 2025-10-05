@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileCheck, Clock, CheckCircle, XCircle, Search, Filter } from 'lucide-react';
 import { VerificationDetailModal } from '@/components/admin/VerificationDetailModal';
+import { Breadcrumbs } from '@/components/common/Breadcrumbs';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -165,6 +166,14 @@ export default function AdminVerificationsPage() {
   return (
     <div className="container max-w-7xl py-8">
       <div className="space-y-6">
+        {/* Breadcrumbs */}
+        <Breadcrumbs 
+          items={[
+            { label: 'Admin', href: '/dashboard/admin' },
+            { label: 'Verifications' }
+          ]}
+        />
+
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Professional Verifications</h1>
