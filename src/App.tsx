@@ -52,6 +52,9 @@ const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const ConversationPage = React.lazy(() => import("./pages/ConversationPage"));
 const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
 const PaymentsPage = React.lazy(() => import("./pages/PaymentsPage"));
+const ProfessionalVerificationPage = React.lazy(() => import("./pages/ProfessionalVerificationPage"));
+const ProfessionalServicesPage = React.lazy(() => import("./pages/ProfessionalServicesPage"));
+const ProfessionalPortfolioPage = React.lazy(() => import("./pages/ProfessionalPortfolioPage"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -122,6 +125,23 @@ function AppContent() {
           <Route path="/onboarding/professional" element={
             <RouteGuard requiredRole="professional">
               <ProfessionalOnboardingPage />
+            </RouteGuard>
+          } />
+          
+          {/* Professional Management Pages */}
+          <Route path="/professional/verification" element={
+            <RouteGuard requiredRole="professional">
+              <ProfessionalVerificationPage />
+            </RouteGuard>
+          } />
+          <Route path="/professional/services" element={
+            <RouteGuard requiredRole="professional">
+              <ProfessionalServicesPage />
+            </RouteGuard>
+          } />
+          <Route path="/professional/portfolio" element={
+            <RouteGuard requiredRole="professional">
+              <ProfessionalPortfolioPage />
             </RouteGuard>
           } />
           
