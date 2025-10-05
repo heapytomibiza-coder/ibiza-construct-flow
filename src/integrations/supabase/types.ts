@@ -1224,6 +1224,8 @@ export type Database = {
       escrow_milestones: {
         Row: {
           amount: number
+          approved_at: string | null
+          approved_by: string | null
           completed_date: string | null
           contract_id: string
           created_at: string
@@ -1231,12 +1233,17 @@ export type Database = {
           due_date: string | null
           id: string
           milestone_number: number
+          rejected_at: string | null
+          rejected_by: string | null
+          rejection_reason: string | null
           status: string
           title: string
           updated_at: string
         }
         Insert: {
           amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
           completed_date?: string | null
           contract_id: string
           created_at?: string
@@ -1244,12 +1251,17 @@ export type Database = {
           due_date?: string | null
           id?: string
           milestone_number: number
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
           status?: string
           title: string
           updated_at?: string
         }
         Update: {
           amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
           completed_date?: string | null
           contract_id?: string
           created_at?: string
@@ -1257,6 +1269,9 @@ export type Database = {
           due_date?: string | null
           id?: string
           milestone_number?: number
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -1267,25 +1282,37 @@ export type Database = {
         Row: {
           amount: number
           booking_id: string | null
+          contract_id: string | null
           created_at: string | null
+          escrow_status: string | null
           id: string
           milestone_id: string | null
+          released_at: string | null
+          released_by: string | null
           status: Database["public"]["Enums"]["payment_status"] | null
         }
         Insert: {
           amount: number
           booking_id?: string | null
+          contract_id?: string | null
           created_at?: string | null
+          escrow_status?: string | null
           id?: string
           milestone_id?: string | null
+          released_at?: string | null
+          released_by?: string | null
           status?: Database["public"]["Enums"]["payment_status"] | null
         }
         Update: {
           amount?: number
           booking_id?: string | null
+          contract_id?: string | null
           created_at?: string | null
+          escrow_status?: string | null
           id?: string
           milestone_id?: string | null
+          released_at?: string | null
+          released_by?: string | null
           status?: Database["public"]["Enums"]["payment_status"] | null
         }
         Relationships: [
@@ -1294,6 +1321,13 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_payments_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
           {
@@ -1394,6 +1428,63 @@ export type Database = {
             columns: ["payment_id"]
             isOneToOne: false
             referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escrow_transactions: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string
+          id: string
+          initiated_by: string
+          metadata: Json | null
+          milestone_id: string
+          payment_id: string | null
+          status: string
+          transaction_type: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          initiated_by: string
+          metadata?: Json | null
+          milestone_id: string
+          payment_id?: string | null
+          status?: string
+          transaction_type: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          initiated_by?: string
+          metadata?: Json | null
+          milestone_id?: string
+          payment_id?: string | null
+          status?: string
+          transaction_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_transactions_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_transactions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_payments"
             referencedColumns: ["id"]
           },
         ]

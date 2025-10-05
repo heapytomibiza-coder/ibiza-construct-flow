@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 const logStep = (step: string, details?: any) => {
-  console.log(`[RELEASE-ESCROW] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
+  console.log(`[CREATE-ESCROW-PAYMENT] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
 };
 
 serve(async (req) => {
@@ -32,13 +32,13 @@ serve(async (req) => {
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     
     const user = userData.user;
-    if (!user) throw new Error("User not authenticated");
+    if (!user?.email) throw new Error("User not authenticated");
     logStep("User authenticated", { userId: user.id });
 
-    const { milestoneId } = await req.json();
+    const { milestoneId, paymentMethodId } = await req.json();
     if (!milestoneId) throw new Error("Milestone ID is required");
 
-    // Get milestone with contract details
+    // Get milestone details
     const { data: milestone, error: milestoneError } = await supabaseClient
       .from('escrow_milestones')
       .select('*, contracts(*)')
@@ -46,85 +46,94 @@ serve(async (req) => {
       .single();
 
     if (milestoneError || !milestone) throw new Error("Milestone not found");
-    logStep("Milestone retrieved", { milestoneId, status: milestone.status });
+    logStep("Milestone retrieved", { milestoneId, amount: milestone.amount });
 
-    // Verify user is authorized (client can release)
+    // Verify user is the client
     if (milestone.contracts.client_id !== user.id) {
-      throw new Error("Unauthorized - only client can release escrow");
+      throw new Error("Unauthorized - only client can fund escrow");
     }
-
-    // Check milestone is completed
-    if (milestone.status !== 'completed') {
-      throw new Error("Milestone must be completed before release");
-    }
-
-    // Get escrow payment
-    const { data: escrowPayment, error: paymentError } = await supabaseClient
-      .from('escrow_payments')
-      .select('*')
-      .eq('milestone_id', milestoneId)
-      .eq('escrow_status', 'held')
-      .single();
-
-    if (paymentError || !escrowPayment) {
-      throw new Error("No held escrow payment found for this milestone");
-    }
-    logStep("Escrow payment found", { escrowPaymentId: escrowPayment.id });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
-    // In a real implementation, you would transfer funds to the professional's Stripe Connect account
-    // For now, we'll simulate the release
-    logStep("Simulating escrow release to professional");
+    // Get or create Stripe customer
+    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    let customerId;
+    
+    if (customers.data.length > 0) {
+      customerId = customers.data[0].id;
+    } else {
+      const customer = await stripe.customers.create({ email: user.email });
+      customerId = customer.id;
+    }
+    logStep("Customer retrieved", { customerId });
 
-    // Update escrow payment status
-    await supabaseClient
+    // Create payment intent for escrow
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(milestone.amount * 100),
+      currency: "usd",
+      customer: customerId,
+      payment_method: paymentMethodId,
+      confirm: true,
+      metadata: {
+        type: 'escrow',
+        milestoneId: milestoneId,
+        contractId: milestone.contract_id,
+        userId: user.id,
+      },
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never',
+      },
+    });
+
+    logStep("Payment intent created", { 
+      paymentIntentId: paymentIntent.id,
+      status: paymentIntent.status 
+    });
+
+    if (paymentIntent.status !== 'succeeded') {
+      throw new Error('Payment failed');
+    }
+
+    // Create escrow payment record
+    const { data: escrowPayment, error: escrowError } = await supabaseClient
       .from('escrow_payments')
-      .update({
-        escrow_status: 'released',
-        status: 'succeeded',
-        released_at: new Date().toISOString(),
-        released_by: user.id,
+      .insert({
+        milestone_id: milestoneId,
+        contract_id: milestone.contract_id,
+        amount: milestone.amount,
+        status: 'pending',
+        escrow_status: 'held',
       })
-      .eq('id', escrowPayment.id);
+      .select()
+      .single();
 
-    // Create release transaction
+    if (escrowError) throw escrowError;
+    logStep("Escrow payment created", { escrowPaymentId: escrowPayment.id });
+
+    // Create escrow transaction record
     await supabaseClient
       .from('escrow_transactions')
       .insert({
         milestone_id: milestoneId,
         payment_id: escrowPayment.id,
-        transaction_type: 'release',
+        transaction_type: 'deposit',
         amount: milestone.amount,
         status: 'completed',
         initiated_by: user.id,
         completed_at: new Date().toISOString(),
         metadata: {
-          professional_id: milestone.contracts.tasker_id,
+          stripe_payment_intent_id: paymentIntent.id,
         },
       });
-
-    // Create escrow release record
-    await supabaseClient
-      .from('escrow_releases')
-      .insert({
-        milestone_id: milestoneId,
-        payment_id: escrowPayment.id,
-        amount: milestone.amount,
-        released_by: user.id,
-        status: 'completed',
-        released_at: new Date().toISOString(),
-      });
-
-    logStep("Escrow released successfully");
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Escrow released successfully',
-        amount: milestone.amount,
+        escrowPaymentId: escrowPayment.id,
+        paymentIntentId: paymentIntent.id,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
