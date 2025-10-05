@@ -6,21 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
-
-const IBIZA_AREAS = [
-  'Ibiza Town', 'Santa Eulària', 'Sant Josep', 'Sant Antoni', 
-  'Platja d\'en Bossa', 'Talamanca', 'Jesus', 'Not sure'
-];
-
-const TRADES = [
-  { id: 'handyman', name: 'Handyman', description: 'General repairs & maintenance' },
-  { id: 'plumber', name: 'Plumber', description: 'Plumbing services' },
-  { id: 'electrician', name: 'Electrician', description: 'Electrical work' },
-  { id: 'painter', name: 'Painter', description: 'Painting & decorating' },
-  { id: 'gardener', name: 'Gardener', description: 'Garden maintenance' },
-  { id: 'cleaner', name: 'Cleaner', description: 'Cleaning services' },
-];
 
 export default function QuickStart() {
   const [searchParams] = useSearchParams();
@@ -28,9 +13,6 @@ export default function QuickStart() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [displayName, setDisplayName] = useState('');
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en']);
-  const [selectedTrade, setSelectedTrade] = useState('');
 
   const role = searchParams.get('role') as 'client' | 'professional' || 'client';
 
@@ -47,36 +29,13 @@ export default function QuickStart() {
         const prefillName = user.user_metadata?.full_name || 
                            user.email?.split('@')[0] || '';
         setDisplayName(prefillName);
-
-        // If professional, check if they need detailed onboarding
-        if (role === 'professional') {
-          const { data: proProfile } = await supabase
-            .from('professional_profiles')
-            .select('bio, skills, hourly_rate')
-            .eq('user_id', user.id)
-            .single();
-
-          // If profile exists but lacks detailed info, redirect to onboarding
-          if (proProfile && (!proProfile.bio || !proProfile.skills || !proProfile.hourly_rate)) {
-            navigate('/onboarding/professional');
-            return;
-          }
-        }
       } catch (error) {
         console.error('Error initializing user:', error);
       }
     };
 
     initializeUser();
-  }, [navigate, role]);
-
-  const toggleSelection = (item: string, selectedItems: string[], setSelectedItems: (items: string[]) => void) => {
-    if (selectedItems.includes(item)) {
-      setSelectedItems(selectedItems.filter(i => i !== item));
-    } else {
-      setSelectedItems([...selectedItems, item]);
-    }
-  };
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,51 +45,30 @@ export default function QuickStart() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
-      // Upsert profile (handle case where trigger might have failed)
+      // Upsert profile
       const { error: profileError } = await supabase
         .from('profiles')
-        .upsert({
-          id: user.id,
+        .update({
           display_name: displayName,
-          preferred_language: selectedLanguages[0] || 'en',
-          roles: role === 'professional' ? ['professional'] : ['client'],
-          full_name: user.user_metadata?.full_name || user.email,
-        });
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
 
       if (profileError) throw profileError;
 
-      // If professional, create/update professional profile
-      if (role === 'professional' && selectedTrade) {
-        const { error: proError } = await supabase
-          .from('professional_profiles')
-          .upsert({
-            user_id: user.id,
-            primary_trade: selectedTrade,
-            zones: selectedAreas,
-            languages: selectedLanguages,
-            verification_status: 'unverified'
-          });
-
-        if (proError) throw proError;
-
-        // Redirect to detailed onboarding
+      // If professional, redirect to full onboarding
+      if (role === 'professional') {
         navigate('/onboarding/professional');
         return;
       }
 
+      // Client flow - redirect to dashboard
       toast({
         title: 'Profile completed!',
-        description: role === 'client' ? 
-          'You can now start posting projects.' : 
-          'Complete verification to start receiving opportunities.',
+        description: 'You can now start posting projects.',
       });
 
-      // Navigate to appropriate dashboard
-      if (role === 'professional') {
-        navigate('/dashboard/pro');
-      } else {
-        navigate('/dashboard/client');
-      }
+      navigate('/dashboard/client');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -171,95 +109,13 @@ export default function QuickStart() {
                 />
               </div>
 
-              {/* Languages */}
-              <div className="space-y-3">
-                <Label>Languages</Label>
-                <div className="flex gap-2">
-                  {[
-                    { code: 'en', name: 'English' },
-                    { code: 'es', name: 'Español' }
-                  ].map(lang => (
-                    <Badge
-                      key={lang.code}
-                      variant={selectedLanguages.includes(lang.code) ? 'default' : 'outline'}
-                      className="cursor-pointer"
-                      onClick={() => toggleSelection(lang.code, selectedLanguages, setSelectedLanguages)}
-                    >
-                      {lang.name}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Professional-specific fields */}
-              {role === 'professional' && (
-                <>
-                  {/* Primary Trade */}
-                  <div className="space-y-3">
-                    <Label>Primary Trade</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {TRADES.map(trade => (
-                        <Card
-                          key={trade.id}
-                          className={`cursor-pointer transition-all ${
-                            selectedTrade === trade.id ? 'ring-2 ring-primary' : ''
-                          }`}
-                          onClick={() => setSelectedTrade(trade.id)}
-                        >
-                          <CardContent className="p-3">
-                            <h4 className="font-medium">{trade.name}</h4>
-                            <p className="text-xs text-muted-foreground">{trade.description}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Service Areas */}
-                  <div className="space-y-3">
-                    <Label>Service Areas in Ibiza</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {IBIZA_AREAS.map(area => (
-                        <Badge
-                          key={area}
-                          variant={selectedAreas.includes(area) ? 'default' : 'outline'}
-                          className="cursor-pointer"
-                          onClick={() => toggleSelection(area, selectedAreas, setSelectedAreas)}
-                        >
-                          {area}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Client-specific fields */}
-              {role === 'client' && (
-                <div className="space-y-3">
-                  <Label>Primary Area</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {IBIZA_AREAS.map(area => (
-                      <Badge
-                        key={area}
-                        variant={selectedAreas.includes(area) ? 'default' : 'outline'}
-                        className="cursor-pointer"
-                        onClick={() => toggleSelection(area, selectedAreas, setSelectedAreas)}
-                      >
-                        {area}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={loading || !displayName || (role === 'professional' && !selectedTrade)}
+                disabled={loading || !displayName}
               >
                 {loading ? 'Setting up...' : 
-                 role === 'client' ? 'Start Finding Professionals' : 'Complete Setup'
+                 role === 'client' ? 'Start Finding Professionals' : 'Continue to Setup'
                 }
               </Button>
             </form>

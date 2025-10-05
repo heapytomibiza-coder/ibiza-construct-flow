@@ -24,7 +24,7 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
       {
         id: 'skills',
         label: 'Add skills',
-        completed: !!profile?.skills && profile.skills.length > 0,
+        completed: !!profile?.skills && Array.isArray(profile.skills) && profile.skills.length > 0,
         required: true
       },
       {
@@ -34,21 +34,21 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
         required: true
       },
       {
-        id: 'portfolio',
-        label: 'Upload portfolio photos (at least 3)',
-        completed: !!profile?.portfolio_images && profile.portfolio_images.length >= 3,
-        required: false
-      },
-      {
-        id: 'services',
-        label: 'Add at least one service',
-        completed: false, // Will be checked from services table
+        id: 'zones',
+        label: 'Set service areas',
+        completed: !!profile?.zones && Array.isArray(profile.zones) && profile.zones.length > 0,
         required: true
       },
       {
         id: 'availability',
         label: 'Set availability',
-        completed: !!profile?.availability && profile.availability.length > 0,
+        completed: !!profile?.availability && Array.isArray(profile.availability) && profile.availability.length > 0,
+        required: true
+      },
+      {
+        id: 'portfolio',
+        label: 'Upload portfolio photos (at least 3)',
+        completed: !!profile?.portfolio_images && Array.isArray(profile.portfolio_images) && profile.portfolio_images.length >= 3,
         required: false
       }
     ];
