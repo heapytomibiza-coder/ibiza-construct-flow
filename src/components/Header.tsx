@@ -109,6 +109,10 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                         </DropdownMenuItem>
                       </>
                     )}
+                    <DropdownMenuItem onClick={() => navigate('/settings/profile')}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Settings
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="w-4 h-4 mr-2" />

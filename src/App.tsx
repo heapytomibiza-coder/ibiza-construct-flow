@@ -47,6 +47,14 @@ const SubscriptionCanceled = React.lazy(() => import("./pages/SubscriptionCancel
 const Templates = React.lazy(() => import("./pages/Templates"));
 const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
 
+// Settings Pages
+const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
+const ProfileSettings = React.lazy(() => import("./pages/settings/ProfileSettings"));
+const AccountSettings = React.lazy(() => import("./pages/settings/AccountSettings"));
+const NotificationSettings = React.lazy(() => import("./pages/settings/NotificationSettings"));
+const ClientSettings = React.lazy(() => import("./pages/settings/ClientSettings"));
+const ProfessionalSettings = React.lazy(() => import("./pages/settings/ProfessionalSettings"));
+
 function AppContent() {
   // Initialize Web Vitals monitoring
   useWebVitals();
@@ -195,6 +203,40 @@ function AppContent() {
               </RouteGuard>
             )
           } />
+          
+          {/* Settings Routes - Role-Aware */}
+          <Route path="/settings" element={
+            DISABLE_AUTH_FOR_WIREFRAME ? (
+              <SettingsLayout />
+            ) : (
+              <RouteGuard>
+                <SettingsLayout />
+              </RouteGuard>
+            )
+          }>
+            <Route index element={<Navigate to="/settings/profile" replace />} />
+            <Route path="profile" element={<ProfileSettings />} />
+            <Route path="account" element={<AccountSettings />} />
+            <Route path="notifications" element={<NotificationSettings />} />
+            <Route path="client" element={
+              DISABLE_AUTH_FOR_WIREFRAME ? (
+                <ClientSettings />
+              ) : (
+                <RouteGuard requiredRole="client">
+                  <ClientSettings />
+                </RouteGuard>
+              )
+            } />
+            <Route path="professional" element={
+              DISABLE_AUTH_FOR_WIREFRAME ? (
+                <ProfessionalSettings />
+              ) : (
+                <RouteGuard requiredRole="professional">
+                  <ProfessionalSettings />
+                </RouteGuard>
+              )
+            } />
+          </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

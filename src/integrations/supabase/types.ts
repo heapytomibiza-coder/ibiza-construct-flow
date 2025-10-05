@@ -3120,11 +3120,15 @@ export type Database = {
         Row: {
           active_role: string | null
           avatar_url: string | null
+          bio: string | null
           coverage_area: string | null
           created_at: string | null
           display_name: string | null
           full_name: string | null
           id: string
+          location: string | null
+          notification_preferences: Json | null
+          phone: string | null
           preferences: Json | null
           preferred_language: string | null
           service_radius: number | null
@@ -3138,11 +3142,15 @@ export type Database = {
         Insert: {
           active_role?: string | null
           avatar_url?: string | null
+          bio?: string | null
           coverage_area?: string | null
           created_at?: string | null
           display_name?: string | null
           full_name?: string | null
           id: string
+          location?: string | null
+          notification_preferences?: Json | null
+          phone?: string | null
           preferences?: Json | null
           preferred_language?: string | null
           service_radius?: number | null
@@ -3156,11 +3164,15 @@ export type Database = {
         Update: {
           active_role?: string | null
           avatar_url?: string | null
+          bio?: string | null
           coverage_area?: string | null
           created_at?: string | null
           display_name?: string | null
           full_name?: string | null
           id?: string
+          location?: string | null
+          notification_preferences?: Json | null
+          phone?: string | null
           preferences?: Json | null
           preferred_language?: string | null
           service_radius?: number | null
