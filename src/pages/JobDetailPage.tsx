@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { MilestoneReviewDialog } from '@/components/reviews/MilestoneReviewDialog';
 import { ViewReviewDialog } from '@/components/reviews/ViewReviewDialog';
+import { JobPaymentButton } from '@/components/jobs/JobPaymentButton';
+import { JobPaymentStatus } from '@/components/jobs/JobPaymentStatus';
 
 interface Job {
   id: string;
@@ -476,6 +478,23 @@ export default function JobDetailPage() {
 
           {/* Payments Tab */}
           <TabsContent value="payments" className="space-y-4">
+            {/* Job Payment Button */}
+            <div className="flex justify-end mb-4">
+              <JobPaymentButton
+                jobId={id!}
+                jobTitle={job.title}
+                estimatedAmount={job.budget_value}
+                disabled={job.status === 'completed' || job.status === 'cancelled'}
+              />
+            </div>
+
+            {/* Job Payment Status */}
+            <JobPaymentStatus 
+              jobId={id!} 
+              jobStatus={job.status}
+              isJobOwner={true}
+            />
+
             {!contractData ? (
               <Card>
                 <CardContent className="text-center py-12">

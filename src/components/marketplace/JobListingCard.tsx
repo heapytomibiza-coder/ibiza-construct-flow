@@ -7,6 +7,7 @@ import {
   MessageSquare, Heart, Share2, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { JobPaymentWidget } from '@/components/jobs/JobPaymentWidget';
 
 interface JobListingCardProps {
   job: {
@@ -88,6 +89,9 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
                   <Clock className="w-4 h-4" />
                   <span>{new Date(job.created_at).toLocaleDateString()}</span>
                 </div>
+
+                {/* Payment status widget */}
+                <JobPaymentWidget jobId={job.id} />
               </div>
             </div>
             
@@ -134,6 +138,9 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
                 <Calendar className="w-4 h-4" />
                 <span>Posted {new Date(job.created_at).toLocaleDateString()}</span>
               </div>
+
+              {/* Payment status widget */}
+              <JobPaymentWidget jobId={job.id} />
             </div>
           </div>
           

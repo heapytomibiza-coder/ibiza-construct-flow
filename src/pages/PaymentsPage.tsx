@@ -1,4 +1,6 @@
+import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PaymentMethodsManager } from '@/components/payments/PaymentMethodsManager';
@@ -9,7 +11,10 @@ import { NotificationPreferences } from '@/components/notifications/Notification
 import { NotificationsList } from '@/components/notifications/NotificationsList';
 import { TransactionHistory } from '@/components/payments/TransactionHistory';
 import { RefundsList } from '@/components/payments/RefundsList';
-import { CreditCard, Wallet, History, BarChart3, Bell, Settings, Receipt } from 'lucide-react';
+import { PaymentHistory } from '@/components/payments/PaymentHistory';
+import { EarningsDashboard } from '@/components/payments/EarningsDashboard';
+import { PaymentNotifications } from '@/components/payments/PaymentNotifications';
+import { CreditCard, Wallet, History, BarChart3, Bell, Settings, Receipt, TrendingUp } from 'lucide-react';
 
 export const PaymentsPage = () => {
   const { user } = useAuth();
@@ -19,8 +24,20 @@ export const PaymentsPage = () => {
   }
 
   // Determine if user is a professional based on their active role
-  // This would come from the user's profile in a real implementation
-  const isProfessional = false; // Replace with actual role check
+  const [isProfessional, setIsProfessional] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkRole = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('active_role')
+        .eq('id', user.id)
+        .single();
+      setIsProfessional(data?.active_role === 'professional');
+    };
+    checkRole();
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-sand pt-20 pb-20">
@@ -56,6 +73,16 @@ export const PaymentsPage = () => {
                 <History className="w-4 h-4" />
                 Refunds
               </TabsTrigger>
+              <TabsTrigger value="history" className="flex items-center gap-2">
+                <Receipt className="w-4 h-4" />
+                Payment History
+              </TabsTrigger>
+              {isProfessional && (
+                <TabsTrigger value="earnings" className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  Earnings
+                </TabsTrigger>
+              )}
               <TabsTrigger value="analytics" className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
                 Analytics
@@ -92,12 +119,22 @@ export const PaymentsPage = () => {
               <RefundsList />
             </TabsContent>
 
+            <TabsContent value="history">
+              <PaymentHistory />
+            </TabsContent>
+
+            {isProfessional && (
+              <TabsContent value="earnings">
+                <EarningsDashboard />
+              </TabsContent>
+            )}
+
             <TabsContent value="analytics">
               <PaymentAnalyticsDashboard />
             </TabsContent>
 
             <TabsContent value="notifications">
-              <NotificationsList />
+              <PaymentNotifications />
             </TabsContent>
 
             <TabsContent value="settings">
