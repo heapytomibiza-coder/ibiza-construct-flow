@@ -9,10 +9,11 @@ import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { ClientPaymentSection } from '@/components/payment/ClientPaymentSection';
 import { MessagesTab } from '@/components/messaging/MessagesTab';
 import { PaymentsManagement } from '@/components/payments/PaymentsManagement';
+import { InvoicesList } from '@/components/invoices/InvoicesList';
 import { 
   LogOut, Plus, Clock, CheckCircle, AlertCircle, 
   Briefcase, Calendar, Euro, TrendingUp, MessageSquare,
-  Home, CreditCard
+  Home, CreditCard, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -130,6 +131,10 @@ const ClientDashboard = ({ user, profile }: any) => {
             <TabsTrigger value="payments" className="flex items-center gap-2">
               <CreditCard className="w-4 h-4" />
               Payments
+            </TabsTrigger>
+            <TabsTrigger value="invoices" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Invoices
             </TabsTrigger>
             <TabsTrigger value="messages" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
@@ -304,6 +309,10 @@ const ClientDashboard = ({ user, profile }: any) => {
 
           <TabsContent value="payments">
             <PaymentsManagement userId={user.id} />
+          </TabsContent>
+
+          <TabsContent value="invoices">
+            <InvoicesList userId={user.id} />
           </TabsContent>
 
           <TabsContent value="messages">

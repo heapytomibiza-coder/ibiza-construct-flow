@@ -1587,69 +1587,215 @@ export type Database = {
           },
         ]
       }
+      invoice_items: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          invoice_id: string
+          item_order: number | null
+          metadata: Json | null
+          quantity: number
+          tax_amount: number | null
+          tax_rate: number | null
+          unit_price: number
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description: string
+          id?: string
+          invoice_id: string
+          item_order?: number | null
+          metadata?: Json | null
+          quantity?: number
+          tax_amount?: number | null
+          tax_rate?: number | null
+          unit_price?: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_id?: string
+          item_order?: number | null
+          metadata?: Json | null
+          quantity?: number
+          tax_amount?: number | null
+          tax_rate?: number | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          invoice_id: string
+          notes: string | null
+          payment_date: string
+          payment_method: string | null
+          payment_transaction_id: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_id: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          payment_transaction_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          payment_transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_payments_payment_transaction_id_fkey"
+            columns: ["payment_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
+          client_address: Json | null
+          client_email: string | null
+          client_name: string | null
           contract_id: string | null
           created_at: string
           currency: string
+          discount_amount: number | null
+          discount_percentage: number | null
           due_date: string | null
+          footer_notes: string | null
           id: string
           invoice_number: string
+          invoice_template: string | null
+          invoice_type: string | null
           job_id: string | null
           line_items: Json
           notes: string | null
           paid_date: string | null
           payment_method_id: string | null
+          professional_address: Json | null
+          professional_email: string | null
+          professional_name: string | null
+          reminder_sent_at: string | null
+          sent_at: string | null
           split_payment: Json | null
           status: string
           subtotal: number
+          tax_id: string | null
+          terms: string | null
           total_amount: number
           updated_at: string
           user_id: string
           vat_amount: number | null
           vat_rate: number | null
+          viewed_at: string | null
         }
         Insert: {
+          client_address?: Json | null
+          client_email?: string | null
+          client_name?: string | null
           contract_id?: string | null
           created_at?: string
           currency?: string
+          discount_amount?: number | null
+          discount_percentage?: number | null
           due_date?: string | null
+          footer_notes?: string | null
           id?: string
           invoice_number: string
+          invoice_template?: string | null
+          invoice_type?: string | null
           job_id?: string | null
           line_items?: Json
           notes?: string | null
           paid_date?: string | null
           payment_method_id?: string | null
+          professional_address?: Json | null
+          professional_email?: string | null
+          professional_name?: string | null
+          reminder_sent_at?: string | null
+          sent_at?: string | null
           split_payment?: Json | null
           status?: string
           subtotal?: number
+          tax_id?: string | null
+          terms?: string | null
           total_amount?: number
           updated_at?: string
           user_id: string
           vat_amount?: number | null
           vat_rate?: number | null
+          viewed_at?: string | null
         }
         Update: {
+          client_address?: Json | null
+          client_email?: string | null
+          client_name?: string | null
           contract_id?: string | null
           created_at?: string
           currency?: string
+          discount_amount?: number | null
+          discount_percentage?: number | null
           due_date?: string | null
+          footer_notes?: string | null
           id?: string
           invoice_number?: string
+          invoice_template?: string | null
+          invoice_type?: string | null
           job_id?: string | null
           line_items?: Json
           notes?: string | null
           paid_date?: string | null
           payment_method_id?: string | null
+          professional_address?: Json | null
+          professional_email?: string | null
+          professional_name?: string | null
+          reminder_sent_at?: string | null
+          sent_at?: string | null
           split_payment?: Json | null
           status?: string
           subtotal?: number
+          tax_id?: string | null
+          terms?: string | null
           total_amount?: number
           updated_at?: string
           user_id?: string
           vat_amount?: number | null
           vat_rate?: number | null
+          viewed_at?: string | null
         }
         Relationships: []
       }
@@ -4544,6 +4690,10 @@ export type Database = {
           p_entity_type?: string
         }
         Returns: string
+      }
+      mark_overdue_invoices: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       user_has_role: {
         Args: { role_name: string; user_id: string }
