@@ -1,11 +1,18 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useRefunds } from '@/hooks/useRefunds';
-import { useAuth } from '@/hooks/useAuth';
+import { useUserPayments } from '@/hooks/useUserPayments';
 import { RefreshCw } from 'lucide-react';
 
 interface RefundRequestDialogProps {
@@ -14,32 +21,31 @@ interface RefundRequestDialogProps {
   trigger?: React.ReactNode;
 }
 
-export const RefundRequestDialog = ({ paymentId, maxAmount, trigger }: RefundRequestDialogProps) => {
-  const { user } = useAuth();
-  const { requestRefund } = useRefunds(user?.id);
+export function RefundRequestDialog({ 
+  paymentId, 
+  maxAmount, 
+  trigger 
+}: RefundRequestDialogProps) {
   const [open, setOpen] = useState(false);
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState(maxAmount.toString());
   const [reason, setReason] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { requestRefund } = useUserPayments();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!amount || !reason) return;
-
-    const numAmount = parseFloat(amount);
-    if (isNaN(numAmount) || numAmount <= 0 || numAmount > maxAmount) {
+  const handleSubmit = async () => {
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0 || parsedAmount > maxAmount) {
       return;
     }
 
-    setLoading(true);
-    try {
-      await requestRefund(paymentId, numAmount, reason);
-      setOpen(false);
-      setAmount('');
-      setReason('');
-    } finally {
-      setLoading(false);
-    }
+    await requestRefund.mutateAsync({
+      paymentId,
+      amount: parsedAmount,
+      reason,
+    });
+
+    setOpen(false);
+    setAmount(maxAmount.toString());
+    setReason('');
   };
 
   return (
@@ -47,62 +53,58 @@ export const RefundRequestDialog = ({ paymentId, maxAmount, trigger }: RefundReq
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline" size="sm">
-            <RefreshCw className="w-4 h-4 mr-2" />
+            <RefreshCw className="h-4 w-4 mr-1" />
             Request Refund
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Request Refund</DialogTitle>
           <DialogDescription>
-            Submit a refund request for this payment. Maximum refund amount: ${maxAmount.toFixed(2)}
+            Submit a refund request for this payment. Our team will review it shortly.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
+        <div className="space-y-4">
+          <div>
             <Label htmlFor="amount">Refund Amount</Label>
             <Input
               id="amount"
               type="number"
               step="0.01"
-              min="0.01"
+              min="0"
               max={maxAmount}
-              placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              required
+              placeholder="0.00"
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               Maximum: ${maxAmount.toFixed(2)}
             </p>
           </div>
-          <div className="space-y-2">
+          <div>
             <Label htmlFor="reason">Reason for Refund</Label>
             <Textarea
               id="reason"
-              placeholder="Please explain why you're requesting a refund..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              required
+              placeholder="Please explain why you're requesting a refund..."
               rows={4}
             />
           </div>
-          <div className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={loading}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Submitting...' : 'Submit Request'}
-            </Button>
-          </div>
-        </form>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!reason.trim() || requestRefund.isPending}
+          >
+            {requestRefund.isPending ? 'Submitting...' : 'Submit Request'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-};
+}

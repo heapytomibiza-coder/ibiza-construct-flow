@@ -5100,6 +5100,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      generate_payment_receipt: {
+        Args: { p_payment_id: string }
+        Returns: Json
+      }
       generate_receipt_number: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -5127,6 +5131,10 @@ export type Database = {
       }
       get_payment_statistics: {
         Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
+      get_professional_earnings_summary: {
+        Args: { p_professional_id: string }
         Returns: Json
       }
       get_unread_message_count: {
