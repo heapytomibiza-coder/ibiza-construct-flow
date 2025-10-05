@@ -137,13 +137,20 @@ export const usePayments = (userId?: string) => {
 
   const requestRefund = useCallback(async (paymentId: string, reason: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const payment = payments.find(p => p.id === paymentId);
+      if (!payment) throw new Error('Payment not found');
+
       const { error } = await supabase
         .from('refunds')
         .insert({
           payment_id: paymentId,
-          amount: payments.find(p => p.id === paymentId)?.amount || 0,
+          amount: payment.amount,
           reason,
-          status: 'pending'
+          status: 'pending',
+          requested_by: user.id
         });
 
       if (error) throw error;

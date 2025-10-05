@@ -1203,6 +1203,57 @@ export type Database = {
           },
         ]
       }
+      escrow_releases: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          milestone_id: string
+          notes: string | null
+          payment_id: string
+          released_at: string | null
+          released_by: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          milestone_id: string
+          notes?: string | null
+          payment_id: string
+          released_at?: string | null
+          released_by: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          milestone_id?: string
+          notes?: string | null
+          payment_id?: string
+          released_at?: string | null
+          released_by?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_releases_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_releases_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_flags: {
         Row: {
           created_at: string | null
@@ -2052,6 +2103,146 @@ export type Database = {
           type?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          client_id: string
+          created_at: string
+          currency: string
+          id: string
+          job_id: string | null
+          net_amount: number
+          payment_method: string | null
+          platform_fee: number
+          professional_id: string | null
+          status: string
+          stripe_charge_id: string | null
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          client_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          job_id?: string | null
+          net_amount: number
+          payment_method?: string | null
+          platform_fee?: number
+          professional_id?: string | null
+          status?: string
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          client_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          job_id?: string | null
+          net_amount?: number
+          payment_method?: string | null
+          platform_fee?: number
+          professional_id?: string | null
+          status?: string
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payout_items: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          payment_id: string
+          payout_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          payment_id: string
+          payout_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          payment_id?: string
+          payout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payout_items_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payout_items_payout_id_fkey"
+            columns: ["payout_id"]
+            isOneToOne: false
+            referencedRelation: "payouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payouts: {
+        Row: {
+          amount: number
+          arrival_date: string | null
+          created_at: string
+          currency: string
+          id: string
+          method: string
+          professional_id: string
+          status: string
+          stripe_account_id: string | null
+          stripe_payout_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          arrival_date?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: string
+          professional_id: string
+          status?: string
+          stripe_account_id?: string | null
+          stripe_payout_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          arrival_date?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: string
+          professional_id?: string
+          status?: string
+          stripe_account_id?: string | null
+          stripe_payout_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -3068,6 +3259,50 @@ export type Database = {
           },
         ]
       }
+      refunds: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          payment_id: string
+          processed_at: string | null
+          reason: string | null
+          requested_by: string
+          status: string
+          stripe_refund_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          payment_id: string
+          processed_at?: string | null
+          reason?: string | null
+          requested_by: string
+          status?: string
+          stripe_refund_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          payment_id?: string
+          processed_at?: string | null
+          reason?: string | null
+          requested_by?: string
+          status?: string
+          stripe_refund_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refunds_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       report_templates: {
         Row: {
           created_at: string
@@ -3379,6 +3614,30 @@ export type Database = {
           skill_score?: number | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      stripe_customers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          stripe_customer_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          stripe_customer_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          stripe_customer_id?: string
+          user_id?: string
         }
         Relationships: []
       }
