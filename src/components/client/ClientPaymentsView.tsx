@@ -16,6 +16,9 @@ import { SplitPayments } from '@/components/payments/SplitPayments';
 import { EscrowTimeline } from '@/components/payments/EscrowTimeline';
 import { DisputeWizard } from '@/components/disputes/DisputeWizard';
 import { DisputeTracker } from '@/components/disputes/DisputeTracker';
+import { EscrowSummaryCard } from '@/components/payments/EscrowSummaryCard';
+import { FeeBreakdownTooltip } from '@/components/payments/FeeBreakdownTooltip';
+import { QuickDisputeForm } from '@/components/disputes/QuickDisputeForm';
 
 interface Transaction {
   id: string;
@@ -104,6 +107,8 @@ export const ClientPaymentsView = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [showDisputeWizard, setShowDisputeWizard] = useState(false);
+  const [showQuickDispute, setShowQuickDispute] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
   const filteredTransactions = mockTransactions.filter(transaction => {
     const matchesSearch = transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -226,7 +231,7 @@ export const ClientPaymentsView = () => {
         </Card>
       </div>
 
-      {/* Recent Transactions Preview */}
+      {/* Recent Transactions with Escrow Summary Cards */}
       <Card className="card-luxury">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -234,38 +239,74 @@ export const ClientPaymentsView = () => {
             <Button variant="outline" size="sm">View All</Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           {filteredTransactions.slice(0, 3).map((transaction) => (
-            <div key={transaction.id} className="flex items-center justify-between p-4 border border-sand-dark/20 rounded-lg hover:bg-sand-light/30 transition-colors mb-3 last:mb-0">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-sand-light rounded-full flex items-center justify-center">
-                  {getTransactionIcon(transaction.type)}
+            transaction.type.includes('escrow') ? (
+              <div key={transaction.id} className="space-y-2">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-medium text-charcoal">{transaction.jobTitle}</h4>
+                  <Badge variant="outline">{transaction.professionalName}</Badge>
                 </div>
-                
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-charcoal">{transaction.description}</h4>
-                    {getStatusBadge(transaction.status)}
+                <EscrowSummaryCard
+                  amount={transaction.amount}
+                  status={transaction.status === 'completed' ? 'completed' : 'in_progress'}
+                  milestone={transaction.description}
+                  fees={{
+                    platformFee: transaction.amount * 0.05,
+                    processingFee: transaction.amount * 0.029,
+                    total: transaction.amount * 0.079
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedTransaction(transaction);
+                    setShowQuickDispute(true);
+                  }}
+                >
+                  Report Issue
+                </Button>
+              </div>
+            ) : (
+              <div key={transaction.id} className="flex items-center justify-between p-4 border border-sand-dark/20 rounded-lg hover:bg-sand-light/30 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-sand-light rounded-full flex items-center justify-center">
+                    {getTransactionIcon(transaction.type)}
                   </div>
                   
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-medium text-charcoal">{transaction.description}</h4>
+                      {getStatusBadge(transaction.status)}
+                    </div>
+                    
+                    <div className="text-sm text-muted-foreground">
+                      <p>{getTransactionLabel(transaction.type)} • {transaction.jobTitle}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-right flex items-center gap-2">
+                  <div className={cn(
+                    "text-lg font-semibold mb-1",
+                    transaction.type === 'refund' ? "text-green-600" : "text-charcoal"
+                  )}>
+                    {transaction.type === 'refund' ? '+' : '-'}€{transaction.amount.toFixed(2)}
+                  </div>
+                  <FeeBreakdownTooltip
+                    fees={{
+                      platformFee: transaction.amount * 0.05,
+                      processingFee: transaction.amount * 0.029,
+                      total: transaction.amount * 0.079
+                    }}
+                  />
                   <div className="text-sm text-muted-foreground">
-                    <p>{getTransactionLabel(transaction.type)} • {transaction.jobTitle}</p>
+                    {new Date(transaction.date).toLocaleDateString()}
                   </div>
                 </div>
               </div>
-              
-              <div className="text-right">
-                <div className={cn(
-                  "text-lg font-semibold mb-1",
-                  transaction.type === 'refund' ? "text-green-600" : "text-charcoal"
-                )}>
-                  {transaction.type === 'refund' ? '+' : '-'}€{transaction.amount.toFixed(2)}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {new Date(transaction.date).toLocaleDateString()}
-                </div>
-              </div>
-            </div>
+            )
           ))}
         </CardContent>
       </Card>
@@ -370,6 +411,22 @@ export const ClientPaymentsView = () => {
             onClose={() => setShowDisputeWizard(false)}
             onSubmit={handleDisputeSubmit}
           />
+        </div>
+      )}
+      
+      {/* Quick Dispute Form */}
+      {showQuickDispute && selectedTransaction && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-background rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto">
+            <QuickDisputeForm
+              jobId={selectedTransaction.id}
+              onSubmit={() => {
+                console.log('Quick dispute submitted');
+                setShowQuickDispute(false);
+              }}
+              onCancel={() => setShowQuickDispute(false)}
+            />
+          </div>
         </div>
       )}
     </div>

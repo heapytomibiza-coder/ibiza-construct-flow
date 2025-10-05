@@ -7,8 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Upload, X } from 'lucide-react';
+import { ArrowLeft, Upload, X, Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { InlineCameraCapture } from '@/components/camera/InlineCameraCapture';
 
 interface ExtrasStepProps {
   microName: string;
@@ -39,6 +40,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
   onBack
 }) => {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
 
   const handleUpdate = (field: string, value: any) => {
     onExtrasChange({ ...extras, [field]: value });
@@ -135,29 +137,61 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
             </div>
           )}
 
-          {/* Upload button */}
-          <label className={cn(
-            "border-2 border-dashed border-muted-foreground/30 rounded-lg p-8",
-            "flex flex-col items-center justify-center cursor-pointer",
-            "hover:border-copper hover:bg-copper/5 transition-all",
-            uploadingPhoto && "opacity-50 pointer-events-none"
-          )}>
-            <Upload className="w-8 h-8 text-muted-foreground mb-2" />
-            <span className="text-sm font-medium text-charcoal">
-              {uploadingPhoto ? 'Uploading...' : 'Click to upload photos'}
-            </span>
-            <span className="text-xs text-muted-foreground mt-1">
-              JPG, PNG up to 10MB each
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(e) => handlePhotoUpload(e.target.files)}
-              disabled={uploadingPhoto}
+          {/* Camera / Upload buttons */}
+          {!showCamera ? (
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="h-24 flex-col gap-2 border-2 border-dashed hover:border-copper hover:bg-copper/5"
+                onClick={() => setShowCamera(true)}
+              >
+                <Camera className="w-8 h-8 text-muted-foreground" />
+                <span className="text-sm font-medium">Take Photo</span>
+              </Button>
+              
+              <label className={cn(
+                "h-24 border-2 border-dashed border-muted-foreground/30 rounded-lg",
+                "flex flex-col items-center justify-center cursor-pointer gap-2",
+                "hover:border-copper hover:bg-copper/5 transition-all",
+                uploadingPhoto && "opacity-50 pointer-events-none"
+              )}>
+                <Upload className="w-8 h-8 text-muted-foreground" />
+                <span className="text-sm font-medium text-charcoal">
+                  {uploadingPhoto ? 'Uploading...' : 'Upload'}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => handlePhotoUpload(e.target.files)}
+                  disabled={uploadingPhoto}
+                />
+              </label>
+            </div>
+          ) : (
+            <InlineCameraCapture
+              enableOCR
+              onCapture={(file, data) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  const newPhotos = [...extras.photos, e.target?.result as string];
+                  handleUpdate('photos', newPhotos);
+                  
+                  // If OCR detected text, add to notes
+                  if (data?.text) {
+                    const currentNotes = extras.notes || '';
+                    const ocrNote = `\n\nFrom photo: ${data.text}`;
+                    handleUpdate('notes', currentNotes + ocrNote);
+                  }
+                  
+                  setShowCamera(false);
+                };
+                reader.readAsDataURL(file);
+              }}
+              onCancel={() => setShowCamera(false)}
             />
-          </label>
+          )}
         </Card>
 
         {/* Common Notes Chips */}

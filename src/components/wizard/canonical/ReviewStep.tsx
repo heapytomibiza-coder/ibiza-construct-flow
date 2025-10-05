@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ArrowLeft, Edit2, MapPin, Calendar, Euro, FileText, Image } from 'lucide-react';
 import { format } from 'date-fns';
+import { EditableReviewChips } from '@/components/wizard/EditableReviewChips';
 
 interface ReviewStepProps {
   jobData: {
@@ -62,14 +63,28 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
 
       {/* Job Card Preview */}
       <Card className="p-8 space-y-6">
-        {/* Summary */}
+        {/* Editable Summary Chips */}
         <div>
           <h2 className="text-xl font-semibold text-charcoal mb-4">Project Summary</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            {Object.entries(answers).slice(0, 3).map(([key, value]) => (
-              <li key={key}>{String(value)}</li>
-            ))}
-          </ul>
+          <EditableReviewChips
+            chips={[
+              { id: 'location', label: 'Location', value: logistics.location || 'Not set', editable: true, type: 'text' },
+              { id: 'budget', label: 'Budget', value: logistics.budgetRange || 'Not set', editable: true, type: 'text' },
+              ...Object.entries(answers).slice(0, 3).map(([key, value]) => ({
+                id: key,
+                label: key.replace(/_/g, ' '),
+                value: String(value),
+                editable: true,
+                type: 'text' as const
+              }))
+            ]}
+            onChipEdit={(chipId, newValue) => {
+              console.log('Edit requested:', chipId, newValue);
+              // In a real implementation, this would update the wizard state
+            }}
+            onSubmit={() => {}}
+            isSubmitting={loading}
+          />
         </div>
 
         {/* Editable Sections */}

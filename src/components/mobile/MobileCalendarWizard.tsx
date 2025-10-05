@@ -15,6 +15,8 @@ import { MobileOptimizedInput } from '@/components/mobile/MobileOptimizedInput';
 import { format } from 'date-fns';
 import { TimeSlotSelector } from '@/components/wizard/shared/TimeSlotSelector';
 import { LocationSelector } from '@/components/wizard/shared/LocationSelector';
+import { SmartTimeSlotSuggestions } from '@/components/calendar/SmartTimeSlotSuggestions';
+import { useCalendarOverlap } from '@/hooks/useCalendarOverlap';
 
 interface MobileCalendarWizardProps {
   onComplete: (jobData: any) => void;
@@ -26,6 +28,13 @@ export const MobileCalendarWizard = ({ onComplete, onCancel }: MobileCalendarWiz
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [isFlexible, setIsFlexible] = useState(false);
   const isMobile = useIsMobile();
+  const [clientUserId, setClientUserId] = useState<string>('');
+  const [professionalUserId, setProfessionalUserId] = useState<string>('');
+  
+  const { suggestions, loading: loadingSlots } = useCalendarOverlap(
+    clientUserId,
+    professionalUserId
+  );
   
   const [formData, setFormData] = useState({
     // Step 1: Schedule
@@ -201,6 +210,22 @@ export const MobileCalendarWizard = ({ onComplete, onCancel }: MobileCalendarWiz
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                {/* Smart Time Slot Suggestions */}
+                {selectedDate && clientUserId && professionalUserId && (
+                  <SmartTimeSlotSuggestions
+                    userId1={clientUserId}
+                    userId2={professionalUserId}
+                    targetDate={selectedDate}
+                    onSelectSlot={(start, end) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        timePreference: 'exact',
+                        exactTime: start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+                      }));
+                    }}
+                  />
+                )}
+                
                 <TimeSlotSelector
                   value={formData.timePreference}
                   onChange={(value) => setFormData(prev => ({ ...prev, timePreference: value }))}

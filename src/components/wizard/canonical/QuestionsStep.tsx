@@ -6,10 +6,13 @@ import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
 import { AIQuestion } from '@/hooks/useAIQuestions';
+import { PresetChips } from '@/components/wizard/PresetChips';
+import { AISmartFill } from '@/components/wizard/AISmartFill';
+import { useJobPresets } from '@/hooks/useJobPresets';
 
 interface QuestionsStepProps {
   microId: string;
@@ -33,6 +36,9 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [invalidRequired, setInvalidRequired] = useState<string[]>([]);
   const [packSource, setPackSource] = useState<'pack' | 'ai' | 'fallback'>('fallback');
+  const [showAISmartFill, setShowAISmartFill] = useState(false);
+  
+  const { presets, usePreset } = useJobPresets(microId);
 
   useEffect(() => {
     loadQuestions();
@@ -235,7 +241,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           Back
         </Button>
 
-        <div>
+        <div className="space-y-4">
           <Badge variant="outline" className="mb-4">{microName}</Badge>
           <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
             Tell us about your project
@@ -243,6 +249,16 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           <p className="text-lg text-muted-foreground mt-2">
             Answer a few quick questions to help professionals understand your needs
           </p>
+          
+          {/* AI Smart-Fill Button */}
+          <Button
+            variant="outline"
+            onClick={() => setShowAISmartFill(true)}
+            className="gap-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            AI Smart-Fill
+          </Button>
         </div>
       </div>
 
@@ -255,6 +271,16 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         </div>
       ) : (
         <>
+          {/* Recent Presets */}
+          {presets.length > 0 && (
+            <PresetChips
+              presetType={microId}
+              onSelectPreset={async (presetData) => {
+                onAnswersChange(presetData);
+              }}
+            />
+          )}
+          
           {packSource === 'pack' && (
             <Alert className="bg-green-50 border-green-200">
               <AlertDescription className="text-green-800">
@@ -270,6 +296,18 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
             onValidationChange={handleValidationChange}
             onAutoAdvance={handleAutoAdvance}
           />
+          
+          {/* AI Smart-Fill Dialog */}
+          {showAISmartFill && (
+            <AISmartFill
+              selections={answers}
+              serviceType={microName}
+              onGenerated={(data) => {
+                onAnswersChange({ ...answers, ...data });
+                setShowAISmartFill(false);
+              }}
+            />
+          )}
         </>
       )}
 

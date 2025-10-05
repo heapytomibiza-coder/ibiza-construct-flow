@@ -11,6 +11,8 @@ import {
   Zap, Info, Edit, Archive, Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ContextualQuickReplies } from '@/components/messaging/ContextualQuickReplies';
+import { CommandPalette } from '@/components/messaging/CommandPalette';
 
 interface JobContext {
   id: string;
@@ -116,10 +118,11 @@ export const EnhancedMessagingSystem = () => {
   const [selectedConversation, setSelectedConversation] = useState<string>(mockConversations[0]?.id || '');
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
-  const [showQuickReplies, setShowQuickReplies] = useState(false);
+  const [showQuickReplies, setShowQuickReplies] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [filterPriority, setFilterPriority] = useState<'all' | 'high' | 'medium' | 'low'>('all');
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -450,24 +453,16 @@ export const EnhancedMessagingSystem = () => {
                 ))}
               </CardContent>
 
-              {/* Quick Replies */}
-              {showQuickReplies && (
-                <div className="border-t border-border p-3 bg-sand-light/30">
-                  <div className="flex flex-wrap gap-2">
-                    {quickReplies.map((reply) => (
-                      <Button
-                        key={reply.id}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleQuickReply(reply)}
-                        className="text-xs"
-                      >
-                        {reply.text}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Quick Replies using ContextualQuickReplies */}
+              <ContextualQuickReplies
+                conversationContext={{
+                  hasPhotos: activeConversation.messages.some(m => m.type === 'image'),
+                  isPendingSchedule: activeConversation.jobContext.status === 'posted',
+                  isNearCompletion: activeConversation.jobContext.progress > 75,
+                  lastMessageType: activeConversation.messages[activeConversation.messages.length - 1]?.type
+                }}
+                onSelectReply={(reply) => handleSendMessage(reply)}
+              />
 
               {/* Enhanced Message Input */}
               <div className="border-t border-border p-4">
@@ -510,7 +505,8 @@ export const EnhancedMessagingSystem = () => {
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => setShowQuickReplies(!showQuickReplies)}
+                        onClick={() => setShowCommandPalette(true)}
+                        title="Commands (type /)"
                       >
                         <Zap className="w-4 h-4" />
                       </Button>
@@ -552,6 +548,17 @@ export const EnhancedMessagingSystem = () => {
         accept="image/*,.pdf,.doc,.docx"
         onChange={() => {}}
       />
+      
+      {/* Command Palette */}
+      {showCommandPalette && (
+        <CommandPalette
+          onCommand={(command, args) => {
+            console.log('Command executed:', command, args);
+            setShowCommandPalette(false);
+          }}
+          onClose={() => setShowCommandPalette(false)}
+        />
+      )}
     </div>
   );
 };
