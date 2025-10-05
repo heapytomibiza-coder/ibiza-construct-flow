@@ -5,7 +5,9 @@ import { PaymentMethodsManager } from '@/components/payments/PaymentMethodsManag
 import { PayoutManagement } from '@/components/payments/PayoutManagement';
 import { ClientPaymentsView } from '@/components/client/ClientPaymentsView';
 import { PaymentAnalyticsDashboard } from '@/components/analytics/PaymentAnalyticsDashboard';
-import { CreditCard, Wallet, History, BarChart3 } from 'lucide-react';
+import { NotificationPreferences } from '@/components/notifications/NotificationPreferences';
+import { NotificationsList } from '@/components/notifications/NotificationsList';
+import { CreditCard, Wallet, History, BarChart3, Bell, Settings } from 'lucide-react';
 
 export const PaymentsPage = () => {
   const { user } = useAuth();
@@ -48,6 +50,14 @@ export const PaymentsPage = () => {
                 <BarChart3 className="w-4 h-4" />
                 Analytics
               </TabsTrigger>
+              <TabsTrigger value="notifications" className="flex items-center gap-2">
+                <Bell className="w-4 h-4" />
+                Notifications
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Settings
+              </TabsTrigger>
               {isProfessional && (
                 <TabsTrigger value="payouts" className="flex items-center gap-2">
                   <History className="w-4 h-4" />
@@ -66,6 +76,14 @@ export const PaymentsPage = () => {
 
             <TabsContent value="analytics">
               <PaymentAnalyticsDashboard />
+            </TabsContent>
+
+            <TabsContent value="notifications">
+              <NotificationsList />
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <NotificationPreferences />
             </TabsContent>
 
             {isProfessional && (
