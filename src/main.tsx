@@ -25,8 +25,18 @@ const qc = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes (garbage collection)
       refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      retry: 1,
+      // Keep previous data while fetching for smoother UX
+      placeholderData: (previousData) => previousData,
+    },
+    mutations: {
+      // Global retry config for mutations
+      retry: 0,
+      // Network mode for better offline handling
+      networkMode: 'online',
     },
   },
 });
