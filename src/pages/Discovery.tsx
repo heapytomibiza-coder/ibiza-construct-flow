@@ -8,12 +8,14 @@ import { DiscoveryServiceCard } from '@/components/discovery/DiscoveryServiceCar
 import { BookingCart } from '@/components/discovery/BookingCart';
 import { GlobalAIChatBot } from '@/components/layout/GlobalAIChatBot';
 import { useDiscoveryServices } from '@/hooks/useDiscoveryServices';
+import { useDiscoveryProfessionals } from '@/hooks/useDiscoveryProfessionals';
 import { useDiscoveryAnalytics } from '@/hooks/useDiscoveryAnalytics';
 import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Sparkles, Store, Users } from 'lucide-react';
 import EnhancedServiceFilters from '@/components/services/EnhancedServiceFilters';
+import EnhancedProfessionalCard from '@/components/professionals/EnhancedProfessionalCard';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
@@ -28,6 +30,8 @@ interface Filters {
   priceRange: [number, number];
   availability: string[];
   location: string;
+  verified?: boolean;
+  minRating?: number;
 }
 
 const Discovery = () => {
@@ -48,6 +52,16 @@ const Discovery = () => {
   });
   
   const { services, loading } = useDiscoveryServices(searchTerm, filters);
+  const { professionals: discoveredProfessionals, loading: loadingPros } = useDiscoveryProfessionals(
+    searchTerm, 
+    {
+      verified: filters.verified,
+      location: filters.location,
+      minRating: filters.minRating,
+      priceRange: filters.priceRange,
+      skills: filters.specialists
+    }
+  );
   const { trackDiscoveryView, trackSearch, trackItemClick } = useDiscoveryAnalytics();
   
   const categories = getCategories();
@@ -242,37 +256,23 @@ const Discovery = () => {
             </div>
           )
         ) : (
-          professionals.length === 0 ? (
+          loadingPros ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <SkeletonLoader key={i} variant="card" />
+              ))}
+            </div>
+          ) : discoveredProfessionals.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-lg text-muted-foreground">No professionals found</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {professionals.map((prof) => (
-                <div
+              {discoveredProfessionals.map((prof) => (
+                <EnhancedProfessionalCard
                   key={prof.id}
-                  onClick={() => navigate(`/professional/${prof.id}`)}
-                  className="cursor-pointer group"
-                >
-                  <div className="bg-card rounded-lg border p-6 hover:shadow-lg transition-shadow">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
-                        {prof.name[0]}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                          {prof.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {prof.servicesCount} service{prof.servicesCount !== 1 ? 's' : ''} available
-                        </p>
-                      </div>
-                    </div>
-                    <Button className="w-full" variant="outline">
-                      View Menu
-                    </Button>
-                  </div>
-                </div>
+                  professional={prof}
+                />
               ))}
             </div>
           )
