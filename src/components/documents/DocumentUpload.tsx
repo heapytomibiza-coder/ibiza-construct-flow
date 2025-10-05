@@ -28,8 +28,9 @@ interface ProfessionalDocument {
   id: string;
   document_type: string;
   file_name: string;
+  file_url: string;
   verification_status: string;
-  verification_notes?: string;
+  reviewer_notes?: string;
   expires_at?: string;
   created_at: string;
 }
@@ -96,12 +97,38 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
   };
 
   const uploadDocument = async (file: File, documentType: string) => {
-    const fileExt = file.name.split('.').pop();
+    // Convert image if it's an image file
+    let fileToUpload = file;
+    if (file.type.startsWith('image/')) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const { data, error: convertError } = await supabase.functions.invoke('convert-image', {
+          body: formData,
+        });
+
+        if (convertError) {
+          console.error('Image conversion failed, using original:', convertError);
+        } else if (data?.file) {
+          // Convert base64 to blob
+          const base64Response = await fetch(data.file);
+          const blob = await base64Response.blob();
+          fileToUpload = new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), {
+            type: 'image/webp',
+          });
+        }
+      } catch (e) {
+        console.error('Image conversion error:', e);
+      }
+    }
+
+    const fileExt = fileToUpload.name.split('.').pop();
     const fileName = `${professionalId}/${documentType}/${Date.now()}.${fileExt}`;
 
     const { data, error } = await supabase.storage
       .from('professional-documents')
-      .upload(fileName, file);
+      .upload(fileName, fileToUpload);
 
     if (error) throw error;
 
@@ -116,8 +143,9 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
         professional_id: professionalId,
         document_type: documentType,
         file_url: publicUrl,
-        file_name: file.name,
-        file_size: file.size
+        file_name: fileToUpload.name,
+        file_size: fileToUpload.size,
+        verification_status: 'pending'
       });
 
     if (dbError) throw dbError;
@@ -187,6 +215,17 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
 
   const removeDocument = async (documentId: string) => {
     try {
+      const doc = documents.find(d => d.id === documentId);
+      
+      // Delete from storage
+      if (doc?.file_url) {
+        const path = doc.file_url.split('/professional-documents/')[1];
+        if (path) {
+          await supabase.storage.from('professional-documents').remove([path]);
+        }
+      }
+
+      // Delete from database
       const { error } = await supabase
         .from('professional_documents')
         .delete()
@@ -275,10 +314,10 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
                     </Button>
                   </div>
                   
-                  {existingDoc.verification_notes && (
+                  {existingDoc.reviewer_notes && (
                     <div className="p-3 bg-muted rounded-lg">
                       <p className="text-sm text-muted-foreground">
-                        <strong>Review notes:</strong> {existingDoc.verification_notes}
+                        <strong>Review notes:</strong> {existingDoc.reviewer_notes}
                       </p>
                     </div>
                   )}
