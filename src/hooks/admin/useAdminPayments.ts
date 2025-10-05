@@ -19,7 +19,7 @@ export function useAdminPayments() {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_payment_statistics');
       if (error) throw error;
-      return data as PaymentStatistics;
+      return data as unknown as PaymentStatistics;
     },
   });
 
