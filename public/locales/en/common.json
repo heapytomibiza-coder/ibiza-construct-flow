@@ -38,5 +38,141 @@
     "saved": "Successfully saved",
     "deleted": "Successfully deleted",
     "updated": "Successfully updated"
+  },
+  "quickReplies": {
+    "available": "I'm available",
+    "busy": "I'm busy right now",
+    "canStartTomorrow": "I can start tomorrow",
+    "needMoreInfo": "I need more information",
+    "quoteReady": "Your quote is ready",
+    "onMyWay": "I'm on my way",
+    "running15": "Running 15 minutes late",
+    "completed": "Job completed",
+    "reviewPhotos": "Please review photos",
+    "needApproval": "Need your approval to proceed"
+  },
+  "commandPalette": {
+    "placeholder": "Type a command or search...",
+    "commands": {
+      "quote": "/quote - Send a price quote",
+      "availability": "/availability - Update your availability",
+      "schedule": "/schedule - Propose meeting time",
+      "invoice": "/invoice - Send an invoice",
+      "photo": "/photo - Share photos",
+      "location": "/location - Share location"
+    }
+  },
+  "visualPickers": {
+    "materials": {
+      "label": "Select Material",
+      "options": {
+        "wood": "Wood",
+        "metal": "Metal",
+        "glass": "Glass",
+        "stone": "Stone",
+        "concrete": "Concrete",
+        "ceramic": "Ceramic"
+      }
+    },
+    "finishes": {
+      "label": "Select Finish",
+      "options": {
+        "matte": "Matte",
+        "glossy": "Glossy",
+        "satin": "Satin",
+        "polished": "Polished",
+        "brushed": "Brushed",
+        "textured": "Textured"
+      }
+    }
+  },
+  "quantities": {
+    "squareMeters": "m²",
+    "linearMeters": "linear m",
+    "pieces": "pieces",
+    "hours": "hours",
+    "days": "days"
+  },
+  "ratings": {
+    "poor": "Poor",
+    "fair": "Fair",
+    "good": "Good",
+    "great": "Great",
+    "excellent": "Excellent"
+  },
+  "presets": {
+    "recent": "Recent Selections",
+    "usePreset": "Use this preset",
+    "fromPreviousJob": "From previous job"
+  },
+  "decline": {
+    "reasons": {
+      "tooExpensive": "Price is too high",
+      "timeline": "Timeline doesn't work",
+      "foundAnother": "Found another professional",
+      "changedMind": "Changed my mind",
+      "needMoreTime": "Need more time to decide"
+    }
+  },
+  "camera": {
+    "capture": "Take Photo",
+    "retake": "Retake",
+    "processing": "Processing image...",
+    "extractingText": "Extracting text...",
+    "textExtracted": "Text extracted successfully",
+    "error": "Failed to process image"
+  },
+  "aiGeneration": {
+    "generating": "Generating with AI...",
+    "generated": "Generated successfully",
+    "useGenerated": "Use generated content",
+    "regenerate": "Regenerate",
+    "error": "Failed to generate content"
+  },
+  "search": {
+    "global": "Search everything...",
+    "noResults": "No results found",
+    "searching": "Searching...",
+    "hint": "Press Cmd+K to search"
+  },
+  "escrow": {
+    "held": "Held in Escrow",
+    "released": "Released",
+    "pending": "Pending Release",
+    "timeline": "Escrow Timeline",
+    "release": "Release Funds",
+    "dispute": "File Dispute"
+  },
+  "dispute": {
+    "file": "File Dispute",
+    "reason": "Dispute Reason",
+    "description": "Describe the issue",
+    "submit": "Submit Dispute",
+    "cancel": "Cancel Dispute"
+  },
+  "timeSlots": {
+    "suggested": "Suggested Times",
+    "earliest": "Earliest overlap",
+    "noOverlap": "No overlapping availability",
+    "selectTime": "Select a time slot"
+  },
+  "applicants": {
+    "new": "New",
+    "shortlisted": "Shortlisted",
+    "invited": "Invited",
+    "rejected": "Rejected",
+    "bulkActions": "Bulk Actions",
+    "moveToShortlist": "Move to Shortlist",
+    "sendInvite": "Send Invite",
+    "reject": "Reject"
+  },
+  "offers": {
+    "expires": "Expires",
+    "extend": "Extend",
+    "counter": "Counter Offer",
+    "accept": "Accept",
+    "decline": "Decline",
+    "autoCounter": "Generate Counter Offer",
+    "generating": "Generating counter offer..."
   }
 }
