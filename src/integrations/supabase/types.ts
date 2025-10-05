@@ -20,11 +20,14 @@ export type Database = {
           actor_id: string | null
           created_at: string | null
           description: string | null
+          dismissed_at: string | null
           entity_id: string | null
           entity_type: string | null
           event_type: string
           id: string
           metadata: Json | null
+          notification_type: string | null
+          priority: string | null
           read_at: string | null
           title: string
           user_id: string
@@ -34,11 +37,14 @@ export type Database = {
           actor_id?: string | null
           created_at?: string | null
           description?: string | null
+          dismissed_at?: string | null
           entity_id?: string | null
           entity_type?: string | null
           event_type: string
           id?: string
           metadata?: Json | null
+          notification_type?: string | null
+          priority?: string | null
           read_at?: string | null
           title: string
           user_id: string
@@ -48,11 +54,14 @@ export type Database = {
           actor_id?: string | null
           created_at?: string | null
           description?: string | null
+          dismissed_at?: string | null
           entity_id?: string | null
           entity_type?: string | null
           event_type?: string
           id?: string
           metadata?: Json | null
+          notification_type?: string | null
+          priority?: string | null
           read_at?: string | null
           title?: string
           user_id?: string
@@ -1119,6 +1128,90 @@ export type Database = {
         }
         Relationships: []
       }
+      document_collaborators: {
+        Row: {
+          created_at: string | null
+          document_id: string
+          id: string
+          last_viewed_at: string | null
+          permission: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          document_id: string
+          id?: string
+          last_viewed_at?: string | null
+          permission: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          document_id?: string
+          id?: string
+          last_viewed_at?: string | null
+          permission?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_collaborators_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "shared_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_collaborators_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_edits: {
+        Row: {
+          change_data: Json | null
+          change_type: string
+          created_at: string | null
+          document_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          change_data?: Json | null
+          change_type: string
+          created_at?: string | null
+          document_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          change_data?: Json | null
+          change_type?: string
+          created_at?: string | null
+          document_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_edits_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "shared_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_edits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escrow_milestones: {
         Row: {
           amount: number
@@ -1423,10 +1516,14 @@ export type Database = {
           applied_at: string | null
           availability_status: string | null
           id: string
+          interview_notes: string | null
+          interview_scheduled_at: string | null
           job_id: string
           notes: string | null
           professional_id: string
+          rating: number | null
           status: string | null
+          tags: string[] | null
           updated_at: string | null
           viewed_at: string | null
         }
@@ -1434,10 +1531,14 @@ export type Database = {
           applied_at?: string | null
           availability_status?: string | null
           id?: string
+          interview_notes?: string | null
+          interview_scheduled_at?: string | null
           job_id: string
           notes?: string | null
           professional_id: string
+          rating?: number | null
           status?: string | null
+          tags?: string[] | null
           updated_at?: string | null
           viewed_at?: string | null
         }
@@ -1445,10 +1546,14 @@ export type Database = {
           applied_at?: string | null
           availability_status?: string | null
           id?: string
+          interview_notes?: string | null
+          interview_scheduled_at?: string | null
           job_id?: string
           notes?: string | null
           professional_id?: string
+          rating?: number | null
           status?: string | null
+          tags?: string[] | null
           updated_at?: string | null
           viewed_at?: string | null
         }
@@ -1944,7 +2049,10 @@ export type Database = {
       }
       offer_negotiations: {
         Row: {
+          attachments: Json | null
+          counter_count: number | null
           created_at: string | null
+          expires_at: string | null
           id: string
           message: string | null
           offer_id: string
@@ -1954,7 +2062,10 @@ export type Database = {
           status: string | null
         }
         Insert: {
+          attachments?: Json | null
+          counter_count?: number | null
           created_at?: string | null
+          expires_at?: string | null
           id?: string
           message?: string | null
           offer_id: string
@@ -1964,7 +2075,10 @@ export type Database = {
           status?: string | null
         }
         Update: {
+          attachments?: Json | null
+          counter_count?: number | null
           created_at?: string | null
+          expires_at?: string | null
           id?: string
           message?: string | null
           offer_id?: string
@@ -2452,6 +2566,44 @@ export type Database = {
           },
           {
             foreignKeyName: "professional_applications_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_availability: {
+        Row: {
+          available_until: string | null
+          created_at: string | null
+          custom_message: string | null
+          id: string
+          professional_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          available_until?: string | null
+          created_at?: string | null
+          custom_message?: string | null
+          id?: string
+          professional_id: string
+          status: string
+          updated_at?: string | null
+        }
+        Update: {
+          available_until?: string | null
+          created_at?: string | null
+          custom_message?: string | null
+          id?: string
+          professional_id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_availability_professional_id_fkey"
             columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -3569,6 +3721,67 @@ export type Database = {
         }
         Relationships: []
       }
+      shared_documents: {
+        Row: {
+          content: Json | null
+          created_at: string | null
+          created_by: string | null
+          document_type: string
+          id: string
+          job_id: string | null
+          last_edited_at: string | null
+          last_edited_by: string | null
+          title: string
+          version: number | null
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          document_type: string
+          id?: string
+          job_id?: string | null
+          last_edited_at?: string | null
+          last_edited_by?: string | null
+          title: string
+          version?: number | null
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          document_type?: string
+          id?: string
+          job_id?: string | null
+          last_edited_at?: string | null
+          last_edited_by?: string | null
+          title?: string
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_documents_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_documents_last_edited_by_fkey"
+            columns: ["last_edited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       smart_matches: {
         Row: {
           availability_score: number | null
@@ -3784,6 +3997,16 @@ export type Database = {
       can_professional_view_job: {
         Args: { _job_id: string; _user_id: string }
         Returns: boolean
+      }
+      get_online_professionals: {
+        Args: { professional_ids?: string[] }
+        Returns: {
+          available_until: string
+          custom_message: string
+          professional_id: string
+          status: string
+          updated_at: string
+        }[]
       }
       get_user_role: {
         Args: { user_id: string }
