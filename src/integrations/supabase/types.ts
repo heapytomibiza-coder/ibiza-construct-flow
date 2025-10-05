@@ -2877,6 +2877,45 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_receipts: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          issued_at: string
+          payment_id: string
+          receipt_data: Json
+          receipt_number: string
+          receipt_url: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          issued_at?: string
+          payment_id: string
+          receipt_data?: Json
+          receipt_number: string
+          receipt_url?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          issued_at?: string
+          payment_id?: string
+          receipt_data?: Json
+          receipt_number?: string
+          receipt_url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_reconciliations: {
         Row: {
           actual_amount: number
@@ -4353,6 +4392,57 @@ export type Database = {
           },
         ]
       }
+      refund_requests: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          payment_id: string
+          processed_at: string | null
+          reason: string
+          requested_by: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          stripe_refund_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          payment_id: string
+          processed_at?: string | null
+          reason: string
+          requested_by: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          stripe_refund_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          payment_id?: string
+          processed_at?: string | null
+          reason?: string
+          requested_by?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          stripe_refund_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       refunds: {
         Row: {
           amount: number
@@ -4895,6 +4985,41 @@ export type Database = {
         }
         Relationships: []
       }
+      transaction_notes: {
+        Row: {
+          created_at: string
+          id: string
+          is_internal: boolean | null
+          note: string
+          transaction_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          note: string
+          transaction_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          note?: string
+          transaction_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_notes_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -4975,6 +5100,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      generate_receipt_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_available_slots: {
         Args: {
           p_date: string
@@ -4995,6 +5124,10 @@ export type Database = {
           status: string
           updated_at: string
         }[]
+      }
+      get_payment_statistics: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
       }
       get_unread_message_count: {
         Args: { p_user_id: string }
