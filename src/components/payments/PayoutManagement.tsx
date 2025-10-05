@@ -1,191 +1,214 @@
-import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { usePayouts } from '@/hooks/usePayouts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-
-interface Payout {
-  id: string;
-  amount: number;
-  status: 'pending' | 'in_transit' | 'completed' | 'failed';
-  requestedDate: string;
-  estimatedArrival?: string;
-  completedDate?: string;
-  description: string;
-}
+import { Loader2, DollarSign, TrendingUp, Clock, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import { format } from 'date-fns';
 
 export const PayoutManagement = () => {
-  const { toast } = useToast();
-  const [availableBalance] = useState(2450.00);
-  const [payouts] = useState<Payout[]>([
-    {
-      id: '1',
-      amount: 850.00,
-      status: 'in_transit',
-      requestedDate: '2025-10-01',
-      estimatedArrival: '2025-10-05',
-      description: 'Bathroom renovation - Final payment'
-    },
-    {
-      id: '2',
-      amount: 1200.00,
-      status: 'completed',
-      requestedDate: '2025-09-15',
-      completedDate: '2025-09-18',
-      description: 'Kitchen installation - Milestone 2'
-    },
-    {
-      id: '3',
-      amount: 500.00,
-      status: 'pending',
-      requestedDate: '2025-10-03',
-      description: 'Electrical work - Initial payment'
+  const { user } = useAuth();
+  const { payoutAccount, payouts, stats, loading, createConnectAccount, requestPayout } = usePayouts(user?.id);
+
+  const handleRequestPayout = async () => {
+    if (stats.availableBalance > 0) {
+      try {
+        await requestPayout(stats.availableBalance);
+      } catch (error) {
+        console.error('Payout request failed:', error);
+      }
     }
-  ]);
-
-  const handleRequestPayout = () => {
-    toast({
-      title: "Payout requested",
-      description: "Your payout request has been submitted and will be processed within 2-3 business days."
-    });
   };
 
-  const getStatusBadge = (status: Payout['status']) => {
-    const variants: Record<Payout['status'], { variant: "default" | "secondary" | "destructive" | "outline", label: string }> = {
-      pending: { variant: "secondary", label: "Pending" },
-      in_transit: { variant: "default", label: "In Transit" },
-      completed: { variant: "outline", label: "Completed" },
-      failed: { variant: "destructive", label: "Failed" }
-    };
-    const config = variants[status];
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return 'bg-green-500';
+      case 'processing':
+        return 'bg-blue-500';
+      case 'failed':
+        return 'bg-red-500';
+      case 'cancelled':
+        return 'bg-gray-500';
+      default:
+        return 'bg-yellow-500';
+    }
   };
 
-  const pendingPayouts = payouts.filter(p => p.status === 'pending' || p.status === 'in_transit');
-  const completedPayouts = payouts.filter(p => p.status === 'completed');
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'processing':
+        return <Clock className="w-4 h-4" />;
+      case 'failed':
+        return <AlertCircle className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!payoutAccount) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Set Up Payouts</CardTitle>
+          <CardDescription>
+            Connect your Stripe account to receive payments
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            To receive payouts for your completed work, you'll need to set up a Stripe Connect account.
+            This is a secure way to receive payments directly to your bank account.
+          </p>
+          <Button onClick={createConnectAccount} className="w-full">
+            <ExternalLink className="w-4 h-4 mr-2" />
+            Set Up Payout Account
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!payoutAccount.details_submitted) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Complete Account Setup</CardTitle>
+          <CardDescription>
+            Finish setting up your payout account
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Your payout account needs additional information before you can receive payments.
+            Click below to complete the setup process.
+          </p>
+          <Button onClick={createConnectAccount} className="w-full">
+            <ExternalLink className="w-4 h-4 mr-2" />
+            Complete Setup
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Balance Overview */}
+      {/* Earnings Summary */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${availableBalance.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Ready to withdraw
-            </p>
-            <Button 
-              className="w-full mt-4" 
-              onClick={handleRequestPayout}
-              disabled={availableBalance === 0}
-            >
-              Request Payout
-            </Button>
+            <div className="text-2xl font-bold">{formatCurrency(stats.totalEarnings)}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingPayouts.length}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              In progress
-            </p>
+            <div className="text-2xl font-bold">{formatCurrency(stats.pendingEarnings)}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Earned</CardTitle>
+            <CardTitle className="text-sm font-medium">Available</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              ${(completedPayouts.reduce((sum, p) => sum + p.amount, 0) + availableBalance).toFixed(2)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Lifetime earnings
-            </p>
+            <div className="text-2xl font-bold">{formatCurrency(stats.availableBalance)}</div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Request Payout Button */}
+      {stats.availableBalance > 0 && (
+        <Card>
+          <CardContent className="pt-6">
+            <Button onClick={handleRequestPayout} className="w-full" size="lg">
+              <DollarSign className="w-4 h-4 mr-2" />
+              Request Payout ({formatCurrency(stats.availableBalance)})
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Payout History */}
       <Card>
         <CardHeader>
           <CardTitle>Payout History</CardTitle>
-          <CardDescription>Track your earnings and payout requests</CardDescription>
+          <CardDescription>Your recent payout requests</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="pending">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="pending">Pending & In Transit</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="pending" className="space-y-4 mt-4">
-              {pendingPayouts.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <AlertCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>No pending payouts</p>
-                </div>
-              ) : (
-                pendingPayouts.map(payout => (
-                  <div key={payout.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium">${payout.amount.toFixed(2)}</p>
-                        {getStatusBadge(payout.status)}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{payout.description}</p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                        <span>Requested: {new Date(payout.requestedDate).toLocaleDateString()}</span>
-                        {payout.estimatedArrival && (
-                          <span>Est. Arrival: {new Date(payout.estimatedArrival).toLocaleDateString()}</span>
-                        )}
-                      </div>
+          {payouts.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              No payouts yet
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {payouts.map((payout) => (
+                <div
+                  key={payout.id}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    {getStatusIcon(payout.status)}
+                    <div>
+                      <p className="font-medium">{formatCurrency(payout.amount)}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {format(new Date(payout.requested_at), 'MMM d, yyyy')}
+                      </p>
                     </div>
                   </div>
-                ))
-              )}
-            </TabsContent>
+                  <Badge className={getStatusColor(payout.status)}>
+                    {payout.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-            <TabsContent value="completed" className="space-y-4 mt-4">
-              {completedPayouts.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <AlertCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>No completed payouts yet</p>
-                </div>
-              ) : (
-                completedPayouts.map(payout => (
-                  <div key={payout.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium">${payout.amount.toFixed(2)}</p>
-                        {getStatusBadge(payout.status)}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{payout.description}</p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                        <span>Requested: {new Date(payout.requestedDate).toLocaleDateString()}</span>
-                        {payout.completedDate && (
-                          <span>Completed: {new Date(payout.completedDate).toLocaleDateString()}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </TabsContent>
-          </Tabs>
+      {/* Payout Stats */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Statistics</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-3">
+          <div className="space-y-1">
+            <p className="text-sm text-muted-foreground">Completed</p>
+            <p className="text-2xl font-bold">
+              {payouts.filter(p => p.status === 'paid').length}
+            </p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm text-muted-foreground">Pending</p>
+            <p className="text-2xl font-bold">
+              {payouts.filter(p => p.status === 'pending' || p.status === 'processing').length}
+            </p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm text-muted-foreground">Total Paid Out</p>
+            <p className="text-2xl font-bold">{formatCurrency(stats.paidOut)}</p>
+          </div>
         </CardContent>
       </Card>
     </div>
