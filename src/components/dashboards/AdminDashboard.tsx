@@ -34,6 +34,7 @@ const UserInspector = lazy(() => import('@/components/admin/UserInspector'));
 const AdminDocumentReview = lazy(() => import('@/components/admin/AdminDocumentReview').then(m => ({ default: m.AdminDocumentReview })));
 const DatabaseStats = lazy(() => import('@/components/admin/DatabaseStats'));
 const FeatureFlagsManager = lazy(() => import('@/components/admin/FeatureFlagsManager'));
+const PaymentManagementDashboard = lazy(() => import('@/components/admin/payments/PaymentManagementDashboard').then(m => ({ default: m.default })));
 
 // Lazy load AI components
 const AISmartMatcher = lazy(() => import('@/components/ai/AISmartMatcher').then(m => ({ default: m.AISmartMatcher })));
@@ -163,6 +164,13 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       description: 'Smart matching & automation',
       tooltip: 'Configure AI-powered job matching, workflow automation, and intelligent routing systems.'
     },
+    { 
+      id: 'payments', 
+      name: 'Payment Management', 
+      icon: CreditCard, 
+      description: 'Manage transactions & disputes',
+      tooltip: 'Oversee payment transactions, approve refunds, resolve disputes, and monitor financial operations.'
+    },
   ];
 
   const handleSignOut = async () => {
@@ -222,6 +230,8 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
               <WorkflowAutomation />
             </div>
           );
+        case 'payments':
+          return <PaymentManagementDashboard />;
         default:
           return <CommandCenter />;
       }
