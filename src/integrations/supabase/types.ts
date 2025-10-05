@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_feed: {
+        Row: {
+          action_url: string | null
+          actor_id: string | null
+          created_at: string | null
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          actor_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          actor_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_feed_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_feed_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_events: {
         Row: {
           admin_id: string
@@ -637,6 +697,75 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_events: {
+        Row: {
+          attendees: string[] | null
+          created_at: string | null
+          description: string | null
+          end_time: string
+          event_type: string | null
+          external_calendar_id: string | null
+          id: string
+          job_id: string | null
+          location: Json | null
+          metadata: Json | null
+          recurrence_rule: string | null
+          start_time: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attendees?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          end_time: string
+          event_type?: string | null
+          external_calendar_id?: string | null
+          id?: string
+          job_id?: string | null
+          location?: Json | null
+          metadata?: Json | null
+          recurrence_rule?: string | null
+          start_time: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attendees?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string
+          event_type?: string | null
+          external_calendar_id?: string | null
+          id?: string
+          job_id?: string | null
+          location?: Json | null
+          metadata?: Json | null
+          recurrence_rule?: string | null
+          start_time?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_events_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       change_orders: {
         Row: {
           approved_at: string | null
@@ -807,6 +936,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          job_id: string | null
+          last_message_at: string | null
+          metadata: Json | null
+          participants: string[]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          last_message_at?: string | null
+          metadata?: Json | null
+          participants: string[]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          last_message_at?: string | null
+          metadata?: Json | null
+          participants?: string[]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       conversion_analytics: {
         Row: {
@@ -1200,6 +1367,57 @@ export type Database = {
         }
         Relationships: []
       }
+      job_applicants: {
+        Row: {
+          applied_at: string | null
+          availability_status: string | null
+          id: string
+          job_id: string
+          notes: string | null
+          professional_id: string
+          status: string | null
+          updated_at: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          applied_at?: string | null
+          availability_status?: string | null
+          id?: string
+          job_id: string
+          notes?: string | null
+          professional_id: string
+          status?: string | null
+          updated_at?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          applied_at?: string | null
+          availability_status?: string | null
+          id?: string
+          job_id?: string
+          notes?: string | null
+          professional_id?: string
+          status?: string | null
+          updated_at?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applicants_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applicants_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_broadcasts: {
         Row: {
           broadcast_type: string
@@ -1472,39 +1690,69 @@ export type Database = {
       }
       messages: {
         Row: {
+          attachments: Json | null
           content: string
           contract_id: string | null
+          conversation_id: string | null
           created_at: string
+          edited_at: string | null
           id: string
+          is_edited: boolean | null
           job_id: string | null
           message_type: string
           read_at: string | null
           recipient_id: string
           sender_id: string
+          thread_id: string | null
         }
         Insert: {
+          attachments?: Json | null
           content: string
           contract_id?: string | null
+          conversation_id?: string | null
           created_at?: string
+          edited_at?: string | null
           id?: string
+          is_edited?: boolean | null
           job_id?: string | null
           message_type?: string
           read_at?: string | null
           recipient_id: string
           sender_id: string
+          thread_id?: string | null
         }
         Update: {
+          attachments?: Json | null
           content?: string
           contract_id?: string | null
+          conversation_id?: string | null
           created_at?: string
+          edited_at?: string | null
           id?: string
+          is_edited?: boolean | null
           job_id?: string | null
           message_type?: string
           read_at?: string | null
           recipient_id?: string
           sender_id?: string
+          thread_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       micro_questions_ai_runs: {
         Row: {
@@ -1642,6 +1890,54 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      offer_negotiations: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string | null
+          offer_id: string
+          proposed_amount: number | null
+          proposed_terms: Json | null
+          sender_id: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          offer_id: string
+          proposed_amount?: number | null
+          proposed_terms?: Json | null
+          sender_id: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          offer_id?: string
+          proposed_amount?: number | null
+          proposed_terms?: Json | null
+          sender_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_negotiations_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offer_negotiations_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       offers: {
         Row: {
@@ -2453,6 +2749,7 @@ export type Database = {
       profiles: {
         Row: {
           active_role: string | null
+          avatar_url: string | null
           coverage_area: string | null
           created_at: string | null
           display_name: string | null
@@ -2470,6 +2767,7 @@ export type Database = {
         }
         Insert: {
           active_role?: string | null
+          avatar_url?: string | null
           coverage_area?: string | null
           created_at?: string | null
           display_name?: string | null
@@ -2487,6 +2785,7 @@ export type Database = {
         }
         Update: {
           active_role?: string | null
+          avatar_url?: string | null
           coverage_area?: string | null
           created_at?: string | null
           display_name?: string | null
