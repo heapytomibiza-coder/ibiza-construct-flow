@@ -38,7 +38,7 @@ serve(async (req) => {
     // Get verification details
     const { data: verification, error: verificationError } = await supabase
       .from("professional_verifications")
-      .select("*, professional_profiles!inner(user_id, profiles!inner(full_name, email))")
+      .select("professional_id")
       .eq("id", verificationId)
       .single();
 
@@ -46,9 +46,21 @@ serve(async (req) => {
       return json({ error: "Verification not found" }, 404);
     }
 
-    const professionalId = verification.professional_profiles.user_id;
-    const professionalName = verification.professional_profiles.profiles.full_name;
-    const professionalEmail = verification.professional_profiles.profiles.email;
+    const professionalId = verification.professional_id;
+
+    // Get professional profile and user details
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", professionalId)
+      .single();
+
+    if (profileError || !profile) {
+      return json({ error: "Professional profile not found" }, 404);
+    }
+
+    const professionalName = profile.full_name;
+    const professionalEmail = profile.email;
 
     // Update verification status
     const { error: updateError } = await supabase
