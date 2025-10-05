@@ -14,6 +14,7 @@ import { Upload, FileText, Download, MessageSquare, User, Star, Clock, MapPin, D
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { MilestoneReviewDialog } from '@/components/reviews/MilestoneReviewDialog';
+import { ViewReviewDialog } from '@/components/reviews/ViewReviewDialog';
 
 interface Job {
   id: string;
@@ -60,7 +61,11 @@ export default function JobDetailPage() {
   const [uploading, setUploading] = useState(false);
   const [selectedMilestone, setSelectedMilestone] = useState<any>(null);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [viewReviewDialogOpen, setViewReviewDialogOpen] = useState(false);
+  const [selectedReview, setSelectedReview] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState('applicants');
+  const [contractData, setContractData] = useState<any>(null);
 
   const { applicants, loading: applicantsLoading, updateApplicantStatus } = useApplicantTracking(id);
   const { releaseMilestone, isReleasing } = useEscrowRelease();
@@ -142,14 +147,24 @@ export default function JobDetailPage() {
 
   const fetchEscrowMilestones = async () => {
     try {
-      // Get contract for this job
+      // Get contract for this job with professional details
       const { data: contract, error: contractError } = await supabase
         .from('contracts')
-        .select('id')
+        .select(`
+          id,
+          tasker_id,
+          tasker:profiles!tasker_id (
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
         .eq('job_id', id)
         .maybeSingle();
 
       if (contractError) throw contractError;
+      
+      setContractData(contract);
       
       if (contract) {
         const { data, error } = await supabase
@@ -159,10 +174,47 @@ export default function JobDetailPage() {
           .order('milestone_number', { ascending: true });
 
         if (error) throw error;
-        setEscrowMilestones(data || []);
+        
+        // Extract professional info (handle array from Supabase)
+        const taskerInfo = Array.isArray(contract.tasker) ? contract.tasker[0] : contract.tasker;
+        
+        // Transform data to include professional info
+        const transformedMilestones = (data || []).map(m => ({
+          ...m,
+          professional_id: taskerInfo?.id,
+          professional_name: taskerInfo?.full_name,
+          professional_avatar: taskerInfo?.avatar_url,
+        }));
+        
+        setEscrowMilestones(transformedMilestones);
       }
     } catch (error: any) {
       console.error('Error fetching escrow milestones:', error);
+    }
+  };
+
+  const viewReview = async (milestoneId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('professional_reviews')
+        .select('*')
+        .eq('milestone_id', milestoneId)
+        .eq('client_id', user?.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      
+      if (data) {
+        const milestone = escrowMilestones.find(m => m.id === milestoneId);
+        setSelectedMilestone(milestone);
+        setSelectedReview(data);
+        setViewReviewDialogOpen(true);
+      } else {
+        toast.error('Review not found');
+      }
+    } catch (error: any) {
+      console.error('Error fetching review:', error);
+      toast.error('Failed to load review');
     }
   };
 
@@ -312,7 +364,7 @@ export default function JobDetailPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="applicants" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList>
             <TabsTrigger value="applicants">Applicants ({applicants.length})</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
@@ -424,23 +476,37 @@ export default function JobDetailPage() {
 
           {/* Payments Tab */}
           <TabsContent value="payments" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-copper" />
-                      Escrow Milestones
-                    </CardTitle>
-                    <CardDescription>Track and release payments for project milestones</CardDescription>
-                  </div>
-                  <Button onClick={() => navigate('/payments')}>
-                    View All Payments
+            {!contractData ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Shield className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Active Contract</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Payment milestones will be created once you hire a professional for this job.
+                  </p>
+                  <Button onClick={() => setActiveTab('applicants')}>
+                    View Applicants
                   </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {escrowMilestones.length > 0 ? (
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <Shield className="w-5 h-5 text-copper" />
+                        Escrow Milestones
+                      </CardTitle>
+                      <CardDescription>Track and release payments for project milestones</CardDescription>
+                    </div>
+                    <Button onClick={() => navigate('/payments')}>
+                      View All Payments
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {escrowMilestones.length > 0 ? (
                   <div className="space-y-4">
                     {escrowMilestones.map((milestone) => (
                       <Card key={milestone.id} className="border-l-4 border-l-copper">
@@ -485,8 +551,18 @@ export default function JobDetailPage() {
                               </Button>
                             )}
                             {milestone.status === 'completed' && milestone.completed_date && (
-                              <div className="text-sm text-muted-foreground ml-4">
-                                Released: {new Date(milestone.completed_date).toLocaleDateString()}
+                              <div className="flex items-center gap-2 ml-4">
+                                <div className="text-sm text-muted-foreground">
+                                  Released: {new Date(milestone.completed_date).toLocaleDateString()}
+                                </div>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => viewReview(milestone.id)}
+                                >
+                                  <Star className="w-4 h-4 mr-1" />
+                                  View Review
+                                </Button>
                               </div>
                             )}
                           </div>
@@ -494,20 +570,18 @@ export default function JobDetailPage() {
                       </Card>
                     ))}
                   </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <Shield className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-charcoal mb-2">No payment milestones</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Payment milestones will appear here once a contract is established
-                    </p>
-                    <Button onClick={() => navigate('/payments')}>
-                      Manage Payments
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Shield className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium mb-2">No payment milestones yet</h3>
+                      <p className="text-muted-foreground">
+                        Milestones will appear here once they are created for the contract.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Timeline Tab */}
@@ -674,41 +748,57 @@ export default function JobDetailPage() {
 
       {/* Milestone Review Dialog */}
       {selectedMilestone && (
-        <MilestoneReviewDialog
-          open={reviewDialogOpen}
-          onOpenChange={setReviewDialogOpen}
-          milestone={{
-            id: selectedMilestone.id,
-            title: selectedMilestone.title,
-            amount: selectedMilestone.amount,
-          }}
-          professional={{
-            id: selectedMilestone.professional_id || '',
-            name: selectedMilestone.professional_name || 'Professional',
-            avatar: selectedMilestone.professional_avatar,
-          }}
-          isAdmin={isAdmin}
-          onSubmit={async (reviewData) => {
-            try {
-              await releaseMilestone({
-                milestoneId: selectedMilestone.id,
-                notes: '',
-                review: reviewData.override ? undefined : {
-                  rating: reviewData.rating!,
-                  title: reviewData.title,
-                  comment: reviewData.comment,
-                },
-                override: reviewData.override || false,
-              });
-              setReviewDialogOpen(false);
-              setSelectedMilestone(null);
-              fetchEscrowMilestones(); // Refresh milestones
-            } catch (error) {
-              console.error('Release error:', error);
-            }
-          }}
-          isSubmitting={isReleasing}
-        />
+        <>
+          <MilestoneReviewDialog
+            open={reviewDialogOpen}
+            onOpenChange={setReviewDialogOpen}
+            milestone={{
+              id: selectedMilestone.id,
+              title: selectedMilestone.title,
+              amount: selectedMilestone.amount,
+            }}
+            professional={{
+              id: selectedMilestone.professional_id || '',
+              name: selectedMilestone.professional_name || 'Professional',
+              avatar: selectedMilestone.professional_avatar,
+            }}
+            isAdmin={isAdmin}
+            onSubmit={async (reviewData) => {
+              try {
+                await releaseMilestone({
+                  milestoneId: selectedMilestone.id,
+                  notes: '',
+                  review: reviewData.override ? undefined : {
+                    rating: reviewData.rating!,
+                    title: reviewData.title,
+                    comment: reviewData.comment,
+                  },
+                  override: reviewData.override || false,
+                });
+                setReviewDialogOpen(false);
+                setSelectedMilestone(null);
+                fetchEscrowMilestones(); // Refresh milestones
+              } catch (error) {
+                console.error('Release error:', error);
+              }
+            }}
+            isSubmitting={isReleasing}
+          />
+
+          <ViewReviewDialog
+            open={viewReviewDialogOpen}
+            onOpenChange={setViewReviewDialogOpen}
+            review={selectedReview}
+            professional={{
+              name: selectedMilestone.professional_name || 'Professional',
+              avatar: selectedMilestone.professional_avatar,
+            }}
+            milestone={{
+              title: selectedMilestone.title,
+              amount: selectedMilestone.amount,
+            }}
+          />
+        </>
       )}
     </div>
   );

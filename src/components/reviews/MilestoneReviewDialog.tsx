@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -43,6 +44,10 @@ export const MilestoneReviewDialog = ({
   const [title, setTitle] = useState('');
   const [comment, setComment] = useState('');
   const [showValidation, setShowValidation] = useState(false);
+  const [showOverrideConfirm, setShowOverrideConfirm] = useState(false);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+
+  const hasUnsavedChanges = rating !== 5 || title.length > 0 || comment.length > 0;
 
   const handleSubmit = async (override: boolean = false) => {
     if (!override && !rating) {
@@ -64,9 +69,27 @@ export const MilestoneReviewDialog = ({
     setShowValidation(false);
   };
 
+  const handleDialogClose = (open: boolean) => {
+    if (!open && hasUnsavedChanges && !isSubmitting) {
+      setShowCloseConfirm(true);
+    } else {
+      onOpenChange(open);
+    }
+  };
+
+  const confirmClose = () => {
+    setShowCloseConfirm(false);
+    setRating(5);
+    setTitle('');
+    setComment('');
+    setShowValidation(false);
+    onOpenChange(false);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+    <>
+      <Dialog open={open} onOpenChange={handleDialogClose}>
+        <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Release Funds & Review Work</DialogTitle>
           <DialogDescription>
@@ -132,7 +155,7 @@ export const MilestoneReviewDialog = ({
           {isAdmin && (
             <Button
               variant="outline"
-              onClick={() => handleSubmit(true)}
+              onClick={() => setShowOverrideConfirm(true)}
               disabled={isSubmitting}
               className="w-full sm:w-auto border-amber-500 text-amber-700 hover:bg-amber-50"
             >
@@ -150,7 +173,51 @@ export const MilestoneReviewDialog = ({
             {isSubmitting ? 'Releasing...' : 'Submit Review & Release Funds'}
           </Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* Admin Override Confirmation */}
+      <AlertDialog open={showOverrideConfirm} onOpenChange={setShowOverrideConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Admin Override</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are about to release ${milestone.amount.toFixed(2)} without requiring a review. 
+              This action will be logged for audit purposes. Are you sure?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                setShowOverrideConfirm(false);
+                handleSubmit(true);
+              }}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              Confirm Override
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Close Confirmation */}
+      <AlertDialog open={showCloseConfirm} onOpenChange={setShowCloseConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Discard Review?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes to your review. Are you sure you want to close without submitting?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Editing</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmClose}>
+              Discard Changes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
