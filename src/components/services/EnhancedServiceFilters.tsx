@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
-import { Filter, X, ChevronRight } from 'lucide-react';
+import { Filter, X, ChevronRight, Star, ShieldCheck } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import Cascader from '@/components/common/Cascader';
 
@@ -19,6 +19,8 @@ interface FilterProps {
     priceRange: [number, number];
     availability: string[];
     location: string;
+    verified?: boolean;
+    minRating?: number;
   };
   onFiltersChange: (filters: any) => void;
   categories: string[];
@@ -110,7 +112,9 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
         parseInt(searchParams.get('maxPrice') || '100000')
       ] as [number, number],
       availability: searchParams.get('avail')?.split(',').filter(Boolean) || [],
-      location: searchParams.get('loc') || ''
+      location: searchParams.get('loc') || '',
+      verified: searchParams.get('verified') === 'true',
+      minRating: searchParams.get('minRating') ? parseInt(searchParams.get('minRating')!) : undefined
     };
     
     setLocalFilters(urlFilters);
@@ -134,6 +138,8 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
     if (newFilters.priceRange[1] < 100000) params.set('maxPrice', newFilters.priceRange[1].toString());
     if (newFilters.availability.length > 0) params.set('avail', newFilters.availability.join(','));
     if (newFilters.location) params.set('loc', newFilters.location);
+    if (newFilters.verified) params.set('verified', 'true');
+    if (newFilters.minRating) params.set('minRating', newFilters.minRating.toString());
     
     setSearchParams(params);
   };
@@ -175,7 +181,9 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
       specialists: [],
       priceRange: [0, 100000] as [number, number],
       availability: [],
-      location: ''
+      location: '',
+      verified: false,
+      minRating: undefined
     };
     updateFilters(emptyFilters);
     setSearchParams(new URLSearchParams());
@@ -186,7 +194,9 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
            localFilters.specialists.length + 
            localFilters.availability.length +
            (localFilters.location ? 1 : 0) +
-           (localFilters.priceRange[0] > 0 || localFilters.priceRange[1] < 100000 ? 1 : 0);
+           (localFilters.priceRange[0] > 0 || localFilters.priceRange[1] < 100000 ? 1 : 0) +
+           (localFilters.verified ? 1 : 0) +
+           (localFilters.minRating ? 1 : 0);
   };
 
   if (!visible) return null;
@@ -342,6 +352,59 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
               </label>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      {/* Professional Quality */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4" />
+            Professional Quality
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="verified-only"
+              checked={localFilters.verified || false}
+              onCheckedChange={(checked) => 
+                updateFilters({ ...localFilters, verified: checked as boolean })
+              }
+            />
+            <label
+              htmlFor="verified-only"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              Verified Professionals Only
+            </label>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center gap-2">
+              <Star className="w-4 h-4" />
+              Minimum Rating
+            </label>
+            <div className="grid grid-cols-5 gap-2">
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <Button
+                  key={rating}
+                  variant={localFilters.minRating === rating ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => 
+                    updateFilters({ 
+                      ...localFilters, 
+                      minRating: localFilters.minRating === rating ? undefined : rating 
+                    })
+                  }
+                  className="flex items-center justify-center gap-1"
+                >
+                  {rating}
+                  <Star className="w-3 h-3" />
+                </Button>
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
