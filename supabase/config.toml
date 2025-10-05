@@ -14,3 +14,18 @@ verify_jwt = true
 
 [functions.generate-job-description]
 verify_jwt = true
+
+[functions.convert-image]
+verify_jwt = true
+
+[functions.admin-verify]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.create-stripe-connect-link]
+verify_jwt = true
+
+[functions.send-email]
+verify_jwt = false
