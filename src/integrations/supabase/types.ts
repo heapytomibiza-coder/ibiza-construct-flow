@@ -1513,6 +1513,54 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_reports: {
+        Row: {
+          created_at: string
+          file_url: string | null
+          generated_at: string | null
+          id: string
+          metadata: Json | null
+          period_end: string
+          period_start: string
+          report_data: Json
+          report_name: string
+          report_type: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_url?: string | null
+          generated_at?: string | null
+          id?: string
+          metadata?: Json | null
+          period_end: string
+          period_start: string
+          report_data?: Json
+          report_name: string
+          report_type: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string | null
+          generated_at?: string | null
+          id?: string
+          metadata?: Json | null
+          period_end?: string
+          period_start?: string
+          report_data?: Json
+          report_name?: string
+          report_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       form_sessions: {
         Row: {
           form_type: string
@@ -2547,6 +2595,69 @@ export type Database = {
           },
         ]
       }
+      payment_analytics: {
+        Row: {
+          average_transaction: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          payment_method_breakdown: Json | null
+          period_end: string
+          period_start: string
+          period_type: string
+          status_breakdown: Json | null
+          total_escrow: number
+          total_expenses: number
+          total_refunds: number
+          total_revenue: number
+          transaction_count: number
+          unique_clients: number
+          unique_professionals: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          average_transaction?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          payment_method_breakdown?: Json | null
+          period_end: string
+          period_start: string
+          period_type: string
+          status_breakdown?: Json | null
+          total_escrow?: number
+          total_expenses?: number
+          total_refunds?: number
+          total_revenue?: number
+          transaction_count?: number
+          unique_clients?: number
+          unique_professionals?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          average_transaction?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          payment_method_breakdown?: Json | null
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          status_breakdown?: Json | null
+          total_escrow?: number
+          total_expenses?: number
+          total_refunds?: number
+          total_revenue?: number
+          transaction_count?: number
+          unique_clients?: number
+          unique_professionals?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           billing_address: Json | null
@@ -2587,6 +2698,54 @@ export type Database = {
           last_four?: string | null
           stripe_payment_method_id?: string
           type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payment_reconciliations: {
+        Row: {
+          actual_amount: number
+          created_at: string
+          difference: number
+          expected_amount: number
+          id: string
+          metadata: Json | null
+          notes: string | null
+          reconciled_at: string | null
+          reconciled_by: string | null
+          reconciliation_date: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_amount: number
+          created_at?: string
+          difference: number
+          expected_amount: number
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reconciliation_date: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actual_amount?: number
+          created_at?: string
+          difference?: number
+          expected_amount?: number
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reconciliation_date?: string
+          status?: string
           updated_at?: string
           user_id?: string
         }

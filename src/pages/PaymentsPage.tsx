@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PaymentMethodsManager } from '@/components/payments/PaymentMethodsManager';
 import { PayoutManagement } from '@/components/payments/PayoutManagement';
 import { ClientPaymentsView } from '@/components/client/ClientPaymentsView';
-import { CreditCard, Wallet, History } from 'lucide-react';
+import { PaymentAnalyticsDashboard } from '@/components/analytics/PaymentAnalyticsDashboard';
+import { CreditCard, Wallet, History, BarChart3 } from 'lucide-react';
 
 export const PaymentsPage = () => {
   const { user } = useAuth();
@@ -43,6 +44,10 @@ export const PaymentsPage = () => {
                 <CreditCard className="w-4 h-4" />
                 Payment Methods
               </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                Analytics
+              </TabsTrigger>
               {isProfessional && (
                 <TabsTrigger value="payouts" className="flex items-center gap-2">
                   <History className="w-4 h-4" />
@@ -57,6 +62,10 @@ export const PaymentsPage = () => {
 
             <TabsContent value="methods">
               <PaymentMethodsManager />
+            </TabsContent>
+
+            <TabsContent value="analytics">
+              <PaymentAnalyticsDashboard />
             </TabsContent>
 
             {isProfessional && (
