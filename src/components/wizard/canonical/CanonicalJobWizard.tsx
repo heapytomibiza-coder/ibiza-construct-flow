@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 import { MainCategoryStep } from './MainCategoryStep';
 import { SubcategoryStep } from './SubcategoryStep';
@@ -273,6 +274,13 @@ export const CanonicalJobWizard: React.FC = () => {
       {/* Header with Progress */}
       <div className="bg-card/80 backdrop-blur-sm border-b sticky top-0 z-40">
         <div className="container mx-auto px-4 py-6">
+          <Breadcrumbs 
+            items={[
+              { label: 'Dashboard', href: '/dashboard/client' },
+              { label: 'Post Job' }
+            ]}
+            className="mb-4"
+          />
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-charcoal">Post a Job</h2>
             <Badge variant="outline">

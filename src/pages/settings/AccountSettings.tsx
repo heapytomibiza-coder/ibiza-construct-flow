@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2, Mail, Lock } from 'lucide-react';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function AccountSettings() {
   const { user } = useAuth();
@@ -67,6 +68,13 @@ export default function AccountSettings() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs 
+        items={[
+          { label: 'Dashboard', href: '/dashboard/client' },
+          { label: 'Settings', href: '/settings' },
+          { label: 'Account' }
+        ]}
+      />
       <Card>
         <CardHeader>
           <CardTitle>Email Address</CardTitle>

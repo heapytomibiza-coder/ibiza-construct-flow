@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +25,7 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
   profile, 
   onToggleMode 
 }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
   const [bookings, setBookings] = useState([]);
   const [stats, setStats] = useState({
@@ -131,7 +133,7 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
   const renderTabContent = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeTab stats={stats} bookings={bookings} onTabChange={setActiveTab} />;
+        return <HomeTab stats={stats} bookings={bookings} onTabChange={setActiveTab} navigate={navigate} />;
       case 'jobs':
         return <JobsTab bookings={bookings} loading={loading} />;
       case 'messages':
@@ -139,7 +141,7 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
       case 'payments':
         return <PaymentsTab />;
       default:
-        return <HomeTab stats={stats} bookings={bookings} onTabChange={setActiveTab} />;
+        return <HomeTab stats={stats} bookings={bookings} onTabChange={setActiveTab} navigate={navigate} />;
     }
   };
 
@@ -208,7 +210,7 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
 };
 
 // Home Tab Component
-const HomeTab = ({ stats, bookings, onTabChange }: any) => (
+const HomeTab = ({ stats, bookings, onTabChange, navigate }: any) => (
   <div className="space-y-6">
     {/* Quick Actions */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -226,6 +228,7 @@ const HomeTab = ({ stats, bookings, onTabChange }: any) => (
           <Button 
             className="w-full mt-4 bg-gradient-hero hover:bg-copper text-white"
             data-tour="post-job"
+            onClick={() => navigate('/post')}
           >
             <Plus className="w-4 h-4 mr-2" />
             Post a Job
@@ -324,15 +327,23 @@ const HomeTab = ({ stats, bookings, onTabChange }: any) => (
 );
 
 // Jobs Tab Component  
-const JobsTab = ({ bookings, loading }: any) => (
-  <div className="space-y-4">
-    <div className="flex items-center justify-between">
-      <h2 className="text-lg font-semibold text-charcoal">My Jobs</h2>
-      <Button size="sm" className="bg-gradient-hero hover:bg-copper text-white" data-tour="post-job">
-        <Plus className="w-4 h-4 mr-2" />
-        New Job
-      </Button>
-    </div>
+const JobsTab = ({ bookings, loading }: any) => {
+  const navigate = useNavigate();
+  
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-charcoal">My Jobs</h2>
+        <Button 
+          size="sm" 
+          className="bg-gradient-hero hover:bg-copper text-white" 
+          data-tour="post-job"
+          onClick={() => navigate('/post')}
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Job
+        </Button>
+      </div>
     
     {loading ? (
       <div className="text-center py-8">
@@ -375,15 +386,19 @@ const JobsTab = ({ bookings, loading }: any) => (
           <Briefcase className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-charcoal mb-2">No jobs yet</h3>
           <p className="text-muted-foreground mb-4">Get started by posting your first job</p>
-          <Button className="bg-gradient-hero hover:bg-copper text-white">
+          <Button 
+            className="bg-gradient-hero hover:bg-copper text-white"
+            onClick={() => navigate('/post')}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Post Your First Job
           </Button>
         </CardContent>
       </Card>
     )}
-  </div>
-);
+    </div>
+  );
+};
 
 // Messages Tab Component
 const MessagesTab = () => (

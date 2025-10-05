@@ -12,6 +12,7 @@ import { ServiceManagementPanel } from '@/components/professional/ServiceManagem
 import { ServiceManagementModal } from '@/components/professional/ServiceManagementModal';
 import { useProfessionalServices } from '@/hooks/useProfessionalServices';
 import { useDropzone } from 'react-dropzone';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function ProfessionalSettings() {
   const { user } = useAuth();
@@ -189,6 +190,13 @@ export default function ProfessionalSettings() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs 
+        items={[
+          { label: 'Dashboard', href: '/dashboard/professional' },
+          { label: 'Settings', href: '/settings' },
+          { label: 'Professional Profile' }
+        ]}
+      />
       {/* Services & Pricing */}
       <Card>
         <CardHeader>

@@ -1,10 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Home, CreditCard, Heart } from 'lucide-react';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function ClientSettings() {
   return (
     <div className="space-y-6">
+      <Breadcrumbs 
+        items={[
+          { label: 'Dashboard', href: '/dashboard/client' },
+          { label: 'Settings', href: '/settings' },
+          { label: 'Client Preferences' }
+        ]}
+      />
       <Card>
         <CardHeader>
           <CardTitle>Payment Methods</CardTitle>

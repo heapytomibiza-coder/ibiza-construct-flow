@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function NotificationSettings() {
   const { user, profile } = useAuth();
@@ -59,6 +60,13 @@ export default function NotificationSettings() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs 
+        items={[
+          { label: 'Dashboard', href: '/dashboard/client' },
+          { label: 'Settings', href: '/settings' },
+          { label: 'Notifications' }
+        ]}
+      />
       <Card>
         <CardHeader>
           <CardTitle>Email Notifications</CardTitle>
