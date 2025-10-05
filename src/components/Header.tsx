@@ -126,7 +126,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                 {t('signIn')}
               </Button>
               <Button 
-                onClick={() => navigate('/auth?mode=signup')}
+                onClick={() => navigate('/auth?tab=signup')}
                 className="bg-gradient-hero text-white"
               >
                   {t('signUp')}
@@ -196,7 +196,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                     <Button 
                       className="w-full bg-gradient-hero text-white"
                       onClick={() => {
-                        navigate('/auth?mode=signup');
+                        navigate('/auth?tab=signup');
                         setIsMenuOpen(false);
                       }}
                     >
