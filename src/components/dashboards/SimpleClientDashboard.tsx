@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useTour } from '@/components/common/Tour';
 import { ClientBookingsSection } from '@/components/booking/ClientBookingsSection';
+import { ClientPaymentSection } from '@/components/payment/ClientPaymentSection';
 import { 
   Briefcase, 
   Calendar, 
@@ -149,7 +150,7 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
     { id: 'jobs', label: 'My Jobs', icon: Briefcase, tourTarget: 'jobs-tab' },
     { id: 'bookings', label: 'Bookings', icon: FileText },
     { id: 'messages', label: 'Messages', icon: MessageSquare, tourTarget: 'messages-tab' },
-    { id: 'payments', label: 'Payments', icon: Euro }
+    { id: 'payments', label: 'Payments', icon: CreditCard }
   ];
 
   const renderTabContent = () => {
@@ -158,10 +159,12 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
         return <HomeTab stats={stats} bookings={bookings} onTabChange={setActiveTab} navigate={navigate} />;
       case 'jobs':
         return <JobsTab bookings={bookings} loading={loading} />;
+      case 'bookings':
+        return <BookingsTab userId={user.id} />;
       case 'messages':
         return <MessagesTab />;
       case 'payments':
-        return <PaymentsTab />;
+        return <PaymentsTab userId={user.id} />;
       default:
         return <HomeTab stats={stats} bookings={bookings} onTabChange={setActiveTab} navigate={navigate} />;
     }
@@ -441,16 +444,10 @@ const MessagesTab = () => (
 );
 
 // Payments Tab Component
-const PaymentsTab = () => (
+const PaymentsTab = ({ userId }: { userId: string }) => (
   <div className="space-y-4" data-tour="payments">
-    <h2 className="text-lg font-semibold text-charcoal">Payments & Invoices</h2>
-    <Card>
-      <CardContent className="p-8 text-center">
-        <Euro className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-charcoal mb-2">No payments yet</h3>
-        <p className="text-muted-foreground">Payment history and invoices will appear here</p>
-      </CardContent>
-    </Card>
+    <h2 className="text-lg font-semibold text-charcoal">Payments & Contracts</h2>
+    <ClientPaymentSection userId={userId} />
   </div>
 );
 

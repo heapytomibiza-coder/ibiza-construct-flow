@@ -10,6 +10,7 @@ import { SubscriptionStatusWidget } from '@/components/marketplace/SubscriptionS
 import { ProfileCompletionTracker } from '@/components/professional/ProfileCompletionTracker';
 import { VerificationStatusCard } from '@/components/professional/VerificationStatusCard';
 import { ProfessionalQuotesSection } from '@/components/booking/ProfessionalQuotesSection';
+import { ProfessionalEarningsSection } from '@/components/payment/ProfessionalEarningsSection';
 import { 
   Home, Briefcase, Euro, LogOut, Play, Clock, 
   CheckCircle, Star, TrendingUp, Users, Calendar,
@@ -105,7 +106,7 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
       case 'quotes':
         return <QuotesTab userId={user.id} />;
       case 'earnings':
-        return <EarningsTab stats={stats} />;
+        return <EarningsTab userId={user.id} />;
       default:
         return <TodayTab stats={stats} profile={profile} />;
     }
@@ -374,73 +375,9 @@ const JobsTab = ({ stats }: any) => (
 );
 
 // Earnings Tab Component
-const EarningsTab = ({ stats }: any) => (
+const EarningsTab = ({ userId }: { userId: string }) => (
   <div className="space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <Card>
-        <CardContent className="p-6 text-center">
-          <TrendingUp className="w-8 h-8 text-copper mx-auto mb-2" />
-          <div className="text-2xl font-bold text-charcoal">€{stats.todayEarnings}</div>
-          <p className="text-sm text-muted-foreground">Today</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-6 text-center">
-          <Euro className="w-8 h-8 text-copper mx-auto mb-2" />
-          <div className="text-2xl font-bold text-charcoal">€{stats.weekEarnings}</div>
-          <p className="text-sm text-muted-foreground">This Week</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-6 text-center">
-          <CheckCircle className="w-8 h-8 text-copper mx-auto mb-2" />
-          <div className="text-2xl font-bold text-charcoal">€3,420</div>
-          <p className="text-sm text-muted-foreground">This Month</p>
-        </CardContent>
-      </Card>
-    </div>
-
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Payments</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-sand-light rounded-lg">
-            <div>
-              <h4 className="font-medium text-charcoal">Kitchen Renovation - Milestone 1</h4>
-              <p className="text-sm text-muted-foreground">Maria Santos • Completed yesterday</p>
-            </div>
-            <div className="text-right">
-              <div className="font-semibold text-charcoal">€850.00</div>
-              <Badge variant="default" className="text-xs">Paid</Badge>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-3 bg-sand-light rounded-lg">
-            <div>
-              <h4 className="font-medium text-charcoal">Plumbing Repair</h4>
-              <p className="text-sm text-muted-foreground">Robert Johnson • 2 days ago</p>
-            </div>
-            <div className="text-right">
-              <div className="font-semibold text-charcoal">€245.50</div>
-              <Badge variant="default" className="text-xs">Paid</Badge>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-3 bg-sand-light rounded-lg">
-            <div>
-              <h4 className="font-medium text-charcoal">Electrical Installation</h4>
-              <p className="text-sm text-muted-foreground">Lisa Martinez • 5 days ago</p>
-            </div>
-            <div className="text-right">
-              <div className="font-semibold text-charcoal">€1,150.00</div>
-              <Badge variant="secondary" className="text-xs">Processing</Badge>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <ProfessionalEarningsSection userId={userId} />
   </div>
 );
 

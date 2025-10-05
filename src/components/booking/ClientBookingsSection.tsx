@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useBookingRequests } from '@/hooks/useBookingRequests';
+import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Clock, Euro, CheckCircle, XCircle, MessageSquare, Eye } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,12 +37,30 @@ export const ClientBookingsSection = ({ clientId }: ClientBookingsSectionProps) 
     return <Badge variant={variant} className={color}>{label}</Badge>;
   };
 
-  const handleAcceptQuote = async (requestId: string) => {
+  const handleAcceptQuote = async (request: any) => {
     if (!confirm('Accept this quote and proceed with the booking?')) return;
 
     try {
-      await acceptQuote(requestId);
-      toast.success('Quote accepted! The professional has been notified.');
+      await acceptQuote(request.id);
+      
+      // Create a contract when quote is accepted
+      const { error: contractError } = await supabase
+        .from('contracts')
+        .insert({
+          job_id: request.id,
+          client_id: clientId,
+          tasker_id: request.professional_id,
+          agreed_amount: request.professional_quote,
+          type: 'fixed',
+          escrow_status: 'none',
+        });
+
+      if (contractError) {
+        console.error('Failed to create contract:', contractError);
+        toast.error('Quote accepted but contract creation failed');
+      } else {
+        toast.success('Quote accepted! Contract created. Proceed to payment.');
+      }
     } catch (error) {
       toast.error('Failed to accept quote');
     }
@@ -118,7 +137,7 @@ export const ClientBookingsSection = ({ clientId }: ClientBookingsSectionProps) 
                           setSelectedRequest(request);
                           setDetailsModalOpen(true);
                         }}
-                        onAccept={() => handleAcceptQuote(request.id)}
+                        onAccept={() => handleAcceptQuote(request)}
                         onDecline={() => handleDeclineQuote(request.id)}
                         getStatusBadge={getStatusBadge}
                         showActions={true}
@@ -267,7 +286,7 @@ export const ClientBookingsSection = ({ clientId }: ClientBookingsSectionProps) 
                     Decline
                   </Button>
                   <Button
-                    onClick={() => handleAcceptQuote(selectedRequest.id)}
+                    onClick={() => handleAcceptQuote(selectedRequest)}
                     className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
