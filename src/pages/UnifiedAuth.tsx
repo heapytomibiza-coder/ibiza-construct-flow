@@ -1,0 +1,354 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Eye, EyeOff, Loader2, Home, Wrench, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useSignIn, useSignUp } from '../../packages/@contracts/clients';
+import { QuickDemoLogin } from '@/components/auth/QuickDemoLogin';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+export default function UnifiedAuth() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+  const { t } = useTranslation('auth');
+  
+  const defaultTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
+  const preSelectedRole = searchParams.get('role') as 'client' | 'professional' | null;
+  
+  const [tab, setTab] = useState<'signin' | 'signup'>(defaultTab);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [role, setRole] = useState<'client' | 'professional'>(preSelectedRole || 'client');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const signInMutation = useSignIn();
+  const signUpMutation = useSignUp();
+
+  // Check if already authenticated
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/dashboard');
+      }
+    });
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      toast({
+        title: 'Missing fields',
+        description: 'Please fill in all required fields',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (tab === 'signin') {
+        await signInMutation.mutateAsync({
+          email,
+          password
+        });
+
+        toast({
+          title: t('signin.welcomeBack'),
+          description: t('signin.signInSuccess')
+        });
+        
+        navigate('/dashboard');
+      } else {
+        const redirectUrl = `${window.location.origin}/`;
+        
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              full_name: fullName || email.split('@')[0],
+              intent_role: role
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: 'Account created!',
+          description: 'Check your email to verify your account'
+        });
+        
+        navigate('/auth/verify-email');
+      }
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Authentication failed',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl grid lg:grid-cols-[1fr,400px] gap-6">
+        {/* Main Auth Card */}
+        <Card>
+          <CardHeader>
+            <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to home
+            </Link>
+            <CardTitle className="text-2xl">
+              {tab === 'signin' ? 'Welcome back' : 'Create your account'}
+            </CardTitle>
+            <CardDescription>
+              {tab === 'signin' 
+                ? 'Sign in to continue to your dashboard'
+                : 'Choose your role and create an account to get started'}
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <Tabs value={tab} onValueChange={(v) => setTab(v as 'signin' | 'signup')} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="signin">Sign In</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="signin" className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">{t('signin.email')}</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder={t('signin.emailPlaceholder')}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">{t('signin.password')}</Label>
+                      <Link to="/auth/forgot-password" className="text-xs text-primary hover:underline">
+                        {t('signin.forgotPassword')}
+                      </Link>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder={t('signin.passwordPlaceholder')}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t('signin.signingIn')}
+                      </>
+                    ) : (
+                      t('signin.signIn')
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="signup" className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Role Selection */}
+                  <div className="space-y-3">
+                    <Label>I want to...</Label>
+                    <RadioGroup value={role} onValueChange={(v) => setRole(v as 'client' | 'professional')}>
+                      <div className="grid gap-3">
+                        <label
+                          htmlFor="role-client"
+                          className={`flex items-start space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            role === 'client' 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-muted hover:border-muted-foreground/50'
+                          }`}
+                        >
+                          <RadioGroupItem value="client" id="role-client" className="mt-1" />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Home className="w-4 h-4" />
+                              <span className="font-semibold">Find professionals</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              Post jobs and hire skilled professionals for your projects
+                            </p>
+                          </div>
+                        </label>
+
+                        <label
+                          htmlFor="role-professional"
+                          className={`flex items-start space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            role === 'professional' 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-muted hover:border-muted-foreground/50'
+                          }`}
+                        >
+                          <RadioGroupItem value="professional" id="role-professional" className="mt-1" />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Wrench className="w-4 h-4" />
+                              <span className="font-semibold">Offer my services</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              Connect with clients and grow your business
+                            </p>
+                          </div>
+                        </label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">{t('signup.fullName')}</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder={t('signup.fullNamePlaceholder')}
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">{t('signup.email')}</Label>
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      placeholder={t('signup.emailPlaceholder')}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">{t('signup.password')}</Label>
+                    <div className="relative">
+                      <Input
+                        id="signup-password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder={t('signup.passwordPlaceholder')}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={6}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Must be at least 6 characters
+                    </p>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t('signup.creatingAccount')}
+                      </>
+                    ) : (
+                      t('signup.createAccount')
+                    )}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+
+          <CardFooter className="flex flex-col gap-4">
+            <div className="text-center text-sm text-muted-foreground">
+              {tab === 'signin' ? (
+                <>
+                  {t('signin.noAccount')}{' '}
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto font-semibold"
+                    onClick={() => setTab('signup')}
+                  >
+                    {t('signin.createOne')}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {t('signup.haveAccount')}{' '}
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto font-semibold"
+                    onClick={() => setTab('signin')}
+                  >
+                    {t('signup.signIn')}
+                  </Button>
+                </>
+              )}
+            </div>
+          </CardFooter>
+        </Card>
+
+        {/* Quick Demo Login Sidebar */}
+        <div className="hidden lg:block">
+          <QuickDemoLogin />
+        </div>
+
+        {/* Mobile Demo Login */}
+        <div className="lg:hidden">
+          <QuickDemoLogin />
+        </div>
+      </div>
+    </div>
+  );
+}

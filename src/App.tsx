@@ -25,6 +25,7 @@ const NotFound = React.lazy(() => import("./pages/NotFound"));
 const RoleSelect = React.lazy(() => import("./pages/RoleSelect"));
 const SignUp = React.lazy(() => import("./pages/SignUp"));
 const SignIn = React.lazy(() => import("./pages/SignIn"));
+const UnifiedAuth = React.lazy(() => import("./pages/UnifiedAuth"));
 const VerifyEmail = React.lazy(() => import("./pages/VerifyEmail"));
 const AuthCallback = React.lazy(() => import("./pages/AuthCallback"));
 const QuickStart = React.lazy(() => import("./pages/QuickStart"));
@@ -98,6 +99,7 @@ function AppContent() {
           <Route path="/contact" element={<Contact />} />
           
           {/* New Auth Flow Routes */}
+          <Route path="/auth" element={<UnifiedAuth />} />
           <Route path="/auth/role-select" element={<RoleSelect />} />
           <Route path="/auth/sign-up" element={<SignUp />} />
           <Route path="/auth/sign-in" element={<SignIn />} />

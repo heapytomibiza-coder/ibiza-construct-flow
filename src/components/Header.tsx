@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
-import AuthModal from '@/components/auth/AuthModal';
 import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
 import { LanguageSwitcher } from '@/components/header/LanguageSwitcher';
 import { MobileOptimizedHeader } from '@/components/mobile/MobileOptimizedHeader';
@@ -26,8 +25,6 @@ interface HeaderProps {
 const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderProps) => {
   const { t } = useTranslation(['navigation', 'common']);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
   const { user, profile, signOut, isAdmin, isProfessional, isClient } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -122,22 +119,16 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
               </>
             ) : (
               <>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setAuthDefaultTab('signin');
-                    setAuthModalOpen(true);
-                  }}
-                >
-                  {t('signIn')}
-                </Button>
-                <Button 
-                  onClick={() => {
-                    setAuthDefaultTab('signup');
-                    setAuthModalOpen(true);
-                  }}
-                  className="bg-gradient-hero text-white"
-                >
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/auth')}
+              >
+                {t('signIn')}
+              </Button>
+              <Button 
+                onClick={() => navigate('/auth?mode=signup')}
+                className="bg-gradient-hero text-white"
+              >
                   {t('signUp')}
                 </Button>
               </>
@@ -196,8 +187,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                       variant="outline" 
                       className="w-full"
                       onClick={() => {
-                        setAuthDefaultTab('signin');
-                        setAuthModalOpen(true);
+                        navigate('/auth');
                         setIsMenuOpen(false);
                       }}
                     >
@@ -206,8 +196,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                     <Button 
                       className="w-full bg-gradient-hero text-white"
                       onClick={() => {
-                        setAuthDefaultTab('signup');
-                        setAuthModalOpen(true);
+                        navigate('/auth?mode=signup');
                         setIsMenuOpen(false);
                       }}
                     >
@@ -220,12 +209,6 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
           </div>
         )}
       </div>
-      
-      <AuthModal 
-        open={authModalOpen} 
-        onClose={() => setAuthModalOpen(false)}
-        defaultTab={authDefaultTab}
-      />
     </header>
   );
 };
