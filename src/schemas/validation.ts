@@ -81,7 +81,7 @@ export const jobPostSchema = z.object({
   microName: z.string().min(1, 'Service name is required'),
   mainCategory: z.string().min(1, 'Category is required'),
   subcategory: z.string().min(1, 'Subcategory is required'),
-  answers: z.record(z.any()),
+  answers: z.record(z.string(), z.any()),
   logistics: logisticsSchema,
   extras: jobExtrasSchema
 });
@@ -96,7 +96,7 @@ export const bookingFormSchema = z.object({
   phone: z.string()
     .min(9, 'Phone number must be at least 9 digits')
     .regex(/^[\d\s\+\-\(\)]+$/, 'Please enter a valid phone number'),
-  preferredDate: z.date({ required_error: 'Date is required' }),
+  preferredDate: z.coerce.date(),
   preferredTime: z.string().min(1, 'Please select a time'),
   service: z.string().min(1, 'Please select a service'),
   message: z.string()
@@ -114,7 +114,7 @@ export const messageSchema = z.object({
   recipientId: z.string().uuid(),
   conversationId: z.string().uuid().optional(),
   attachments: z.array(z.string().url()).max(5).optional(),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.string(), z.any()).optional()
 });
 
 export const conversationSchema = z.object({
@@ -139,7 +139,7 @@ export const milestoneSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(100),
   description: z.string().max(500).optional(),
   amount: z.number().positive('Amount must be positive'),
-  dueDate: z.date({ required_error: 'Date is required' }).optional(),
+  dueDate: z.coerce.date().optional(),
   status: z.enum(['pending', 'in_progress', 'completed', 'released']).default('pending')
 });
 
