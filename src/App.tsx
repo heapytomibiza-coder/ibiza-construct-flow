@@ -48,6 +48,8 @@ const SubscriptionSuccess = React.lazy(() => import("./pages/SubscriptionSuccess
 const SubscriptionCanceled = React.lazy(() => import("./pages/SubscriptionCanceled"));
 const Templates = React.lazy(() => import("./pages/Templates"));
 const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
+const MessagesPage = React.lazy(() => import("./pages/MessagesPage").then(m => ({ default: m.MessagesPage })));
+const ConversationPage = React.lazy(() => import("./pages/ConversationPage").then(m => ({ default: m.ConversationPage })));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -150,6 +152,26 @@ function AppContent() {
           ) : (
             <RouteGuard requiredRole="client">
               <Templates />
+            </RouteGuard>
+          )
+        } />
+        
+        {/* Messages Routes */}
+        <Route path="/messages" element={
+          DISABLE_AUTH_FOR_WIREFRAME ? (
+            <MessagesPage />
+          ) : (
+            <RouteGuard>
+              <MessagesPage />
+            </RouteGuard>
+          )
+        } />
+        <Route path="/messages/:conversationId" element={
+          DISABLE_AUTH_FOR_WIREFRAME ? (
+            <ConversationPage />
+          ) : (
+            <RouteGuard>
+              <ConversationPage />
             </RouteGuard>
           )
         } />

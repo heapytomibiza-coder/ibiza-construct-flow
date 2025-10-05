@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   Star, MapPin, Clock, Award, MessageSquare, 
   Briefcase, Euro, CheckCircle, Mail
@@ -15,17 +16,18 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProfessionalProfile() {
-  const { id } = useParams();
+  const { id: professionalId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data: profile, isLoading } = useQuery({
-    queryKey: ['professional', id],
+    queryKey: ['professional', professionalId],
     queryFn: async () => {
       // Fetch professional profile
       const { data: proProfile, error: proError } = await supabase
         .from('professional_profiles')
         .select('*')
-        .eq('user_id', id)
+        .eq('user_id', professionalId)
         .single();
 
       if (proError) throw proError;
@@ -34,7 +36,7 @@ export default function ProfessionalProfile() {
       const { data: userProfile, error: userError } = await supabase
         .from('profiles')
         .select('display_name, full_name')
-        .eq('id', id)
+        .eq('id', professionalId)
         .single();
 
       if (userError) throw userError;
@@ -43,14 +45,14 @@ export default function ProfessionalProfile() {
       const { data: services } = await supabase
         .from('professional_services')
         .select('*')
-        .eq('professional_id', id)
+        .eq('professional_id', professionalId)
         .eq('is_active', true);
 
       // Fetch stats
       const { data: stats } = await supabase
         .from('professional_stats')
         .select('*')
-        .eq('professional_id', id)
+        .eq('professional_id', professionalId)
         .single();
 
       return {
@@ -63,12 +65,41 @@ export default function ProfessionalProfile() {
         portfolio_images: Array.isArray(proProfile.portfolio_images) ? proProfile.portfolio_images : []
       };
     },
-    enabled: !!id
+    enabled: !!professionalId
   });
 
-  const handleContact = () => {
-    // TODO: Implement conversation creation
-    toast.info('Messaging feature coming soon');
+  const handleContact = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    
+    try {
+      // Get or create conversation with this professional
+      const { data: existing } = await supabase
+        .from('conversations')
+        .select('*')
+        .contains('participants', [user.id, professionalId!])
+        .single();
+
+      if (existing) {
+        navigate(`/messages?conversation=${existing.id}`);
+      } else {
+        const { data: newConv, error } = await supabase
+          .from('conversations')
+          .insert({
+            participants: [user.id, professionalId!],
+            metadata: { professional_profile: true }
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        navigate(`/messages?conversation=${newConv.id}`);
+      }
+    } catch (error) {
+      toast.error('Failed to start conversation. Please try again.');
+    }
   };
 
   if (isLoading) {

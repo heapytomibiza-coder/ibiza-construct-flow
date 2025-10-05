@@ -18,6 +18,8 @@ import { LanguageSwitcher } from '@/components/header/LanguageSwitcher';
 import { MobileOptimizedHeader } from '@/components/mobile/MobileOptimizedHeader';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { Badge } from '@/components/ui/badge';
+import { useConversationList } from '@/hooks/useConversationList';
+import { MessageSquare } from 'lucide-react';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -31,6 +33,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
   const { activeRole } = useActiveRole();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { totalUnread } = useConversationList(user?.id);
 
   const handleSignOut = async () => {
     await signOut();
@@ -83,6 +86,24 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             {user ? (
               <>
                 {isProfessional() && <NotificationBell />}
+                {(isClient() || isProfessional()) && (
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="relative"
+                    onClick={() => navigate('/messages')}
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    {totalUnread > 0 && (
+                      <Badge 
+                        variant="destructive" 
+                        className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center text-xs"
+                      >
+                        {totalUnread}
+                      </Badge>
+                    )}
+                  </Button>
+                )}
                 <HeaderRoleSwitcher />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

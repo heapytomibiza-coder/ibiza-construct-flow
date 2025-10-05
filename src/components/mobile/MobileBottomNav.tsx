@@ -14,6 +14,8 @@ import {
 import { useActiveRole } from '@/hooks/useActiveRole';
 import { useScrollHide } from '@/hooks/useScrollHide';
 import { cn } from '@/lib/utils';
+import { useConversationList } from '@/hooks/useConversationList';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavItem {
   icon: React.ComponentType<any>;
@@ -27,6 +29,8 @@ export const MobileBottomNav = () => {
   const location = useLocation();
   const { activeRole } = useActiveRole();
   const { isVisible } = useScrollHide({ threshold: 10, hideDelay: 150 });
+  const { user } = useAuth();
+  const { totalUnread } = useConversationList(user?.id);
 
   const getNavItems = (): NavItem[] => {
     const baseItems: NavItem[] = [
@@ -47,7 +51,7 @@ export const MobileBottomNav = () => {
       return [
         ...baseItems,
         { icon: Briefcase, label: 'My Jobs', href: '/dashboard/client' },
-        { icon: MessageSquare, label: 'Messages', href: '/messages', badge: 2 },
+        { icon: MessageSquare, label: 'Messages', href: '/messages', badge: totalUnread },
         { icon: User, label: 'Profile', href: '/profile' }
       ];
     }

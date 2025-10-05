@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,12 +8,30 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useTour } from '@/components/common/Tour';
 import { 
-  Plus, Clock, CheckCircle, AlertCircle, TrendingUp, 
-  Briefcase, MessageSquare, Euro, LogOut, Play, 
-  Users, Calendar 
+  Briefcase, 
+  Calendar, 
+  DollarSign, 
+  Star, 
+  TrendingUp, 
+  Users, 
+  Clock,
+  FileText,
+  CreditCard,
+  MessageSquare,
+  Plus,
+  ChevronRight,
+  BarChart3,
+  Settings,
+  Search,
+  CheckCircle,
+  AlertCircle,
+  Euro,
+  LogOut,
+  Play
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useConversationList } from '@/hooks/useConversationList';
 
 interface SimpleClientDashboardProps {
   user: any;
@@ -26,6 +45,7 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
   onToggleMode 
 }) => {
   const navigate = useNavigate();
+  const { totalUnread } = useConversationList(user?.id);
   const [activeTab, setActiveTab] = useState('home');
   const [bookings, setBookings] = useState([]);
   const [stats, setStats] = useState({
