@@ -211,6 +211,108 @@ All colors MUST be HSL. Premium construction platform aesthetic.
   }
 }
 
+@layer components {
+  /* Skeleton Loaders */
+  .skeleton {
+    @apply animate-skeleton-pulse bg-muted rounded-md;
+  }
+
+  .skeleton-text {
+    @apply skeleton h-4 w-full;
+  }
+
+  .skeleton-heading {
+    @apply skeleton h-8 w-3/4;
+  }
+
+  .skeleton-avatar {
+    @apply skeleton h-12 w-12 rounded-full;
+  }
+
+  .skeleton-card {
+    @apply skeleton h-32 w-full rounded-lg;
+  }
+
+  /* Shimmer effect for loading states */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* Premium Card Variants */
+  .premium-card {
+    @apply bg-card border border-border rounded-lg p-6 
+           shadow-card hover:shadow-hover transition-all duration-smooth;
+  }
+
+  .premium-card-interactive {
+    @apply premium-card cursor-pointer hover:scale-[1.02] 
+           active:scale-[0.98] transition-transform duration-micro;
+  }
+
+  .premium-card-elevated {
+    @apply premium-card shadow-elegant hover:shadow-luxury;
+  }
+
+  /* Framer Motion Base Classes */
+  .motion-safe {
+    @apply transition-all duration-smooth;
+  }
+
+  .motion-micro {
+    @apply transition-all duration-micro;
+  }
+
+  .motion-scale-in {
+    @apply animate-scale-in;
+  }
+
+  .motion-fade-in {
+    @apply animate-fade-in;
+  }
+
+  .motion-slide-up {
+    @apply animate-slide-up;
+  }
+
+  /* Interactive States */
+  .interactive-chip {
+    @apply inline-flex items-center px-3 py-1.5 rounded-full
+           bg-secondary text-secondary-foreground
+           hover:bg-accent hover:text-accent-foreground
+           active:scale-95 transition-all duration-micro
+           cursor-pointer min-h-[44px] min-w-[44px] justify-center;
+  }
+
+  .interactive-button {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg
+           font-medium transition-all duration-micro
+           hover:shadow-hover active:scale-95
+           focus:outline-none focus:ring-2 focus:ring-ring
+           min-h-[44px] min-w-[44px];
+  }
+
+  /* Touch-Optimized Targets (44px minimum) */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Glass Morphism Effects */
+  .glass {
+    @apply bg-background/80 backdrop-blur-md border border-border/50;
+  }
+
+  .glass-card {
+    @apply glass rounded-xl p-6 shadow-card;
+  }
+}
+
 @layer utilities {
   /* Mobile-first utility classes for safe areas */
   .safe-top {
