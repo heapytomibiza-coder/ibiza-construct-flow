@@ -7,128 +7,96 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const logStep = (step: string, details?: any) => {
+  console.log(`[CREATE-PAYMENT-INTENT] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
+    logStep("Function started");
+
+    const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Not authenticated");
-    }
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) throw new Error("No authorization header provided");
 
-    const { jobId, amount, currency = "USD" } = await req.json();
-    console.log("[create-payment-intent] Request:", { jobId, amount, currency, userId: user.id });
+    const token = authHeader.replace("Bearer ", "");
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+    if (userError) throw new Error(`Authentication error: ${userError.message}`);
+    
+    const user = userData.user;
+    if (!user?.email) throw new Error("User not authenticated or email not available");
+    logStep("User authenticated", { userId: user.id, email: user.email });
 
-    if (!jobId || !amount) {
-      throw new Error("Missing required fields: jobId and amount");
-    }
+    const { amount, currency = "USD", jobId, metadata } = await req.json();
+    if (!amount || amount <= 0) throw new Error("Invalid amount");
 
-    // Get or create Stripe customer
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
-    let stripeCustomerId: string;
+    // Check if customer exists
+    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    let customerId;
     
-    // Check if customer exists in our database
-    const { data: existingCustomer } = await supabase
-      .from("stripe_customers")
-      .select("stripe_customer_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (existingCustomer) {
-      stripeCustomerId = existingCustomer.stripe_customer_id;
-      console.log("[create-payment-intent] Found existing customer:", stripeCustomerId);
+    if (customers.data.length > 0) {
+      customerId = customers.data[0].id;
+      logStep("Existing customer found", { customerId });
     } else {
-      // Create new Stripe customer
-      const customer = await stripe.customers.create({
-        email: user.email,
-        metadata: { user_id: user.id }
-      });
-      stripeCustomerId = customer.id;
-      console.log("[create-payment-intent] Created new customer:", stripeCustomerId);
-
-      // Save to database
-      await supabase.from("stripe_customers").insert({
-        user_id: user.id,
-        stripe_customer_id: stripeCustomerId,
-        email: user.email
-      });
+      const customer = await stripe.customers.create({ email: user.email });
+      customerId = customer.id;
+      logStep("New customer created", { customerId });
     }
-
-    // Calculate platform fee (10% of amount)
-    const platformFee = Math.round(amount * 0.1);
-    const netAmount = amount - platformFee;
-
-    // Get job and professional details
-    const { data: job } = await supabase
-      .from("jobs")
-      .select("title, client_id")
-      .eq("id", jobId)
-      .single();
-
-    // Get professional from offer
-    const { data: offer } = await supabase
-      .from("offers")
-      .select("tasker_id")
-      .eq("job_id", jobId)
-      .eq("status", "accepted")
-      .single();
 
     // Create payment intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
       currency: currency.toLowerCase(),
-      customer: stripeCustomerId,
+      customer: customerId,
       metadata: {
-        job_id: jobId,
-        user_id: user.id,
-        professional_id: offer?.tasker_id || "",
-        platform_fee: platformFee.toString(),
+        userId: user.id,
+        jobId: jobId || "",
+        ...metadata,
       },
-      description: `Payment for: ${job?.title || "Job"}`,
+      automatic_payment_methods: {
+        enabled: true,
+      },
     });
 
-    console.log("[create-payment-intent] Created payment intent:", paymentIntent.id);
+    logStep("Payment intent created", { 
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency 
+    });
 
-    // Create payment record in database
-    const { data: payment, error: paymentError } = await supabase
-      .from("payments")
+    // Record transaction in database
+    const { error: dbError } = await supabaseClient
+      .from("payment_transactions")
       .insert({
-        job_id: jobId,
-        client_id: user.id,
-        professional_id: offer?.tasker_id,
+        user_id: user.id,
         stripe_payment_intent_id: paymentIntent.id,
         amount: amount,
         currency: currency,
-        platform_fee: platformFee,
-        net_amount: netAmount,
         status: "pending",
-      })
-      .select()
-      .single();
+        job_id: jobId,
+        metadata: metadata || {},
+      });
 
-    if (paymentError) {
-      console.error("[create-payment-intent] Database error:", paymentError);
-      throw paymentError;
+    if (dbError) {
+      logStep("Database error", { error: dbError.message });
     }
-
-    console.log("[create-payment-intent] Created payment record:", payment.id);
 
     return new Response(
       JSON.stringify({
         clientSecret: paymentIntent.client_secret,
         paymentIntentId: paymentIntent.id,
-        paymentId: payment.id,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -136,13 +104,11 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("[create-payment-intent] Error:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logStep("ERROR", { message: errorMessage });
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+    });
   }
 });

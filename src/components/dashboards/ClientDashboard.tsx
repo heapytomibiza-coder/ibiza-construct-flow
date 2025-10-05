@@ -8,10 +8,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { ClientPaymentSection } from '@/components/payment/ClientPaymentSection';
 import { MessagesTab } from '@/components/messaging/MessagesTab';
+import { PaymentsManagement } from '@/components/payments/PaymentsManagement';
 import { 
   LogOut, Plus, Clock, CheckCircle, AlertCircle, 
   Briefcase, Calendar, Euro, TrendingUp, MessageSquare,
-  Home
+  Home, CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -127,7 +128,7 @@ const ClientDashboard = ({ user, profile }: any) => {
               My Jobs
             </TabsTrigger>
             <TabsTrigger value="payments" className="flex items-center gap-2">
-              <Euro className="w-4 h-4" />
+              <CreditCard className="w-4 h-4" />
               Payments
             </TabsTrigger>
             <TabsTrigger value="messages" className="flex items-center gap-2">
@@ -302,7 +303,7 @@ const ClientDashboard = ({ user, profile }: any) => {
           </TabsContent>
 
           <TabsContent value="payments">
-            <ClientPaymentSection userId={user.id} />
+            <PaymentsManagement userId={user.id} />
           </TabsContent>
 
           <TabsContent value="messages">
