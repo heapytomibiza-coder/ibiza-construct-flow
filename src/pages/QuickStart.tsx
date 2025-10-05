@@ -47,13 +47,28 @@ export default function QuickStart() {
         const prefillName = user.user_metadata?.full_name || 
                            user.email?.split('@')[0] || '';
         setDisplayName(prefillName);
+
+        // If professional, check if they need detailed onboarding
+        if (role === 'professional') {
+          const { data: proProfile } = await supabase
+            .from('professional_profiles')
+            .select('bio, skills, hourly_rate')
+            .eq('user_id', user.id)
+            .single();
+
+          // If profile exists but lacks detailed info, redirect to onboarding
+          if (proProfile && (!proProfile.bio || !proProfile.skills || !proProfile.hourly_rate)) {
+            navigate('/onboarding/professional');
+            return;
+          }
+        }
       } catch (error) {
         console.error('Error initializing user:', error);
       }
     };
 
     initializeUser();
-  }, [navigate]);
+  }, [navigate, role]);
 
   const toggleSelection = (item: string, selectedItems: string[], setSelectedItems: (items: string[]) => void) => {
     if (selectedItems.includes(item)) {
@@ -97,6 +112,10 @@ export default function QuickStart() {
           });
 
         if (proError) throw proError;
+
+        // Redirect to detailed onboarding
+        navigate('/onboarding/professional');
+        return;
       }
 
       toast({

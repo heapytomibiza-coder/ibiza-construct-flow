@@ -2798,49 +2798,67 @@ export type Database = {
       professional_profiles: {
         Row: {
           availability: Json | null
+          bank_details: Json | null
           bio: string | null
+          business_name: string | null
           created_at: string | null
           experience_years: number | null
           hourly_rate: number | null
+          insurance_details: Json | null
+          is_active: boolean | null
           languages: Json | null
           portfolio_images: Json | null
           primary_trade: string | null
+          response_time_hours: number | null
           skills: Json | null
           subscription_tier: string | null
           updated_at: string | null
           user_id: string
+          vat_number: string | null
           verification_status: string | null
           zones: Json | null
         }
         Insert: {
           availability?: Json | null
+          bank_details?: Json | null
           bio?: string | null
+          business_name?: string | null
           created_at?: string | null
           experience_years?: number | null
           hourly_rate?: number | null
+          insurance_details?: Json | null
+          is_active?: boolean | null
           languages?: Json | null
           portfolio_images?: Json | null
           primary_trade?: string | null
+          response_time_hours?: number | null
           skills?: Json | null
           subscription_tier?: string | null
           updated_at?: string | null
           user_id: string
+          vat_number?: string | null
           verification_status?: string | null
           zones?: Json | null
         }
         Update: {
           availability?: Json | null
+          bank_details?: Json | null
           bio?: string | null
+          business_name?: string | null
           created_at?: string | null
           experience_years?: number | null
           hourly_rate?: number | null
+          insurance_details?: Json | null
+          is_active?: boolean | null
           languages?: Json | null
           portfolio_images?: Json | null
           primary_trade?: string | null
+          response_time_hours?: number | null
           skills?: Json | null
           subscription_tier?: string | null
           updated_at?: string | null
           user_id?: string
+          vat_number?: string | null
           verification_status?: string | null
           zones?: Json | null
         }

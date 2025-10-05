@@ -36,7 +36,8 @@ const PackCompareView = React.lazy(() => import("./components/admin/packs/PackCo
 const WebsiteSettings = React.lazy(() => import("./pages/admin/WebsiteSettings"));
 const PostJob = React.lazy(() => import("./pages/PostJob"));
 const Discovery = React.lazy(() => import("./pages/Discovery"));
-const ProfessionalMenuBoard = React.lazy(() => import("./pages/ProfessionalMenuBoard"));
+const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
+const ProfessionalOnboardingPage = React.lazy(() => import("./pages/ProfessionalOnboardingPage"));
 const BookingPage = React.lazy(() => import("./pages/BookingPage"));
 const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
 const Contact = React.lazy(() => import("./pages/Contact"));
@@ -98,7 +99,7 @@ function AppContent() {
                   <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/discovery" element={<Discovery />} />
-          <Route path="/professional/:id" element={<ProfessionalMenuBoard />} />
+          <Route path="/professional/:id" element={<ProfessionalProfile />} />
           <Route path="/book" element={<BookingPage />} />
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
@@ -112,6 +113,13 @@ function AppContent() {
           <Route path="/auth/verify-email" element={<VerifyEmail />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth/quick-start" element={<QuickStart />} />
+          
+          {/* Professional Onboarding */}
+          <Route path="/onboarding/professional" element={
+            <RouteGuard requiredRole="professional">
+              <ProfessionalOnboardingPage />
+            </RouteGuard>
+          } />
           
           {/* Role Switcher */}
           <Route path="/role-switcher" element={<RoleSwitcher />} />

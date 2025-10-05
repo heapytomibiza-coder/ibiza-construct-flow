@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useTour } from '@/components/common/Tour';
 import { useAuth } from '@/hooks/useAuth';
 import { SubscriptionStatusWidget } from '@/components/marketplace/SubscriptionStatusWidget';
+import { ProfileCompletionTracker } from '@/components/professional/ProfileCompletionTracker';
 import { 
   Home, Briefcase, Euro, LogOut, Play, Clock, 
   CheckCircle, Star, TrendingUp, Users, Calendar,
@@ -175,6 +176,9 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
 // Today Tab Component
 const TodayTab = ({ stats, profile }: any) => (
   <div className="space-y-6">
+    {/* Profile Completion */}
+    <ProfileCompletionTracker profile={profile} />
+    
     {/* Subscription Status */}
     <SubscriptionStatusWidget />
     
