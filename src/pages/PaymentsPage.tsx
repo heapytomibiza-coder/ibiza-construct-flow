@@ -7,7 +7,9 @@ import { ClientPaymentsView } from '@/components/client/ClientPaymentsView';
 import { PaymentAnalyticsDashboard } from '@/components/analytics/PaymentAnalyticsDashboard';
 import { NotificationPreferences } from '@/components/notifications/NotificationPreferences';
 import { NotificationsList } from '@/components/notifications/NotificationsList';
-import { CreditCard, Wallet, History, BarChart3, Bell, Settings } from 'lucide-react';
+import { TransactionHistory } from '@/components/payments/TransactionHistory';
+import { RefundsList } from '@/components/payments/RefundsList';
+import { CreditCard, Wallet, History, BarChart3, Bell, Settings, Receipt } from 'lucide-react';
 
 export const PaymentsPage = () => {
   const { user } = useAuth();
@@ -37,7 +39,7 @@ export const PaymentsPage = () => {
           </p>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList>
+            <TabsList className="flex-wrap h-auto">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <Wallet className="w-4 h-4" />
                 Overview
@@ -45,6 +47,14 @@ export const PaymentsPage = () => {
               <TabsTrigger value="methods" className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4" />
                 Payment Methods
+              </TabsTrigger>
+              <TabsTrigger value="transactions" className="flex items-center gap-2">
+                <Receipt className="w-4 h-4" />
+                Transactions
+              </TabsTrigger>
+              <TabsTrigger value="refunds" className="flex items-center gap-2">
+                <History className="w-4 h-4" />
+                Refunds
               </TabsTrigger>
               <TabsTrigger value="analytics" className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
@@ -72,6 +82,14 @@ export const PaymentsPage = () => {
 
             <TabsContent value="methods">
               <PaymentMethodsManager />
+            </TabsContent>
+
+            <TabsContent value="transactions">
+              <TransactionHistory />
+            </TabsContent>
+
+            <TabsContent value="refunds">
+              <RefundsList />
             </TabsContent>
 
             <TabsContent value="analytics">
