@@ -65,14 +65,14 @@ export const usePayouts = (userId?: string) => {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('payout_accounts')
         .select('*')
         .eq('professional_id', userId)
         .maybeSingle();
 
       if (error) throw error;
-      setPayoutAccount(data as any);
+      setPayoutAccount(data);
     } catch (error) {
       console.error('Error fetching payout account:', error);
       toast.error('Failed to load payout account');
@@ -86,14 +86,14 @@ export const usePayouts = (userId?: string) => {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('professional_payouts')
         .select('*')
         .eq('professional_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPayouts((data as any) || []);
+      setPayouts(data || []);
     } catch (error) {
       console.error('Error fetching payouts:', error);
       toast.error('Failed to load payouts');
@@ -106,14 +106,14 @@ export const usePayouts = (userId?: string) => {
     if (!userId) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('professional_earnings')
         .select('*')
         .eq('professional_id', userId)
         .order('earned_at', { ascending: false });
 
       if (error) throw error;
-      setEarnings((data as any) || []);
+      setEarnings(data || []);
     } catch (error) {
       console.error('Error fetching earnings:', error);
       toast.error('Failed to load earnings');
@@ -128,7 +128,7 @@ export const usePayouts = (userId?: string) => {
     }
 
     // Set up real-time subscriptions
-    const payoutAccountChannel = supabase
+    const payoutAccountChannel = (supabase as any)
       .channel('payout-account-changes')
       .on(
         'postgres_changes',
@@ -144,7 +144,7 @@ export const usePayouts = (userId?: string) => {
       )
       .subscribe();
 
-    const payoutsChannel = supabase
+    const payoutsChannel = (supabase as any)
       .channel('payouts-changes')
       .on(
         'postgres_changes',
@@ -160,7 +160,7 @@ export const usePayouts = (userId?: string) => {
       )
       .subscribe();
 
-    const earningsChannel = supabase
+    const earningsChannel = (supabase as any)
       .channel('earnings-changes')
       .on(
         'postgres_changes',
