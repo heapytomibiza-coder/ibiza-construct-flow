@@ -12,10 +12,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useActiveRole } from '@/hooks/useActiveRole';
 import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
 import { LanguageSwitcher } from '@/components/header/LanguageSwitcher';
 import { MobileOptimizedHeader } from '@/components/mobile/MobileOptimizedHeader';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { Badge } from '@/components/ui/badge';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -26,6 +28,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
   const { t } = useTranslation(['navigation', 'common']);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, profile, signOut, isAdmin, isProfessional, isClient } = useAuth();
+  const { activeRole } = useActiveRole();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -87,9 +90,16 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                       <div className="w-8 h-8 bg-gradient-hero rounded-full flex items-center justify-center">
                         <User className="w-4 h-4 text-white" />
                       </div>
-                      <span className="font-medium">
-                        {profile?.display_name || profile?.full_name || 'User'}
-                      </span>
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">
+                          {profile?.display_name || profile?.full_name || 'User'}
+                        </span>
+                        {activeRole && (
+                          <Badge variant="secondary" className="text-xs capitalize mt-0.5">
+                            {activeRole}
+                          </Badge>
+                        )}
+                      </div>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">

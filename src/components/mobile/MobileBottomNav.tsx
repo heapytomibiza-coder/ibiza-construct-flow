@@ -46,7 +46,7 @@ export const MobileBottomNav = () => {
     if (activeRole === 'client') {
       return [
         ...baseItems,
-        { icon: Briefcase, label: 'My Jobs', href: '/client-dashboard' },
+        { icon: Briefcase, label: 'My Jobs', href: '/dashboard/client' },
         { icon: MessageSquare, label: 'Messages', href: '/messages', badge: 2 },
         { icon: User, label: 'Profile', href: '/profile' }
       ];

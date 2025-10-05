@@ -148,7 +148,7 @@ export const CanonicalJobWizard: React.FC = () => {
       }).catch(err => console.warn('Notification dispatch failed:', err));
 
       toast.success('Job posted successfully! Professionals will start submitting quotes soon.');
-      navigate('/dashboard');
+      navigate('/dashboard/client');
     } catch (error) {
       console.error('Error posting job:', error);
       toast.error('Failed to post job. Please try again.');
