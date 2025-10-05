@@ -12,10 +12,12 @@ import { VerificationStatusCard } from '@/components/professional/VerificationSt
 import { ProfessionalQuotesSection } from '@/components/booking/ProfessionalQuotesSection';
 import { ProfessionalEarningsSection } from '@/components/payment/ProfessionalEarningsSection';
 import { ProfessionalReviewsManagement } from '@/components/reviews/ProfessionalReviewsManagement';
+import { CalendarView } from '@/components/calendar/CalendarView';
+import { AvailabilitySettings } from '@/components/calendar/AvailabilitySettings';
 import { 
   Home, Briefcase, Euro, LogOut, Play, Clock, 
-  CheckCircle, Star, TrendingUp, Users, Calendar,
-  MessageSquare, Camera, FileText
+  CheckCircle, Star, TrendingUp, Users, Calendar as CalendarIcon,
+  MessageSquare, Camera, FileText, Settings
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -97,7 +99,9 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
     { id: 'quotes', label: 'Quotes', icon: FileText },
     { id: 'earnings', label: 'Earnings', icon: Euro },
     { id: 'reviews', label: 'Reviews', icon: Star },
-    { id: 'messages', label: 'Messages', icon: MessageSquare }
+    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
+    { id: 'availability', label: 'Availability', icon: Settings }
   ];
 
   const renderTabContent = () => {
@@ -114,6 +118,10 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
         return <ReviewsTab userId={user.id} />;
       case 'messages':
         return <MessagesTabContent />;
+      case 'calendar':
+        return <CalendarTab userId={user.id} />;
+      case 'availability':
+        return <AvailabilityTab userId={user.id} />;
       default:
         return <TodayTab stats={stats} profile={profile} />;
     }
@@ -157,7 +165,7 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
       </header>
 
       {/* Tab Navigation */}
-      <div className="border-b border-border bg-card">
+      <div className="border-b border-border bg-card overflow-x-auto">
         <div className="max-w-4xl mx-auto px-4">
           <nav className="flex space-x-1">
             {tabs.map((tab) => (
@@ -166,7 +174,7 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
                 data-tour={`${tab.id}-tab`}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-t-lg transition-colors",
+                  "flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap",
                   activeTab === tab.id
                     ? "text-copper border-b-2 border-copper bg-background"
                     : "text-muted-foreground hover:text-foreground"
@@ -218,7 +226,7 @@ const TodayTab = ({ stats, profile }: any) => (
         <span className="text-sm">Update Client</span>
       </Button>
       <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
-        <Calendar className="w-6 h-6" />
+        <CalendarIcon className="w-6 h-6" />
         <span className="text-sm">Schedule</span>
       </Button>
     </div>
@@ -275,7 +283,7 @@ const TodayTab = ({ stats, profile }: any) => (
           
           <div className="flex items-center gap-3 p-3 bg-sand-light rounded-lg">
             <div className="w-10 h-10 bg-copper/10 rounded-lg flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-copper" />
+              <CalendarIcon className="w-5 h-5 text-copper" />
             </div>
             <div className="flex-1">
               <h4 className="font-medium text-charcoal">Bathroom Tiles Installation</h4>
@@ -456,5 +464,19 @@ const MessagesTabContent = () => {
     </div>
   );
 };
+
+// Calendar Tab Component
+const CalendarTab = ({ userId }: { userId: string }) => (
+  <div className="space-y-6">
+    <CalendarView userId={userId} />
+  </div>
+);
+
+// Availability Tab Component
+const AvailabilityTab = ({ userId }: { userId: string }) => (
+  <div className="space-y-6">
+    <AvailabilitySettings professionalId={userId} />
+  </div>
+);
 
 export default SimpleProfessionalDashboard;

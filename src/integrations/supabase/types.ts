@@ -709,6 +709,7 @@ export type Database = {
       calendar_events: {
         Row: {
           attendees: string[] | null
+          color: string | null
           created_at: string | null
           description: string | null
           end_time: string
@@ -718,14 +719,17 @@ export type Database = {
           job_id: string | null
           location: Json | null
           metadata: Json | null
+          notes: string | null
           recurrence_rule: string | null
           start_time: string
+          status: string | null
           title: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
           attendees?: string[] | null
+          color?: string | null
           created_at?: string | null
           description?: string | null
           end_time: string
@@ -735,14 +739,17 @@ export type Database = {
           job_id?: string | null
           location?: Json | null
           metadata?: Json | null
+          notes?: string | null
           recurrence_rule?: string | null
           start_time: string
+          status?: string | null
           title: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
           attendees?: string[] | null
+          color?: string | null
           created_at?: string | null
           description?: string | null
           end_time?: string
@@ -752,8 +759,10 @@ export type Database = {
           job_id?: string | null
           location?: Json | null
           metadata?: Json | null
+          notes?: string | null
           recurrence_rule?: string | null
           start_time?: string
+          status?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
@@ -2702,30 +2711,39 @@ export type Database = {
       professional_availability: {
         Row: {
           available_until: string | null
+          buffer_time_minutes: number | null
           created_at: string | null
           custom_message: string | null
           id: string
+          max_bookings_per_day: number | null
           professional_id: string
           status: string
           updated_at: string | null
+          working_hours: Json | null
         }
         Insert: {
           available_until?: string | null
+          buffer_time_minutes?: number | null
           created_at?: string | null
           custom_message?: string | null
           id?: string
+          max_bookings_per_day?: number | null
           professional_id: string
           status: string
           updated_at?: string | null
+          working_hours?: Json | null
         }
         Update: {
           available_until?: string | null
+          buffer_time_minutes?: number | null
           created_at?: string | null
           custom_message?: string | null
           id?: string
+          max_bookings_per_day?: number | null
           professional_id?: string
           status?: string
           updated_at?: string | null
+          working_hours?: Json | null
         }
         Relationships: [
           {
@@ -4308,6 +4326,25 @@ export type Database = {
       can_professional_view_job: {
         Args: { _job_id: string; _user_id: string }
         Returns: boolean
+      }
+      check_availability: {
+        Args: {
+          p_end_time: string
+          p_professional_id: string
+          p_start_time: string
+        }
+        Returns: boolean
+      }
+      get_available_slots: {
+        Args: {
+          p_date: string
+          p_duration_minutes?: number
+          p_professional_id: string
+        }
+        Returns: {
+          slot_end: string
+          slot_start: string
+        }[]
       }
       get_online_professionals: {
         Args: { professional_ids?: string[] }

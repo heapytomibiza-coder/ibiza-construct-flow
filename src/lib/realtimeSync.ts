@@ -20,6 +20,14 @@ export function initRealtime(queryClient: QueryClient) {
       console.log('[Realtime] Contracts changed, invalidating cache');
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
     })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
+      console.log('[Realtime] Messages changed, invalidating cache');
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'calendar_events' }, () => {
+      console.log('[Realtime] Calendar events changed, invalidating cache');
+      queryClient.invalidateQueries({ queryKey: ['calendar_events'] });
+    })
     .subscribe((status) => {
       console.log('[Realtime] Subscription status:', status);
     });

@@ -31,7 +31,11 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ professionalI
   const handleSave = async () => {
     try {
       setSaving(true);
-      await updateAvailability(status as any, customMessage, availableUntil);
+      await updateAvailability({
+        status: status as any,
+        custom_message: customMessage,
+        available_until: availableUntil?.toISOString()
+      });
       toast({
         title: 'Availability Updated',
         description: 'Your availability status has been updated successfully.',
