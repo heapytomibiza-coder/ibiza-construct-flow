@@ -108,6 +108,7 @@ function AppContent() {
           <Route path="/" element={<Index />} />
           <Route path="/discovery" element={<Discovery />} />
           <Route path="/professional/:id" element={<ProfessionalProfile />} />
+          <Route path="/professionals/:id" element={<ProfessionalProfile />} />
           <Route path="/book" element={<BookingPage />} />
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
