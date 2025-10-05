@@ -1688,6 +1688,33 @@ export type Database = {
           },
         ]
       }
+      job_presets: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_used_at: string | null
+          preset_data: Json | null
+          preset_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          preset_data?: Json | null
+          preset_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          preset_data?: Json | null
+          preset_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       job_question_snapshot: {
         Row: {
           created_at: string
