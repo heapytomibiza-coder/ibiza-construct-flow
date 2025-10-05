@@ -45,29 +45,33 @@ export const EditableReviewChips = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" role="form" aria-label="Job request review form">
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold">Review & Submit</h3>
+        <h3 className="text-lg font-semibold" id="review-heading">Review & Submit</h3>
         <p className="text-sm text-muted-foreground">
           Tap any detail to edit before submitting
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4" role="list" aria-labelledby="review-heading">
         {chips.map((chip) => (
           <div
             key={chip.id}
             className={cn(
-              "flex items-center justify-between p-4 rounded-xl border-2 transition-all",
+              "flex items-center justify-between p-4 rounded-xl border-2 transition-all min-h-[44px]",
               editingChipId === chip.id
                 ? "border-primary bg-primary/5"
                 : "border-border bg-card hover:border-primary/50"
             )}
+            role="listitem"
           >
             <div className="flex-1 space-y-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              <label 
+                htmlFor={`chip-${chip.id}`}
+                className="text-xs font-medium text-muted-foreground uppercase tracking-wide"
+              >
                 {chip.label}
-              </p>
+              </label>
               
               {editingChipId === chip.id ? (
                 <InlineChipEditor
@@ -78,7 +82,9 @@ export const EditableReviewChips = ({
                   onCancel={handleCancel}
                 />
               ) : (
-                <p className="text-base font-medium">{chip.value}</p>
+                <p className="text-base font-medium" id={`chip-${chip.id}`} role="status">
+                  {chip.value}
+                </p>
               )}
             </div>
 
@@ -87,9 +93,10 @@ export const EditableReviewChips = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => handleEditClick(chip.id)}
-                className="shrink-0 ml-3"
+                className="shrink-0 ml-3 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label={`Edit ${chip.label}`}
               >
-                <Pencil className="w-4 h-4" />
+                <Pencil className="w-4 h-4" aria-hidden="true" />
               </Button>
             )}
           </div>
@@ -100,13 +107,18 @@ export const EditableReviewChips = ({
         <Button
           onClick={onSubmit}
           disabled={isSubmitting || editingChipId !== null}
-          className="w-full h-12 text-base font-semibold"
+          className="w-full min-h-[44px] h-12 text-base font-semibold focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          aria-label="Submit job request"
+          aria-busy={isSubmitting}
         >
           {isSubmitting ? (
-            'Submitting...'
+            <>
+              <span className="sr-only">Submitting your request...</span>
+              <span aria-hidden="true">Submitting...</span>
+            </>
           ) : (
             <>
-              <Check className="w-5 h-5 mr-2" />
+              <Check className="w-5 h-5 mr-2" aria-hidden="true" />
               Submit Job Request
             </>
           )}

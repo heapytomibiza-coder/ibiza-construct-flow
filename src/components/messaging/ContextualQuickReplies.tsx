@@ -52,16 +52,18 @@ export const ContextualQuickReplies = ({
   const contextualReplies = getContextualReplies();
 
   return (
-    <div className="border-t bg-background">
+    <div className="border-t bg-background" role="region" aria-label="Quick reply suggestions">
       <ScrollArea className="w-full">
-        <div className="flex gap-2 p-3">
+        <div className="flex gap-2 p-3" role="list">
           {contextualReplies.map((reply, index) => (
             <Button
               key={index}
               variant="outline"
               size="sm"
               onClick={() => onSelectReply(reply)}
-              className="shrink-0 rounded-full h-9 px-4 hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="shrink-0 rounded-full min-h-[44px] h-auto px-4 hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label={`Send quick reply: ${reply}`}
+              role="listitem"
             >
               {reply}
             </Button>

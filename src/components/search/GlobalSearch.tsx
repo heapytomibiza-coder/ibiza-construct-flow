@@ -39,15 +39,16 @@ export const GlobalSearch = () => {
   }, {} as Record<string, typeof results>);
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
+    <CommandDialog open={isOpen} onOpenChange={setIsOpen} aria-label="Global search">
       <CommandInput
         placeholder="Search jobs, professionals, conversations..."
         value={query}
         onValueChange={setQuery}
+        aria-label="Search everything"
       />
-      <CommandList>
+      <CommandList aria-label="Search results">
         {loading && (
-          <div className="py-6 text-center text-sm text-muted-foreground">
+          <div className="py-6 text-center text-sm text-muted-foreground" role="status" aria-live="polite">
             Searching...
           </div>
         )}
@@ -55,7 +56,7 @@ export const GlobalSearch = () => {
         {!loading && results.length === 0 && query && (
           <CommandEmpty>
             <div className="py-6 text-center">
-              <Search className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+              <Search className="w-12 h-12 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
               <p className="font-medium">No results found</p>
               <p className="text-sm text-muted-foreground">
                 Try different keywords or check spelling
@@ -65,10 +66,10 @@ export const GlobalSearch = () => {
         )}
 
         {!query && !loading && (
-          <div className="py-6 px-4">
+          <div className="py-6 px-4" role="region" aria-label="Search tips">
             <p className="text-sm text-muted-foreground mb-3">Quick tips:</p>
-            <ul className="space-y-1 text-xs text-muted-foreground">
-              <li>• Press <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono">Cmd/Ctrl + K</kbd> to search</li>
+            <ul className="space-y-1 text-xs text-muted-foreground" role="list">
+              <li>• Press <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono" aria-label="Command or Control plus K">Cmd/Ctrl + K</kbd> to search</li>
               <li>• Search for jobs, professionals, messages, or offers</li>
               <li>• Use keywords from job titles or names</li>
             </ul>
@@ -85,9 +86,10 @@ export const GlobalSearch = () => {
                 <CommandItem
                   key={result.id}
                   onSelect={() => handleSelect(result.url)}
-                  className="flex items-center gap-3 py-3"
+                  className="flex items-center gap-3 py-3 min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={`${result.title}${result.subtitle ? `, ${result.subtitle}` : ''}${result.metadata?.status ? `, Status: ${result.metadata.status}` : ''}`}
                 >
-                  <div className="p-2 rounded-lg bg-secondary">
+                  <div className="p-2 rounded-lg bg-secondary" aria-hidden="true">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -99,7 +101,7 @@ export const GlobalSearch = () => {
                     )}
                   </div>
                   {result.metadata?.status && (
-                    <Badge variant="secondary" className="shrink-0">
+                    <Badge variant="secondary" className="shrink-0" aria-label={`Status: ${result.metadata.status}`}>
                       {result.metadata.status}
                     </Badge>
                   )}
@@ -110,12 +112,12 @@ export const GlobalSearch = () => {
         })}
       </CommandList>
 
-      <div className="border-t p-2 text-xs text-muted-foreground">
-        <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono">↑↓</kbd> to navigate
-        <span className="mx-2">•</span>
-        <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono">Enter</kbd> to select
-        <span className="mx-2">•</span>
-        <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono">Esc</kbd> to close
+      <div className="border-t p-2 text-xs text-muted-foreground" role="note" aria-label="Keyboard shortcuts">
+        <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono" aria-label="Up and down arrows">↑↓</kbd> to navigate
+        <span className="mx-2" aria-hidden="true">•</span>
+        <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono" aria-label="Enter key">Enter</kbd> to select
+        <span className="mx-2" aria-hidden="true">•</span>
+        <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono" aria-label="Escape key">Esc</kbd> to close
       </div>
     </CommandDialog>
   );

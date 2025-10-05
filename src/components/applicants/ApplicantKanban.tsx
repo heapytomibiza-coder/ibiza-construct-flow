@@ -30,12 +30,14 @@ export const ApplicantKanban = ({ jobId }: ApplicantKanbanProps) => {
     return applicants.filter(a => a.status === status);
   };
 
-  const handleDragStart = (applicantId: string) => {
+  const handleDragStart = (applicantId: string, e: React.DragEvent) => {
     setDraggedApplicant(applicantId);
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
   };
 
   const handleDrop = async (newStatus: string) => {
@@ -54,6 +56,23 @@ export const ApplicantKanban = ({ jobId }: ApplicantKanbanProps) => {
       });
     } finally {
       setDraggedApplicant(null);
+    }
+  };
+
+  // Keyboard navigation for drag-and-drop
+  const handleKeyDown = async (e: React.KeyboardEvent, applicantId: string, currentStatus: string) => {
+    const statusIndex = KANBAN_COLUMNS.findIndex(col => col.id === currentStatus);
+    
+    if (e.key === 'ArrowRight' && statusIndex < KANBAN_COLUMNS.length - 1) {
+      e.preventDefault();
+      const nextStatus = KANBAN_COLUMNS[statusIndex + 1].id;
+      await updateApplicantStatus(applicantId, nextStatus as any);
+      toast({ title: 'Status updated', description: `Moved to ${nextStatus}` });
+    } else if (e.key === 'ArrowLeft' && statusIndex > 0) {
+      e.preventDefault();
+      const prevStatus = KANBAN_COLUMNS[statusIndex - 1].id;
+      await updateApplicantStatus(applicantId, prevStatus as any);
+      toast({ title: 'Status updated', description: `Moved to ${prevStatus}` });
     }
   };
 
@@ -127,9 +146,13 @@ export const ApplicantKanban = ({ jobId }: ApplicantKanbanProps) => {
                 <Card
                   key={applicant.id}
                   draggable
-                  onDragStart={() => handleDragStart(applicant.id)}
+                  onDragStart={(e) => handleDragStart(applicant.id, e)}
+                  onKeyDown={(e) => handleKeyDown(e, applicant.id, column.id)}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`${applicant.professional?.full_name || 'Professional'} - ${column.label}. Press arrow keys to move between columns.`}
                   className={cn(
-                    "p-4 cursor-move hover:shadow-md transition-all",
+                    "p-4 cursor-move hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[44px]",
                     selectedIds.includes(applicant.id) && "ring-2 ring-primary",
                     draggedApplicant === applicant.id && "opacity-50"
                   )}
@@ -175,13 +198,23 @@ export const ApplicantKanban = ({ jobId }: ApplicantKanbanProps) => {
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" className="flex-1 h-8">
-                        <Mail className="w-3 h-3 mr-1" />
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="flex-1 h-auto min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label={`Send message to ${applicant.professional?.full_name || 'Professional'}`}
+                      >
+                        <Mail className="w-3 h-3 mr-1" aria-hidden="true" />
                         Message
                       </Button>
                       {applicant.interview_scheduled_at && (
-                        <Button variant="ghost" size="sm" className="flex-1 h-8">
-                          <Calendar className="w-3 h-3 mr-1" />
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex-1 h-auto min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring"
+                          aria-label="View interview details"
+                        >
+                          <Calendar className="w-3 h-3 mr-1" aria-hidden="true" />
                           Interview
                         </Button>
                       )}
