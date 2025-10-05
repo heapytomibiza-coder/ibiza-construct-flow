@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,9 +11,11 @@ import {
   Euro,
   MessageCircle,
   Phone,
-  Calendar
+  Calendar,
+  FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
 
 interface ProfessionalCardProps {
   professional: {
@@ -35,6 +37,7 @@ interface ProfessionalCardProps {
 
 const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professional }) => {
   const navigate = useNavigate();
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
   const handleViewProfile = () => {
     navigate(`/professionals/${professional.user_id}`);
@@ -45,8 +48,9 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
     console.log('Contact professional:', professional.id);
   };
 
-  const handleBookNow = () => {
-    navigate(`/post?professional=${professional.id}`);
+  const handleRequestQuote = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setQuoteModalOpen(true);
   };
 
   const getPriceBandDisplay = (band: string) => {
@@ -185,16 +189,21 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
           <Button 
             size="sm" 
             className="flex-1 bg-gradient-hero text-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleBookNow();
-            }}
+            onClick={handleRequestQuote}
           >
-            <Calendar className="w-4 h-4 mr-2" />
-            Book Now
+            <FileText className="w-4 h-4 mr-2" />
+            Request Quote
           </Button>
         </div>
       </CardContent>
+
+      {/* Quote Request Modal */}
+      <QuoteRequestModal
+        open={quoteModalOpen}
+        onOpenChange={setQuoteModalOpen}
+        professionalId={professional.user_id}
+        professionalName={professional.full_name}
+      />
     </Card>
   );
 };

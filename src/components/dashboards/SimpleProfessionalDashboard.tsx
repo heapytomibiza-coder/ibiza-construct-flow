@@ -9,10 +9,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { SubscriptionStatusWidget } from '@/components/marketplace/SubscriptionStatusWidget';
 import { ProfileCompletionTracker } from '@/components/professional/ProfileCompletionTracker';
 import { VerificationStatusCard } from '@/components/professional/VerificationStatusCard';
+import { ProfessionalQuotesSection } from '@/components/booking/ProfessionalQuotesSection';
 import { 
   Home, Briefcase, Euro, LogOut, Play, Clock, 
   CheckCircle, Star, TrendingUp, Users, Calendar,
-  MessageSquare, Camera
+  MessageSquare, Camera, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -91,6 +92,7 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
   const tabs = [
     { id: 'today', label: 'Today', icon: Home },
     { id: 'jobs', label: 'My Jobs', icon: Briefcase },
+    { id: 'quotes', label: 'Quotes', icon: FileText },
     { id: 'earnings', label: 'Earnings', icon: Euro }
   ];
 
@@ -100,6 +102,8 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
         return <TodayTab stats={stats} profile={profile} />;
       case 'jobs':
         return <JobsTab stats={stats} />;
+      case 'quotes':
+        return <QuotesTab userId={user.id} />;
       case 'earnings':
         return <EarningsTab stats={stats} />;
       default:
@@ -437,6 +441,13 @@ const EarningsTab = ({ stats }: any) => (
         </div>
       </CardContent>
     </Card>
+  </div>
+);
+
+// Quotes Tab Component
+const QuotesTab = ({ userId }: { userId: string }) => (
+  <div className="space-y-6">
+    <ProfessionalQuotesSection professionalId={userId} />
   </div>
 );
 

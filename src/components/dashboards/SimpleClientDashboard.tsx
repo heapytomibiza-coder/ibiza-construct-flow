@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useTour } from '@/components/common/Tour';
+import { ClientBookingsSection } from '@/components/booking/ClientBookingsSection';
 import { 
   Briefcase, 
   Calendar, 
@@ -146,6 +147,7 @@ const SimpleClientDashboard: React.FC<SimpleClientDashboardProps> = ({
   const tabs = [
     { id: 'home', label: 'Home', icon: Clock },
     { id: 'jobs', label: 'My Jobs', icon: Briefcase, tourTarget: 'jobs-tab' },
+    { id: 'bookings', label: 'Bookings', icon: FileText },
     { id: 'messages', label: 'Messages', icon: MessageSquare, tourTarget: 'messages-tab' },
     { id: 'payments', label: 'Payments', icon: Euro }
   ];
@@ -449,6 +451,13 @@ const PaymentsTab = () => (
         <p className="text-muted-foreground">Payment history and invoices will appear here</p>
       </CardContent>
     </Card>
+  </div>
+);
+
+// Bookings Tab Component
+const BookingsTab = ({ userId }: { userId: string }) => (
+  <div className="space-y-6">
+    <ClientBookingsSection clientId={userId} />
   </div>
 );
 

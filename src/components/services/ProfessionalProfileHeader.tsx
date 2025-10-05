@@ -25,13 +25,15 @@ interface ProfessionalProfileHeaderProps {
   showContactButtons?: boolean;
   onContact?: () => void;
   onMessage?: () => void;
+  onRequestQuote?: () => void;
 }
 
 export const ProfessionalProfileHeader = ({ 
   professional, 
   showContactButtons = true,
   onContact,
-  onMessage
+  onMessage,
+  onRequestQuote
 }: ProfessionalProfileHeaderProps) => {
   const { availability, loading: availabilityLoading } = useProfessionalAvailability(professional.id);
 
@@ -119,7 +121,10 @@ export const ProfessionalProfileHeader = ({
         
         {showContactButtons && (
           <div className="flex flex-col gap-3">
-            <Button size="lg" onClick={onContact} className="bg-copper hover:bg-copper/90">
+            <Button size="lg" onClick={onRequestQuote} className="bg-gradient-hero text-white">
+              Request Quote
+            </Button>
+            <Button variant="outline" size="lg" onClick={onContact} className="bg-copper hover:bg-copper/90">
               <Phone className="w-4 h-4 mr-2" />
               Call Now
             </Button>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,11 +13,13 @@ import { ProfessionalAboutSection } from '@/components/professionals/Professiona
 import { ProfessionalServicesList } from '@/components/professionals/ProfessionalServicesList';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
 import { ProfessionalReviewsSection } from '@/components/professionals/ProfessionalReviewsSection';
+import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
 
 export default function ProfessionalProfile() {
   const { id: professionalId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['professional', professionalId],
@@ -143,7 +146,12 @@ export default function ProfessionalProfile() {
   }
 
   const handleRequestQuote = () => {
-    navigate(`/post?professional=${professionalId}`);
+    if (!user) {
+      toast.error('Please sign in to request a quote');
+      navigate('/auth');
+      return;
+    }
+    setQuoteModalOpen(true);
   };
 
   return (
@@ -170,6 +178,7 @@ export default function ProfessionalProfile() {
             }}
             onContact={handleContact}
             onMessage={handleContact}
+            onRequestQuote={handleRequestQuote}
           />
 
           {/* About Section */}
@@ -207,6 +216,16 @@ export default function ProfessionalProfile() {
       </main>
       
       <Footer />
+
+      {/* Quote Request Modal */}
+      <QuoteRequestModal
+        open={quoteModalOpen}
+        onOpenChange={setQuoteModalOpen}
+        professionalId={professionalId!}
+        professionalName={profile.display_name}
+        serviceId={profile.services[0]?.id}
+        serviceName={profile.services[0]?.micro_service_id}
+      />
     </div>
   );
 }
