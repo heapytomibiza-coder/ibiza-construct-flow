@@ -55,6 +55,7 @@ const PaymentsPage = React.lazy(() => import("./pages/PaymentsPage"));
 const ProfessionalVerificationPage = React.lazy(() => import("./pages/ProfessionalVerificationPage"));
 const ProfessionalServicesPage = React.lazy(() => import("./pages/ProfessionalServicesPage"));
 const ProfessionalPortfolioPage = React.lazy(() => import("./pages/ProfessionalPortfolioPage"));
+const AdminVerificationsPage = React.lazy(() => import("./pages/AdminVerificationsPage"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -284,6 +285,15 @@ function AppContent() {
             ) : (
               <RouteGuard requiredRole="admin">
                 <WebsiteSettings />
+              </RouteGuard>
+            )
+          } />
+          <Route path="/admin/verifications" element={
+            DISABLE_AUTH_FOR_WIREFRAME ? (
+              <AdminVerificationsPage />
+            ) : (
+              <RouteGuard requiredRole="admin">
+                <AdminVerificationsPage />
               </RouteGuard>
             )
           } />
