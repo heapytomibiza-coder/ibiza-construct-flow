@@ -12,6 +12,7 @@ import {
   Settings
 } from 'lucide-react';
 import { useActiveRole } from '@/hooks/useActiveRole';
+import { useScrollHide } from '@/hooks/useScrollHide';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -25,6 +26,7 @@ interface NavItem {
 export const MobileBottomNav = () => {
   const location = useLocation();
   const { activeRole } = useActiveRole();
+  const { isVisible } = useScrollHide({ threshold: 10, hideDelay: 150 });
 
   const getNavItems = (): NavItem[] => {
     const baseItems: NavItem[] = [
@@ -71,7 +73,15 @@ export const MobileBottomNav = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border md:hidden">
+    <nav 
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-40",
+        "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "border-t border-border md:hidden",
+        "transition-transform duration-300 ease-in-out",
+        isVisible ? "translate-y-0" : "translate-y-full"
+      )}
+    >
       <div className="flex items-center justify-around px-2 py-2 pb-safe">
         {navItems.map((item) => {
           const active = isActive(item.href);

@@ -11,6 +11,9 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
+import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 import { MainCategoryStep } from './MainCategoryStep';
 import { SubcategoryStep } from './SubcategoryStep';
 import { MicroStep } from './MicroStep';
@@ -58,6 +61,7 @@ const STEP_LABELS = [
 export const CanonicalJobWizard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   
@@ -251,8 +255,21 @@ export const CanonicalJobWizard: React.FC = () => {
     }
   };
 
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1: return !!wizardState.mainCategory;
+      case 2: return !!wizardState.subcategory;
+      case 3: return !!wizardState.microId;
+      case 4: return true; // Questions are optional
+      case 5: return !!wizardState.logistics.location;
+      case 6: return true; // Extras are optional
+      case 7: return true;
+      default: return false;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-24 md:pb-0">
       {/* Header with Progress */}
       <div className="bg-card/80 backdrop-blur-sm border-b sticky top-0 z-40">
         <div className="container mx-auto px-4 py-6">
@@ -273,6 +290,22 @@ export const CanonicalJobWizard: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         {renderStep()}
       </div>
+
+      {/* Mobile Sticky CTA */}
+      {isMobile && currentStep < 8 && (
+        <StickyMobileCTA
+          primaryAction={{
+            label: currentStep === 7 ? 'Post Job' : 'Continue',
+            onClick: currentStep === 7 ? handleSubmit : handleNext,
+            disabled: !canProceed(),
+            loading: loading
+          }}
+          secondaryAction={currentStep > 1 ? {
+            label: 'Back',
+            onClick: handleBack
+          } : undefined}
+        />
+      )}
     </div>
   );
 };
