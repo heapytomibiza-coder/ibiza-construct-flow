@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, FileText, CreditCard, Clock, CheckCircle } from 'lucide-react';
+import { DollarSign, FileText, CreditCard, Clock, CheckCircle, Star } from 'lucide-react';
 import { useContracts } from '@/hooks/useContracts';
 import { supabase } from '@/integrations/supabase/client';
+import { ReviewSubmissionModal } from '@/components/reviews/ReviewSubmissionModal';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -15,6 +16,8 @@ interface ClientPaymentSectionProps {
 export const ClientPaymentSection: React.FC<ClientPaymentSectionProps> = ({ userId }) => {
   const { contracts, loading } = useContracts({ userId, userRole: 'client' });
   const [processingPayment, setProcessingPayment] = useState<string | null>(null);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<any>(null);
 
   const handlePayment = async (contract: any) => {
     setProcessingPayment(contract.id);
@@ -145,16 +148,42 @@ export const ClientPaymentSection: React.FC<ClientPaymentSectionProps> = ({ user
                     </div>
                   )}
                   {contract.escrow_status === 'released' && (
-                    <div className="w-full p-3 bg-muted rounded-md flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      <span className="text-sm">Payment completed</span>
-                    </div>
+                    <>
+                      <div className="flex-1 p-3 bg-muted rounded-md flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm">Payment completed</span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedContract(contract);
+                          setReviewModalOpen(true);
+                        }}
+                      >
+                        <Star className="w-4 h-4 mr-2" />
+                        Leave Review
+                      </Button>
+                    </>
                   )}
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Review Modal */}
+      {selectedContract && (
+        <ReviewSubmissionModal
+          open={reviewModalOpen}
+          onClose={() => {
+            setReviewModalOpen(false);
+            setSelectedContract(null);
+          }}
+          contractId={selectedContract.id}
+          professionalId={selectedContract.tasker_id}
+          professionalName={selectedContract.tasker?.full_name || 'Professional'}
+        />
       )}
     </div>
   );

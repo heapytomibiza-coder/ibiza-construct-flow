@@ -12,7 +12,7 @@ import { ProfessionalProfileHeader } from '@/components/services/ProfessionalPro
 import { ProfessionalAboutSection } from '@/components/professionals/ProfessionalAboutSection';
 import { ProfessionalServicesList } from '@/components/professionals/ProfessionalServicesList';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
-import { ProfessionalReviewsSection } from '@/components/professionals/ProfessionalReviewsSection';
+import { ReviewsSection } from '@/components/reviews/ReviewsSection';
 import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
 
 export default function ProfessionalProfile() {
@@ -205,13 +205,7 @@ export default function ProfessionalProfile() {
           )}
 
           {/* Reviews Section */}
-          {profile.reviews.length > 0 && (
-            <ProfessionalReviewsSection
-              reviews={profile.reviews}
-              averageRating={profile.stats.average_rating}
-              totalReviews={profile.stats.total_reviews}
-            />
-          )}
+          <ReviewsSection professionalId={professionalId!} />
         </div>
       </main>
       

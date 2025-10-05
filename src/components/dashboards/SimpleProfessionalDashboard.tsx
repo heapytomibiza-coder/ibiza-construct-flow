@@ -11,6 +11,7 @@ import { ProfileCompletionTracker } from '@/components/professional/ProfileCompl
 import { VerificationStatusCard } from '@/components/professional/VerificationStatusCard';
 import { ProfessionalQuotesSection } from '@/components/booking/ProfessionalQuotesSection';
 import { ProfessionalEarningsSection } from '@/components/payment/ProfessionalEarningsSection';
+import { ProfessionalReviewsManagement } from '@/components/reviews/ProfessionalReviewsManagement';
 import { 
   Home, Briefcase, Euro, LogOut, Play, Clock, 
   CheckCircle, Star, TrendingUp, Users, Calendar,
@@ -94,7 +95,8 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
     { id: 'today', label: 'Today', icon: Home },
     { id: 'jobs', label: 'My Jobs', icon: Briefcase },
     { id: 'quotes', label: 'Quotes', icon: FileText },
-    { id: 'earnings', label: 'Earnings', icon: Euro }
+    { id: 'earnings', label: 'Earnings', icon: Euro },
+    { id: 'reviews', label: 'Reviews', icon: Star }
   ];
 
   const renderTabContent = () => {
@@ -107,6 +109,8 @@ const SimpleProfessionalDashboard: React.FC<SimpleProfessionalDashboardProps> = 
         return <QuotesTab userId={user.id} />;
       case 'earnings':
         return <EarningsTab userId={user.id} />;
+      case 'reviews':
+        return <ReviewsTab userId={user.id} />;
       default:
         return <TodayTab stats={stats} profile={profile} />;
     }
@@ -385,6 +389,13 @@ const EarningsTab = ({ userId }: { userId: string }) => (
 const QuotesTab = ({ userId }: { userId: string }) => (
   <div className="space-y-6">
     <ProfessionalQuotesSection professionalId={userId} />
+  </div>
+);
+
+// Reviews Tab Component
+const ReviewsTab = ({ userId }: { userId: string }) => (
+  <div className="space-y-6">
+    <ProfessionalReviewsManagement professionalId={userId} />
   </div>
 );
 
