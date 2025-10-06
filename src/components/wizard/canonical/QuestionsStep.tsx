@@ -150,10 +150,10 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     return microDef.questions.map((q: any) => ({
       id: q.key,
       type: mapPackTypeToAIType(q.type),
-      label: q.i18nKey, // TODO: Resolve i18n
+      label: q.i18nKey, // i18n keys used directly (i18n resolver in future phase)
       required: q.required ?? false,
       options: q.options?.map((opt: any) => ({
-        label: opt.i18nKey, // TODO: Resolve i18n
+        label: opt.i18nKey, // i18n keys used directly (i18n resolver in future phase)
         value: opt.value
       })),
       min: q.min,

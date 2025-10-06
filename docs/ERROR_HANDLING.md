@@ -1,313 +1,19 @@
-# Error Handling & Recovery Guide
-
-Comprehensive guide for error handling patterns, recovery mechanisms, and user-friendly error experiences implemented in Phase 7.
+# Error Handling Guide
 
 ## Overview
 
-This document covers:
-- Error classification and handling
-- Error boundaries and fallback UIs
-- Retry mechanisms with exponential backoff
+This project uses a comprehensive, standardized error handling system that provides:
+- Automatic error classification
 - User-friendly error messages
-- Error logging and monitoring
+- Retry logic with exponential backoff
+- Centralized error logging
+- Toast notifications for user feedback
 
-## Architecture
+## Client-Side Error Handling
 
-### Error Flow
+### useErrorHandler Hook
 
-```
-User Action → Try Operation
-    ↓
-Catch Error → Classify Error → Log Error
-    ↓
-Determine if Retryable
-    ↓
-Yes: Retry with Backoff → Success/Fail
-No: Show User-Friendly Message
-    ↓
-Offer Recovery Actions
-```
-
-## Error Classification
-
-### ErrorType Enum
-
-Location: `src/utils/errorUtils.ts`
-
-```typescript
-enum ErrorType {
-  NETWORK = 'NETWORK',           // Connection issues
-  AUTH = 'AUTH',                 // Authentication/session
-  VALIDATION = 'VALIDATION',     // Invalid input
-  NOT_FOUND = 'NOT_FOUND',      // Resource not found
-  PERMISSION = 'PERMISSION',     // Access denied
-  SERVER = 'SERVER',             // Server errors
-  UNKNOWN = 'UNKNOWN'            // Unclassified
-}
-```
-
-### Error Properties
-
-```typescript
-interface AppError {
-  type: ErrorType;
-  message: string;              // Technical message
-  userMessage: string;          // User-friendly message
-  originalError?: Error;        // Original error object
-  retryable: boolean;           // Can it be retried?
-  statusCode?: number;          // HTTP status code
-}
-```
-
-## Error Utilities
-
-### classifyError()
-
-Automatically classifies errors based on message content and properties:
-
-```typescript
-import { classifyError } from '@/utils/errorUtils';
-
-try {
-  await fetchData();
-} catch (error) {
-  const classified = classifyError(error);
-  console.log(classified.type);        // ErrorType.NETWORK
-  console.log(classified.userMessage); // "Unable to connect..."
-  console.log(classified.retryable);   // true
-}
-```
-
-**Classification Rules:**
-- Contains "network", "fetch", "offline" → `NETWORK`
-- Contains "auth", "unauthorized", "token" → `AUTH`
-- Contains "validation", "invalid", "required" → `VALIDATION`
-- Contains "not found", "404" → `NOT_FOUND`
-- Contains "permission", "forbidden", "403" → `PERMISSION`
-- Contains "server", "500", "internal" → `SERVER`
-- Default → `UNKNOWN`
-
-### retryWithBackoff()
-
-Implements exponential backoff retry logic:
-
-```typescript
-import { retryWithBackoff } from '@/utils/errorUtils';
-
-const data = await retryWithBackoff(
-  () => fetchUserData(userId),
-  {
-    maxRetries: 3,              // Default: 3
-    initialDelay: 1000,         // Default: 1000ms
-    maxDelay: 10000,            // Default: 10000ms
-    backoffMultiplier: 2,       // Default: 2
-    onRetry: (attempt, error) => {
-      console.log(`Retry ${attempt}:`, error);
-    }
-  }
-);
-```
-
-**Retry Schedule:**
-- Attempt 1: Wait 1s (1000ms)
-- Attempt 2: Wait 2s (2000ms)
-- Attempt 3: Wait 4s (4000ms)
-- Max delay cap: 10s
-
-**Only Retries If:**
-- Error is classified as retryable
-- Max retries not exceeded
-
-### safeAsync()
-
-Creates error-safe async wrappers:
-
-```typescript
-import { safeAsync } from '@/utils/errorUtils';
-
-const safeFetch = safeAsync(
-  async (url: string) => {
-    const res = await fetch(url);
-    return res.json();
-  },
-  {
-    onError: (error) => console.error('Fetch failed:', error),
-    fallbackValue: null
-  }
-);
-
-const data = await safeFetch('/api/users'); // Returns null on error
-```
-
-## Error Boundaries
-
-### ErrorBoundary Component
-
-Location: `src/components/error/ErrorBoundary.tsx`
-
-**Features:**
-- Catches React component errors
-- Shows custom fallback UI
-- Logs errors to console/monitoring
-- Provides reset and navigation actions
-- Shows dev details in development mode
-
-**Usage:**
-
-```tsx
-import { ErrorBoundary } from '@/components/error/ErrorBoundary';
-
-<ErrorBoundary>
-  <YourComponent />
-</ErrorBoundary>
-```
-
-**With Custom Fallback:**
-
-```tsx
-<ErrorBoundary fallback={<CustomErrorUI />}>
-  <YourComponent />
-</ErrorBoundary>
-```
-
-**With Error Handler:**
-
-```tsx
-<ErrorBoundary 
-  onError={(error, errorInfo) => {
-    // Custom error handling
-    logToService(error, errorInfo);
-  }}
->
-  <YourComponent />
-</ErrorBoundary>
-```
-
-### Higher-Order Component
-
-```tsx
-import { withErrorBoundary } from '@/components/error/ErrorBoundary';
-
-const SafeComponent = withErrorBoundary(
-  MyComponent,
-  <CustomFallback />,
-  (error, errorInfo) => logError(error)
-);
-```
-
-## Error Fallback Components
-
-Location: `src/components/error/ErrorFallback.tsx`
-
-### Available Fallbacks
-
-#### 1. GenericErrorFallback
-
-General-purpose error display:
-
-```tsx
-import { GenericErrorFallback } from '@/components/error/ErrorFallback';
-
-<GenericErrorFallback
-  error={error}
-  resetErrorBoundary={reset}
-  title="Something went wrong"
-  message="Please try again"
-/>
-```
-
-#### 2. NetworkErrorFallback
-
-For connection issues:
-
-```tsx
-import { NetworkErrorFallback } from '@/components/error/ErrorFallback';
-
-<NetworkErrorFallback resetErrorBoundary={reset} />
-```
-
-**Shows:**
-- WiFi off icon
-- "Connection Lost" title
-- Internet connection check prompt
-- Retry button
-
-#### 3. AuthErrorFallback
-
-For authentication errors:
-
-```tsx
-import { AuthErrorFallback } from '@/components/error/ErrorFallback';
-
-<AuthErrorFallback />
-```
-
-**Shows:**
-- Lock icon
-- "Session Expired" title
-- Sign in redirect button
-
-#### 4. NotFoundErrorFallback
-
-For 404 errors:
-
-```tsx
-import { NotFoundErrorFallback } from '@/components/error/ErrorFallback';
-
-<NotFoundErrorFallback message="User not found" />
-```
-
-#### 5. ServerErrorFallback
-
-For 500 errors:
-
-```tsx
-import { ServerErrorFallback } from '@/components/error/ErrorFallback';
-
-<ServerErrorFallback resetErrorBoundary={reset} />
-```
-
-**Shows:**
-- Server icon
-- "Server Error" title
-- Support contact option
-
-### Inline Components
-
-#### InlineError
-
-For form fields and small components:
-
-```tsx
-import { InlineError } from '@/components/error/ErrorFallback';
-
-<InlineError 
-  message="Failed to save changes" 
-  retry={handleRetry}
-/>
-```
-
-#### LoadingWithError
-
-Combined loading/error/success states:
-
-```tsx
-import { LoadingWithError } from '@/components/error/ErrorFallback';
-
-<LoadingWithError
-  loading={loading}
-  error={error}
-  retry={refetch}
->
-  <YourContent />
-</LoadingWithError>
-```
-
-## Hooks
-
-### useErrorHandler
-
-Centralized error handling with toast notifications:
+The primary hook for handling errors in React components:
 
 ```typescript
 import { useErrorHandler } from '@/hooks/useErrorHandler';
@@ -315,305 +21,502 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 const MyComponent = () => {
   const { handleError } = useErrorHandler();
   
-  const fetchData = async () => {
+  const doSomething = async () => {
     try {
-      await api.getData();
+      await riskyOperation();
     } catch (error) {
-      handleError(error, { context: 'fetchData', userId });
+      handleError(error, { 
+        functionName: 'doSomething',
+        userId: user?.id 
+      });
     }
   };
 };
 ```
 
-**Toast Notifications by Error Type:**
-- `NETWORK`: "Connection Error" with retry action
-- `AUTH`: "Authentication Required" with sign-in action
-- `VALIDATION`: "Invalid Input" message
-- `PERMISSION`: "Access Denied" message
-- `NOT_FOUND`: "Not Found" message
-- `SERVER`: "Server Error" with support contact action
+**Features:**
+- Automatically classifies errors into types
+- Logs errors with context
+- Shows user-friendly toast notifications
+- Provides retry actions for retryable errors
 
-### useAsyncWithError
+### useAsyncWithError Hook
 
-Handles async operations with loading/error states:
+Recommended for async operations with built-in error handling:
 
 ```typescript
 import { useAsyncWithError } from '@/hooks/useAsyncWithError';
 
 const MyComponent = () => {
-  const { execute, loading, error, data, reset } = useAsyncWithError(
-    async (userId: string) => {
-      return await fetchUser(userId);
+  const { execute, loading, error, data } = useAsyncWithError(
+    async (id: string) => {
+      const { data } = await supabase
+        .from('table')
+        .select('*')
+        .eq('id', id)
+        .single();
+      return data;
     },
     {
-      retry: true,              // Enable retry
-      maxRetries: 3,            // Max retry attempts
-      onSuccess: (user) => {
-        console.log('User loaded:', user);
+      retry: true,           // Enable automatic retries
+      maxRetries: 3,         // Max 3 retry attempts
+      onSuccess: (data) => {
+        toast.success('Operation successful!');
       },
       onError: (error) => {
-        console.error('Failed to load user');
+        console.error('Failed:', error);
       }
     }
   );
   
   return (
-    <div>
-      <button onClick={() => execute('123')} disabled={loading}>
-        {loading ? 'Loading...' : 'Load User'}
-      </button>
-      {error && <InlineError message={error.message} retry={reset} />}
-      {data && <UserProfile user={data} />}
-    </div>
+    <Button 
+      onClick={() => execute(itemId)} 
+      disabled={loading}
+    >
+      {loading ? 'Loading...' : 'Load Data'}
+    </Button>
   );
 };
 ```
 
 **Features:**
-- Automatic loading state
-- Error classification and handling
-- Optional retry with backoff
+- Automatic loading state management
+- Built-in retry logic with exponential backoff
 - Success/error callbacks
-- Reset function
+- Automatic error classification and logging
 
-## Common Patterns
+## Error Types
 
-### Pattern 1: Form Submission with Error Handling
+Errors are automatically classified into the following types:
 
-```tsx
-import { useAsyncWithError } from '@/hooks/useAsyncWithError';
-import { InlineError } from '@/components/error/ErrorFallback';
+### NETWORK
+Connection and network-related errors
+- **Retryable**: Yes
+- **User Message**: "Network error. Please check your connection."
+- **Examples**: 
+  - `fetch failed`
+  - `NetworkError`
+  - `Failed to fetch`
 
-const MyForm = () => {
-  const { execute, loading, error } = useAsyncWithError(
-    async (formData: FormData) => {
-      return await submitForm(formData);
-    },
-    {
-      onSuccess: () => {
-        toast.success('Form submitted successfully');
-        navigate('/success');
-      }
+### AUTH
+Authentication and authorization errors
+- **Retryable**: No
+- **User Message**: "Authentication failed. Please log in again."
+- **Examples**:
+  - `Invalid credentials`
+  - `Unauthorized`
+  - `Session expired`
+
+### VALIDATION
+Input validation errors
+- **Retryable**: No
+- **User Message**: "Invalid input. Please check your data."
+- **Examples**:
+  - `Validation failed`
+  - `Invalid email format`
+  - `Required field missing`
+
+### NOT_FOUND
+Resource not found errors
+- **Retryable**: No
+- **User Message**: "Resource not found."
+- **Examples**:
+  - `404`
+  - `not found`
+  - `does not exist`
+
+### PERMISSION
+Permission and access control errors
+- **Retryable**: No
+- **User Message**: "You don't have permission to perform this action."
+- **Examples**:
+  - `Forbidden`
+  - `Access denied`
+  - `Insufficient permissions`
+
+### SERVER
+Internal server errors
+- **Retryable**: Yes
+- **User Message**: "Server error. Please try again."
+- **Examples**:
+  - `500`
+  - `Internal server error`
+  - `Service unavailable`
+
+### UNKNOWN
+Unclassified errors
+- **Retryable**: No
+- **User Message**: "An unexpected error occurred."
+- **Examples**: Any error not matching other patterns
+
+## Error Utilities
+
+### classifyError
+
+Classify any error into a structured `AppError`:
+
+```typescript
+import { classifyError } from '@/utils/errorUtils';
+
+try {
+  await operation();
+} catch (error) {
+  const classified = classifyError(error);
+  console.log(classified.type);        // 'NETWORK'
+  console.log(classified.userMessage);  // User-friendly message
+  console.log(classified.retryable);    // true/false
+}
+```
+
+### retryWithBackoff
+
+Retry an operation with exponential backoff:
+
+```typescript
+import { retryWithBackoff } from '@/utils/errorUtils';
+
+const result = await retryWithBackoff(
+  async () => {
+    const response = await fetch('/api/data');
+    if (!response.ok) throw new Error('Failed');
+    return response.json();
+  },
+  {
+    maxRetries: 3,              // Max 3 attempts
+    initialDelay: 1000,         // Start with 1s delay
+    maxDelay: 10000,           // Cap at 10s delay
+    backoffMultiplier: 2,      // Double delay each time
+    onRetry: (attempt, error) => {
+      console.log(`Retry ${attempt}:`, error);
     }
-  );
-  
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    execute(formData);
-  };
-  
-  return (
-    <form onSubmit={handleSubmit}>
-      {/* Form fields */}
-      {error && <InlineError message={error.message} />}
-      <Button type="submit" disabled={loading}>
-        {loading ? 'Submitting...' : 'Submit'}
-      </Button>
-    </form>
-  );
-};
-```
-
-### Pattern 2: Data Fetching with Retry
-
-```tsx
-import { useAsyncWithError } from '@/hooks/useAsyncWithError';
-import { LoadingWithError } from '@/components/error/ErrorFallback';
-
-const UserList = () => {
-  const { execute, loading, error, data } = useAsyncWithError(
-    fetchUsers,
-    { retry: true, maxRetries: 3 }
-  );
-  
-  useEffect(() => {
-    execute();
-  }, [execute]);
-  
-  return (
-    <LoadingWithError loading={loading} error={error} retry={execute}>
-      <UserListView users={data || []} />
-    </LoadingWithError>
-  );
-};
-```
-
-### Pattern 3: Protected Component with Error Boundary
-
-```tsx
-import { ErrorBoundary } from '@/components/error/ErrorBoundary';
-import { NetworkErrorFallback } from '@/components/error/ErrorFallback';
-
-const ProtectedFeature = () => (
-  <ErrorBoundary fallback={<NetworkErrorFallback />}>
-    <ComplexFeature />
-  </ErrorBoundary>
+  }
 );
 ```
 
-### Pattern 4: Manual Error Classification
+### safeAsync
 
-```tsx
-import { classifyError, getUserErrorMessage } from '@/utils/errorUtils';
-
-const handleApiError = (error: unknown) => {
-  const classified = classifyError(error);
-  
-  if (classified.type === ErrorType.AUTH) {
-    redirectToLogin();
-  } else if (classified.retryable) {
-    showRetryOption();
-  } else {
-    showErrorMessage(classified.userMessage);
-  }
-};
-```
-
-## Error Logging
-
-### Development
-
-Errors are logged to console with full details:
+Wrap async functions to catch and log errors:
 
 ```typescript
-console.error('🔴 Error logged:', {
-  type: 'NETWORK',
-  message: 'Failed to fetch',
-  userMessage: 'Unable to connect...',
-  timestamp: '2025-01-01T00:00:00Z',
-  context: { userId: '123' },
-  stack: '...'
+import { safeAsync } from '@/utils/errorUtils';
+
+const safeFetch = safeAsync(
+  async (url: string) => {
+    const response = await fetch(url);
+    return response.json();
+  },
+  {
+    onError: (error) => {
+      console.error('Fetch failed:', error);
+    },
+    fallbackValue: null  // Return null on error
+  }
+);
+
+// Usage - never throws, always returns result or fallback
+const data = await safeFetch('/api/data');
+```
+
+### logError
+
+Log errors with context (development/production aware):
+
+```typescript
+import { logError } from '@/utils/errorUtils';
+
+logError(error, {
+  component: 'MyComponent',
+  action: 'submitForm',
+  userId: user?.id,
+  metadata: { formData }
 });
 ```
 
-### Production
+## Edge Function Error Handling
 
-In production, integrate with monitoring services:
+### withErrorTracking
+
+Wrap Edge Function handlers for automatic error tracking:
 
 ```typescript
-// Example: Sentry integration
-import * as Sentry from '@sentry/react';
+import { withErrorTracking } from '../_shared/errorHandler.ts';
 
-export const logError = (error: unknown, context?: Record<string, any>) => {
-  const classified = classifyError(error);
-  
-  if (process.env.NODE_ENV === 'production') {
-    Sentry.captureException(error, {
-      extra: {
-        type: classified.type,
-        userMessage: classified.userMessage,
-        ...context
-      }
-    });
-  }
+const handler = async (req: Request): Promise<Response> => {
+  // Your logic here
+  return new Response(JSON.stringify({ success: true }));
 };
+
+// Wraps handler with error tracking
+Deno.serve(withErrorTracking(handler, 'my-function'));
 ```
 
-## User Experience Guidelines
+**Features:**
+- Automatically catches and logs errors
+- Returns standardized error responses
+- Tracks errors in `edge_function_errors` table
+- Includes request context in error logs
 
-### Error Messages
+### Standard Error Responses
 
-**DO:**
-- Use clear, non-technical language
-- Explain what happened
-- Provide actionable next steps
-- Offer recovery options (retry, go home, contact support)
+Use standardized error response helpers:
 
-**DON'T:**
-- Show technical stack traces to users
-- Use jargon or error codes
-- Leave users stuck with no options
-- Blame the user
+```typescript
+import { 
+  errorResponse, 
+  validationError, 
+  authError,
+  rateLimitError 
+} from '../_shared/errorHandler.ts';
 
-### Recovery Actions
+// Generic error
+return errorResponse('Something went wrong', 500);
 
-**Always Provide:**
-1. **Retry** - For retryable errors
-2. **Go Home** - Safe navigation option
-3. **Contact Support** - For persistent issues
+// Validation error (400)
+return validationError('Email is required');
 
-### Visual Design
+// Auth error (401)
+return authError('Invalid token');
 
-**Error States:**
-- Use appropriate icons (WiFi off, lock, alert)
-- Use semantic colors (destructive for errors, amber for warnings)
-- Maintain consistent layout
-- Ensure touch-friendly buttons (44px minimum)
+// Rate limit error (429)
+return rateLimitError();
+```
 
-## Integration with Existing Components
+### Manual Error Logging
 
-### Canonical Job Wizard
+Log errors manually in Edge Functions:
 
-```tsx
-// In QuestionsStep.tsx or LogisticsStep.tsx
+```typescript
+import { logEdgeFunctionError } from '../_shared/errorHandler.ts';
+
+try {
+  await riskyOperation();
+} catch (error) {
+  await logEdgeFunctionError(supabaseClient, error as Error, {
+    functionName: 'my-function',
+    requestData: { userId: user.id },
+    userId: user.id,
+    severity: 'error'
+  });
+  throw error;
+}
+```
+
+## Error Monitoring
+
+### System Health Dashboard
+
+Access the System Health Dashboard (Admin only) to:
+- View unresolved errors across all Edge Functions
+- See error counts by severity (warning, error, critical)
+- Resolve errors once fixed
+- Track error trends
+
+Location: Admin Dashboard → System Health
+
+### Error Tracking Class
+
+Programmatically track and query errors:
+
+```typescript
+import { ErrorTracker } from '@/lib/monitoring/errorTracking';
+
+const tracker = new ErrorTracker(supabase);
+
+// Log an error
+await tracker.logEdgeFunctionError('function-name', error, {
+  severity: 'critical',
+  userId: user?.id,
+  requestData: { action: 'submit' }
+});
+
+// Get unresolved errors summary
+const summary = await tracker.getUnresolvedErrorsSummary();
+console.log(summary.totalUnresolved);
+console.log(summary.criticalCount);
+
+// Resolve an error
+await tracker.resolveError(errorId);
+
+// Get errors for specific function
+const errors = await tracker.getFunctionErrors('my-function', 10);
+```
+
+## Best Practices
+
+### 1. Always Validate Input
+
+```typescript
+import { z } from 'zod';
+
+const schema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1).max(100)
+});
+
+// Client-side
+const result = schema.safeParse(formData);
+if (!result.success) {
+  return validationError('Invalid form data');
+}
+
+// Server-side (Edge Function)
+try {
+  schema.parse(requestData);
+} catch (error) {
+  return validationError('Validation failed');
+}
+```
+
+### 2. Use Appropriate Error Types
+
+```typescript
+// User not authenticated
+if (!user) {
+  return authError('Please log in');
+}
+
+// Resource not found
+if (!record) {
+  return errorResponse('Record not found', 404, 'NOT_FOUND');
+}
+
+// Rate limit exceeded
+if (requestCount > limit) {
+  return rateLimitError();
+}
+```
+
+### 3. Provide Context in Errors
+
+```typescript
+const { handleError } = useErrorHandler();
+
+try {
+  await updateProfile(data);
+} catch (error) {
+  handleError(error, {
+    functionName: 'updateProfile',
+    userId: user.id,
+    profileData: data  // Helps debugging
+  });
+}
+```
+
+### 4. Use Retry for Transient Failures
+
+```typescript
+// Network requests that might fail temporarily
+const { execute } = useAsyncWithError(fetchData, { 
+  retry: true,
+  maxRetries: 3 
+});
+
+// Use retryWithBackoff for critical operations
+const result = await retryWithBackoff(saveToDatabase, {
+  maxRetries: 5,
+  initialDelay: 1000
+});
+```
+
+### 5. Don't Log Sensitive Data
+
+```typescript
+// ❌ BAD - Logs sensitive data
+logError(error, { password: user.password });
+
+// ✅ GOOD - Logs only necessary info
+logError(error, { userId: user.id, action: 'login' });
+```
+
+### 6. Handle Edge Cases
+
+```typescript
+const { execute, error } = useAsyncWithError(fetchUser);
+
+if (error) {
+  // Show user-friendly fallback
+  return <ErrorState message="Unable to load user data" />;
+}
+```
+
+## Testing Error Handling
+
+### Unit Tests
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { classifyError } from '@/utils/errorUtils';
+
+describe('Error Classification', () => {
+  it('should classify network errors', () => {
+    const error = new Error('fetch failed');
+    const classified = classifyError(error);
+    
+    expect(classified.type).toBe('NETWORK');
+    expect(classified.retryable).toBe(true);
+  });
+  
+  it('should classify auth errors', () => {
+    const error = new Error('Unauthorized');
+    const classified = classifyError(error);
+    
+    expect(classified.type).toBe('AUTH');
+    expect(classified.retryable).toBe(false);
+  });
+});
+```
+
+### Integration Tests
+
+```typescript
+import { renderHook, waitFor } from '@testing-library/react';
 import { useAsyncWithError } from '@/hooks/useAsyncWithError';
 
-const { execute: saveAnswers, loading, error } = useAsyncWithError(
-  async (answers: Record<string, any>) => {
-    return await supabase
-      .from('job_answers')
-      .insert(answers);
-  },
-  {
-    retry: true,
-    onSuccess: () => handleNext()
-  }
-);
+it('should retry on failure', async () => {
+  let attempts = 0;
+  const failTwice = async () => {
+    attempts++;
+    if (attempts < 3) throw new Error('Network error');
+    return 'success';
+  };
+  
+  const { result } = renderHook(() => 
+    useAsyncWithError(failTwice, { retry: true, maxRetries: 3 })
+  );
+  
+  await result.current.execute();
+  
+  await waitFor(() => {
+    expect(result.current.data).toBe('success');
+    expect(attempts).toBe(3);
+  });
+});
 ```
 
-### Professional Dashboard
+## Troubleshooting
 
-```tsx
-import { ErrorBoundary } from '@/components/error/ErrorBoundary';
-import { ServerErrorFallback } from '@/components/error/ErrorFallback';
+### Error Not Being Caught
+- Ensure you're using try/catch or async error boundaries
+- Check if error is thrown vs returned
+- Verify error handler is called
 
-<ErrorBoundary fallback={<ServerErrorFallback />}>
-  <DashboardStats />
-  <LeadsList />
-</ErrorBoundary>
-```
+### Retry Not Working
+- Check if error is classified as retryable
+- Verify maxRetries is set correctly
+- Check network conditions (might be offline)
 
-## Testing Error Scenarios
+### Errors Not Logging
+- Verify Supabase connection
+- Check RLS policies on error tables
+- Ensure user has permission to write errors
 
-### Simulate Network Error
+### Toast Not Showing
+- Check if toast container is rendered
+- Verify useErrorHandler is called correctly
+- Check browser console for React errors
 
-```typescript
-// Throw network error
-throw new Error('Network request failed');
-// Classified as: ErrorType.NETWORK
-// Retryable: true
-```
+---
 
-### Simulate Auth Error
-
-```typescript
-throw new Error('Unauthorized - invalid token');
-// Classified as: ErrorType.AUTH
-// Retryable: false
-```
-
-### Simulate Validation Error
-
-```typescript
-throw new Error('Validation failed: email is required');
-// Classified as: ErrorType.VALIDATION
-// Retryable: false
-```
-
-## Browser Support
-
-- **Error Boundaries**: All modern browsers
-- **Toast Notifications**: All modern browsers
-- **Retry Logic**: All modern browsers
-- **Exponential Backoff**: All modern browsers
-
-## Future Enhancements
-
-- [ ] Integrate with Sentry for production error tracking
-- [ ] Add error analytics dashboard
-- [ ] Implement offline error queue
-- [ ] Add user feedback collection on errors
-- [ ] Smart error prediction based on patterns
-- [ ] Automatic error recovery suggestions
-- [ ] Error rate limiting for repeated failures
+**Last Updated**: Phase 5 Implementation
+**Related**: `docs/DEVELOPER_GUIDE.md`, `docs/TESTING_VALIDATION.md`
