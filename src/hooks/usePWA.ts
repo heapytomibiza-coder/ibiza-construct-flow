@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -9,6 +10,8 @@ export const usePWA = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check if PWA is supported
@@ -36,16 +39,42 @@ export const usePWA = () => {
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
+      toast({
+        title: 'App installed',
+        description: 'TaskHub has been installed successfully!'
+      });
+    };
+
+    // Handle online/offline status
+    const handleOnline = () => {
+      setIsOnline(true);
+      toast({
+        title: 'Back online',
+        description: 'Your connection has been restored'
+      });
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast({
+        title: 'You are offline',
+        description: 'Some features may be limited',
+        variant: 'destructive'
+      });
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [toast]);
 
   const installApp = async () => {
     if (!deferredPrompt) return false;
@@ -65,6 +94,17 @@ export const usePWA = () => {
     }
   };
 
+  const registerServiceWorker = async () => {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('/service-worker.js');
+        console.log('Service Worker registered:', registration);
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+      }
+    }
+  };
+
   const getInstallationStatus = () => {
     if (!isSupported) return 'not-supported';
     if (isInstalled) return 'installed';
@@ -76,7 +116,10 @@ export const usePWA = () => {
     isInstalled,
     isSupported,
     canInstall: !!deferredPrompt,
+    isInstallable: !!deferredPrompt,
+    isOnline,
     installationStatus: getInstallationStatus(),
-    installApp
+    installApp,
+    registerServiceWorker
   };
 };
