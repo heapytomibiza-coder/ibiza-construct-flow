@@ -47,6 +47,7 @@ const FeatureFlagsManager = lazy(() => import('@/components/admin/FeatureFlagsMa
 const EnhancedPaymentManagement = lazy(() => import('@/components/admin/payments/EnhancedPaymentManagement').then(m => ({ default: m.EnhancedPaymentManagement })));
 const ContentModerationPanel = lazy(() => import('@/components/admin/ContentModerationPanel'));
 const UserAnalyticsDashboard = lazy(() => import('@/components/admin/UserAnalyticsDashboard'));
+const SystemHealthDashboard = lazy(() => import('@/components/admin/SystemHealthDashboard').then(m => ({ default: m.SystemHealthDashboard })));
 
 // Lazy load AI components
 const AISmartMatcher = lazy(() => import('@/components/ai/AISmartMatcher').then(m => ({ default: m.AISmartMatcher })));
@@ -212,6 +213,14 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       category: 'tools'
     },
     { 
+      id: 'system-health', 
+      name: 'System Health', 
+      icon: Activity, 
+      description: 'Health checks & errors',
+      tooltip: 'Monitor system health checks, edge function errors, and service availability.',
+      category: 'tools'
+    },
+    { 
       id: 'services', 
       name: 'Service Catalogue', 
       icon: Folder, 
@@ -307,6 +316,18 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       description: 'Go to dashboard home',
       callback: () => setActiveWorkspace('overview'),
     },
+    {
+      key: 's',
+      ctrl: true,
+      description: 'Go to system health',
+      callback: () => setActiveWorkspace('system-health'),
+    },
+    {
+      key: 'c',
+      ctrl: true,
+      description: 'Go to command centre',
+      callback: () => setActiveWorkspace('command'),
+    },
   ]);
 
   // Filter workspaces
@@ -393,6 +414,8 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
         case 'performance':
           navigate('/admin/performance');
           return null;
+        case 'system-health':
+          return <SystemHealthDashboard />;
         case 'services':
           return <ServiceCatalogue />;
         case 'legacy':
