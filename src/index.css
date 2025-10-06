@@ -466,4 +466,30 @@ All colors MUST be HSL. Premium construction platform aesthetic.
   }
 }
 
+/* Typing indicator animation */
+@keyframes typing-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce {
+  animation: typing-bounce 1s ease-in-out infinite;
+}
+
+.delay-0 {
+  animation-delay: 0ms;
+}
+
+.delay-75 {
+  animation-delay: 150ms;
+}
+
+.delay-150 {
+  animation-delay: 300ms;
+}
+
 }

@@ -1133,6 +1133,59 @@ export type Database = {
         }
         Relationships: []
       }
+      collaborative_sessions: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          host_id: string
+          id: string
+          job_id: string | null
+          participants: string[]
+          room_id: string
+          session_data: Json | null
+          session_type: string
+          started_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          host_id: string
+          id?: string
+          job_id?: string | null
+          participants?: string[]
+          room_id: string
+          session_data?: Json | null
+          session_type: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          host_id?: string
+          id?: string
+          job_id?: string | null
+          participants?: string[]
+          room_id?: string
+          session_data?: Json | null
+          session_type?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaborative_sessions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contracts: {
         Row: {
           agreed_amount: number
@@ -2755,6 +2808,38 @@ export type Database = {
           },
         ]
       }
+      message_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          reaction: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          reaction: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          reaction?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_reports: {
         Row: {
           admin_notes: string | null
@@ -2809,6 +2894,42 @@ export type Database = {
             columns: ["reviewed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_threads: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          parent_message_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          parent_message_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          parent_message_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_threads_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_threads_parent_message_id_fkey"
+            columns: ["parent_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
         ]
@@ -5310,6 +5431,35 @@ export type Database = {
         }
         Relationships: []
       }
+      read_receipts: {
+        Row: {
+          id: string
+          message_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          message_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          message_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "read_receipts_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       refund_requests: {
         Row: {
           admin_notes: string | null
@@ -6460,6 +6610,38 @@ export type Database = {
           },
         ]
       }
+      typing_indicators: {
+        Row: {
+          conversation_id: string
+          expires_at: string
+          id: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          expires_at?: string
+          id?: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          expires_at?: string
+          id?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "typing_indicators_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_blocks: {
         Row: {
           blocked_id: string
@@ -6499,6 +6681,36 @@ export type Database = {
           },
         ]
       }
+      user_presence: {
+        Row: {
+          custom_status: string | null
+          device_info: Json | null
+          last_seen: string
+          status: string
+          status_emoji: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          custom_status?: string | null
+          device_info?: Json | null
+          last_seen?: string
+          status?: string
+          status_emoji?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          custom_status?: string | null
+          device_info?: Json | null
+          last_seen?: string
+          status?: string
+          status_emoji?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -6519,6 +6731,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      video_calls: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          initiated_by: string
+          metadata: Json | null
+          participants: string[]
+          recording_url: string | null
+          room_id: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          initiated_by: string
+          metadata?: Json | null
+          participants?: string[]
+          recording_url?: string | null
+          room_id: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          initiated_by?: string
+          metadata?: Json | null
+          participants?: string[]
+          recording_url?: string | null
+          room_id?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_calls_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workflow_automations: {
         Row: {
@@ -6620,6 +6888,10 @@ export type Database = {
         Args: { p_recipient_id: string; p_sender_id: string }
         Returns: boolean
       }
+      cleanup_expired_typing_indicators: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       convert_currency: {
         Args: {
           p_amount: number
@@ -6698,6 +6970,10 @@ export type Database = {
           status: string
           updated_at: string
         }[]
+      }
+      get_online_users_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       get_payment_method_distribution: {
         Args: { p_end_date: string; p_start_date: string; p_user_id: string }
@@ -6862,6 +7138,14 @@ export type Database = {
           p_error_message?: string
           p_reminder_id: string
           p_success: boolean
+        }
+        Returns: undefined
+      }
+      mark_user_online: {
+        Args: {
+          p_custom_status?: string
+          p_device_info?: Json
+          p_user_id: string
         }
         Returns: undefined
       }
