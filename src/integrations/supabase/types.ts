@@ -83,6 +83,42 @@ export type Database = {
           },
         ]
       }
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          changes: Json | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          changes?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          changes?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       admin_events: {
         Row: {
           admin_id: string
@@ -113,6 +149,30 @@ export type Database = {
           event_type?: string
           id?: string
           metadata?: Json | null
+        }
+        Relationships: []
+      }
+      admin_permissions: {
+        Row: {
+          admin_id: string
+          granted_at: string
+          granted_by: string | null
+          id: string
+          permission: string
+        }
+        Insert: {
+          admin_id: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          permission: string
+        }
+        Update: {
+          admin_id?: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          permission?: string
         }
         Relationships: []
       }
@@ -6200,6 +6260,36 @@ export type Database = {
         }
         Relationships: []
       }
+      system_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          metric_metadata: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          recorded_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric_metadata?: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          recorded_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric_metadata?: Json | null
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+          recorded_at?: string
+        }
+        Relationships: []
+      }
       transaction_notes: {
         Row: {
           created_at: string
@@ -6426,6 +6516,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_admin_dashboard_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_auto_closeable_disputes: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -6599,6 +6693,15 @@ export type Database = {
         Returns: boolean
       }
       log_activity: {
+        Args: {
+          p_action: string
+          p_changes?: Json
+          p_entity_id?: string
+          p_entity_type?: string
+        }
+        Returns: string
+      }
+      log_admin_action: {
         Args: {
           p_action: string
           p_changes?: Json
