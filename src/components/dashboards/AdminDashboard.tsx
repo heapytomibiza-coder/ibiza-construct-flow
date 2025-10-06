@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import EarlyWarningPanel from '@/components/disputes/EarlyWarningPanel';
 import { Link } from 'react-router-dom';
+import { AdminSeedTestButtons } from '@/components/admin/AdminSeedTestButtons';
 
 // Lazy load workspaces for better code splitting
 const AIPanel = lazy(() => import('@/components/admin/AIPanel'));
@@ -69,6 +70,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const infoTipsEnabled = useFeature('admin_info_tips');
   const { pendingCount } = usePendingVerifications();
   const { enabled: analyticsEnabled } = useFeatureFlag('analytics_v1');
+  const [showTestTools, setShowTestTools] = useState(false);
 
   const workspaces = [
     { 
@@ -388,13 +390,30 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
             {/* Right Sidebar: AI Panel + Warnings */}
             <div className="w-80 border-l p-4 space-y-4 overflow-auto">
               {analyticsEnabled && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4" />
-                    Active Warnings
-                  </h3>
-                  <EarlyWarningPanel compact />
-                </div>
+                <>
+                  <div className="mb-6">
+                    <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" />
+                      Active Warnings
+                    </h3>
+                    <EarlyWarningPanel compact />
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowTestTools(!showTestTools)}
+                    className="w-full"
+                  >
+                    {showTestTools ? 'Hide' : 'Show'} Test Tools
+                  </Button>
+                  
+                  {showTestTools && (
+                    <div className="mt-4">
+                      <AdminSeedTestButtons />
+                    </div>
+                  )}
+                </>
               )}
               <AIPanel context={aiContext} />
             </div>
