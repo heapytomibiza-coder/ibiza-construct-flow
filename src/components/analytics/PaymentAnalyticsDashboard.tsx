@@ -1,264 +1,194 @@
-import { useAuth } from '@/hooks/useAuth';
-import { usePaymentAnalytics } from '@/hooks/usePaymentAnalytics';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { 
-  Loader2, TrendingUp, TrendingDown, DollarSign, 
-  Activity, Users, CreditCard, Download, FileText,
-  BarChart3, PieChart, Calendar
-} from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { usePaymentAnalytics } from '@/hooks/usePaymentAnalytics';
+import { RevenueChart } from './RevenueChart';
+import { PaymentMethodChart } from './PaymentMethodChart';
+import { TopRevenueSourcesTable } from './TopRevenueSourcesTable';
+import { AnalyticsMetricCard } from './AnalyticsMetricCard';
+import { Download, TrendingUp, CreditCard, CheckCircle, XCircle, DollarSign, Percent } from 'lucide-react';
+import { toast } from 'sonner';
 
-export const PaymentAnalyticsDashboard = () => {
-  const { user } = useAuth();
-  const { analytics, reports, loading, summary, comparison } = usePaymentAnalytics(user?.id);
+export function PaymentAnalyticsDashboard() {
+  const [period, setPeriod] = useState<number>(30);
+  const { analytics, revenueTrend, paymentMethods, topRevenueSources, isLoading } = usePaymentAnalytics(period);
 
-  if (loading) {
+  const handleExport = () => {
+    if (!analytics) return;
+
+    const csvData = [
+      ['Metric', 'Value'],
+      ['Total Revenue', analytics.total_revenue],
+      ['Total Payments', analytics.total_payments],
+      ['Successful Payments', analytics.successful_payments],
+      ['Failed Payments', analytics.failed_payments],
+      ['Average Transaction Value', analytics.average_transaction_value],
+      ['Conversion Rate', `${analytics.conversion_rate}%`],
+      ['Refund Rate', `${analytics.refund_rate}%`],
+    ];
+
+    const csv = csvData.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `payment-analytics-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    toast.success('Analytics exported successfully');
+  };
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="w-8 h-8 animate-spin" />
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Payment Analytics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">Loading analytics...</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  const getTrendIndicator = (change: number) => {
-    if (change > 0) {
-      return (
-        <div className="flex items-center gap-1 text-green-600">
-          <TrendingUp className="w-4 h-4" />
-          <span className="text-sm font-medium">+{change.toFixed(1)}%</span>
-        </div>
-      );
-    }
-    if (change < 0) {
-      return (
-        <div className="flex items-center gap-1 text-red-600">
-          <TrendingDown className="w-4 h-4" />
-          <span className="text-sm font-medium">{change.toFixed(1)}%</span>
-        </div>
-      );
-    }
-    return (
-      <div className="flex items-center gap-1 text-muted-foreground">
-        <span className="text-sm font-medium">0%</span>
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6">
-      {/* Overview Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Payment Analytics</h2>
+          <p className="text-muted-foreground">
+            Comprehensive insights into your payment performance
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <Select value={period.toString()} onValueChange={(v) => setPeriod(parseInt(v))}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7">Last 7 days</SelectItem>
+              <SelectItem value="30">Last 30 days</SelectItem>
+              <SelectItem value="90">Last 90 days</SelectItem>
+              <SelectItem value="365">Last year</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={handleExport} variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        </div>
+      </div>
+
+      {/* Key Metrics */}
+      {analytics && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <AnalyticsMetricCard
+            title="Total Revenue"
+            value={`$${analytics.total_revenue.toFixed(2)}`}
+            icon={DollarSign}
+            trend={analytics.total_revenue > 0 ? 'up' : 'neutral'}
+          />
+          <AnalyticsMetricCard
+            title="Total Payments"
+            value={analytics.total_payments.toString()}
+            icon={CreditCard}
+            description={`${analytics.successful_payments} successful`}
+          />
+          <AnalyticsMetricCard
+            title="Conversion Rate"
+            value={`${analytics.conversion_rate.toFixed(1)}%`}
+            icon={TrendingUp}
+            trend={analytics.conversion_rate > 80 ? 'up' : analytics.conversion_rate > 50 ? 'neutral' : 'down'}
+          />
+          <AnalyticsMetricCard
+            title="Avg Transaction"
+            value={`$${analytics.average_transaction_value.toFixed(2)}`}
+            icon={DollarSign}
+          />
+        </div>
+      )}
+
+      {/* Charts */}
+      <div className="grid gap-6 md:grid-cols-2">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle>Revenue Trend</CardTitle>
+            <CardDescription>Daily revenue over the selected period</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(summary.totalRevenue)}</div>
-            {comparison && getTrendIndicator(comparison.revenue.change)}
+            <RevenueChart data={revenueTrend || []} />
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Transactions</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle>Payment Methods</CardTitle>
+            <CardDescription>Distribution by payment method</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summary.totalTransactions}</div>
-            {comparison && getTrendIndicator(comparison.transactions.change)}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Transaction</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(summary.averageTransaction)}</div>
-            {comparison && getTrendIndicator(comparison.average.change)}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Escrow</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(summary.totalEscrow)}</div>
-            <p className="text-xs text-muted-foreground">Protected funds</p>
+            <PaymentMethodChart data={paymentMethods || []} />
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts and Details */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">
-            <BarChart3 className="w-4 h-4 mr-2" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="breakdown">
-            <PieChart className="w-4 h-4 mr-2" />
-            Breakdown
-          </TabsTrigger>
-          <TabsTrigger value="reports">
-            <FileText className="w-4 h-4 mr-2" />
-            Reports
-          </TabsTrigger>
-        </TabsList>
+      {/* Top Revenue Sources */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Top Revenue Sources</CardTitle>
+          <CardDescription>Jobs generating the most revenue</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TopRevenueSourcesTable data={topRevenueSources || []} />
+        </CardContent>
+      </Card>
 
-        <TabsContent value="overview" className="space-y-4">
+      {/* Additional Metrics */}
+      {analytics && (
+        <div className="grid gap-4 md:grid-cols-3">
           <Card>
-            <CardHeader>
-              <CardTitle>Monthly Performance</CardTitle>
-              <CardDescription>Last 12 months financial overview</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+              <CheckCircle className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              {analytics.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  No analytics data available yet
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {analytics.slice(0, 6).map((period) => (
-                    <div
-                      key={period.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-4">
-                        <Calendar className="w-8 h-8 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">
-                            {format(new Date(period.period_start), 'MMMM yyyy')}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {period.transaction_count} transactions
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold">
-                          {formatCurrency(period.total_revenue)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Avg: {formatCurrency(period.average_transaction)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="text-2xl font-bold">{analytics.conversion_rate.toFixed(1)}%</div>
+              <p className="text-xs text-muted-foreground">
+                {analytics.successful_payments} of {analytics.total_payments} payments
+              </p>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="breakdown" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment Methods</CardTitle>
-                <CardDescription>Distribution by payment type</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {analytics.length > 0 && analytics[0].payment_method_breakdown ? (
-                  <div className="space-y-2">
-                    {Object.entries(analytics[0].payment_method_breakdown).map(([method, count]) => (
-                      <div key={method} className="flex items-center justify-between">
-                        <span className="text-sm capitalize">{method}</span>
-                        <Badge variant="outline">{count}</Badge>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No data available</p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Transaction Status</CardTitle>
-                <CardDescription>Breakdown by status</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {analytics.length > 0 && analytics[0].status_breakdown ? (
-                  <div className="space-y-2">
-                    {Object.entries(analytics[0].status_breakdown).map(([status, count]) => (
-                      <div key={status} className="flex items-center justify-between">
-                        <span className="text-sm capitalize">{status}</span>
-                        <Badge variant="outline">{count}</Badge>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No data available</p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="reports" className="space-y-4">
           <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Financial Reports</CardTitle>
-                  <CardDescription>Generated reports and exports</CardDescription>
-                </div>
-                <Button>
-                  <Download className="w-4 h-4 mr-2" />
-                  Generate Report
-                </Button>
-              </div>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Failed Payments</CardTitle>
+              <XCircle className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              {reports.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  No reports generated yet
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {reports.map((report) => (
-                    <div
-                      key={report.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">{report.report_name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {format(new Date(report.created_at), 'MMM d, yyyy')}
-                          </p>
-                        </div>
-                      </div>
-                      <Badge
-                        variant={
-                          report.status === 'completed'
-                            ? 'default'
-                            : report.status === 'failed'
-                            ? 'destructive'
-                            : 'secondary'
-                        }
-                      >
-                        {report.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="text-2xl font-bold">{analytics.failed_payments}</div>
+              <p className="text-xs text-muted-foreground">
+                {((analytics.failed_payments / Math.max(analytics.total_payments, 1)) * 100).toFixed(1)}% failure rate
+              </p>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Refund Rate</CardTitle>
+              <Percent className="h-4 w-4 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{analytics.refund_rate.toFixed(1)}%</div>
+              <p className="text-xs text-muted-foreground">
+                Of successful payments
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
-};
+}

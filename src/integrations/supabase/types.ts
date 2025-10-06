@@ -535,6 +535,36 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_snapshots: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          snapshot_date: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value?: number
+          snapshot_date: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+          snapshot_date?: string
+        }
+        Relationships: []
+      }
       booking_requests: {
         Row: {
           client_id: string
@@ -2802,6 +2832,60 @@ export type Database = {
           unique_professionals?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      payment_analytics_summary: {
+        Row: {
+          average_transaction_value: number
+          conversion_rate: number
+          created_at: string
+          currency: string
+          failed_payments: number
+          id: string
+          metadata: Json | null
+          period_end: string
+          period_start: string
+          refund_rate: number
+          successful_payments: number
+          total_payments: number
+          total_revenue: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          average_transaction_value?: number
+          conversion_rate?: number
+          created_at?: string
+          currency?: string
+          failed_payments?: number
+          id?: string
+          metadata?: Json | null
+          period_end: string
+          period_start: string
+          refund_rate?: number
+          successful_payments?: number
+          total_payments?: number
+          total_revenue?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          average_transaction_value?: number
+          conversion_rate?: number
+          created_at?: string
+          currency?: string
+          failed_payments?: number
+          id?: string
+          metadata?: Json | null
+          period_end?: string
+          period_start?: string
+          refund_rate?: number
+          successful_payments?: number
+          total_payments?: number
+          total_revenue?: number
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -5292,6 +5376,18 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_user_payment_analytics: {
+        Args: { p_end_date: string; p_start_date: string; p_user_id: string }
+        Returns: {
+          average_transaction_value: number
+          conversion_rate: number
+          failed_payments: number
+          refund_rate: number
+          successful_payments: number
+          total_payments: number
+          total_revenue: number
+        }[]
+      }
       can_professional_view_job: {
         Args: { _job_id: string; _user_id: string }
         Returns: boolean
@@ -5356,6 +5452,15 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_payment_method_distribution: {
+        Args: { p_end_date: string; p_start_date: string; p_user_id: string }
+        Returns: {
+          count: number
+          payment_method: string
+          percentage: number
+          total_amount: number
+        }[]
+      }
       get_payment_statistics: {
         Args: { p_end_date?: string; p_start_date?: string }
         Returns: Json
@@ -5377,6 +5482,28 @@ export type Database = {
       get_professional_earnings_summary: {
         Args: { p_professional_id: string }
         Returns: Json
+      }
+      get_revenue_trend: {
+        Args: { p_days?: number; p_user_id: string }
+        Returns: {
+          date: string
+          payment_count: number
+          revenue: number
+        }[]
+      }
+      get_top_revenue_sources: {
+        Args: {
+          p_end_date: string
+          p_limit?: number
+          p_start_date: string
+          p_user_id: string
+        }
+        Returns: {
+          job_id: string
+          job_title: string
+          payment_count: number
+          total_revenue: number
+        }[]
       }
       get_unread_message_count: {
         Args: { p_user_id: string }
