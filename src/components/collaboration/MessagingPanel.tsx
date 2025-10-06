@@ -138,12 +138,9 @@ export const MessagingPanel: React.FC<MessagingPanelProps> = ({
               variant="ghost"
               size="icon"
               onClick={pushNotifications.isSubscribed ? pushNotifications.unsubscribe : pushNotifications.subscribe}
-              disabled={pushNotifications.isLoading}
               title={pushNotifications.isSubscribed ? "Disable notifications" : "Enable notifications"}
             >
-              {pushNotifications.isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : pushNotifications.isSubscribed ? (
+              {pushNotifications.isSubscribed ? (
                 <Bell className="h-4 w-4" />
               ) : (
                 <BellOff className="h-4 w-4" />

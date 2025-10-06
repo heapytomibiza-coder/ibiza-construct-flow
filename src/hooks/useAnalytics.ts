@@ -36,8 +36,8 @@ export const useAnalytics = (startDate?: Date, endDate?: Date) => {
 
       if (rpcError) throw rpcError;
       
-      if (data && typeof data === 'object') {
-        setKpis(data as DashboardKPIs);
+      if (data && typeof data === 'object' && !Array.isArray(data)) {
+        setKpis(data as unknown as DashboardKPIs);
       }
     } catch (err) {
       console.error('Error fetching KPIs:', err);

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { CheckCheck, X, Settings } from 'lucide-react';
+import { Bell, CheckCheck, X, Settings } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,11 +12,10 @@ interface NotificationPanelProps {
 }
 
 export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
-  const { notifications, notificationsLoading, unreadCount, markAsRead, markAllAsRead, dismissNotification } = useNotifications();
+  const { notifications, isLoading, unreadCount, markAsRead, markAllAsRead, archiveNotification } = useNotifications();
   const navigate = useNavigate();
 
-  const getNotificationIcon = (type: Notification['notification_type']) => {
-    // Return appropriate icon based on type
+  const getNotificationIcon = (type?: string) => {
     return '📬';
   };
 
@@ -31,9 +30,9 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
     }
   };
 
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = (notification: InAppNotification) => {
     if (!notification.read_at) {
-      markAsRead(notification.id);
+      markAsRead([notification.id]);
     }
     
     if (notification.action_url) {
@@ -44,10 +43,10 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
 
   const handleDismiss = (e: React.MouseEvent, notificationId: string) => {
     e.stopPropagation();
-    dismissNotification(notificationId);
+    archiveNotification(notificationId);
   };
 
-  if (notificationsLoading) {
+  if (isLoading) {
     return (
       <div className="p-8 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -55,12 +54,11 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
     );
   }
 
-  const unreadNotifications = notifications?.filter(n => !n.read_at && !n.dismissed_at) || [];
-  const readNotifications = notifications?.filter(n => n.read_at && !n.dismissed_at) || [];
+  const unreadNotifications = notifications?.filter(n => !n.read_at) || [];
+  const readNotifications = notifications?.filter(n => n.read_at) || [];
 
   return (
     <div className="flex flex-col h-[500px]">
-      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b">
         <div>
           <h3 className="font-semibold">Notifications</h3>
@@ -92,15 +90,14 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
         </div>
       </div>
 
-      {/* Notifications List */}
       <ScrollArea className="flex-1">
         {(!notifications || notifications.length === 0) ? (
           <div className="p-8 text-center text-muted-foreground">
+            <Bell className="h-12 w-12 mx-auto mb-2 opacity-50" />
             <p>No notifications yet</p>
           </div>
         ) : (
           <div className="divide-y">
-            {/* Unread Notifications */}
             {unreadNotifications.length > 0 && (
               <div>
                 {unreadNotifications.map((notification) => (
@@ -122,9 +119,11 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {notification.message}
-                        </p>
+                        {notification.description && (
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {notification.description}
+                          </p>
+                        )}
                         <p className="text-xs text-muted-foreground mt-2">
                           {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                         </p>
@@ -143,7 +142,6 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
               </div>
             )}
 
-            {/* Read Notifications */}
             {readNotifications.length > 0 && (
               <div>
                 {unreadNotifications.length > 0 && (
@@ -161,9 +159,11 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm">{notification.title}</h4>
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {notification.message}
-                        </p>
+                        {notification.description && (
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {notification.description}
+                          </p>
+                        )}
                         <p className="text-xs text-muted-foreground mt-2">
                           {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                         </p>

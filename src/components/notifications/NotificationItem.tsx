@@ -3,16 +3,16 @@ import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, ExternalLink, AlertCircle, Info, CheckCircle, AlertTriangle } from 'lucide-react';
-import { Notification } from '@/hooks/useNotifications';
+import { InAppNotification } from '@/hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
 
 interface NotificationItemProps {
-  notification: Notification;
+  notification: InAppNotification;
   onMarkAsRead: (id: string) => void;
   onDismiss: (id: string) => void;
 }
 
-const getPriorityIcon = (priority: string) => {
+const getPriorityIcon = (priority?: string) => {
   switch (priority) {
     case 'urgent':
       return <AlertCircle className="h-4 w-4 text-red-500" />;
@@ -25,8 +25,8 @@ const getPriorityIcon = (priority: string) => {
   }
 };
 
-const getCategoryColor = (category: string) => {
-  const colors = {
+const getCategoryColor = (category?: string) => {
+  const colors: Record<string, string> = {
     jobs: 'bg-blue-500',
     messages: 'bg-purple-500',
     bookings: 'bg-green-500',
@@ -34,7 +34,7 @@ const getCategoryColor = (category: string) => {
     payments: 'bg-emerald-500',
     system: 'bg-gray-500',
   };
-  return colors[category as keyof typeof colors] || 'bg-gray-500';
+  return colors[category || 'system'] || 'bg-gray-500';
 };
 
 export const NotificationItem = ({
@@ -86,17 +86,21 @@ export const NotificationItem = ({
             )}
           </div>
           
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-            {notification.message}
-          </p>
+          {notification.description && (
+            <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+              {notification.description}
+            </p>
+          )}
           
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge
-              variant="secondary"
-              className={`text-xs ${getCategoryColor(notification.category)} text-white`}
-            >
-              {notification.category}
-            </Badge>
+            {notification.event_type && (
+              <Badge
+                variant="secondary"
+                className={`text-xs ${getCategoryColor(notification.event_type)} text-white`}
+              >
+                {notification.event_type}
+              </Badge>
+            )}
             
             <span className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
@@ -119,7 +123,7 @@ export const NotificationItem = ({
                 handleClick();
               }}
             >
-              {notification.action_text || 'View'}
+              View
               <ExternalLink className="h-3 w-3 ml-1" />
             </Button>
           )}

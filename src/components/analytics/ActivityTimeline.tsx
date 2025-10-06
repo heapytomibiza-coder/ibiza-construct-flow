@@ -82,8 +82,9 @@ export const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
               </div>
             ) : (
               activities.map((activity, index) => {
-                const Icon = getActivityIcon(activity.activity_type);
-                const colorClass = getActivityColor(activity.activity_type);
+                const activityType = activity.action || activity.entity_type || 'activity';
+                const Icon = getActivityIcon(activityType);
+                const colorClass = getActivityColor(activityType);
 
                 return (
                   <div key={activity.id} className="flex gap-4">
@@ -100,7 +101,7 @@ export const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
                     <div className="flex-1 space-y-1 pb-4">
                       <div className="flex items-center justify-between">
                         <p className="font-medium">
-                          {formatActivityType(activity.activity_type)}
+                          {formatActivityType(activityType)}
                         </p>
                         <span className="text-xs text-muted-foreground">
                           {formatTimestamp(activity.created_at)}

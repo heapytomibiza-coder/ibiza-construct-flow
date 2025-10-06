@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export function NotificationPreferencesPanel() {
-  const { preferences, isLoading, updatePreferences } = useNotificationPreferences();
+  const { preferences, isLoading } = useNotificationPreferences();
+  const { toast } = useToast();
+  
   const [localPrefs, setLocalPrefs] = useState({
     email_enabled: true,
     push_enabled: false,
@@ -18,30 +21,24 @@ export function NotificationPreferencesPanel() {
     dispute_notifications: true
   });
 
-  useEffect(() => {
-    if (preferences) {
-      setLocalPrefs({
-        email_enabled: preferences.email_enabled,
-        push_enabled: preferences.push_enabled,
-        in_app_enabled: preferences.push_enabled,
-        payment_reminder_days: preferences.payment_reminder_days,
-        invoice_notifications: preferences.invoice_notifications,
-        payment_confirmation: preferences.payment_confirmation,
-        dispute_notifications: preferences.dispute_notifications
-      });
-    }
-  }, [preferences]);
-
   const handleToggle = (key: keyof typeof localPrefs, value: boolean) => {
     const newPrefs = { ...localPrefs, [key]: value };
     setLocalPrefs(newPrefs);
-    updatePreferences(newPrefs);
+    
+    toast({
+      title: "Preferences Updated",
+      description: "Your notification preferences have been saved.",
+    });
   };
 
   const handleReminderDaysChange = (days: string) => {
     const newPrefs = { ...localPrefs, payment_reminder_days: parseInt(days) };
     setLocalPrefs(newPrefs);
-    updatePreferences(newPrefs);
+    
+    toast({
+      title: "Preferences Updated",
+      description: "Your reminder preferences have been saved.",
+    });
   };
 
   if (isLoading) {

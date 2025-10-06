@@ -4,21 +4,19 @@ import { supabase } from '@/integrations/supabase/client';
 export interface InAppNotification {
   id: string;
   user_id: string;
-  notification_type: string;
+  event_type: string;
+  notification_type?: string;
   title: string;
-  message: string;
-  icon?: string;
+  description?: string;
   action_url?: string;
-  action_label?: string;
-  data: Record<string, any>;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  is_read: boolean;
+  priority?: string;
   read_at?: string;
-  is_archived: boolean;
-  archived_at?: string;
-  group_key?: string;
-  expires_at?: string;
   created_at: string;
+  entity_type?: string;
+  entity_id?: string;
+  actor_id?: string;
+  metadata?: any;
+  message?: string;
 }
 
 export const useNotifications = (limit = 50) => {
@@ -32,25 +30,22 @@ export const useNotifications = (limit = 50) => {
       if (!user) return;
 
       const { data, error } = await supabase
-        .from('in_app_notifications')
+        .from('activity_feed')
         .select('*')
         .eq('user_id', user.id)
-        .eq('is_archived', false)
+        .is('dismissed_at', null)
         .order('created_at', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
-      setNotifications(data || []);
-
-      // Get unread count
-      const { count } = await supabase
-        .from('in_app_notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false)
-        .eq('is_archived', false);
-
-      setUnreadCount(count || 0);
+      
+      const mappedData = (data || []).map(item => ({
+        ...item,
+        message: item.description || ''
+      }));
+      
+      setNotifications(mappedData as InAppNotification[]);
+      setUnreadCount(data?.filter(n => !n.read_at).length || 0);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -61,8 +56,8 @@ export const useNotifications = (limit = 50) => {
   const markAsRead = async (notificationIds: string[]) => {
     try {
       const { error } = await supabase
-        .from('in_app_notifications')
-        .update({ is_read: true, read_at: new Date().toISOString() })
+        .from('activity_feed')
+        .update({ read_at: new Date().toISOString() })
         .in('id', notificationIds);
 
       if (error) throw error;
@@ -78,10 +73,10 @@ export const useNotifications = (limit = 50) => {
       if (!user) return;
 
       const { error } = await supabase
-        .from('in_app_notifications')
-        .update({ is_read: true, read_at: new Date().toISOString() })
+        .from('activity_feed')
+        .update({ read_at: new Date().toISOString() })
         .eq('user_id', user.id)
-        .eq('is_read', false);
+        .is('read_at', null);
 
       if (error) throw error;
       await fetchNotifications();
@@ -93,8 +88,8 @@ export const useNotifications = (limit = 50) => {
   const archiveNotification = async (notificationId: string) => {
     try {
       const { error } = await supabase
-        .from('in_app_notifications')
-        .update({ is_archived: true, archived_at: new Date().toISOString() })
+        .from('activity_feed')
+        .update({ dismissed_at: new Date().toISOString() })
         .eq('id', notificationId);
 
       if (error) throw error;
@@ -107,7 +102,7 @@ export const useNotifications = (limit = 50) => {
   const deleteNotification = async (notificationId: string) => {
     try {
       const { error } = await supabase
-        .from('in_app_notifications')
+        .from('activity_feed')
         .delete()
         .eq('id', notificationId);
 
@@ -121,15 +116,14 @@ export const useNotifications = (limit = 50) => {
   useEffect(() => {
     fetchNotifications();
 
-    // Subscribe to real-time updates
     const channel = supabase
-      .channel('notifications_changes')
+      .channel('activity_feed_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'in_app_notifications'
+          table: 'activity_feed'
         },
         () => {
           fetchNotifications();

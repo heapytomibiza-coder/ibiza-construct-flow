@@ -8,17 +8,16 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { useNotifications } from '@/hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
 export const NotificationBell: React.FC = () => {
   const navigate = useNavigate();
-  const { notifications, unreadCount, markAsRead, markAllAsRead, loading } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, isLoading } = useNotifications();
 
   const handleNotificationClick = (notification: any) => {
-    markAsRead(notification.id);
+    markAsRead([notification.id]);
     if (notification.action_url) {
       navigate(notification.action_url);
     }
@@ -54,7 +53,7 @@ export const NotificationBell: React.FC = () => {
           )}
         </div>
         <ScrollArea className="h-[400px]">
-          {loading ? (
+          {isLoading ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               Loading notifications...
             </div>
@@ -83,9 +82,11 @@ export const NotificationBell: React.FC = () => {
                           <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1" />
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {notification.message}
-                      </p>
+                      {notification.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {notification.description}
+                        </p>
+                      )}
                       <p className="text-xs text-muted-foreground">
                         {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                       </p>

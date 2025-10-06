@@ -26,7 +26,7 @@ export const NotificationCenter = () => {
     deleteNotification
   } = useNotifications();
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority?: string) => {
     switch (priority) {
       case 'urgent': return 'text-red-500';
       case 'high': return 'text-orange-500';
@@ -96,18 +96,14 @@ export const NotificationCenter = () => {
                   key={notification.id}
                   className={cn(
                     "p-4 rounded-lg border transition-colors",
-                    notification.is_read
+                    notification.read_at
                       ? "bg-background"
                       : "bg-accent/50 border-accent"
                   )}
                 >
                   <div className="flex items-start gap-3">
                     <div className={cn("mt-0.5", getPriorityColor(notification.priority))}>
-                      {notification.icon ? (
-                        <span className="text-2xl">{notification.icon}</span>
-                      ) : (
-                        <Bell className="h-5 w-5" />
-                      )}
+                      <Bell className="h-5 w-5" />
                     </div>
 
                     <div className="flex-1 space-y-1">
@@ -122,11 +118,13 @@ export const NotificationCenter = () => {
                         </p>
                       </div>
 
-                      <p className="text-sm text-muted-foreground">
-                        {notification.message}
-                      </p>
+                      {notification.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {notification.description}
+                        </p>
+                      )}
 
-                      {notification.action_url && notification.action_label && (
+                      {notification.action_url && (
                         <Button
                           variant="link"
                           size="sm"
@@ -134,14 +132,14 @@ export const NotificationCenter = () => {
                           asChild
                         >
                           <a href={notification.action_url}>
-                            {notification.action_label}
+                            View details
                             <ExternalLink className="h-3 w-3 ml-1" />
                           </a>
                         </Button>
                       )}
 
                       <div className="flex items-center gap-2 pt-2">
-                        {!notification.is_read && (
+                        {!notification.read_at && (
                           <Button
                             variant="ghost"
                             size="sm"

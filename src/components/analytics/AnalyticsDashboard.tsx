@@ -4,41 +4,31 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAnalytics, usePlatformAnalytics } from '@/hooks/useAnalytics';
 import { useAuth } from '@/hooks/useAuth';
-import { MetricCard } from './MetricCard';
-import { AnalyticsChart } from './AnalyticsChart';
-import { ActivityTimeline } from './ActivityTimeline';
-import { ReportGenerator } from './ReportGenerator';
-import { Calendar, TrendingUp, Users, Briefcase, DollarSign } from 'lucide-react';
+import { KPICard } from './KPICard';
+import { Calendar, TrendingUp, Users, Briefcase, DollarSign, Star, AlertCircle } from 'lucide-react';
 
 export const AnalyticsDashboard = () => {
   const { user, isAdmin } = useAuth();
   const [dateRange, setDateRange] = useState('30');
-  const { summary, activities, fetchUserSummary, fetchActivities, loading } = useAnalytics(user?.id);
-  const { metrics, fetchPlatformMetrics, loading: platformLoading } = usePlatformAnalytics();
-
-  useEffect(() => {
-    if (user) {
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - parseInt(dateRange));
-      
-      fetchUserSummary(startDate, endDate);
-      fetchActivities();
-
-      if (isAdmin()) {
-        fetchPlatformMetrics(startDate, endDate);
-      }
-    }
-  }, [user, dateRange]);
+  const { kpis, isLoading, error } = useAnalytics();
+  const { metrics, isLoading: platformLoading } = usePlatformAnalytics();
 
   const handleDateRangeChange = (value: string) => {
     setDateRange(value);
   };
 
-  if (loading || platformLoading) {
+  if (isLoading || platformLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64 text-destructive">
+        <p>Error loading analytics: {error}</p>
       </div>
     );
   }
@@ -68,89 +58,87 @@ export const AnalyticsDashboard = () => {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          {isAdmin() && <TabsTrigger value="platform">Platform</TabsTrigger>}
+          {isAdmin?.() && <TabsTrigger value="platform">Platform</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <MetricCard
-              title="Total Activities"
-              value={summary?.total_activities || 0}
-              icon={Calendar}
-              trend={5}
+            <KPICard
+              title="Total Users"
+              value={kpis?.total_users || 0}
+              icon={<Users className="h-4 w-4" />}
             />
-            <MetricCard
-              title="Activity Types"
-              value={Object.keys(summary?.activity_breakdown || {}).length}
-              icon={TrendingUp}
+            <KPICard
+              title="Active Users"
+              value={kpis?.active_users || 0}
+              icon={<TrendingUp className="h-4 w-4" />}
+            />
+            <KPICard
+              title="Total Bookings"
+              value={kpis?.total_bookings || 0}
+              icon={<Briefcase className="h-4 w-4" />}
+            />
+            <KPICard
+              title="Active Disputes"
+              value={kpis?.active_disputes || 0}
+              icon={<AlertCircle className="h-4 w-4" />}
             />
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Activity Trend</CardTitle>
-              <CardDescription>Your daily activity over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AnalyticsChart
-                data={summary?.daily_activity || []}
-                xKey="date"
-                yKey="count"
-                title="Daily Activities"
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="activity" className="space-y-4">
-          <ActivityTimeline activities={activities} />
-        </TabsContent>
-
-        <TabsContent value="reports" className="space-y-4">
-          <ReportGenerator />
-        </TabsContent>
-
-        {isAdmin() && (
-          <TabsContent value="platform" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <MetricCard
-                title="Total Users"
-                value={metrics?.total_users || 0}
-                icon={Users}
-              />
-              <MetricCard
-                title="Active Users"
-                value={metrics?.active_users || 0}
-                icon={TrendingUp}
-              />
-              <MetricCard
-                title="Total Jobs"
-                value={metrics?.total_jobs || 0}
-                icon={Briefcase}
-              />
-              <MetricCard
-                title="Revenue"
-                value={`$${metrics?.total_revenue?.toLocaleString() || 0}`}
-                icon={DollarSign}
-              />
-            </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Revenue</CardTitle>
+                <CardDescription>Total platform revenue</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  ${(kpis?.total_revenue || 0).toLocaleString()}
+                </div>
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>User Growth</CardTitle>
-                <CardDescription>New user registrations over time</CardDescription>
+                <CardTitle>Average Rating</CardTitle>
+                <CardDescription>Platform-wide rating</CardDescription>
               </CardHeader>
               <CardContent>
-                <AnalyticsChart
-                  data={metrics?.user_growth || []}
-                  xKey="date"
-                  yKey="new_users"
-                  title="User Growth"
-                />
+                <div className="flex items-center gap-2">
+                  <div className="text-2xl font-bold">
+                    {(kpis?.average_rating || 0).toFixed(1)}
+                  </div>
+                  <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                </div>
               </CardContent>
             </Card>
+          </div>
+        </TabsContent>
+
+        {isAdmin?.() && (
+          <TabsContent value="platform" className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <KPICard
+                title="Total Users"
+                value={metrics?.total_users || kpis?.total_users || 0}
+                icon={<Users className="h-4 w-4" />}
+              />
+              <KPICard
+                title="Active Users"
+                value={metrics?.active_users || kpis?.active_users || 0}
+                icon={<TrendingUp className="h-4 w-4" />}
+              />
+              <KPICard
+                title="Total Bookings"
+                value={metrics?.total_bookings || kpis?.total_bookings || 0}
+                icon={<Briefcase className="h-4 w-4" />}
+              />
+              <KPICard
+                title="Revenue"
+                value={`$${(metrics?.total_revenue || kpis?.total_revenue || 0).toLocaleString()}`}
+                icon={<DollarSign className="h-4 w-4" />}
+              />
+            </div>
           </TabsContent>
         )}
       </Tabs>
