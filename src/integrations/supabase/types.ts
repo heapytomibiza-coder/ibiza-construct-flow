@@ -628,6 +628,63 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          device_type: string | null
+          event_category: string | null
+          event_name: string
+          event_properties: Json | null
+          id: string
+          ip_address: unknown | null
+          os: string | null
+          page_url: string | null
+          referrer: string | null
+          session_id: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          event_category?: string | null
+          event_name: string
+          event_properties?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          os?: string | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          event_category?: string | null
+          event_name?: string
+          event_properties?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          os?: string | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       analytics_snapshots: {
         Row: {
           created_at: string
@@ -1619,6 +1676,54 @@ export type Database = {
           file_url?: string | null
           id?: string
           request_type?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      data_exports: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          expires_at: string | null
+          export_format: string
+          export_type: string
+          file_size_bytes: number | null
+          file_url: string | null
+          filters: Json | null
+          id: string
+          row_count: number | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          expires_at?: string | null
+          export_format: string
+          export_type: string
+          file_size_bytes?: number | null
+          file_url?: string | null
+          filters?: Json | null
+          id?: string
+          row_count?: number | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          expires_at?: string | null
+          export_format?: string
+          export_type?: string
+          file_size_bytes?: number | null
+          file_url?: string | null
+          filters?: Json | null
+          id?: string
+          row_count?: number | null
           status?: string | null
           user_id?: string
         }
@@ -2639,6 +2744,48 @@ export type Database = {
           pattern_data?: Json
           pattern_type?: string
           severity?: string
+        }
+        Relationships: []
+      }
+      funnel_analytics: {
+        Row: {
+          analysis_date: string
+          average_time_seconds: number | null
+          conversion_rate: number | null
+          created_at: string | null
+          drop_off_count: number | null
+          funnel_name: string
+          id: string
+          step_name: string
+          step_number: number
+          users_completed: number | null
+          users_entered: number | null
+        }
+        Insert: {
+          analysis_date: string
+          average_time_seconds?: number | null
+          conversion_rate?: number | null
+          created_at?: string | null
+          drop_off_count?: number | null
+          funnel_name: string
+          id?: string
+          step_name: string
+          step_number: number
+          users_completed?: number | null
+          users_entered?: number | null
+        }
+        Update: {
+          analysis_date?: string
+          average_time_seconds?: number | null
+          conversion_rate?: number | null
+          created_at?: string | null
+          drop_off_count?: number | null
+          funnel_name?: string
+          id?: string
+          step_name?: string
+          step_number?: number
+          users_completed?: number | null
+          users_entered?: number | null
         }
         Relationships: []
       }
@@ -4845,6 +4992,69 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_metrics: {
+        Row: {
+          active_users: number | null
+          average_booking_value: number | null
+          average_rating: number | null
+          cancelled_bookings: number | null
+          completed_bookings: number | null
+          created_at: string | null
+          disputes_opened: number | null
+          disputes_resolved: number | null
+          id: string
+          metric_date: string
+          metric_hour: number | null
+          new_users: number | null
+          total_bookings: number | null
+          total_messages: number | null
+          total_revenue: number | null
+          total_reviews: number | null
+          total_users: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_users?: number | null
+          average_booking_value?: number | null
+          average_rating?: number | null
+          cancelled_bookings?: number | null
+          completed_bookings?: number | null
+          created_at?: string | null
+          disputes_opened?: number | null
+          disputes_resolved?: number | null
+          id?: string
+          metric_date: string
+          metric_hour?: number | null
+          new_users?: number | null
+          total_bookings?: number | null
+          total_messages?: number | null
+          total_revenue?: number | null
+          total_reviews?: number | null
+          total_users?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_users?: number | null
+          average_booking_value?: number | null
+          average_rating?: number | null
+          cancelled_bookings?: number | null
+          completed_bookings?: number | null
+          created_at?: string | null
+          disputes_opened?: number | null
+          disputes_resolved?: number | null
+          id?: string
+          metric_date?: string
+          metric_hour?: number | null
+          new_users?: number | null
+          total_bookings?: number | null
+          total_messages?: number | null
+          total_revenue?: number | null
+          total_reviews?: number | null
+          total_users?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       popular_searches: {
         Row: {
           id: string
@@ -6391,6 +6601,57 @@ export type Database = {
         }
         Relationships: []
       }
+      report_schedules: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          next_run_at: string | null
+          recipients: string[]
+          report_config: Json | null
+          report_name: string
+          report_type: string
+          schedule_day: number | null
+          schedule_frequency: string
+          schedule_time: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          recipients: string[]
+          report_config?: Json | null
+          report_name: string
+          report_type: string
+          schedule_day?: number | null
+          schedule_frequency: string
+          schedule_time: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          recipients?: string[]
+          report_config?: Json | null
+          report_name?: string
+          report_type?: string
+          schedule_day?: number | null
+          schedule_frequency?: string
+          schedule_time?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       report_templates: {
         Row: {
           created_at: string
@@ -6474,6 +6735,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      revenue_analytics: {
+        Row: {
+          analysis_date: string
+          average_transaction: number | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          net_revenue: number | null
+          refund_amount: number | null
+          revenue_type: string
+          total_amount: number | null
+          transaction_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          analysis_date: string
+          average_transaction?: number | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          net_revenue?: number | null
+          refund_amount?: number | null
+          revenue_type: string
+          total_amount?: number | null
+          transaction_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          analysis_date?: string
+          average_transaction?: number | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          net_revenue?: number | null
+          refund_amount?: number | null
+          revenue_type?: string
+          total_amount?: number | null
+          transaction_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       revenue_forecasts: {
         Row: {
@@ -6835,6 +7138,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_reports: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          generated_at: string | null
+          id: string
+          is_public: boolean | null
+          report_config: Json
+          report_data: Json | null
+          report_name: string
+          report_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          generated_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          report_config: Json
+          report_data?: Json | null
+          report_name: string
+          report_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          generated_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          report_config?: Json
+          report_data?: Json | null
+          report_name?: string
+          report_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       saved_searches: {
         Row: {
@@ -7771,6 +8116,54 @@ export type Database = {
           },
         ]
       }
+      user_activity_metrics: {
+        Row: {
+          actions_count: number | null
+          bookings_made: number | null
+          created_at: string | null
+          id: string
+          last_active_at: string | null
+          messages_sent: number | null
+          metric_date: string
+          page_views: number | null
+          searches_performed: number | null
+          sessions_count: number | null
+          time_spent_seconds: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          actions_count?: number | null
+          bookings_made?: number | null
+          created_at?: string | null
+          id?: string
+          last_active_at?: string | null
+          messages_sent?: number | null
+          metric_date: string
+          page_views?: number | null
+          searches_performed?: number | null
+          sessions_count?: number | null
+          time_spent_seconds?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          actions_count?: number | null
+          bookings_made?: number | null
+          created_at?: string | null
+          id?: string
+          last_active_at?: string | null
+          messages_sent?: number | null
+          metric_date?: string
+          page_views?: number | null
+          searches_performed?: number | null
+          sessions_count?: number | null
+          time_spent_seconds?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_blocks: {
         Row: {
           blocked_id: string
@@ -7809,6 +8202,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_cohorts: {
+        Row: {
+          cohort_date: string
+          cohort_size: number | null
+          created_at: string | null
+          id: string
+          retention_day_1: number | null
+          retention_day_30: number | null
+          retention_day_60: number | null
+          retention_day_7: number | null
+          retention_day_90: number | null
+          total_bookings: number | null
+          total_revenue: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cohort_date: string
+          cohort_size?: number | null
+          created_at?: string | null
+          id?: string
+          retention_day_1?: number | null
+          retention_day_30?: number | null
+          retention_day_60?: number | null
+          retention_day_7?: number | null
+          retention_day_90?: number | null
+          total_bookings?: number | null
+          total_revenue?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cohort_date?: string
+          cohort_size?: number | null
+          created_at?: string | null
+          id?: string
+          retention_day_1?: number | null
+          retention_day_30?: number | null
+          retention_day_60?: number | null
+          retention_day_7?: number | null
+          retention_day_90?: number | null
+          total_bookings?: number | null
+          total_revenue?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       user_devices: {
         Row: {
@@ -8080,6 +8518,10 @@ export type Database = {
       }
     }
     Functions: {
+      aggregate_platform_metrics: {
+        Args: { p_metric_date: string }
+        Returns: undefined
+      }
       bulk_user_suspend: {
         Args: { reason: string; suspended_by: string; user_ids: string[] }
         Returns: undefined
@@ -8125,6 +8567,10 @@ export type Database = {
           total_payments: number
           total_revenue: number
         }[]
+      }
+      calculate_user_retention: {
+        Args: { p_cohort_date: string }
+        Returns: undefined
       }
       can_professional_view_job: {
         Args: { _job_id: string; _user_id: string }
@@ -8242,7 +8688,9 @@ export type Database = {
         Returns: Json
       }
       get_dashboard_kpis: {
-        Args: Record<PropertyKey, never>
+        Args:
+          | Record<PropertyKey, never>
+          | { p_end_date?: string; p_start_date?: string }
         Returns: Json
       }
       get_exchange_rate: {
@@ -8484,6 +8932,18 @@ export type Database = {
       should_expose_feature: {
         Args: { p_flag_key: string; p_user_id: string }
         Returns: boolean
+      }
+      track_analytics_event: {
+        Args: {
+          p_event_category?: string
+          p_event_name?: string
+          p_event_properties?: Json
+          p_page_url?: string
+          p_referrer?: string
+          p_session_id?: string
+          p_user_id?: string
+        }
+        Returns: string
       }
       track_search_analytics: {
         Args: {
