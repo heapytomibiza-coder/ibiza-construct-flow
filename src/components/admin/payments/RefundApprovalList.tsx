@@ -12,11 +12,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useAdminPayments } from '@/hooks/admin/useAdminPayments';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { Check, X } from 'lucide-react';
 import { format } from 'date-fns';
 
 export function RefundApprovalList() {
   const { pendingRefunds, loadingRefunds, approveRefund, rejectRefund } = useAdminPayments();
+  const { toast } = useToast();
   const [selectedRefund, setSelectedRefund] = useState<any>(null);
   const [action, setAction] = useState<'approve' | 'reject' | null>(null);
   const [notes, setNotes] = useState('');
@@ -24,21 +27,58 @@ export function RefundApprovalList() {
   const handleAction = async () => {
     if (!selectedRefund || !action) return;
 
-    if (action === 'approve') {
-      await approveRefund.mutateAsync({
-        refundId: selectedRefund.id,
-        notes,
-      });
-    } else {
-      await rejectRefund.mutateAsync({
-        refundId: selectedRefund.id,
-        notes,
+    try {
+      if (action === 'approve') {
+        // Process refund through Stripe
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        const { error: refundError } = await supabase.functions.invoke('create-payment-refund', {
+          body: {
+            refundRequestId: selectedRefund.id,
+            amount: selectedRefund.amount,
+            reason: notes || 'approved_by_admin',
+          },
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        });
+
+        if (refundError) throw refundError;
+
+        toast({
+          title: "Success",
+          description: "Refund processed successfully through Stripe",
+        });
+      } else {
+        if (!notes.trim()) {
+          toast({
+            title: "Notes required",
+            description: "Please provide a reason for rejection",
+            variant: "destructive",
+          });
+          return;
+        }
+        await rejectRefund.mutateAsync({
+          refundId: selectedRefund.id,
+          notes,
+        });
+        
+        toast({
+          title: "Success",
+          description: "Refund request rejected",
+        });
+      }
+
+      setSelectedRefund(null);
+      setAction(null);
+      setNotes('');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to process refund",
+        variant: "destructive",
       });
     }
-
-    setSelectedRefund(null);
-    setAction(null);
-    setNotes('');
   };
 
   if (loadingRefunds) {

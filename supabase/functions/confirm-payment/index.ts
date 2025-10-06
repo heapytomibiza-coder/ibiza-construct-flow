@@ -12,97 +12,63 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+  );
+
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const authHeader = req.headers.get("Authorization")!;
+    const token = authHeader.replace("Bearer ", "");
+    const { data } = await supabaseClient.auth.getUser(token);
+    const user = data.user;
+    
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
 
     const { paymentIntentId } = await req.json();
-    console.log("[confirm-payment] Request:", { paymentIntentId });
 
     if (!paymentIntentId) {
       throw new Error("Missing paymentIntentId");
     }
 
-    // Get payment intent from Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
+    // Retrieve payment intent from Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    console.log("[confirm-payment] Payment intent status:", paymentIntent.status);
 
-    // Update payment record in database
-    const { data: payment, error: updateError } = await supabase
-      .from("payments")
+    // Update payment transaction status
+    const { error: updateError } = await supabaseClient
+      .from("payment_transactions")
       .update({
-        status: paymentIntent.status === "succeeded" ? "succeeded" : paymentIntent.status,
-        stripe_charge_id: paymentIntent.latest_charge as string,
-        payment_method: paymentIntent.payment_method_types[0],
+        status: paymentIntent.status === "succeeded" ? "completed" : paymentIntent.status,
+        updated_at: new Date().toISOString(),
       })
-      .eq("stripe_payment_intent_id", paymentIntentId)
-      .select()
-      .single();
+      .eq("stripe_payment_intent_id", paymentIntentId);
 
     if (updateError) {
-      console.error("[confirm-payment] Database error:", updateError);
-      throw updateError;
+      console.error("Error updating transaction:", updateError);
+      throw new Error("Failed to update payment transaction");
     }
 
-    console.log("[confirm-payment] Updated payment:", payment.id);
-
-    // If payment succeeded, create escrow milestones
-    if (paymentIntent.status === "succeeded" && payment.job_id) {
-      // Create default milestone (full amount held in escrow)
-      const { error: milestoneError } = await supabase
-        .from("escrow_milestones")
-        .insert({
-          contract_id: payment.job_id, // Assuming contract exists
-          payment_id: payment.id,
-          milestone_number: 1,
-          title: "Job Completion",
-          description: "Full payment held in escrow",
-          amount: payment.net_amount,
-          status: "pending",
-        });
-
-      if (milestoneError) {
-        console.error("[confirm-payment] Milestone creation error:", milestoneError);
-      } else {
-        console.log("[confirm-payment] Created escrow milestone");
-      }
-
-      // Create activity feed entry
-      await supabase.from("activity_feed").insert({
-        user_id: payment.client_id,
-        event_type: "payment_succeeded",
-        entity_type: "payment",
-        entity_id: payment.id,
-        title: "Payment Successful",
-        description: `Your payment of ${payment.currency} ${payment.amount} has been processed`,
-        action_url: `/jobs/${payment.job_id}`,
-      });
-
-      // Notify professional
-      if (payment.professional_id) {
-        await supabase.from("activity_feed").insert({
-          user_id: payment.professional_id,
-          event_type: "payment_received",
-          entity_type: "payment",
-          entity_id: payment.id,
-          title: "Payment Received",
-          description: `Client has paid ${payment.currency} ${payment.net_amount} (held in escrow)`,
-          action_url: `/jobs/${payment.job_id}`,
-        });
+    // If payment succeeded, update job status
+    if (paymentIntent.status === "succeeded") {
+      const jobId = paymentIntent.metadata.job_id;
+      if (jobId) {
+        await supabaseClient
+          .from("jobs")
+          .update({ status: "in_progress" })
+          .eq("id", jobId);
       }
     }
 
     return new Response(
       JSON.stringify({
-        success: true,
-        payment,
         status: paymentIntent.status,
+        amount: paymentIntent.amount / 100,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -110,7 +76,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("[confirm-payment] Error:", error);
+    console.error("Error in confirm-payment:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
