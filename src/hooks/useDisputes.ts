@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -20,7 +21,7 @@ interface CreateDisputeParams {
 interface SendMessageParams {
   disputeId: string;
   message: string;
-  attachments?: any[];
+  templateUsed?: string;
 }
 
 interface UploadEvidenceParams {
@@ -85,7 +86,7 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
   });
 
   // Fetch dispute evidence separately
-  const { data: evidence } = useQuery({
+  const { data: evidence, isLoading: evidenceLoading } = useQuery({
     queryKey: ['dispute-evidence', disputeId],
     queryFn: async () => {
       if (!disputeId) return [];
@@ -103,7 +104,7 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
   });
 
   // Fetch dispute timeline separately
-  const { data: timeline } = useQuery({
+  const { data: timeline, isLoading: timelineLoading } = useQuery({
     queryKey: ['dispute-timeline', disputeId],
     queryFn: async () => {
       if (!disputeId) return [];
@@ -121,7 +122,7 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
   });
 
   // Fetch dispute resolution separately
-  const { data: resolution } = useQuery({
+  const { data: resolution, isLoading: resolutionLoading } = useQuery({
     queryKey: ['dispute-resolution', disputeId],
     queryFn: async () => {
       if (!disputeId) return null;
@@ -212,7 +213,7 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
 
   // Send message
   const sendMessage = useMutation({
-    mutationFn: async ({ disputeId, message, attachments }: SendMessageParams) => {
+    mutationFn: async ({ disputeId, message, templateUsed }: SendMessageParams) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
@@ -222,7 +223,7 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
           dispute_id: disputeId,
           sender_id: user.id,
           message,
-          attachments: attachments || [],
+          template_used: templateUsed || null,
         })
         .select()
         .single();
@@ -372,6 +373,31 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
     },
   });
 
+  // Real-time subscription for dispute updates
+  useEffect(() => {
+    if (!disputeId) return;
+
+    const channel = supabase
+      .channel(`dispute:${disputeId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'disputes',
+          filter: `id=eq.${disputeId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['disputes', disputeId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [disputeId, queryClient]);
+
   return {
     disputes,
     dispute,
@@ -381,6 +407,9 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
     messages,
     disputesLoading,
     disputeLoading,
+    evidenceLoading,
+    timelineLoading,
+    resolutionLoading,
     messagesLoading,
     createDispute,
     sendMessage,

@@ -4,10 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDisputes } from '@/hooks/useDisputes';
-import { DisputeMessages } from './DisputeMessages';
-import { DisputeTimeline } from './DisputeTimeline';
+import { DisputeConversation } from './DisputeConversation';
+import { AutomatedTimelineTracker } from './AutomatedTimelineTracker';
 import { DisputeEvidence } from './DisputeEvidence';
 import { ResolutionProposal } from './ResolutionProposal';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   AlertTriangle, 
   Clock, 
@@ -24,7 +25,26 @@ interface DisputeDetailsViewProps {
 
 export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
   const [showResolutionProposal, setShowResolutionProposal] = useState(false);
-  const { dispute, evidence, timeline, resolution, disputeLoading, updateDisputeStatus } = useDisputes(undefined, disputeId);
+  const [currentUserId, setCurrentUserId] = useState<string>('');
+  
+  const {
+    dispute,
+    evidence,
+    timeline,
+    resolution,
+    messages,
+    disputeLoading,
+    messagesLoading,
+    sendMessage,
+    updateDisputeStatus,
+  } = useDisputes(undefined, disputeId);
+
+  // Get current user
+  useState(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUserId(user?.id || '');
+    });
+  });
 
   if (disputeLoading) {
     return (
@@ -167,27 +187,41 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
         </div>
       </Card>
 
-      {/* Tabs */}
-      <Tabs defaultValue="messages" className="space-y-4">
+      {/* Communication Hub */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DisputeConversation
+          disputeId={disputeId}
+          messages={(messages as any) || []}
+          currentUserId={currentUserId}
+          onSendMessage={(message, templateUsed) =>
+            sendMessage.mutate({
+              disputeId,
+              message,
+              templateUsed,
+            })
+          }
+          isSending={sendMessage.isPending}
+        />
+        <AutomatedTimelineTracker
+          disputeId={disputeId}
+          timeline={timeline || []}
+          deadlineAt={dispute?.response_deadline || undefined}
+          escalationLevel={dispute?.escalation_level || 1}
+          status={dispute?.status || 'open'}
+        />
+      </div>
+
+      {/* Evidence & Resolution Tabs */}
+      <Tabs defaultValue="evidence" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="messages">Messages</TabsTrigger>
           <TabsTrigger value="evidence">Evidence</TabsTrigger>
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
           {resolution && (
             <TabsTrigger value="resolution">Resolution</TabsTrigger>
           )}
         </TabsList>
 
-        <TabsContent value="messages">
-          <DisputeMessages disputeId={disputeId} />
-        </TabsContent>
-
         <TabsContent value="evidence">
           <DisputeEvidence disputeId={disputeId} evidence={evidence || []} />
-        </TabsContent>
-
-        <TabsContent value="timeline">
-          <DisputeTimeline timeline={timeline || []} />
         </TabsContent>
 
         {resolution && (

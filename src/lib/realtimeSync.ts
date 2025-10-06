@@ -28,6 +28,10 @@ export function initRealtime(queryClient: QueryClient) {
       console.log('[Realtime] Calendar events changed, invalidating cache');
       queryClient.invalidateQueries({ queryKey: ['calendar_events'] });
     })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'disputes' }, () => {
+      console.log('[Realtime] Disputes changed, invalidating cache');
+      queryClient.invalidateQueries({ queryKey: ['disputes'] });
+    })
     .subscribe((status) => {
       console.log('[Realtime] Subscription status:', status);
     });

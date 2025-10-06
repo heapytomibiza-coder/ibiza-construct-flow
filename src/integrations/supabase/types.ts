@@ -1350,30 +1350,39 @@ export type Database = {
           created_at: string | null
           dispute_id: string
           id: string
+          is_admin_note: boolean | null
           is_internal: boolean | null
           message: string
           read_at: string | null
+          response_time_seconds: number | null
           sender_id: string
+          template_used: string | null
         }
         Insert: {
           attachments?: Json | null
           created_at?: string | null
           dispute_id: string
           id?: string
+          is_admin_note?: boolean | null
           is_internal?: boolean | null
           message: string
           read_at?: string | null
+          response_time_seconds?: number | null
           sender_id: string
+          template_used?: string | null
         }
         Update: {
           attachments?: Json | null
           created_at?: string | null
           dispute_id?: string
           id?: string
+          is_admin_note?: boolean | null
           is_internal?: boolean | null
           message?: string
           read_at?: string | null
+          response_time_seconds?: number | null
           sender_id?: string
+          template_used?: string | null
         }
         Relationships: [
           {
@@ -1484,9 +1493,11 @@ export type Database = {
           due_date: string | null
           escalated_at: string | null
           escalation_level: number | null
+          escalation_reasons: Json | null
           id: string
           invoice_id: string | null
           job_id: string
+          last_activity_at: string | null
           mediator_id: string | null
           mediator_notes: string | null
           pre_dispute_contact_attempted: boolean | null
@@ -1515,9 +1526,11 @@ export type Database = {
           due_date?: string | null
           escalated_at?: string | null
           escalation_level?: number | null
+          escalation_reasons?: Json | null
           id?: string
           invoice_id?: string | null
           job_id: string
+          last_activity_at?: string | null
           mediator_id?: string | null
           mediator_notes?: string | null
           pre_dispute_contact_attempted?: boolean | null
@@ -1546,9 +1559,11 @@ export type Database = {
           due_date?: string | null
           escalated_at?: string | null
           escalation_level?: number | null
+          escalation_reasons?: Json | null
           id?: string
           invoice_id?: string | null
           job_id?: string
+          last_activity_at?: string | null
           mediator_id?: string | null
           mediator_notes?: string | null
           pre_dispute_contact_attempted?: boolean | null
@@ -6965,6 +6980,10 @@ export type Database = {
           p_total_amount: number
         }
         Returns: string
+      }
+      escalation_reasons_updater: {
+        Args: { p_dispute_id: string }
+        Returns: undefined
       }
       generate_payment_receipt: {
         Args: { p_payment_id: string }
