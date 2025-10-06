@@ -658,6 +658,95 @@ export type Database = {
         }
         Relationships: []
       }
+      automation_executions: {
+        Row: {
+          completed_at: string | null
+          error_message: string | null
+          executed_at: string
+          execution_data: Json | null
+          id: string
+          result_data: Json | null
+          status: string
+          workflow_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          error_message?: string | null
+          executed_at?: string
+          execution_data?: Json | null
+          id?: string
+          result_data?: Json | null
+          status?: string
+          workflow_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          error_message?: string | null
+          executed_at?: string
+          execution_data?: Json | null
+          id?: string
+          result_data?: Json | null
+          status?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_executions_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "automation_workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      automation_workflows: {
+        Row: {
+          actions: Json
+          conditions: Json
+          created_at: string
+          created_by: string | null
+          description: string | null
+          execution_count: number
+          id: string
+          is_active: boolean
+          last_executed_at: string | null
+          name: string
+          success_rate: number | null
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          actions?: Json
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          execution_count?: number
+          id?: string
+          is_active?: boolean
+          last_executed_at?: string | null
+          name: string
+          success_rate?: number | null
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          actions?: Json
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          execution_count?: number
+          id?: string
+          is_active?: boolean
+          last_executed_at?: string | null
+          name?: string
+          success_rate?: number | null
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       availability_presets: {
         Row: {
           created_at: string | null
@@ -7980,6 +8069,19 @@ export type Database = {
         }
         Returns: undefined
       }
+      calculate_professional_earnings: {
+        Args: {
+          p_end_date?: string
+          p_professional_id: string
+          p_start_date?: string
+        }
+        Returns: {
+          average_per_job: number
+          completed_jobs: number
+          currency: string
+          total_earnings: number
+        }[]
+      }
       calculate_professional_score: {
         Args: { p_professional_id: string }
         Returns: undefined
@@ -8246,6 +8348,17 @@ export type Database = {
           ticket_id: string
           ticket_number: number
           user_id: string
+        }[]
+      }
+      get_top_performing_professionals: {
+        Args: { p_end_date?: string; p_limit?: number; p_start_date?: string }
+        Returns: {
+          average_rating: number
+          jobs_completed: number
+          professional_id: string
+          professional_name: string
+          success_rate: number
+          total_earnings: number
         }[]
       }
       get_top_revenue_sources: {

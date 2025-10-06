@@ -108,39 +108,69 @@ export default function ProfessionalAnalytics() {
         acc + (p.hourly_rate || 0), 0
       ) / Math.max(professionals?.filter(p => p.hourly_rate).length || 1, 1);
 
+      // Calculate total earnings and top performers using real data
+      const { data: topPerformers, error: topError } = await supabase.rpc('get_top_performing_professionals' as any, {
+        p_limit: 5,
+        p_start_date: timeRangeStart.toISOString(),
+        p_end_date: now.toISOString()
+      }) as { data: any[] | null; error: any };
+
+      const topPerformingProfessionals = (topPerformers || []).map((p: any) => ({
+        id: p.professional_id,
+        name: p.professional_name,
+        earnings: Number(p.total_earnings) || 0,
+        jobs_completed: p.jobs_completed || 0,
+        rating: Number(p.average_rating) || 0
+      }));
+
+      const totalEarnings = topPerformingProfessionals.reduce((acc, p) => acc + p.earnings, 0);
+
       setMetrics({
         total_professionals: totalProfessionals,
         active_professionals: activeProfessionals,
         new_signups_this_month: newSignups,
         average_completion_rate: Math.round(avgCompletion),
-        total_earnings: 0, // TODO: Calculate from contracts table
+        total_earnings: totalEarnings,
         average_hourly_rate: Math.round(avgHourlyRate * 100) / 100,
-        top_performing_professionals: [] // TODO: Calculate from performance data
+        top_performing_professionals: topPerformingProfessionals
       });
 
-      // Mock geographic data (replace with real data)
-      setGeographicData([
-        { region: 'North Region', professional_count: 45, average_rate: 35, demand_score: 85 },
-        { region: 'South Region', professional_count: 32, average_rate: 28, demand_score: 72 },
-        { region: 'Central Region', professional_count: 58, average_rate: 42, demand_score: 91 },
-        { region: 'East Region', professional_count: 23, average_rate: 30, demand_score: 68 }
-      ]);
+      // Calculate real earnings data from payment transactions
+      const { data: dailyEarnings } = await supabase
+        .from('payment_transactions')
+        .select('amount, created_at')
+        .gte('created_at', timeRangeStart.toISOString())
+        .lte('created_at', now.toISOString())
+        .in('status', ['completed', 'succeeded']);
 
-      // Mock earnings data (replace with real data)
-      const earningsData = [];
+      // Group by day
+      const earningsMap = new Map<string, { total: number; count: Set<string> }>();
+      (dailyEarnings || []).forEach(t => {
+        const day = format(new Date(t.created_at), 'MMM dd');
+        if (!earningsMap.has(day)) {
+          earningsMap.set(day, { total: 0, count: new Set() });
+        }
+        const dayData = earningsMap.get(day)!;
+        dayData.total += t.amount || 0;
+      });
+
+      // Generate complete date range with real data
+      const realEarningsData: EarningsData[] = [];
       for (let i = 29; i >= 0; i--) {
         const date = subDays(now, i);
-        earningsData.push({
-          period: format(date, 'MMM dd'),
-          total_earnings: Math.floor(Math.random() * 5000) + 2000,
-          professional_count: Math.floor(Math.random() * 20) + 30,
-          average_per_professional: 0
+        const dayKey = format(date, 'MMM dd');
+        const dayData = earningsMap.get(dayKey);
+        
+        realEarningsData.push({
+          period: dayKey,
+          total_earnings: dayData?.total || 0,
+          professional_count: activeProfessionals,
+          average_per_professional: dayData 
+            ? Math.round((dayData.total / Math.max(activeProfessionals, 1))) 
+            : 0
         });
       }
-      earningsData.forEach(d => {
-        d.average_per_professional = Math.round(d.total_earnings / d.professional_count);
-      });
-      setEarningsData(earningsData);
+      setEarningsData(realEarningsData);
 
     } catch (error) {
       console.error('Error loading analytics:', error);

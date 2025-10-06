@@ -16,7 +16,7 @@ import {
   Activity,
 } from 'lucide-react';
 import { toast } from 'sonner';
-// import { supabase } from '@/integrations/supabase/client'; // TODO: uncomment when wiring
+import { supabase } from '@/integrations/supabase/client';
 
 /** ---------- Types ---------- */
 
@@ -98,71 +98,78 @@ export const CommandCenter: React.FC = () => {
   const [metrics, setMetrics] = useState<AutomationMetrics | null>(null);
   const [loading, setLoading] = useState(true);
 
-  /** Loaders (mocked now; wire to Supabase later) */
+  /** Loaders - now using real Supabase queries */
   useEffect(() => {
     const load = async () => {
       try {
-        // TODO: Replace with Supabase queries (tables: automation_workflows, automation_metrics_view)
-        const mockWorkflows: WorkflowRule[] = [
-          {
-            id: '1',
-            name: 'Auto-assign High Priority Jobs',
-            trigger: 'job_created',
-            conditions: [{ field: 'priority', operator: 'equals', value: 'high' }],
-            actions: [{ type: 'assign_professional', criteria: 'best_match' }],
-            is_active: true,
-            execution_count: 245,
-            success_rate: 94.2,
-            last_executed: '2025-09-22T10:30:00.000Z',
-          },
-          {
-            id: '2',
-            name: 'Payment Reminder Automation',
-            trigger: 'job_completed',
-            conditions: [{ field: 'payment_status', operator: 'equals', value: 'pending' }],
-            actions: [{ type: 'send_payment_reminder', delay: '24_hours' }],
-            is_active: true,
-            execution_count: 158,
-            success_rate: 87.3,
-            last_executed: '2025-09-24T09:15:00.000Z',
-          },
-          {
-            id: '3',
-            name: 'Professional Performance Review',
-            trigger: 'monthly_schedule',
-            conditions: [{ field: 'jobs_completed', operator: 'greater_than', value: 10 }],
-            actions: [{ type: 'generate_performance_report', recipients: ['admin'] }],
-            is_active: true,
-            execution_count: 12,
-            success_rate: 100,
-            last_executed: '2025-09-01T00:00:00.000Z',
-          },
-          {
-            id: '4',
-            name: 'Emergency Job Alert System',
-            trigger: 'job_created',
-            conditions: [{ field: 'urgency', operator: 'equals', value: 'emergency' }],
-            actions: [{ type: 'broadcast_alert', channels: ['sms', 'push', 'email'] }],
-            is_active: false,
-            execution_count: 8,
-            success_rate: 62.5,
-            last_executed: '2025-09-20T16:45:00.000Z',
-          },
-        ];
+        // Fetch workflows from database
+        const { data: workflowsData, error: workflowsError } = await supabase
+          .from('automation_workflows')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-        const mockMetrics: AutomationMetrics = {
-          total_workflows: mockWorkflows.length,
-          active_workflows: mockWorkflows.filter((w) => w.is_active).length,
-          executions_today: 47,
-          success_rate: 91.2,
-          time_saved_hours: 127.5,
+        if (workflowsError) throw workflowsError;
+
+        // Transform database records to WorkflowRule format
+        const transformedWorkflows: WorkflowRule[] = (workflowsData || []).map(w => ({
+          id: w.id,
+          name: w.name,
+          trigger: w.trigger_type as WorkflowTrigger,
+          conditions: (w.conditions as any) || [],
+          actions: (w.actions as any) || [],
+          is_active: w.is_active,
+          execution_count: w.execution_count || 0,
+          success_rate: w.success_rate || 0,
+          last_executed: w.last_executed_at || new Date().toISOString(),
+        }));
+
+        // Calculate metrics from workflows
+        const totalWorkflows = transformedWorkflows.length;
+        const activeWorkflows = transformedWorkflows.filter(w => w.is_active).length;
+        
+        // Get today's executions
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const { count: executionsToday } = await supabase
+          .from('automation_executions')
+          .select('*', { count: 'exact', head: true })
+          .gte('executed_at', today.toISOString());
+
+        // Calculate overall success rate
+        const totalExecutions = transformedWorkflows.reduce((acc, w) => acc + w.execution_count, 0);
+        const successfulExecutions = transformedWorkflows.reduce((acc, w) => 
+          acc + Math.round(w.execution_count * (w.success_rate / 100)), 0
+        );
+        const overallSuccessRate = totalExecutions > 0 
+          ? (successfulExecutions / totalExecutions) * 100 
+          : 0;
+
+        // Estimate time saved (assumption: each automation saves ~15 minutes)
+        const timeSavedHours = (executionsToday || 0) * 0.25;
+
+        const calculatedMetrics: AutomationMetrics = {
+          total_workflows: totalWorkflows,
+          active_workflows: activeWorkflows,
+          executions_today: executionsToday || 0,
+          success_rate: Math.round(overallSuccessRate * 10) / 10,
+          time_saved_hours: Math.round(timeSavedHours * 10) / 10,
         };
 
-        setWorkflows(mockWorkflows);
-        setMetrics(mockMetrics);
+        setWorkflows(transformedWorkflows);
+        setMetrics(calculatedMetrics);
       } catch (e) {
-        console.error(e);
-        toast.error('Failed to load Command Center');
+        console.error('Error loading Command Center:', e);
+        toast.error('Failed to load Command Center data');
+        
+        // Fallback to empty state instead of mock data
+        setWorkflows([]);
+        setMetrics({
+          total_workflows: 0,
+          active_workflows: 0,
+          executions_today: 0,
+          success_rate: 0,
+          time_saved_hours: 0,
+        });
       } finally {
         setLoading(false);
       }
@@ -171,22 +178,28 @@ export const CommandCenter: React.FC = () => {
     load();
   }, []);
 
-  /** Optimistic mutations with rollback */
+  /** Optimistic mutations with Supabase persistence */
   const toggleWorkflow = useCallback(async (workflowId: string) => {
     const prev = workflows;
+    const workflow = prev.find(w => w.id === workflowId);
+    if (!workflow) return;
+
+    const nextState = !workflow.is_active;
     const next = prev.map((w) =>
-      w.id === workflowId ? { ...w, is_active: !w.is_active } : w
+      w.id === workflowId ? { ...w, is_active: nextState } : w
     );
     setWorkflows(next);
-    toast.success(`Workflow ${next.find((w) => w.id === workflowId)?.is_active ? 'activated' : 'deactivated'}`);
+    toast.success(`Workflow ${nextState ? 'activated' : 'deactivated'}`);
 
     try {
-      // TODO: Persist via Supabase:
-      // const { error } = await supabase.from('automation_workflows')
-      //   .update({ is_active: nextState }).eq('id', workflowId);
-      // if (error) throw error;
+      const { error } = await supabase
+        .from('automation_workflows')
+        .update({ is_active: nextState })
+        .eq('id', workflowId);
+      
+      if (error) throw error;
     } catch (e) {
-      console.error(e);
+      console.error('Failed to update workflow:', e);
       setWorkflows(prev); // rollback
       toast.error('Failed to update workflow');
     }
@@ -194,6 +207,9 @@ export const CommandCenter: React.FC = () => {
 
   const executeWorkflow = useCallback(async (workflowId: string) => {
     const prev = workflows;
+    const workflow = prev.find(w => w.id === workflowId);
+    if (!workflow) return;
+
     const next = prev.map((w) =>
       w.id === workflowId
         ? { ...w, execution_count: w.execution_count + 1, last_executed: new Date().toISOString() }
@@ -203,11 +219,32 @@ export const CommandCenter: React.FC = () => {
     toast.success('Workflow execution initiated');
 
     try {
-      // TODO: RPC call to edge function that runs the workflow server-side
-      // const { data, error } = await supabase.functions.invoke('run-workflow', { body: { workflowId } });
-      // if (error) throw error;
+      // Log the execution
+      const { error: execError } = await supabase
+        .from('automation_executions')
+        .insert({
+          workflow_id: workflowId,
+          status: 'pending',
+          executed_at: new Date().toISOString()
+        });
+
+      if (execError) throw execError;
+
+      // Update execution count
+      const { error: updateError } = await supabase
+        .from('automation_workflows')
+        .update({
+          execution_count: workflow.execution_count + 1,
+          last_executed_at: new Date().toISOString()
+        })
+        .eq('id', workflowId);
+
+      if (updateError) throw updateError;
+
+      // In a real implementation, you would trigger the workflow logic here
+      // via an edge function or database trigger
     } catch (e) {
-      console.error(e);
+      console.error('Failed to execute workflow:', e);
       setWorkflows(prev); // rollback
       toast.error('Failed to execute workflow');
     }

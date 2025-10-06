@@ -16,6 +16,8 @@ import {
   Send
 } from 'lucide-react';
 import { useMatchProfessionals } from '../../../packages/@contracts/clients/professional-matching';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface ProfessionalMatch {
   professional: {
@@ -94,12 +96,23 @@ export default function ProfessionalMatchModal({
   const handleSendInvitation = async (professionalId: string) => {
     setIsSending(true);
     try {
-      // TODO: Integrate with communications API when available
-      console.log('Sending invitation to professional:', professionalId);
-      console.log('Job details:', { jobTitle, jobDescription });
-      // Placeholder for future communications integration
+      const { data, error } = await supabase.functions.invoke('send-professional-invitation', {
+        body: {
+          professionalId,
+          jobId,
+          jobTitle,
+          jobDescription,
+          message: `You've been selected as a great match for this job. Please review the details and let us know if you're interested.`
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success('Invitation sent successfully!');
+      console.log('Invitation sent:', data);
     } catch (error) {
-      console.error('Error drafting invitation:', error);
+      console.error('Error sending invitation:', error);
+      toast.error('Failed to send invitation. Please try again.');
     } finally {
       setIsSending(false);
     }
