@@ -60,6 +60,9 @@ const AdminVerificationsPage = React.lazy(() => import("./pages/AdminVerificatio
 const DisputeAnalyticsPage = React.lazy(() => import("./pages/admin/DisputeAnalyticsPage"));
 const AdminDisputeDetailPage = React.lazy(() => import("./pages/admin/AdminDisputeDetailPage"));
 const AdminAuditLogPage = React.lazy(() => import("./pages/admin/AdminAuditLogPage"));
+const AdminHelpdeskPage = React.lazy(() => import("./pages/admin/AdminHelpdeskPage"));
+const AdminHelpdeskDetailPage = React.lazy(() => import("./pages/admin/AdminHelpdeskDetailPage"));
+const AdminReviewModerationPage = React.lazy(() => import("./pages/admin/AdminReviewModerationPage"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -255,6 +258,21 @@ function AppContent() {
           <Route path="/admin/audit" element={
             <RouteGuard requiredRole="admin">
               <AdminAuditLogPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/helpdesk" element={
+            <RouteGuard requiredRole="admin">
+              <AdminHelpdeskPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/helpdesk/:ticketId" element={
+            <RouteGuard requiredRole="admin">
+              <AdminHelpdeskDetailPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/moderation/reviews" element={
+            <RouteGuard requiredRole="admin">
+              <AdminReviewModerationPage />
             </RouteGuard>
           } />
           

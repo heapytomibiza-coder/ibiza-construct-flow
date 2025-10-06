@@ -5936,6 +5936,45 @@ export type Database = {
           },
         ]
       }
+      review_flags: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          flag_reason: string
+          flagged_by: string
+          id: string
+          moderation_action: string | null
+          review_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          flag_reason: string
+          flagged_by: string
+          id?: string
+          moderation_action?: string | null
+          review_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          flag_reason?: string
+          flagged_by?: string
+          id?: string
+          moderation_action?: string | null
+          review_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       review_helpful_votes: {
         Row: {
           created_at: string | null
@@ -6815,6 +6854,57 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: string
+          closed_at: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          priority: string | null
+          resolved_at: string | null
+          sla_deadline: string | null
+          status: string | null
+          subject: string
+          ticket_number: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category: string
+          closed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          priority?: string | null
+          resolved_at?: string | null
+          sla_deadline?: string | null
+          status?: string | null
+          subject: string
+          ticket_number?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string
+          closed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          priority?: string | null
+          resolved_at?: string | null
+          sla_deadline?: string | null
+          status?: string | null
+          subject?: string
+          ticket_number?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       system_activity_log: {
         Row: {
           action: string
@@ -6916,6 +7006,92 @@ export type Database = {
           recorded_at?: string
         }
         Relationships: []
+      }
+      ticket_attachments: {
+        Row: {
+          created_at: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          message_id: string | null
+          mime_type: string | null
+          ticket_id: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          message_id?: string | null
+          mime_type?: string | null
+          ticket_id: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          message_id?: string | null
+          mime_type?: string | null
+          ticket_id?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_attachments_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_attachments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_internal_note: boolean | null
+          message: string
+          sender_id: string
+          ticket_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_internal_note?: boolean | null
+          message: string
+          sender_id: string
+          ticket_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_internal_note?: boolean | null
+          message?: string
+          sender_id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transaction_notes: {
         Row: {
@@ -7218,6 +7394,23 @@ export type Database = {
       }
     }
     Functions: {
+      bulk_user_suspend: {
+        Args: { reason: string; suspended_by: string; user_ids: string[] }
+        Returns: undefined
+      }
+      bulk_verification_action: {
+        Args: {
+          action: string
+          actioned_by: string
+          reason: string
+          verification_ids: string[]
+        }
+        Returns: undefined
+      }
+      calculate_sla_deadline: {
+        Args: { p_created_at?: string; p_priority: string }
+        Returns: string
+      }
       calculate_user_payment_analytics: {
         Args: { p_end_date: string; p_start_date: string; p_user_id: string }
         Returns: {
@@ -7442,6 +7635,19 @@ export type Database = {
           reviewer_id: string
           reviewer_name: string
           title: string
+        }[]
+      }
+      get_sla_breach_tickets: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          assigned_to: string
+          minutes_until_breach: number
+          priority: string
+          sla_deadline: string
+          subject: string
+          ticket_id: string
+          ticket_number: number
+          user_id: string
         }[]
       }
       get_top_revenue_sources: {
