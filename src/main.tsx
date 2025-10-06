@@ -9,9 +9,25 @@ import "./index.css";
 import "./i18n";
 import { initWebVitals } from "./lib/performance/webVitals";
 import { logBundleMetrics } from "./components/performance/BundleOptimizer";
+import { setupGlobalErrorHandling } from "./lib/monitoring/errorTracking";
+import { setupNavigationTracking } from "./lib/analytics/tracking";
+import { validateEnvironment } from "./lib/deployment/environment";
+
+// Validate environment (Phase 9: Production Hardening)
+try {
+  validateEnvironment();
+} catch (error) {
+  console.error('Environment validation failed:', error);
+}
 
 // Initialize Web Vitals tracking (Phase 6: Performance Optimization)
 initWebVitals();
+
+// Setup error handling (Phase 9: Error Tracking)
+setupGlobalErrorHandling();
+
+// Setup analytics (Phase 9: Analytics)
+setupNavigationTracking();
 
 // Log bundle metrics in development (Phase 7: Bundle Optimization)
 if (import.meta.env.DEV) {

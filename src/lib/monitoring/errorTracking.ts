@@ -2,6 +2,92 @@ import { supabase } from '@/integrations/supabase/client';
 
 export type ErrorSeverity = 'warning' | 'error' | 'critical';
 
+export interface ErrorContext {
+  userId?: string;
+  route?: string;
+  action?: string;
+  userAgent?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface ClientErrorReport {
+  message: string;
+  stack?: string;
+  context: ErrorContext;
+  timestamp: Date;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+}
+
+class ClientErrorTracker {
+  private errors: ClientErrorReport[] = [];
+  private maxErrors = 100;
+
+  captureError(
+    error: Error,
+    context: ErrorContext = {},
+    severity: ClientErrorReport['severity'] = 'medium'
+  ): void {
+    const report: ClientErrorReport = {
+      message: error.message,
+      stack: error.stack,
+      context: {
+        ...context,
+        route: window.location.pathname,
+        userAgent: navigator.userAgent,
+      },
+      timestamp: new Date(),
+      severity,
+    };
+
+    this.errors.push(report);
+    
+    if (this.errors.length > this.maxErrors) {
+      this.errors.shift();
+    }
+
+    if (import.meta.env.DEV) {
+      console.error('[Client Error]', report);
+    }
+  }
+
+  getErrors(): ClientErrorReport[] {
+    return [...this.errors];
+  }
+
+  clearErrors(): void {
+    this.errors = [];
+  }
+}
+
+export const clientErrorTracker = new ClientErrorTracker();
+
+export function setupGlobalErrorHandling(): void {
+  window.addEventListener('error', (event) => {
+    clientErrorTracker.captureError(
+      new Error(event.message),
+      { metadata: { filename: event.filename, lineno: event.lineno } },
+      'high'
+    );
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    clientErrorTracker.captureError(
+      new Error(event.reason?.message || 'Unhandled Promise Rejection'),
+      { metadata: { reason: event.reason } },
+      'high'
+    );
+  });
+}
+
+export function logErrorBoundary(error: Error, errorInfo: any): void {
+  clientErrorTracker.captureError(
+    error,
+    { metadata: { componentStack: errorInfo.componentStack } },
+    'critical'
+  );
+}
+
+// Edge function error tracking (existing)
 export interface EdgeFunctionError {
   id?: string;
   functionName: string;
@@ -14,9 +100,6 @@ export interface EdgeFunctionError {
 }
 
 export class ErrorTracker {
-  /**
-   * Log an edge function error
-   */
   static async logEdgeFunctionError(
     functionName: string,
     error: Error,
@@ -48,9 +131,6 @@ export class ErrorTracker {
     }
   }
 
-  /**
-   * Get unresolved errors summary
-   */
   static async getUnresolvedErrorsSummary(): Promise<{
     totalUnresolved: number;
     criticalCount: number;
@@ -81,9 +161,6 @@ export class ErrorTracker {
     };
   }
 
-  /**
-   * Resolve an error
-   */
   static async resolveError(errorId: string): Promise<boolean> {
     try {
       const { data: user } = await supabase.auth.getUser();
@@ -108,9 +185,6 @@ export class ErrorTracker {
     }
   }
 
-  /**
-   * Get recent errors for a specific function
-   */
   static async getFunctionErrors(
     functionName: string,
     limit: number = 50
@@ -139,9 +213,6 @@ export class ErrorTracker {
     }));
   }
 
-  /**
-   * Wrapper for edge function calls with automatic error tracking
-   */
   static async withErrorTracking<T>(
     functionName: string,
     fn: () => Promise<T>,
