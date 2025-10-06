@@ -2483,6 +2483,146 @@ export type Database = {
         }
         Relationships: []
       }
+      message_attachment_metadata: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          file_name: string
+          file_size: number
+          id: string
+          message_id: string | null
+          mime_type: string
+          storage_path: string
+          thumbnail_path: string | null
+          virus_scan_date: string | null
+          virus_scan_status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          file_name: string
+          file_size: number
+          id?: string
+          message_id?: string | null
+          mime_type: string
+          storage_path: string
+          thumbnail_path?: string | null
+          virus_scan_date?: string | null
+          virus_scan_status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          file_name?: string
+          file_size?: number
+          id?: string
+          message_id?: string | null
+          mime_type?: string
+          storage_path?: string
+          thumbnail_path?: string | null
+          virus_scan_date?: string | null
+          virus_scan_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_attachment_metadata_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_rate_limits: {
+        Row: {
+          is_throttled: boolean | null
+          messages_sent: number | null
+          throttled_until: string | null
+          user_id: string
+          window_start: string | null
+        }
+        Insert: {
+          is_throttled?: boolean | null
+          messages_sent?: number | null
+          throttled_until?: string | null
+          user_id: string
+          window_start?: string | null
+        }
+        Update: {
+          is_throttled?: boolean | null
+          messages_sent?: number | null
+          throttled_until?: string | null
+          user_id?: string
+          window_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_rate_limits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          id: string
+          message_id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          message_id: string
+          reason: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          message_id?: string
+          reason?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reports_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           attachments: Json | null
@@ -5720,6 +5860,41 @@ export type Database = {
         }
         Relationships: []
       }
+      spam_keywords: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          keyword: string
+          severity: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          keyword: string
+          severity?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          keyword?: string
+          severity?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spam_keywords_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stripe_customers: {
         Row: {
           created_at: string
@@ -5851,6 +6026,45 @@ export type Database = {
           },
         ]
       }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string | null
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -5959,6 +6173,18 @@ export type Database = {
           contract_id: string
           milestone_id: string
         }[]
+      }
+      check_rate_limit: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
+      check_spam_content: {
+        Args: { p_content: string }
+        Returns: Json
+      }
+      check_user_blocked: {
+        Args: { p_recipient_id: string; p_sender_id: string }
+        Returns: boolean
       }
       convert_currency: {
         Args: {
@@ -6135,6 +6361,10 @@ export type Database = {
           p_user: string
         }
         Returns: boolean
+      }
+      increment_message_count: {
+        Args: { p_user_id: string }
+        Returns: undefined
       }
       is_admin_user: {
         Args: Record<PropertyKey, never>
