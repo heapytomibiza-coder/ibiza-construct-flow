@@ -2689,9 +2689,11 @@ export type Database = {
           client_id: string
           created_at: string
           description: string | null
+          duration_minutes: number | null
           id: string
           location: Json | null
           micro_id: string
+          scheduled_at: string | null
           status: string
           title: string
           updated_at: string
@@ -2703,9 +2705,11 @@ export type Database = {
           client_id: string
           created_at?: string
           description?: string | null
+          duration_minutes?: number | null
           id?: string
           location?: Json | null
           micro_id: string
+          scheduled_at?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -2717,9 +2721,11 @@ export type Database = {
           client_id?: string
           created_at?: string
           description?: string | null
+          duration_minutes?: number | null
           id?: string
           location?: Json | null
           micro_id?: string
+          scheduled_at?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -6680,6 +6686,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_devices: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          last_seen_at: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          last_seen_at?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          last_seen_at?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_presence: {
         Row: {

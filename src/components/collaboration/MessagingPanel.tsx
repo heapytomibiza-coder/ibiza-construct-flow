@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRealtimeMessages } from '@/hooks/useRealtimeMessages';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Paperclip, Send, Loader2 } from 'lucide-react';
+import { Paperclip, Send, Loader2, Bell, BellOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, isToday, isYesterday } from 'date-fns';
 
@@ -39,6 +40,8 @@ export const MessagingPanel: React.FC<MessagingPanelProps> = ({
     setTyping,
     uploadAttachment
   } = useRealtimeMessages(conversationId);
+
+  const pushNotifications = usePushNotifications();
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -124,12 +127,29 @@ export const MessagingPanel: React.FC<MessagingPanelProps> = ({
             <AvatarImage src={otherUser.avatar} />
             <AvatarFallback>{otherUser.name[0]}</AvatarFallback>
           </Avatar>
-          <div>
+          <div className="flex-1">
             <p className="font-semibold">{otherUser.name}</p>
             {typingUsers.length > 0 && (
               <p className="text-sm text-muted-foreground">typing...</p>
             )}
           </div>
+          {pushNotifications.isSupported && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={pushNotifications.isSubscribed ? pushNotifications.unsubscribe : pushNotifications.subscribe}
+              disabled={pushNotifications.isLoading}
+              title={pushNotifications.isSubscribed ? "Disable notifications" : "Enable notifications"}
+            >
+              {pushNotifications.isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : pushNotifications.isSubscribed ? (
+                <Bell className="h-4 w-4" />
+              ) : (
+                <BellOff className="h-4 w-4" />
+              )}
+            </Button>
+          )}
         </div>
       )}
 
