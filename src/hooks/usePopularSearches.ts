@@ -20,8 +20,7 @@ export const usePopularSearches = (limit = 10) => {
       const { data, error } = await supabase
         .from('popular_searches')
         .select('*')
-        .gte('period_end', new Date().toISOString())
-        .order('trend_score', { ascending: false })
+        .order('popularity_score', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
@@ -29,12 +28,12 @@ export const usePopularSearches = (limit = 10) => {
       // Map database fields to interface
       const mappedData = (data || []).map(item => ({
         id: item.id,
-        query: item.query || (item as any).search_term || '',
-        search_term: (item as any).search_term || item.query,
-        search_count: (item as any).search_count || 0,
-        trend_score: item.trend_score || (item as any).popularity_score || 0,
-        popularity_score: (item as any).popularity_score || item.trend_score,
-        category: item.category
+        query: item.search_term || '',
+        search_term: item.search_term,
+        search_count: 0, // Not in current schema
+        trend_score: item.popularity_score || 0,
+        popularity_score: item.popularity_score,
+        category: item.search_type // Using search_type as category
       }));
       
       setPopularSearches(mappedData as PopularSearch[]);
