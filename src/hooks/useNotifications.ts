@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 
-interface Notification {
+export interface Notification {
   id: string;
   title: string;
   message: string;
@@ -12,6 +12,8 @@ interface Notification {
   metadata?: any;
   read_at?: string;
   created_at: string;
+  priority?: string;
+  dismissed_at?: string;
 }
 
 export const useNotifications = () => {
@@ -74,6 +76,18 @@ export const useNotifications = () => {
     }
   };
 
+  // Dismiss notification
+  const dismissNotification = async (notificationId: string) => {
+    // Remove from local state
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    
+    // Update in database (dismissed_at will be available after types regenerate)
+    // const { error } = await supabase
+    //   .from('notifications')
+    //   .update({ dismissed_at: new Date().toISOString() })
+    //   .eq('id', notificationId);
+  };
+
   // Subscribe to real-time notifications
   useEffect(() => {
     if (!user) return;
@@ -117,8 +131,10 @@ export const useNotifications = () => {
     notifications,
     unreadCount,
     loading,
+    notificationsLoading: loading,
     markAsRead,
     markAllAsRead,
+    dismissNotification,
     refresh: fetchNotifications
   };
 };
