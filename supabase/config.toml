@@ -62,3 +62,18 @@ verify_jwt = false
 
 [functions.register-push-device]
 verify_jwt = true
+
+[functions.quality-recalculate]
+verify_jwt = false
+
+[functions.early-warning-monitor]
+verify_jwt = false
+
+[functions.sentiment-batch]
+verify_jwt = false
+
+[functions.weekly-insights-digest]
+verify_jwt = false
+
+[functions.export-report]
+verify_jwt = true
