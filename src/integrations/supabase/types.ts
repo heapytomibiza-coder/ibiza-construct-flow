@@ -1098,9 +1098,136 @@ export type Database = {
         }
         Relationships: []
       }
+      dispute_messages: {
+        Row: {
+          attachments: Json | null
+          created_at: string | null
+          dispute_id: string
+          id: string
+          is_internal: boolean | null
+          message: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string | null
+          dispute_id: string
+          id?: string
+          is_internal?: boolean | null
+          message: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string | null
+          dispute_id?: string
+          id?: string
+          is_internal?: boolean | null
+          message?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_messages_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispute_resolutions: {
+        Row: {
+          agreed_by_client: boolean | null
+          agreed_by_professional: boolean | null
+          amount: number | null
+          awarded_to: string | null
+          created_at: string | null
+          details: string | null
+          dispute_id: string
+          finalized_at: string | null
+          id: string
+          resolution_type: string
+        }
+        Insert: {
+          agreed_by_client?: boolean | null
+          agreed_by_professional?: boolean | null
+          amount?: number | null
+          awarded_to?: string | null
+          created_at?: string | null
+          details?: string | null
+          dispute_id: string
+          finalized_at?: string | null
+          id?: string
+          resolution_type: string
+        }
+        Update: {
+          agreed_by_client?: boolean | null
+          agreed_by_professional?: boolean | null
+          amount?: number | null
+          awarded_to?: string | null
+          created_at?: string | null
+          details?: string | null
+          dispute_id?: string
+          finalized_at?: string | null
+          id?: string
+          resolution_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_resolutions_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispute_timeline: {
+        Row: {
+          actor_id: string | null
+          created_at: string | null
+          description: string
+          dispute_id: string
+          event_type: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string | null
+          description: string
+          dispute_id: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string | null
+          description?: string
+          dispute_id?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_timeline_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       disputes: {
         Row: {
           amount_disputed: number | null
+          auto_close_date: string | null
           contract_id: string | null
           created_at: string
           created_by: string
@@ -1109,14 +1236,18 @@ export type Database = {
           disputed_against: string
           due_date: string | null
           escalated_at: string | null
+          escalation_level: number | null
           id: string
           invoice_id: string | null
           job_id: string
+          mediator_id: string | null
+          mediator_notes: string | null
           priority: string
           resolution_amount: number | null
           resolution_notes: string | null
           resolved_at: string | null
           resolved_by: string | null
+          response_deadline: string | null
           status: string
           title: string
           type: string
@@ -1124,6 +1255,7 @@ export type Database = {
         }
         Insert: {
           amount_disputed?: number | null
+          auto_close_date?: string | null
           contract_id?: string | null
           created_at?: string
           created_by: string
@@ -1132,14 +1264,18 @@ export type Database = {
           disputed_against: string
           due_date?: string | null
           escalated_at?: string | null
+          escalation_level?: number | null
           id?: string
           invoice_id?: string | null
           job_id: string
+          mediator_id?: string | null
+          mediator_notes?: string | null
           priority?: string
           resolution_amount?: number | null
           resolution_notes?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
+          response_deadline?: string | null
           status?: string
           title: string
           type: string
@@ -1147,6 +1283,7 @@ export type Database = {
         }
         Update: {
           amount_disputed?: number | null
+          auto_close_date?: string | null
           contract_id?: string | null
           created_at?: string
           created_by?: string
@@ -1155,14 +1292,18 @@ export type Database = {
           disputed_against?: string
           due_date?: string | null
           escalated_at?: string | null
+          escalation_level?: number | null
           id?: string
           invoice_id?: string | null
           job_id?: string
+          mediator_id?: string | null
+          mediator_notes?: string | null
           priority?: string
           resolution_amount?: number | null
           resolution_notes?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
+          response_deadline?: string | null
           status?: string
           title?: string
           type?: string
@@ -5845,6 +5986,13 @@ export type Database = {
       generate_receipt_number: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_auto_closeable_disputes: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          days_open: number
+          dispute_id: string
+        }[]
       }
       get_available_slots: {
         Args: {
