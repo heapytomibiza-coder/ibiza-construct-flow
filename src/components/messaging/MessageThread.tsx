@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useMessaging } from '@/hooks/useMessaging';
@@ -19,6 +19,7 @@ export const MessageThread = ({
   recipientId,
 }: MessageThreadProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isSending, setIsSending] = useState(false);
   const {
     messages,
     messagesLoading,
@@ -40,17 +41,22 @@ export const MessageThread = ({
   // Mark messages as read when conversation opens
   useEffect(() => {
     if (conversationId) {
-      markAsRead.mutate(conversationId);
+      markAsRead(conversationId);
     }
-  }, [conversationId]);
+  }, [conversationId, markAsRead]);
 
   const handleSendMessage = async (content: string, attachments?: any[]) => {
-    await sendMessage.mutateAsync({
-      conversationId,
-      recipientId,
-      content,
-      attachments,
-    });
+    setIsSending(true);
+    try {
+      await sendMessage({
+        conversationId,
+        recipientId,
+        content,
+        attachments,
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handleTyping = (isTyping: boolean) => {
@@ -76,9 +82,9 @@ export const MessageThread = ({
                 message={message}
                 isOwn={message.sender_id === userId}
                 onReact={(reaction) =>
-                  addReaction.mutate({ messageId: message.id, reaction })
+                  addReaction({ messageId: message.id, reaction })
                 }
-                onDelete={() => deleteMessage.mutate(message.id)}
+                onDelete={() => deleteMessage(message.id)}
               />
             ))}
             {typingUsers.size > 0 && <TypingIndicator />}
@@ -96,7 +102,7 @@ export const MessageThread = ({
         <MessageInput
           onSend={handleSendMessage}
           onTyping={handleTyping}
-          disabled={sendMessage.isPending}
+          disabled={isSending}
         />
       </div>
     </Card>

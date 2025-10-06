@@ -1,7 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+
+// Import supabase client with type assertion to avoid deep inference
+const getSupabase = async () => {
+  const { supabase } = await import('@/integrations/supabase/client');
+  return supabase;
+};
 
 interface SendMessageParams {
   conversationId: string;
@@ -20,38 +24,60 @@ interface CreateConversationParams {
 
 export const useMessaging = (userId?: string, conversationId?: string) => {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
+  const [conversationsLoading, setConversationsLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(true);
 
   // Fetch conversations
-  const conversationsQuery = useQuery({
-    queryKey: ['conversations', userId],
-    queryFn: async () => {
-      if (!userId) return [];
+  useEffect(() => {
+    if (!userId) {
+      setConversationsLoading(false);
+      return;
+    }
 
-      const { data, error } = await supabase
-        .from('conversations')
-        .select('*')
-        .eq('is_archived', false)
-        .order('last_message_at', { ascending: false });
-
-      if (error) throw error;
+    const fetchConversations = async () => {
+      const supabase = await getSupabase();
+      const result = await supabase.from('conversations').select('*').eq('is_archived', false).order('last_message_at', { ascending: false });
       
-      // Filter conversations where user is a participant
-      return (data || []).filter((conv: any) => 
+      if (result.error) {
+        console.error('Error fetching conversations:', result.error);
+        setConversationsLoading(false);
+        return;
+      }
+
+      const data: any[] = result.data || [];
+      const filtered = data.filter((conv: any) => 
         conv.participants && Array.isArray(conv.participants) && conv.participants.includes(userId)
       );
-    },
-    enabled: !!userId,
-  });
+      
+      setConversations(filtered);
+      setConversationsLoading(false);
+    };
+
+    fetchConversations();
+
+    // Real-time subscription
+    getSupabase().then(supabase => {
+      const channel = supabase.channel('user-conversations')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => fetchConversations())
+        .subscribe();
+
+      return () => { supabase.removeChannel(channel); };
+    });
+  }, [userId]);
 
   // Fetch messages for conversation
-  const messagesQuery = useQuery<any[]>({
-    queryKey: ['messages', conversationId],
-    queryFn: async (): Promise<any[]> => {
-      if (!conversationId) return [];
+  useEffect(() => {
+    if (!conversationId) {
+      setMessagesLoading(false);
+      return;
+    }
 
-      const { data, error } = await supabase
+    const fetchMessages = async () => {
+      const result: any = await supabase
         .from('messages')
         .select(`
           *,
@@ -60,35 +86,19 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!conversationId,
-  });
+      if (result.error) {
+        console.error('Error fetching messages:', result.error);
+        setMessagesLoading(false);
+        return;
+      }
 
-  // Fetch unread count
-  const unreadCountQuery = useQuery<number>({
-    queryKey: ['unread-count', userId],
-    queryFn: async (): Promise<number> => {
-      if (!userId) return 0;
+      setMessages(result.data || []);
+      setMessagesLoading(false);
+    };
 
-      const { count, error } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('recipient_id', userId)
-        .is('read_at', null);
+    fetchMessages();
 
-      if (error) throw error;
-      return count || 0;
-    },
-    enabled: !!userId,
-    refetchInterval: 30000, // Refresh every 30 seconds
-  });
-
-  // Subscribe to real-time messages
-  useEffect(() => {
-    if (!conversationId) return;
-
+    // Subscribe to real-time messages
     const channel = supabase
       .channel(`messages:${conversationId}`)
       .on(
@@ -99,10 +109,8 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
           table: 'messages',
           filter: `conversation_id=eq.${conversationId}`,
         },
-        (payload) => {
-          queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });
-          queryClient.invalidateQueries({ queryKey: ['conversations'] });
-          queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+        () => {
+          fetchMessages();
         }
       )
       .on(
@@ -114,7 +122,7 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
           filter: `conversation_id=eq.${conversationId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });
+          fetchMessages();
         }
       )
       .subscribe();
@@ -122,7 +130,54 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [conversationId, queryClient]);
+  }, [conversationId]);
+
+  // Fetch unread count
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchUnreadCount = async () => {
+      const result: any = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('recipient_id', userId)
+        .is('read_at', null);
+
+      if (result.error) {
+        console.error('Error fetching unread count:', result.error);
+        return;
+      }
+
+      setUnreadCount(result.count || 0);
+    };
+
+    fetchUnreadCount();
+
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+
+    // Subscribe to new messages
+    const channel = supabase
+      .channel('user-messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `recipient_id=eq.${userId}`,
+        },
+        () => {
+          fetchUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
 
   // Subscribe to typing indicators
   useEffect(() => {
@@ -161,30 +216,31 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
   }, [conversationId, userId]);
 
   // Create conversation
-  const createConversation = useMutation({
-    mutationFn: async ({ recipientId, subject, jobId, initialMessage }: CreateConversationParams) => {
+  const createConversation = useCallback(async ({ recipientId, subject, jobId, initialMessage }: CreateConversationParams) => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Check if conversation already exists
-      const { data: existingConvs } = await supabase
-        .from('conversations')
-        .select('id, participants')
-        .eq('is_archived', false);
+      // Check if conversation already exists - use helper to avoid type inference issues
+      const fetchResult = await fetchConversationsRaw(false);
+      if (fetchResult.error) throw fetchResult.error;
+      
+      const allConvs = fetchResult.data || [];
+      const existingConvs = allConvs.filter((c: any) => 
+        c.participants && Array.isArray(c.participants)
+      );
 
-      const existing = existingConvs?.find((conv: any) =>
-        conv.participants &&
-        Array.isArray(conv.participants) &&
+      const existing = existingConvs.find((conv: any) =>
         conv.participants.length === 2 &&
         conv.participants.includes(user.id) &&
         conv.participants.includes(recipientId)
       );
 
-      let conversationId = existing?.id;
+      let convId = existing?.id;
 
-      if (!conversationId) {
+      if (!convId) {
         // Create new conversation
-        const { data: newConversation, error: convError } = await supabase
+        const insertResult: any = await supabase
           .from('conversations')
           .insert({
             participants: [user.id, recipientId],
@@ -194,47 +250,45 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
           .select()
           .single();
 
-        if (convError) throw convError;
-        conversationId = newConversation.id;
+        if (insertResult.error) throw insertResult.error;
+        convId = insertResult.data.id;
       }
 
       // Send initial message
-      const { error: msgError } = await supabase
+      const msgResult: any = await supabase
         .from('messages')
         .insert({
-          conversation_id: conversationId,
+          conversation_id: convId,
           sender_id: user.id,
           recipient_id: recipientId,
           content: initialMessage,
         });
 
-      if (msgError) throw msgError;
+      if (msgResult.error) throw msgResult.error;
 
-      return conversationId;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
       toast({
         title: 'Conversation Started',
         description: 'Your message has been sent.',
       });
-    },
-    onError: (error: any) => {
+
+      return convId;
+    } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Failed to Start Conversation',
         description: error.message,
       });
-    },
-  });
+      throw error;
+    }
+  }, [toast]);
 
   // Send message
-  const sendMessage = useMutation({
-    mutationFn: async ({ conversationId, recipientId, content, attachments, parentMessageId }: SendMessageParams) => {
+  const sendMessage = useCallback(async ({ conversationId, recipientId, content, attachments, parentMessageId }: SendMessageParams) => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data, error }: any = await supabase
         .from('messages')
         .insert({
           conversation_id: conversationId,
@@ -249,27 +303,23 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
 
       if (error) throw error;
       return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
-    },
-    onError: (error: any) => {
+    } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Failed to Send Message',
         description: error.message,
       });
-    },
-  });
+      throw error;
+    }
+  }, [toast]);
 
   // Mark messages as read
-  const markAsRead = useMutation({
-    mutationFn: async (conversationId: string) => {
+  const markAsRead = useCallback(async (conversationId: string) => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      const { error }: any = await supabase
         .from('messages')
         .update({ read_at: new Date().toISOString() })
         .eq('conversation_id', conversationId)
@@ -277,15 +327,13 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
         .is('read_at', null);
 
       if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
-      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
-    },
-  });
+    } catch (error: any) {
+      console.error('Error marking as read:', error);
+    }
+  }, []);
 
   // Update typing status
-  const updateTypingStatus = async (isTyping: boolean) => {
+  const updateTypingStatus = useCallback(async (isTyping: boolean) => {
     if (!conversationId || !userId) return;
 
     await supabase
@@ -296,15 +344,15 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
         is_typing: isTyping,
         updated_at: new Date().toISOString(),
       });
-  };
+  }, [conversationId, userId]);
 
   // Add reaction
-  const addReaction = useMutation({
-    mutationFn: async ({ messageId, reaction }: { messageId: string; reaction: string }) => {
+  const addReaction = useCallback(async ({ messageId, reaction }: { messageId: string; reaction: string }) => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data, error }: any = await supabase
         .from('message_reactions' as any)
         .upsert({
           message_id: messageId,
@@ -316,38 +364,41 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
 
       if (error) throw error;
       return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
-    },
-  });
+    } catch (error: any) {
+      console.error('Error adding reaction:', error);
+    }
+  }, []);
 
   // Delete message
-  const deleteMessage = useMutation({
-    mutationFn: async (messageId: string) => {
-      const { error } = await supabase
+  const deleteMessage = useCallback(async (messageId: string) => {
+    try {
+      const { error }: any = await supabase
         .from('messages')
         .delete()
         .eq('id', messageId);
 
       if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
+
       toast({
         title: 'Message Deleted',
         description: 'The message has been removed.',
       });
-    },
-  });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to Delete Message',
+        description: error.message,
+      });
+    }
+  }, [toast]);
 
   return {
-    conversations: conversationsQuery.data || [],
-    messages: messagesQuery.data || [],
-    unreadCount: unreadCountQuery.data || 0,
+    conversations,
+    messages,
+    unreadCount,
     typingUsers,
-    conversationsLoading: conversationsQuery.isLoading,
-    messagesLoading: messagesQuery.isLoading,
+    conversationsLoading,
+    messagesLoading,
     createConversation,
     sendMessage,
     markAsRead,
