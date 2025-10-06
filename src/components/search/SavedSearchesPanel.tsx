@@ -30,7 +30,7 @@ export const SavedSearchesPanel = ({ onRunSearch }: SavedSearchesPanelProps) => 
     } catch (error) {
       console.error('Error updating last run:', error);
     }
-    onRunSearch(search.search_query, search.filters);
+    onRunSearch(search.query, search.filters);
   };
 
   if (loading) {
@@ -77,12 +77,11 @@ export const SavedSearchesPanel = ({ onRunSearch }: SavedSearchesPanelProps) => 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <h4 className="font-semibold truncate">{search.name}</h4>
-                      <Badge variant="outline">{search.search_type}</Badge>
                     </div>
 
-                    {search.search_query && (
+                    {search.query && (
                       <p className="text-sm text-muted-foreground mb-2">
-                        "{search.search_query}"
+                        "{search.query}"
                       </p>
                     )}
 
@@ -93,13 +92,6 @@ export const SavedSearchesPanel = ({ onRunSearch }: SavedSearchesPanelProps) => 
                             {key}: {String(value)}
                           </Badge>
                         ))}
-                      </div>
-                    )}
-
-                    {search.last_checked_at && (
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        Last run {formatDistanceToNow(new Date(search.last_checked_at))} ago
                       </div>
                     )}
                   </div>

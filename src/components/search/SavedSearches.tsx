@@ -60,24 +60,16 @@ export const SavedSearches = ({ onSearchClick }: SavedSearchesProps) => {
               >
                 <div className="flex items-center gap-2">
                   <h4 className="font-medium">{search.name}</h4>
-                  <Badge variant="outline" className="text-xs">
-                    {search.search_type}
-                  </Badge>
                 </div>
-                {search.search_query && (
+                {search.query && (
                   <p className="text-sm text-muted-foreground">
-                    "{search.search_query}"
+                    "{search.query}"
                   </p>
                 )}
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span>
                     Created {new Date(search.created_at).toLocaleDateString()}
                   </span>
-                  {search.last_checked_at && (
-                    <span>
-                      • Last checked {new Date(search.last_checked_at).toLocaleDateString()}
-                    </span>
-                  )}
                 </div>
               </div>
 

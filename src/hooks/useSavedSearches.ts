@@ -6,11 +6,11 @@ import { SearchFilters } from './useSearch';
 export interface SavedSearch {
   id: string;
   name: string;
-  search_query: string | null;
-  search_type: string;
+  query: string;
   filters: SearchFilters;
   notification_enabled: boolean;
-  last_checked_at: string | null;
+  notification_frequency?: string;
+  result_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -32,8 +32,20 @@ export const useSavedSearches = () => {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setSavedSearches((data || []) as SavedSearch[]);
+      // Map database fields to interface
+      const mappedData = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        query: (item as any).search_query || '',
+        filters: item.filters as any,
+        notification_enabled: item.notification_enabled,
+        notification_frequency: (item as any).notification_frequency,
+        result_count: 0,
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }));
+      
+      setSavedSearches(mappedData as any);
     } catch (error: any) {
       console.error('Error fetching saved searches:', error);
       toast({
@@ -142,8 +154,28 @@ export const useSavedSearches = () => {
   return {
     savedSearches,
     loading,
+    isLoading: loading,
     saveSearch,
     deleteSearch,
+    deleteSavedSearch: deleteSearch,
+    updateSavedSearch: async (searchId: string, updates: Partial<SavedSearch>) => {
+      try {
+        const { error } = await supabase
+          .from('saved_searches')
+          .update(updates as any)
+          .eq('id', searchId);
+
+        if (error) throw error;
+        await fetchSavedSearches();
+      } catch (error: any) {
+        console.error('Error updating search:', error);
+        toast({
+          title: 'Failed to update search',
+          description: error.message,
+          variant: 'destructive'
+        });
+      }
+    },
     toggleNotifications,
     refreshSearches: fetchSavedSearches
   };
