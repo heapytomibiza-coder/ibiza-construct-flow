@@ -1,160 +1,160 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
-interface Milestone {
+export interface EscrowContract {
   id: string;
-  contract_id: string;
-  payment_id?: string | null;
-  milestone_number: number;
-  title: string;
-  description: string | null;
-  amount: number;
+  job_id: string;
+  total_amount: number;
   status: string;
-  due_date: string | null;
-  completed_date: string | null;
-  released_by?: string | null;
-  released_at?: string | null;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
 }
 
-export const useEscrow = (jobId?: string) => {
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [loading, setLoading] = useState(true);
+export interface EscrowMilestone {
+  id: string;
+  title: string;
+  amount: number;
+  status: string;
+  due_date?: string;
+  description?: string;
+  milestone_number?: number;
+  completed_date?: string;
+}
+
+export function useEscrow(jobId?: string) {
+  const [contract, setContract] = useState<EscrowContract | null>(null);
+  const [milestones, setMilestones] = useState<EscrowMilestone[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (!jobId) {
-      setLoading(false);
-      return;
+    if (jobId) {
+      fetchEscrowData();
     }
+  }, [jobId]);
 
-    const fetchMilestones = async () => {
-      const { data: contractData } = await supabase
-        .from('contracts')
-        .select('id')
+  const fetchEscrowData = async () => {
+    if (!jobId) return;
+    
+    setLoading(true);
+    try {
+      const { data: contractData, error: contractError } = await supabase
+        .from('escrow_contracts' as any)
+        .select('*')
         .eq('job_id', jobId)
         .single();
 
-      if (!contractData) {
-        setLoading(false);
-        return;
-      }
+      if (contractError) throw contractError;
+      setContract(contractData as any);
 
-      const { data, error } = await supabase
-        .from('escrow_milestones')
-        .select('*')
-        .eq('contract_id', contractData.id)
-        .order('milestone_number', { ascending: true });
+      if (contractData) {
+        const { data: milestonesData, error: milestonesError } = await supabase
+          .from('escrow_milestones')
+          .select('*')
+          .eq('contract_id', (contractData as any).id)
+          .order('milestone_number', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching milestones:', error);
-      } else {
-        setMilestones(data || []);
+        if (milestonesError) throw milestonesError;
+        setMilestones(milestonesData || []);
       }
+    } catch (error) {
+      console.error('Error fetching escrow data:', error);
+    } finally {
       setLoading(false);
-    };
+    }
+  };
 
-    fetchMilestones();
-
-    // Subscribe to real-time updates
-    const channel = supabase
-      .channel('milestones-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'escrow_milestones'
-        },
-        () => {
-          fetchMilestones();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
-    };
-  }, [jobId]);
-
-  const releaseMilestone = useCallback(async (milestoneId: string, notes?: string) => {
+  const approveMilestone = async (milestoneId: string) => {
     try {
-      const { data, error } = await supabase.functions.invoke('release-escrow', {
-        body: { milestoneId, notes }
+      const { error } = await supabase
+        .from('escrow_milestones')
+        .update({ 
+          status: 'completed',
+          approved_at: new Date().toISOString(),
+          approved_by: (await supabase.auth.getUser()).data.user?.id,
+        })
+        .eq('id', milestoneId);
+
+      if (error) throw error;
+      
+      toast({
+        title: 'Success',
+        description: 'Milestone approved',
+      });
+      
+      await fetchEscrowData();
+    } catch (error) {
+      console.error('Error approving milestone:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to approve milestone',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const releaseFunds = async (milestoneId: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('process-escrow-release', {
+        body: { milestone_id: milestoneId },
       });
 
       if (error) throw error;
-
-      toast.success('Milestone released successfully');
+      
+      toast({
+        title: 'Success',
+        description: 'Funds released successfully',
+      });
+      
+      await fetchEscrowData();
       return data;
-    } catch (error: any) {
-      console.error('Error releasing milestone:', error);
-      toast.error(error.message || 'Failed to release milestone');
+    } catch (error) {
+      console.error('Error releasing funds:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to release funds',
+        variant: 'destructive',
+      });
       throw error;
     }
-  }, []);
+  };
 
-  const createMilestone = useCallback(async (
-    contractId: string,
-    milestoneData: {
-      milestone_number: number;
-      title: string;
-      description?: string;
-      amount: number;
-      status?: string;
-      due_date?: string;
-    }
-  ) => {
+  const getMilestoneProgress = async (contractId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('escrow_milestones')
-        .insert({
-          contract_id: contractId,
-          milestone_number: milestoneData.milestone_number,
-          title: milestoneData.title,
-          description: milestoneData.description || null,
-          amount: milestoneData.amount,
-          status: milestoneData.status || 'pending',
-          due_date: milestoneData.due_date || null
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.rpc('get_milestone_progress', {
+        p_contract_id: contractId,
+      });
 
       if (error) throw error;
-
-      toast.success('Milestone created');
-      return data;
-    } catch (error: any) {
-      console.error('Error creating milestone:', error);
-      toast.error('Failed to create milestone');
-      throw error;
+      return data[0];
+    } catch (error) {
+      console.error('Error getting milestone progress:', error);
+      return null;
     }
-  }, []);
+  };
 
-  const getMilestoneProgress = useCallback(() => {
-    const total = milestones.length;
-    const completed = milestones.filter(m => m.status === 'completed').length;
-    const totalAmount = milestones.reduce((sum, m) => sum + m.amount, 0);
-    const completedAmount = milestones
-      .filter(m => m.status === 'completed')
-      .reduce((sum, m) => sum + m.amount, 0);
+  const releaseMilestone = releaseFunds;
 
-    return {
-      total,
-      completed,
-      percentage: total > 0 ? (completed / total) * 100 : 0,
-      totalAmount,
-      completedAmount,
-      remainingAmount: totalAmount - completedAmount
-    };
-  }, [milestones]);
+  const progress = {
+    total: milestones.length,
+    completed: milestones.filter(m => m.status === 'completed' || m.status === 'released').length,
+    percentage: milestones.length > 0 
+      ? (milestones.filter(m => m.status === 'completed' || m.status === 'released').length / milestones.length) * 100 
+      : 0,
+    totalAmount: milestones.reduce((sum, m) => sum + m.amount, 0),
+    completedAmount: milestones.filter(m => m.status === 'completed' || m.status === 'released').reduce((sum, m) => sum + m.amount, 0),
+    remainingAmount: milestones.filter(m => m.status !== 'completed' && m.status !== 'released').reduce((sum, m) => sum + m.amount, 0),
+  };
 
   return {
+    contract,
     milestones,
     loading,
+    fetchEscrowData,
+    approveMilestone,
+    releaseFunds,
     releaseMilestone,
-    createMilestone,
-    progress: getMilestoneProgress()
+    getMilestoneProgress,
+    progress,
   };
-};
+}

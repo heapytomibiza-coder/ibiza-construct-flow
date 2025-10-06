@@ -44,7 +44,7 @@ export const EnhancedEscrowTimeline: React.FC<EnhancedEscrowTimelineProps> = ({
 
     setReleasing(true);
     try {
-      await releaseMilestone(selectedMilestone, releaseNotes);
+      await releaseMilestone(selectedMilestone);
       toast.success('Funds released successfully');
       setSelectedMilestone(null);
       setReleaseNotes('');

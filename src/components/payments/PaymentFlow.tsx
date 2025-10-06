@@ -33,7 +33,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ jobId, amount, onSuccess, onC
 
     try {
       // Create payment intent
-      const { clientSecret, paymentIntentId } = await createPaymentIntent(jobId, amount);
+      const { clientSecret, paymentIntentId } = await createPaymentIntent(amount, jobId);
 
       // Get card element
       const cardElement = elements.getElement(CardElement);
