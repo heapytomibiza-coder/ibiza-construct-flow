@@ -949,6 +949,7 @@ export type Database = {
           client_id: string
           created_at: string
           end_at: string | null
+          escrow_hold_period: number | null
           escrow_status: string
           id: string
           job_id: string
@@ -962,6 +963,7 @@ export type Database = {
           client_id: string
           created_at?: string
           end_at?: string | null
+          escrow_hold_period?: number | null
           escrow_status?: string
           id?: string
           job_id: string
@@ -975,6 +977,7 @@ export type Database = {
           client_id?: string
           created_at?: string
           end_at?: string | null
+          escrow_hold_period?: number | null
           escrow_status?: string
           id?: string
           job_id?: string
@@ -1254,8 +1257,10 @@ export type Database = {
       escrow_milestones: {
         Row: {
           amount: number
+          approval_deadline: string | null
           approved_at: string | null
           approved_by: string | null
+          auto_release_date: string | null
           completed_date: string | null
           contract_id: string
           created_at: string
@@ -1263,17 +1268,24 @@ export type Database = {
           due_date: string | null
           id: string
           milestone_number: number
+          partial_release_enabled: boolean | null
           rejected_at: string | null
           rejected_by: string | null
           rejection_reason: string | null
+          released_amount: number | null
           status: string
+          submission_notes: string | null
+          submitted_at: string | null
+          submitted_by: string | null
           title: string
           updated_at: string
         }
         Insert: {
           amount?: number
+          approval_deadline?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          auto_release_date?: string | null
           completed_date?: string | null
           contract_id: string
           created_at?: string
@@ -1281,17 +1293,24 @@ export type Database = {
           due_date?: string | null
           id?: string
           milestone_number: number
+          partial_release_enabled?: boolean | null
           rejected_at?: string | null
           rejected_by?: string | null
           rejection_reason?: string | null
+          released_amount?: number | null
           status?: string
+          submission_notes?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           amount?: number
+          approval_deadline?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          auto_release_date?: string | null
           completed_date?: string | null
           contract_id?: string
           created_at?: string
@@ -1299,10 +1318,15 @@ export type Database = {
           due_date?: string | null
           id?: string
           milestone_number?: number
+          partial_release_enabled?: boolean | null
           rejected_at?: string | null
           rejected_by?: string | null
           rejection_reason?: string | null
+          released_amount?: number | null
           status?: string
+          submission_notes?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
           title?: string
           updated_at?: string
         }
@@ -1515,6 +1539,60 @@ export type Database = {
             columns: ["payment_id"]
             isOneToOne: false
             referencedRelation: "escrow_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      escrow_transfer_logs: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string | null
+          failure_reason: string | null
+          id: string
+          metadata: Json | null
+          milestone_id: string
+          professional_account_id: string | null
+          status: string
+          stripe_transfer_id: string | null
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          milestone_id: string
+          professional_account_id?: string | null
+          status?: string
+          stripe_transfer_id?: string | null
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          milestone_id?: string
+          professional_account_id?: string | null
+          status?: string
+          stripe_transfer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_transfer_logs_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_transfer_logs_professional_account_id_fkey"
+            columns: ["professional_account_id"]
+            isOneToOne: false
+            referencedRelation: "professional_stripe_accounts"
             referencedColumns: ["id"]
           },
         ]
@@ -2392,6 +2470,44 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      milestone_approvals: {
+        Row: {
+          action: string
+          approver_id: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          milestone_id: string
+          notes: string | null
+        }
+        Insert: {
+          action: string
+          approver_id: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          milestone_id: string
+          notes?: string | null
+        }
+        Update: {
+          action?: string
+          approver_id?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          milestone_id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_approvals_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_milestones"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       milestones: {
         Row: {
@@ -4213,6 +4329,57 @@ export type Database = {
           },
         ]
       }
+      professional_stripe_accounts: {
+        Row: {
+          account_status: string
+          balance_available: number | null
+          balance_pending: number | null
+          charges_enabled: boolean | null
+          country: string | null
+          created_at: string | null
+          currency: string | null
+          details_submitted: boolean | null
+          id: string
+          metadata: Json | null
+          payouts_enabled: boolean | null
+          professional_id: string
+          stripe_account_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          account_status?: string
+          balance_available?: number | null
+          balance_pending?: number | null
+          charges_enabled?: boolean | null
+          country?: string | null
+          created_at?: string | null
+          currency?: string | null
+          details_submitted?: boolean | null
+          id?: string
+          metadata?: Json | null
+          payouts_enabled?: boolean | null
+          professional_id: string
+          stripe_account_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          account_status?: string
+          balance_available?: number | null
+          balance_pending?: number | null
+          charges_enabled?: boolean | null
+          country?: string | null
+          created_at?: string | null
+          currency?: string | null
+          details_submitted?: boolean | null
+          id?: string
+          metadata?: Json | null
+          payouts_enabled?: boolean | null
+          professional_id?: string
+          stripe_account_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       professional_verifications: {
         Row: {
           created_at: string
@@ -5400,6 +5567,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_milestone_auto_release: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          amount: number
+          auto_release_date: string
+          contract_id: string
+          milestone_id: string
+        }[]
+      }
       convert_currency: {
         Args: {
           p_amount: number
@@ -5441,6 +5617,18 @@ export type Database = {
       get_exchange_rate: {
         Args: { p_from_currency: string; p_to_currency: string }
         Returns: number
+      }
+      get_milestone_progress: {
+        Args: { p_contract_id: string }
+        Returns: {
+          completed_milestones: number
+          pending_amount: number
+          pending_milestones: number
+          progress_percentage: number
+          released_amount: number
+          total_amount: number
+          total_milestones: number
+        }[]
       }
       get_online_professionals: {
         Args: { professional_ids?: string[] }

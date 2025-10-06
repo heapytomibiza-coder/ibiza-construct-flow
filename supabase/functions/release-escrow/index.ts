@@ -35,7 +35,7 @@ serve(async (req) => {
     if (!user) throw new Error("User not authenticated");
     logStep("User authenticated", { userId: user.id });
 
-    const { milestoneId } = await req.json();
+    const { milestoneId, notes, partial, amount: partialAmount } = await req.json();
     if (!milestoneId) throw new Error("Milestone ID is required");
 
     // Get milestone with contract details
@@ -75,20 +75,97 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    // In a real implementation, you would transfer funds to the professional's Stripe Connect account
-    // For now, we'll simulate the release
-    logStep("Simulating escrow release to professional");
+    // Get professional's Stripe Connect account
+    const contract = milestone.contracts;
+    const { data: stripeAccount, error: stripeAccountError } = await supabaseClient
+      .from('professional_stripe_accounts')
+      .select('*')
+      .eq('professional_id', contract.tasker_id)
+      .single();
 
-    // Update escrow payment status
-    await supabaseClient
-      .from('escrow_payments')
-      .update({
-        escrow_status: 'released',
+    if (stripeAccountError || !stripeAccount) {
+      logStep("Professional does not have a Stripe Connect account");
+      throw new Error('Professional payment account not set up');
+    }
+
+    if (stripeAccount.account_status !== 'active') {
+      throw new Error('Professional payment account is not active');
+    }
+
+    // Calculate release amount
+    const releaseAmount = partial && partialAmount 
+      ? partialAmount 
+      : milestone.amount;
+
+    // Create Stripe transfer to professional
+    let stripeTransferId = null;
+    try {
+      const transfer = await stripe.transfers.create({
+        amount: Math.round(releaseAmount * 100), // Convert to cents
+        currency: 'usd',
+        destination: stripeAccount.stripe_account_id,
+        description: `Payment for milestone: ${milestone.title}${partial ? ' (Partial)' : ''}`,
+        metadata: {
+          milestone_id: milestoneId,
+          contract_id: milestone.contract_id,
+          professional_id: contract.tasker_id,
+          partial: partial ? 'true' : 'false',
+        },
+      });
+
+      stripeTransferId = transfer.id;
+      logStep('Stripe transfer created', { transferId: transfer.id, amount: releaseAmount });
+
+      // Log the transfer
+      await supabaseClient.from('escrow_transfer_logs').insert({
+        milestone_id: milestoneId,
+        stripe_transfer_id: stripeTransferId,
+        amount: releaseAmount,
         status: 'succeeded',
-        released_at: new Date().toISOString(),
-        released_by: user.id,
+        professional_account_id: stripeAccount.id,
+        completed_at: new Date().toISOString(),
+        metadata: { notes, partial },
+      });
+    } catch (stripeError: any) {
+      logStep('Stripe transfer failed', { error: stripeError.message });
+      
+      // Log failed transfer
+      await supabaseClient.from('escrow_transfer_logs').insert({
+        milestone_id: milestoneId,
+        amount: releaseAmount,
+        status: 'failed',
+        failure_reason: stripeError.message,
+        professional_account_id: stripeAccount.id,
+        metadata: { notes, partial },
+      });
+
+      throw new Error(`Payment transfer failed: ${stripeError.message}`);
+    }
+
+    // Update escrow payment status (full release only)
+    if (!partial) {
+      await supabaseClient
+        .from('escrow_payments')
+        .update({
+          escrow_status: 'released',
+          status: 'succeeded',
+          released_at: new Date().toISOString(),
+          released_by: user.id,
+        })
+        .eq('id', escrowPayment.id);
+    }
+
+    // Update milestone released amount
+    const currentReleased = milestone.released_amount || 0;
+    const newReleasedAmount = currentReleased + releaseAmount;
+    
+    await supabaseClient
+      .from('escrow_milestones')
+      .update({
+        released_amount: newReleasedAmount,
+        status: newReleasedAmount >= milestone.amount ? 'released' : milestone.status,
       })
-      .eq('id', escrowPayment.id);
+      .eq('id', milestoneId);
 
     // Create release transaction
     await supabaseClient
@@ -97,12 +174,15 @@ serve(async (req) => {
         milestone_id: milestoneId,
         payment_id: escrowPayment.id,
         transaction_type: 'release',
-        amount: milestone.amount,
+        amount: releaseAmount,
         status: 'completed',
         initiated_by: user.id,
         completed_at: new Date().toISOString(),
         metadata: {
-          professional_id: milestone.contracts.tasker_id,
+          professional_id: contract.tasker_id,
+          stripe_transfer_id: stripeTransferId,
+          notes,
+          partial,
         },
       });
 
@@ -112,10 +192,11 @@ serve(async (req) => {
       .insert({
         milestone_id: milestoneId,
         payment_id: escrowPayment.id,
-        amount: milestone.amount,
+        amount: releaseAmount,
         released_by: user.id,
         status: 'completed',
         released_at: new Date().toISOString(),
+        notes,
       });
 
     logStep("Escrow released successfully");
@@ -123,8 +204,9 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Escrow released successfully',
-        amount: milestone.amount,
+        message: partial ? 'Partial payment released successfully' : 'Escrow released successfully',
+        amount: releaseAmount,
+        transferId: stripeTransferId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
