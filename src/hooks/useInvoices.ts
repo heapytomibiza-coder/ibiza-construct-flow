@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
+
+type Invoice = Database['public']['Tables']['invoices']['Row'];
 
 export interface InvoiceItem {
   description: string;
@@ -13,17 +16,17 @@ export interface InvoiceItem {
 export function useInvoices(userId: string) {
   const queryClient = useQueryClient();
 
-  const { data: invoices = [], isLoading: loading } = useQuery({
+  const { data: invoices = [], isLoading: loading } = useQuery<Invoice[]>({
     queryKey: ['invoices', userId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error }: any = await (supabase as any)
         .from('invoices')
         .select('*')
         .eq('client_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as Invoice[];
     },
   });
 
@@ -35,7 +38,7 @@ export function useInvoices(userId: string) {
   };
 
   const createInvoice = async (invoiceData: any, items: Partial<InvoiceItem>[]) => {
-    const { error } = await supabase.from('invoices').insert({
+    const { error }: any = await (supabase as any).from('invoices').insert({
       ...invoiceData,
       client_id: userId,
       line_items: items,
@@ -46,7 +49,7 @@ export function useInvoices(userId: string) {
   };
 
   const sendInvoice = async (id: string) => {
-    const { error } = await supabase
+    const { error }: any = await (supabase as any)
       .from('invoices')
       .update({ status: 'sent', sent_at: new Date().toISOString() })
       .eq('id', id);
@@ -56,7 +59,7 @@ export function useInvoices(userId: string) {
   };
 
   const markAsPaid = async (id: string) => {
-    const { error } = await supabase
+    const { error }: any = await (supabase as any)
       .from('invoices')
       .update({ status: 'paid', paid_at: new Date().toISOString() })
       .eq('id', id);
@@ -66,7 +69,7 @@ export function useInvoices(userId: string) {
   };
 
   const deleteInvoice = async (id: string) => {
-    const { error } = await supabase.from('invoices').delete().eq('id', id);
+    const { error }: any = await (supabase as any).from('invoices').delete().eq('id', id);
     if (error) throw error;
     queryClient.invalidateQueries({ queryKey: ['invoices'] });
     toast.success('Invoice deleted');
