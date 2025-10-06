@@ -2214,26 +2214,62 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_flag_exposures: {
+        Row: {
+          exposed_at: string | null
+          flag_key: string
+          id: string
+          metadata: Json | null
+          user_id: string
+          user_segment: Json | null
+        }
+        Insert: {
+          exposed_at?: string | null
+          flag_key: string
+          id?: string
+          metadata?: Json | null
+          user_id: string
+          user_segment?: Json | null
+        }
+        Update: {
+          exposed_at?: string | null
+          flag_key?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string
+          user_segment?: Json | null
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           created_at: string | null
           description: string | null
           enabled: boolean | null
+          error_budget_threshold: number | null
           key: string
+          kill_switch_active: boolean | null
+          rollout_percentage: number | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           description?: string | null
           enabled?: boolean | null
+          error_budget_threshold?: number | null
           key: string
+          kill_switch_active?: boolean | null
+          rollout_percentage?: number | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string | null
           enabled?: boolean | null
+          error_budget_threshold?: number | null
           key?: string
+          kill_switch_active?: boolean | null
+          rollout_percentage?: number | null
           updated_at?: string | null
         }
         Relationships: []
@@ -5852,6 +5888,51 @@ export type Database = {
           },
         ]
       }
+      report_exports: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          export_format: string
+          file_path: string | null
+          file_size: number | null
+          filters: Json | null
+          id: string
+          include_pii: boolean | null
+          report_type: string
+          requested_by: string
+          status: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          export_format: string
+          file_path?: string | null
+          file_size?: number | null
+          filters?: Json | null
+          id?: string
+          include_pii?: boolean | null
+          report_type: string
+          requested_by: string
+          status?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          export_format?: string
+          file_path?: string | null
+          file_size?: number | null
+          filters?: Json | null
+          id?: string
+          include_pii?: boolean | null
+          report_type?: string
+          requested_by?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
       report_templates: {
         Row: {
           created_at: string
@@ -7472,6 +7553,15 @@ export type Database = {
         Args: { p_booking_id: string; p_event_start: string; p_user_id: string }
         Returns: undefined
       }
+      create_job_version: {
+        Args: {
+          p_change_reason: string
+          p_changed_by: string
+          p_job_id: string
+          p_new_data: Json
+        }
+        Returns: string
+      }
       create_payment_schedule: {
         Args: {
           p_currency: string
@@ -7520,6 +7610,10 @@ export type Database = {
           slot_end: string
           slot_start: string
         }[]
+      }
+      get_dashboard_kpis: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_exchange_rate: {
         Args: { p_from_currency: string; p_to_currency: string }
@@ -7745,6 +7839,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: undefined
+      }
+      should_expose_feature: {
+        Args: { p_flag_key: string; p_user_id: string }
+        Returns: boolean
       }
       track_search_analytics: {
         Args: {

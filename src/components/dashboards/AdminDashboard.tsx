@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import { AdminSeedTestButtons } from '@/components/admin/AdminSeedTestButtons';
 
 // Lazy load workspaces for better code splitting
+const OverviewDashboard = lazy(() => import('@/components/admin/OverviewDashboard').then(m => ({ default: m.OverviewDashboard })));
 const AIPanel = lazy(() => import('@/components/admin/AIPanel'));
 const CommandCenter = lazy(() => import('@/components/admin/workspaces/CommandCenter').then(m => ({ default: m.CommandCenter })));
 const ServiceCatalogue = lazy(() => import('@/components/admin/workspaces/ServiceCatalogue').then(m => ({ default: m.ServiceCatalogue })));
@@ -64,7 +65,7 @@ interface AdminDashboardProps {
 const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [activeWorkspace, setActiveWorkspace] = useState('command');
+  const [activeWorkspace, setActiveWorkspace] = useState('overview');
   const [selectedView, setSelectedView] = useState('overview');
   const [aiContext, setAiContext] = useState<{ type: 'job' | 'professional' | 'service' | 'review' | 'overview' }>({ type: 'overview' });
   const infoTipsEnabled = useFeature('admin_info_tips');
@@ -73,6 +74,13 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const [showTestTools, setShowTestTools] = useState(false);
 
   const workspaces = [
+    { 
+      id: 'overview', 
+      name: 'Dashboard Home', 
+      icon: Home, 
+      description: 'KPIs & action queues',
+      tooltip: 'Unified overview of platform health, risk monitors, and pending admin actions. Your control center.'
+    },
     { 
       id: 'command', 
       name: 'Command Centre', 
@@ -129,6 +137,27 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       description: 'Verify professionals',
       tooltip: 'Review and approve professional verification requests. Manage verification documents and status.',
       badge: pendingCount > 0 ? pendingCount : undefined
+    },
+    { 
+      id: 'helpdesk', 
+      name: 'Support Helpdesk', 
+      icon: Activity, 
+      description: 'Manage support tickets',
+      tooltip: 'Handle customer support tickets with SLA tracking, internal notes, and assignment management.'
+    },
+    { 
+      id: 'moderation', 
+      name: 'Review Moderation', 
+      icon: AlertTriangle, 
+      description: 'Moderate reviews & flags',
+      tooltip: 'Review flagged content, moderate user reviews, and manage content compliance.'
+    },
+    { 
+      id: 'export-reports', 
+      name: 'Data Exports', 
+      icon: FileCheck, 
+      description: 'Generate reports',
+      tooltip: 'Export platform data in CSV, JSON, or PDF format with audit logging.'
     },
     { 
       id: 'services', 
@@ -222,6 +251,8 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const renderWorkspaceContent = () => {
     const content = (() => {
       switch (activeWorkspace) {
+        case 'overview':
+          return <OverviewDashboard />;
         case 'command':
           return <CommandCenter />;
         case 'analytics':
@@ -241,6 +272,15 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
         case 'verifications':
           // Navigate to dedicated verifications page
           navigate('/admin/verifications');
+          return null;
+        case 'helpdesk':
+          navigate('/admin/helpdesk');
+          return null;
+        case 'moderation':
+          navigate('/admin/moderation/reviews');
+          return null;
+        case 'export-reports':
+          navigate('/admin/reports');
           return null;
         case 'services':
           return <ServiceCatalogue />;
@@ -270,7 +310,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
         case 'user-analytics':
           return <UserAnalyticsDashboard />;
         default:
-          return <CommandCenter />;
+          return <OverviewDashboard />;
       }
     })();
 
