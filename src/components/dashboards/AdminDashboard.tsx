@@ -3,7 +3,7 @@ import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity, FileCheck, AlertTriangle, Brain } from 'lucide-react';
+import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity, FileCheck, AlertTriangle, Brain, Search, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { InfoTip } from '@/components/ui/info-tip';
@@ -15,6 +15,11 @@ import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import EarlyWarningPanel from '@/components/disputes/EarlyWarningPanel';
 import { Link } from 'react-router-dom';
 import { AdminSeedTestButtons } from '@/components/admin/AdminSeedTestButtons';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
+import { useWorkspaceFavorites } from '@/hooks/useWorkspaceFavorites';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 
 // Lazy load workspaces for better code splitting
 const OverviewDashboard = lazy(() => import('@/components/admin/OverviewDashboard').then(m => ({ default: m.OverviewDashboard })));
@@ -72,6 +77,9 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const { pendingCount } = usePendingVerifications();
   const { enabled: analyticsEnabled } = useFeatureFlag('analytics_v1');
   const [showTestTools, setShowTestTools] = useState(false);
+  const { favorites, toggleFavorite, isFavorite } = useWorkspaceFavorites();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
 
   const workspaces = [
     { 
@@ -79,56 +87,64 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       name: 'Dashboard Home', 
       icon: Home, 
       description: 'KPIs & action queues',
-      tooltip: 'Unified overview of platform health, risk monitors, and pending admin actions. Your control center.'
+      tooltip: 'Unified overview of platform health, risk monitors, and pending admin actions. Your control center.',
+      category: 'core'
     },
     { 
       id: 'command', 
       name: 'Command Centre', 
       icon: Command, 
       description: 'Live jobs and operations',
-      tooltip: 'Live view of all jobs. Reassign, broadcast, or resolve issues fast. Monitor platform activity in real-time.'
+      tooltip: 'Live view of all jobs. Reassign, broadcast, or resolve issues fast. Monitor platform activity in real-time.',
+      category: 'core'
     },
     { 
       id: 'analytics', 
       name: 'Professional Analytics', 
       icon: Users, 
       description: 'Performance & earnings analytics',
-      tooltip: 'Track professional performance metrics, earnings, completion rates, and quality scores across the platform.'
+      tooltip: 'Track professional performance metrics, earnings, completion rates, and quality scores across the platform.',
+      category: 'analytics'
     },
     { 
       id: 'ai-monitor', 
       name: 'AI System Monitor', 
       icon: Bot, 
       description: 'AI functions & performance',
-      tooltip: 'Monitor AI systems performance, function execution rates, error logs, and automated workflows.'
+      tooltip: 'Monitor AI systems performance, function execution rates, error logs, and automated workflows.',
+      category: 'ai'
     },
     { 
       id: 'risk', 
       name: 'Risk Management', 
       icon: Shield, 
       description: 'Risk flags & safety compliance',
-      tooltip: 'Identify and manage platform risks, safety violations, compliance issues, and security threats.'
+      tooltip: 'Identify and manage platform risks, safety violations, compliance issues, and security threats.',
+      category: 'operations'
     },
     { 
       id: 'market', 
       name: 'Market Intelligence', 
       icon: TrendingUp, 
       description: 'Market analysis & opportunities',
-      tooltip: 'Analyze market trends, pricing patterns, demand forecasts, and growth opportunities across Ibiza.'
+      tooltip: 'Analyze market trends, pricing patterns, demand forecasts, and growth opportunities across Ibiza.',
+      category: 'analytics'
     },
     ...(analyticsEnabled ? [{
       id: 'dispute-analytics',
       name: 'Dispute Analytics',
       icon: AlertTriangle,
       description: 'KPIs, warnings & quality',
-      tooltip: 'Monitor dispute resolution metrics, early warnings, and quality scores. Track platform mediation performance.'
+      tooltip: 'Monitor dispute resolution metrics, early warnings, and quality scores. Track platform mediation performance.',
+      category: 'analytics'
     }] : []),
     { 
       id: 'professionals', 
       name: 'Professional Hub', 
       icon: Users, 
       description: 'Professional management',
-      tooltip: 'Manage professional profiles, verification status, skills, availability, and performance reviews.'
+      tooltip: 'Manage professional profiles, verification status, skills, availability, and performance reviews.',
+      category: 'operations'
     },
     { 
       id: 'verifications', 
@@ -136,127 +152,184 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       icon: FileCheck, 
       description: 'Verify professionals',
       tooltip: 'Review and approve professional verification requests. Manage verification documents and status.',
-      badge: pendingCount > 0 ? pendingCount : undefined
+      badge: pendingCount > 0 ? pendingCount : undefined,
+      category: 'operations'
     },
     { 
       id: 'helpdesk', 
       name: 'Support Helpdesk', 
       icon: Activity, 
       description: 'Manage support tickets',
-      tooltip: 'Handle customer support tickets with SLA tracking, internal notes, and assignment management.'
+      tooltip: 'Handle customer support tickets with SLA tracking, internal notes, and assignment management.',
+      category: 'operations'
     },
     { 
       id: 'moderation', 
       name: 'Review Moderation', 
       icon: AlertTriangle, 
       description: 'Moderate reviews & flags',
-      tooltip: 'Review flagged content, moderate user reviews, and manage content compliance.'
+      tooltip: 'Review flagged content, moderate user reviews, and manage content compliance.',
+      category: 'operations'
     },
     { 
       id: 'export-reports', 
       name: 'Data Exports', 
       icon: FileCheck, 
       description: 'Generate reports',
-      tooltip: 'Export platform data in CSV, JSON, or PDF format with audit logging.'
+      tooltip: 'Export platform data in CSV, JSON, or PDF format with audit logging.',
+      category: 'tools'
     },
     { 
       id: 'security', 
       name: 'Security Settings', 
       icon: Shield, 
       description: '2FA & access control',
-      tooltip: 'Manage two-factor authentication, sessions, and IP whitelisting.'
+      tooltip: 'Manage two-factor authentication, sessions, and IP whitelisting.',
+      category: 'settings'
     },
     { 
       id: 'intelligence', 
       name: 'AI Intelligence', 
       icon: Brain, 
       description: 'Fraud & predictions',
-      tooltip: 'Fraud detection, performance scoring, revenue forecasts, and churn predictions.'
+      tooltip: 'Fraud detection, performance scoring, revenue forecasts, and churn predictions.',
+      category: 'ai'
     },
     { 
       id: 'integrations', 
       name: 'Integrations', 
       icon: Bot, 
       description: 'External services',
-      tooltip: 'Connect Stripe, calendars, email, SMS, and webhook services.'
+      tooltip: 'Connect Stripe, calendars, email, SMS, and webhook services.',
+      category: 'settings'
     },
     { 
       id: 'performance', 
       name: 'Performance Monitor', 
       icon: Activity, 
       description: 'System performance',
-      tooltip: 'Monitor background jobs, cache performance, and system health.'
+      tooltip: 'Monitor background jobs, cache performance, and system health.',
+      category: 'tools'
     },
     { 
       id: 'services', 
       name: 'Service Catalogue', 
       icon: Folder, 
       description: 'Manage service taxonomy',
-      tooltip: 'Configure service categories, pricing structures, and requirements. Update service offerings and descriptions.'
+      tooltip: 'Configure service categories, pricing structures, and requirements. Update service offerings and descriptions.',
+      category: 'operations'
     },
     { 
       id: 'legacy', 
       name: 'Legacy Tools', 
       icon: Settings, 
       description: 'Original admin tools',
-      tooltip: 'Access original administrative tools and legacy functions for backward compatibility.'
+      tooltip: 'Access original administrative tools and legacy functions for backward compatibility.',
+      category: 'tools'
     },
     { 
       id: 'business-analytics', 
       name: 'Analytics Dashboard', 
       icon: TrendingUp, 
       description: 'Advanced analytics & BI',
-      tooltip: 'Deep dive into business metrics, revenue analytics, user behavior patterns, and performance KPIs.'
+      tooltip: 'Deep dive into business metrics, revenue analytics, user behavior patterns, and performance KPIs.',
+      category: 'analytics'
     },
     { 
       id: 'business-intelligence', 
       name: 'Business Intelligence', 
       icon: Bot, 
       description: 'AI-powered insights',
-      tooltip: 'AI-generated business insights, predictive analytics, and automated recommendations for platform optimization.'
+      tooltip: 'AI-generated business insights, predictive analytics, and automated recommendations for platform optimization.',
+      category: 'ai'
     },
     { 
       id: 'reports', 
       name: 'Report Generator', 
       icon: CreditCard, 
       description: 'Automated reporting',
-      tooltip: 'Generate automated reports for stakeholders, financial summaries, and operational metrics.'
+      tooltip: 'Generate automated reports for stakeholders, financial summaries, and operational metrics.',
+      category: 'tools'
     },
     { 
       id: 'alerts', 
       name: 'Alert System', 
       icon: Shield, 
       description: 'Business alerts & monitoring',
-      tooltip: 'Configure and monitor business alerts, threshold warnings, and automated notifications.'
+      tooltip: 'Configure and monitor business alerts, threshold warnings, and automated notifications.',
+      category: 'tools'
     },
     { 
       id: 'ai-automation', 
       name: 'AI Automation', 
       icon: Bot, 
       description: 'Smart matching & automation',
-      tooltip: 'Configure AI-powered job matching, workflow automation, and intelligent routing systems.'
+      tooltip: 'Configure AI-powered job matching, workflow automation, and intelligent routing systems.',
+      category: 'ai'
     },
     { 
       id: 'payments', 
       name: 'Payment Management', 
       icon: CreditCard, 
       description: 'Manage transactions & disputes',
-      tooltip: 'Oversee payment transactions, approve refunds, resolve disputes, and monitor financial operations.'
+      tooltip: 'Oversee payment transactions, approve refunds, resolve disputes, and monitor financial operations.',
+      category: 'finance'
     },
     { 
       id: 'content-moderation', 
       name: 'Content Moderation', 
       icon: Shield, 
       description: 'Review flagged content',
-      tooltip: 'Review and moderate user-reported content, spam, and policy violations.'
+      tooltip: 'Review and moderate user-reported content, spam, and policy violations.',
+      category: 'operations'
     },
     { 
       id: 'user-analytics', 
       name: 'User Analytics', 
       icon: Users, 
       description: 'User cohorts & activity',
-      tooltip: 'Analyze user cohorts, activity patterns, retention metrics, and engagement data.'
+      tooltip: 'Analyze user cohorts, activity patterns, retention metrics, and engagement data.',
+      category: 'analytics'
     },
+  ];
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'k',
+      ctrl: true,
+      description: 'Search workspaces',
+      callback: () => setSearchQuery(prev => prev ? '' : 'focus'),
+    },
+    {
+      key: 'h',
+      ctrl: true,
+      description: 'Go to dashboard home',
+      callback: () => setActiveWorkspace('overview'),
+    },
+  ]);
+
+  // Filter workspaces
+  const filteredWorkspaces = workspaces.filter(w => {
+    const matchesSearch = !searchQuery || 
+      w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      w.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory === 'all' || w.category === activeCategory;
+    const matchesFavorites = activeCategory !== 'favorites' || favorites.includes(w.id);
+    
+    return matchesSearch && matchesCategory && (activeCategory === 'favorites' ? matchesFavorites : true);
+  });
+
+  const categories = [
+    { id: 'all', label: 'All', count: workspaces.length },
+    { id: 'favorites', label: 'Favorites', count: favorites.length },
+    { id: 'core', label: 'Core', count: workspaces.filter(w => w.category === 'core').length },
+    { id: 'analytics', label: 'Analytics', count: workspaces.filter(w => w.category === 'analytics').length },
+    { id: 'operations', label: 'Operations', count: workspaces.filter(w => w.category === 'operations').length },
+    { id: 'ai', label: 'AI', count: workspaces.filter(w => w.category === 'ai').length },
+    { id: 'finance', label: 'Finance', count: workspaces.filter(w => w.category === 'finance').length },
+    { id: 'tools', label: 'Tools', count: workspaces.filter(w => w.category === 'tools').length },
+    { id: 'settings', label: 'Settings', count: workspaces.filter(w => w.category === 'settings').length },
   ];
 
   const handleSignOut = async () => {
@@ -292,13 +365,11 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
         case 'market':
           return <MarketIntelligence />;
         case 'dispute-analytics':
-          // Navigate to dedicated analytics page
           navigate('/admin/analytics/disputes');
           return null;
         case 'professionals':
           return <ProfessionalHub />;
         case 'verifications':
-          // Navigate to dedicated verifications page
           navigate('/admin/verifications');
           return null;
         case 'helpdesk':
@@ -354,12 +425,14 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       }
     })();
 
-    // Wrap all lazy-loaded components in Suspense for better UX
+    // Wrap all lazy-loaded components in ErrorBoundary and Suspense
     if (activeWorkspace !== 'legacy') {
       return (
-        <Suspense fallback={<SkeletonLoader variant="dashboard" />}>
-          {content}
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<SkeletonLoader variant="dashboard" />}>
+            {content}
+          </Suspense>
+        </ErrorBoundary>
       );
     }
     
@@ -367,10 +440,10 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   };
 
   const AppSidebar = () => (
-    <Sidebar className="w-64">
+    <Sidebar className="w-72">
       <SidebarContent>
         <div className="p-4 border-b border-border">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-3">
             <Bot className="h-6 w-6 text-primary" />
             <div>
               <h2 className="font-semibold">Admin Console</h2>
@@ -379,13 +452,56 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
               </p>
             </div>
           </div>
+          
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search workspaces (⌘K)"
+              value={searchQuery === 'focus' ? '' : searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 h-9"
+            />
+          </div>
+        </div>
+
+        {/* Category Tabs */}
+        <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
+          <TabsList className="w-full grid grid-cols-3 h-9 px-2">
+            <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+            <TabsTrigger value="favorites" className="text-xs">
+              <Star className="h-3 w-3 mr-1" />
+              Favorites
+            </TabsTrigger>
+            <TabsTrigger value="core" className="text-xs">Core</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {/* Secondary Categories */}
+        <div className="flex flex-wrap gap-1 px-2 py-2 border-b">
+          {categories.slice(3).map(cat => (
+            <Button
+              key={cat.id}
+              variant={activeCategory === cat.id ? 'secondary' : 'ghost'}
+              size="sm"
+              className="h-7 text-xs"
+              onClick={() => setActiveCategory(cat.id)}
+            >
+              {cat.label} ({cat.count})
+            </Button>
+          ))}
         </div>
         
         <SidebarGroup>
-          <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {activeCategory === 'all' && 'All Workspaces'}
+            {activeCategory === 'favorites' && 'Favorite Workspaces'}
+            {activeCategory !== 'all' && activeCategory !== 'favorites' && 
+              `${categories.find(c => c.id === activeCategory)?.label} Workspaces`}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {workspaces.map((workspace) => (
+              {filteredWorkspaces.map((workspace) => (
                 <SidebarMenuItem key={workspace.id}>
                   <SidebarMenuButton 
                     onClick={() => {
@@ -410,6 +526,19 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
                       </div>
                       <span className="text-xs text-muted-foreground">{workspace.description}</span>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(workspace.id);
+                      }}
+                    >
+                      <Star 
+                        className={`h-3 w-3 ${isFavorite(workspace.id) ? 'fill-yellow-400 text-yellow-400' : ''}`}
+                      />
+                    </Button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
