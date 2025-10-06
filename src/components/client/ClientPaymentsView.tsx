@@ -149,9 +149,10 @@ export const ClientPaymentsView = () => {
     }
   };
 
-  const handleDisputeSubmit = (dispute: any) => {
+  const handleDisputeSubmit = async (dispute: any) => {
     console.log('Dispute submitted:', dispute);
     setShowDisputeWizard(false);
+    return { id: undefined }; // Return empty result for now
   };
 
   const tabs = [
@@ -405,11 +406,13 @@ export const ClientPaymentsView = () => {
       </div>
 
       {/* Dispute Wizard Modal */}
-      {showDisputeWizard && (
+      {showDisputeWizard && selectedTransaction && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <DisputeWizard 
             onClose={() => setShowDisputeWizard(false)}
             onSubmit={handleDisputeSubmit}
+            jobId={selectedTransaction.id}
+            disputedAgainst={'placeholder-user-id'}
           />
         </div>
       )}

@@ -12,6 +12,9 @@ interface CreateDisputeParams {
   description: string;
   amountDisputed?: number;
   priority?: string;
+  disputeCategory?: string;
+  requiredEvidenceTypes?: string[];
+  preDisputeContactAttempted?: boolean;
 }
 
 interface SendMessageParams {
@@ -25,6 +28,7 @@ interface UploadEvidenceParams {
   evidenceType: string;
   description: string;
   file: File;
+  evidenceCategory?: string;
 }
 
 interface ProposeResolutionParams {
@@ -180,6 +184,9 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
           priority: params.priority || 'medium',
           status: 'open',
           response_deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+          dispute_category: params.disputeCategory,
+          required_evidence_types: params.requiredEvidenceTypes || [],
+          pre_dispute_contact_attempted: params.preDisputeContactAttempted || false,
         })
         .select()
         .single();
@@ -237,24 +244,24 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
 
   // Upload evidence
   const uploadEvidence = useMutation({
-    mutationFn: async ({ disputeId, evidenceType, description, file }: UploadEvidenceParams) => {
+    mutationFn: async ({ disputeId, evidenceType, description, file, evidenceCategory }: UploadEvidenceParams) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Upload file
-      const fileName = `${Date.now()}-${file.name}`;
+      // Upload file to dispute-evidence bucket
+      const fileName = `${disputeId}/${Date.now()}-${file.name}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('professional-documents')
-        .upload(`dispute-evidence/${disputeId}/${fileName}`, file);
+        .from('dispute-evidence')
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('professional-documents')
+        .from('dispute-evidence')
         .getPublicUrl(uploadData.path);
 
-      // Insert evidence record
+      // Insert evidence record with category
       const { data, error } = await supabase
         .from('dispute_evidence')
         .insert({
@@ -266,6 +273,7 @@ export const useDisputes = (userId?: string, disputeId?: string) => {
           file_size: file.size,
           file_url: publicUrl,
           uploaded_by: user.id,
+          evidence_category: evidenceCategory || 'other',
         })
         .select()
         .single();

@@ -1307,6 +1307,7 @@ export type Database = {
           created_at: string
           description: string | null
           dispute_id: string
+          evidence_category: string | null
           evidence_type: string
           file_name: string
           file_size: number | null
@@ -1319,6 +1320,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           dispute_id: string
+          evidence_category?: string | null
           evidence_type: string
           file_name: string
           file_size?: number | null
@@ -1331,6 +1333,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           dispute_id?: string
+          evidence_category?: string | null
           evidence_type?: string
           file_name?: string
           file_size?: number | null
@@ -1475,6 +1478,7 @@ export type Database = {
           created_at: string
           created_by: string
           description: string
+          dispute_category: string | null
           dispute_number: string
           disputed_against: string
           due_date: string | null
@@ -1485,7 +1489,9 @@ export type Database = {
           job_id: string
           mediator_id: string | null
           mediator_notes: string | null
+          pre_dispute_contact_attempted: boolean | null
           priority: string
+          required_evidence_types: Json | null
           resolution_amount: number | null
           resolution_notes: string | null
           resolved_at: string | null
@@ -1503,6 +1509,7 @@ export type Database = {
           created_at?: string
           created_by: string
           description: string
+          dispute_category?: string | null
           dispute_number: string
           disputed_against: string
           due_date?: string | null
@@ -1513,7 +1520,9 @@ export type Database = {
           job_id: string
           mediator_id?: string | null
           mediator_notes?: string | null
+          pre_dispute_contact_attempted?: boolean | null
           priority?: string
+          required_evidence_types?: Json | null
           resolution_amount?: number | null
           resolution_notes?: string | null
           resolved_at?: string | null
@@ -1531,6 +1540,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           description?: string
+          dispute_category?: string | null
           dispute_number?: string
           disputed_against?: string
           due_date?: string | null
@@ -1541,7 +1551,9 @@ export type Database = {
           job_id?: string
           mediator_id?: string | null
           mediator_notes?: string | null
+          pre_dispute_contact_attempted?: boolean | null
           priority?: string
+          required_evidence_types?: Json | null
           resolution_amount?: number | null
           resolution_notes?: string | null
           resolved_at?: string | null
