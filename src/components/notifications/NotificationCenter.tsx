@@ -1,147 +1,181 @@
-import { useState } from 'react';
-import { Bell, Check, Settings, X } from 'lucide-react';
+import { Bell, Check, Trash2, Archive, ExternalLink } from 'lucide-react';
+import { useNotifications } from '@/hooks/useNotifications';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useNotifications } from '@/hooks/useNotifications';
-import { NotificationItem } from './NotificationItem';
-import { NotificationSettingsDialog } from './NotificationSettingsDialog';
+import { Separator } from '@/components/ui/separator';
+import { formatDistanceToNow } from 'date-fns';
+import { cn } from '@/lib/utils';
 
-interface NotificationCenterProps {
-  userId: string;
-}
+export const NotificationCenter = () => {
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    markAsRead,
+    markAllAsRead,
+    archiveNotification,
+    deleteNotification
+  } = useNotifications();
 
-export const NotificationCenter = ({ userId }: NotificationCenterProps) => {
-  const { notifications, unreadCount, loading, markAsRead, markAllAsRead, dismiss } =
-    useNotifications();
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  const unreadNotifications = notifications.filter((n) => !n.read_at);
-  const readNotifications = notifications.filter((n) => n.read_at);
-
-  const handleMarkAsRead = async (id: string) => {
-    await markAsRead(id);
-  };
-
-  const handleDismiss = async (id: string) => {
-    await dismiss([id]);
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'text-red-500';
+      case 'high': return 'text-orange-500';
+      case 'medium': return 'text-yellow-500';
+      default: return 'text-blue-500';
+    }
   };
 
   return (
-    <>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-              >
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </Badge>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-96 p-0" align="end">
-          <div className="flex items-center justify-between p-4 border-b">
-            <h3 className="font-semibold">Notifications</h3>
-            <div className="flex gap-2">
-              {unreadCount > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={markAllAsRead}
-                  className="text-xs"
-                >
-                  <Check className="h-3 w-3 mr-1" />
-                  Mark all read
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setSettingsOpen(true)}
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <Badge 
+              variant="destructive" 
+              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+            >
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </Badge>
+          )}
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-full sm:max-w-lg">
+        <SheetHeader>
+          <SheetTitle>Notifications</SheetTitle>
+          <SheetDescription>
+            Stay updated with your latest activity
+          </SheetDescription>
+        </SheetHeader>
+
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+          </p>
+          {unreadCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={markAllAsRead}
+            >
+              <Check className="h-4 w-4 mr-2" />
+              Mark all as read
+            </Button>
+          )}
+        </div>
+
+        <Separator className="my-4" />
+
+        <ScrollArea className="h-[calc(100vh-200px)]">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-sm text-muted-foreground">Loading...</p>
             </div>
-          </div>
+          ) : notifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <Bell className="h-12 w-12 text-muted-foreground/50 mb-4" />
+              <p className="text-sm font-medium">No notifications</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                You're all caught up!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={cn(
+                    "p-4 rounded-lg border transition-colors",
+                    notification.is_read
+                      ? "bg-background"
+                      : "bg-accent/50 border-accent"
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={cn("mt-0.5", getPriorityColor(notification.priority))}>
+                      {notification.icon ? (
+                        <span className="text-2xl">{notification.icon}</span>
+                      ) : (
+                        <Bell className="h-5 w-5" />
+                      )}
+                    </div>
 
-          <Tabs defaultValue="unread" className="w-full">
-            <TabsList className="w-full rounded-none border-b">
-              <TabsTrigger value="unread" className="flex-1">
-                Unread ({unreadCount})
-              </TabsTrigger>
-              <TabsTrigger value="all" className="flex-1">
-                All
-              </TabsTrigger>
-            </TabsList>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-sm font-medium leading-tight">
+                          {notification.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground whitespace-nowrap">
+                          {formatDistanceToNow(new Date(notification.created_at), {
+                            addSuffix: true
+                          })}
+                        </p>
+                      </div>
 
-            <TabsContent value="unread" className="m-0">
-              <ScrollArea className="h-[400px]">
-                {loading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                  </div>
-                ) : unreadNotifications.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Bell className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>No unread notifications</p>
-                  </div>
-                ) : (
-                  <div className="divide-y">
-                    {unreadNotifications.map((notification) => (
-                      <NotificationItem
-                        key={notification.id}
-                        notification={notification}
-                        onMarkAsRead={handleMarkAsRead}
-                        onDismiss={handleDismiss}
-                      />
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
-            </TabsContent>
+                      <p className="text-sm text-muted-foreground">
+                        {notification.message}
+                      </p>
 
-            <TabsContent value="all" className="m-0">
-              <ScrollArea className="h-[400px]">
-                {loading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                  </div>
-                ) : notifications.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Bell className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>No notifications yet</p>
-                  </div>
-                ) : (
-                  <div className="divide-y">
-                    {notifications.map((notification) => (
-                      <NotificationItem
-                        key={notification.id}
-                        notification={notification}
-                        onMarkAsRead={handleMarkAsRead}
-                        onDismiss={handleDismiss}
-                      />
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
-            </TabsContent>
-          </Tabs>
-        </PopoverContent>
-      </Popover>
+                      {notification.action_url && notification.action_label && (
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="h-auto p-0 text-xs"
+                          asChild
+                        >
+                          <a href={notification.action_url}>
+                            {notification.action_label}
+                            <ExternalLink className="h-3 w-3 ml-1" />
+                          </a>
+                        </Button>
+                      )}
 
-      <NotificationSettingsDialog
-        userId={userId}
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
-      />
-    </>
+                      <div className="flex items-center gap-2 pt-2">
+                        {!notification.is_read && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => markAsRead([notification.id])}
+                          >
+                            <Check className="h-3 w-3 mr-1" />
+                            Mark read
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => archiveNotification(notification.id)}
+                        >
+                          <Archive className="h-3 w-3 mr-1" />
+                          Archive
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteNotification(notification.id)}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 };

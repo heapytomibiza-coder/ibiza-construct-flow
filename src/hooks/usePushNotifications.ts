@@ -1,132 +1,144 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 
-const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LzbOwyYuntBL0Y8UdM3nZyKHEQhcNZnLz_7dKdEv3qGQ0A'; // Demo key
-
-export function usePushNotifications() {
+export const usePushNotifications = () => {
   const [isSupported, setIsSupported] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [permission, setPermission] = useState<NotificationPermission>('default');
 
   useEffect(() => {
-    const checkSupport = () => {
-      const supported = 'serviceWorker' in navigator && 'PushManager' in window;
-      setIsSupported(supported);
-    };
-    checkSupport();
+    setIsSupported('Notification' in window && 'serviceWorker' in navigator);
+    if ('Notification' in window) {
+      setPermission(Notification.permission);
+    }
   }, []);
 
-  const urlBase64ToUint8Array = (base64String: string) => {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/\-/g, '+')
-      .replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
+  const requestPermission = async () => {
+    if (!isSupported) {
+      console.error('Push notifications not supported');
+      return false;
     }
-    return outputArray;
+
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+      return result === 'granted';
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      return false;
+    }
   };
 
   const subscribe = async () => {
-    if (!isSupported) {
-      toast({
-        title: "Not Supported",
-        description: "Push notifications are not supported in this browser.",
-        variant: "destructive",
-      });
-      return;
+    if (!isSupported || permission !== 'granted') {
+      console.error('Cannot subscribe: permission not granted');
+      return false;
     }
 
-    setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
       const registration = await navigator.serviceWorker.ready;
       
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') {
-        toast({
-          title: "Permission Denied",
-          description: "Please allow notifications to receive updates.",
-          variant: "destructive",
-        });
-        return;
-      }
-
+      // Get VAPID public key from your environment or backend
+      const vapidPublicKey = 'YOUR_VAPID_PUBLIC_KEY'; // TODO: Replace with actual key
+      
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
       });
 
-      const subscriptionJson = subscription.toJSON();
-      
-      const { error } = await supabase.functions.invoke('register-push-device', {
-        body: {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      // Save subscription to database
+      const subscriptionData = subscription.toJSON();
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .upsert({
           user_id: user.id,
-          endpoint: subscription.endpoint,
-          keys: {
-            p256dh: subscriptionJson.keys?.p256dh,
-            auth: subscriptionJson.keys?.auth,
-          },
+          endpoint: subscriptionData.endpoint!,
+          p256dh_key: subscriptionData.keys!.p256dh,
+          auth_key: subscriptionData.keys!.auth,
           user_agent: navigator.userAgent,
-        }
-      });
+          is_active: true,
+          last_used_at: new Date().toISOString()
+        }, {
+          onConflict: 'endpoint'
+        });
 
       if (error) throw error;
-
+      
       setIsSubscribed(true);
-      toast({
-        title: "Notifications Enabled",
-        description: "You'll now receive message notifications.",
-      });
+      return true;
     } catch (error) {
-      console.error('Push subscription error:', error);
-      toast({
-        title: "Subscription Failed",
-        description: "Could not enable push notifications.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      console.error('Error subscribing to push notifications:', error);
+      return false;
     }
   };
 
   const unsubscribe = async () => {
-    setIsLoading(true);
     try {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
       
       if (subscription) {
         await subscription.unsubscribe();
-        setIsSubscribed(false);
-        toast({
-          title: "Notifications Disabled",
-          description: "You won't receive push notifications anymore.",
-        });
+        
+        // Remove from database
+        const { error } = await supabase
+          .from('push_subscriptions')
+          .update({ is_active: false })
+          .eq('endpoint', subscription.endpoint);
+
+        if (error) throw error;
       }
+      
+      setIsSubscribed(false);
+      return true;
     } catch (error) {
-      console.error('Unsubscribe error:', error);
-      toast({
-        title: "Error",
-        description: "Could not disable notifications.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      console.error('Error unsubscribing from push notifications:', error);
+      return false;
     }
   };
+
+  const checkSubscription = async () => {
+    if (!isSupported) return;
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      setIsSubscribed(!!subscription);
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    }
+  };
+
+  useEffect(() => {
+    checkSubscription();
+  }, [isSupported]);
 
   return {
     isSupported,
     isSubscribed,
-    isLoading,
+    permission,
+    requestPermission,
     subscribe,
     unsubscribe,
+    checkSubscription
   };
+};
+
+// Helper function to convert VAPID key
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 }

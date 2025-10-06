@@ -1,89 +1,119 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 export interface NotificationPreference {
-  id?: string;
+  id: string;
   user_id: string;
-  email_enabled: boolean;
-  sms_enabled: boolean;
-  push_enabled: boolean;
-  payment_reminder_days: number;
-  invoice_notifications: boolean;
-  payment_confirmation: boolean;
-  dispute_notifications: boolean;
-  created_at?: string;
-  updated_at?: string;
+  notification_type: string;
+  channels: string[];
+  enabled: boolean;
+  quiet_hours_start?: string;
+  quiet_hours_end?: string;
+  frequency: 'immediate' | 'daily_digest' | 'weekly_digest';
+  created_at: string;
+  updated_at: string;
 }
 
-export function useNotificationPreferences() {
-  const queryClient = useQueryClient();
+export const useNotificationPreferences = () => {
+  const [preferences, setPreferences] = useState<NotificationPreference[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: preferences, isLoading } = useQuery<NotificationPreference | null>({
-    queryKey: ['notification-preferences'],
-    queryFn: async () => {
+  const fetchPreferences = async () => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) return;
 
-      const { data, error }: any = await (supabase as any)
+      const { data, error } = await supabase
         .from('notification_preferences')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .order('notification_type');
 
-      if (error && error.code !== 'PGRST116') throw error;
-      return data as NotificationPreference | null;
-    },
-  });
+      if (error) throw error;
+      setPreferences(data || []);
+    } catch (error) {
+      console.error('Error fetching preferences:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const updatePreferences = useMutation({
-    mutationFn: async (updates: Partial<NotificationPreference>) => {
+  const updatePreference = async (
+    notificationType: string,
+    updates: Partial<NotificationPreference>
+  ) => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) return;
 
-      const { error }: any = await (supabase as any)
+      const { error } = await supabase
         .from('notification_preferences')
         .upsert({
           user_id: user.id,
+          notification_type: notificationType,
           ...updates,
+          updated_at: new Date().toISOString()
         }, {
-          onConflict: 'user_id'
+          onConflict: 'user_id,notification_type'
         });
 
       if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notification-preferences'] });
-      toast.success('Notification preferences updated');
-    },
-    onError: (error: Error) => {
-      toast.error(`Failed to update preferences: ${error.message}`);
-    },
-  });
+      await fetchPreferences();
+    } catch (error) {
+      console.error('Error updating preference:', error);
+      throw error;
+    }
+  };
 
-  const { data: reminders, isLoading: remindersLoading } = useQuery({
-    queryKey: ['payment-reminders'],
-    queryFn: async () => {
+  const toggleChannel = async (notificationType: string, channel: string) => {
+    try {
+      const preference = preferences.find(p => p.notification_type === notificationType);
+      if (!preference) return;
+
+      const channels = preference.channels.includes(channel)
+        ? preference.channels.filter(c => c !== channel)
+        : [...preference.channels, channel];
+
+      await updatePreference(notificationType, { channels });
+    } catch (error) {
+      console.error('Error toggling channel:', error);
+    }
+  };
+
+  const setQuietHours = async (start: string, end: string) => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) return;
 
-      const { data, error }: any = await (supabase as any)
-        .from('payment_reminders')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('sent_at', { ascending: false })
-        .limit(20);
+      // Update all preferences with quiet hours
+      const updates = preferences.map(p => ({
+        ...p,
+        quiet_hours_start: start,
+        quiet_hours_end: end,
+        updated_at: new Date().toISOString()
+      }));
+
+      const { error } = await supabase
+        .from('notification_preferences')
+        .upsert(updates);
 
       if (error) throw error;
-      return data || [];
-    },
-  });
+      await fetchPreferences();
+    } catch (error) {
+      console.error('Error setting quiet hours:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPreferences();
+  }, []);
 
   return {
     preferences,
     isLoading,
-    updatePreferences: updatePreferences.mutate,
-    reminders,
-    remindersLoading,
+    updatePreference,
+    toggleChannel,
+    setQuietHours,
+    refetch: fetchPreferences
   };
-}
+};

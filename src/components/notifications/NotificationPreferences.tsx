@@ -1,229 +1,227 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { Bell, Mail, MessageSquare, Smartphone } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-interface NotificationPreference {
-  id: string;
-  user_id: string;
-  email_enabled: boolean;
-  sms_enabled: boolean;
-  push_enabled: boolean;
-  payment_reminder_days: number;
-  invoice_notifications: boolean;
-  payment_confirmation: boolean;
-  dispute_notifications: boolean;
-}
+const notificationTypeLabels: Record<string, string> = {
+  booking_request: 'Booking Requests',
+  booking_confirmed: 'Booking Confirmations',
+  booking_cancelled: 'Booking Cancellations',
+  booking_completed: 'Booking Completions',
+  message_received: 'New Messages',
+  review_received: 'New Reviews',
+  payment_received: 'Payment Received',
+  payment_due: 'Payment Reminders',
+  verification_approved: 'Verification Approved',
+  verification_rejected: 'Verification Rejected',
+  job_application: 'Job Applications',
+  job_accepted: 'Job Acceptances',
+  job_declined: 'Job Declines',
+  milestone_completed: 'Milestone Completions',
+  dispute_opened: 'Disputes Opened',
+  dispute_resolved: 'Disputes Resolved',
+  system_announcement: 'System Announcements',
+  promotional: 'Promotional Messages'
+};
 
-export function NotificationPreferences() {
-  const queryClient = useQueryClient();
-  const [reminderDays, setReminderDays] = useState(3);
+export const NotificationPreferences = () => {
+  const { preferences, isLoading, updatePreference, toggleChannel } = useNotificationPreferences();
+  const { 
+    isSupported, 
+    isSubscribed, 
+    permission, 
+    requestPermission, 
+    subscribe, 
+    unsubscribe 
+  } = usePushNotifications();
+  const { toast } = useToast();
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const { data: preferences, isLoading } = useQuery({
-    queryKey: ['notification-preferences'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data, error }: any = await (supabase as any)
-        .from('notification_preferences')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
-      
-      if (data) {
-        setReminderDays(data.payment_reminder_days);
-      }
-      
-      return data as NotificationPreference | null;
-    },
-  });
-
-  const updatePreferences = useMutation({
-    mutationFn: async (updates: Partial<NotificationPreference>) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { error }: any = await (supabase as any)
-        .from('notification_preferences')
-        .upsert({
-          user_id: user.id,
-          ...updates,
-        }, {
-          onConflict: 'user_id'
-        });
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notification-preferences'] });
-      toast.success('Preferences updated');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const handleToggle = (field: keyof NotificationPreference, value: boolean) => {
-    updatePreferences.mutate({ [field]: value });
+  const handleToggleNotification = async (notificationType: string, enabled: boolean) => {
+    setIsUpdating(true);
+    try {
+      await updatePreference(notificationType, { enabled });
+      toast({
+        title: 'Preferences updated',
+        description: 'Your notification preferences have been saved.'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update preferences. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  const handleReminderDaysChange = () => {
-    if (reminderDays < 1 || reminderDays > 30) {
-      toast.error('Reminder days must be between 1 and 30');
+  const handleToggleChannel = async (notificationType: string, channel: string) => {
+    setIsUpdating(true);
+    try {
+      await toggleChannel(notificationType, channel);
+      toast({
+        title: 'Preferences updated',
+        description: 'Your notification channels have been updated.'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update channel. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handlePushNotificationToggle = async () => {
+    if (!isSupported) {
+      toast({
+        title: 'Not supported',
+        description: 'Push notifications are not supported in your browser.',
+        variant: 'destructive'
+      });
       return;
     }
-    updatePreferences.mutate({ payment_reminder_days: reminderDays });
+
+    if (permission === 'denied') {
+      toast({
+        title: 'Permission denied',
+        description: 'Please enable notifications in your browser settings.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (isSubscribed) {
+      await unsubscribe();
+      toast({
+        title: 'Unsubscribed',
+        description: 'You will no longer receive push notifications.'
+      });
+    } else {
+      if (permission === 'default') {
+        const granted = await requestPermission();
+        if (!granted) return;
+      }
+      
+      const success = await subscribe();
+      if (success) {
+        toast({
+          title: 'Subscribed',
+          description: 'You will now receive push notifications.'
+        });
+      }
+    }
+  };
+
+  const getChannelIcon = (channel: string) => {
+    switch (channel) {
+      case 'push': return <Bell className="h-4 w-4" />;
+      case 'email': return <Mail className="h-4 w-4" />;
+      case 'sms': return <Smartphone className="h-4 w-4" />;
+      case 'in_app': return <MessageSquare className="h-4 w-4" />;
+      default: return null;
+    }
   };
 
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Notification Preferences</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Loading preferences...</p>
+        <CardContent className="pt-6">
+          <p className="text-center text-muted-foreground">Loading preferences...</p>
         </CardContent>
       </Card>
     );
   }
 
-  const currentPrefs = preferences || {
-    email_enabled: true,
-    sms_enabled: false,
-    push_enabled: false,
-    payment_reminder_days: 3,
-    invoice_notifications: true,
-    payment_confirmation: true,
-    dispute_notifications: true,
-  };
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Bell className="h-5 w-5" />
-          Notification Preferences
-        </CardTitle>
-        <CardDescription>
-          Manage how you receive notifications about payments and invoices
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Notification Channels */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold">Notification Channels</h3>
-          
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Push Notifications</CardTitle>
+          <CardDescription>
+            Enable browser push notifications to stay updated in real-time
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <Label htmlFor="email-enabled">Email Notifications</Label>
+            <div className="space-y-1">
+              <Label>Browser Notifications</Label>
+              <p className="text-sm text-muted-foreground">
+                {isSupported ? (
+                  isSubscribed ? 'Enabled' : 'Disabled'
+                ) : 'Not supported'}
+              </p>
             </div>
-            <Switch
-              id="email-enabled"
-              checked={currentPrefs.email_enabled}
-              onCheckedChange={(checked) => handleToggle('email_enabled', checked)}
-            />
+            <Button
+              variant={isSubscribed ? 'destructive' : 'default'}
+              onClick={handlePushNotificationToggle}
+              disabled={!isSupported || permission === 'denied'}
+            >
+              {isSubscribed ? 'Disable' : 'Enable'}
+            </Button>
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
-              <Label htmlFor="sms-enabled">SMS Notifications</Label>
-            </div>
-            <Switch
-              id="sms-enabled"
-              checked={currentPrefs.sms_enabled}
-              onCheckedChange={(checked) => handleToggle('sms_enabled', checked)}
-              disabled
-            />
-          </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Notification Settings</CardTitle>
+          <CardDescription>
+            Choose what notifications you want to receive and how
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {Object.entries(notificationTypeLabels).map(([type, label]) => {
+            const preference = preferences.find(p => p.notification_type === type);
+            const enabled = preference?.enabled ?? true;
+            const channels = preference?.channels ?? ['in_app', 'email'];
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Smartphone className="h-4 w-4 text-muted-foreground" />
-              <Label htmlFor="push-enabled">Push Notifications</Label>
-            </div>
-            <Switch
-              id="push-enabled"
-              checked={currentPrefs.push_enabled}
-              onCheckedChange={(checked) => handleToggle('push_enabled', checked)}
-              disabled
-            />
-          </div>
-        </div>
+            return (
+              <div key={type} className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor={type} className="text-base">
+                    {label}
+                  </Label>
+                  <Switch
+                    id={type}
+                    checked={enabled}
+                    onCheckedChange={(checked) => handleToggleNotification(type, checked)}
+                    disabled={isUpdating}
+                  />
+                </div>
 
-        {/* Payment Reminder Settings */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold">Payment Reminders</h3>
-          
-          <div className="space-y-2">
-            <Label htmlFor="reminder-days">Send reminders (days before due date)</Label>
-            <div className="flex gap-2">
-              <Input
-                id="reminder-days"
-                type="number"
-                min="1"
-                max="30"
-                value={reminderDays}
-                onChange={(e) => setReminderDays(parseInt(e.target.value) || 3)}
-                className="w-24"
-              />
-              <Button
-                onClick={handleReminderDaysChange}
-                variant="outline"
-                size="sm"
-              >
-                Update
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              You'll receive reminders {reminderDays} day{reminderDays !== 1 ? 's' : ''} before payments are due
-            </p>
-          </div>
-        </div>
+                {enabled && (
+                  <div className="flex flex-wrap gap-2 pl-6">
+                    {['in_app', 'email', 'push', 'sms'].map((channel) => (
+                      <Badge
+                        key={channel}
+                        variant={channels.includes(channel) ? 'default' : 'outline'}
+                        className="cursor-pointer"
+                        onClick={() => handleToggleChannel(type, channel)}
+                      >
+                        {getChannelIcon(channel)}
+                        <span className="ml-1 capitalize">{channel.replace('_', ' ')}</span>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
 
-        {/* Notification Types */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold">Notification Types</h3>
-          
-          <div className="flex items-center justify-between">
-            <Label htmlFor="invoice-notifications">Invoice Updates</Label>
-            <Switch
-              id="invoice-notifications"
-              checked={currentPrefs.invoice_notifications}
-              onCheckedChange={(checked) => handleToggle('invoice_notifications', checked)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <Label htmlFor="payment-confirmation">Payment Confirmations</Label>
-            <Switch
-              id="payment-confirmation"
-              checked={currentPrefs.payment_confirmation}
-              onCheckedChange={(checked) => handleToggle('payment_confirmation', checked)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <Label htmlFor="dispute-notifications">Dispute Notifications</Label>
-            <Switch
-              id="dispute-notifications"
-              checked={currentPrefs.dispute_notifications}
-              onCheckedChange={(checked) => handleToggle('dispute_notifications', checked)}
-            />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+                <Separator />
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    </div>
   );
-}
+};
