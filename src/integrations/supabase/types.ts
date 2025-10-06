@@ -565,6 +565,136 @@ export type Database = {
         }
         Relationships: []
       }
+      availability_presets: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+          working_hours: Json
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+          working_hours: Json
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          working_hours?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_presets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blocked_dates: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          id: string
+          professional_id: string
+          reason: string | null
+          start_date: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          id?: string
+          professional_id: string
+          reason?: string | null
+          start_date: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          professional_id?: string
+          reason?: string | null
+          start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocked_dates_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_reminders: {
+        Row: {
+          booking_id: string
+          created_at: string | null
+          delivery_method: string
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          reminder_type: string
+          scheduled_for: string
+          sent_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string | null
+          delivery_method?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          reminder_type: string
+          scheduled_for: string
+          sent_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string | null
+          delivery_method?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          reminder_type?: string
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_reminders_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_reminders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_requests: {
         Row: {
           client_id: string
@@ -6194,6 +6324,10 @@ export type Database = {
         }
         Returns: number
       }
+      create_booking_reminders: {
+        Args: { p_booking_id: string; p_event_start: string; p_user_id: string }
+        Returns: undefined
+      }
       create_payment_schedule: {
         Args: {
           p_currency: string
@@ -6282,6 +6416,21 @@ export type Database = {
           reminder_days: number
           schedule_id: string
           user_id: string
+        }[]
+      }
+      get_pending_reminders: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          booking_id: string
+          delivery_method: string
+          event_location: Json
+          event_start: string
+          event_title: string
+          reminder_id: string
+          reminder_type: string
+          user_email: string
+          user_id: string
+          user_name: string
         }[]
       }
       get_professional_earnings_summary: {
@@ -6382,6 +6531,14 @@ export type Database = {
       mark_overdue_invoices: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      mark_reminder_sent: {
+        Args: {
+          p_error_message?: string
+          p_reminder_id: string
+          p_success: boolean
+        }
+        Returns: undefined
       }
       update_rating_summary: {
         Args: { p_role: string; p_user_id: string }
