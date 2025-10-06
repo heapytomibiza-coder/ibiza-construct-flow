@@ -2991,6 +2991,50 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_reminders: {
+        Row: {
+          channel: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          reminder_type: string
+          scheduled_payment_id: string
+          sent_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reminder_type: string
+          scheduled_payment_id: string
+          sent_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reminder_type?: string
+          scheduled_payment_id?: string
+          sent_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_reminders_scheduled_payment_id_fkey"
+            columns: ["scheduled_payment_id"]
+            isOneToOne: false
+            referencedRelation: "scheduled_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_schedules: {
         Row: {
           created_at: string
@@ -5315,6 +5359,20 @@ export type Database = {
       get_payment_statistics: {
         Args: { p_end_date?: string; p_start_date?: string }
         Returns: Json
+      }
+      get_payments_needing_reminders: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          amount: number
+          currency: string
+          due_date: string
+          installment_number: number
+          job_id: string
+          payment_id: string
+          reminder_days: number
+          schedule_id: string
+          user_id: string
+        }[]
       }
       get_professional_earnings_summary: {
         Args: { p_professional_id: string }
