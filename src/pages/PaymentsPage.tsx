@@ -14,6 +14,7 @@ import { RefundsList } from '@/components/payments/RefundsList';
 import { PaymentHistory } from '@/components/payments/PaymentHistory';
 import { EarningsDashboard } from '@/components/payments/EarningsDashboard';
 import { PaymentNotifications } from '@/components/payments/PaymentNotifications';
+import { AdvancedPaymentAnalytics } from '@/components/analytics/AdvancedPaymentAnalytics';
 import { CreditCard, Wallet, History, BarChart3, Bell, Settings, Receipt, TrendingUp } from 'lucide-react';
 
 export const PaymentsPage = () => {
@@ -87,6 +88,10 @@ export const PaymentsPage = () => {
                 <BarChart3 className="w-4 h-4" />
                 Analytics
               </TabsTrigger>
+              <TabsTrigger value="advanced-analytics" className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                Advanced Analytics
+              </TabsTrigger>
               <TabsTrigger value="notifications" className="flex items-center gap-2">
                 <Bell className="w-4 h-4" />
                 Notifications
@@ -131,6 +136,10 @@ export const PaymentsPage = () => {
 
             <TabsContent value="analytics">
               <PaymentAnalyticsDashboard />
+            </TabsContent>
+
+            <TabsContent value="advanced-analytics">
+              <AdvancedPaymentAnalytics />
             </TabsContent>
 
             <TabsContent value="notifications">
