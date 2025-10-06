@@ -2964,6 +2964,59 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_schedules: {
+        Row: {
+          created_at: string
+          currency: string
+          frequency: string
+          id: string
+          installment_count: number
+          job_id: string
+          metadata: Json | null
+          next_payment_date: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          frequency: string
+          id?: string
+          installment_count: number
+          job_id: string
+          metadata?: Json | null
+          next_payment_date?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          frequency?: string
+          id?: string
+          installment_count?: number
+          job_id?: string
+          metadata?: Json | null
+          next_payment_date?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_schedules_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_transactions: {
         Row: {
           amount: number
@@ -4526,6 +4579,75 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          due_date: string
+          failure_reason: string | null
+          id: string
+          installment_number: number
+          metadata: Json | null
+          paid_at: string | null
+          payment_transaction_id: string | null
+          reminder_sent_at: string | null
+          schedule_id: string
+          status: string
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          due_date: string
+          failure_reason?: string | null
+          id?: string
+          installment_number: number
+          metadata?: Json | null
+          paid_at?: string | null
+          payment_transaction_id?: string | null
+          reminder_sent_at?: string | null
+          schedule_id: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          due_date?: string
+          failure_reason?: string | null
+          id?: string
+          installment_number?: number
+          metadata?: Json | null
+          paid_at?: string | null
+          payment_transaction_id?: string | null
+          reminder_sent_at?: string | null
+          schedule_id?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_payments_payment_transaction_id_fkey"
+            columns: ["payment_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduled_payments_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "payment_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_addons: {
         Row: {
           created_at: string
@@ -5100,6 +5222,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      create_payment_schedule: {
+        Args: {
+          p_currency: string
+          p_frequency: string
+          p_installment_count: number
+          p_job_id: string
+          p_start_date?: string
+          p_total_amount: number
+        }
+        Returns: string
+      }
       generate_payment_receipt: {
         Args: { p_payment_id: string }
         Returns: Json
@@ -5140,6 +5273,19 @@ export type Database = {
       get_unread_message_count: {
         Args: { p_user_id: string }
         Returns: number
+      }
+      get_upcoming_payments: {
+        Args: { p_days_ahead?: number; p_user_id?: string }
+        Returns: {
+          amount: number
+          currency: string
+          due_date: string
+          installment_number: number
+          job_id: string
+          payment_id: string
+          schedule_id: string
+          status: string
+        }[]
       }
       get_user_role: {
         Args: { user_id: string }
