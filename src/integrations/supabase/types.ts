@@ -1489,6 +1489,33 @@ export type Database = {
           },
         ]
       }
+      exchange_rates: {
+        Row: {
+          created_at: string
+          from_currency: string
+          id: string
+          rate: number
+          to_currency: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_currency: string
+          id?: string
+          rate: number
+          to_currency: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_currency?: string
+          id?: string
+          rate?: number
+          to_currency?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           created_at: string | null
@@ -4125,6 +4152,7 @@ export type Database = {
           notification_preferences: Json | null
           phone: string | null
           preferences: Json | null
+          preferred_currency: string | null
           preferred_language: string | null
           service_radius: number | null
           simple_mode: boolean | null
@@ -4147,6 +4175,7 @@ export type Database = {
           notification_preferences?: Json | null
           phone?: string | null
           preferences?: Json | null
+          preferred_currency?: string | null
           preferred_language?: string | null
           service_radius?: number | null
           simple_mode?: boolean | null
@@ -4169,6 +4198,7 @@ export type Database = {
           notification_preferences?: Json | null
           phone?: string | null
           preferences?: Json | null
+          preferred_currency?: string | null
           preferred_language?: string | null
           service_radius?: number | null
           simple_mode?: boolean | null
@@ -5207,7 +5237,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      currency_exchange_pairs: {
+        Row: {
+          from_currency: string | null
+          rate: number | null
+          to_currency: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_professional_view_job: {
@@ -5221,6 +5259,14 @@ export type Database = {
           p_start_time: string
         }
         Returns: boolean
+      }
+      convert_currency: {
+        Args: {
+          p_amount: number
+          p_from_currency: string
+          p_to_currency: string
+        }
+        Returns: number
       }
       create_payment_schedule: {
         Args: {
@@ -5251,6 +5297,10 @@ export type Database = {
           slot_end: string
           slot_start: string
         }[]
+      }
+      get_exchange_rate: {
+        Args: { p_from_currency: string; p_to_currency: string }
+        Returns: number
       }
       get_online_professionals: {
         Args: { professional_ids?: string[] }
