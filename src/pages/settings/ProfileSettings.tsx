@@ -8,9 +8,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Upload, Loader2 } from 'lucide-react';
+import { Upload, Loader2, Award } from 'lucide-react';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import QualityScoreDetail from '@/components/disputes/QualityScoreDetail';
 
 export default function ProfileSettings() {
+  const { enabled: qualityEnabled } = useFeatureFlag('quality_score_private');
   const { profile, user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -95,6 +98,23 @@ export default function ProfileSettings() {
 
   return (
     <div className="space-y-6">
+      {qualityEnabled && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="w-5 h-5" />
+              My Quality Score
+            </CardTitle>
+            <CardDescription>
+              Your platform reputation and dispute resolution quality
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <QualityScoreDetail />
+          </CardContent>
+        </Card>
+      )}
+      
       <Card>
         <CardHeader>
           <CardTitle>Profile Information</CardTitle>

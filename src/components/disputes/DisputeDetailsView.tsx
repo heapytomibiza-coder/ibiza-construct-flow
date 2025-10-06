@@ -13,6 +13,9 @@ import { ResolutionBuilder } from './ResolutionBuilder';
 import { DisputeAgreementFlow } from './DisputeAgreementFlow';
 import { CounterProposalList } from './CounterProposalList';
 import { EnforcementTracker } from './EnforcementTracker';
+import CaseAuditViewer from './CaseAuditViewer';
+import { QualityScoreBadge } from './QualityScoreBadge';
+import FeedbackPrompt from './FeedbackPrompt';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   AlertTriangle, 
@@ -33,6 +36,10 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [userSide, setUserSide] = useState<'client' | 'professional'>('client');
+  const [auditItems, setAuditItems] = useState<any[]>([]);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [clientQuality, setClientQuality] = useState<number>();
+  const [proQuality, setProQuality] = useState<number>();
   
   const {
     dispute,
@@ -71,6 +78,63 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
     };
     checkUser();
   }, [dispute]);
+
+  // Load audit trail
+  useEffect(() => {
+    if (!disputeId) return;
+    const loadAudit = async () => {
+      const { data } = await supabase
+        .from('case_audit_trail' as any)
+        .select('*')
+        .eq('dispute_id', disputeId)
+        .order('created_at', { ascending: false });
+      setAuditItems(data || []);
+    };
+    loadAudit();
+  }, [disputeId]);
+
+  // Load quality scores
+  useEffect(() => {
+    if (!dispute) return;
+    const loadQuality = async () => {
+      if (dispute.created_by) {
+        const { data: cq } = await supabase
+          .from('quality_scores' as any)
+          .select('score')
+          .eq('user_id', dispute.created_by)
+          .maybeSingle();
+        setClientQuality((cq as any)?.score);
+      }
+      if (dispute.disputed_against) {
+        const { data: pq } = await supabase
+          .from('quality_scores' as any)
+          .select('score')
+          .eq('user_id', dispute.disputed_against)
+          .maybeSingle();
+        setProQuality((pq as any)?.score);
+      }
+    };
+    loadQuality();
+  }, [dispute]);
+
+  // Trigger feedback prompt on resolution
+  useEffect(() => {
+    if (!dispute || !currentUserId) return;
+    const checkFeedback = async () => {
+      const isResolved = dispute.status === 'resolved';
+      if (!isResolved) return;
+
+      const { data: fb } = await supabase
+        .from('dispute_feedback' as any)
+        .select('id')
+        .eq('dispute_id', disputeId)
+        .eq('respondent_id', currentUserId)
+        .maybeSingle();
+
+      if (!fb) setShowFeedback(true);
+    };
+    checkFeedback();
+  }, [dispute, currentUserId, disputeId]);
 
   if (disputeLoading) {
     return (
@@ -131,6 +195,18 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
               </div>
             </div>
             <div className="flex gap-2">
+              {clientQuality != null && (
+                <div className="flex items-center gap-1">
+                  <span className="text-xs">Client</span>
+                  <QualityScoreBadge score={clientQuality} />
+                </div>
+              )}
+              {proQuality != null && (
+                <div className="flex items-center gap-1">
+                  <span className="text-xs">Pro</span>
+                  <QualityScoreBadge score={proQuality} />
+                </div>
+              )}
               <Badge className={getStatusColor(dispute.status)}>
                 {dispute.status.replace('_', ' ').toUpperCase()}
               </Badge>
@@ -252,6 +328,7 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
           )}
           <TabsTrigger value="counter">Counter-Proposals</TabsTrigger>
           <TabsTrigger value="enforcement">Enforcement</TabsTrigger>
+          <TabsTrigger value="audit">Audit Log</TabsTrigger>
         </TabsList>
 
         <TabsContent value="evidence">
@@ -292,7 +369,29 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
         <TabsContent value="enforcement">
           <EnforcementTracker disputeId={disputeId} />
         </TabsContent>
+
+        <TabsContent value="audit">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Case Audit Trail</h3>
+            <CaseAuditViewer disputeId={disputeId} />
+          </Card>
+        </TabsContent>
       </Tabs>
+
+      {showFeedback && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md p-6 m-4">
+            <h3 className="text-lg font-semibold mb-4">How was your experience?</h3>
+            <FeedbackPrompt
+              disputeId={disputeId}
+              onSubmit={async () => {
+                setShowFeedback(false);
+              }}
+              onSkip={() => setShowFeedback(false)}
+            />
+          </Card>
+        </div>
+      )}
 
       {showResolutionProposal && (
         <ResolutionProposal

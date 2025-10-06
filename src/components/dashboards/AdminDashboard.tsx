@@ -3,7 +3,7 @@ import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity, FileCheck } from 'lucide-react';
+import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity, FileCheck, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { InfoTip } from '@/components/ui/info-tip';
@@ -11,6 +11,9 @@ import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
 import { usePendingVerifications } from '@/hooks/usePendingVerifications';
 import { useNavigate } from 'react-router-dom';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import EarlyWarningPanel from '@/components/disputes/EarlyWarningPanel';
+import { Link } from 'react-router-dom';
 
 // Lazy load workspaces for better code splitting
 const AIPanel = lazy(() => import('@/components/admin/AIPanel'));
@@ -65,6 +68,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const [aiContext, setAiContext] = useState<{ type: 'job' | 'professional' | 'service' | 'review' | 'overview' }>({ type: 'overview' });
   const infoTipsEnabled = useFeature('admin_info_tips');
   const { pendingCount } = usePendingVerifications();
+  const { enabled: analyticsEnabled } = useFeatureFlag('analytics_v1');
 
   const workspaces = [
     { 
@@ -102,6 +106,13 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       description: 'Market analysis & opportunities',
       tooltip: 'Analyze market trends, pricing patterns, demand forecasts, and growth opportunities across Ibiza.'
     },
+    ...(analyticsEnabled ? [{
+      id: 'dispute-analytics',
+      name: 'Dispute Analytics',
+      icon: AlertTriangle,
+      description: 'KPIs, warnings & quality',
+      tooltip: 'Monitor dispute resolution metrics, early warnings, and quality scores. Track platform mediation performance.'
+    }] : []),
     { 
       id: 'professionals', 
       name: 'Professional Hub', 
@@ -219,6 +230,10 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
           return <RiskManagement />;
         case 'market':
           return <MarketIntelligence />;
+        case 'dispute-analytics':
+          // Navigate to dedicated analytics page
+          navigate('/admin/analytics/disputes');
+          return null;
         case 'professionals':
           return <ProfessionalHub />;
         case 'verifications':
@@ -365,13 +380,24 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
           </header>
 
           {/* Main Content with AI Panel */}
-          <div className="flex-1 flex">
+          <div className="flex-1 flex gap-6">
             <main className="flex-1 p-6 overflow-auto">
               {renderWorkspaceContent()}
             </main>
             
-            {/* AI Assistant Panel */}
-            <AIPanel context={aiContext} />
+            {/* Right Sidebar: AI Panel + Warnings */}
+            <div className="w-80 border-l p-4 space-y-4 overflow-auto">
+              {analyticsEnabled && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" />
+                    Active Warnings
+                  </h3>
+                  <EarlyWarningPanel compact />
+                </div>
+              )}
+              <AIPanel context={aiContext} />
+            </div>
           </div>
         </div>
       </div>

@@ -56,6 +56,7 @@ const ProfessionalVerificationPage = React.lazy(() => import("./pages/Profession
 const ProfessionalServicesPage = React.lazy(() => import("./pages/ProfessionalServicesPage"));
 const ProfessionalPortfolioPage = React.lazy(() => import("./pages/ProfessionalPortfolioPage"));
 const AdminVerificationsPage = React.lazy(() => import("./pages/AdminVerificationsPage"));
+const DisputeAnalyticsPage = React.lazy(() => import("./pages/admin/DisputeAnalyticsPage"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -235,6 +236,11 @@ function AppContent() {
           <Route path="/admin/verifications" element={
             <RouteGuard requiredRole="admin">
               <AdminVerificationsPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/analytics/disputes" element={
+            <RouteGuard requiredRole="admin">
+              <DisputeAnalyticsPage />
             </RouteGuard>
           } />
           
