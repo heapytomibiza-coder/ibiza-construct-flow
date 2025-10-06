@@ -2,97 +2,59 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-export interface ExportRequest {
-  export_type: string;
-  export_format: 'csv' | 'json' | 'xlsx' | 'pdf';
-  filters?: Record<string, any>;
-}
+export type ExportFormat = 'csv' | 'excel' | 'json' | 'pdf';
 
-export const useDataExport = () => {
-  const [isExporting, setIsExporting] = useState(false);
+export function useDataExport() {
+  const [exporting, setExporting] = useState(false);
   const { toast } = useToast();
 
-  const requestExport = async (request: ExportRequest) => {
+  const exportData = async (
+    reportType: string,
+    format: ExportFormat,
+    dateRange?: { from: Date; to: Date }
+  ) => {
+    setExporting(true);
     try {
-      setIsExporting(true);
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data, error } = await supabase
-        .from('data_exports')
-        .insert({
-          user_id: user.id,
-          export_type: request.export_type,
-          export_format: request.export_format,
-          filters: request.filters || {},
-          status: 'pending',
-          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.functions.invoke('process-data-export', {
+        body: {
+          report_type: reportType,
+          format,
+          date_range: dateRange ? {
+            start: dateRange.from.toISOString(),
+            end: dateRange.to.toISOString(),
+          } : undefined,
+        },
+      });
 
       if (error) throw error;
 
-      // Trigger the export processing via edge function
-      const { error: functionError } = await supabase.functions.invoke('process-data-export', {
-        body: { export_id: data.id }
-      });
-
-      if (functionError) throw functionError;
-
-      toast({
-        title: 'Export requested',
-        description: 'Your export is being processed. You will be notified when it\'s ready.'
-      });
+      if (data?.download_url) {
+        // Download the file
+        window.open(data.download_url, '_blank');
+        toast({
+          title: 'Export Complete',
+          description: `Your ${format.toUpperCase()} export is ready.`,
+        });
+      } else if (data?.file_url) {
+        window.open(data.file_url, '_blank');
+        toast({
+          title: 'Export Complete',
+          description: `Your ${format.toUpperCase()} export is ready.`,
+        });
+      }
 
       return data;
     } catch (error) {
-      console.error('Error requesting export:', error);
+      console.error('Export error:', error);
       toast({
-        title: 'Export failed',
-        description: 'Failed to request data export. Please try again.',
-        variant: 'destructive'
+        title: 'Export Failed',
+        description: error instanceof Error ? error.message : 'Failed to export data',
+        variant: 'destructive',
       });
-      throw error;
     } finally {
-      setIsExporting(false);
+      setExporting(false);
     }
   };
 
-  const getExportStatus = async (exportId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('data_exports')
-        .select('*')
-        .eq('id', exportId)
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error fetching export status:', error);
-      return null;
-    }
-  };
-
-  const downloadExport = async (fileUrl: string) => {
-    try {
-      window.open(fileUrl, '_blank');
-    } catch (error) {
-      console.error('Error downloading export:', error);
-      toast({
-        title: 'Download failed',
-        description: 'Failed to download the export file.',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  return {
-    isExporting,
-    requestExport,
-    getExportStatus,
-    downloadExport
-  };
-};
+  return { exportData, exporting };
+}
