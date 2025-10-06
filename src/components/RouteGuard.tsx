@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useCurrentSession } from '../../packages/@contracts/clients/auth';
 import { Navigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { requiresTwoFactor } from '@/lib/security/securityMonitor';
+import { logAdminAccessAttempt } from '@/lib/security/ipWhitelist';
+import { useToast } from '@/hooks/use-toast';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -9,6 +12,7 @@ interface RouteGuardProps {
   fallbackPath?: string;
   skipAuthInDev?: boolean;
   requireOnboardingComplete?: boolean;
+  enforce2FA?: boolean;
 }
 
 export default function RouteGuard({ 
@@ -16,12 +20,14 @@ export default function RouteGuard({
   requiredRole, 
   fallbackPath = '/auth',
   skipAuthInDev = false,
-  requireOnboardingComplete = false
+  requireOnboardingComplete = false,
+  enforce2FA = true
 }: RouteGuardProps) {
   const { data: sessionData, isLoading: authLoading } = useCurrentSession();
   const session = sessionData?.data;
   const location = useLocation();
-  const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized'>('loading');
+  const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized' | '2fa_required'>('loading');
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -50,8 +56,33 @@ export default function RouteGuard({
         
         if (!hasRequiredRole) {
           console.warn(`Access denied: User roles [${session.roles.join(', ')}] do not include required role '${requiredRole}'`);
+          await logAdminAccessAttempt(false, 'insufficient_permissions');
           setStatus('unauthorized');
           return;
+        }
+
+        // If admin role required, enforce 2FA
+        if (requiredRole === 'admin' && enforce2FA) {
+          const needs2FA = await requiresTwoFactor(session.userId);
+          if (needs2FA) {
+            // Check if 2FA is actually set up
+            const { data: twoFactorData } = await supabase
+              .from('two_factor_auth')
+              .select('*')
+              .eq('user_id', session.userId)
+              .maybeSingle();
+
+            if (!twoFactorData) {
+              console.log('Admin requires 2FA but it is not set up');
+              toast({
+                title: 'Two-Factor Authentication Required',
+                description: 'As an admin, you must enable 2FA to access this area.',
+                variant: 'destructive',
+              });
+              setStatus('2fa_required');
+              return;
+            }
+          }
         }
 
         // Check onboarding completion for professionals if required
@@ -67,6 +98,11 @@ export default function RouteGuard({
             setStatus('unauthorized');
             return;
           }
+        }
+
+        // Log successful admin access
+        if (requiredRole === 'admin') {
+          await logAdminAccessAttempt(true);
         }
         
         setStatus('authorized');
@@ -85,6 +121,10 @@ export default function RouteGuard({
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
+  }
+
+  if (status === '2fa_required') {
+    return <Navigate to="/admin/security?setup2fa=true" replace />;
   }
 
   if (status === 'unauthorized') {
