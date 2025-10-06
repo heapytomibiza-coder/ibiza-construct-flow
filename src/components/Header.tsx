@@ -20,6 +20,7 @@ import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { Badge } from '@/components/ui/badge';
 import { useConversationList } from '@/hooks/useConversationList';
 import { MessageSquare } from 'lucide-react';
+import { getDashboardForRole } from '@/lib/navigation';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -40,12 +41,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
     navigate('/');
   };
 
-  const getDashboardPath = () => {
-    if (isAdmin()) return '/dashboard/admin';
-    if (isProfessional()) return '/dashboard/pro';
-    if (isClient()) return '/dashboard/client';
-    return '/dashboard';
-  };
+  const dashboardPath = getDashboardForRole(activeRole || 'client');
 
   // Use mobile-optimized header on mobile devices
   if (isMobile) {
@@ -124,7 +120,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem onClick={() => navigate(getDashboardPath())}>
+                    <DropdownMenuItem onClick={() => navigate(dashboardPath)}>
                       <Settings className="w-4 h-4 mr-2" />
                       {t('dashboard')}
                     </DropdownMenuItem>
@@ -199,7 +195,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                     <div className="flex justify-center py-2">
                       <HeaderRoleSwitcher />
                     </div>
-                    <Link to={getDashboardPath()} className="btn-secondary">
+                    <Link to={dashboardPath} className="btn-secondary">
                       {t('dashboard')}
                     </Link>
                     {jobWizardEnabled && isClient() && (

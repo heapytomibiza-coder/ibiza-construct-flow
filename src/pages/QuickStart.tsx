@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { getAuthRoute } from '@/lib/navigation';
 
 export default function QuickStart() {
   const [searchParams] = useSearchParams();
@@ -21,7 +22,7 @@ export default function QuickStart() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          navigate('/auth/sign-in');
+          navigate(getAuthRoute('signin'));
           return;
         }
 

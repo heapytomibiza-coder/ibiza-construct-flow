@@ -10,6 +10,7 @@ import { LocationChips, PropertyTypeChips, UrgencyChips } from './QuickSelection
 import { VisualPricingTiers } from './VisualPricingTiers';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { getAuthRoute } from '@/lib/navigation';
 import { 
   ShoppingCart, 
   Plus, 
@@ -76,7 +77,7 @@ export const BookingRequestSummary = ({
     if (!user) {
       toast.error('Please sign in to request a booking');
       const currentPath = window.location.pathname + window.location.search;
-      navigate(`/auth/sign-in?redirect=${encodeURIComponent(currentPath)}`);
+      navigate(`${getAuthRoute('signin')}?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
 

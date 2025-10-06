@@ -5,6 +5,7 @@
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { classifyError, logError, ErrorType } from '@/utils/errorUtils';
+import { getAuthRoute } from '@/lib/navigation';
 
 export const useErrorHandler = () => {
   const handleError = useCallback((error: unknown, context?: Record<string, any>) => {
@@ -30,7 +31,7 @@ export const useErrorHandler = () => {
           description: classified.userMessage,
           action: {
             label: 'Sign In',
-            onClick: () => window.location.href = '/auth/sign-in'
+            onClick: () => window.location.href = getAuthRoute('signin')
           }
         });
         break;

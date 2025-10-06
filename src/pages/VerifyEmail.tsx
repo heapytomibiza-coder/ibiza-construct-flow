@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Mail } from 'lucide-react';
+import { getAuthRoute } from '@/lib/navigation';
 
 export default function VerifyEmail() {
   const { toast } = useToast();
@@ -39,7 +40,7 @@ export default function VerifyEmail() {
               </div>
 
               <Button 
-                onClick={() => window.location.href = '/auth/sign-in'} 
+                onClick={() => window.location.href = getAuthRoute('signin')} 
                 variant="outline"
                 className="w-full"
               >

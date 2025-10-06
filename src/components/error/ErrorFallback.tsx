@@ -5,6 +5,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { getAuthRoute } from '@/lib/navigation';
 import { 
   AlertTriangle, 
   RefreshCw, 
@@ -97,7 +98,7 @@ export const AuthErrorFallback: React.FC = () => (
           Your session has expired. Please sign in again to continue.
         </p>
         
-        <Button onClick={() => window.location.href = '/auth/sign-in'} className="w-full">
+        <Button onClick={() => window.location.href = getAuthRoute('signin')} className="w-full">
           <Lock className="w-4 h-4 mr-2" />
           Sign In
         </Button>

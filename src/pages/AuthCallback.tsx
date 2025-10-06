@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { getAuthRoute } from '@/lib/navigation';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function AuthCallback() {
             title: 'Authentication Error',
             description: error.message,
           });
-          navigate('/auth/sign-in');
+          navigate(getAuthRoute('signin'));
           return;
         }
 
@@ -60,7 +61,7 @@ export default function AuthCallback() {
               title: 'Profile Creation Error',
               description: 'Failed to create your profile. Please try signing in again.',
             });
-            navigate('/auth/sign-in');
+            navigate(getAuthRoute('signin'));
             return;
           }
 
@@ -74,11 +75,11 @@ export default function AuthCallback() {
             navigate(path);
           }
         } else {
-          navigate('/auth/sign-in');
+          navigate(getAuthRoute('signin'));
         }
       } catch (error) {
         console.error('Unexpected error in auth callback:', error);
-        navigate('/auth/sign-in');
+        navigate(getAuthRoute('signin'));
       }
     };
 

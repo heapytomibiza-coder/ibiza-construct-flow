@@ -1,9 +1,10 @@
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ProfessionalOnboarding, OnboardingData } from '@/components/onboarding/ProfessionalOnboarding';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { ProfessionalOnboarding, OnboardingData } from '@/components/onboarding/ProfessionalOnboarding';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { getAuthRoute } from '@/lib/navigation';
 
 export default function ProfessionalOnboardingPage() {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ export default function ProfessionalOnboardingPage() {
   const handleComplete = async (data: OnboardingData) => {
     if (!user) {
       toast.error('Please sign in to complete onboarding');
-      navigate('/auth/sign-in');
+      navigate(getAuthRoute('signin'));
       return;
     }
 

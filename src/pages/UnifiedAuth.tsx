@@ -12,6 +12,14 @@ import { useTranslation } from 'react-i18next';
 import { useSignIn, useSignUp } from '../../packages/@contracts/clients';
 import { QuickDemoLogin } from '@/components/auth/QuickDemoLogin';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { z } from 'zod';
+
+const signupSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  fullName: z.string().min(1, 'Name is required').optional(),
+  role: z.union([z.literal('client'), z.literal('professional')])
+});
 
 export default function UnifiedAuth() {
   const navigate = useNavigate();
@@ -33,14 +41,11 @@ export default function UnifiedAuth() {
   const signInMutation = useSignIn();
   const signUpMutation = useSignUp();
 
-  // Check if already authenticated
+  // Check if already authenticated and redirect away from auth page
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/dashboard');
-      }
-    });
-  }, [navigate]);
+    // Removed - RouteGuard should handle auth gating instead
+    // This prevents unnecessary redirects from the auth page
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +75,25 @@ export default function UnifiedAuth() {
         
         navigate('/dashboard');
       } else {
+        // Validate signup data
+        const validationResult = signupSchema.safeParse({ 
+          email, 
+          password, 
+          fullName, 
+          role 
+        });
+
+        if (!validationResult.success) {
+          const firstError = validationResult.error.issues[0];
+          toast({
+            title: 'Validation Error',
+            description: firstError.message,
+            variant: 'destructive'
+          });
+          setLoading(false);
+          return;
+        }
+
         const redirectUrl = `${window.location.origin}/`;
         
         const { error } = await supabase.auth.signUp({

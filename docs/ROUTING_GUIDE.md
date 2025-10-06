@@ -77,7 +77,32 @@ async function getInitialDashboardRoute(userId: string):
 
 ---
 
-## Protected Routes
+## Route Purpose Guide
+
+### Smart Router (`/dashboard`)
+**When to use:** After login, role switch, or when user's role is unknown  
+**Behavior:** Redirects to appropriate role-specific dashboard using `getInitialDashboardRoute()`
+
+### Direct Role Dashboards
+- **`/dashboard/admin`** - Admin panel (requires `admin` role)
+- **`/dashboard/pro`** - Professional workspace (requires `professional` role + completed onboarding)
+- **`/dashboard/client`** - Client area (default for authenticated users)
+
+### Onboarding Flows
+- **QuickStart** (`/auth/quick-start`) - Universal identity gate (display_name check)
+- **Professional Onboarding** (`/onboarding/professional`) - Business setup for professionals only
+
+### Auth Entry Point
+- **`/auth`** - Single unified auth page
+  - `?mode=signin` - Show sign-in form
+  - `?mode=signup` - Show sign-up form
+  - `?role=client|professional` - Pre-select role for signup
+
+### Role Concepts
+- **`active_role`** - Which dashboard the user currently sees
+- **`roles[]`** - Which dashboards the user *can* switch to (multi-role users)
+
+---
 
 ### Route Guards
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
+import { getAuthRoute } from '@/lib/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,7 +56,7 @@ export default function Templates() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/auth/sign-in');
+      navigate(getAuthRoute('signin'));
       return;
     }
     loadTemplates();

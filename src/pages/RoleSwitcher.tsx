@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { getAuthRoute } from '@/lib/navigation';
 import { Home, Wrench } from 'lucide-react';
 
 export default function RoleSwitcher() {
@@ -15,7 +16,7 @@ export default function RoleSwitcher() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          navigate('/auth/sign-in');
+          navigate(getAuthRoute('signin'));
           return;
         }
 
@@ -40,7 +41,7 @@ export default function RoleSwitcher() {
         }
       } catch (error) {
         console.error('Error checking user roles:', error);
-        navigate('/auth/sign-in');
+        navigate(getAuthRoute('signin'));
       } finally {
         setLoading(false);
       }

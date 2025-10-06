@@ -28,25 +28,6 @@ const Index = () => {
       <main>
         <Hero />
         
-        {/* Testing Section - Remove in production */}
-        {(layout?.showTestingBanner ?? true) && (
-          <div className="bg-yellow-50 border-b border-yellow-200 p-4">
-            <div className="container mx-auto">
-              <h3 className="text-sm font-medium text-yellow-800 mb-2">{t('testing.title')}</h3>
-              <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <Link to="/dashboard/pro">{t('testing.professionalDashboard')}</Link>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  <Link to="/dashboard/admin">{t('testing.adminDashboard')}</Link>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  <Link to="/dashboard/client">{t('testing.clientDashboard')}</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
         {(layout?.showBenefitsStrip ?? benefitsStripEnabled) && <BenefitsStrip />}
         {(layout?.showCarousel ?? featuredCarouselEnabled) ? <FeaturedServicesCarousel /> : <Services />}
         <ExpressModeSection />
