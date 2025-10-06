@@ -1,11 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-// Import supabase client with type assertion to avoid deep inference
-const getSupabase = async () => {
-  const { supabase } = await import('@/integrations/supabase/client');
-  return supabase;
-};
 
 interface SendMessageParams {
   conversationId: string;
@@ -20,6 +15,13 @@ interface CreateConversationParams {
   subject?: string;
   jobId?: string;
   initialMessage: string;
+}
+
+// Helper function outside component to avoid type inference issues
+async function fetchExistingConversations(): Promise<{ data: any[] | null; error: any }> {
+  const client: any = supabase;
+  const result = await client.from('conversations').select('id, participants').eq('is_archived', false);
+  return { data: result.data, error: result.error };
 }
 
 export const useMessaging = (userId?: string, conversationId?: string) => {
@@ -39,17 +41,21 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
     }
 
     const fetchConversations = async () => {
-      const supabase = await getSupabase();
-      const result = await supabase.from('conversations').select('*').eq('is_archived', false).order('last_message_at', { ascending: false });
-      
-      if (result.error) {
-        console.error('Error fetching conversations:', result.error);
+      const client: any = supabase;
+      const { data: convData, error: convError } = await client
+        .from('conversations')
+        .select('*')
+        .eq('is_archived', false)
+        .order('last_message_at', { ascending: false, nullsFirst: false });
+
+      if (convError) {
+        console.error('Error fetching conversations:', convError);
         setConversationsLoading(false);
         return;
       }
 
-      const data: any[] = result.data || [];
-      const filtered = data.filter((conv: any) => 
+      // Filter conversations where user is a participant
+      const filtered = (convData || []).filter((conv: any) => 
         conv.participants && Array.isArray(conv.participants) && conv.participants.includes(userId)
       );
       
@@ -59,14 +65,25 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
 
     fetchConversations();
 
-    // Real-time subscription
-    getSupabase().then(supabase => {
-      const channel = supabase.channel('user-conversations')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => fetchConversations())
-        .subscribe();
+    // Subscribe to real-time conversation updates
+    const channel = supabase
+      .channel('user-conversations')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'conversations'
+        },
+        () => {
+          fetchConversations();
+        }
+      )
+      .subscribe();
 
-      return () => { supabase.removeChannel(channel); };
-    });
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [userId]);
 
   // Fetch messages for conversation
@@ -77,7 +94,8 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
     }
 
     const fetchMessages = async () => {
-      const result: any = await supabase
+      const client: any = supabase;
+      const { data, error } = await client
         .from('messages')
         .select(`
           *,
@@ -86,13 +104,13 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true });
 
-      if (result.error) {
-        console.error('Error fetching messages:', result.error);
+      if (error) {
+        console.error('Error fetching messages:', error);
         setMessagesLoading(false);
         return;
       }
 
-      setMessages(result.data || []);
+      setMessages(data || []);
       setMessagesLoading(false);
     };
 
@@ -137,18 +155,19 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
     if (!userId) return;
 
     const fetchUnreadCount = async () => {
-      const result: any = await supabase
+      const client: any = supabase;
+      const { count, error } = await client
         .from('messages')
         .select('*', { count: 'exact', head: true })
         .eq('recipient_id', userId)
         .is('read_at', null);
 
-      if (result.error) {
-        console.error('Error fetching unread count:', result.error);
+      if (error) {
+        console.error('Error fetching unread count:', error);
         return;
       }
 
-      setUnreadCount(result.count || 0);
+      setUnreadCount(count || 0);
     };
 
     fetchUnreadCount();
@@ -221,16 +240,12 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Check if conversation already exists - use helper to avoid type inference issues
-      const fetchResult = await fetchConversationsRaw(false);
-      if (fetchResult.error) throw fetchResult.error;
-      
-      const allConvs = fetchResult.data || [];
-      const existingConvs = allConvs.filter((c: any) => 
-        c.participants && Array.isArray(c.participants)
-      );
-
+      // Check if conversation already exists
+      const convQuery = await fetchExistingConversations();
+      const existingConvs = convQuery.data || [];
       const existing = existingConvs.find((conv: any) =>
+        conv.participants &&
+        Array.isArray(conv.participants) &&
         conv.participants.length === 2 &&
         conv.participants.includes(user.id) &&
         conv.participants.includes(recipientId)
@@ -240,7 +255,8 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
 
       if (!convId) {
         // Create new conversation
-        const insertResult: any = await supabase
+        const client: any = supabase;
+        const { data: newConversation, error: convError } = await client
           .from('conversations')
           .insert({
             participants: [user.id, recipientId],
@@ -250,12 +266,13 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
           .select()
           .single();
 
-        if (insertResult.error) throw insertResult.error;
-        convId = insertResult.data.id;
+        if (convError) throw convError;
+        convId = newConversation.id;
       }
 
       // Send initial message
-      const msgResult: any = await supabase
+      const msgClient: any = supabase;
+      const { error: msgError } = await msgClient
         .from('messages')
         .insert({
           conversation_id: convId,
@@ -264,7 +281,7 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
           content: initialMessage,
         });
 
-      if (msgResult.error) throw msgResult.error;
+      if (msgError) throw msgError;
 
       toast({
         title: 'Conversation Started',
@@ -288,7 +305,8 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error }: any = await supabase
+      const client: any = supabase;
+      const { data, error } = await client
         .from('messages')
         .insert({
           conversation_id: conversationId,
@@ -319,7 +337,8 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error }: any = await supabase
+      const client: any = supabase;
+      const { error } = await client
         .from('messages')
         .update({ read_at: new Date().toISOString() })
         .eq('conversation_id', conversationId)
@@ -336,8 +355,9 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
   const updateTypingStatus = useCallback(async (isTyping: boolean) => {
     if (!conversationId || !userId) return;
 
-    await supabase
-      .from('typing_indicators' as any)
+    const client: any = supabase;
+    await client
+      .from('typing_indicators')
       .upsert({
         conversation_id: conversationId,
         user_id: userId,
@@ -352,8 +372,9 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error }: any = await supabase
-        .from('message_reactions' as any)
+      const client: any = supabase;
+      const { data, error } = await client
+        .from('message_reactions')
         .upsert({
           message_id: messageId,
           user_id: user.id,
@@ -372,7 +393,8 @@ export const useMessaging = (userId?: string, conversationId?: string) => {
   // Delete message
   const deleteMessage = useCallback(async (messageId: string) => {
     try {
-      const { error }: any = await supabase
+      const client: any = supabase;
+      const { error } = await client
         .from('messages')
         .delete()
         .eq('id', messageId);
