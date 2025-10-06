@@ -3993,6 +3993,36 @@ export type Database = {
         }
         Relationships: []
       }
+      popular_searches: {
+        Row: {
+          id: string
+          period: string
+          period_start: string
+          popularity_score: number | null
+          search_term: string
+          search_type: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          period: string
+          period_start: string
+          popularity_score?: number | null
+          search_term: string
+          search_type: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          period?: string
+          period_start?: string
+          popularity_score?: number | null
+          search_term?: string
+          search_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       predictive_insights: {
         Row: {
           confidence_level: number
@@ -5697,6 +5727,45 @@ export type Database = {
           },
         ]
       }
+      saved_searches: {
+        Row: {
+          created_at: string
+          filters: Json | null
+          id: string
+          last_checked_at: string | null
+          name: string
+          notification_enabled: boolean | null
+          search_query: string | null
+          search_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          last_checked_at?: string | null
+          name: string
+          notification_enabled?: boolean | null
+          search_query?: string | null
+          search_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          last_checked_at?: string | null
+          name?: string
+          notification_enabled?: boolean | null
+          search_query?: string | null
+          search_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       scheduled_payments: {
         Row: {
           amount: number
@@ -5765,6 +5834,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      search_analytics: {
+        Row: {
+          avg_results: number | null
+          created_at: string
+          date: string
+          id: string
+          search_count: number | null
+          search_term: string
+          search_type: string
+          zero_results_count: number | null
+        }
+        Insert: {
+          avg_results?: number | null
+          created_at?: string
+          date: string
+          id?: string
+          search_count?: number | null
+          search_term: string
+          search_type: string
+          zero_results_count?: number | null
+        }
+        Update: {
+          avg_results?: number | null
+          created_at?: string
+          date?: string
+          id?: string
+          search_count?: number | null
+          search_term?: string
+          search_type?: string
+          zero_results_count?: number | null
+        }
+        Relationships: []
+      }
+      search_history: {
+        Row: {
+          clicked_result_id: string | null
+          created_at: string
+          filters: Json | null
+          id: string
+          results_count: number | null
+          search_query: string
+          search_type: string
+          user_id: string
+        }
+        Insert: {
+          clicked_result_id?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          results_count?: number | null
+          search_query: string
+          search_type: string
+          user_id: string
+        }
+        Update: {
+          clicked_result_id?: string | null
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          results_count?: number | null
+          search_query?: string
+          search_type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       service_addons: {
         Row: {
@@ -6606,6 +6741,14 @@ export type Database = {
           user_name: string
         }[]
       }
+      get_popular_searches: {
+        Args: { p_limit?: number; p_period?: string; p_search_type?: string }
+        Returns: {
+          popularity_score: number
+          search_term: string
+          search_type: string
+        }[]
+      }
       get_professional_earnings_summary: {
         Args: { p_professional_id: string }
         Returns: Json
@@ -6719,6 +6862,14 @@ export type Database = {
           p_error_message?: string
           p_reminder_id: string
           p_success: boolean
+        }
+        Returns: undefined
+      }
+      track_search_analytics: {
+        Args: {
+          p_results_count: number
+          p_search_term: string
+          p_search_type: string
         }
         Returns: undefined
       }
