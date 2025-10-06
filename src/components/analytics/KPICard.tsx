@@ -9,6 +9,10 @@ interface KPICardProps {
   changeLabel?: string;
   icon?: React.ReactNode;
   loading?: boolean;
+  unit?: string;
+  trend?: string;
+  target?: number;
+  previousValue?: number;
 }
 
 export const KPICard = ({ title, value, change, changeLabel, icon, loading }: KPICardProps) => {

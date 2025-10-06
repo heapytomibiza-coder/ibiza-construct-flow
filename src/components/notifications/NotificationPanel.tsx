@@ -1,4 +1,4 @@
-import { useNotifications, type Notification } from '@/hooks/useNotifications';
+import { useNotifications, type InAppNotification } from '@/hooks/useNotifications';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';

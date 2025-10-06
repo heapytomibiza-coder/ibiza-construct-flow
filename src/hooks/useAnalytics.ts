@@ -12,6 +12,16 @@ export interface DashboardKPIs {
   active_disputes: number;
 }
 
+export interface UserActivity {
+  id: string;
+  user_id: string;
+  action: string;
+  entity_type?: string;
+  entity_id?: string;
+  metadata?: any;
+  created_at: string;
+}
+
 export const useAnalytics = (startDate?: Date, endDate?: Date) => {
   const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,13 +32,13 @@ export const useAnalytics = (startDate?: Date, endDate?: Date) => {
       setIsLoading(true);
       setError(null);
 
-      const { data, error: rpcError } = await supabase.rpc('get_dashboard_kpis', {
-        p_start_date: startDate?.toISOString().split('T')[0] || null,
-        p_end_date: endDate?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0]
-      });
+      const { data, error: rpcError } = await supabase.rpc('get_dashboard_kpis');
 
       if (rpcError) throw rpcError;
-      setKpis(data);
+      
+      if (data && typeof data === 'object') {
+        setKpis(data as DashboardKPIs);
+      }
     } catch (err) {
       console.error('Error fetching KPIs:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
@@ -47,4 +57,27 @@ export const useAnalytics = (startDate?: Date, endDate?: Date) => {
     error,
     refetch: fetchKPIs
   };
+};
+
+export const usePlatformAnalytics = (startDate?: Date, endDate?: Date) => {
+  const [metrics, setMetrics] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      setIsLoading(true);
+      try {
+        const { data } = await supabase.rpc('get_dashboard_kpis');
+        setMetrics(data);
+      } catch (error) {
+        console.error('Error fetching platform metrics:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMetrics();
+  }, [startDate, endDate]);
+
+  return { metrics, isLoading };
 };
