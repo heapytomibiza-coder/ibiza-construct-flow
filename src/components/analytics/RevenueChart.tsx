@@ -9,9 +9,10 @@ interface RevenueTrend {
 
 interface RevenueChartProps {
   data: RevenueTrend[];
+  showForecast?: boolean;
 }
 
-export function RevenueChart({ data }: RevenueChartProps) {
+export function RevenueChart({ data, showForecast = false }: RevenueChartProps) {
   if (!data || data.length === 0) {
     return (
       <div className="h-[300px] flex items-center justify-center text-muted-foreground">
