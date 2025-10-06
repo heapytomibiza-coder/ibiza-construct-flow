@@ -8,45 +8,53 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
-import { Plus, Flag, Trash2 } from 'lucide-react';
+import { Plus, Flag, Trash2, Edit } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import type { FeatureFlag } from '@/hooks/useFeatureFlags';
 
 export default function FeatureFlagsManager() {
   const { t } = useTranslation('admin');
   const { flags, loading, createFlag, updateFlag, toggleFlag, deleteFlag } = useFeatureFlags();
   const [showDialog, setShowDialog] = useState(false);
-  const [editingFlag, setEditingFlag] = useState<any>(null);
+  const [editingFlag, setEditingFlag] = useState<FeatureFlag | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
+    key: '',
     description: '',
-    rollout_percentage: 0,
+    audienceRoles: '',
   });
 
   const handleCreateOrUpdate = async () => {
+    const audience = formData.audienceRoles.trim() 
+      ? { roles: formData.audienceRoles.split(',').map(r => r.trim()) }
+      : {};
+
     if (editingFlag) {
-      await updateFlag(editingFlag.id, formData);
+      await updateFlag(editingFlag.key, {
+        description: formData.description || null,
+        audience,
+      });
     } else {
-      await createFlag(formData.name, formData.description);
+      await createFlag(formData.key, formData.description || undefined, false, audience);
     }
     setShowDialog(false);
     setEditingFlag(null);
-    setFormData({ name: '', description: '', rollout_percentage: 0 });
+    setFormData({ key: '', description: '', audienceRoles: '' });
   };
 
-  const handleEdit = (flag: any) => {
+  const handleEdit = (flag: FeatureFlag) => {
     setEditingFlag(flag);
+    const roles = flag.audience?.roles ? (flag.audience.roles as string[]).join(', ') : '';
     setFormData({
-      name: flag.name,
+      key: flag.key,
       description: flag.description || '',
-      rollout_percentage: flag.rollout_percentage,
+      audienceRoles: roles,
     });
     setShowDialog(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (key: string) => {
     if (confirm('Are you sure you want to delete this feature flag?')) {
-      await deleteFlag(id);
+      await deleteFlag(key);
     }
   };
 
@@ -67,52 +75,57 @@ export default function FeatureFlagsManager() {
         <p className="text-center text-muted-foreground py-8">{t('featureFlags.loading')}</p>
       ) : (
         <div className="grid gap-4">
-          {flags.map((flag) => (
-            <Card key={flag.id}>
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 space-y-2">
+          {flags.map((flag) => {
+            const roles = flag.audience?.roles as string[] | undefined;
+            return (
+              <Card key={flag.key}>
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Flag className="h-4 w-4" />
+                        <span className="font-medium">{flag.key}</span>
+                        {flag.enabled && (
+                          <Badge variant="default">{t('featureFlags.active')}</Badge>
+                        )}
+                      </div>
+                      {flag.description && (
+                        <p className="text-sm text-muted-foreground">{flag.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        {roles && roles.length > 0 && (
+                          <span>Roles: {roles.join(', ')}</span>
+                        )}
+                        {(!roles || roles.length === 0) && (
+                          <span>All users</span>
+                        )}
+                      </div>
+                    </div>
                     <div className="flex items-center gap-2">
-                      <Flag className="h-4 w-4" />
-                      <span className="font-medium">{flag.name}</span>
-                      {flag.is_enabled && (
-                        <Badge variant="default">{t('featureFlags.active')}</Badge>
-                      )}
-                    </div>
-                    {flag.description && (
-                      <p className="text-sm text-muted-foreground">{flag.description}</p>
-                    )}
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span>Rollout: {flag.rollout_percentage}%</span>
-                      {flag.target_roles && flag.target_roles.length > 0 && (
-                        <span>Roles: {flag.target_roles.join(', ')}</span>
-                      )}
+                      <Switch
+                        checked={flag.enabled}
+                        onCheckedChange={(checked) => toggleFlag(flag.key, checked)}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(flag)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(flag.key)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={flag.is_enabled}
-                      onCheckedChange={(checked) => toggleFlag(flag.id, checked)}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(flag)}
-                    >
-                      <Flag className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(flag.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 
@@ -126,12 +139,12 @@ export default function FeatureFlagsManager() {
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Flag Name</Label>
+              <Label htmlFor="key">Flag Key</Label>
               <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., new_dashboard"
+                id="key"
+                value={formData.key}
+                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
+                placeholder="e.g., analytics_v1"
                 disabled={!!editingFlag}
               />
             </div>
@@ -147,29 +160,25 @@ export default function FeatureFlagsManager() {
               />
             </div>
 
-            {editingFlag && (
-              <div>
-                <Label htmlFor="rollout">Rollout Percentage: {formData.rollout_percentage}%</Label>
-                <Slider
-                  id="rollout"
-                  value={[formData.rollout_percentage]}
-                  onValueChange={([value]) =>
-                    setFormData({ ...formData, rollout_percentage: value })
-                  }
-                  min={0}
-                  max={100}
-                  step={5}
-                  className="mt-2"
-                />
-              </div>
-            )}
+            <div>
+              <Label htmlFor="roles">Target Roles (comma-separated)</Label>
+              <Input
+                id="roles"
+                value={formData.audienceRoles}
+                onChange={(e) => setFormData({ ...formData, audienceRoles: e.target.value })}
+                placeholder="e.g., admin, moderator"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Leave empty to allow all users. Separate multiple roles with commas.
+              </p>
+            </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCreateOrUpdate} disabled={!formData.name}>
+            <Button onClick={handleCreateOrUpdate} disabled={!formData.key}>
               {editingFlag ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>

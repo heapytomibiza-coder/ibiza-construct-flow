@@ -3,16 +3,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export interface FeatureFlag {
-  id: string;
-  name: string;
+  key: string;
   description: string | null;
-  is_enabled: boolean;
-  rollout_percentage: number;
-  target_roles: string[] | null;
-  target_users: string[] | null;
+  enabled: boolean;
+  audience: Record<string, any>;
   metadata: Record<string, any>;
-  created_by: string | null;
-  created_at: string;
+  updated_at: string;
+}
+
+export interface FeatureOverride {
+  user_id: string;
+  key: string;
+  enabled: boolean;
   updated_at: string;
 }
 
@@ -27,7 +29,7 @@ export function useFeatureFlags() {
       const { data, error } = await supabase
         .from('feature_flags' as any)
         .select('*')
-        .order('name');
+        .order('key');
 
       if (error) throw error;
       setFlags((data || []) as unknown as FeatureFlag[]);
@@ -43,23 +45,25 @@ export function useFeatureFlags() {
   };
 
   const createFlag = async (
-    name: string,
+    key: string,
     description?: string,
-    is_enabled: boolean = false
+    enabled: boolean = false,
+    audience: Record<string, any> = {}
   ) => {
     setLoading(true);
     try {
       const { error } = await supabase.from('feature_flags' as any).insert({
-        name,
+        key,
         description,
-        is_enabled,
+        enabled,
+        audience,
       } as any);
 
       if (error) throw error;
 
       toast({
         title: 'Feature Flag Created',
-        description: `Flag "${name}" has been created.`,
+        description: `Flag "${key}" has been created.`,
       });
 
       await fetchFlags();
@@ -77,15 +81,15 @@ export function useFeatureFlags() {
   };
 
   const updateFlag = async (
-    id: string,
-    updates: Partial<Omit<FeatureFlag, 'id' | 'created_at' | 'updated_at'>>
+    key: string,
+    updates: Partial<Omit<FeatureFlag, 'key' | 'updated_at'>>
   ) => {
     setLoading(true);
     try {
       const { error } = await supabase
         .from('feature_flags' as any)
         .update(updates as any)
-        .eq('id', id);
+        .eq('key', key);
 
       if (error) throw error;
 
@@ -108,17 +112,17 @@ export function useFeatureFlags() {
     }
   };
 
-  const toggleFlag = async (id: string, is_enabled: boolean) => {
-    return updateFlag(id, { is_enabled });
+  const toggleFlag = async (key: string, enabled: boolean) => {
+    return updateFlag(key, { enabled });
   };
 
-  const deleteFlag = async (id: string) => {
+  const deleteFlag = async (key: string) => {
     setLoading(true);
     try {
       const { error } = await supabase
         .from('feature_flags' as any)
         .delete()
-        .eq('id', id);
+        .eq('key', key);
 
       if (error) throw error;
 
@@ -141,12 +145,12 @@ export function useFeatureFlags() {
     }
   };
 
-  const checkFlag = async (flagName: string, userId?: string) => {
+  const checkFlag = async (key: string, userId?: string) => {
     try {
-      const { data, error } = await supabase.rpc('check_feature_flag' as any, {
-        p_flag_name: flagName,
-        p_user_id: userId,
-      } as any);
+      const { data, error } = await supabase.rpc(
+        userId ? 'is_feature_enabled' as any : 'is_feature_on' as any,
+        userId ? { p_user: userId, p_key: key } : { p_key: key }
+      );
 
       if (error) throw error;
       return data as boolean;
