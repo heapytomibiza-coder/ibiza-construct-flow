@@ -48,6 +48,7 @@ const EnhancedPaymentManagement = lazy(() => import('@/components/admin/payments
 const ContentModerationPanel = lazy(() => import('@/components/admin/ContentModerationPanel'));
 const UserAnalyticsDashboard = lazy(() => import('@/components/admin/UserAnalyticsDashboard'));
 const SystemHealthDashboard = lazy(() => import('@/components/admin/SystemHealthDashboard').then(m => ({ default: m.SystemHealthDashboard })));
+const PerformanceDashboard = lazy(() => import('@/components/admin/PerformanceDashboard').then(m => ({ default: m.PerformanceDashboard })));
 
 // Lazy load AI components
 const AISmartMatcher = lazy(() => import('@/components/ai/AISmartMatcher').then(m => ({ default: m.AISmartMatcher })));
@@ -416,6 +417,8 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
           return null;
         case 'system-health':
           return <SystemHealthDashboard />;
+        case 'performance':
+          return <PerformanceDashboard />;
         case 'services':
           return <ServiceCatalogue />;
         case 'legacy':

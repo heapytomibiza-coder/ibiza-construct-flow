@@ -5927,6 +5927,30 @@ export type Database = {
         }
         Relationships: []
       }
+      query_performance_log: {
+        Row: {
+          created_at: string
+          execution_time_ms: number
+          id: string
+          query_name: string
+          table_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          execution_time_ms: number
+          id?: string
+          query_name: string
+          table_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          execution_time_ms?: number
+          id?: string
+          query_name?: string
+          table_name?: string | null
+        }
+        Relationships: []
+      }
       question_metrics: {
         Row: {
           answers: number

@@ -7,6 +7,10 @@ import { BookingCartProvider } from "./contexts/BookingCartContext";
 import App from "./App";
 import "./index.css";
 import "./i18n";
+import { initWebVitals } from "./lib/performance/webVitals";
+
+// Initialize Web Vitals tracking (Phase 6: Performance Optimization)
+initWebVitals();
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
