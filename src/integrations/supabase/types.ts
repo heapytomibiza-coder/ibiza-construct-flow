@@ -1302,6 +1302,54 @@ export type Database = {
         }
         Relationships: []
       }
+      dispute_counter_proposals: {
+        Row: {
+          created_at: string | null
+          dispute_id: string
+          id: string
+          note: string | null
+          parent_resolution_id: string | null
+          proposer_id: string
+          status: string | null
+          terms: Json
+        }
+        Insert: {
+          created_at?: string | null
+          dispute_id: string
+          id?: string
+          note?: string | null
+          parent_resolution_id?: string | null
+          proposer_id: string
+          status?: string | null
+          terms?: Json
+        }
+        Update: {
+          created_at?: string | null
+          dispute_id?: string
+          id?: string
+          note?: string | null
+          parent_resolution_id?: string | null
+          proposer_id?: string
+          status?: string | null
+          terms?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_counter_proposals_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_counter_proposals_parent_resolution_id_fkey"
+            columns: ["parent_resolution_id"]
+            isOneToOne: false
+            referencedRelation: "dispute_resolutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dispute_evidence: {
         Row: {
           created_at: string
@@ -1396,40 +1444,64 @@ export type Database = {
       }
       dispute_resolutions: {
         Row: {
-          agreed_by_client: boolean | null
-          agreed_by_professional: boolean | null
+          agreement_finalized_at: string | null
           amount: number | null
+          appeal_deadline: string | null
+          auto_execute_date: string | null
           awarded_to: string | null
           created_at: string | null
           details: string | null
           dispute_id: string
+          fault_percentage_client: number | null
+          fault_percentage_professional: number | null
           finalized_at: string | null
           id: string
+          mediator_decision_reasoning: string | null
+          party_client_agreed: boolean | null
+          party_professional_agreed: boolean | null
           resolution_type: string
+          status: string | null
+          terms: Json | null
         }
         Insert: {
-          agreed_by_client?: boolean | null
-          agreed_by_professional?: boolean | null
+          agreement_finalized_at?: string | null
           amount?: number | null
+          appeal_deadline?: string | null
+          auto_execute_date?: string | null
           awarded_to?: string | null
           created_at?: string | null
           details?: string | null
           dispute_id: string
+          fault_percentage_client?: number | null
+          fault_percentage_professional?: number | null
           finalized_at?: string | null
           id?: string
+          mediator_decision_reasoning?: string | null
+          party_client_agreed?: boolean | null
+          party_professional_agreed?: boolean | null
           resolution_type: string
+          status?: string | null
+          terms?: Json | null
         }
         Update: {
-          agreed_by_client?: boolean | null
-          agreed_by_professional?: boolean | null
+          agreement_finalized_at?: string | null
           amount?: number | null
+          appeal_deadline?: string | null
+          auto_execute_date?: string | null
           awarded_to?: string | null
           created_at?: string | null
           details?: string | null
           dispute_id?: string
+          fault_percentage_client?: number | null
+          fault_percentage_professional?: number | null
           finalized_at?: string | null
           id?: string
+          mediator_decision_reasoning?: string | null
+          party_client_agreed?: boolean | null
+          party_professional_agreed?: boolean | null
           resolution_type?: string
+          status?: string | null
+          terms?: Json | null
         }
         Relationships: [
           {
@@ -5627,6 +5699,51 @@ export type Database = {
         }
         Relationships: []
       }
+      resolution_enforcement_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          dispute_id: string
+          executed_by: string | null
+          id: string
+          resolution_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          dispute_id: string
+          executed_by?: string | null
+          id?: string
+          resolution_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          dispute_id?: string
+          executed_by?: string | null
+          id?: string
+          resolution_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resolution_enforcement_log_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resolution_enforcement_log_resolution_id_fkey"
+            columns: ["resolution_id"]
+            isOneToOne: false
+            referencedRelation: "dispute_resolutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       review_helpful_votes: {
         Row: {
           created_at: string | null
@@ -6985,6 +7102,10 @@ export type Database = {
         Args: { p_dispute_id: string }
         Returns: undefined
       }
+      execute_resolution: {
+        Args: { p_resolution_id: string }
+        Returns: undefined
+      }
       generate_payment_receipt: {
         Args: { p_payment_id: string }
         Returns: Json
@@ -7202,6 +7323,10 @@ export type Database = {
       mark_overdue_invoices: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      mark_party_agreement: {
+        Args: { p_dispute_id: string; p_field: string }
+        Returns: undefined
       }
       mark_reminder_sent: {
         Args: {

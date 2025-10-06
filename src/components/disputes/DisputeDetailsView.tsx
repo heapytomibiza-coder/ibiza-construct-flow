@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,11 @@ import { DisputeConversation } from './DisputeConversation';
 import { AutomatedTimelineTracker } from './AutomatedTimelineTracker';
 import { DisputeEvidence } from './DisputeEvidence';
 import { ResolutionProposal } from './ResolutionProposal';
+import { MediatorDashboard } from './MediatorDashboard';
+import { ResolutionBuilder } from './ResolutionBuilder';
+import { DisputeAgreementFlow } from './DisputeAgreementFlow';
+import { CounterProposalList } from './CounterProposalList';
+import { EnforcementTracker } from './EnforcementTracker';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   AlertTriangle, 
@@ -26,6 +31,8 @@ interface DisputeDetailsViewProps {
 export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
   const [showResolutionProposal, setShowResolutionProposal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userSide, setUserSide] = useState<'client' | 'professional'>('client');
   
   const {
     dispute,
@@ -39,12 +46,31 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
     updateDisputeStatus,
   } = useDisputes(undefined, disputeId);
 
-  // Get current user
-  useState(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUserId(user?.id || '');
-    });
-  });
+  // Get current user and check admin status
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUserId(user.id);
+        
+        // Check if user is admin
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .single();
+        
+        setIsAdmin(!!roles);
+
+        // Determine user side in dispute
+        if (dispute) {
+          setUserSide(dispute.created_by === user.id ? 'client' : 'professional');
+        }
+      }
+    };
+    checkUser();
+  }, [dispute]);
 
   if (disputeLoading) {
     return (
@@ -84,6 +110,11 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Admin Mediator Dashboard */}
+      {isAdmin && (
+        <MediatorDashboard disputeId={disputeId} />
+      )}
+
       {/* Header */}
       <Card className="p-6">
         <div className="space-y-4">
@@ -215,29 +246,52 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
       <Tabs defaultValue="evidence" className="space-y-4">
         <TabsList>
           <TabsTrigger value="evidence">Evidence</TabsTrigger>
-          {resolution && (
-            <TabsTrigger value="resolution">Resolution</TabsTrigger>
+          <TabsTrigger value="resolution">Resolution</TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger value="builder">Build Resolution</TabsTrigger>
           )}
+          <TabsTrigger value="counter">Counter-Proposals</TabsTrigger>
+          <TabsTrigger value="enforcement">Enforcement</TabsTrigger>
         </TabsList>
 
         <TabsContent value="evidence">
           <DisputeEvidence disputeId={disputeId} evidence={evidence || []} />
         </TabsContent>
 
-        {resolution && (
-          <TabsContent value="resolution">
-            <Card className="p-6">
-              <div className="space-y-4">
-                <h3 className="font-semibold">Resolution Details</h3>
-                <div className="space-y-2">
-                  <p><strong>Type:</strong> {resolution.resolution_type}</p>
-                  <p><strong>Amount:</strong> ${resolution.amount?.toFixed(2) || '0.00'}</p>
-                  <p><strong>Details:</strong> {resolution.details}</p>
+        <TabsContent value="resolution">
+          <div className="space-y-4">
+            <DisputeAgreementFlow 
+              disputeId={disputeId} 
+              side={userSide}
+            />
+            {resolution && (
+              <Card className="p-6">
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Legacy Resolution Details</h3>
+                  <div className="space-y-2">
+                    <p><strong>Type:</strong> {resolution.resolution_type}</p>
+                    <p><strong>Amount:</strong> ${resolution.amount?.toFixed(2) || '0.00'}</p>
+                    <p><strong>Details:</strong> {resolution.details}</p>
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
+        {isAdmin && (
+          <TabsContent value="builder">
+            <ResolutionBuilder disputeId={disputeId} />
           </TabsContent>
         )}
+
+        <TabsContent value="counter">
+          <CounterProposalList disputeId={disputeId} />
+        </TabsContent>
+
+        <TabsContent value="enforcement">
+          <EnforcementTracker disputeId={disputeId} />
+        </TabsContent>
       </Tabs>
 
       {showResolutionProposal && (
