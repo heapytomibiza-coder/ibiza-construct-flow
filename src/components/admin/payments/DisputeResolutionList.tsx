@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { ExternalLink } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +26,7 @@ import { useAdminPayments } from '@/hooks/admin/useAdminPayments';
 import { format } from 'date-fns';
 
 export function DisputeResolutionList() {
+  const navigate = useNavigate();
   const { activeDisputes, loadingDisputes, updateDispute } = useAdminPayments();
   const [selectedDispute, setSelectedDispute] = useState<any>(null);
   const [newStatus, setNewStatus] = useState('');
@@ -115,9 +118,20 @@ export function DisputeResolutionList() {
                     </span>
                   </div>
                 </div>
-                <Button size="sm" onClick={() => setSelectedDispute(dispute)}>
-                  Resolve
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(`/admin/disputes/${dispute.id}`)}
+                    className="gap-1"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    Full Details
+                  </Button>
+                  <Button size="sm" onClick={() => setSelectedDispute(dispute)}>
+                    Quick Resolve
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

@@ -159,6 +159,7 @@ export type Database = {
           granted_by: string | null
           id: string
           permission: string
+          scope: string | null
         }
         Insert: {
           admin_id: string
@@ -166,6 +167,7 @@ export type Database = {
           granted_by?: string | null
           id?: string
           permission: string
+          scope?: string | null
         }
         Update: {
           admin_id?: string
@@ -173,6 +175,7 @@ export type Database = {
           granted_by?: string | null
           id?: string
           permission?: string
+          scope?: string | null
         }
         Relationships: []
       }
@@ -812,13 +815,61 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_risk_flags: {
+        Row: {
+          booking_id: string
+          detected_at: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          resolved_at: string | null
+          resolved_by: string | null
+          risk_type: string
+          severity: string
+        }
+        Insert: {
+          booking_id: string
+          detected_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          risk_type: string
+          severity: string
+        }
+        Update: {
+          booking_id?: string
+          detected_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          risk_type?: string
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_risk_flags_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
+          auto_complete_eligible_at: string | null
           budget_range: string | null
           catalogue_version_used: number | null
+          checkin_window_end: string | null
+          checkin_window_start: string | null
           client_id: string | null
           created_at: string | null
           description: string | null
+          escrow_funded_at: string | null
           general_answers: Json | null
           id: string
           locale: string | null
@@ -831,11 +882,15 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          auto_complete_eligible_at?: string | null
           budget_range?: string | null
           catalogue_version_used?: number | null
+          checkin_window_end?: string | null
+          checkin_window_start?: string | null
           client_id?: string | null
           created_at?: string | null
           description?: string | null
+          escrow_funded_at?: string | null
           general_answers?: Json | null
           id?: string
           locale?: string | null
@@ -848,11 +903,15 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          auto_complete_eligible_at?: string | null
           budget_range?: string | null
           catalogue_version_used?: number | null
+          checkin_window_end?: string | null
+          checkin_window_start?: string | null
           client_id?: string | null
           created_at?: string | null
           description?: string | null
+          escrow_funded_at?: string | null
           general_answers?: Json | null
           id?: string
           locale?: string | null
@@ -1584,6 +1643,7 @@ export type Database = {
           title: string
           type: string
           updated_at: string
+          workflow_state: string | null
         }
         Insert: {
           amount_disputed?: number | null
@@ -1617,6 +1677,7 @@ export type Database = {
           title: string
           type: string
           updated_at?: string
+          workflow_state?: string | null
         }
         Update: {
           amount_disputed?: number | null
@@ -1650,6 +1711,7 @@ export type Database = {
           title?: string
           type?: string
           updated_at?: string
+          workflow_state?: string | null
         }
         Relationships: []
       }
@@ -1736,6 +1798,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dual_control_approvals: {
+        Row: {
+          action_type: string
+          approved_by: string | null
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          expires_at: string
+          id: string
+          payload: Json
+          reason: string
+          requested_by: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          action_type: string
+          approved_by?: string | null
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          expires_at?: string
+          id?: string
+          payload: Json
+          reason: string
+          requested_by: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          action_type?: string
+          approved_by?: string | null
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          expires_at?: string
+          id?: string
+          payload?: Json
+          reason?: string
+          requested_by?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       escrow_milestones: {
         Row: {
@@ -2705,6 +2812,47 @@ export type Database = {
           },
         ]
       }
+      job_state_transitions: {
+        Row: {
+          created_at: string | null
+          from_state: string
+          id: string
+          job_id: string
+          metadata: Json | null
+          reason: string | null
+          to_state: string
+          triggered_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          from_state: string
+          id?: string
+          job_id: string
+          metadata?: Json | null
+          reason?: string | null
+          to_state: string
+          triggered_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          from_state?: string
+          id?: string
+          job_id?: string
+          metadata?: Json | null
+          reason?: string | null
+          to_state?: string
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_state_transitions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_status_updates: {
         Row: {
           created_at: string
@@ -2780,6 +2928,47 @@ export type Database = {
         }
         Relationships: []
       }
+      job_versions: {
+        Row: {
+          change_reason: string | null
+          changes: Json
+          created_at: string | null
+          created_by: string
+          id: string
+          invalidated_offers: boolean | null
+          job_id: string
+          version_number: number
+        }
+        Insert: {
+          change_reason?: string | null
+          changes: Json
+          created_at?: string | null
+          created_by: string
+          id?: string
+          invalidated_offers?: boolean | null
+          job_id: string
+          version_number: number
+        }
+        Update: {
+          change_reason?: string | null
+          changes?: Json
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          invalidated_offers?: boolean | null
+          job_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_versions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           answers: Json
@@ -2796,6 +2985,7 @@ export type Database = {
           status: string
           title: string
           updated_at: string
+          workflow_state: string | null
         }
         Insert: {
           answers?: Json
@@ -2812,6 +3002,7 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string
+          workflow_state?: string | null
         }
         Update: {
           answers?: Json
@@ -2828,6 +3019,7 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+          workflow_state?: string | null
         }
         Relationships: []
       }
@@ -7286,6 +7478,10 @@ export type Database = {
       get_user_role: {
         Args: { user_id: string }
         Returns: string
+      }
+      has_admin_scope: {
+        Args: { p_scope: string; p_user_id: string }
+        Returns: boolean
       }
       has_role: {
         Args: {

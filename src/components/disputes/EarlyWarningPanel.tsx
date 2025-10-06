@@ -1,10 +1,10 @@
 import React from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useDisputeAnalytics } from "@/hooks/useDisputeAnalytics";
-import { AlertTriangle, Clock, UserX, Calendar, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { AlertTriangle, Clock, UserX, Calendar, CheckCircle, ExternalLink } from "lucide-react";
 
 const ICON_MAP = {
   slow_response: Clock,
@@ -20,6 +20,7 @@ const LEVEL_VARIANT = {
 } as const;
 
 export default function EarlyWarningPanel({ compact = false }: { compact?: boolean }) {
+  const navigate = useNavigate();
   const { warnings, resolveWarning, loading } = useDisputeAnalytics();
 
   const urgentCount = warnings.filter(w => w.level === 'urgent').length;
@@ -92,11 +93,15 @@ export default function EarlyWarningPanel({ compact = false }: { compact?: boole
                 </p>
                 
                 <div className="flex items-center gap-2 mt-2">
-                  <Link to={`/dispute/${warning.dispute_id}`}>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs">
-                      View Dispute
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={() => navigate(`/admin/disputes/${warning.dispute_id}`)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs gap-1"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    View Dispute
+                  </Button>
                   <Button
                     onClick={() => resolveWarning(warning.id)}
                     variant="outline"
