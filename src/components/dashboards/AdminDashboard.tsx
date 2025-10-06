@@ -34,7 +34,7 @@ const UserInspector = lazy(() => import('@/components/admin/UserInspector'));
 const AdminDocumentReview = lazy(() => import('@/components/admin/AdminDocumentReview').then(m => ({ default: m.AdminDocumentReview })));
 const DatabaseStats = lazy(() => import('@/components/admin/DatabaseStats'));
 const FeatureFlagsManager = lazy(() => import('@/components/admin/FeatureFlagsManager'));
-const PaymentManagementDashboard = lazy(() => import('@/components/admin/payments/PaymentManagementDashboard').then(m => ({ default: m.default })));
+const EnhancedPaymentManagement = lazy(() => import('@/components/admin/payments/EnhancedPaymentManagement').then(m => ({ default: m.EnhancedPaymentManagement })));
 
 // Lazy load AI components
 const AISmartMatcher = lazy(() => import('@/components/ai/AISmartMatcher').then(m => ({ default: m.AISmartMatcher })));
@@ -231,7 +231,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
             </div>
           );
         case 'payments':
-          return <PaymentManagementDashboard />;
+          return <EnhancedPaymentManagement />;
         default:
           return <CommandCenter />;
       }
