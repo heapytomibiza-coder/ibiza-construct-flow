@@ -25,5 +25,28 @@
   "lang": "en",
   "dir": "ltr",
   "scope": "/",
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Go to your dashboard",
+      "url": "/dashboard",
+      "icons": []
+    },
+    {
+      "name": "Post Job",
+      "short_name": "Post",
+      "description": "Post a new job",
+      "url": "/post",
+      "icons": []
+    },
+    {
+      "name": "Discovery",
+      "short_name": "Discover",
+      "description": "Find professionals",
+      "url": "/discovery",
+      "icons": []
+    }
+  ]
 }

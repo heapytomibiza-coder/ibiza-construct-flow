@@ -39,6 +39,33 @@ export const preloadRoute = (routePath: string) => {
   }
 };
 
+// Preload on hover for better UX
+export const useRoutePreload = () => {
+  const handleMouseEnter = (path: string) => {
+    preloadRoute(path);
+  };
+
+  return { handleMouseEnter };
+};
+
+// Monitor bundle performance
+export const logBundleMetrics = () => {
+  if (import.meta.env.DEV && 'performance' in window) {
+    const resources = performance.getEntriesByType('resource');
+    const jsResources = resources.filter(r => r.name.endsWith('.js'));
+    
+    const totalSize = jsResources.reduce((acc, r: any) => acc + (r.transferSize || 0), 0);
+    const totalTime = jsResources.reduce((acc, r: any) => acc + r.duration, 0);
+    
+    console.log('📦 Bundle Metrics:', {
+      jsFiles: jsResources.length,
+      totalSize: `${(totalSize / 1024).toFixed(2)} KB`,
+      totalTime: `${totalTime.toFixed(2)} ms`,
+      avgSize: `${(totalSize / jsResources.length / 1024).toFixed(2)} KB`,
+    });
+  }
+};
+
 // Bundle size analyzer component (development only)
 export const BundleAnalyzer = () => {
   if (process.env.NODE_ENV !== 'development') return null;

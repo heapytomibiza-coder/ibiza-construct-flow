@@ -1,5 +1,6 @@
-// Service Worker for PWA and Push Notifications - Phase 14.1A
+// Service Worker for PWA - Phase 7: Bundle Optimization
 const CACHE_NAME = 'ibiza-v1';
+const RUNTIME_CACHE = 'ibiza-runtime';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -25,7 +26,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
             console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -36,7 +37,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch - network first, fallback to cache
+// Fetch - network first, fallback to cache with runtime caching
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -47,18 +48,26 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome extensions and other protocols
   if (!url.protocol.startsWith('http')) return;
 
+  // Skip cross-origin requests
+  if (!url.origin.includes(self.location.origin)) return;
+
   event.respondWith(
     fetch(request)
       .then((response) => {
         // Clone response for cache
         const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, responseToCache);
-        });
+        
+        // Cache successful responses in runtime cache
+        if (response.status === 200) {
+          caches.open(RUNTIME_CACHE).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+        }
+        
         return response;
       })
       .catch(() => {
-        // Fallback to cache
+        // Fallback to cache (try runtime first, then static)
         return caches.match(request).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;

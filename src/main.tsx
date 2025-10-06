@@ -8,9 +8,15 @@ import App from "./App";
 import "./index.css";
 import "./i18n";
 import { initWebVitals } from "./lib/performance/webVitals";
+import { logBundleMetrics } from "./components/performance/BundleOptimizer";
 
 // Initialize Web Vitals tracking (Phase 6: Performance Optimization)
 initWebVitals();
+
+// Log bundle metrics in development (Phase 7: Bundle Optimization)
+if (import.meta.env.DEV) {
+  window.addEventListener('load', logBundleMetrics);
+}
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
