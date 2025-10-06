@@ -4770,6 +4770,45 @@ export type Database = {
           },
         ]
       }
+      rating_summary: {
+        Row: {
+          average_rating: number | null
+          category_averages: Json | null
+          created_at: string | null
+          id: string
+          rating_distribution: Json | null
+          response_rate: number | null
+          role: string
+          total_reviews: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          average_rating?: number | null
+          category_averages?: Json | null
+          created_at?: string | null
+          id?: string
+          rating_distribution?: Json | null
+          response_rate?: number | null
+          role: string
+          total_reviews?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          average_rating?: number | null
+          category_averages?: Json | null
+          created_at?: string | null
+          id?: string
+          rating_distribution?: Json | null
+          response_rate?: number | null
+          role?: string
+          total_reviews?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       refund_requests: {
         Row: {
           admin_notes: string | null
@@ -4903,6 +4942,210 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      review_helpful_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_helpful: boolean
+          review_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_helpful: boolean
+          review_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_helpful?: boolean
+          review_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_helpful_votes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_media: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          file_name: string | null
+          file_size: number | null
+          file_type: string
+          file_url: string
+          id: string
+          review_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          file_name?: string | null
+          file_size?: number | null
+          file_type: string
+          file_url: string
+          id?: string
+          review_id: string
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          file_name?: string | null
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          id?: string
+          review_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_media_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_responses: {
+        Row: {
+          created_at: string | null
+          id: string
+          responder_id: string
+          response_text: string
+          review_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          responder_id: string
+          response_text: string
+          review_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          responder_id?: string
+          response_text?: string
+          review_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_responses_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          category_ratings: Json | null
+          comment: string | null
+          contract_id: string | null
+          created_at: string | null
+          flag_reason: string | null
+          flagged_at: string | null
+          helpful_count: number | null
+          id: string
+          is_featured: boolean | null
+          is_verified: boolean | null
+          job_id: string
+          metadata: Json | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_notes: string | null
+          moderation_status: string | null
+          rating: number
+          response_at: string | null
+          response_text: string | null
+          reviewee_id: string
+          reviewer_id: string
+          title: string | null
+          unhelpful_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_ratings?: Json | null
+          comment?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          flag_reason?: string | null
+          flagged_at?: string | null
+          helpful_count?: number | null
+          id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          job_id: string
+          metadata?: Json | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string | null
+          rating: number
+          response_at?: string | null
+          response_text?: string | null
+          reviewee_id: string
+          reviewer_id: string
+          title?: string | null
+          unhelpful_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_ratings?: Json | null
+          comment?: string | null
+          contract_id?: string | null
+          created_at?: string | null
+          flag_reason?: string | null
+          flagged_at?: string | null
+          helpful_count?: number | null
+          id?: string
+          is_featured?: boolean | null
+          is_verified?: boolean | null
+          job_id?: string
+          metadata?: Json | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string | null
+          rating?: number
+          response_at?: string | null
+          response_text?: string | null
+          reviewee_id?: string
+          reviewer_id?: string
+          title?: string | null
+          unhelpful_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scheduled_payments: {
         Row: {
@@ -5679,6 +5922,30 @@ export type Database = {
           revenue: number
         }[]
       }
+      get_reviews_for_user: {
+        Args: {
+          p_limit?: number
+          p_min_rating?: number
+          p_offset?: number
+          p_user_id: string
+        }
+        Returns: {
+          category_ratings: Json
+          comment: string
+          created_at: string
+          helpful_count: number
+          id: string
+          is_verified: boolean
+          job_id: string
+          rating: number
+          response_at: string
+          response_text: string
+          reviewer_avatar: string
+          reviewer_id: string
+          reviewer_name: string
+          title: string
+        }[]
+      }
       get_top_revenue_sources: {
         Args: {
           p_end_date: string
@@ -5737,6 +6004,10 @@ export type Database = {
       mark_overdue_invoices: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      update_rating_summary: {
+        Args: { p_role: string; p_user_id: string }
+        Returns: undefined
       }
       user_has_role: {
         Args: { role_name: string; user_id: string }
