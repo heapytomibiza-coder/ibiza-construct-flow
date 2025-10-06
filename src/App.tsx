@@ -15,6 +15,7 @@ import { useFeature } from "./contexts/FeatureFlagsContext";
 import { BundleAnalyzer, preloadRoute } from "./components/performance/BundleOptimizer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initRealtime } from "./lib/realtimeSync";
+import { ImpersonationBanner } from "./components/admin/ImpersonationBanner";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const ProfessionalPortfolioPage = React.lazy(() => import("./pages/ProfessionalP
 const AdminVerificationsPage = React.lazy(() => import("./pages/AdminVerificationsPage"));
 const DisputeAnalyticsPage = React.lazy(() => import("./pages/admin/DisputeAnalyticsPage"));
 const AdminDisputeDetailPage = React.lazy(() => import("./pages/admin/AdminDisputeDetailPage"));
+const AdminAuditLogPage = React.lazy(() => import("./pages/admin/AdminAuditLogPage"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -101,6 +103,7 @@ function AppContent() {
           }}
         >
             <MobileGestures enableSwipeNavigation={true} enablePullToRefresh={true}>
+              <ImpersonationBanner />
               <OfflineIndicator />
               <MobileAppWrapper>
                 <Suspense fallback={<SkeletonLoader variant="card" />}>
@@ -247,6 +250,11 @@ function AppContent() {
           <Route path="/admin/disputes/:id" element={
             <RouteGuard requiredRole="admin">
               <AdminDisputeDetailPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/audit" element={
+            <RouteGuard requiredRole="admin">
+              <AdminAuditLogPage />
             </RouteGuard>
           } />
           

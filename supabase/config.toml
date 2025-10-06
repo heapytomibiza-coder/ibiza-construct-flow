@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.export-report]
 verify_jwt = true
+
+[functions.booking-risk-monitor]
+verify_jwt = false
