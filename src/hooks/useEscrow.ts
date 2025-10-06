@@ -19,6 +19,15 @@ export interface EscrowMilestone {
   description?: string;
   milestone_number?: number;
   completed_date?: string;
+  approved_by?: string;
+  approved_at?: string;
+  rejected_by?: string;
+  rejected_at?: string;
+  rejection_reason?: string;
+  auto_release_date?: string;
+  approval_deadline?: string;
+  deliverables?: any[];
+  metadata?: Record<string, any>;
 }
 
 export function useEscrow(jobId?: string) {
@@ -135,6 +144,60 @@ export function useEscrow(jobId?: string) {
 
   const releaseMilestone = releaseFunds;
 
+  const createMilestone = async (milestone: Partial<EscrowMilestone> & { contract_id: string }) => {
+    try {
+      const { error } = await supabase
+        .from('escrow_milestones')
+        .insert([milestone as any]);
+
+      if (error) throw error;
+      
+      toast({
+        title: 'Success',
+        description: 'Milestone created',
+      });
+      
+      await fetchEscrowData();
+    } catch (error) {
+      console.error('Error creating milestone:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create milestone',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const rejectMilestone = async (milestoneId: string, reason: string) => {
+    try {
+      const { error } = await supabase
+        .from('escrow_milestones')
+        .update({ 
+          status: 'rejected',
+          rejected_at: new Date().toISOString(),
+          rejected_by: (await supabase.auth.getUser()).data.user?.id,
+          rejection_reason: reason,
+        })
+        .eq('id', milestoneId);
+
+      if (error) throw error;
+      
+      toast({
+        title: 'Success',
+        description: 'Milestone rejected',
+      });
+      
+      await fetchEscrowData();
+    } catch (error) {
+      console.error('Error rejecting milestone:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject milestone',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const progress = {
     total: milestones.length,
     completed: milestones.filter(m => m.status === 'completed' || m.status === 'released').length,
@@ -155,6 +218,9 @@ export function useEscrow(jobId?: string) {
     releaseFunds,
     releaseMilestone,
     getMilestoneProgress,
+    createMilestone,
+    rejectMilestone,
+    releaseEscrow: releaseFunds,
     progress,
   };
 }
