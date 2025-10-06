@@ -65,6 +65,10 @@ const AdminHelpdeskDetailPage = React.lazy(() => import("./pages/admin/AdminHelp
 const AdminReviewModerationPage = React.lazy(() => import("./pages/admin/AdminReviewModerationPage"));
 const AdminReportsPage = React.lazy(() => import("./pages/admin/AdminReportsPage"));
 const AdminOverviewPage = React.lazy(() => import("./pages/admin/AdminOverviewPage"));
+const SecuritySettingsPage = React.lazy(() => import("./pages/admin/SecuritySettingsPage"));
+const IntelligencePage = React.lazy(() => import("./pages/admin/IntelligencePage"));
+const IntegrationHubPage = React.lazy(() => import("./pages/admin/IntegrationHubPage"));
+const PerformanceMonitorPage = React.lazy(() => import("./pages/admin/PerformanceMonitorPage"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -285,6 +289,26 @@ function AppContent() {
           <Route path="/admin/overview" element={
             <RouteGuard requiredRole="admin">
               <AdminOverviewPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/security" element={
+            <RouteGuard requiredRole="admin">
+              <SecuritySettingsPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/intelligence" element={
+            <RouteGuard requiredRole="admin">
+              <IntelligencePage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/integrations" element={
+            <RouteGuard requiredRole="admin">
+              <IntegrationHubPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/performance" element={
+            <RouteGuard requiredRole="admin">
+              <PerformanceMonitorPage />
             </RouteGuard>
           } />
           

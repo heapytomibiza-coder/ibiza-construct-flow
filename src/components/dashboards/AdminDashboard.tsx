@@ -3,7 +3,7 @@ import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity, FileCheck, AlertTriangle } from 'lucide-react';
+import { LogOut, Bot, Command, Folder, Users, CreditCard, Shield, Settings, Home, TrendingUp, Activity, FileCheck, AlertTriangle, Brain } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { InfoTip } from '@/components/ui/info-tip';
@@ -160,6 +160,34 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       tooltip: 'Export platform data in CSV, JSON, or PDF format with audit logging.'
     },
     { 
+      id: 'security', 
+      name: 'Security Settings', 
+      icon: Shield, 
+      description: '2FA & access control',
+      tooltip: 'Manage two-factor authentication, sessions, and IP whitelisting.'
+    },
+    { 
+      id: 'intelligence', 
+      name: 'AI Intelligence', 
+      icon: Brain, 
+      description: 'Fraud & predictions',
+      tooltip: 'Fraud detection, performance scoring, revenue forecasts, and churn predictions.'
+    },
+    { 
+      id: 'integrations', 
+      name: 'Integrations', 
+      icon: Bot, 
+      description: 'External services',
+      tooltip: 'Connect Stripe, calendars, email, SMS, and webhook services.'
+    },
+    { 
+      id: 'performance', 
+      name: 'Performance Monitor', 
+      icon: Activity, 
+      description: 'System performance',
+      tooltip: 'Monitor background jobs, cache performance, and system health.'
+    },
+    { 
       id: 'services', 
       name: 'Service Catalogue', 
       icon: Folder, 
@@ -281,6 +309,18 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
           return null;
         case 'export-reports':
           navigate('/admin/reports');
+          return null;
+        case 'security':
+          navigate('/admin/security');
+          return null;
+        case 'intelligence':
+          navigate('/admin/intelligence');
+          return null;
+        case 'integrations':
+          navigate('/admin/integrations');
+          return null;
+        case 'performance':
+          navigate('/admin/performance');
           return null;
         case 'services':
           return <ServiceCatalogue />;
