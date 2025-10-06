@@ -36,10 +36,11 @@ export const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({
     setSubmitting(true);
     try {
       await submitReview({
-        contract_id: contractId,
-        professional_id: professionalId,
+        job_id: contractId, // Using contract_id as job_id for now
+        reviewee_id: professionalId,
         rating,
-        comment: comment.trim() || undefined,
+        title: `Review for ${professionalName}`,
+        comment: comment.trim(),
       });
       onClose();
     } catch (error: any) {

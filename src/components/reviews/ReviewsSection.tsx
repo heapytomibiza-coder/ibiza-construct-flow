@@ -72,13 +72,13 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
           <div className="grid md:grid-cols-2 gap-6">
             {/* Overall Rating */}
             <div className="text-center md:border-r">
-              <div className="text-5xl font-bold mb-2">{stats.averageRating}</div>
+              <div className="text-5xl font-bold mb-2">{stats?.average_rating?.toFixed(1) || 0}</div>
               <div className="flex items-center justify-center gap-1 mb-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
                     className={`w-5 h-5 ${
-                      star <= Math.round(stats.averageRating)
+                      star <= Math.round(stats?.average_rating || 0)
                         ? 'fill-yellow-400 text-yellow-400'
                         : 'text-gray-300'
                     }`}
@@ -86,7 +86,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                 ))}
               </div>
               <p className="text-sm text-muted-foreground">
-                Based on {stats.totalReviews} {stats.totalReviews === 1 ? 'review' : 'reviews'}
+                Based on {stats?.total_reviews || 0} {stats?.total_reviews === 1 ? 'review' : 'reviews'}
               </p>
             </div>
 
@@ -95,8 +95,8 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
               {[5, 4, 3, 2, 1].map((rating) =>
                 renderRatingBar(
                   rating,
-                  stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution],
-                  stats.totalReviews
+                  stats?.rating_distribution?.[rating] || 0,
+                  stats?.total_reviews || 0
                 )
               )}
             </div>

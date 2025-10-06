@@ -6,6 +6,8 @@ export interface Review {
   id: string;
   job_id: string;
   reviewer_id: string;
+  reviewer_name: string;
+  reviewer_avatar?: string;
   reviewee_id: string;
   rating: number;
   title: string;
@@ -28,7 +30,8 @@ export interface ReviewStats {
   response_rate: number;
 }
 
-export function useReviews(userId?: string) {
+export function useReviews(params?: { userId?: string; professionalId?: string }) {
+  const userId = params?.userId || params?.professionalId;
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(false);
@@ -54,7 +57,13 @@ export function useReviews(userId?: string) {
       });
 
       if (error) throw error;
-      setReviews(data || []);
+      setReviews((data || []).map(review => ({
+        ...review,
+        reviewee_id: userId || '', // Add reviewee_id from the userId parameter
+        category_ratings: review.category_ratings as Record<string, number> | undefined,
+        unhelpful_count: 0,
+        moderation_status: 'approved'
+      })));
     } catch (error) {
       console.error('Error fetching reviews:', error);
       toast({
@@ -88,7 +97,7 @@ export function useReviews(userId?: string) {
     job_id: string;
     reviewee_id: string;
     rating: number;
-    title: string;
+    title?: string;
     comment: string;
     category_ratings?: Record<string, number>;
   }) => {
