@@ -1,7 +1,7 @@
 {
-  "name": "Constructive Solutions Ibiza",
-  "short_name": "CS Ibiza",
-  "description": "Ibiza's premier construction and building services network",
+  "name": "Ibiza Build Flow",
+  "short_name": "BuildFlow",
+  "description": "Professional service marketplace connecting clients with skilled professionals",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a1a",

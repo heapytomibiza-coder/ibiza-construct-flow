@@ -1,17 +1,19 @@
-// Service Worker for PWA - Phase 7: Bundle Optimization
-const CACHE_NAME = 'ibiza-v1';
-const RUNTIME_CACHE = 'ibiza-runtime';
+// Service Worker for PWA - Phase 17: Mobile Optimization
+const CACHE_NAME = 'ibiza-build-flow-v1';
+const STATIC_CACHE = 'static-v1';
+const DYNAMIC_CACHE = 'dynamic-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/offline.html'
 ];
 
 // Install - cache static assets
 self.addEventListener('install', (event) => {
   console.log('[SW] Install event');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(STATIC_CACHE).then((cache) => {
       console.log('[SW] Caching static assets');
       return cache.addAll(STATIC_ASSETS);
     })
@@ -26,7 +28,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
+          if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
             console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -57,9 +59,9 @@ self.addEventListener('fetch', (event) => {
         // Clone response for cache
         const responseToCache = response.clone();
         
-        // Cache successful responses in runtime cache
+        // Cache successful responses in dynamic cache
         if (response.status === 200) {
-          caches.open(RUNTIME_CACHE).then((cache) => {
+          caches.open(DYNAMIC_CACHE).then((cache) => {
             cache.put(request, responseToCache);
           });
         }
@@ -67,14 +69,14 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Fallback to cache (try runtime first, then static)
+        // Fallback to cache
         return caches.match(request).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
           }
           // Return offline page for navigation requests
           if (request.mode === 'navigate') {
-            return caches.match('/');
+            return caches.match('/offline.html') || caches.match('/');
           }
           return new Response('Network error', {
             status: 408,
@@ -143,9 +145,13 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Background sync (for offline message queue)
+// Background sync (for offline actions)
 self.addEventListener('sync', (event) => {
   console.log('[SW] Background sync:', event.tag);
+  
+  if (event.tag === 'sync-messages') {
+    event.waitUntil(syncMessages());
+  }
   
   if (event.tag === 'message-queue') {
     event.waitUntil(
@@ -157,3 +163,16 @@ self.addEventListener('sync', (event) => {
     );
   }
 });
+
+async function syncMessages() {
+  console.log('[SW] Syncing messages...');
+  // Sync logic will be implemented in the app
+  try {
+    const clients = await self.clients.matchAll();
+    clients.forEach(client => {
+      client.postMessage({ type: 'SYNC_COMPLETE' });
+    });
+  } catch (error) {
+    console.error('[SW] Sync failed:', error);
+  }
+}
