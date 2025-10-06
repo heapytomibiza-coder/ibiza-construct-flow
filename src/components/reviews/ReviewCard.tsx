@@ -1,150 +1,222 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState } from 'react';
+import { Star, ThumbsUp, ThumbsDown, Flag, MessageSquare } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star, CheckCircle, MessageSquare } from 'lucide-react';
-import { Review } from '@/hooks/useReviews';
+import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 
 interface ReviewCardProps {
-  review: Review;
+  review: {
+    id: string;
+    reviewer_name: string;
+    reviewer_avatar?: string;
+    rating: number;
+    title: string;
+    comment: string;
+    category_ratings?: Record<string, number>;
+    is_verified: boolean;
+    helpful_count: number;
+    unhelpful_count?: number;
+    response_text?: string;
+    response_at?: string;
+    created_at: string;
+  };
   canRespond?: boolean;
+  onMarkHelpful?: (reviewId: string, isHelpful: boolean) => void;
+  onReport?: (reviewId: string, reason: string) => void;
   onRespond?: (reviewId: string, response: string) => void;
 }
 
-export const ReviewCard: React.FC<ReviewCardProps> = ({
+export function ReviewCard({
   review,
-  canRespond = false,
+  canRespond,
+  onMarkHelpful,
+  onReport,
   onRespond,
-}) => {
-  const [showResponseForm, setShowResponseForm] = useState(false);
-  const [response, setResponse] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+}: ReviewCardProps) {
+  const [showResponse, setShowResponse] = useState(false);
+  const [responseText, setResponseText] = useState('');
+  const [showReport, setShowReport] = useState(false);
+  const [reportReason, setReportReason] = useState('');
 
-  const handleSubmitResponse = async () => {
-    if (!response.trim() || !onRespond) return;
-    
-    setSubmitting(true);
-    try {
-      await onRespond(review.id, response);
-      setShowResponseForm(false);
-      setResponse('');
-    } finally {
-      setSubmitting(false);
+  const handleSubmitResponse = () => {
+    if (responseText.trim() && onRespond) {
+      onRespond(review.id, responseText);
+      setShowResponse(false);
+      setResponseText('');
     }
   };
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-4 h-4 ${
-              star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-            }`}
-          />
-        ))}
-      </div>
-    );
+  const handleSubmitReport = () => {
+    if (reportReason.trim() && onReport) {
+      onReport(review.id, reportReason);
+      setShowReport(false);
+      setReportReason('');
+    }
   };
 
   return (
     <Card>
-      <CardContent className="pt-6">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-start gap-3">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={review.client?.avatar_url} />
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarImage src={review.reviewer_avatar} />
               <AvatarFallback>
-                {review.client?.full_name?.charAt(0) || 'U'}
+                {review.reviewer_name.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="font-semibold">{review.client?.full_name || 'Anonymous'}</h4>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">{review.reviewer_name}</p>
                 {review.is_verified && (
                   <Badge variant="secondary" className="text-xs">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Verified
+                    Verified Purchase
                   </Badge>
                 )}
               </div>
-              {renderStars(review.rating)}
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground">
                 {format(new Date(review.created_at), 'MMM dd, yyyy')}
               </p>
             </div>
           </div>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className={`h-4 w-4 ${
+                  i < review.rating
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-muted-foreground'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        <div>
+          <h4 className="font-semibold mb-2">{review.title}</h4>
+          <p className="text-muted-foreground">{review.comment}</p>
         </div>
 
-        {/* Comment */}
-        {review.comment && (
-          <p className="text-sm mb-4">{review.comment}</p>
-        )}
-
-        {/* Professional Response */}
-        {review.response && (
-          <div className="mt-4 p-4 bg-muted rounded-lg border-l-4 border-primary">
-            <div className="flex items-center gap-2 mb-2">
-              <MessageSquare className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold">Response from Professional</span>
-              <span className="text-xs text-muted-foreground">
-                {format(new Date(review.responded_at!), 'MMM dd, yyyy')}
-              </span>
-            </div>
-            <p className="text-sm">{review.response}</p>
+        {review.category_ratings && Object.keys(review.category_ratings).length > 0 && (
+          <div className="grid grid-cols-2 gap-2">
+            {Object.entries(review.category_ratings).map(([category, rating]) => (
+              <div key={category} className="text-sm">
+                <span className="text-muted-foreground capitalize">
+                  {category.replace('_', ' ')}:
+                </span>
+                <span className="ml-2 font-medium">{rating}/5</span>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Response Form */}
-        {canRespond && !review.response && (
-          <div className="mt-4">
-            {!showResponseForm ? (
+        <div className="flex items-center gap-2">
+          {onMarkHelpful && (
+            <>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                onClick={() => setShowResponseForm(true)}
+                onClick={() => onMarkHelpful(review.id, true)}
               >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Respond
+                <ThumbsUp className="h-4 w-4 mr-1" />
+                Helpful ({review.helpful_count})
               </Button>
-            ) : (
-              <div className="space-y-3">
-                <Textarea
-                  value={response}
-                  onChange={(e) => setResponse(e.target.value)}
-                  placeholder="Write a professional response..."
-                  rows={3}
-                  maxLength={500}
-                />
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setShowResponseForm(false);
-                      setResponse('');
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleSubmitResponse}
-                    disabled={!response.trim() || submitting}
-                  >
-                    {submitting ? 'Posting...' : 'Post Response'}
-                  </Button>
-                </div>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onMarkHelpful(review.id, false)}
+              >
+                <ThumbsDown className="h-4 w-4 mr-1" />
+                {review.unhelpful_count && `(${review.unhelpful_count})`}
+              </Button>
+            </>
+          )}
+          {onReport && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowReport(!showReport)}
+            >
+              <Flag className="h-4 w-4 mr-1" />
+              Report
+            </Button>
+          )}
+          {canRespond && !review.response_text && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowResponse(!showResponse)}
+            >
+              <MessageSquare className="h-4 w-4 mr-1" />
+              Respond
+            </Button>
+          )}
+        </div>
+
+        {showReport && (
+          <div className="space-y-2 pt-2 border-t">
+            <Textarea
+              placeholder="Why are you reporting this review?"
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              rows={2}
+            />
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleSubmitReport}>
+                Submit Report
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowReport(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {showResponse && (
+          <div className="space-y-2 pt-2 border-t">
+            <Textarea
+              placeholder="Write your response..."
+              value={responseText}
+              onChange={(e) => setResponseText(e.target.value)}
+              rows={3}
+            />
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleSubmitResponse}>
+                Post Response
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowResponse(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {review.response_text && (
+          <div className="bg-muted p-4 rounded-lg border-l-4 border-primary">
+            <p className="text-sm font-semibold mb-1">Response from Professional</p>
+            <p className="text-sm text-muted-foreground">{review.response_text}</p>
+            {review.response_at && (
+              <p className="text-xs text-muted-foreground mt-2">
+                {format(new Date(review.response_at), 'MMM dd, yyyy')}
+              </p>
             )}
           </div>
         )}
       </CardContent>
     </Card>
   );
-};
+}
