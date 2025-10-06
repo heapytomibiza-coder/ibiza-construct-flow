@@ -31,7 +31,7 @@ export default function FeedbackPrompt({ disputeId, onSubmit, onSkip }: Feedback
 
     setSubmitting(true);
     try {
-      const { error } = await supabase.from('dispute_feedback').insert({
+      const { error } = await supabase.from('dispute_feedback' as any).insert({
         dispute_id: disputeId,
         fairness,
         professionalism,

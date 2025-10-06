@@ -34,14 +34,14 @@ export function useDisputeAnalytics() {
       const weekAgo = new Date();
       weekAgo.setDate(today.getDate() - 7);
 
-      const { data: kpiData, error: kpiError } = await supabase.rpc('get_dispute_kpis', {
+      const { data: kpiData, error: kpiError } = await supabase.rpc('get_dispute_kpis' as any, {
         p_from: weekAgo.toISOString().slice(0, 10),
         p_to: today.toISOString().slice(0, 10),
       });
 
       if (kpiError) throw kpiError;
 
-      const { data: warningData, error: warningError } = await supabase.rpc('list_early_warnings', {
+      const { data: warningData, error: warningError } = await supabase.rpc('list_early_warnings' as any, {
         p_level: null,
         p_resolved: false,
       });
@@ -49,12 +49,13 @@ export function useDisputeAnalytics() {
       if (warningError) throw warningError;
 
       // Aggregate KPIs
-      const resolved = (kpiData || []).reduce((sum: number, row: any) => sum + (row.resolved_count || 0), 0);
-      const avgHours = (kpiData || []).length > 0
-        ? (kpiData || []).reduce((sum: number, row: any) => sum + (row.avg_resolution_hours || 0), 0) / (kpiData || []).length
+      const kpiArray = Array.isArray(kpiData) ? kpiData : [];
+      const resolved = kpiArray.reduce((sum: number, row: any) => sum + (row.resolved_count || 0), 0);
+      const avgHours = kpiArray.length > 0
+        ? kpiArray.reduce((sum: number, row: any) => sum + (row.avg_resolution_hours || 0), 0) / kpiArray.length
         : 0;
-      const adminForced = (kpiData || []).reduce((sum: number, row: any) => sum + (row.admin_forced_count || 0), 0);
-      const expired = (kpiData || []).reduce((sum: number, row: any) => sum + (row.expired_count || 0), 0);
+      const adminForced = kpiArray.reduce((sum: number, row: any) => sum + (row.admin_forced_count || 0), 0);
+      const expired = kpiArray.reduce((sum: number, row: any) => sum + (row.expired_count || 0), 0);
 
       setKpis({
         resolved,
@@ -63,7 +64,7 @@ export function useDisputeAnalytics() {
         expired,
       });
 
-      setWarnings(warningData || []);
+      setWarnings(Array.isArray(warningData) ? warningData : []);
     } catch (error: any) {
       console.error('Failed to load analytics:', error);
       toast({
@@ -78,7 +79,7 @@ export function useDisputeAnalytics() {
 
   async function resolveWarning(id: number) {
     try {
-      const { error } = await supabase.rpc('resolve_warning', { p_id: id });
+      const { error } = await supabase.rpc('resolve_warning' as any, { p_id: id });
       if (error) throw error;
 
       toast({

@@ -32,13 +32,13 @@ export default function CaseAuditViewer({ disputeId }: CaseAuditViewerProps) {
     async function loadAuditTrail() {
       try {
         const { data, error } = await supabase
-          .from('case_audit_trail')
+          .from('case_audit_trail' as any)
           .select('*')
           .eq('dispute_id', disputeId)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setItems(data || []);
+        setItems((data || []) as unknown as AuditEntry[]);
       } catch (error) {
         console.error('Failed to load audit trail:', error);
       } finally {
@@ -52,14 +52,14 @@ export default function CaseAuditViewer({ disputeId }: CaseAuditViewerProps) {
     const channel = supabase
       .channel(`audit_${disputeId}`)
       .on(
-        'postgres_changes',
+        'postgres_changes' as any,
         {
           event: 'INSERT',
           schema: 'public',
           table: 'case_audit_trail',
           filter: `dispute_id=eq.${disputeId}`,
         },
-        (payload) => {
+        (payload: any) => {
           setItems((prev) => [payload.new as AuditEntry, ...prev]);
         }
       )

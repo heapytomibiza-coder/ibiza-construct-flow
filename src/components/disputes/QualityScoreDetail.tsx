@@ -11,7 +11,7 @@ export default function QualityScoreDetail() {
   useEffect(() => {
     async function loadQualityScore() {
       try {
-        const { data: score, error } = await supabase.rpc('get_my_quality');
+        const { data: score, error } = await supabase.rpc('get_my_quality' as any);
         if (error) throw error;
         setData(score);
       } catch (error) {
