@@ -26,6 +26,7 @@ export const SavedSearchesPanel = ({ onRunSearch }: SavedSearchesPanelProps) => 
         .from('saved_searches')
         .update({ last_checked_at: new Date().toISOString() })
         .eq('id', search.id);
+      refreshSearches();
     } catch (error) {
       console.error('Error updating last run:', error);
     }
