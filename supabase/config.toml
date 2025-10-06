@@ -53,3 +53,12 @@ verify_jwt = true
 
 [functions.stripe-connect-webhook]
 verify_jwt = false
+
+[functions.send-message-notification]
+verify_jwt = false
+
+[functions.send-booking-reminder]
+verify_jwt = false
+
+[functions.register-push-device]
+verify_jwt = true
