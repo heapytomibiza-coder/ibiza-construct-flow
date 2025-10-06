@@ -147,6 +147,68 @@ export function getDashboardRoute(role: Role): string {
   return routes[role] || routes.client;
 }
 
+export type InitialRouteReason =
+  | 'no_display_name'
+  | 'admin_dashboard'
+  | 'pro_needs_onboarding'
+  | 'pro_dashboard'
+  | 'client_dashboard';
+
+/**
+ * Single source of truth for initial dashboard routing
+ * Checks profile completeness, role, and onboarding status
+ */
+export async function getInitialDashboardRoute(
+  userId: string
+): Promise<{ path: string; reason: InitialRouteReason }> {
+  // 1) Check profile has display_name
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('display_name, active_role')
+    .eq('id', userId)
+    .single();
+
+  if (!profile?.display_name) {
+    return { path: '/auth/quick-start', reason: 'no_display_name' };
+  }
+
+  // 2) Get user roles
+  const { data: rolesData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId);
+
+  const roles = rolesData?.map(r => r.role as Role) || [];
+  const hasRole = (r: Role) => roles.includes(r);
+
+  // 3) Admin takes precedence if active
+  if (hasRole('admin') && profile.active_role === 'admin') {
+    return { path: '/dashboard/admin', reason: 'admin_dashboard' };
+  }
+
+  // 4) Professional with onboarding check
+  if (profile.active_role === 'professional' || hasRole('professional')) {
+    // Check onboarding status from profiles table
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('tasker_onboarding_status')
+      .eq('id', userId)
+      .single();
+
+    // Check if onboarding is complete
+    const onboardingComplete = profileData?.tasker_onboarding_status === 'complete';
+    
+    if (!onboardingComplete) {
+      return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
+    }
+    
+    return { path: '/dashboard/pro', reason: 'pro_dashboard' };
+  }
+
+  // 5) Default to client
+  return { path: '/dashboard/client', reason: 'client_dashboard' };
+}
+
 export async function getProfile(): Promise<UserProfile | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;

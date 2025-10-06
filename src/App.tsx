@@ -72,8 +72,6 @@ function AppContent() {
   // Initialize language management for SEO
   useLanguage();
   
-  // Enable auth for production (set to false to enforce authentication)
-  const DISABLE_AUTH_FOR_WIREFRAME = false;
   
   // Enable job wizard for implementation
   const jobWizardEnabled = useFeature('ff.jobWizardV2', true);
@@ -114,18 +112,15 @@ function AppContent() {
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
           
-          {/* Auth Flow Routes */}
-          <Route path="/auth" element={<Navigate to="/auth/sign-in" replace />} />
-          <Route path="/auth/role-select" element={<Navigate to="/auth?tab=signup" replace />} />
-          <Route path="/auth/sign-up" element={<Navigate to="/auth?tab=signup" replace />} />
-          <Route path="/auth/sign-in" element={<Navigate to="/auth?tab=signin" replace />} />
+          {/* Auth Flow Routes - Consolidated */}
+          <Route path="/auth" element={<UnifiedAuth />} />
           <Route path="/auth/verify-email" element={<VerifyEmail />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth/quick-start" element={<QuickStart />} />
           
-          {/* Professional Onboarding */}
+          {/* Professional Onboarding - No completion requirement here */}
           <Route path="/onboarding/professional" element={
-            <RouteGuard requiredRole="professional">
+            <RouteGuard requiredRole="professional" requireOnboardingComplete={false}>
               <ProfessionalOnboardingPage />
             </RouteGuard>
           } />
@@ -159,67 +154,43 @@ function AppContent() {
           {/* Job Wizard - Feature Flagged */}
           {jobWizardEnabled && (
             <Route path="/post" element={
-              DISABLE_AUTH_FOR_WIREFRAME ? (
-              <PostJob />
-            ) : (
               <RouteGuard requiredRole="client">
                 <PostJob />
               </RouteGuard>
-            )
-          } />
-        )}
+            } />
+          )}
         
         {/* Templates Page */}
         <Route path="/templates" element={
-          DISABLE_AUTH_FOR_WIREFRAME ? (
+          <RouteGuard requiredRole="client">
             <Templates />
-          ) : (
-            <RouteGuard requiredRole="client">
-              <Templates />
-            </RouteGuard>
-          )
+          </RouteGuard>
         } />
         
         {/* Messages Routes */}
         <Route path="/messages" element={
-          DISABLE_AUTH_FOR_WIREFRAME ? (
+          <RouteGuard>
             <MessagesPage />
-          ) : (
-            <RouteGuard>
-              <MessagesPage />
-            </RouteGuard>
-          )
+          </RouteGuard>
         } />
         <Route path="/messages/:conversationId" element={
-          DISABLE_AUTH_FOR_WIREFRAME ? (
+          <RouteGuard>
             <ConversationPage />
-          ) : (
-            <RouteGuard>
-              <ConversationPage />
-            </RouteGuard>
-          )
+          </RouteGuard>
         } />
         
         {/* Job Detail Page */}
         <Route path="/job/:id" element={
-          DISABLE_AUTH_FOR_WIREFRAME ? (
+          <RouteGuard requiredRole="client">
             <JobDetailPage />
-          ) : (
-            <RouteGuard requiredRole="client">
-              <JobDetailPage />
-            </RouteGuard>
-          )
+          </RouteGuard>
         } />
         
         {/* Payments Page */}
         <Route path="/payments" element={
-          DISABLE_AUTH_FOR_WIREFRAME ? (
+          <RouteGuard>
             <PaymentsPage />
-          ) : (
-            <RouteGuard>
-              <PaymentsPage />
-            </RouteGuard>
-          )
+          </RouteGuard>
         } />
         
         {/* Color Preview Page */}
@@ -227,109 +198,65 @@ function AppContent() {
         
         {/* Protected Dashboard Routes */}
         <Route path="/dashboard" element={
-          DISABLE_AUTH_FOR_WIREFRAME ? (
+          <RouteGuard>
             <Dashboard />
-          ) : (
-            <RouteGuard>
-              <Dashboard />
-            </RouteGuard>
-          )
+          </RouteGuard>
         } />
         <Route path="/dashboard/client" element={
-          DISABLE_AUTH_FOR_WIREFRAME ? (
+          <RouteGuard requiredRole="client">
             <UnifiedClientDashboard />
-          ) : (
-            <RouteGuard requiredRole="client">
-              <UnifiedClientDashboard />
-            </RouteGuard>
-          )
+          </RouteGuard>
         } />
         <Route path="/dashboard/pro" element={
-          DISABLE_AUTH_FOR_WIREFRAME ? (
+          <RouteGuard requiredRole="professional" requireOnboardingComplete>
             <UnifiedProfessionalDashboard />
-          ) : (
-            <RouteGuard requiredRole="professional">
-              <UnifiedProfessionalDashboard />
-            </RouteGuard>
-          )
+          </RouteGuard>
         } />
           <Route path="/dashboard/admin" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            <RouteGuard requiredRole="admin">
               <AdminDashboardPage />
-            ) : (
-              <RouteGuard requiredRole="admin">
-                <AdminDashboardPage />
-              </RouteGuard>
-            )
+            </RouteGuard>
           } />
           <Route path="/admin/questions" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            <RouteGuard requiredRole="admin">
               <AdminQuestions />
-            ) : (
-              <RouteGuard requiredRole="admin">
-                <AdminQuestions />
-              </RouteGuard>
-            )
+            </RouteGuard>
           } />
           <Route path="/admin/questions/compare/:slug" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            <RouteGuard requiredRole="admin">
               <PackCompareView />
-            ) : (
-              <RouteGuard requiredRole="admin">
-                <PackCompareView />
-              </RouteGuard>
-            )
+            </RouteGuard>
           } />
           <Route path="/admin/website-settings" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            <RouteGuard requiredRole="admin">
               <WebsiteSettings />
-            ) : (
-              <RouteGuard requiredRole="admin">
-                <WebsiteSettings />
-              </RouteGuard>
-            )
+            </RouteGuard>
           } />
           <Route path="/admin/verifications" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            <RouteGuard requiredRole="admin">
               <AdminVerificationsPage />
-            ) : (
-              <RouteGuard requiredRole="admin">
-                <AdminVerificationsPage />
-              </RouteGuard>
-            )
+            </RouteGuard>
           } />
           
           {/* Settings Routes - Role-Aware */}
           <Route path="/settings" element={
-            DISABLE_AUTH_FOR_WIREFRAME ? (
+            <RouteGuard>
               <SettingsLayout />
-            ) : (
-              <RouteGuard>
-                <SettingsLayout />
-              </RouteGuard>
-            )
+            </RouteGuard>
           }>
             <Route index element={<Navigate to="/settings/profile" replace />} />
             <Route path="profile" element={<ProfileSettings />} />
             <Route path="account" element={<AccountSettings />} />
             <Route path="notifications" element={<NotificationSettings />} />
             <Route path="client" element={
-              DISABLE_AUTH_FOR_WIREFRAME ? (
+              <RouteGuard requiredRole="client">
                 <ClientSettings />
-              ) : (
-                <RouteGuard requiredRole="client">
-                  <ClientSettings />
-                </RouteGuard>
-              )
+              </RouteGuard>
             } />
             <Route path="professional" element={
-              DISABLE_AUTH_FOR_WIREFRAME ? (
+              <RouteGuard requiredRole="professional">
                 <ProfessionalSettings />
-              ) : (
-                <RouteGuard requiredRole="professional">
-                  <ProfessionalSettings />
-                </RouteGuard>
-              )
+              </RouteGuard>
             } />
           </Route>
           

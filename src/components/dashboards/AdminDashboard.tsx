@@ -35,6 +35,8 @@ const AdminDocumentReview = lazy(() => import('@/components/admin/AdminDocumentR
 const DatabaseStats = lazy(() => import('@/components/admin/DatabaseStats'));
 const FeatureFlagsManager = lazy(() => import('@/components/admin/FeatureFlagsManager'));
 const EnhancedPaymentManagement = lazy(() => import('@/components/admin/payments/EnhancedPaymentManagement').then(m => ({ default: m.EnhancedPaymentManagement })));
+const ContentModerationPanel = lazy(() => import('@/components/admin/ContentModerationPanel'));
+const UserAnalyticsDashboard = lazy(() => import('@/components/admin/UserAnalyticsDashboard'));
 
 // Lazy load AI components
 const AISmartMatcher = lazy(() => import('@/components/ai/AISmartMatcher').then(m => ({ default: m.AISmartMatcher })));
@@ -171,6 +173,20 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
       description: 'Manage transactions & disputes',
       tooltip: 'Oversee payment transactions, approve refunds, resolve disputes, and monitor financial operations.'
     },
+    { 
+      id: 'content-moderation', 
+      name: 'Content Moderation', 
+      icon: Shield, 
+      description: 'Review flagged content',
+      tooltip: 'Review and moderate user-reported content, spam, and policy violations.'
+    },
+    { 
+      id: 'user-analytics', 
+      name: 'User Analytics', 
+      icon: Users, 
+      description: 'User cohorts & activity',
+      tooltip: 'Analyze user cohorts, activity patterns, retention metrics, and engagement data.'
+    },
   ];
 
   const handleSignOut = async () => {
@@ -232,6 +248,10 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
           );
         case 'payments':
           return <EnhancedPaymentManagement />;
+        case 'content-moderation':
+          return <ContentModerationPanel />;
+        case 'user-analytics':
+          return <UserAnalyticsDashboard />;
         default:
           return <CommandCenter />;
       }

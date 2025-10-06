@@ -191,3 +191,5 @@ export function UserAnalyticsDashboard() {
     </div>
   );
 }
+
+export default UserAnalyticsDashboard;

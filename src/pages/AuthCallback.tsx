@@ -64,27 +64,14 @@ export default function AuthCallback() {
             return;
           }
 
-          // Handle redirect or navigate based on roles
+          // Handle redirect or navigate based on centralized routing
           if (redirectTo) {
-            navigate(redirectTo);
+            navigate(decodeURIComponent(redirectTo));
           } else {
-            // Get roles from user_roles table for navigation
-            const { data: rolesData } = await supabase
-              .from('user_roles')
-              .select('role')
-              .eq('user_id', data.session.user.id);
-            
-            const roles = rolesData?.map(r => r.role) || [];
-            
-            if (roles.includes('admin')) {
-              navigate('/dashboard/admin');
-            } else if (roles.includes('client') && roles.includes('professional')) {
-              navigate('/role-switcher');
-            } else if (roles.includes('professional')) {
-              navigate('/dashboard/pro');
-            } else {
-              navigate('/dashboard/client');
-            }
+            // Use centralized routing logic
+            const { getInitialDashboardRoute } = await import('@/lib/roles');
+            const { path } = await getInitialDashboardRoute(data.session.user.id);
+            navigate(path);
           }
         } else {
           navigate('/auth/sign-in');

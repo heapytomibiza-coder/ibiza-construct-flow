@@ -256,3 +256,5 @@ export function ContentModerationPanel() {
     </div>
   );
 }
+
+export default ContentModerationPanel;

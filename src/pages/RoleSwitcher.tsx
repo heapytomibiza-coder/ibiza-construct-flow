@@ -50,9 +50,6 @@ export default function RoleSwitcher() {
   }, [navigate]);
 
   const handleRoleSelect = (role: 'client' | 'professional') => {
-    // Store the selected role in localStorage for future reference
-    localStorage.setItem('selectedRole', role);
-    
     if (role === 'professional') {
       navigate('/dashboard/pro');
     } else {
