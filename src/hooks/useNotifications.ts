@@ -5,15 +5,21 @@ import { toast } from 'sonner';
 
 export interface Notification {
   id: string;
+  user_id: string;
   title: string;
   message: string;
-  type: string;
+  notification_type: string;
+  priority: string;
+  category: string;
   action_url?: string;
-  metadata?: any;
+  action_text?: string;
+  entity_type?: string;
+  entity_id?: string;
+  metadata: any;
   read_at?: string;
-  created_at: string;
-  priority?: string;
   dismissed_at?: string;
+  expires_at?: string;
+  created_at: string;
 }
 
 export const useNotifications = () => {
@@ -26,7 +32,7 @@ export const useNotifications = () => {
   const fetchNotifications = async () => {
     if (!user) return;
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('notifications')
       .select('*')
       .eq('user_id', user.id)
@@ -38,7 +44,7 @@ export const useNotifications = () => {
       return;
     }
 
-    setNotifications(data || []);
+    setNotifications((data || []) as any);
     setUnreadCount((data || []).filter(n => !n.read_at).length);
     setLoading(false);
   };
@@ -81,11 +87,25 @@ export const useNotifications = () => {
     // Remove from local state
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
     
-    // Update in database (dismissed_at will be available after types regenerate)
-    // const { error } = await supabase
-    //   .from('notifications')
-    //   .update({ dismissed_at: new Date().toISOString() })
-    //   .eq('id', notificationId);
+    // Update in database
+    await (supabase as any)
+      .from('notifications')
+      .update({ dismissed_at: new Date().toISOString() })
+      .eq('id', notificationId);
+  };
+
+  // Dismiss multiple notifications
+  const dismiss = async (notificationIds: string[]) => {
+    // Remove from local state
+    setNotifications(prev => prev.filter(n => !notificationIds.includes(n.id)));
+    
+    // Update in database
+    for (const id of notificationIds) {
+      await (supabase as any)
+        .from('notifications')
+        .update({ dismissed_at: new Date().toISOString() })
+        .eq('id', id);
+    }
   };
 
   // Subscribe to real-time notifications
@@ -135,6 +155,7 @@ export const useNotifications = () => {
     markAsRead,
     markAllAsRead,
     dismissNotification,
+    dismiss,
     refresh: fetchNotifications
   };
 };

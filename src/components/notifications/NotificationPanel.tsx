@@ -15,7 +15,7 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
   const { notifications, notificationsLoading, unreadCount, markAsRead, markAllAsRead, dismissNotification } = useNotifications();
   const navigate = useNavigate();
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const getNotificationIcon = (type: Notification['notification_type']) => {
     // Return appropriate icon based on type
     return '📬';
   };
@@ -111,7 +111,7 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
                   >
                     <div className="flex gap-3">
                       <div className="text-2xl flex-shrink-0">
-                        {getNotificationIcon(notification.type)}
+                        {getNotificationIcon(notification.notification_type)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
@@ -157,7 +157,7 @@ export const NotificationPanel = ({ onClose }: NotificationPanelProps) => {
                   >
                     <div className="flex gap-3">
                       <div className="text-2xl flex-shrink-0">
-                        {getNotificationIcon(notification.type)}
+                        {getNotificationIcon(notification.notification_type)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm">{notification.title}</h4>
