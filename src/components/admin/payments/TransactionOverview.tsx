@@ -18,22 +18,58 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useQuery } from '@tanstack/react-query';
 import { useAdminPayments } from '@/hooks/admin/useAdminPayments';
 import { format } from 'date-fns';
 
-export function TransactionOverview() {
+interface TransactionOverviewProps {
+  filters?: any;
+  onSelectionChange?: (ids: string[]) => void;
+  refreshKey?: number;
+}
+
+export function TransactionOverview({ 
+  filters: externalFilters, 
+  onSelectionChange,
+  refreshKey = 0 
+}: TransactionOverviewProps = {}) {
   const { fetchTransactions } = useAdminPayments();
-  const [filters, setFilters] = useState({
+  const [localFilters, setLocalFilters] = useState({
     status: '',
     startDate: '',
     endDate: '',
   });
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const filters = externalFilters || localFilters;
 
   const { data: transactions, isLoading } = useQuery({
-    queryKey: ['admin-transactions', filters],
+    queryKey: ['admin-transactions', filters, refreshKey],
     queryFn: () => fetchTransactions(filters),
   });
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked && transactions) {
+      const ids = transactions.map((t: any) => t.id);
+      setSelectedIds(ids);
+      onSelectionChange?.(ids);
+    } else {
+      setSelectedIds([]);
+      onSelectionChange?.([]);
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    let newSelection: string[];
+    if (checked) {
+      newSelection = [...selectedIds, id];
+    } else {
+      newSelection = selectedIds.filter(sid => sid !== id);
+    }
+    setSelectedIds(newSelection);
+    onSelectionChange?.(newSelection);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -61,41 +97,45 @@ export function TransactionOverview() {
         <div className="space-y-4">
           {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label>Status</Label>
-              <Select
-                value={filters.status}
-                onValueChange={(value) => setFilters({ ...filters, status: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="All statuses" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="succeeded">Succeeded</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Start Date</Label>
-              <Input
-                type="date"
-                value={filters.startDate}
-                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label>End Date</Label>
-              <Input
-                type="date"
-                value={filters.endDate}
-                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-              />
-            </div>
+            {!externalFilters && (
+              <>
+                <div>
+                  <Label>Status</Label>
+                  <Select
+                    value={localFilters.status}
+                    onValueChange={(value) => setLocalFilters({ ...localFilters, status: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="All statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="succeeded">Succeeded</SelectItem>
+                      <SelectItem value="failed">Failed</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Start Date</Label>
+                  <Input
+                    type="date"
+                    value={localFilters.startDate}
+                    onChange={(e) => setLocalFilters({ ...localFilters, startDate: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>End Date</Label>
+                  <Input
+                    type="date"
+                    value={localFilters.endDate}
+                    onChange={(e) => setLocalFilters({ ...localFilters, endDate: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
           </div>
 
           {/* Transactions Table */}
@@ -110,6 +150,14 @@ export function TransactionOverview() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    {onSelectionChange && (
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={selectedIds.length === transactions?.length && transactions?.length > 0}
+                          onCheckedChange={handleSelectAll}
+                        />
+                      </TableHead>
+                    )}
                     <TableHead>Date</TableHead>
                     <TableHead>User</TableHead>
                     <TableHead>Amount</TableHead>
@@ -120,6 +168,14 @@ export function TransactionOverview() {
                 <TableBody>
                   {transactions.map((transaction: any) => (
                     <TableRow key={transaction.id}>
+                      {onSelectionChange && (
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedIds.includes(transaction.id)}
+                            onCheckedChange={(checked) => handleSelectOne(transaction.id, checked as boolean)}
+                          />
+                        </TableCell>
+                      )}
                       <TableCell className="text-sm">
                         {format(new Date(transaction.created_at), 'PP')}
                       </TableCell>
