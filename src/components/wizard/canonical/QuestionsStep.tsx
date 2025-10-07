@@ -44,99 +44,89 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     loadQuestions();
   }, [microId]);
 
+  const getFallbackQuestions = (): AIQuestion[] => {
+    return [
+      {
+        id: 'scope',
+        type: 'radio',
+        label: 'What is the scope of work?',
+        required: true,
+        options: [
+          { label: 'Small job', value: 'small' },
+          { label: 'Medium project', value: 'medium' },
+          { label: 'Large project', value: 'large' }
+        ]
+      },
+      {
+        id: 'urgency',
+        type: 'radio',
+        label: 'How urgent is this?',
+        required: true,
+        options: [
+          { label: 'Emergency', value: 'emergency' },
+          { label: 'Urgent (this week)', value: 'urgent' },
+          { label: 'Normal', value: 'normal' },
+          { label: 'Flexible timing', value: 'flexible' }
+        ]
+      }
+    ];
+  };
+
   const loadQuestions = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      // First try to get questions from question_packs (new system)
-      const { data: packData, error: packError } = await supabase
-        .from('question_packs')
-        .select('content, pack_id, version')
-        .eq('is_active', true)
-        .ilike('micro_slug', `%${microName.toLowerCase().replace(/\s+/g, '-')}%`)
-        .order('version', { ascending: false })
-        .limit(1)
+      if (!microId || !microName) {
+        console.warn('No microId or microName provided, using fallback questions');
+        setQuestions(getFallbackQuestions());
+        setPackSource('fallback');
+        setLoading(false);
+        return;
+      }
+
+      // Try to get questions from new micro_service_questions table
+      const { data: microQuestionsData, error: microError } = await supabase
+        .from('micro_service_questions')
+        .select('questions')
+        .eq('micro_id', microId)
         .maybeSingle();
 
-      if (!packError && packData?.content) {
-        const packQuestions = transformPackToAIQuestions(packData.content);
-        if (packQuestions.length > 0) {
-          setQuestions(packQuestions);
+      if (!microError && microQuestionsData?.questions && Array.isArray(microQuestionsData.questions)) {
+        const dbQuestions = transformDatabaseToAIQuestions(microQuestionsData.questions);
+        if (dbQuestions.length > 0) {
+          setQuestions(dbQuestions);
           setPackSource('pack');
           setLoading(false);
           return;
         }
       }
 
-      // Fallback to legacy service_questions table
-      const { data: dbData, error: dbError } = await supabase
-        .from('service_questions')
+      // Fallback: try by micro name if ID lookup failed
+      const { data: nameData, error: nameError } = await supabase
+        .from('micro_service_questions')
         .select('questions')
-        .eq('service_id', microId)
+        .ilike('micro_name', microName)
         .maybeSingle();
 
-      if (!dbError && dbData) {
-        const questionsData = dbData.questions as any;
-        if (questionsData?.questions) {
-          const legacyQuestions = transformLegacyToAIQuestions(questionsData.questions);
-          setQuestions(legacyQuestions);
-          setPackSource('ai');
+      if (!nameError && nameData?.questions && Array.isArray(nameData.questions)) {
+        const dbQuestions = transformDatabaseToAIQuestions(nameData.questions);
+        if (dbQuestions.length > 0) {
+          setQuestions(dbQuestions);
+          setPackSource('pack');
           setLoading(false);
           return;
         }
       }
 
-      // Generate with AI if no stored questions
-      const { data: aiData, error: aiError } = await supabase.functions.invoke('generate-questions', {
-        body: { 
-          microServiceId: microId,
-          microServiceName: microName,
-          locale: 'en'
-        }
-      });
-
-      if (!aiError && aiData?.questions) {
-        const generatedQuestions = transformLegacyToAIQuestions(aiData.questions);
-        setQuestions(generatedQuestions);
-        setPackSource('ai');
-        setLoading(false);
-        return;
-      }
-
-      // If AI generation fails, use fallback questions without throwing error
-      console.warn('AI question generation unavailable, using fallback questions');
+      // If no questions found in database, use fallback
+      console.warn('No questions found in database, using fallback questions');
+      setQuestions(getFallbackQuestions());
+      setPackSource('fallback');
       
     } catch (error: any) {
       console.warn('Error loading questions, using fallback:', error.message);
-      // Don't set error state, just use fallback questions
-      
-      // Provide basic fallback questions
-      setQuestions([
-        {
-          id: 'scope',
-          type: 'radio',
-          label: 'What is the scope of work?',
-          required: true,
-          options: [
-            { label: 'Small job', value: 'small' },
-            { label: 'Medium project', value: 'medium' },
-            { label: 'Large project', value: 'large' }
-          ]
-        },
-        {
-          id: 'urgency',
-          type: 'radio',
-          label: 'How urgent is this?',
-          required: true,
-          options: [
-            { label: 'Emergency', value: 'emergency' },
-            { label: 'Urgent (this week)', value: 'urgent' },
-            { label: 'Normal', value: 'normal' },
-            { label: 'Flexible timing', value: 'flexible' }
-          ]
-        }
-      ]);
+      setQuestions(getFallbackQuestions());
       setPackSource('fallback');
     } finally {
       setLoading(false);
@@ -181,6 +171,22 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       'file': 'file'
     };
     return typeMap[packType] || 'radio';
+  };
+
+  const transformDatabaseToAIQuestions = (dbQuestions: any[]): AIQuestion[] => {
+    return dbQuestions.map((q: any) => ({
+      id: q.id,
+      type: q.type as AIQuestion['type'],
+      label: q.label,
+      required: q.required ?? false,
+      options: q.options?.map((opt: any) => ({
+        label: opt.label,
+        value: opt.value
+      })),
+      min: q.min,
+      max: q.max,
+      step: q.step,
+    }));
   };
 
   const transformLegacyToAIQuestions = (legacyQuestions: any[]): AIQuestion[] => {

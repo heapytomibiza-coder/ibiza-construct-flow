@@ -4318,6 +4318,39 @@ export type Database = {
         }
         Relationships: []
       }
+      micro_service_questions: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          micro_id: string
+          micro_name: string
+          questions: Json
+          subcategory: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          micro_id: string
+          micro_name: string
+          questions?: Json
+          subcategory: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          micro_id?: string
+          micro_name?: string
+          questions?: Json
+          subcategory?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       milestone_approvals: {
         Row: {
           action: string
