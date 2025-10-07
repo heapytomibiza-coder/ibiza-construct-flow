@@ -169,10 +169,17 @@ function AppContent() {
           <Route path="/subscription-success" element={<SubscriptionSuccess />} />
           <Route path="/subscription-canceled" element={<SubscriptionCanceled />} />
           
-          {/* Job Wizard - Feature Flagged */}
-          {jobWizardEnabled && (
-            <Route path="/post" element={<PostJob />} />
-          )}
+          {/* Job Wizard - Always Registered */}
+          <Route 
+            path="/post" 
+            element={
+              <Suspense fallback={<SkeletonLoader variant="card" count={3} />}>
+                <RouteGuard requiredRole="client">
+                  <PostJob />
+                </RouteGuard>
+              </Suspense>
+            } 
+          />
         
         {/* Templates Page */}
         <Route path="/templates" element={

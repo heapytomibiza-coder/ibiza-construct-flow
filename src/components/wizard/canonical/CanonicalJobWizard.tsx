@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -172,7 +173,8 @@ export const CanonicalJobWizard: React.FC = () => {
     console.log('🔄 renderStep called with currentStep:', currentStep);
     console.log('🔄 wizardState:', wizardState);
     
-    switch (currentStep) {
+    try {
+      switch (currentStep) {
       case 1:
         console.log('✅ Rendering MainCategoryStep');
         return (
@@ -277,7 +279,26 @@ export const CanonicalJobWizard: React.FC = () => {
         );
 
       default:
-        return null;
+        console.error('Unknown step:', currentStep);
+        return (
+          <div role="alert" className="text-center py-12">
+            <p className="text-destructive">Wizard error: unknown step "{currentStep}"</p>
+            <Button onClick={() => setCurrentStep(1)} className="mt-4">
+              Restart Wizard
+            </Button>
+          </div>
+        );
+    }
+    } catch (error) {
+      console.error('💥 Wizard render error:', error);
+      return (
+        <div role="alert" className="text-center py-12">
+          <p className="text-destructive">Something went wrong loading the wizard.</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">
+            Refresh Page
+          </Button>
+        </div>
+      );
     }
   };
 

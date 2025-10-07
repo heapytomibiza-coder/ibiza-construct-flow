@@ -2,7 +2,7 @@
  * Step 2: Subcategory Selection
  * Tile-based selection with category context
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,80 +28,97 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
   const [subcategories, setSubcategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Mount logging
+  useEffect(() => {
+    console.log('🚨 SUBCATEGORY STEP MOUNTED', { mainCategory, selectedSubcategory });
+    return () => console.log('🚨 SUBCATEGORY STEP UNMOUNTED');
+  }, []);
+
+  // Stable callback ref to avoid re-renders
+  const onNextRef = useRef(onNext);
+  useEffect(() => { 
+    onNextRef.current = onNext; 
+  }, [onNext]);
+
   useEffect(() => {
     loadSubcategories();
   }, [mainCategory]);
 
   // Auto-advance after selection
   useEffect(() => {
-    if (selectedSubcategory && !loading) {
+    if (selectedSubcategory && !loading && subcategories.length > 0) {
       const timer = setTimeout(() => {
-        onNext();
+        console.log('⏭️ Auto-advancing to next step');
+        onNextRef.current();
       }, 400);
       return () => clearTimeout(timer);
     }
-  }, [selectedSubcategory, loading, onNext]);
+  }, [selectedSubcategory, loading, subcategories]);
 
   const loadSubcategories = async () => {
-    console.log('🔍 SubcategoryStep - loadSubcategories called');
-    console.log('🔍 mainCategory:', mainCategory);
+    console.log('🔍 loadSubcategories START - mainCategory:', mainCategory);
     
     if (!mainCategory) {
-      console.warn('⚠️ No mainCategory provided to SubcategoryStep');
+      console.warn('⚠️ No mainCategory provided');
       setSubcategories([]);
       setLoading(false);
       return;
     }
     
     setLoading(true);
-    console.log('📡 Querying services_unified table for subcategories...');
+    let cancelled = false;
     
     try {
+      console.log('📡 Executing Supabase query...');
       const queryStart = Date.now();
+      
       const { data, error } = await supabase
         .from('services_unified')
         .select('subcategory')
         .eq('category', mainCategory)
-        .order('subcategory');
-
+        .order('subcategory', { ascending: true })
+        .limit(100);
+      
+      if (cancelled) return;
+      
       const queryTime = Date.now() - queryStart;
       console.log(`📊 Query completed in ${queryTime}ms`);
-      console.log('📊 Subcategory query response:', { data, error, dataLength: data?.length });
+      console.log('📊 Response:', { 
+        dataLength: data?.length, 
+        error: error ? JSON.stringify(error) : null 
+      });
 
       if (error) {
-        console.error('❌ Database error loading subcategories:', error);
-        console.error('❌ Error details:', JSON.stringify(error, null, 2));
+        console.error('❌ Supabase error:', error);
         setSubcategories([]);
         setLoading(false);
         return;
       }
 
       if (!data || data.length === 0) {
-        console.warn(`⚠️ No subcategories found for category: ${mainCategory}`);
+        console.warn(`⚠️ No subcategories found for: ${mainCategory}`);
         setSubcategories([]);
         setLoading(false);
         return;
       }
 
-      // Get unique subcategories
-      console.log('🔄 Processing subcategories data...');
-      const uniqueSubs = Array.from(new Set(data.map(s => s.subcategory).filter(Boolean)));
-      console.log('✅ Unique subcategories:', uniqueSubs);
+      const uniqueSubs = Array.from(
+        new Set(data.map(s => s.subcategory).filter(Boolean))
+      );
+      console.log('✅ Processed subcategories:', uniqueSubs);
       
-      const formattedSubs = uniqueSubs.map(sub => ({ name: sub }));
-      console.log('✅ Formatted subcategories:', formattedSubs);
-      
-      setSubcategories(formattedSubs);
-      console.log(`✅ Loaded ${uniqueSubs.length} subcategories for ${mainCategory}`);
-    } catch (error) {
-      console.error('💥 Caught error in loadSubcategories:', error);
-      console.error('💥 Error type:', typeof error);
-      console.error('💥 Error message:', error instanceof Error ? error.message : String(error));
-      setSubcategories([]);
-    } finally {
+      setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
       setLoading(false);
-      console.log('🏁 SubcategoryStep loading complete');
+      
+    } catch (error) {
+      if (!cancelled) {
+        console.error('💥 Caught exception:', error);
+        setSubcategories([]);
+        setLoading(false);
+      }
     }
+    
+    return () => { cancelled = true; };
   };
 
   console.log('🎨 SubcategoryStep render - loading:', loading, 'subcategories:', subcategories.length);
