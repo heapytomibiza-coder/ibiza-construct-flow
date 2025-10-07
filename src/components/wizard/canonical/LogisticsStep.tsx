@@ -145,7 +145,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 1. Job Start Date */}
-        <Card className="relative z-10 p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <div className="flex items-center gap-2">
             <PlayCircle className="w-5 h-5 text-copper" />
             <Label className="text-base font-medium text-charcoal">
@@ -186,7 +186,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   {logistics.startDate ? format(logistics.startDate, 'PPP') : 'Pick a start date'}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 z-50" align="start">
                 <Calendar
                   mode="single"
                   selected={logistics.startDate}
@@ -203,7 +203,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 2. Ideal Completion Date (Optional) */}
-        <Card className="relative z-10 p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-copper" />
             <Label className="text-base font-medium text-charcoal">
@@ -226,7 +226,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                 {logistics.completionDate ? format(logistics.completionDate, 'PPP') : 'Pick ideal completion date'}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 z-50" align="start">
               <Calendar
                 mode="single"
                 selected={logistics.completionDate}
@@ -242,7 +242,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* 3. Consultation Booking */}
-        <Card className="relative z-10 p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <Label className="text-base font-medium text-charcoal">
             Book a consultation
           </Label>
@@ -254,7 +254,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           <div className="grid grid-cols-3 gap-3">
             <Card
               className={cn(
-                "relative z-20 p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
                 logistics.consultationType === 'site_visit' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'site_visit')}
@@ -264,7 +264,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             </Card>
             <Card
               className={cn(
-                "relative z-20 p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
                 logistics.consultationType === 'phone_call' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'phone_call')}
@@ -274,7 +274,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             </Card>
             <Card
               className={cn(
-                "relative z-20 p-4 cursor-pointer transition-all hover:shadow-md text-center",
+                "p-4 cursor-pointer transition-all hover:shadow-md text-center",
                 logistics.consultationType === 'video_call' && "ring-2 ring-copper bg-copper/5"
               )}
               onClick={() => handleUpdate('consultationType', 'video_call')}
@@ -298,7 +298,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                     {logistics.consultationDate ? format(logistics.consultationDate, 'PPP') : 'Pick consultation date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 z-50" align="start">
                   <Calendar
                     mode="single"
                     selected={logistics.consultationDate}
@@ -334,7 +334,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* Contact & Access */}
-        <Card className="relative z-10 p-6 space-y-4">
+        <Card className="p-6 space-y-4">
           <Label className="text-base font-medium text-charcoal">Site Access</Label>
           
           <div>
@@ -369,7 +369,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         </Card>
 
         {/* Budget Range */}
-        <Card className="relative z-10 p-6 space-y-3">
+        <Card className="p-6 space-y-3">
           <Label className="text-base font-medium text-charcoal">Budget Range</Label>
           <p className="text-sm text-muted-foreground">Select a budget range or choose "Unsure" to get quotes first</p>
           <div className="flex flex-wrap gap-2">
