@@ -89,13 +89,19 @@ export const CanonicalJobWizard: React.FC = () => {
   const progress = (currentStep / 8) * 100;
 
   const handleNext = () => {
+    console.log('⏭️ handleNext called, current step:', currentStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCurrentStep(prev => Math.min(prev + 1, 8));
+    const newStep = Math.min(currentStep + 1, 8);
+    console.log('⏭️ Setting new step:', newStep);
+    setCurrentStep(newStep);
   };
   
   const handleBack = () => {
+    console.log('⏮️ handleBack called, current step:', currentStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    const newStep = Math.max(currentStep - 1, 1);
+    console.log('⏮️ Setting new step:', newStep);
+    setCurrentStep(newStep);
   };
 
   const handleSubmit = async () => {
@@ -163,17 +169,32 @@ export const CanonicalJobWizard: React.FC = () => {
   };
 
   const renderStep = () => {
+    console.log('🔄 renderStep called with currentStep:', currentStep);
+    console.log('🔄 wizardState:', wizardState);
+    
     switch (currentStep) {
       case 1:
+        console.log('✅ Rendering MainCategoryStep');
         return (
           <MainCategoryStep
             selectedCategory={wizardState.mainCategory}
-            onSelect={(category) => setWizardState(prev => ({ ...prev, mainCategory: category }))}
-            onNext={handleNext}
+            onSelect={(category) => {
+              console.log('🎯 MainCategoryStep onSelect called:', category);
+              setWizardState(prev => ({ ...prev, mainCategory: category }));
+            }}
+            onNext={() => {
+              console.log('➡️ MainCategoryStep onNext called, advancing to step 2');
+              handleNext();
+            }}
           />
         );
 
       case 2:
+        console.log('✅ Rendering SubcategoryStep with mainCategory:', wizardState.mainCategory);
+        if (!wizardState.mainCategory) {
+          console.error('❌ ERROR: Trying to render SubcategoryStep but mainCategory is empty!');
+          return <div className="text-center text-red-500">Error: No category selected. Please go back.</div>;
+        }
         return (
           <SubcategoryStep
             mainCategory={wizardState.mainCategory}
