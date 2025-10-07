@@ -45,37 +45,41 @@ export function QuickDemoLogin() {
     setLoading(account.email);
     
     try {
-      // Try to sign in
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Sign in with demo account
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: account.email,
         password: account.password
       });
 
-      if (error && error.message.includes('Invalid login credentials')) {
-        // Account doesn't exist, create it
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: account.email,
-          password: account.password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              full_name: account.label,
-              intent_role: account.role
-            }
+      if (signInError) {
+        throw signInError;
+      }
+
+      if (!signInData.user) {
+        throw new Error('No user data returned');
+      }
+
+      // Ensure the user has the correct role in user_roles table
+      await supabase
+        .from('user_roles')
+        .upsert(
+          { 
+            user_id: signInData.user.id, 
+            role: account.role as 'client' | 'professional' | 'admin'
+          },
+          { 
+            onConflict: 'user_id,role'
           }
-        });
+        );
 
-        if (signUpError) throw signUpError;
+      // Update profile active_role
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ active_role: account.role })
+        .eq('id', signInData.user.id);
 
-        // Try to sign in again after signup
-        const { error: retryError } = await supabase.auth.signInWithPassword({
-          email: account.email,
-          password: account.password
-        });
-
-        if (retryError) throw retryError;
-      } else if (error) {
-        throw error;
+      if (profileError) {
+        console.warn('Profile update warning:', profileError);
       }
 
       toast({
@@ -90,12 +94,15 @@ export function QuickDemoLogin() {
         admin: '/dashboard/admin'
       };
       
-      navigate(dashboardMap[account.role] || '/dashboard');
+      // Small delay to ensure auth state is updated
+      setTimeout(() => {
+        navigate(dashboardMap[account.role] || '/dashboard');
+      }, 500);
     } catch (error: any) {
       console.error('Demo login error:', error);
       toast({
         title: 'Demo Login Failed',
-        description: error.message,
+        description: error.message || 'Failed to sign in with demo account',
         variant: 'destructive'
       });
     } finally {
