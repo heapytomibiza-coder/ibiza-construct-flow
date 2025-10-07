@@ -113,10 +113,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
                   "p-6 cursor-pointer transition-all hover:shadow-lg",
                   isSelected && "ring-2 ring-copper shadow-lg"
                 )}
-                onClick={() => {
-                  onSelect(sub.name);
-                  setTimeout(() => onNext(), 150);
-                }}
+                onClick={() => onSelect(sub.name)}
               >
                 <div className="flex items-center justify-center h-full">
                   <span className="font-medium text-center text-charcoal">
