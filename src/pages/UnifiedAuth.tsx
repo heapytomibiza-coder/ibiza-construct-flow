@@ -63,18 +63,32 @@ export default function UnifiedAuth() {
 
     try {
       if (tab === 'signin') {
+        console.log('🔵 [UnifiedAuth] Starting sign in...');
         await signInMutation.mutateAsync({
           email,
           password
         });
 
-        // Wait for session to be established
-        const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔵 [UnifiedAuth] Sign in mutation complete, verifying session...');
         
-        if (!session) {
+        // Retry mechanism: Wait for session to be confirmed
+        let sessionConfirmed = false;
+        for (let i = 0; i < 3; i++) {
+          await new Promise(resolve => setTimeout(resolve, 150));
+          const { data: { session } } = await supabase.auth.getSession();
+          console.log(`🔵 [UnifiedAuth] Session check attempt ${i + 1}:`, !!session);
+          
+          if (session) {
+            sessionConfirmed = true;
+            break;
+          }
+        }
+        
+        if (!sessionConfirmed) {
           throw new Error('Failed to establish session');
         }
 
+        console.log('🔵 [UnifiedAuth] ✅ Session confirmed, showing toast');
         toast({
           title: t('signin.welcomeBack'),
           description: t('signin.signInSuccess')
@@ -83,10 +97,11 @@ export default function UnifiedAuth() {
         // Respect redirect parameter from URL
         const redirectTo = searchParams.get('redirect');
         
-        // Small delay to ensure session is fully propagated
+        // Delay to ensure session is fully propagated across all listeners
+        console.log('🔵 [UnifiedAuth] Navigating to:', redirectTo || '/dashboard');
         setTimeout(() => {
           navigate(redirectTo || '/dashboard', { replace: true });
-        }, 100);
+        }, 250);
       } else {
         // Validate signup data
         const validationResult = signupSchema.safeParse({ 

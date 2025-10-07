@@ -27,26 +27,34 @@ export default function RouteGuard({
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log('🔒 [RouteGuard] Starting auth check for role:', requiredRole);
+    let isStale = false;
+    
     const checkAuth = async () => {
       try {
         // Skip authentication in development if flag is set
         if (skipAuthInDev && process.env.NODE_ENV === 'development') {
+          console.log('🔒 [RouteGuard] Dev mode - skipping auth');
           setStatus('authorized');
           return;
         }
 
-        // Get session directly from Supabase (failsafe check)
+        // Get session directly from Supabase
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log('🔒 [RouteGuard] Session check result:', { hasSession: !!session, error: sessionError });
         
         if (sessionError) {
-          console.error('Session error:', sessionError);
-          setStatus('unauthorized');
+          console.error('🔒 [RouteGuard] Session error:', sessionError);
+          if (!isStale) setStatus('unauthorized');
           return;
         }
 
+        // Add a small delay to let all auth listeners settle
+        await new Promise(resolve => setTimeout(resolve, 200));
+
         if (!session?.user) {
-          console.log('No session found, redirecting to auth');
-          setStatus('unauthorized');
+          console.log('🔒 [RouteGuard] No session found after delay, redirecting to auth');
+          if (!isStale) setStatus('unauthorized');
           return;
         }
 
@@ -54,7 +62,8 @@ export default function RouteGuard({
 
         // No role requirement = just check authentication
         if (!requiredRole) {
-          setStatus('authorized');
+          console.log('🔒 [RouteGuard] No role required - authorized');
+          if (!isStale) setStatus('authorized');
           return;
         }
 
@@ -65,18 +74,20 @@ export default function RouteGuard({
           .eq('user_id', userId);
 
         if (rolesError) {
-          console.error('Error fetching roles:', rolesError);
-          setStatus('unauthorized');
+          console.error('🔒 [RouteGuard] Error fetching roles:', rolesError);
+          if (!isStale) setStatus('unauthorized');
           return;
         }
 
         const userRoles = (rolesData ?? []).map(r => r.role);
         const hasRequiredRole = userRoles.includes(requiredRole);
         
+        console.log('🔒 [RouteGuard] Role check:', { userRoles, requiredRole, hasRequiredRole });
+        
         if (!hasRequiredRole) {
-          console.warn(`Access denied: User roles [${userRoles.join(', ')}] do not include required role '${requiredRole}'`);
+          console.warn(`🔒 [RouteGuard] Access denied: User roles [${userRoles.join(', ')}] do not include required role '${requiredRole}'`);
           await logAdminAccessAttempt(false, 'insufficient_permissions');
-          setStatus('unauthorized');
+          if (!isStale) setStatus('unauthorized');
           return;
         }
 
@@ -92,13 +103,13 @@ export default function RouteGuard({
               .maybeSingle();
 
             if (!twoFactorData) {
-              console.log('Admin requires 2FA but it is not set up');
+              console.log('🔒 [RouteGuard] Admin requires 2FA but it is not set up');
               toast({
                 title: 'Two-Factor Authentication Required',
                 description: 'As an admin, you must enable 2FA to access this area.',
                 variant: 'destructive',
               });
-              setStatus('2fa_required');
+              if (!isStale) setStatus('2fa_required');
               return;
             }
           }
@@ -113,8 +124,8 @@ export default function RouteGuard({
             .single();
 
           if (!profileData || profileData.tasker_onboarding_status !== 'complete') {
-            console.warn('Professional onboarding not complete, redirecting to onboarding');
-            setStatus('unauthorized');
+            console.warn('🔒 [RouteGuard] Professional onboarding not complete, redirecting to onboarding');
+            if (!isStale) setStatus('unauthorized');
             return;
           }
         }
@@ -124,14 +135,29 @@ export default function RouteGuard({
           await logAdminAccessAttempt(true);
         }
         
-        setStatus('authorized');
+        console.log('🔒 [RouteGuard] ✅ Authorized');
+        if (!isStale) setStatus('authorized');
       } catch (error) {
-        console.error('Route guard error:', error);
-        setStatus('unauthorized');
+        console.error('🔒 [RouteGuard] Route guard error:', error);
+        if (!isStale) setStatus('unauthorized');
       }
     };
 
+    // Set up auth state listener to detect changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔒 [RouteGuard] Auth state change:', event, 'hasSession:', !!session);
+      // Re-run auth check when auth state changes
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        checkAuth();
+      }
+    });
+
     checkAuth();
+
+    return () => {
+      isStale = true;
+      subscription.unsubscribe();
+    };
   }, [requiredRole, skipAuthInDev, requireOnboardingComplete, enforce2FA, toast]);
 
   if (status === 'loading') {

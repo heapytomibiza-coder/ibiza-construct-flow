@@ -116,22 +116,25 @@ i18n
   });
 
 // Load user's language preference from profile on app start
-supabase.auth.onAuthStateChange(async (event, session) => {
+supabase.auth.onAuthStateChange((event, session) => {
   if (session?.user) {
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('preferences')
-        .eq('id', session.user.id)
-        .single();
-      
-      const preferences = profile?.preferences as Record<string, any> | null;
-      if (preferences && typeof preferences === 'object' && 'language' in preferences) {
-        i18n.changeLanguage(preferences.language as string);
+    // Defer profile fetch to prevent blocking critical auth flow
+    setTimeout(async () => {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('preferences')
+          .eq('id', session.user.id)
+          .single();
+        
+        const preferences = profile?.preferences as Record<string, any> | null;
+        if (preferences && typeof preferences === 'object' && 'language' in preferences) {
+          i18n.changeLanguage(preferences.language as string);
+        }
+      } catch (error) {
+        console.log('Failed to load language preference:', error);
       }
-    } catch (error) {
-      console.log('Failed to load language preference:', error);
-    }
+    }, 0);
   }
 });
 
