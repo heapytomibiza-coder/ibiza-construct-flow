@@ -60,6 +60,8 @@ const STEP_LABELS = [
 ];
 
 export const CanonicalJobWizard: React.FC = () => {
+  console.log('🎯 CanonicalJobWizard component rendering');
+  
   const navigate = useNavigate();
   const { user } = useAuth();
   const isMobile = useIsMobile();
@@ -81,6 +83,8 @@ export const CanonicalJobWizard: React.FC = () => {
       photos: []
     }
   });
+
+  console.log('📊 Current wizard state:', { currentStep, wizardState });
 
   const progress = (currentStep / 8) * 100;
 

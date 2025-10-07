@@ -43,34 +43,50 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
   }, [selectedSubcategory, loading, onNext]);
 
   const loadSubcategories = async () => {
+    console.log('🔍 SubcategoryStep - loadSubcategories called');
+    console.log('🔍 mainCategory:', mainCategory);
+    
+    if (!mainCategory) {
+      console.warn('⚠️ No mainCategory provided to SubcategoryStep');
+      setSubcategories([]);
+      setLoading(false);
+      return;
+    }
+    
     try {
       setLoading(true);
+      console.log('📡 Querying services_unified table for subcategories...');
+      
       const { data, error } = await supabase
         .from('services_unified')
         .select('subcategory')
         .eq('category', mainCategory)
         .order('subcategory');
 
+      console.log('📊 Subcategory query response:', { data, error });
+
       if (error) {
-        console.error('Database error loading subcategories:', error);
+        console.error('❌ Database error loading subcategories:', error);
         throw error;
       }
 
       if (!data || data.length === 0) {
-        console.warn(`No subcategories found for category: ${mainCategory}`);
+        console.warn(`⚠️ No subcategories found for category: ${mainCategory}`);
         setSubcategories([]);
         return;
       }
 
       // Get unique subcategories
       const uniqueSubs = Array.from(new Set(data.map(s => s.subcategory)));
+      console.log('✅ Unique subcategories:', uniqueSubs);
       setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
-      console.log(`Loaded ${uniqueSubs.length} subcategories for ${mainCategory}`);
+      console.log(`✅ Loaded ${uniqueSubs.length} subcategories for ${mainCategory}`);
     } catch (error) {
-      console.error('Error loading subcategories:', error);
+      console.error('💥 Error loading subcategories:', error);
       setSubcategories([]);
     } finally {
       setLoading(false);
+      console.log('🏁 SubcategoryStep loading complete');
     }
   };
 

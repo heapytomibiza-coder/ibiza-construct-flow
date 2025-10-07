@@ -47,8 +47,20 @@ export const MicroStep: React.FC<MicroStepProps> = ({
   }, [selectedMicroId, loading, onNext]);
 
   const loadMicros = async () => {
+    console.log('🔍 MicroStep - loadMicros called');
+    console.log('🔍 mainCategory:', mainCategory, 'subcategory:', subcategory);
+    
+    if (!mainCategory || !subcategory) {
+      console.warn('⚠️ Missing mainCategory or subcategory in MicroStep');
+      setMicros([]);
+      setLoading(false);
+      return;
+    }
+    
     try {
       setLoading(true);
+      console.log('📡 Querying services_unified table for micro categories...');
+      
       const { data, error } = await supabase
         .from('services_unified')
         .select('id, micro')
@@ -56,24 +68,28 @@ export const MicroStep: React.FC<MicroStepProps> = ({
         .eq('subcategory', subcategory)
         .order('micro');
 
+      console.log('📊 Micro query response:', { data, error });
+
       if (error) {
-        console.error('Database error loading micro categories:', error);
+        console.error('❌ Database error loading micro categories:', error);
         throw error;
       }
 
       if (!data || data.length === 0) {
-        console.warn(`No micro categories found for ${mainCategory} > ${subcategory}`);
+        console.warn(`⚠️ No micro categories found for ${mainCategory} > ${subcategory}`);
         setMicros([]);
         return;
       }
 
+      console.log('✅ Micro services data:', data);
       setMicros(data);
-      console.log(`Loaded ${data.length} micro categories for ${mainCategory} > ${subcategory}`);
+      console.log(`✅ Loaded ${data.length} micro categories for ${mainCategory} > ${subcategory}`);
     } catch (error) {
-      console.error('Error loading micro categories:', error);
+      console.error('💥 Error loading micro categories:', error);
       setMicros([]);
     } finally {
       setLoading(false);
+      console.log('🏁 MicroStep loading complete');
     }
   };
 
