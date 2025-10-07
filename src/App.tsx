@@ -171,11 +171,7 @@ function AppContent() {
           
           {/* Job Wizard - Feature Flagged */}
           {jobWizardEnabled && (
-            <Route path="/post" element={
-              <RouteGuard requiredRole="client">
-                <PostJob />
-              </RouteGuard>
-            } />
+            <Route path="/post" element={<PostJob />} />
           )}
         
         {/* Templates Page */}

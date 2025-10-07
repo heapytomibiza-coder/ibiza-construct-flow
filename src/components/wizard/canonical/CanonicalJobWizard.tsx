@@ -97,7 +97,7 @@ export const CanonicalJobWizard: React.FC = () => {
   const handleSubmit = async () => {
     if (!user) {
       toast.error('Please sign in to post a job');
-      navigate('/signin');
+      navigate('/auth');
       return;
     }
 
