@@ -25,6 +25,8 @@ const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const UnifiedAuth = React.lazy(() => import("./pages/UnifiedAuth"));
 const VerifyEmail = React.lazy(() => import("./pages/VerifyEmail"));
+const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
 const AuthCallback = React.lazy(() => import("./pages/AuthCallback"));
 const QuickStart = React.lazy(() => import("./pages/QuickStart"));
 const RoleSwitcher = React.lazy(() => import("./pages/RoleSwitcher"));
@@ -129,6 +131,8 @@ function AppContent() {
           {/* Auth Flow Routes - Consolidated */}
           <Route path="/auth" element={<UnifiedAuth />} />
           <Route path="/auth/verify-email" element={<VerifyEmail />} />
+          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+          <Route path="/auth/reset-password" element={<ResetPassword />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth/quick-start" element={<QuickStart />} />
           
