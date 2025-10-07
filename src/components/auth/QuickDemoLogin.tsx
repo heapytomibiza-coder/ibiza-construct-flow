@@ -4,7 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Briefcase, Shield, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const DEMO_ACCOUNTS = [
   {
@@ -39,6 +39,7 @@ const DEMO_ACCOUNTS = [
 export function QuickDemoLogin() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleDemoLogin = async (account: typeof DEMO_ACCOUNTS[0]) => {
@@ -84,38 +85,37 @@ export function QuickDemoLogin() {
         description: `Signed in as ${account.label}`
       });
 
-      // Navigate based on role with hard reload to ensure fresh session state
+      // Determine navigation target with priority: redirect param > auth page logic > current page reload
+      const redirectParam = searchParams.get('redirect');
+      const currentPath = window.location.pathname;
+      
       const dashboardMap: Record<string, string> = {
         client: '/dashboard/client',
         professional: '/dashboard/pro',
         admin: '/dashboard/admin'
       };
-      
-      // Check if current route requires a different role
-      const currentPath = window.location.pathname;
-      const targetUrl = dashboardMap[account.role] || '/dashboard';
-      const needsRedirect = 
-        (account.role !== 'client' && currentPath === '/post') || // /post requires client
-        (currentPath.startsWith('/admin') && account.role !== 'admin'); // admin routes
 
-      console.log('🔵 [QuickDemoLogin] Current path:', currentPath);
-      console.log('🔵 [QuickDemoLogin] Target URL:', targetUrl);
-      console.log('🔵 [QuickDemoLogin] Needs redirect:', needsRedirect);
+      let targetUrl: string;
 
-      if (needsRedirect || currentPath === '/auth') {
-        console.log('🔵 [QuickDemoLogin] Redirecting to dashboard...');
-        // Use setTimeout to ensure state updates complete before navigation
-        setTimeout(() => {
-          console.log('🔵 [QuickDemoLogin] Executing window.location.assign to:', targetUrl);
-          window.location.assign(targetUrl);
-        }, 100);
+      if (redirectParam) {
+        // Priority 1: Use redirect query parameter
+        targetUrl = redirectParam;
+        console.log('🔵 [QuickDemoLogin] Using redirect param:', targetUrl);
+      } else if (currentPath === '/auth') {
+        // Priority 2: If on auth page, go to role-specific dashboard
+        targetUrl = dashboardMap[account.role] || '/dashboard';
+        console.log('🔵 [QuickDemoLogin] On /auth, redirecting to dashboard:', targetUrl);
       } else {
-        console.log('🔵 [QuickDemoLogin] Reloading current page...');
-        setTimeout(() => {
-          console.log('🔵 [QuickDemoLogin] Executing window.location.reload');
-          window.location.reload();
-        }, 100);
+        // Priority 3: Stay on current page (reload to apply role change)
+        targetUrl = currentPath;
+        console.log('🔵 [QuickDemoLogin] Staying on current page:', targetUrl);
       }
+
+      console.log('✅ [QuickDemoLogin] Final navigation target:', targetUrl);
+      
+      // Reset loading state and navigate
+      setLoading(null);
+      navigate(targetUrl, { replace: true });
     } catch (error: any) {
       console.error('🔴 [QuickDemoLogin] Demo login error:', error);
       setLoading(null); // Only reset loading on error
