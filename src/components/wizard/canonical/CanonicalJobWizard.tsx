@@ -4,6 +4,7 @@
  * DO NOT modify flow without governance approval
  */
 import React, { useState, useCallback, useMemo } from 'react';
+import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -103,22 +104,26 @@ export const CanonicalJobWizard: React.FC = () => {
   // Stable updaters for wizardState (all defined at top level)
   const handleCategorySelect = useCallback((category: string) => {
     console.log('🎯 MainCategoryStep onSelect called:', category);
-    setWizardState(prev => ({ 
-      ...prev, 
-      mainCategory: category, 
-      subcategory: '', 
-      microName: '', 
-      microId: '' 
-    }));
+    flushSync(() => {
+      setWizardState(prev => ({ 
+        ...prev, 
+        mainCategory: category, 
+        subcategory: '', 
+        microName: '', 
+        microId: '' 
+      }));
+    });
   }, []);
 
   const handleSubcategorySelect = useCallback((sub: string) => {
-    setWizardState(prev => ({ 
-      ...prev, 
-      subcategory: sub, 
-      microName: '', 
-      microId: '' 
-    }));
+    flushSync(() => {
+      setWizardState(prev => ({ 
+        ...prev, 
+        subcategory: sub, 
+        microName: '', 
+        microId: '' 
+      }));
+    });
   }, []);
 
   const handleMicroSelect = useCallback((micro: string, microId: string) => {
@@ -232,6 +237,7 @@ export const CanonicalJobWizard: React.FC = () => {
         }
         return (
           <SubcategoryStep
+            key={wizardState.mainCategory || 'empty'}
             mainCategory={wizardState.mainCategory}
             selectedSubcategory={wizardState.subcategory}
             onSelect={handleSubcategorySelect}
@@ -243,6 +249,7 @@ export const CanonicalJobWizard: React.FC = () => {
       case 3:
         return (
           <MicroStep
+            key={wizardState.subcategory || 'empty'}
             mainCategory={wizardState.mainCategory}
             subcategory={wizardState.subcategory}
             selectedMicro={wizardState.microName}

@@ -41,7 +41,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
         const { data, error } = await supabase
           .from('services_catalog')
           .select('subcategory')
-          .eq('category', mainCategory)
+          .ilike('category', mainCategory)
           .order('subcategory', { ascending: true });
 
         if (error) {
@@ -65,6 +65,15 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
     loadSubcategories();
   }, [mainCategory]);
 
+
+  if (!mainCategory) {
+    return (
+      <div className="max-w-4xl mx-auto text-center py-12">
+        <p className="text-muted-foreground mb-4">Please select a main category first</p>
+        <Button onClick={onBack}>Go Back</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">

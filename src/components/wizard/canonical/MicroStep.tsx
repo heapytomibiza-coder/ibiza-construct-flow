@@ -64,8 +64,8 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       const { data, error } = await supabase
         .from('services_catalog')
         .select('id, micro')
-        .eq('category', mainCategory)
-        .eq('subcategory', subcategory)
+        .ilike('category', mainCategory)
+        .ilike('subcategory', subcategory)
         .order('micro');
 
       console.log('📊 Micro query response:', { data, error });
@@ -92,6 +92,15 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       console.log('🏁 MicroStep loading complete');
     }
   };
+
+  if (!mainCategory || !subcategory) {
+    return (
+      <div className="max-w-4xl mx-auto text-center py-12">
+        <p className="text-muted-foreground mb-4">Please select a category and subcategory first</p>
+        <Button onClick={onBack}>Go Back</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
