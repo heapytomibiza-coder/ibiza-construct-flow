@@ -9354,6 +9354,33 @@ export type Database = {
         }
         Relationships: []
       }
+      services_catalog: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string | null
+          micro: string | null
+          subcategory: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: string | null
+          micro?: string | null
+          subcategory?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string | null
+          micro?: string | null
+          subcategory?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       aggregate_platform_metrics: {

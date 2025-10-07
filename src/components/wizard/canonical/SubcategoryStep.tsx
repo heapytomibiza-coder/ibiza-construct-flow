@@ -60,7 +60,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
         const queryStart = Date.now();
         
         const { data, error } = await supabase
-          .from('services_unified_v1')
+          .from('services_catalog')
           .select('subcategory')
           .eq('category', mainCategory)
           .order('subcategory', { ascending: true })

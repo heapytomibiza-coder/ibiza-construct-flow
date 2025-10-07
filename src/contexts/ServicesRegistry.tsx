@@ -221,7 +221,7 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
     queryKey: ['services-registry', 'v1'],
     queryFn: async (): Promise<ServiceNode[]> => {
       const { data, error } = await supabase
-        .from('services_unified_v1')
+        .from('services_catalog')
         .select('id, category, subcategory, micro')
         .order('category, subcategory, micro');
       
