@@ -41,7 +41,76 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
   }, [onNext]);
 
   useEffect(() => {
+    let cancelled = false;
+    
+    const loadSubcategories = async () => {
+      console.log('🔍 loadSubcategories START - mainCategory:', mainCategory);
+      
+      if (!mainCategory) {
+        console.warn('⚠️ No mainCategory provided');
+        setSubcategories([]);
+        setLoading(false);
+        return;
+      }
+      
+      setLoading(true);
+      
+      try {
+        console.log('📡 Executing Supabase query...');
+        const queryStart = Date.now();
+        
+        const { data, error } = await supabase
+          .from('services_unified_v1')
+          .select('subcategory')
+          .eq('category', mainCategory)
+          .order('subcategory', { ascending: true })
+          .limit(100);
+        
+        if (cancelled) return;
+        
+        const queryTime = Date.now() - queryStart;
+        console.log(`📊 Query completed in ${queryTime}ms`);
+        console.log('📊 Response:', { 
+          dataLength: data?.length, 
+          error: error ? JSON.stringify(error) : null 
+        });
+
+        if (error) {
+          console.error('❌ Supabase error:', error);
+          setSubcategories([]);
+          setLoading(false);
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          console.warn(`⚠️ No subcategories found for: ${mainCategory}`);
+          setSubcategories([]);
+          setLoading(false);
+          return;
+        }
+
+        const uniqueSubs = Array.from(
+          new Set(data.map(s => s.subcategory).filter(Boolean))
+        );
+        console.log('✅ Processed subcategories:', uniqueSubs);
+        
+        setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
+        setLoading(false);
+        
+      } catch (error) {
+        if (!cancelled) {
+          console.error('💥 Caught exception:', error);
+          setSubcategories([]);
+          setLoading(false);
+        }
+      }
+    };
+    
     loadSubcategories();
+    
+    return () => { 
+      cancelled = true;
+    };
   }, [mainCategory]);
 
   // Auto-advance after selection
@@ -54,72 +123,6 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
       return () => clearTimeout(timer);
     }
   }, [selectedSubcategory, loading, subcategories]);
-
-  const loadSubcategories = async () => {
-    console.log('🔍 loadSubcategories START - mainCategory:', mainCategory);
-    
-    if (!mainCategory) {
-      console.warn('⚠️ No mainCategory provided');
-      setSubcategories([]);
-      setLoading(false);
-      return;
-    }
-    
-    setLoading(true);
-    let cancelled = false;
-    
-    try {
-      console.log('📡 Executing Supabase query...');
-      const queryStart = Date.now();
-      
-      const { data, error } = await supabase
-        .from('services_unified')
-        .select('subcategory')
-        .eq('category', mainCategory)
-        .order('subcategory', { ascending: true })
-        .limit(100);
-      
-      if (cancelled) return;
-      
-      const queryTime = Date.now() - queryStart;
-      console.log(`📊 Query completed in ${queryTime}ms`);
-      console.log('📊 Response:', { 
-        dataLength: data?.length, 
-        error: error ? JSON.stringify(error) : null 
-      });
-
-      if (error) {
-        console.error('❌ Supabase error:', error);
-        setSubcategories([]);
-        setLoading(false);
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        console.warn(`⚠️ No subcategories found for: ${mainCategory}`);
-        setSubcategories([]);
-        setLoading(false);
-        return;
-      }
-
-      const uniqueSubs = Array.from(
-        new Set(data.map(s => s.subcategory).filter(Boolean))
-      );
-      console.log('✅ Processed subcategories:', uniqueSubs);
-      
-      setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
-      setLoading(false);
-      
-    } catch (error) {
-      if (!cancelled) {
-        console.error('💥 Caught exception:', error);
-        setSubcategories([]);
-        setLoading(false);
-      }
-    }
-    
-    return () => { cancelled = true; };
-  };
 
   console.log('🎨 SubcategoryStep render - loading:', loading, 'subcategories:', subcategories.length);
 

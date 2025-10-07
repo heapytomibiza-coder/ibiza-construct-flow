@@ -62,7 +62,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       console.log('📡 Querying services_unified table for micro categories...');
       
       const { data, error } = await supabase
-        .from('services_unified')
+        .from('services_unified_v1')
         .select('id, micro')
         .eq('category', mainCategory)
         .eq('subcategory', subcategory)
