@@ -68,6 +68,13 @@ export default function UnifiedAuth() {
           password
         });
 
+        // Wait for session to be established
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          throw new Error('Failed to establish session');
+        }
+
         toast({
           title: t('signin.welcomeBack'),
           description: t('signin.signInSuccess')
@@ -75,7 +82,11 @@ export default function UnifiedAuth() {
         
         // Respect redirect parameter from URL
         const redirectTo = searchParams.get('redirect');
-        navigate(redirectTo || '/dashboard', { replace: true });
+        
+        // Small delay to ensure session is fully propagated
+        setTimeout(() => {
+          navigate(redirectTo || '/dashboard', { replace: true });
+        }, 100);
       } else {
         // Validate signup data
         const validationResult = signupSchema.safeParse({ 
