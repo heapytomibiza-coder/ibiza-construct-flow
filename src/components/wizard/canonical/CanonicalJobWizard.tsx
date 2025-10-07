@@ -63,10 +63,8 @@ const STEP_LABELS = [
 const TOTAL_STEPS = STEP_LABELS.length; // 7
 
 export const CanonicalJobWizard: React.FC = () => {
-  console.log('🎯 CanonicalJobWizard component rendering');
-  
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isClient } = useAuth();
   const isMobile = useIsMobile();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -87,29 +85,88 @@ export const CanonicalJobWizard: React.FC = () => {
     }
   });
 
-  console.log('📊 Current wizard state:', { currentStep, wizardState });
-
-  // Load saved draft on mount
+  // Client-only route guard
   useEffect(() => {
-    try {
-      const saved = sessionStorage.getItem('wizardState');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setWizardState(prev => ({ ...prev, ...parsed }));
+    const enforceClientAccess = async () => {
+      if (!user) {
+        toast.error('Please sign in to post a job');
+        navigate('/auth?redirect=/post');
+        return;
       }
-    } catch (err) {
-      console.warn('Failed to restore draft:', err);
-    }
-  }, []);
+      const isClientUser = await isClient();
+      if (!isClientUser) {
+        toast.error('Only clients can post jobs. Switch to client role in settings.');
+        navigate('/dashboard');
+      }
+    };
+    enforceClientAccess();
+  }, [user, isClient, navigate]);
 
-  // Save draft on state change
+  // Restore draft on mount (server + sessionStorage fallback)
   useEffect(() => {
-    try {
-      sessionStorage.setItem('wizardState', JSON.stringify(wizardState));
-    } catch (err) {
-      console.warn('Failed to save draft:', err);
-    }
-  }, [wizardState]);
+    const restoreDraft = async () => {
+      if (!user) return;
+      
+      try {
+        // Try server first
+        const { data } = await supabase
+          .from('form_sessions')
+          .select('payload')
+          .eq('user_id', user.id)
+          .eq('form_type', 'job_post')
+          .maybeSingle();
+        
+        if (data?.payload) {
+          setWizardState(data.payload as unknown as WizardState);
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to restore server draft:', err);
+      }
+
+      // Fallback to sessionStorage
+      try {
+        const saved = sessionStorage.getItem('wizardState');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setWizardState(prev => ({ ...prev, ...parsed }));
+        }
+      } catch (err) {
+        console.error('Failed to restore session draft:', err);
+      }
+    };
+    
+    restoreDraft();
+  }, [user]);
+
+  // Autosave draft (debounced)
+  useEffect(() => {
+    if (!user) return;
+    
+    const timer = setTimeout(async () => {
+      // Save to server
+      try {
+        await supabase
+          .from('form_sessions')
+          .upsert({
+            user_id: user.id,
+            form_type: 'job_post',
+            payload: wizardState as any
+          });
+      } catch (err) {
+        console.error('Failed to autosave draft:', err);
+      }
+      
+      // Backup to sessionStorage
+      try {
+        sessionStorage.setItem('wizardState', JSON.stringify(wizardState));
+      } catch (err) {
+        console.error('Failed to save session draft:', err);
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [wizardState, user]);
 
   // Auto-correct illegal states
   useEffect(() => {
@@ -249,6 +306,19 @@ export const CanonicalJobWizard: React.FC = () => {
 
       if (error) throw error;
 
+      // Clear draft after successful post
+      try {
+        await supabase
+          .from('form_sessions')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('form_type', 'job_post');
+      } catch {}
+      
+      try {
+        sessionStorage.removeItem('wizardState');
+      } catch {}
+
       // Trigger professional notifications (non-blocking)
       supabase.functions.invoke('notify-job-broadcast', {
         body: { jobId: newJob.id }
@@ -265,13 +335,9 @@ export const CanonicalJobWizard: React.FC = () => {
   };
 
   const renderStep = () => {
-    console.log('🔄 renderStep called with currentStep:', currentStep);
-    console.log('🔄 wizardState:', wizardState);
-    
     try {
       switch (currentStep) {
       case 1:
-        console.log('✅ Rendering MainCategoryStep');
         return (
           <MainCategoryStep
             selectedCategory={wizardState.mainCategory}
@@ -281,9 +347,7 @@ export const CanonicalJobWizard: React.FC = () => {
         );
 
       case 2:
-        console.log('✅ Rendering SubcategoryStep with mainCategory:', wizardState.mainCategory);
         if (!wizardState.mainCategory) {
-          console.error('❌ ERROR: Trying to render SubcategoryStep but mainCategory is empty!');
           return <div className="text-center text-red-500">Error: No category selected. Please go back.</div>;
         }
         return (
@@ -363,7 +427,6 @@ export const CanonicalJobWizard: React.FC = () => {
         );
 
       default:
-        console.error('Unknown step:', currentStep);
         return (
           <div role="alert" className="text-center py-12">
             <p className="text-destructive">Wizard error: unknown step "{currentStep}"</p>
@@ -374,7 +437,7 @@ export const CanonicalJobWizard: React.FC = () => {
         );
     }
     } catch (error) {
-      console.error('💥 Wizard render error:', error);
+      console.error('Wizard render error:', error);
       return (
         <div role="alert" className="text-center py-12">
           <p className="text-destructive">Something went wrong loading the wizard.</p>
@@ -386,16 +449,27 @@ export const CanonicalJobWizard: React.FC = () => {
     }
   };
 
-  const canProceed = () => {
+  const canProceed = (): { can: boolean; reason?: string } => {
     switch (currentStep) {
-      case 1: return !!wizardState.mainCategory;
-      case 2: return !!wizardState.subcategory;
-      case 3: return !!wizardState.microId;
-      case 4: return true; // Questions are optional
-      case 5: return !!wizardState.logistics.location?.trim();
-      case 6: return true; // Extras are optional
-      case 7: return true;
-      default: return false;
+      case 1: 
+        return { can: !!wizardState.mainCategory, reason: 'Please select a category' };
+      case 2: 
+        return { can: !!wizardState.subcategory, reason: 'Please select a subcategory' };
+      case 3: 
+        return { can: !!wizardState.microId, reason: 'Please select a specific service' };
+      case 4: 
+        return { can: true }; // Questions are optional
+      case 5: 
+        return { 
+          can: !!wizardState.logistics.location?.trim(), 
+          reason: 'Please provide a location for the job' 
+        };
+      case 6: 
+        return { can: true }; // Extras are optional
+      case 7: 
+        return { can: true };
+      default: 
+        return { can: false };
     }
   };
 
@@ -431,18 +505,27 @@ export const CanonicalJobWizard: React.FC = () => {
 
       {/* Mobile Sticky CTA */}
       {isMobile && currentStep < TOTAL_STEPS && (
-        <StickyMobileCTA
-          primaryAction={{
-            label: currentStep === 7 ? 'Post Job' : 'Continue',
-            onClick: currentStep === 7 ? handleSubmit : handleNext,
-            disabled: !canProceed(),
-            loading: loading
-          }}
-          secondaryAction={currentStep > 1 ? {
-            label: 'Back',
-            onClick: handleBack
-          } : undefined}
-        />
+        <div>
+          <StickyMobileCTA
+            primaryAction={{
+              label: currentStep === 7 ? 'Post Job' : 'Continue',
+              onClick: currentStep === 7 ? handleSubmit : handleNext,
+              disabled: !canProceed().can,
+              loading: loading
+            }}
+            secondaryAction={currentStep > 1 ? {
+              label: 'Back',
+              onClick: handleBack
+            } : undefined}
+          />
+          {!canProceed().can && canProceed().reason && (
+            <div className="fixed bottom-20 left-0 right-0 text-center">
+              <p className="text-sm text-muted-foreground bg-card/90 backdrop-blur-sm px-4 py-2 mx-4 rounded-lg border">
+                {canProceed().reason}
+              </p>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

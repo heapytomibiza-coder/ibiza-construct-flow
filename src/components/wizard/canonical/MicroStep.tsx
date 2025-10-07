@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 interface MicroStepProps {
@@ -33,65 +34,74 @@ export const MicroStep: React.FC<MicroStepProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadMicros();
-  }, [subcategory]);
+    let mounted = true;
 
-  // Auto-advance after selection
-  useEffect(() => {
-    if (selectedMicroId && !loading) {
-      const timer = setTimeout(() => {
-        onNext();
-      }, 400);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedMicroId, loading, onNext]);
-
-  const loadMicros = async () => {
-    console.log('🔍 MicroStep - loadMicros called');
-    console.log('🔍 mainCategory:', mainCategory, 'subcategory:', subcategory);
-    
-    if (!mainCategory || !subcategory) {
-      console.warn('⚠️ Missing mainCategory or subcategory in MicroStep');
-      setMicros([]);
-      setLoading(false);
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      console.log('📡 Querying services_unified table for micro categories...');
-      
-      const { data, error } = await supabase
-        .from('services_catalog')
-        .select('id, micro')
-        .ilike('category', mainCategory)
-        .ilike('subcategory', subcategory)
-        .order('micro');
-
-      console.log('📊 Micro query response:', { data, error });
-
-      if (error) {
-        console.error('❌ Database error loading micro categories:', error);
-        throw error;
-      }
-
-      if (!data || data.length === 0) {
-        console.warn(`⚠️ No micro categories found for ${mainCategory} > ${subcategory}`);
-        setMicros([]);
+    const loadMicros = async () => {
+      if (!mainCategory || !subcategory) {
+        if (mounted) {
+          setMicros([]);
+          setLoading(false);
+        }
         return;
       }
 
-      console.log('✅ Micro services data:', data);
-      setMicros(data);
-      console.log(`✅ Loaded ${data.length} micro categories for ${mainCategory} > ${subcategory}`);
-    } catch (error) {
-      console.error('💥 Error loading micro categories:', error);
-      setMicros([]);
-    } finally {
-      setLoading(false);
-      console.log('🏁 MicroStep loading complete');
-    }
-  };
+      setLoading(true);
+      try {
+        // Fast path: exact match
+        let { data, error } = await supabase
+          .from('services_catalog')
+          .select('id, micro')
+          .eq('category', mainCategory)
+          .eq('subcategory', subcategory)
+          .not('micro', 'is', null)
+          .order('micro');
+
+        if (error) {
+          console.error('Error loading micro services (eq):', error);
+          data = null;
+        }
+
+        // Fallback: contains search if nothing found
+        if (!data || data.length === 0) {
+          const { data: fallbackData, error: fbErr } = await supabase
+            .from('services_catalog')
+            .select('id, micro')
+            .ilike('category', `%${mainCategory}%`)
+            .ilike('subcategory', `%${subcategory}%`)
+            .not('micro', 'is', null)
+            .order('micro');
+
+          if (fbErr) {
+            console.error('Error loading micro services (ilike):', fbErr);
+          } else if (fallbackData) {
+            data = fallbackData;
+          }
+        }
+
+        if (!mounted) return;
+
+        if (!data || data.length === 0) {
+          setMicros([]);
+          return;
+        }
+
+        setMicros(data);
+      } catch (error) {
+        if (mounted) {
+          console.error('Failed to load micro services:', error);
+          toast.error('Failed to load services. Please try again.');
+          setMicros([]);
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadMicros();
+    return () => {
+      mounted = false;
+    };
+  }, [mainCategory, subcategory]);
 
   if (!mainCategory || !subcategory) {
     return (

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface SubcategoryStepProps {
   mainCategory: string;
@@ -83,6 +84,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
       } catch (error) {
         if (mounted) {
           console.error('Failed to load subcategories:', error);
+          toast.error('Failed to load subcategories. Please try again.');
           setSubcategories([]);
         }
       } finally {
