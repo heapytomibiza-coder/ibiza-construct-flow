@@ -1,14 +1,11 @@
 /**
  * Step 1: Main Category Selection
- * Dynamically loads categories from database
+ * Categories hardcoded for immediate functionality
  */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import {
   Home, Wrench, Paintbrush, Zap, Droplet, Hammer,
   TreePine, Trees, Waves, Wind, Lightbulb, Sun,
@@ -29,53 +26,43 @@ const ICON_MAP: Record<string, any> = {
   Grid3X3, Layers
 };
 
+const CATEGORIES = [
+  // 12 Main Construction Categories
+  'Builder',
+  'Plumber',
+  'Electrician',
+  'Carpenter',
+  'Handyman',
+  'Painter',
+  'Tiler',
+  'Plasterer',
+  'Roofer',
+  'Landscaper',
+  'Pool Builder',
+  'HVAC',
+  // 6 Specialist Categories
+  'Architects & Design',
+  'Structural Works',
+  'Floors, Doors & Windows',
+  'Kitchen & Bathroom',
+  'Commercial Projects',
+  'Legal & Regulatory',
+];
+
 export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
   selectedCategory,
   onSelect,
   onNext
 }) => {
-  const [categories, setCategories] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    console.log('MainCategoryStep mounted, loading categories...');
-    loadCategories();
-  }, []);
-
   // Auto-advance after selection
   useEffect(() => {
-    if (selectedCategory && !loading) {
+    if (selectedCategory) {
       const timer = setTimeout(() => {
         onNext();
       }, 400);
       return () => clearTimeout(timer);
     }
-  }, [selectedCategory, loading, onNext]);
-
-  const loadCategories = async () => {
-    console.log('loadCategories called');
-    setLoading(true);
-    try {
-      console.log('Fetching from services_unified_v1...');
-      const { data, error } = await supabase
-        .from('services_unified_v1')
-        .select('category')
-        .order('category', { ascending: true });
-
-      console.log('Query result:', { data, error });
-      if (error) throw error;
-      
-      // Get unique categories
-      const unique = Array.from(new Set(data.map(d => d.category)));
-      console.log('Unique categories:', unique);
-      setCategories(unique);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-      toast.error('Failed to load categories');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [selectedCategory, onNext]);
 
   // Map category names to icons (12 Main + 6 Specialist)
   const getCategoryIcon = (category: string): keyof typeof ICON_MAP => {
@@ -104,22 +91,6 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
     return iconMap[category] || 'Wrench';
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="text-center space-y-2">
-          <Skeleton className="h-8 w-64 mx-auto" />
-          <Skeleton className="h-4 w-96 mx-auto" />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="text-center space-y-4">
@@ -134,7 +105,7 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
       {/* Available Services */}
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          {categories.map((category) => {
+          {CATEGORIES.map((category) => {
             const iconName = getCategoryIcon(category);
             const IconComponent = ICON_MAP[iconName];
             const isSelected = selectedCategory === category;
