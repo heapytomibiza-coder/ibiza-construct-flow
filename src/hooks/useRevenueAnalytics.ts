@@ -1,59 +1,82 @@
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface RevenueData {
-  date: string;
-  revenue: number;
-  transactions: number;
+export interface RevenueTransaction {
+  id: string;
+  transaction_type: string;
+  amount: number;
+  currency: string;
+  category: string;
+  status: string;
+  processed_at: string;
 }
 
-export function useRevenueAnalytics(startDate?: Date, endDate?: Date) {
-  const [data, setData] = useState<RevenueData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export const useRevenueAnalytics = (dateRange?: { start: string; end: string }) => {
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchRevenue = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+  const { data: transactions, isLoading } = useQuery({
+    queryKey: ['revenue-analytics', dateRange],
+    queryFn: async () => {
+      let query = (supabase as any)
+        .from('revenue_analytics')
+        .select('*')
+        .order('processed_at', { ascending: false });
 
-        const { data: payments, error: paymentsError } = await supabase
-          .from('payment_transactions')
-          .select('created_at, amount, status')
-          .in('status', ['completed', 'succeeded'])
-          .order('created_at', { ascending: true });
-
-        if (paymentsError) throw paymentsError;
-
-        // Group by date
-        const grouped = (payments || []).reduce((acc: Record<string, { revenue: number; count: number }>, payment) => {
-          const date = new Date(payment.created_at).toISOString().split('T')[0];
-          if (!acc[date]) {
-            acc[date] = { revenue: 0, count: 0 };
-          }
-          acc[date].revenue += payment.amount || 0;
-          acc[date].count += 1;
-          return acc;
-        }, {});
-
-        const revenueData = Object.entries(grouped).map(([date, stats]) => ({
-          date,
-          revenue: stats.revenue,
-          transactions: stats.count,
-        }));
-
-        setData(revenueData);
-      } catch (err) {
-        console.error('Error fetching revenue:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch revenue data');
-      } finally {
-        setIsLoading(false);
+      if (dateRange) {
+        query = query
+          .gte('processed_at', dateRange.start)
+          .lte('processed_at', dateRange.end);
       }
-    };
 
-    fetchRevenue();
-  }, [startDate, endDate]);
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as RevenueTransaction[];
+    },
+  });
 
-  return { data, isLoading, error };
-}
+  const addTransaction = useMutation({
+    mutationFn: async (transaction: Omit<RevenueTransaction, 'id'>) => {
+      const { data, error } = await (supabase as any)
+        .from('revenue_analytics')
+        .insert(transaction)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['revenue-analytics'] });
+    },
+  });
+
+  const generateReport = useMutation({
+    mutationFn: async (params: {
+      dateRange: { start: string; end: string };
+      filters?: any;
+    }) => {
+      const { data, error } = await supabase.functions.invoke('report-generator', {
+        body: {
+          reportType: 'revenue',
+          dateRange: params.dateRange,
+          filters: params.filters,
+        },
+      });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const totalRevenue = transactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+  const completedTransactions = transactions?.filter(t => t.status === 'completed').length || 0;
+
+  return {
+    transactions,
+    totalRevenue,
+    completedTransactions,
+    isLoading,
+    addTransaction: addTransaction.mutate,
+    generateReport: generateReport.mutateAsync,
+  };
+};

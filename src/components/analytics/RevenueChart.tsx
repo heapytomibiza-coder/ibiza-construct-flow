@@ -1,73 +1,56 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { format, parseISO } from 'date-fns';
-
-interface RevenueTrend {
-  date: string;
-  revenue: number;
-  payment_count: number;
-}
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface RevenueChartProps {
-  data: RevenueTrend[];
+  data: Array<{
+    date?: string;
+    period?: string;
+    revenue?: number;
+    amount?: number;
+    [key: string]: any;
+  }>;
   showForecast?: boolean;
 }
 
-export function RevenueChart({ data, showForecast = false }: RevenueChartProps) {
-  if (!data || data.length === 0) {
-    return (
-      <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-        No revenue data available
-      </div>
-    );
-  }
-
-  const chartData = data
-    .map((item) => ({
-      date: format(parseISO(item.date), 'MMM dd'),
-      revenue: Number(item.revenue),
-      payments: Number(item.payment_count),
-    }))
-    .reverse();
+export const RevenueChart = ({ data, showForecast }: RevenueChartProps) => {
+  const chartData = data.map(item => ({
+    date: item.date || item.period || '',
+    revenue: item.revenue || item.amount || 0,
+  }));
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-        <XAxis 
-          dataKey="date" 
-          className="text-xs"
-          stroke="hsl(var(--muted-foreground))"
-        />
-        <YAxis 
-          className="text-xs"
-          stroke="hsl(var(--muted-foreground))"
-        />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: 'hsl(var(--card))',
-            border: '1px solid hsl(var(--border))',
-            borderRadius: '8px',
-          }}
-          labelStyle={{ color: 'hsl(var(--foreground))' }}
-        />
-        <Legend />
-        <Line
-          type="monotone"
-          dataKey="revenue"
-          stroke="hsl(var(--primary))"
-          strokeWidth={2}
-          name="Revenue ($)"
-          dot={{ fill: 'hsl(var(--primary))', r: 4 }}
-        />
-        <Line
-          type="monotone"
-          dataKey="payments"
-          stroke="hsl(var(--accent))"
-          strokeWidth={2}
-          name="Payments"
-          dot={{ fill: 'hsl(var(--accent))', r: 4 }}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <Card>
+      <CardHeader>
+        <CardTitle>Revenue Trend</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis 
+              dataKey="date"
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <YAxis 
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px'
+              }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="revenue" 
+              stroke="hsl(var(--primary))" 
+              strokeWidth={2}
+              dot={{ fill: 'hsl(var(--primary))' }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
-}
+};

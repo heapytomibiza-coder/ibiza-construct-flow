@@ -1,270 +1,207 @@
-import { useAnalytics } from '@/hooks/useAnalytics';
-import { useRevenueAnalytics } from '@/hooks/useRevenueAnalytics';
-import { useDataExport } from '@/hooks/useDataExport';
-import { KPICard } from './KPICard';
-import { LineChart } from './charts/LineChart';
-import { BarChart } from './charts/BarChart';
-import { AreaChart } from './charts/AreaChart';
-import { PieChart } from './charts/PieChart';
-import { FunnelChart } from './FunnelChart';
-import { CohortTable } from './CohortTable';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAnalyticsDashboard } from '@/hooks/useAnalyticsDashboard';
+import { TrendingUp, DollarSign, Star, Clock, Briefcase, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Loader2, Download } from 'lucide-react';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import { useState } from 'react';
-import { addDays } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 
-export function AnalyticsDashboard() {
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
-    from: addDays(new Date(), -30),
-    to: new Date(),
-  });
+export const AnalyticsDashboard = () => {
+  const { stats, insights, isLoading, markInsightAsRead, generateInsights } = useAnalyticsDashboard();
 
-  const { kpis, isLoading, error } = useAnalytics(dateRange.from, dateRange.to);
-  const { data: revenueData, isLoading: revenueLoading } = useRevenueAnalytics(dateRange.from, dateRange.to);
-  const { exportData, exporting } = useDataExport();
-
-  const handleExport = async (format: 'csv' | 'excel' | 'json' | 'pdf') => {
-    await exportData('revenue', format, dateRange);
-  };
-
-  // Mock funnel data
-  const funnelData = [
-    { name: 'Visits', value: 10000, percentage: 100 },
-    { name: 'Searched', value: 7500, percentage: 75 },
-    { name: 'Viewed Profile', value: 5000, percentage: 50 },
-    { name: 'Contacted', value: 2500, percentage: 25 },
-    { name: 'Booked', value: 1000, percentage: 10 },
-  ];
-
-  // Mock cohort data
-  const cohortData = [
-    { cohort: 'Jan 2024', size: 150, retention: [100, 85, 72, 65, 58, 52] },
-    { cohort: 'Feb 2024', size: 180, retention: [100, 88, 75, 68, 61] },
-    { cohort: 'Mar 2024', size: 200, retention: [100, 90, 78, 70] },
-    { cohort: 'Apr 2024', size: 220, retention: [100, 92, 80] },
-  ];
-
-  if (isLoading || revenueLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+  if (isLoading) {
+    return <div className="space-y-4">
+      {[1, 2, 3].map(i => (
+        <Card key={i} className="animate-pulse">
+          <CardContent className="h-32" />
+        </Card>
+      ))}
+    </div>;
   }
 
-  if (error) {
-    return (
-      <Card className="p-6">
-        <p className="text-destructive">Error loading analytics: {error}</p>
-      </Card>
-    );
-  }
+  const statCards = [
+    {
+      title: 'Total Revenue',
+      value: `€${stats?.summary?.total_revenue?.toFixed(2) || '0.00'}`,
+      icon: DollarSign,
+      trend: '+12%',
+      color: 'text-green-600',
+    },
+    {
+      title: 'Jobs Completed',
+      value: stats?.summary?.total_jobs_completed || 0,
+      icon: Briefcase,
+      trend: '+8%',
+      color: 'text-blue-600',
+    },
+    {
+      title: 'Average Rating',
+      value: stats?.summary?.average_rating?.toFixed(1) || '0.0',
+      icon: Star,
+      trend: '+0.3',
+      color: 'text-yellow-600',
+    },
+    {
+      title: 'Response Time',
+      value: `${Math.floor((stats?.summary?.response_time_avg || 0) / 60)}h`,
+      icon: Clock,
+      trend: '-15%',
+      color: 'text-purple-600',
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h2>
-        <div className="flex items-center gap-4">
-          <DatePickerWithRange
-            date={dateRange}
-            onDateChange={(range) => range && setDateRange(range)}
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleExport('csv')}
-            disabled={exporting}
-          >
-            {exporting ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : (
-              <Download className="h-4 w-4 mr-2" />
-            )}
-            Export
-          </Button>
-        </div>
+      {/* Stats Overview */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat) => (
+          <Card key={stat.title}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground">
+                <span className={stat.color}>{stat.trend}</span> from last month
+              </p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
+      {/* Business Insights */}
+      {insights && insights.length > 0 && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <CardTitle>Business Insights</CardTitle>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => generateInsights()}>
+              Refresh Insights
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {insights.map((insight: any) => (
+              <div
+                key={insight.id}
+                className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+              >
+                <AlertCircle className={`h-5 w-5 mt-0.5 ${
+                  insight.priority === 'high' ? 'text-red-500' :
+                  insight.priority === 'medium' ? 'text-yellow-500' :
+                  'text-blue-500'
+                }`} />
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold">{insight.insight_title}</h4>
+                    <Badge variant={
+                      insight.priority === 'high' ? 'destructive' :
+                      insight.priority === 'medium' ? 'default' :
+                      'secondary'
+                    }>
+                      {insight.priority}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{insight.insight_description}</p>
+                  {insight.action_items && insight.action_items.length > 0 && (
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">Action Items:</p>
+                      <ul className="list-disc list-inside text-sm text-muted-foreground">
+                        {insight.action_items.map((item: string, i: number) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => markInsightAsRead(insight.id)}
+                  >
+                    Mark as Read
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Tabs for detailed analytics */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="funnel">Conversion</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <KPICard
-              title="Total Users"
-              value={kpis?.total_users || 0}
-            />
-            <KPICard
-              title="Active Users"
-              value={kpis?.active_users || 0}
-            />
-            <KPICard
-              title="Total Bookings"
-              value={kpis?.total_bookings || 0}
-            />
-            <KPICard
-              title="Active Disputes"
-              value={kpis?.active_disputes || 0}
-            />
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Total Revenue</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">
-                  ${(kpis?.total_revenue || 0).toLocaleString()}
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Average Rating</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">
-                  {(kpis?.average_rating || 0).toFixed(1)} / 5.0
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="p-6">
-            <AreaChart
-              data={revenueData}
-              xKey="date"
-              areas={[
-                { key: 'revenue', name: 'Revenue', color: 'hsl(var(--primary))' },
-                { key: 'transactions', name: 'Transactions', color: 'hsl(var(--secondary))' },
-              ]}
-              title="Revenue Trends"
-              height={400}
-            />
+          <Card>
+            <CardHeader>
+              <CardTitle>Monthly Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Chart visualization will be displayed here
+              </div>
+            </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="revenue" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            <KPICard
-              title="Total Revenue"
-              value={`$${(kpis?.total_revenue || 0).toLocaleString()}`}
-            />
-            <KPICard
-              title="Completed Bookings"
-              value={kpis?.completed_bookings || 0}
-            />
-            <KPICard
-              title="Avg. Booking Value"
-              value={`$${kpis?.completed_bookings ? ((kpis.total_revenue / kpis.completed_bookings) || 0).toFixed(2) : '0.00'}`}
-            />
-          </div>
-
-          <Card className="p-6">
-            <LineChart
-              data={revenueData}
-              xKey="date"
-              lines={[
-                { key: 'revenue', name: 'Revenue ($)', color: 'hsl(var(--primary))' },
-              ]}
-              title="Daily Revenue"
-              height={400}
-            />
-          </Card>
-
-          <Card className="p-6">
-            <BarChart
-              data={revenueData.slice(-7)}
-              xKey="date"
-              bars={[
-                { key: 'transactions', name: 'Transactions', color: 'hsl(var(--primary))' },
-              ]}
-              title="Daily Transactions (Last 7 Days)"
-              height={300}
-            />
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            <KPICard
-              title="Total Users"
-              value={kpis?.total_users || 0}
-            />
-            <KPICard
-              title="Active Users"
-              value={kpis?.active_users || 0}
-            />
-            <KPICard
-              title="New Users"
-              value={kpis?.new_users || 0}
-            />
-          </div>
-
-          <CohortTable data={cohortData} title="User Retention Cohorts" />
-
-          <Card className="p-6">
-            <PieChart
-              data={[
-                { name: 'Active', value: kpis?.active_users || 0 },
-                { name: 'Inactive', value: (kpis?.total_users || 0) - (kpis?.active_users || 0) },
-              ]}
-              colors={['hsl(var(--primary))', 'hsl(var(--muted))']}
-              title="User Activity Distribution"
-              height={300}
-            />
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="funnel" className="space-y-4">
-          <FunnelChart data={funnelData} title="Conversion Funnel" />
-          
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Key Metrics</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Overall Conversion</span>
-                  <span className="font-semibold">10%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Search to Contact</span>
-                  <span className="font-semibold">33.3%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Contact to Book</span>
-                  <span className="font-semibold">40%</span>
+        <TabsContent value="revenue">
+          <Card>
+            <CardHeader>
+              <CardTitle>Revenue Analytics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground">This Month</p>
+                    <p className="text-2xl font-bold">€{stats?.monthlyRevenue?.toFixed(2) || '0.00'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Completion Rate</p>
+                    <p className="text-2xl font-bold">{(stats?.summary?.completion_rate * 100)?.toFixed(0) || 0}%</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Spending</p>
+                    <p className="text-2xl font-bold">€{stats?.summary?.total_spending?.toFixed(2) || '0.00'}</p>
+                  </div>
                 </div>
               </div>
-            </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Improvement Areas</h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm font-medium">Biggest Drop-off</p>
-                  <p className="text-sm text-muted-foreground">Search to Profile (25% drop)</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Recommendation</p>
-                  <p className="text-sm text-muted-foreground">
-                    Improve search results relevance and professional profiles
-                  </p>
-                </div>
+        <TabsContent value="performance">
+          <Card>
+            <CardHeader>
+              <CardTitle>Performance Metrics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Performance metrics visualization
               </div>
-            </Card>
-          </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="activity">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Activity timeline will be displayed here
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
   );
-}
+};
