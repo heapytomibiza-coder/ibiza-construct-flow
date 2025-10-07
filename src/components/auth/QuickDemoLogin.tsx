@@ -59,25 +59,7 @@ export function QuickDemoLogin() {
         throw new Error('No user data returned');
       }
 
-      // Ensure the user has the correct role in user_roles table
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .upsert(
-          { 
-            user_id: signInData.user.id, 
-            role: account.role as 'client' | 'professional' | 'admin'
-          },
-          { 
-            onConflict: 'user_id,role'
-          }
-        );
-
-      if (roleError) {
-        console.error('Role upsert error:', roleError);
-        throw new Error(`Failed to set role: ${roleError.message}`);
-      }
-
-      // Update profile active_role
+      // Switch the active role in the profile
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ active_role: account.role })
@@ -85,7 +67,7 @@ export function QuickDemoLogin() {
 
       if (profileError) {
         console.error('Profile update error:', profileError);
-        throw new Error(`Failed to update profile: ${profileError.message}`);
+        throw new Error(`Failed to update active role: ${profileError.message}`);
       }
 
       toast({
