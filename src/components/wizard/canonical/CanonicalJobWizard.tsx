@@ -105,6 +105,10 @@ export const CanonicalJobWizard: React.FC = () => {
     setCurrentStep(newStep);
   }, [currentStep]);
 
+  const handleSubcategorySelect = useCallback((sub: string) => {
+    setWizardState(prev => ({ ...prev, subcategory: sub }));
+  }, []);
+
   const handleSubmit = async () => {
     if (!user) {
       toast.error('Please sign in to post a job');
@@ -197,11 +201,6 @@ export const CanonicalJobWizard: React.FC = () => {
           console.error('❌ ERROR: Trying to render SubcategoryStep but mainCategory is empty!');
           return <div className="text-center text-red-500">Error: No category selected. Please go back.</div>;
         }
-        
-        const handleSubcategorySelect = useCallback((sub: string) => {
-          setWizardState(prev => ({ ...prev, subcategory: sub }));
-        }, []);
-        
         return (
           <SubcategoryStep
             mainCategory={wizardState.mainCategory}
