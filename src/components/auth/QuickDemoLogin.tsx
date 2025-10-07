@@ -8,8 +8,8 @@ import { useNavigate } from 'react-router-dom';
 
 const DEMO_ACCOUNTS = [
   {
-    email: 'demo-client@test.com',
-    password: 'demo123',
+    email: 'client.demo@platform.com',
+    password: 'ClientDemo123!',
     role: 'client',
     label: 'Client Demo',
     description: 'Post jobs & hire professionals',
@@ -17,8 +17,8 @@ const DEMO_ACCOUNTS = [
     color: 'bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/20'
   },
   {
-    email: 'demo-pro@test.com',
-    password: 'demo123',
+    email: 'pro.demo@platform.com',
+    password: 'ProDemo123!',
     role: 'professional',
     label: 'Professional Demo',
     description: 'Find work & manage bookings',
@@ -26,8 +26,8 @@ const DEMO_ACCOUNTS = [
     color: 'bg-purple-500/10 hover:bg-purple-500/20 border-purple-500/20'
   },
   {
-    email: 'demo-admin@test.com',
-    password: 'demo123',
+    email: 'admin.demo@platform.com',
+    password: 'AdminDemo123!',
     role: 'admin',
     label: 'Admin Demo',
     description: 'Manage platform & users',
@@ -136,7 +136,7 @@ export function QuickDemoLogin() {
           );
         })}
         <p className="text-xs text-muted-foreground text-center mt-2">
-          All demo accounts use password: <code className="bg-muted px-1 rounded">demo123</code>
+          Demo accounts are pre-configured for instant access
         </p>
       </CardContent>
     </Card>
