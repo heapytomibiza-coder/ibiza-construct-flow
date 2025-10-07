@@ -53,42 +53,58 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
       return;
     }
     
+    setLoading(true);
+    console.log('📡 Querying services_unified table for subcategories...');
+    
     try {
-      setLoading(true);
-      console.log('📡 Querying services_unified table for subcategories...');
-      
+      const queryStart = Date.now();
       const { data, error } = await supabase
         .from('services_unified')
         .select('subcategory')
         .eq('category', mainCategory)
         .order('subcategory');
 
-      console.log('📊 Subcategory query response:', { data, error });
+      const queryTime = Date.now() - queryStart;
+      console.log(`📊 Query completed in ${queryTime}ms`);
+      console.log('📊 Subcategory query response:', { data, error, dataLength: data?.length });
 
       if (error) {
         console.error('❌ Database error loading subcategories:', error);
-        throw error;
+        console.error('❌ Error details:', JSON.stringify(error, null, 2));
+        setSubcategories([]);
+        setLoading(false);
+        return;
       }
 
       if (!data || data.length === 0) {
         console.warn(`⚠️ No subcategories found for category: ${mainCategory}`);
         setSubcategories([]);
+        setLoading(false);
         return;
       }
 
       // Get unique subcategories
-      const uniqueSubs = Array.from(new Set(data.map(s => s.subcategory)));
+      console.log('🔄 Processing subcategories data...');
+      const uniqueSubs = Array.from(new Set(data.map(s => s.subcategory).filter(Boolean)));
       console.log('✅ Unique subcategories:', uniqueSubs);
-      setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
+      
+      const formattedSubs = uniqueSubs.map(sub => ({ name: sub }));
+      console.log('✅ Formatted subcategories:', formattedSubs);
+      
+      setSubcategories(formattedSubs);
       console.log(`✅ Loaded ${uniqueSubs.length} subcategories for ${mainCategory}`);
     } catch (error) {
-      console.error('💥 Error loading subcategories:', error);
+      console.error('💥 Caught error in loadSubcategories:', error);
+      console.error('💥 Error type:', typeof error);
+      console.error('💥 Error message:', error instanceof Error ? error.message : String(error));
       setSubcategories([]);
     } finally {
       setLoading(false);
       console.log('🏁 SubcategoryStep loading complete');
     }
   };
+
+  console.log('🎨 SubcategoryStep render - loading:', loading, 'subcategories:', subcategories.length);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -116,10 +132,18 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-32 bg-muted/30 animate-pulse rounded-xl" />
-          ))}
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">Loading subcategories...</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-32 bg-muted/30 animate-pulse rounded-xl" />
+            ))}
+          </div>
+        </div>
+      ) : subcategories.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No subcategories found for {mainCategory}</p>
+          <Button onClick={onBack} className="mt-4">Go Back</Button>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -133,7 +157,10 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
                   "p-6 cursor-pointer transition-all hover:shadow-lg",
                   isSelected && "ring-2 ring-copper shadow-lg"
                 )}
-                onClick={() => onSelect(sub.name)}
+                onClick={() => {
+                  console.log('🎯 Selected subcategory:', sub.name);
+                  onSelect(sub.name);
+                }}
               >
                 <div className="flex items-center justify-center h-full">
                   <span className="font-medium text-center text-charcoal">
