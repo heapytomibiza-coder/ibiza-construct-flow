@@ -91,16 +91,14 @@ export const CanonicalJobWizard: React.FC = () => {
 
   // Stable navigation callbacks
   const handleNext = useCallback(() => {
-    console.log('⏭️ handleNext called, current step:', currentStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setCurrentStep(s => Math.min(s + 1, 8));
-  }, [currentStep]);
+  }, []);
   
   const handleBack = useCallback(() => {
-    console.log('⏮️ handleBack called, current step:', currentStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setCurrentStep(s => Math.max(s - 1, 1));
-  }, [currentStep]);
+  }, []);
 
   // Stable updaters for wizardState (all defined at top level)
   const handleCategorySelect = useCallback((category: string) => {
