@@ -31,9 +31,6 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
   // 🔒 Make sure we only auto-advance after an explicit click this session
   const [userClicked, setUserClicked] = useState(false);
 
-  // 🚫 Prevent duplicate fetches for same category (StrictMode double-mount)
-  const lastCategoryRef = useRef<string | null>(null);
-
   // Mount logging
   useEffect(() => {
     console.log('🚨 SUBCATEGORY STEP MOUNTED', { mainCategory, selectedSubcategory });
@@ -59,13 +56,6 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
       setLoading(false);
       return;
     }
-
-    // Skip duplicate fetch for same category (handles StrictMode double mount)
-    if (lastCategoryRef.current === mainCategory) {
-      console.log('⏭️ Skipping duplicate fetch for:', mainCategory);
-      return;
-    }
-    lastCategoryRef.current = mainCategory;
 
     const ac = new AbortController();
     let cancelled = false;
