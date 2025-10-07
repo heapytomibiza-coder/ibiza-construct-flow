@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, ReactNode, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -437,11 +437,11 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
     refetch();
   }, [refetch]);
 
-  const value: ServicesRegistryContextType = {
+  const value = useMemo<ServicesRegistryContextType>(() => ({
     services,
     loading,
     error: error?.message || null,
-    version: 1, // Can be incremented when admin publishes changes
+    version: 1,
     getCategories,
     getSubcategories,
     getMicroServices,
@@ -450,7 +450,7 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
     getQuestions,
     getPricing,
     invalidateCache
-  };
+  }), [services, loading, error, getCategories, getSubcategories, getMicroServices, getServicesByCategory, getServiceCards, getQuestions, getPricing, invalidateCache]);
 
   return (
     <ServicesRegistryContext.Provider value={value}>

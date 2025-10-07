@@ -3,7 +3,7 @@
  * 8-screen tap-first wizard per locked specification
  * DO NOT modify flow without governance approval
  */
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -89,21 +89,21 @@ export const CanonicalJobWizard: React.FC = () => {
 
   const progress = (currentStep / 8) * 100;
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     console.log('⏭️ handleNext called, current step:', currentStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const newStep = Math.min(currentStep + 1, 8);
     console.log('⏭️ Setting new step:', newStep);
     setCurrentStep(newStep);
-  };
+  }, [currentStep]);
   
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     console.log('⏮️ handleBack called, current step:', currentStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const newStep = Math.max(currentStep - 1, 1);
     console.log('⏮️ Setting new step:', newStep);
     setCurrentStep(newStep);
-  };
+  }, [currentStep]);
 
   const handleSubmit = async () => {
     if (!user) {
@@ -197,11 +197,16 @@ export const CanonicalJobWizard: React.FC = () => {
           console.error('❌ ERROR: Trying to render SubcategoryStep but mainCategory is empty!');
           return <div className="text-center text-red-500">Error: No category selected. Please go back.</div>;
         }
+        
+        const handleSubcategorySelect = useCallback((sub: string) => {
+          setWizardState(prev => ({ ...prev, subcategory: sub }));
+        }, []);
+        
         return (
           <SubcategoryStep
             mainCategory={wizardState.mainCategory}
             selectedSubcategory={wizardState.subcategory}
-            onSelect={(sub) => setWizardState(prev => ({ ...prev, subcategory: sub }))}
+            onSelect={handleSubcategorySelect}
             onNext={handleNext}
             onBack={handleBack}
           />

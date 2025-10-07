@@ -18,7 +18,7 @@ interface SubcategoryStepProps {
   onBack: () => void;
 }
 
-export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
+export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
   mainCategory,
   selectedSubcategory,
   onSelect,
@@ -27,13 +27,11 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
 }) => {
   const [subcategories, setSubcategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Mount logging
-  useEffect(() => {
-    console.log('🚨 SUBCATEGORY STEP MOUNTED', { mainCategory, selectedSubcategory });
-    return () => console.log('🚨 SUBCATEGORY STEP UNMOUNTED');
-  }, []);
-
+  const [userClicked, setUserClicked] = useState(false);
+  
+  // Prevent duplicate fetches for same category
+  const lastCategoryRef = useRef<string | null>(null);
+  
   // Stable callback ref to avoid re-renders
   const onNextRef = useRef(onNext);
   useEffect(() => { 
@@ -41,23 +39,33 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
   }, [onNext]);
 
   useEffect(() => {
-    const ac = new AbortController();
+    if (!mainCategory) {
+      setSubcategories([]);
+      setLoading(false);
+      return;
+    }
+
+    // Skip if we already fetched for this category (prevents double-fire)
+    if (lastCategoryRef.current === mainCategory) {
+      console.log('⏭️ Skipping duplicate fetch for:', mainCategory);
+      return;
+    }
+    lastCategoryRef.current = mainCategory;
+
     let cancelled = false;
-    
-    const loadSubcategories = async () => {
-      console.log('🔍 loadSubcategories START - mainCategory:', mainCategory);
-      
-      if (!mainCategory) {
-        console.warn('⚠️ No mainCategory provided');
-        setSubcategories([]);
-        setLoading(false);
-        return;
+    const ac = new AbortController();
+
+    const timeout = setTimeout(() => {
+      if (!cancelled) {
+        console.warn('⏱️ services_catalog query slow or blocked (10s+)');
+        ac.abort();
       }
-      
+    }, 10000);
+
+    const loadSubcategories = async () => {
       setLoading(true);
-      
       try {
-        console.log('📡 Executing Supabase query...');
+        console.log('📡 Executing Supabase query...', { mainCategory });
         const queryStart = Date.now();
         
         const { data, error } = await supabase
@@ -66,68 +74,44 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
           .eq('category', mainCategory)
           .order('subcategory', { ascending: true })
           .limit(100);
-        
+
         if (cancelled) return;
-        
+
         const queryTime = Date.now() - queryStart;
         console.log(`📊 Query completed in ${queryTime}ms`);
-        console.log('📊 Response:', { 
-          dataLength: data?.length, 
-          error: error ? JSON.stringify(error) : null 
-        });
 
         if (error) {
-          console.error('❌ Supabase error:', error);
-          console.error('❌ Error details:', {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          });
+          console.error('❌ services_catalog error:', error);
           setSubcategories([]);
-          setLoading(false);
           return;
         }
 
-        if (!data || data.length === 0) {
-          console.warn(`⚠️ No subcategories found for: ${mainCategory}`);
-          setSubcategories([]);
-          setLoading(false);
-          return;
-        }
-
-        const uniqueSubs = Array.from(
-          new Set(data.map(s => s.subcategory).filter(Boolean))
-        );
-        console.log('✅ Processed subcategories:', uniqueSubs);
-        
-        setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
-        setLoading(false);
-        
-      } catch (error: any) {
+        const unique = Array.from(new Set((data ?? []).map((r: any) => r?.subcategory).filter(Boolean)));
+        setSubcategories(unique.map((name) => ({ name })));
+        console.log('✅ Processed subcategories:', unique);
+      } catch (e: any) {
         if (!cancelled) {
-          console.error('💥 Caught exception:', error?.message || error);
-          console.error('💥 Exception details:', {
-            name: error?.name,
-            message: error?.message,
-            stack: error?.stack
-          });
+          console.error('💥 Subcategory load exception:', e?.message ?? e);
           setSubcategories([]);
-          setLoading(false);
         }
+      } finally {
+        if (!cancelled) setLoading(false);
+        clearTimeout(timeout);
       }
     };
-    
+
     loadSubcategories();
-    
-    return () => { 
+
+    return () => {
       cancelled = true;
-      ac.abort(); // Cancel in-flight request during StrictMode remount
+      clearTimeout(timeout);
+      ac.abort();
     };
   }, [mainCategory]);
 
-  // Auto-advance after selection
+  // Only auto-advance after explicit user click
   useEffect(() => {
+    if (!userClicked) return;
     if (selectedSubcategory && !loading && subcategories.length > 0) {
       const timer = setTimeout(() => {
         console.log('⏭️ Auto-advancing to next step');
@@ -135,7 +119,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
       }, 400);
       return () => clearTimeout(timer);
     }
-  }, [selectedSubcategory, loading, subcategories]);
+  }, [userClicked, selectedSubcategory, loading, subcategories]);
 
   console.log('🎨 SubcategoryStep render - loading:', loading, 'subcategories:', subcategories.length);
 
@@ -193,6 +177,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
                 onClick={() => {
                   console.log('🎯 Selected subcategory:', sub.name);
                   onSelect(sub.name);
+                  setUserClicked(true);
                 }}
               >
                 <div className="flex items-center justify-center h-full">
@@ -219,4 +204,4 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
       )}
     </div>
   );
-};
+});
