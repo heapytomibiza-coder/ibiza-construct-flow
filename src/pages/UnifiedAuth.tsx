@@ -73,7 +73,9 @@ export default function UnifiedAuth() {
           description: t('signin.signInSuccess')
         });
         
-        navigate('/dashboard');
+        // Respect redirect parameter from URL
+        const redirectTo = searchParams.get('redirect');
+        navigate(redirectTo || '/dashboard', { replace: true });
       } else {
         // Validate signup data
         const validationResult = signupSchema.safeParse({ 
