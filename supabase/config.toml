@@ -1,5 +1,8 @@
 project_id = "kcncrtayycwdwrxcgler"
 
+[functions.reset-demo-passwords]
+verify_jwt = false
+
 [functions.send-professional-invitation]
 verify_jwt = true
 
