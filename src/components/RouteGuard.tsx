@@ -35,10 +35,17 @@ export default function RouteGuard({
           return;
         }
 
-        // Get session directly from Supabase
+        // Get session directly from Supabase (failsafe check)
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError || !session?.user) {
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          setStatus('unauthorized');
+          return;
+        }
+
+        if (!session?.user) {
+          console.log('No session found, redirecting to auth');
           setStatus('unauthorized');
           return;
         }
