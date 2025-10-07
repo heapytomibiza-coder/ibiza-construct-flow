@@ -41,6 +41,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
   }, [onNext]);
 
   useEffect(() => {
+    const ac = new AbortController();
     let cancelled = false;
     
     const loadSubcategories = async () => {
@@ -77,6 +78,12 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
 
         if (error) {
           console.error('❌ Supabase error:', error);
+          console.error('❌ Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
           setSubcategories([]);
           setLoading(false);
           return;
@@ -97,9 +104,14 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
         setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
         setLoading(false);
         
-      } catch (error) {
+      } catch (error: any) {
         if (!cancelled) {
-          console.error('💥 Caught exception:', error);
+          console.error('💥 Caught exception:', error?.message || error);
+          console.error('💥 Exception details:', {
+            name: error?.name,
+            message: error?.message,
+            stack: error?.stack
+          });
           setSubcategories([]);
           setLoading(false);
         }
@@ -110,6 +122,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
     
     return () => { 
       cancelled = true;
+      ac.abort(); // Cancel in-flight request during StrictMode remount
     };
   }, [mainCategory]);
 
