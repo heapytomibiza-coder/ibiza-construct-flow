@@ -42,33 +42,42 @@ export function QuickDemoLogin() {
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleDemoLogin = async (account: typeof DEMO_ACCOUNTS[0]) => {
+    console.log('🔵 [QuickDemoLogin] Demo login started for:', account.email, 'role:', account.role);
     setLoading(account.email);
     
     try {
       // Sign in with demo account
+      console.log('🔵 [QuickDemoLogin] Attempting sign in...');
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: account.email,
         password: account.password
       });
 
       if (signInError) {
+        console.error('🔴 [QuickDemoLogin] Sign in error:', signInError);
         throw signInError;
       }
 
       if (!signInData.user) {
+        console.error('🔴 [QuickDemoLogin] No user data returned');
         throw new Error('No user data returned');
       }
 
+      console.log('✅ [QuickDemoLogin] Sign in successful, user ID:', signInData.user.id);
+
       // Switch the active role in the profile
+      console.log('🔵 [QuickDemoLogin] Updating active_role to:', account.role);
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ active_role: account.role })
         .eq('id', signInData.user.id);
 
       if (profileError) {
-        console.error('Profile update error:', profileError);
+        console.error('🔴 [QuickDemoLogin] Profile update error:', profileError);
         throw new Error(`Failed to update active role: ${profileError.message}`);
       }
+
+      console.log('✅ [QuickDemoLogin] Profile updated successfully');
 
       toast({
         title: 'Demo Login Successful',
@@ -84,26 +93,37 @@ export function QuickDemoLogin() {
       
       // Check if current route requires a different role
       const currentPath = window.location.pathname;
+      const targetUrl = dashboardMap[account.role] || '/dashboard';
       const needsRedirect = 
         (account.role !== 'client' && currentPath === '/post') || // /post requires client
         (currentPath.startsWith('/admin') && account.role !== 'admin'); // admin routes
 
+      console.log('🔵 [QuickDemoLogin] Current path:', currentPath);
+      console.log('🔵 [QuickDemoLogin] Target URL:', targetUrl);
+      console.log('🔵 [QuickDemoLogin] Needs redirect:', needsRedirect);
+
       if (needsRedirect || currentPath === '/auth') {
-        // Redirect to appropriate dashboard
-        window.location.assign(dashboardMap[account.role] || '/dashboard');
+        console.log('🔵 [QuickDemoLogin] Redirecting to dashboard...');
+        // Use setTimeout to ensure state updates complete before navigation
+        setTimeout(() => {
+          console.log('🔵 [QuickDemoLogin] Executing window.location.assign to:', targetUrl);
+          window.location.assign(targetUrl);
+        }, 100);
       } else {
-        // Stay on current page, just reload to refresh auth state
-        window.location.reload();
+        console.log('🔵 [QuickDemoLogin] Reloading current page...');
+        setTimeout(() => {
+          console.log('🔵 [QuickDemoLogin] Executing window.location.reload');
+          window.location.reload();
+        }, 100);
       }
     } catch (error: any) {
-      console.error('Demo login error:', error);
+      console.error('🔴 [QuickDemoLogin] Demo login error:', error);
+      setLoading(null); // Only reset loading on error
       toast({
         title: 'Demo Login Failed',
         description: error.message || 'Failed to sign in with demo account',
         variant: 'destructive'
       });
-    } finally {
-      setLoading(null);
     }
   };
 
