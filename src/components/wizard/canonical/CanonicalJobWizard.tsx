@@ -1,9 +1,9 @@
 /**
  * CANONICAL JOB WIZARD (v1.0 - LOCKED SPEC)
- * 8-screen tap-first wizard per locked specification
+ * 7-screen tap-first wizard per locked specification
  * DO NOT modify flow without governance approval
  */
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
@@ -57,9 +57,10 @@ const STEP_LABELS = [
   'Questions',
   'Logistics',
   'Extras',
-  'Review',
-  'Done'
+  'Review'
 ];
+
+const TOTAL_STEPS = STEP_LABELS.length; // 7
 
 export const CanonicalJobWizard: React.FC = () => {
   console.log('🎯 CanonicalJobWizard component rendering');
@@ -88,12 +89,47 @@ export const CanonicalJobWizard: React.FC = () => {
 
   console.log('📊 Current wizard state:', { currentStep, wizardState });
 
-  const progress = (currentStep / 8) * 100;
+  // Load saved draft on mount
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('wizardState');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setWizardState(prev => ({ ...prev, ...parsed }));
+      }
+    } catch (err) {
+      console.warn('Failed to restore draft:', err);
+    }
+  }, []);
+
+  // Save draft on state change
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('wizardState', JSON.stringify(wizardState));
+    } catch (err) {
+      console.warn('Failed to save draft:', err);
+    }
+  }, [wizardState]);
+
+  // Auto-correct illegal states
+  useEffect(() => {
+    if (currentStep >= 2 && !wizardState.mainCategory) {
+      setCurrentStep(1);
+    }
+    if (currentStep >= 3 && !wizardState.subcategory) {
+      setCurrentStep(2);
+    }
+    if (currentStep >= 4 && !wizardState.microId) {
+      setCurrentStep(3);
+    }
+  }, [currentStep, wizardState.mainCategory, wizardState.subcategory, wizardState.microId]);
+
+  const progress = (currentStep / TOTAL_STEPS) * 100;
 
   // Stable navigation callbacks
   const handleNext = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCurrentStep(s => Math.min(s + 1, 8));
+    setCurrentStep(s => Math.min(s + 1, TOTAL_STEPS));
   }, []);
   
   const handleBack = useCallback(() => {
@@ -113,6 +149,7 @@ export const CanonicalJobWizard: React.FC = () => {
         microId: '' 
       }));
     });
+    setCurrentStep(2); // Auto-advance to subcategory
   }, []);
 
   const handleSubcategorySelect = useCallback((sub: string) => {
@@ -124,6 +161,7 @@ export const CanonicalJobWizard: React.FC = () => {
         microId: '' 
       }));
     });
+    setCurrentStep(3); // Auto-advance to micro
   }, []);
 
   const handleMicroSelect = useCallback((micro: string, microId: string) => {
@@ -149,6 +187,14 @@ export const CanonicalJobWizard: React.FC = () => {
     setWizardState(prev => ({ ...prev, extras }));
   }, []);
 
+  // Budget parsing helper
+  const parseBudgetValue = (input?: string) => {
+    if (!input) return null;
+    const cleaned = input.replace(/[^0-9.,]/g, '').replace(',', '.');
+    const match = cleaned.match(/^\d+(\.\d+)?$/);
+    return match ? Number(match[0]) : null;
+  };
+
   const handleSubmit = async () => {
     if (!user) {
       toast.error('Please sign in to post a job');
@@ -163,6 +209,11 @@ export const CanonicalJobWizard: React.FC = () => {
 
     setLoading(true);
     try {
+      const budgetValue = parseBudgetValue(wizardState.logistics.budgetRange);
+      const budgetType = wizardState.logistics.budgetRange 
+        ? (budgetValue ? 'fixed' : 'range') 
+        : 'hourly';
+
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert([{
@@ -183,8 +234,8 @@ export const CanonicalJobWizard: React.FC = () => {
               permitsConcern: wizardState.extras.permitsConcern
             }
           },
-          budget_type: wizardState.logistics.budgetRange ? 'fixed' : 'hourly',
-          budget_value: null,
+          budget_type: budgetType,
+          budget_value: budgetValue,
           location: {
             address: wizardState.logistics.location,
             customLocation: wizardState.logistics.customLocation,
@@ -237,7 +288,7 @@ export const CanonicalJobWizard: React.FC = () => {
         }
         return (
           <SubcategoryStep
-            key={wizardState.mainCategory || 'empty'}
+            key={`sub:${wizardState.mainCategory || 'none'}`}
             mainCategory={wizardState.mainCategory}
             selectedSubcategory={wizardState.subcategory}
             onSelect={handleSubcategorySelect}
@@ -249,7 +300,7 @@ export const CanonicalJobWizard: React.FC = () => {
       case 3:
         return (
           <MicroStep
-            key={wizardState.subcategory || 'empty'}
+            key={`micro:${wizardState.mainCategory}|${wizardState.subcategory || 'none'}`}
             mainCategory={wizardState.mainCategory}
             subcategory={wizardState.subcategory}
             selectedMicro={wizardState.microName}
@@ -341,7 +392,7 @@ export const CanonicalJobWizard: React.FC = () => {
       case 2: return !!wizardState.subcategory;
       case 3: return !!wizardState.microId;
       case 4: return true; // Questions are optional
-      case 5: return !!wizardState.logistics.location;
+      case 5: return !!wizardState.logistics.location?.trim();
       case 6: return true; // Extras are optional
       case 7: return true;
       default: return false;
@@ -363,11 +414,11 @@ export const CanonicalJobWizard: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-charcoal">Post a Job</h2>
             <Badge variant="outline">
-              Step {currentStep} of 8
+              Step {currentStep} of {TOTAL_STEPS}
             </Badge>
           </div>
           <Progress value={progress} className="h-2" />
-          <p className="text-sm text-muted-foreground mt-3">
+          <p className="text-sm text-muted-foreground mt-3" aria-live="polite">
             {STEP_LABELS[currentStep - 1]}
           </p>
         </div>
@@ -379,7 +430,7 @@ export const CanonicalJobWizard: React.FC = () => {
       </div>
 
       {/* Mobile Sticky CTA */}
-      {isMobile && currentStep < 8 && (
+      {isMobile && currentStep < TOTAL_STEPS && (
         <StickyMobileCTA
           primaryAction={{
             label: currentStep === 7 ? 'Post Job' : 'Continue',
