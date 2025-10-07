@@ -75,17 +75,15 @@ export function QuickDemoLogin() {
         description: `Signed in as ${account.label}`
       });
 
-      // Navigate based on role
+      // Navigate based on role with hard reload to ensure fresh session state
       const dashboardMap: Record<string, string> = {
         client: '/dashboard/client',
         professional: '/dashboard/pro',
         admin: '/dashboard/admin'
       };
       
-      // Small delay to ensure auth state is updated
-      setTimeout(() => {
-        navigate(dashboardMap[account.role] || '/dashboard');
-      }, 500);
+      // Use window.location.assign for hard navigation (eliminates race conditions)
+      window.location.assign(dashboardMap[account.role] || '/dashboard');
     } catch (error: any) {
       console.error('Demo login error:', error);
       toast({

@@ -25,7 +25,17 @@ const Dashboard = () => {
           return;
         }
 
-        // Use centralized routing logic
+        // Failsafe: if already on a valid dashboard route, don't re-route
+        const currentPath = window.location.pathname;
+        if (currentPath.startsWith('/dashboard/client') || 
+            currentPath.startsWith('/dashboard/pro') || 
+            currentPath.startsWith('/dashboard/admin')) {
+          console.log('Already on valid dashboard route:', currentPath);
+          setLoading(false);
+          return;
+        }
+
+        // Use centralized routing logic only if on base /dashboard
         const { getInitialDashboardRoute } = await import('@/lib/roles');
         const { path } = await getInitialDashboardRoute(user.id);
         navigate(path);
