@@ -38,6 +38,7 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('MainCategoryStep mounted, loading categories...');
     loadCategories();
   }, []);
 
@@ -52,17 +53,21 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
   }, [selectedCategory, loading, onNext]);
 
   const loadCategories = async () => {
+    console.log('loadCategories called');
     setLoading(true);
     try {
+      console.log('Fetching from services_unified_v1...');
       const { data, error } = await supabase
         .from('services_unified_v1')
         .select('category')
         .order('category', { ascending: true });
 
+      console.log('Query result:', { data, error });
       if (error) throw error;
       
       // Get unique categories
       const unique = Array.from(new Set(data.map(d => d.category)));
+      console.log('Unique categories:', unique);
       setCategories(unique);
     } catch (error) {
       console.error('Error loading categories:', error);
