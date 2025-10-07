@@ -65,11 +65,6 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
     loadSubcategories();
   }, [mainCategory]);
 
-  useEffect(() => {
-    if (selectedSubcategory && !loading && subcategories.length > 0) {
-      onNext();
-    }
-  }, [selectedSubcategory, loading, subcategories, onNext]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -118,7 +113,10 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
                   "p-6 cursor-pointer transition-all hover:shadow-lg",
                   isSelected && "ring-2 ring-copper shadow-lg"
                 )}
-                onClick={() => onSelect(sub.name)}
+                onClick={() => {
+                  onSelect(sub.name);
+                  setTimeout(() => onNext(), 150);
+                }}
               >
                 <div className="flex items-center justify-center h-full">
                   <span className="font-medium text-center text-charcoal">
