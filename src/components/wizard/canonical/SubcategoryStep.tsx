@@ -16,6 +16,7 @@ interface SubcategoryStepProps {
   onSelect: (subcategory: string) => void;
   onNext: () => void;
   onBack: () => void;
+  autoAdvanceOnSelect?: boolean;
 }
 
 export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
@@ -23,46 +24,76 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
   selectedSubcategory,
   onSelect,
   onNext,
-  onBack
+  onBack,
+  autoAdvanceOnSelect = false,
 }) => {
   const [subcategories, setSubcategories] = useState<{ name: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!mainCategory) {
-      setSubcategories([]);
-      setLoading(false);
-      return;
-    }
+    let mounted = true;
 
     const loadSubcategories = async () => {
+      if (!mainCategory) {
+        if (mounted) {
+          setSubcategories([]);
+          setLoading(false);
+        }
+        return;
+      }
+
       setLoading(true);
       try {
-        const { data, error } = await supabase
+        // Fast path: exact match
+        let { data, error } = await supabase
           .from('services_catalog')
           .select('subcategory')
-          .ilike('category', mainCategory)
+          .eq('category', mainCategory)
+          .not('subcategory', 'is', null)
           .order('subcategory', { ascending: true });
 
         if (error) {
-          console.error('Error loading subcategories:', error);
-          setSubcategories([]);
-          return;
+          console.error('Error loading subcategories (eq):', error);
+          data = null;
         }
+
+        // Fallback: contains search if nothing found
+        if (!data || data.length === 0) {
+          const likeTerm = `%${mainCategory}%`;
+          const { data: fallbackData, error: fbErr } = await supabase
+            .from('services_catalog')
+            .select('subcategory')
+            .ilike('category', likeTerm)
+            .not('subcategory', 'is', null)
+            .order('subcategory', { ascending: true });
+
+          if (fbErr) {
+            console.error('Error loading subcategories (ilike):', fbErr);
+          } else if (fallbackData) {
+            data = fallbackData;
+          }
+        }
+
+        if (!mounted) return;
 
         const unique = Array.from(
           new Set((data ?? []).map((s: any) => s?.subcategory).filter(Boolean))
         ) as string[];
         setSubcategories(unique.map((name) => ({ name })));
       } catch (error) {
-        console.error('Failed to load subcategories:', error);
-        setSubcategories([]);
+        if (mounted) {
+          console.error('Failed to load subcategories:', error);
+          setSubcategories([]);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     loadSubcategories();
+    return () => {
+      mounted = false;
+    };
   }, [mainCategory]);
 
 
@@ -74,6 +105,11 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
       </div>
     );
   }
+
+  const handleTileClick = (name: string) => {
+    onSelect(name);
+    if (autoAdvanceOnSelect) onNext();
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -107,7 +143,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
         </div>
       ) : subcategories.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No subcategories found for {mainCategory}</p>
+          <p className="text-muted-foreground">No subcategories found for "{mainCategory}"</p>
           <Button onClick={onBack} className="mt-4">Go Back</Button>
         </div>
       ) : (
@@ -122,7 +158,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
                   "p-6 cursor-pointer transition-all hover:shadow-lg",
                   isSelected && "ring-2 ring-copper shadow-lg"
                 )}
-                onClick={() => onSelect(sub.name)}
+                onClick={() => handleTileClick(sub.name)}
               >
                 <div className="flex items-center justify-center h-full">
                   <span className="font-medium text-center text-charcoal">
@@ -135,7 +171,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
         </div>
       )}
 
-      {selectedSubcategory && !loading && (
+      {selectedSubcategory && !loading && !autoAdvanceOnSelect && (
         <div className="flex justify-end pt-6">
           <Button size="lg" onClick={onNext} className="bg-gradient-hero text-white px-8">
             Continue
