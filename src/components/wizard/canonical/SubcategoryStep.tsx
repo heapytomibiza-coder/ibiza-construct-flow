@@ -46,15 +46,15 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('services_unified_v1')
+        .from('services_unified' as any)
         .select('subcategory')
-        .eq('category', mainCategory.replace(/-/g, ' '))
+        .eq('category', mainCategory)
         .order('subcategory');
 
       if (error) throw error;
 
       // Get unique subcategories
-      const uniqueSubs = Array.from(new Set(data?.map(s => s.subcategory) || []));
+      const uniqueSubs = Array.from(new Set(data?.map((s: any) => s.subcategory) || []));
       setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
     } catch (error) {
       console.error('Error loading subcategories:', error);
@@ -77,7 +77,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
 
         <div>
           <Badge variant="outline" className="mb-4">
-            {mainCategory.replace(/-/g, ' ')}
+            {mainCategory}
           </Badge>
           <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
             What specific service do you need?

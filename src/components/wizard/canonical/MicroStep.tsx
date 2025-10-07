@@ -50,9 +50,9 @@ export const MicroStep: React.FC<MicroStepProps> = ({
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('services_unified_v1')
+        .from('services_unified' as any)
         .select('id, micro')
-        .eq('category', mainCategory.replace(/-/g, ' '))
+        .eq('category', mainCategory)
         .eq('subcategory', subcategory)
         .order('micro');
 
@@ -79,7 +79,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
 
         <div>
           <div className="flex gap-2 mb-4">
-            <Badge variant="outline">{mainCategory.replace(/-/g, ' ')}</Badge>
+            <Badge variant="outline">{mainCategory}</Badge>
             <Badge variant="outline">{subcategory}</Badge>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
