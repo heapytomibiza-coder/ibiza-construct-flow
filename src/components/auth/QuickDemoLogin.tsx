@@ -82,8 +82,19 @@ export function QuickDemoLogin() {
         admin: '/dashboard/admin'
       };
       
-      // Use window.location.assign for hard navigation (eliminates race conditions)
-      window.location.assign(dashboardMap[account.role] || '/dashboard');
+      // Check if current route requires a different role
+      const currentPath = window.location.pathname;
+      const needsRedirect = 
+        (account.role !== 'client' && currentPath === '/post') || // /post requires client
+        (currentPath.startsWith('/admin') && account.role !== 'admin'); // admin routes
+
+      if (needsRedirect || currentPath === '/auth') {
+        // Redirect to appropriate dashboard
+        window.location.assign(dashboardMap[account.role] || '/dashboard');
+      } else {
+        // Stay on current page, just reload to refresh auth state
+        window.location.reload();
+      }
     } catch (error: any) {
       console.error('Demo login error:', error);
       toast({
