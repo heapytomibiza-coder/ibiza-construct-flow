@@ -173,9 +173,11 @@ function AppContent() {
             <Route 
               path="/post" 
               element={
-                <Suspense fallback={<SkeletonLoader variant="card" count={3} />}>
-                  <PostJob />
-                </Suspense>
+                <RouteGuard requiredRole="client">
+                  <Suspense fallback={<SkeletonLoader variant="card" count={3} />}>
+                    <PostJob />
+                  </Suspense>
+                </RouteGuard>
               } 
             />
         

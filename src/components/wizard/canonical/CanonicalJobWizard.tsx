@@ -85,22 +85,6 @@ export const CanonicalJobWizard: React.FC = () => {
     }
   });
 
-  // Client-only route guard
-  useEffect(() => {
-    const enforceClientAccess = async () => {
-      if (!user) {
-        toast.error('Please sign in to post a job');
-        navigate('/auth?redirect=/post');
-        return;
-      }
-      const isClientUser = await isClient();
-      if (!isClientUser) {
-        toast.error('Only clients can post jobs. Switch to client role in settings.');
-        navigate('/dashboard');
-      }
-    };
-    enforceClientAccess();
-  }, [user, isClient, navigate]);
 
   // Restore draft on mount (server + sessionStorage fallback)
   useEffect(() => {
