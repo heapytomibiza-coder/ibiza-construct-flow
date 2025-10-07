@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useCurrentSession } from '../../packages/@contracts/clients/auth';
 import { Navigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { requiresTwoFactor } from '@/lib/security/securityMonitor';
@@ -23,8 +22,6 @@ export default function RouteGuard({
   requireOnboardingComplete = false,
   enforce2FA = true
 }: RouteGuardProps) {
-  const { data: sessionData, isLoading: authLoading } = useCurrentSession();
-  const session = sessionData?.data;
   const location = useLocation();
   const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized' | '2fa_required'>('loading');
   const { toast } = useToast();
@@ -38,12 +35,15 @@ export default function RouteGuard({
           return;
         }
 
-        if (authLoading) return;
-
-        if (!session?.userId) {
+        // Get session directly from Supabase
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session?.user) {
           setStatus('unauthorized');
           return;
         }
+
+        const userId = session.user.id;
 
         // No role requirement = just check authentication
         if (!requiredRole) {
@@ -51,11 +51,23 @@ export default function RouteGuard({
           return;
         }
 
-        // Check if user has required role
-        const hasRequiredRole = session.roles.includes(requiredRole);
+        // Fetch user roles from database
+        const { data: rolesData, error: rolesError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId);
+
+        if (rolesError) {
+          console.error('Error fetching roles:', rolesError);
+          setStatus('unauthorized');
+          return;
+        }
+
+        const userRoles = (rolesData ?? []).map(r => r.role);
+        const hasRequiredRole = userRoles.includes(requiredRole);
         
         if (!hasRequiredRole) {
-          console.warn(`Access denied: User roles [${session.roles.join(', ')}] do not include required role '${requiredRole}'`);
+          console.warn(`Access denied: User roles [${userRoles.join(', ')}] do not include required role '${requiredRole}'`);
           await logAdminAccessAttempt(false, 'insufficient_permissions');
           setStatus('unauthorized');
           return;
@@ -63,13 +75,13 @@ export default function RouteGuard({
 
         // If admin role required, enforce 2FA
         if (requiredRole === 'admin' && enforce2FA) {
-          const needs2FA = await requiresTwoFactor(session.userId);
+          const needs2FA = await requiresTwoFactor(userId);
           if (needs2FA) {
             // Check if 2FA is actually set up
             const { data: twoFactorData } = await supabase
               .from('two_factor_auth')
               .select('*')
-              .eq('user_id', session.userId)
+              .eq('user_id', userId)
               .maybeSingle();
 
             if (!twoFactorData) {
@@ -90,7 +102,7 @@ export default function RouteGuard({
           const { data: profileData } = await supabase
             .from('profiles')
             .select('tasker_onboarding_status')
-            .eq('id', session.userId)
+            .eq('id', userId)
             .single();
 
           if (!profileData || profileData.tasker_onboarding_status !== 'complete') {
@@ -113,9 +125,9 @@ export default function RouteGuard({
     };
 
     checkAuth();
-  }, [session, authLoading, requiredRole, skipAuthInDev]);
+  }, [requiredRole, skipAuthInDev, requireOnboardingComplete, enforce2FA, toast]);
 
-  if (authLoading || status === 'loading') {
+  if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>

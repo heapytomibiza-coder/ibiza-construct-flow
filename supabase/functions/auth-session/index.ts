@@ -7,6 +7,11 @@ serve(async (req) => {
   const pf = preflight(req);
   if (pf) return pf;
 
+  // Only support GET requests for session data
+  if (req.method !== 'GET') {
+    return json({ error: 'Method not allowed. Use Supabase client directly for auth operations.' }, 405);
+  }
+
   const supabase = serverClient(req);
   const { data: { user } } = await supabase.auth.getUser();
   

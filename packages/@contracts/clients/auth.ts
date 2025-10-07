@@ -67,12 +67,18 @@ export const useSignIn = () => {
   const queryClient = useQueryClient();
   
   return useMutation<SignInResponse, Error, SignInRequest>({
-    mutationFn: (data) => 
-      customInstance({ 
-        url: '/auth-session',
-        method: 'POST',
-        data: { action: 'signin', ...data }
-      }),
+    mutationFn: async ({ email, password }) => {
+      const { data, error } = await import('@/integrations/supabase/client').then(m => 
+        m.supabase.auth.signInWithPassword({ email, password })
+      );
+      
+      if (error) throw error;
+      if (!data.user) throw new Error('Sign in failed');
+      
+      // Fetch session data from edge function
+      const sessionResponse = await customInstance({ url: '/auth-session', method: 'GET' }) as GetSessionResponse;
+      return sessionResponse as SignInResponse;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
     },
@@ -83,12 +89,27 @@ export const useSignUp = () => {
   const queryClient = useQueryClient();
   
   return useMutation<SignUpResponse, Error, SignUpRequest>({
-    mutationFn: (data) => 
-      customInstance({ 
-        url: '/auth-session',
-        method: 'POST',
-        data: { action: 'signup', ...data }
-      }),
+    mutationFn: async ({ email, password, fullName }) => {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error } = await import('@/integrations/supabase/client').then(m => 
+        m.supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: { full_name: fullName }
+          }
+        })
+      );
+      
+      if (error) throw error;
+      if (!data.user) throw new Error('Sign up failed');
+      
+      // Fetch session data from edge function
+      const sessionResponse = await customInstance({ url: '/auth-session', method: 'GET' }) as GetSessionResponse;
+      return sessionResponse as SignUpResponse;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.session() });
     },
@@ -99,12 +120,14 @@ export const useSignOut = () => {
   const queryClient = useQueryClient();
   
   return useMutation<SignOutResponse, Error, void>({
-    mutationFn: () => 
-      customInstance({ 
-        url: '/auth-session',
-        method: 'POST',
-        data: { action: 'signout' }
-      }),
+    mutationFn: async () => {
+      const { error } = await import('@/integrations/supabase/client').then(m => 
+        m.supabase.auth.signOut()
+      );
+      
+      if (error) throw error;
+      return { success: true };
+    },
     onSuccess: () => {
       queryClient.clear();
     },
