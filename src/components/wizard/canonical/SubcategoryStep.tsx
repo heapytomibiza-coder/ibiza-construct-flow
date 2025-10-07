@@ -46,18 +46,29 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('services_unified' as any)
+        .from('services_unified')
         .select('subcategory')
         .eq('category', mainCategory)
         .order('subcategory');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error loading subcategories:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.warn(`No subcategories found for category: ${mainCategory}`);
+        setSubcategories([]);
+        return;
+      }
 
       // Get unique subcategories
-      const uniqueSubs = Array.from(new Set(data?.map((s: any) => s.subcategory) || []));
+      const uniqueSubs = Array.from(new Set(data.map(s => s.subcategory)));
       setSubcategories(uniqueSubs.map(sub => ({ name: sub })));
+      console.log(`Loaded ${uniqueSubs.length} subcategories for ${mainCategory}`);
     } catch (error) {
       console.error('Error loading subcategories:', error);
+      setSubcategories([]);
     } finally {
       setLoading(false);
     }

@@ -8213,6 +8213,42 @@ export type Database = {
         }
         Relationships: []
       }
+      services_unified: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          micro: string
+          price_range: string | null
+          subcategory: string
+          typical_duration: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          micro: string
+          price_range?: string | null
+          subcategory: string
+          typical_duration?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          micro?: string
+          price_range?: string | null
+          subcategory?: string
+          typical_duration?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       services_unified_v1: {
         Row: {
           category: string

@@ -50,16 +50,28 @@ export const MicroStep: React.FC<MicroStepProps> = ({
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('services_unified' as any)
+        .from('services_unified')
         .select('id, micro')
         .eq('category', mainCategory)
         .eq('subcategory', subcategory)
         .order('micro');
 
-      if (error) throw error;
-      setMicros(data || []);
+      if (error) {
+        console.error('Database error loading micro categories:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.warn(`No micro categories found for ${mainCategory} > ${subcategory}`);
+        setMicros([]);
+        return;
+      }
+
+      setMicros(data);
+      console.log(`Loaded ${data.length} micro categories for ${mainCategory} > ${subcategory}`);
     } catch (error) {
-      console.error('Error loading micros:', error);
+      console.error('Error loading micro categories:', error);
+      setMicros([]);
     } finally {
       setLoading(false);
     }
