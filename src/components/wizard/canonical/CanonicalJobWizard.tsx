@@ -89,24 +89,61 @@ export const CanonicalJobWizard: React.FC = () => {
 
   const progress = (currentStep / 8) * 100;
 
+  // Stable navigation callbacks
   const handleNext = useCallback(() => {
     console.log('⏭️ handleNext called, current step:', currentStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    const newStep = Math.min(currentStep + 1, 8);
-    console.log('⏭️ Setting new step:', newStep);
-    setCurrentStep(newStep);
+    setCurrentStep(s => Math.min(s + 1, 8));
   }, [currentStep]);
   
   const handleBack = useCallback(() => {
     console.log('⏮️ handleBack called, current step:', currentStep);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    const newStep = Math.max(currentStep - 1, 1);
-    console.log('⏮️ Setting new step:', newStep);
-    setCurrentStep(newStep);
+    setCurrentStep(s => Math.max(s - 1, 1));
   }, [currentStep]);
 
+  // Stable updaters for wizardState (all defined at top level)
+  const handleCategorySelect = useCallback((category: string) => {
+    console.log('🎯 MainCategoryStep onSelect called:', category);
+    setWizardState(prev => ({ 
+      ...prev, 
+      mainCategory: category, 
+      subcategory: '', 
+      microName: '', 
+      microId: '' 
+    }));
+  }, []);
+
   const handleSubcategorySelect = useCallback((sub: string) => {
-    setWizardState(prev => ({ ...prev, subcategory: sub }));
+    setWizardState(prev => ({ 
+      ...prev, 
+      subcategory: sub, 
+      microName: '', 
+      microId: '' 
+    }));
+  }, []);
+
+  const handleMicroSelect = useCallback((micro: string, microId: string) => {
+    setWizardState(prev => ({ 
+      ...prev, 
+      microName: micro, 
+      microId 
+    }));
+  }, []);
+
+  const handleAnswersChange = useCallback((answers: Record<string, any>) => {
+    setWizardState(prev => ({ ...prev, answers }));
+  }, []);
+
+  const handleLogisticsChange = useCallback((newLogistics: WizardState['logistics']) => {
+    setWizardState(prev => ({ 
+      ...prev, 
+      logistics: { ...prev.logistics, ...newLogistics }
+    }));
+  }, []);
+
+  const handleExtrasChange = useCallback((extras: WizardState['extras']) => {
+    setWizardState(prev => ({ ...prev, extras }));
   }, []);
 
   const handleSubmit = async () => {
@@ -184,14 +221,8 @@ export const CanonicalJobWizard: React.FC = () => {
         return (
           <MainCategoryStep
             selectedCategory={wizardState.mainCategory}
-            onSelect={(category) => {
-              console.log('🎯 MainCategoryStep onSelect called:', category);
-              setWizardState(prev => ({ ...prev, mainCategory: category }));
-            }}
-            onNext={() => {
-              console.log('➡️ MainCategoryStep onNext called, advancing to step 2');
-              handleNext();
-            }}
+            onSelect={handleCategorySelect}
+            onNext={handleNext}
           />
         );
 
@@ -218,9 +249,7 @@ export const CanonicalJobWizard: React.FC = () => {
             subcategory={wizardState.subcategory}
             selectedMicro={wizardState.microName}
             selectedMicroId={wizardState.microId}
-            onSelect={(micro, microId) => 
-              setWizardState(prev => ({ ...prev, microName: micro, microId }))
-            }
+            onSelect={handleMicroSelect}
             onNext={handleNext}
             onBack={handleBack}
           />
@@ -232,7 +261,7 @@ export const CanonicalJobWizard: React.FC = () => {
             microId={wizardState.microId}
             microName={wizardState.microName}
             answers={wizardState.answers}
-            onAnswersChange={(answers) => setWizardState(prev => ({ ...prev, answers }))}
+            onAnswersChange={handleAnswersChange}
             onNext={handleNext}
             onBack={handleBack}
           />
@@ -243,12 +272,7 @@ export const CanonicalJobWizard: React.FC = () => {
           <LogisticsStep
             microName={wizardState.microName}
             logistics={wizardState.logistics}
-            onLogisticsChange={(newLogistics) => {
-              setWizardState(prev => ({ 
-                ...prev, 
-                logistics: { ...prev.logistics, ...newLogistics }
-              }));
-            }}
+            onLogisticsChange={handleLogisticsChange}
             onNext={handleNext}
             onBack={handleBack}
           />
@@ -259,7 +283,7 @@ export const CanonicalJobWizard: React.FC = () => {
           <ExtrasStep
             microName={wizardState.microName}
             extras={wizardState.extras}
-            onExtrasChange={(extras) => setWizardState(prev => ({ ...prev, extras }))}
+            onExtrasChange={handleExtrasChange}
             onNext={handleNext}
             onBack={handleBack}
           />

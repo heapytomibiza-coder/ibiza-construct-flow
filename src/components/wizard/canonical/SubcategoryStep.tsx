@@ -2,7 +2,7 @@
  * Step 2: Subcategory Selection
  * Tile-based selection with category context
  */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,78 +25,111 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
   onNext,
   onBack
 }) => {
-  const [subcategories, setSubcategories] = useState<any[]>([]);
+  const [subcategories, setSubcategories] = useState<{ name: string }[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // 🔒 Make sure we only auto-advance after an explicit click this session
   const [userClicked, setUserClicked] = useState(false);
-  
-  // Prevent duplicate fetches for same category
+
+  // 🚫 Prevent duplicate fetches for same category (StrictMode double-mount)
   const lastCategoryRef = useRef<string | null>(null);
-  
+
+  // Mount logging
+  useEffect(() => {
+    console.log('🚨 SUBCATEGORY STEP MOUNTED', { mainCategory, selectedSubcategory });
+    return () => console.log('🚨 SUBCATEGORY STEP UNMOUNTED');
+  }, [mainCategory, selectedSubcategory]);
+
   // Stable callback ref to avoid re-renders
   const onNextRef = useRef(onNext);
-  useEffect(() => { 
-    onNextRef.current = onNext; 
-  }, [onNext]);
+  useEffect(() => { onNextRef.current = onNext; }, [onNext]);
+
+  // Stable click handler so parent/state churn doesn't re-render cards unnecessarily
+  const handlePick = useCallback((sub: string) => {
+    console.log('🎯 Selected subcategory:', sub);
+    setUserClicked(true);
+    onSelect(sub);
+  }, [onSelect]);
 
   useEffect(() => {
+    // Skip if no category
     if (!mainCategory) {
+      console.warn('⚠️ No mainCategory provided');
       setSubcategories([]);
       setLoading(false);
       return;
     }
 
-    // Skip if we already fetched for this category (prevents double-fire)
+    // Skip duplicate fetch for same category (handles StrictMode double mount)
     if (lastCategoryRef.current === mainCategory) {
       console.log('⏭️ Skipping duplicate fetch for:', mainCategory);
       return;
     }
     lastCategoryRef.current = mainCategory;
 
-    let cancelled = false;
     const ac = new AbortController();
+    let cancelled = false;
 
-    const timeout = setTimeout(() => {
+    // Long-request watchdog: surface "hangs"
+    const watchdog = setTimeout(() => {
       if (!cancelled) {
-        console.warn('⏱️ services_catalog query slow or blocked (10s+)');
+        console.warn('⏱️ services_catalog query slow (10s+). Aborting to avoid hang.');
         ac.abort();
       }
-    }, 10000);
+    }, 10_000);
 
     const loadSubcategories = async () => {
       setLoading(true);
       try {
         console.log('📡 Executing Supabase query...', { mainCategory });
-        const queryStart = Date.now();
-        
-        const { data, error } = await supabase
+
+        // NOTE: postgrest-js supports abort via .abortSignal(signal) on recent versions.
+        const builder: any = supabase
           .from('services_catalog')
           .select('subcategory')
           .eq('category', mainCategory)
           .order('subcategory', { ascending: true })
           .limit(100);
 
+        // Wire up abort if supported
+        if (typeof builder.abortSignal === 'function') {
+          builder.abortSignal(ac.signal);
+        }
+
+        const queryStart = Date.now();
+        const { data, error } = await builder;
+
         if (cancelled) return;
 
         const queryTime = Date.now() - queryStart;
-        console.log(`📊 Query completed in ${queryTime}ms`);
+        console.log(`📊 Query completed in ${queryTime}ms`, { len: data?.length, error: error?.message });
 
         if (error) {
-          console.error('❌ services_catalog error:', error);
+          console.error('❌ Supabase error:', {
+            message: error.message,
+            details: (error as any).details,
+            hint: (error as any).hint,
+            code: (error as any).code
+          });
           setSubcategories([]);
           return;
         }
 
-        const unique = Array.from(new Set((data ?? []).map((r: any) => r?.subcategory).filter(Boolean)));
-        setSubcategories(unique.map((name) => ({ name })));
+        const unique = Array.from(new Set((data ?? []).map((s: any) => s?.subcategory).filter(Boolean))) as string[];
         console.log('✅ Processed subcategories:', unique);
-      } catch (e: any) {
+        setSubcategories(unique.map((name) => ({ name })));
+      } catch (error: any) {
         if (!cancelled) {
-          console.error('💥 Subcategory load exception:', e?.message ?? e);
+          console.error('💥 Caught exception:', {
+            name: error?.name,
+            message: error?.message,
+            stack: error?.stack
+          });
           setSubcategories([]);
         }
       } finally {
         if (!cancelled) setLoading(false);
-        clearTimeout(timeout);
+        clearTimeout(watchdog);
       }
     };
 
@@ -104,12 +137,12 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
 
     return () => {
       cancelled = true;
-      clearTimeout(timeout);
-      ac.abort();
+      clearTimeout(watchdog);
+      ac.abort(); // now actually cancels if .abortSignal is supported
     };
   }, [mainCategory]);
 
-  // Only auto-advance after explicit user click
+  // ✅ Only auto-advance after a click this session (prevents phantom advances)
   useEffect(() => {
     if (!userClicked) return;
     if (selectedSubcategory && !loading && subcategories.length > 0) {
@@ -126,11 +159,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="space-y-4">
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          className="mb-4"
-        >
+        <Button variant="ghost" onClick={onBack} className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
@@ -149,7 +178,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
       </div>
 
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-3" data-testid="loader">
           <p className="text-sm text-muted-foreground">Loading subcategories...</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -166,19 +195,15 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {subcategories.map((sub) => {
             const isSelected = selectedSubcategory === sub.name;
-            
             return (
               <Card
                 key={sub.name}
+                data-testid="subcategory-tile"
                 className={cn(
                   "p-6 cursor-pointer transition-all hover:shadow-lg",
                   isSelected && "ring-2 ring-copper shadow-lg"
                 )}
-                onClick={() => {
-                  console.log('🎯 Selected subcategory:', sub.name);
-                  onSelect(sub.name);
-                  setUserClicked(true);
-                }}
+                onClick={() => handlePick(sub.name)}
               >
                 <div className="flex items-center justify-center h-full">
                   <span className="font-medium text-center text-charcoal">
@@ -193,11 +218,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = React.memo(({
 
       {selectedSubcategory && !loading && (
         <div className="flex justify-end pt-6">
-          <Button
-            size="lg"
-            onClick={onNext}
-            className="bg-gradient-hero text-white px-8"
-          >
+          <Button size="lg" onClick={onNext} className="bg-gradient-hero text-white px-8">
             Continue
           </Button>
         </div>
