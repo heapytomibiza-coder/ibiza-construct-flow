@@ -10,13 +10,17 @@ import {
   Settings, 
   Database,
   Search,
-  Filter
+  Filter,
+  Wrench,
+  ShieldCheck
 } from 'lucide-react';
 import DatabaseStats from './DatabaseStats';
 import FeatureFlagsManager from './FeatureFlagsManager';
 import UserInspector from './UserInspector';
 import { AdminDocumentReview } from './AdminDocumentReview';
 import { TestRunner } from './TestRunner';
+import ServiceMicroManager from './ServiceMicroManager';
+import ProfileModerationQueue from './ProfileModerationQueue';
 
 export default function AdminDashboardTabs() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,6 +38,18 @@ export default function AdminDashboardTabs() {
       label: 'User Management',
       icon: Users,
       description: 'Manage users and inspect profiles'
+    },
+    {
+      id: 'services',
+      label: 'Service Management',
+      icon: Wrench,
+      description: 'Manage micro services catalog'
+    },
+    {
+      id: 'profiles',
+      label: 'Profile Moderation',
+      icon: ShieldCheck,
+      description: 'Review and moderate profile verifications'
     },
     {
       id: 'documents',
@@ -81,7 +97,7 @@ export default function AdminDashboardTabs() {
 
       {/* Main Tabs Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-1">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-7 h-auto p-1">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -128,6 +144,40 @@ export default function AdminDashboardTabs() {
             </CardHeader>
             <CardContent>
               <UserInspector />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="services" className="space-y-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Wrench className="h-5 w-5 text-primary" />
+                <CardTitle>Service Management</CardTitle>
+              </div>
+              <CardDescription>
+                Manage the micro services catalog and configuration
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ServiceMicroManager />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="profiles" className="space-y-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                <CardTitle>Profile Moderation</CardTitle>
+              </div>
+              <CardDescription>
+                Review and moderate pending profile verifications
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProfileModerationQueue />
             </CardContent>
           </Card>
         </TabsContent>
