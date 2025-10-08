@@ -1275,6 +1275,51 @@ export type Database = {
           },
         ]
       }
+      business_insights: {
+        Row: {
+          action_items: Json | null
+          created_at: string
+          id: string
+          impact_score: number | null
+          insight_description: string | null
+          insight_title: string
+          insight_type: string
+          is_read: boolean
+          priority: string
+          priority_weight: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action_items?: Json | null
+          created_at?: string
+          id?: string
+          impact_score?: number | null
+          insight_description?: string | null
+          insight_title: string
+          insight_type: string
+          is_read?: boolean
+          priority?: string
+          priority_weight?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action_items?: Json | null
+          created_at?: string
+          id?: string
+          impact_score?: number | null
+          insight_description?: string | null
+          insight_title?: string
+          insight_type?: string
+          is_read?: boolean
+          priority?: string
+          priority_weight?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       business_metrics: {
         Row: {
           change_percentage: number | null

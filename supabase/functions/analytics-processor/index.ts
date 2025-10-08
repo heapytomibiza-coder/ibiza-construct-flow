@@ -41,11 +41,18 @@ serve(async (req) => {
         break;
 
       case 'get_dashboard_stats':
-        const { data: summary } = await supabaseClient
+        const { data: summary, error: summaryError } = await supabaseClient
           .from('user_activity_summary')
           .select('*')
           .eq('user_id', user.id)
           .single();
+
+        if (summaryError) {
+          return new Response(
+            JSON.stringify({ error: { message: 'Failed to fetch dashboard stats' } }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+          );
+        }
 
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -70,11 +77,18 @@ serve(async (req) => {
 
       case 'generate_insights':
         // Generate business insights based on user data
-        const insights = await generateBusinessInsights(supabaseClient, user.id);
-        return new Response(
-          JSON.stringify({ insights, success: true }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        try {
+          const insights = await generateBusinessInsights(supabaseClient, user.id);
+          return new Response(
+            JSON.stringify({ insights, success: true }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        } catch (insightError) {
+          return new Response(
+            JSON.stringify({ error: { message: 'Insight generation failed' } }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+          );
+        }
 
       default:
         throw new Error('Invalid action');
