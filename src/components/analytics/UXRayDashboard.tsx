@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 import { 
   AlertTriangle, 
   XCircle, 
@@ -29,6 +31,7 @@ type UXHealthCheck = z.infer<typeof UXHealthCheckSchema>;
 
 export const UXRayDashboard = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   // Fetch active health warnings
   const { data: healthChecks, isLoading } = useQuery<UXHealthCheck[]>({
@@ -46,6 +49,41 @@ export const UXRayDashboard = () => {
     },
     staleTime: 30_000, // 30 seconds
   });
+  
+  // Real-time subscription for new UX health warnings
+  useEffect(() => {
+    const channel = supabase
+      .channel('ux-health-checks-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'ux_health_checks',
+          filter: 'status=eq.active'
+        },
+        (payload: any) => {
+          console.log('New UX health warning detected:', payload);
+          
+          // Show toast notification for critical/high severity warnings
+          if (payload.new?.severity === 'critical' || payload.new?.severity === 'high') {
+            toast({
+              title: `${payload.new.severity.toUpperCase()} UX Issue Detected`,
+              description: payload.new.message,
+              variant: payload.new.severity === 'critical' ? 'destructive' : 'default',
+            });
+          }
+          
+          // Invalidate queries to refresh data
+          queryClient.invalidateQueries({ queryKey: ['ux-health-checks'] });
+        }
+      )
+      .subscribe();
+    
+    return () => { 
+      supabase.removeChannel(channel); 
+    };
+  }, [queryClient, toast]);
   
   // Mark check as resolved
   const resolveCheck = useMutation({

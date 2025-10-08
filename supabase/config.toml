@@ -107,3 +107,6 @@ verify_jwt = true
 
 [functions.ux-health-monitor]
 verify_jwt = false
+
+[functions.analytics-seed-data]
+verify_jwt = false

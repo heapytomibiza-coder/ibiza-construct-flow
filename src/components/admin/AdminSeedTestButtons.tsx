@@ -4,10 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlayCircle, RefreshCw, AlertTriangle, Award } from 'lucide-react';
+import { Loader2, PlayCircle, RefreshCw, AlertTriangle, Award, BarChart3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function AdminSeedTestButtons() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [results, setResults] = useState<{ [key: string]: any }>({});
 
@@ -58,6 +60,63 @@ export function AdminSeedTestButtons() {
     }
   }
 
+  async function seedAnalyticsAndRunUXRay() {
+    setLoading('analytics-seed');
+    try {
+      // Step 1: Seed analytics data
+      const { data: seedData, error: seedError } = await supabase.functions.invoke('analytics-seed-data', {
+        body: {
+          action: 'generate_test_sessions',
+          scenarios: {
+            success: 10,
+            dropoff: 15,  // 60% dropoff rate to trigger warning
+            error: 8,     // High error rate to trigger warning
+            form_complexity: 5
+          }
+        }
+      });
+
+      if (seedError) throw seedError;
+
+      // Step 2: Run UX health checks immediately
+      const { data: healthData, error: healthError } = await supabase.functions.invoke('ux-health-monitor', {
+        body: { action: 'run_checks' }
+      });
+
+      if (healthError) throw healthError;
+
+      setResults(prev => ({ 
+        ...prev, 
+        'analytics-seed': seedData,
+        'ux-health-check': healthData
+      }));
+
+      const warningCount = healthData?.health_checks?.length || 0;
+
+      toast({
+        title: 'Analytics Seeded & UX-Ray Complete',
+        description: `Created ${seedData?.events_created} events. Found ${warningCount} UX issues.`,
+        action: warningCount > 0 ? (
+          <Button 
+            size="sm" 
+            variant="secondary"
+            onClick={() => navigate('/admin?tab=ux-ray')}
+          >
+            View Issues
+          </Button>
+        ) : undefined,
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to seed analytics data',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(null);
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -71,6 +130,20 @@ export function AdminSeedTestButtons() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={seedAnalyticsAndRunUXRay}
+            disabled={loading !== null}
+            className="col-span-2 h-auto py-4 flex flex-col items-start"
+          >
+            {loading === 'analytics-seed' ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <BarChart3 className="w-4 h-4 mb-1" />
+            )}
+            <span className="text-sm font-medium">Seed Analytics & Run UX-Ray</span>
+            <span className="text-xs text-muted-foreground">Generate test data + detect UX issues</span>
+          </Button>
+
           <Button
             variant="outline"
             onClick={() => callFunction('sentiment-batch', 'Sentiment Batch')}

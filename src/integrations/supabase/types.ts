@@ -9441,6 +9441,18 @@ export type Database = {
       }
     }
     Views: {
+      analytics_live_kpis: {
+        Row: {
+          abandonments: number | null
+          active_sessions: number | null
+          events_last_5min: number | null
+          events_last_hour: number | null
+          field_focuses: number | null
+          validation_errors: number | null
+          wizard_starts: number | null
+        }
+        Relationships: []
+      }
       currency_exchange_pairs: {
         Row: {
           from_currency: string | null
