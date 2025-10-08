@@ -4,6 +4,7 @@ import { useAnalyticsDashboard } from '@/hooks/useAnalyticsDashboard';
 import { TrendingUp, DollarSign, Star, Clock, Briefcase, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { UXMetricsDashboard } from './UXMetricsDashboard';
 
 export const AnalyticsDashboard = () => {
   const { stats, insights, isLoading, markInsightAsRead, generateInsights } = useAnalyticsDashboard();
@@ -132,6 +133,7 @@ export const AnalyticsDashboard = () => {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="ux">UX Metrics</TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
@@ -148,6 +150,10 @@ export const AnalyticsDashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="ux" className="space-y-4">
+          <UXMetricsDashboard />
         </TabsContent>
 
         <TabsContent value="revenue">

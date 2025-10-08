@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { supabase } from '@/integrations/supabase/client';
 import { useAIQuestions, AIQuestion } from '@/hooks/useAIQuestions';
 import { toast } from 'sonner';
+import { useUXMetrics } from '@/hooks/useUXMetrics';
 
 export interface WizardState {
   step: number;
@@ -26,6 +27,8 @@ interface Service {
 
 export const useWizard = () => {
   const { services, getQuestions } = useServicesRegistry();
+  const uxMetrics = useUXMetrics();
+  
   const [state, setState] = useState<WizardState>({
     step: 1,
     category: '',
@@ -46,6 +49,12 @@ export const useWizard = () => {
   
   // AI-powered question generation
   const aiQuestions = useAIQuestions();
+
+  // Track wizard step changes
+  useEffect(() => {
+    const stepNames = ['Category', 'Subcategory', 'Service', 'Questions', 'Details', 'Budget', 'Review', 'Complete'];
+    uxMetrics.trackWizardStepView(state.step, stepNames[state.step - 1] || `Step ${state.step}`);
+  }, [state.step]);
 
   // Load questions for a service from services_micro table
   const loadQuestions = useCallback(async (serviceId: string) => {
@@ -112,11 +121,14 @@ export const useWizard = () => {
 
   const nextStep = useCallback(() => {
     setState(prev => ({ ...prev, step: prev.step + 1 }));
-  }, []);
+    uxMetrics.trackCTAClick('Next Step', 'primary', 'wizard');
+  }, [uxMetrics]);
 
   const prevStep = useCallback(() => {
+    const currentStep = state.step;
     setState(prev => ({ ...prev, step: Math.max(1, prev.step - 1) }));
-  }, []);
+    uxMetrics.trackBackNavigation(currentStep, Math.max(1, currentStep - 1));
+  }, [state.step, uxMetrics]);
 
   // Submit the booking
   const submitBooking = useCallback(async () => {
