@@ -7,18 +7,23 @@ export type SecurityEventType =
   | 'rate_limit_exceeded'
   | 'ip_blocked'
   | 'privilege_escalation_attempt'
-  | 'data_breach_attempt';
+  | 'data_breach_attempt'
+  | 'profile_updated'
+  | 'role_assigned'
+  | 'role_removed'
+  | 'admin_access_attempt';
 
 export type SecurityEventSeverity = 'low' | 'medium' | 'high' | 'critical';
 
 export interface LogSecurityEventParams {
   eventType: SecurityEventType;
-  severity: SecurityEventSeverity;
-  eventData?: Record<string, any>;
+  severity?: SecurityEventSeverity;
+  category?: string;
+  metadata?: Record<string, any>;
 }
 
 /**
- * Log a security event for monitoring and alerting
+ * Log a security event using server-side function
  */
 export async function logSecurityEvent(
   params: LogSecurityEventParams
@@ -26,32 +31,26 @@ export async function logSecurityEvent(
   try {
     const { data: { user } } = await supabase.auth.getUser();
     
-    // Get IP address if available
-    let ipAddress: string | null = null;
-    try {
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      ipAddress = data.ip;
-    } catch {
-      // IP detection failed, continue without it
+    // Call server-side logging function
+    const { error } = await supabase.rpc('log_security_event' as any, {
+      p_user_id: user?.id || null,
+      p_event_type: params.eventType,
+      p_severity: params.severity || 'medium',
+      p_details: {
+        category: params.category || 'security',
+        ...(params.metadata || {}),
+        timestamp: new Date().toISOString(),
+        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server'
+      }
+    } as any);
+
+    if (error) {
+      console.error('Failed to log security event:', error);
     }
 
-    await supabase.rpc('log_security_event' as any, {
-      p_event_type: params.eventType,
-      p_severity: params.severity,
-      p_user_id: user?.id || null,
-      p_ip_address: ipAddress,
-      p_event_data: params.eventData || {}
-    });
-
-    // For critical events, also log to console immediately
+    // Log critical/high events to console for immediate visibility
     if (params.severity === 'critical' || params.severity === 'high') {
-      console.error('🚨 Security Event:', {
-        type: params.eventType,
-        severity: params.severity,
-        userId: user?.id,
-        data: params.eventData
-      });
+      console.warn(`🚨 [Security Alert] ${params.eventType}:`, params.metadata);
     }
   } catch (error) {
     console.error('Failed to log security event:', error);
@@ -80,50 +79,41 @@ export async function requiresTwoFactor(userId: string): Promise<boolean> {
 }
 
 /**
- * Monitor for suspicious patterns in user behavior
+ * Monitor for suspicious activity using server-side rate limiting
  */
-export function monitorSuspiciousActivity(
+export async function monitorSuspiciousActivity(
   userId: string,
   action: string
-): void {
-  // This is a placeholder for more sophisticated monitoring
-  // In production, this would integrate with your monitoring service
-  const suspiciousPatterns = {
-    rapidRequests: 0,
-    failedAttempts: 0,
-    lastActivity: Date.now()
-  };
+): Promise<void> {
+  try {
+    // Check rate limit using server-side function
+    const { data, error } = await supabase.rpc('check_rate_limit' as any, {
+      p_user_id: userId,
+      p_action: action,
+      p_limit: 50,  // 50 requests
+      p_window_sec: 60  // per minute
+    } as any) as { data: boolean | null; error: any };
 
-  // Store in session storage for client-side tracking
-  const key = `security_monitor_${userId}`;
-  const stored = sessionStorage.getItem(key);
-  
-  if (stored) {
-    const data = JSON.parse(stored);
-    const timeSinceLastActivity = Date.now() - data.lastActivity;
-    
-    // Check for rapid requests (more than 10 per second)
-    if (timeSinceLastActivity < 100) {
-      data.rapidRequests++;
-      
-      if (data.rapidRequests > 100) {
-        logSecurityEvent({
-          eventType: 'suspicious_activity',
-          severity: 'high',
-          eventData: {
-            pattern: 'rapid_requests',
-            count: data.rapidRequests,
-            action
-          }
-        });
-      }
-    } else {
-      data.rapidRequests = 0;
+    if (error) {
+      console.error('Rate limit check failed:', error);
+      return;
     }
-    
-    data.lastActivity = Date.now();
-    sessionStorage.setItem(key, JSON.stringify(data));
-  } else {
-    sessionStorage.setItem(key, JSON.stringify(suspiciousPatterns));
+
+    // If rate limit exceeded (function returns false), log suspicious activity
+    if (data === false) {
+      await logSecurityEvent({
+        eventType: 'rate_limit_exceeded',
+        severity: 'high',
+        category: 'behavior',
+        metadata: {
+          userId,
+          action,
+          pattern: 'rate_limit_exceeded',
+          timestamp: new Date().toISOString()
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Failed to monitor suspicious activity:', error);
   }
 }
