@@ -48,12 +48,20 @@ serve(async (req) => {
     console.log("User authenticated:", user.id);
 
     // 2) Verify admin role
-    const { data: roleData } = await userClient
+    const { data: roleData, error: roleError } = await userClient
       .from("user_roles")
-      .select("app_role")
+      .select("role")
       .eq("user_id", user.id)
-      .in("app_role", ["admin"])
+      .eq("role", "admin")
       .maybeSingle();
+    
+    if (roleError) {
+      console.error("Role check error:", roleError);
+      return new Response(
+        JSON.stringify({ error: "Error checking admin privileges" }), 
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (!roleData) {
       console.error("User does not have admin role");
