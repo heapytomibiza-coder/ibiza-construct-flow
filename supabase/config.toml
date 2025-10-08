@@ -104,3 +104,6 @@ verify_jwt = false
 
 [functions.admin-edit-job-version]
 verify_jwt = true
+
+[functions.ux-health-monitor]
+verify_jwt = false

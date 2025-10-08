@@ -5,6 +5,7 @@ import { TrendingUp, DollarSign, Star, Clock, Briefcase, AlertCircle } from 'luc
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UXMetricsDashboard } from './UXMetricsDashboard';
+import { UXRayDashboard } from './UXRayDashboard';
 
 export const AnalyticsDashboard = () => {
   const { stats, insights, isLoading, markInsightAsRead, generateInsights } = useAnalyticsDashboard();
@@ -134,6 +135,7 @@ export const AnalyticsDashboard = () => {
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="ux">UX Metrics</TabsTrigger>
+          <TabsTrigger value="ux-ray">UX-Ray</TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
@@ -154,6 +156,10 @@ export const AnalyticsDashboard = () => {
 
         <TabsContent value="ux" className="space-y-4">
           <UXMetricsDashboard />
+        </TabsContent>
+
+        <TabsContent value="ux-ray" className="space-y-4">
+          <UXRayDashboard />
         </TabsContent>
 
         <TabsContent value="revenue">
