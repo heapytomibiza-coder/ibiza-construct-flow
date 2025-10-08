@@ -4,42 +4,26 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Users, Shield } from 'lucide-react';
-import { useListUsers, useUpdateUserRole } from '../../../packages/@contracts/clients/user-inspector';
+import { useListUsers } from '../../../packages/@contracts/clients/user-inspector';
+import { useAdminRoleManagement } from '@/hooks/useAdminRoleManagement';
 
 const UserInspector = () => {
   const { toast } = useToast();
   
   // Use contract-generated React Query hooks
   const { data: usersData, isLoading: loading } = useListUsers({ limit: 100 });
-  const updateRoleMutation = useUpdateUserRole();
+  const { assignRole, isLoading: isAssigning } = useAdminRoleManagement();
 
   const users = usersData || [];
 
-  const promoteToAdmin = (userId: string, currentRoles: Array<'client' | 'professional' | 'admin'>) => {
-    const updatedRoles: Array<'client' | 'professional' | 'admin'> = [...currentRoles];
-    if (!updatedRoles.includes('admin')) {
-      updatedRoles.push('admin');
-    }
-
-    updateRoleMutation.mutate(
-      { userId, roles: updatedRoles },
-      {
-        onSuccess: () => {
-          toast({
-            title: "User Promoted",
-            description: "User has been granted admin privileges",
-          });
-        },
-        onError: (error) => {
-          console.error('Error promoting user:', error);
-          toast({
-            title: "Error",
-            description: "Failed to promote user to admin",
-            variant: "destructive",
-          });
-        },
+  const promoteToAdmin = async (userId: string, currentRoles: Array<'client' | 'professional' | 'admin'>) => {
+    if (!currentRoles.includes('admin')) {
+      try {
+        await assignRole(userId, 'admin');
+      } catch (error) {
+        console.error('Error promoting user:', error);
       }
-    );
+    }
   };
 
   const getRoleBadges = (roles: Array<'client' | 'professional' | 'admin'>) => {
@@ -114,9 +98,10 @@ const UserInspector = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => promoteToAdmin(user.user_id, user.roles)}
+                          disabled={isAssigning}
                         >
                           <Shield className="w-3 h-3 mr-1" />
-                          Make Admin
+                          {isAssigning ? "Processing..." : "Make Admin"}
                         </Button>
                       )}
                     </div>

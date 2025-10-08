@@ -9263,6 +9263,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles_audit_log: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          created_at: string
+          id: string
+          new_row: Json | null
+          old_row: Json | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          new_row?: Json | null
+          old_row?: Json | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          new_row?: Json | null
+          old_row?: Json | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       user_sessions: {
         Row: {
           created_at: string | null
@@ -9539,6 +9569,20 @@ export type Database = {
       }
     }
     Functions: {
+      admin_assign_role: {
+        Args: {
+          p_role: Database["public"]["Enums"]["app_role"]
+          p_target_user_id: string
+        }
+        Returns: undefined
+      }
+      admin_revoke_role: {
+        Args: {
+          p_role: Database["public"]["Enums"]["app_role"]
+          p_target_user_id: string
+        }
+        Returns: undefined
+      }
       aggregate_platform_metrics: {
         Args: { p_metric_date: string }
         Returns: undefined
