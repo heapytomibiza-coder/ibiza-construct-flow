@@ -6588,6 +6588,10 @@ export type Database = {
             | null
           tour_completed: boolean | null
           updated_at: string | null
+          verification_notes: string | null
+          verification_status: string | null
+          verified_at: string | null
+          verified_by: string | null
         }
         Insert: {
           active_role?: string | null
@@ -6611,6 +6615,10 @@ export type Database = {
             | null
           tour_completed?: boolean | null
           updated_at?: string | null
+          verification_notes?: string | null
+          verification_status?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Update: {
           active_role?: string | null
@@ -6634,6 +6642,10 @@ export type Database = {
             | null
           tour_completed?: boolean | null
           updated_at?: string | null
+          verification_notes?: string | null
+          verification_status?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: []
       }
@@ -8220,13 +8232,16 @@ export type Database = {
           created_at: string
           ibiza_specific: boolean | null
           id: string
+          is_active: boolean | null
           micro: string
           priority_level: string | null
           question_source: string | null
           questions_logistics: Json
           questions_micro: Json
+          sort_index: number | null
           subcategory: string
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           category: string
@@ -8234,13 +8249,16 @@ export type Database = {
           created_at?: string
           ibiza_specific?: boolean | null
           id?: string
+          is_active?: boolean | null
           micro: string
           priority_level?: string | null
           question_source?: string | null
           questions_logistics?: Json
           questions_micro?: Json
+          sort_index?: number | null
           subcategory: string
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           category?: string
@@ -8248,13 +8266,43 @@ export type Database = {
           created_at?: string
           ibiza_specific?: boolean | null
           id?: string
+          is_active?: boolean | null
           micro?: string
           priority_level?: string | null
           question_source?: string | null
           questions_logistics?: Json
           questions_micro?: Json
+          sort_index?: number | null
           subcategory?: string
           updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      services_micro_versions: {
+        Row: {
+          actor: string
+          change_summary: string | null
+          created_at: string | null
+          services_micro_id: string
+          snapshot: Json
+          version_id: number
+        }
+        Insert: {
+          actor: string
+          change_summary?: string | null
+          created_at?: string | null
+          services_micro_id: string
+          snapshot: Json
+          version_id?: never
+        }
+        Update: {
+          actor?: string
+          change_summary?: string | null
+          created_at?: string | null
+          services_micro_id?: string
+          snapshot?: Json
+          version_id?: never
         }
         Relationships: []
       }
@@ -9878,12 +9926,19 @@ export type Database = {
         Returns: string
       }
       log_admin_action: {
-        Args: {
-          p_action: string
-          p_changes?: Json
-          p_entity_id?: string
-          p_entity_type?: string
-        }
+        Args:
+          | {
+              p_action: string
+              p_changes?: Json
+              p_entity_id?: string
+              p_entity_type?: string
+            }
+          | {
+              p_action: string
+              p_entity_id: string
+              p_entity_type: string
+              p_meta?: Json
+            }
         Returns: string
       }
       log_security_event: {
