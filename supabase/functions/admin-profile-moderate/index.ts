@@ -1,0 +1,125 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+// Validation schema
+const Payload = z.object({
+  profile_id: z.string().uuid(),
+  action: z.enum(["approve", "reject", "under_review"]),
+  notes: z.string().max(1000).optional(),
+  reason: z.string().max(500).optional(),
+});
+
+serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  try {
+    console.log("admin-profile-moderate: Request received");
+
+    // Create Supabase client with service role
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { 
+        global: { 
+          headers: { Authorization: req.headers.get("Authorization")! } 
+        } 
+      }
+    );
+
+    // 1) Verify user authentication
+    const { data: { user }, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !user) {
+      console.error("Authentication failed:", userErr);
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }), 
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log("User authenticated:", user.id);
+
+    // 2) Verify admin role
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("app_role")
+      .eq("user_id", user.id)
+      .in("app_role", ["admin"])
+      .maybeSingle();
+
+    if (!roleData) {
+      console.error("User does not have admin role");
+      return new Response(
+        JSON.stringify({ error: "Forbidden: Admin access required" }), 
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log("Admin role verified");
+
+    // 3) Parse and validate payload
+    const body = await req.json();
+    const parsed = Payload.parse(body);
+
+    console.log("Moderating profile:", parsed.profile_id, "Action:", parsed.action);
+
+    // 4) Update profile verification status
+    const updates: Record<string, unknown> = {
+      verification_status: parsed.action,
+      verification_notes: parsed.notes ?? parsed.reason ?? null,
+      verified_by: user.id,
+      verified_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .update(updates)
+      .eq("id", parsed.profile_id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Database update error:", error);
+      throw error;
+    }
+
+    console.log("Profile status updated successfully");
+
+    // 5) Create audit log entry
+    await supabase.rpc("log_admin_action", {
+      p_action: `PROFILE_${parsed.action.toUpperCase()}`,
+      p_entity_type: "profile",
+      p_entity_id: parsed.profile_id,
+      p_meta: { 
+        notes: parsed.notes, 
+        reason: parsed.reason 
+      },
+    });
+
+    console.log("Audit log created");
+
+    return new Response(
+      JSON.stringify({ success: true, data }), 
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+
+  } catch (e) {
+    console.error("Error in admin-profile-moderate:", e);
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    return new Response(
+      JSON.stringify({ error: errorMessage }), 
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
+  }
+});

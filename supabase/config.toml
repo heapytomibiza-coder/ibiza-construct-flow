@@ -110,3 +110,9 @@ verify_jwt = false
 
 [functions.analytics-seed-data]
 verify_jwt = false
+
+[functions.admin-service-upsert]
+verify_jwt = true
+
+[functions.admin-profile-moderate]
+verify_jwt = true
