@@ -24,10 +24,10 @@ serve(async (req) => {
   try {
     console.log("admin-profile-moderate: Request received");
 
-    // Create Supabase client with service role
-    const supabase = createClient(
+    // Create user client for authentication
+    const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
       { 
         global: { 
           headers: { Authorization: req.headers.get("Authorization")! } 
@@ -36,7 +36,7 @@ serve(async (req) => {
     );
 
     // 1) Verify user authentication
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
+    const { data: { user }, error: userErr } = await userClient.auth.getUser();
     if (userErr || !user) {
       console.error("Authentication failed:", userErr);
       return new Response(
@@ -48,7 +48,7 @@ serve(async (req) => {
     console.log("User authenticated:", user.id);
 
     // 2) Verify admin role
-    const { data: roleData } = await supabase
+    const { data: roleData } = await userClient
       .from("user_roles")
       .select("app_role")
       .eq("user_id", user.id)
@@ -65,6 +65,12 @@ serve(async (req) => {
 
     console.log("Admin role verified");
 
+    // Create service role client for privileged operations
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
     // 3) Parse and validate payload
     const body = await req.json();
     const parsed = Payload.parse(body);
@@ -79,7 +85,7 @@ serve(async (req) => {
       verified_at: new Date().toISOString(),
     };
 
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from("profiles")
       .update(updates)
       .eq("id", parsed.profile_id)
@@ -94,7 +100,7 @@ serve(async (req) => {
     console.log("Profile status updated successfully");
 
     // 5) Create audit log entry
-    await supabase.rpc("log_admin_action", {
+    await adminClient.rpc("log_admin_action", {
       p_action: `PROFILE_${parsed.action.toUpperCase()}`,
       p_entity_type: "profile",
       p_entity_id: parsed.profile_id,

@@ -48,10 +48,10 @@ serve(async (req) => {
   try {
     console.log("admin-service-upsert: Request received");
 
-    // Create Supabase client with service role
-    const supabase = createClient(
+    // Create user client for authentication
+    const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
       { 
         global: { 
           headers: { Authorization: req.headers.get("Authorization")! } 
@@ -60,7 +60,7 @@ serve(async (req) => {
     );
 
     // 1) Verify user authentication
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
+    const { data: { user }, error: userErr } = await userClient.auth.getUser();
     if (userErr || !user) {
       console.error("Authentication failed:", userErr);
       return new Response(
@@ -72,7 +72,7 @@ serve(async (req) => {
     console.log("User authenticated:", user.id);
 
     // 2) Verify admin role
-    const { data: roleData } = await supabase
+    const { data: roleData } = await userClient
       .from("user_roles")
       .select("app_role")
       .eq("user_id", user.id)
@@ -89,6 +89,12 @@ serve(async (req) => {
 
     console.log("Admin role verified");
 
+    // Create service role client for privileged operations
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
     // 3) Parse and validate payload
     const body = await req.json();
     const parsed = Payload.parse(body);
@@ -97,7 +103,7 @@ serve(async (req) => {
 
     // 4) Create snapshot if updating existing service
     if (parsed.id) {
-      const { data: existing } = await supabase
+      const { data: existing } = await adminClient
         .from("services_micro")
         .select("*")
         .eq("id", parsed.id)
@@ -105,7 +111,7 @@ serve(async (req) => {
 
       if (existing) {
         console.log("Creating version snapshot for service:", parsed.id);
-        await supabase.from("services_micro_versions").insert({
+        await adminClient.from("services_micro_versions").insert({
           services_micro_id: parsed.id,
           snapshot: existing,
           change_summary: parsed.change_summary ?? "Updated via admin",
@@ -115,7 +121,7 @@ serve(async (req) => {
     }
 
     // 5) Upsert service
-    const { data, error } = await supabase
+    const { data, error } = await adminClient
       .from("services_micro")
       .upsert({
         id: parsed.id,
@@ -140,7 +146,7 @@ serve(async (req) => {
     console.log("Service upserted successfully:", data.id);
 
     // 6) Create audit log entry
-    await supabase.rpc("log_admin_action", {
+    await adminClient.rpc("log_admin_action", {
       p_action: parsed.id ? "SERVICES_MICRO_UPDATE" : "SERVICES_MICRO_CREATE",
       p_entity_type: "services_micro",
       p_entity_id: data.id,
