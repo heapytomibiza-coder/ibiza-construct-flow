@@ -9864,6 +9864,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_feature_on: {
+        Args: { p_key: string }
+        Returns: boolean
+      }
       log_activity: {
         Args: {
           p_action: string

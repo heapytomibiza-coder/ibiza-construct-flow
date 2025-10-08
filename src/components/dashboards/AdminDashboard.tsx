@@ -78,7 +78,7 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   const infoTipsEnabled = useFeature('admin_info_tips');
   const { pendingCount } = usePendingVerifications();
   const { enabled: analyticsEnabled } = useFeatureFlag('analytics_v1');
-  const [showTestTools, setShowTestTools] = useState(true);
+  const [showTestTools, setShowTestTools] = useState(false);
   const { favorites, toggleFavorite, isFavorite } = useWorkspaceFavorites();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
