@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { 
   Home, Users, Briefcase, Folder, MessageSquare, 
-  AlertTriangle, Activity, FileText, Settings, BarChart3, Calendar
+  AlertTriangle, Activity, FileText, Settings, BarChart3, Calendar,
+  Database, Search as SearchIcon, Wrench, ShieldCheck, TestTube, Flag
 } from 'lucide-react';
 import {
   Sidebar,
@@ -24,6 +25,7 @@ const navigationItems = [
     items: [
       { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/admin', description: 'Overview & metrics' },
       { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/admin/analytics', description: 'Reports & insights' },
+      { id: 'database', label: 'Database', icon: Database, path: '/admin/database', description: 'Database statistics' },
     ],
   },
   {
@@ -36,6 +38,17 @@ const navigationItems = [
       { id: 'services', label: 'Services', icon: Folder, path: '/admin/services', description: 'Service catalog' },
       { id: 'reviews', label: 'Reviews', icon: MessageSquare, path: '/admin/reviews', description: 'Moderation queue' },
       { id: 'disputes', label: 'Disputes', icon: AlertTriangle, path: '/admin/disputes', description: 'Resolution timeline' },
+    ],
+  },
+  {
+    group: 'Advanced Tools',
+    items: [
+      { id: 'user-inspector', label: 'User Inspector', icon: SearchIcon, path: '/admin/user-inspector', description: 'Deep user search' },
+      { id: 'service-manager', label: 'Service Manager', icon: Wrench, path: '/admin/service-manager', description: 'Manage micro services' },
+      { id: 'profile-moderation', label: 'Moderation', icon: ShieldCheck, path: '/admin/profile-moderation', description: 'Profile verification' },
+      { id: 'documents', label: 'Documents', icon: FileText, path: '/admin/documents', description: 'Document review' },
+      { id: 'feature-flags', label: 'Feature Flags', icon: Flag, path: '/admin/feature-flags', description: 'Toggle features' },
+      { id: 'test-runner', label: 'Test Runner', icon: TestTube, path: '/admin/test-runner', description: 'AI system tests' },
     ],
   },
   {

@@ -77,6 +77,13 @@ const AdminSettings = React.lazy(() => import("./pages/admin/Settings"));
 const AdminServices = React.lazy(() => import("./pages/admin/Services"));
 const AdminJobs = React.lazy(() => import("./pages/admin/Jobs"));
 const AdminBookings = React.lazy(() => import("./pages/admin/Bookings"));
+const AdminDatabaseOverview = React.lazy(() => import("./pages/admin/DatabaseOverview"));
+const AdminUserInspector = React.lazy(() => import("./pages/admin/UserInspector"));
+const AdminServiceManager = React.lazy(() => import("./pages/admin/ServiceManager"));
+const AdminDocumentReview = React.lazy(() => import("./pages/admin/DocumentReview"));
+const AdminFeatureFlags = React.lazy(() => import("./pages/admin/FeatureFlags"));
+const AdminTestRunner = React.lazy(() => import("./pages/admin/TestRunner"));
+const AdminProfileModeration = React.lazy(() => import("./pages/admin/ProfileModeration"));
 const AdminHelpdeskPage = React.lazy(() => import("./pages/admin/AdminHelpdeskPage"));
 const AdminHelpdeskDetailPage = React.lazy(() => import("./pages/admin/AdminHelpdeskDetailPage"));
 const AdminReviewModerationPage = React.lazy(() => import("./pages/admin/AdminReviewModerationPage"));
@@ -311,6 +318,41 @@ function AppContent() {
           <Route path="/admin/bookings" element={
             <RouteGuard requiredRole="admin">
               <AdminBookings />
+            </RouteGuard>
+          } />
+          <Route path="/admin/database" element={
+            <RouteGuard requiredRole="admin">
+              <AdminDatabaseOverview />
+            </RouteGuard>
+          } />
+          <Route path="/admin/user-inspector" element={
+            <RouteGuard requiredRole="admin">
+              <AdminUserInspector />
+            </RouteGuard>
+          } />
+          <Route path="/admin/service-manager" element={
+            <RouteGuard requiredRole="admin">
+              <AdminServiceManager />
+            </RouteGuard>
+          } />
+          <Route path="/admin/documents" element={
+            <RouteGuard requiredRole="admin">
+              <AdminDocumentReview />
+            </RouteGuard>
+          } />
+          <Route path="/admin/feature-flags" element={
+            <RouteGuard requiredRole="admin">
+              <AdminFeatureFlags />
+            </RouteGuard>
+          } />
+          <Route path="/admin/test-runner" element={
+            <RouteGuard requiredRole="admin">
+              <AdminTestRunner />
+            </RouteGuard>
+          } />
+          <Route path="/admin/profile-moderation" element={
+            <RouteGuard requiredRole="admin">
+              <AdminProfileModeration />
             </RouteGuard>
           } />
           <Route path="/admin/questions" element={
