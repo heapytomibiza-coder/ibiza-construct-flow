@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,9 +16,12 @@ import { SubscriptionUpsellBanner } from './SubscriptionUpsellBanner';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { cn } from '@/lib/utils';
 
 export const JobsMarketplace: React.FC = () => {
   const { user, profile } = useAuth();
+  const [searchParams] = useSearchParams();
+  const highlightJobId = searchParams.get('highlight');
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,34 +39,12 @@ export const JobsMarketplace: React.FC = () => {
     try {
       setLoading(true);
       
-      // Get professional's subscription tier if logged in
-      let subscriptionTier = 'basic';
-      if (user) {
-        const { data: profile } = await supabase
-          .from('professional_profiles')
-          .select('subscription_tier')
-          .eq('user_id', user.id)
-          .single();
-        
-        subscriptionTier = profile?.subscription_tier || 'basic';
-      }
-      
-      // Calculate visibility cutoff for basic users (24 hours ago)
-      const cutoffDate = subscriptionTier === 'basic' 
-        ? new Date(Date.now() - 24 * 60 * 60 * 1000) 
-        : null;
-
-      let query = supabase
+      // Fetch ALL open jobs - no tier filtering
+      const { data, error } = await supabase
         .from('jobs')
         .select('*')
-        .eq('status', 'open');
-
-      // Basic users only see jobs older than 24hrs
-      if (cutoffDate) {
-        query = query.lt('created_at', cutoffDate.toISOString());
-      }
-
-      const { data, error } = await query.order(sortBy, { ascending: false });
+        .eq('status', 'open')
+        .order(sortBy, { ascending: false });
 
       if (error) throw error;
 
@@ -324,14 +306,20 @@ export const JobsMarketplace: React.FC = () => {
       <div className={`grid gap-4 ${viewMode === 'card' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
-            <JobListingCard
+            <div
               key={job.id}
-              job={job}
-              onSendOffer={handleSendOffer}
-              onMessage={handleMessageClient}
-              onSave={handleSaveJob}
-              viewMode={viewMode}
-            />
+              className={cn(
+                highlightJobId === job.id && "ring-2 ring-copper animate-highlight"
+              )}
+            >
+              <JobListingCard
+                job={job}
+                onSendOffer={handleSendOffer}
+                onMessage={handleMessageClient}
+                onSave={handleSaveJob}
+                viewMode={viewMode}
+              />
+            </div>
           ))
         ) : (
           <Card className="col-span-full">

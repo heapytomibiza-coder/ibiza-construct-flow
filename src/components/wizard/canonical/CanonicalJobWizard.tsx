@@ -308,8 +308,13 @@ export const CanonicalJobWizard: React.FC = () => {
         body: { jobId: newJob.id }
       }).catch(err => console.warn('Notification dispatch failed:', err));
 
-      toast.success('Job posted successfully! Professionals will start submitting quotes soon.');
-      navigate('/dashboard/client');
+      toast.success('Job Posted Successfully!', {
+        description: 'Your job is now live. Pro & Premium professionals have been notified.',
+        duration: 5000
+      });
+      
+      // Navigate to job board with highlight
+      navigate(`/job-board?highlight=${newJob.id}`);
     } catch (error) {
       console.error('Error posting job:', error);
       toast.error('Failed to post job. Please try again.');

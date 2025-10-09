@@ -492,4 +492,20 @@ All colors MUST be HSL. Premium construction platform aesthetic.
   animation-delay: 300ms;
 }
 
+@keyframes highlight-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 hsl(var(--copper) / 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 0 8px hsl(var(--copper) / 0);
+    transform: scale(1.01);
+  }
+}
+
+.animate-highlight {
+  animation: highlight-pulse 2s ease-in-out 3;
+  border-radius: 0.5rem;
+}
+
 }

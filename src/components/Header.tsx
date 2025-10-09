@@ -124,6 +124,12 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                       <Settings className="w-4 h-4 mr-2" />
                       {t('dashboard')}
                     </DropdownMenuItem>
+                    {isProfessional() && (
+                      <DropdownMenuItem onClick={() => navigate('/job-board')}>
+                        <Briefcase className="w-4 h-4 mr-2" />
+                        {t('jobBoard', 'Job Board')}
+                      </DropdownMenuItem>
+                    )}
                     {jobWizardEnabled && isClient() && (
                       <>
                         <DropdownMenuItem onClick={() => navigate('/post')}>
@@ -198,6 +204,11 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                     <Link to={dashboardPath} className="btn-secondary">
                       {t('dashboard')}
                     </Link>
+                    {isProfessional() && (
+                      <Link to="/job-board" className="btn-secondary">
+                        {t('jobBoard', 'Job Board')}
+                      </Link>
+                    )}
                     {jobWizardEnabled && isClient() && (
                       <>
                         <Link to="/post" className="btn-hero">

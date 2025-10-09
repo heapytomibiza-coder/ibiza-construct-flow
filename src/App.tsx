@@ -47,6 +47,8 @@ const AdminQuestions = React.lazy(() => import("./pages/AdminQuestions"));
 const PackCompareView = React.lazy(() => import("./components/admin/packs/PackCompareView").then(m => ({ default: m.PackCompareView })));
 const WebsiteSettings = React.lazy(() => import("./pages/admin/WebsiteSettings"));
 const PostJob = React.lazy(() => import("./pages/PostJob"));
+const JobBoardPage = React.lazy(() => import("./pages/JobBoardPage"));
+const PostJobSuccessPage = React.lazy(() => import("./pages/PostJobSuccessPage"));
 const Discovery = React.lazy(() => import("./pages/Discovery"));
 const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
 const ProfessionalOnboardingPage = React.lazy(() => import("./pages/ProfessionalOnboardingPage"));
@@ -208,6 +210,20 @@ function AppContent() {
         <Route path="/templates" element={
           <RouteGuard requiredRole="client">
             <Templates />
+          </RouteGuard>
+        } />
+        
+        {/* Job Board - All professionals can see all jobs */}
+        <Route path="/job-board" element={
+          <RouteGuard requiredRole="professional">
+            <JobBoardPage />
+          </RouteGuard>
+        } />
+        
+        {/* Post Job Success Page */}
+        <Route path="/post/success" element={
+          <RouteGuard requiredRole="client">
+            <PostJobSuccessPage />
           </RouteGuard>
         } />
         
