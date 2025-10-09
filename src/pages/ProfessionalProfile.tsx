@@ -45,6 +45,9 @@ import { ComparisonButton } from '@/components/professionals/ComparisonButton';
 import { ReferralCard } from '@/components/professionals/ReferralCard';
 import { PerformanceScore } from '@/components/professionals/PerformanceScore';
 import { LiveActivityFeed } from '@/components/professionals/LiveActivityFeed';
+import { VerificationBadges } from '@/components/professionals/VerificationBadges';
+import { MobileQuickActions } from '@/components/professionals/MobileQuickActions';
+import { ComparisonFloatingButton } from '@/components/professionals/ComparisonFloatingButton';
 import { motion } from 'framer-motion';
 import { useProfileAnalytics } from '@/hooks/useProfileAnalytics';
 
@@ -291,6 +294,21 @@ export default function ProfessionalProfile() {
               satisfactionRate={95}
               yearsInBusiness={profile.experience_years}
               responseRate={98}
+            />
+          </motion.div>
+
+          {/* Verification Badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="flex justify-center"
+          >
+            <VerificationBadges
+              isVerified={profile.verification_status === 'verified'}
+              hasInsurance={true}
+              isBackgroundChecked={true}
+              isLicensed={true}
             />
           </motion.div>
 
@@ -664,6 +682,27 @@ export default function ProfessionalProfile() {
 
       {/* Accessibility Toolbar */}
       <AccessibilityToolbar />
+
+      {/* Mobile Quick Actions */}
+      <MobileQuickActions
+        onCall={() => window.location.href = 'tel:+34612345678'}
+        onMessage={handleContact}
+        onBooking={handleRequestQuote}
+        onShare={() => {
+          if (navigator.share) {
+            navigator.share({
+              title: `${profile.display_name} - Professional Profile`,
+              url: window.location.href
+            });
+          } else {
+            navigator.clipboard.writeText(window.location.href);
+            toast.success('Link copied to clipboard!');
+          }
+        }}
+      />
+
+      {/* Comparison Floating Button */}
+      <ComparisonFloatingButton />
     </div>
   );
 }

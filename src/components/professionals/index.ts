@@ -33,3 +33,8 @@ export { ComparisonButton } from './ComparisonButton';
 export { ReferralCard } from './ReferralCard';
 export { PerformanceScore } from './PerformanceScore';
 export { LiveActivityFeed } from './LiveActivityFeed';
+export { ComparisonModal } from './ComparisonModal';
+export { VerificationBadges } from './VerificationBadges';
+export { MobileQuickActions } from './MobileQuickActions';
+export { ComparisonFloatingButton } from './ComparisonFloatingButton';
+export { SwipeableGallery } from './SwipeableGallery';
