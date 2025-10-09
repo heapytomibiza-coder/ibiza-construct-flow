@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Users, Briefcase, FileCheck, AlertTriangle, BarChart3, Settings } from "lucide-react";
+import { Users, Briefcase, FileCheck, AlertTriangle, BarChart3, Settings, Calendar } from "lucide-react";
 
 export function QuickActions() {
   const navigate = useNavigate();
@@ -16,6 +16,11 @@ export function QuickActions() {
       label: "View Jobs",
       icon: Briefcase,
       onClick: () => navigate("/admin/jobs"),
+    },
+    {
+      label: "View Bookings",
+      icon: Calendar,
+      onClick: () => navigate("/admin/bookings"),
     },
     {
       label: "Profiles Queue",

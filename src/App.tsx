@@ -76,6 +76,7 @@ const AdminUsers = React.lazy(() => import("./pages/admin/Users"));
 const AdminSettings = React.lazy(() => import("./pages/admin/Settings"));
 const AdminServices = React.lazy(() => import("./pages/admin/Services"));
 const AdminJobs = React.lazy(() => import("./pages/admin/Jobs"));
+const AdminBookings = React.lazy(() => import("./pages/admin/Bookings"));
 const AdminHelpdeskPage = React.lazy(() => import("./pages/admin/AdminHelpdeskPage"));
 const AdminHelpdeskDetailPage = React.lazy(() => import("./pages/admin/AdminHelpdeskDetailPage"));
 const AdminReviewModerationPage = React.lazy(() => import("./pages/admin/AdminReviewModerationPage"));
@@ -305,6 +306,11 @@ function AppContent() {
           <Route path="/admin/settings" element={
             <RouteGuard requiredRole="admin">
               <AdminSettingsPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/bookings" element={
+            <RouteGuard requiredRole="admin">
+              <AdminBookings />
             </RouteGuard>
           } />
           <Route path="/admin/questions" element={

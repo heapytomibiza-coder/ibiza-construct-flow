@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { 
   Home, Users, Briefcase, Folder, MessageSquare, 
-  AlertTriangle, Activity, FileText, Settings, BarChart3
+  AlertTriangle, Activity, FileText, Settings, BarChart3, Calendar
 } from 'lucide-react';
 import {
   Sidebar,
@@ -32,6 +32,7 @@ const navigationItems = [
       { id: 'users', label: 'Users', icon: Users, path: '/admin/users', description: 'User management' },
       { id: 'profiles', label: 'Profiles', icon: Users, path: '/admin/profiles', description: 'Verification queue' },
       { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/admin/jobs', description: 'Job & booking queue' },
+      { id: 'bookings', label: 'Bookings', icon: Calendar, path: '/admin/bookings', description: 'Booking management' },
       { id: 'services', label: 'Services', icon: Folder, path: '/admin/services', description: 'Service catalog' },
       { id: 'reviews', label: 'Reviews', icon: MessageSquare, path: '/admin/reviews', description: 'Moderation queue' },
       { id: 'disputes', label: 'Disputes', icon: AlertTriangle, path: '/admin/disputes', description: 'Resolution timeline' },
