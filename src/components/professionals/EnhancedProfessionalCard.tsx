@@ -180,11 +180,11 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
             className="flex-1"
             onClick={(e) => {
               e.stopPropagation();
-              handleContact();
+              handleViewProfile();
             }}
           >
-            <MessageCircle className="w-4 h-4 mr-2" />
-            Message
+            <FileText className="w-4 h-4 mr-2" />
+            View Details
           </Button>
           <Button 
             size="sm" 
