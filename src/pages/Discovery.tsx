@@ -19,7 +19,6 @@ import EnhancedProfessionalCard from '@/components/professionals/EnhancedProfess
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
-import { SmartMatchBanner } from '@/components/discovery/SmartMatchBanner';
 
 interface Filters {
   selectedTaxonomy: {
@@ -175,11 +174,6 @@ const Discovery = () => {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-
-        {/* Smart Match Banner */}
-        {viewMode === 'professionals' && !searchTerm && (
-          <SmartMatchBanner />
-        )}
 
         {/* AI Suggestions Banner */}
         {viewMode === 'services' && !searchTerm && (
