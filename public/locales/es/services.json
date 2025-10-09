@@ -85,5 +85,21 @@
     "subtitle": "Explora servicios, compara profesionales y obtén presupuestos",
     "searchPlaceholder": "¿Qué servicio necesitas?",
     "cta": "Comenzar"
+  },
+  "discovery": {
+    "services": {
+      "title": "Explorar Servicios",
+      "subtitle": "¿Conoces tu trabajo? Encuentra servicios específicos",
+      "searchPlaceholder": "Busca 'reparación de fregadero', 'instalación de enchufe'...",
+      "popularTitle": "Servicios Populares",
+      "popularSubtitle": "Explora nuestros servicios más solicitados"
+    },
+    "professionals": {
+      "title": "Explorar Profesionales",
+      "subtitle": "Busca por oficio o especialidad",
+      "searchPlaceholder": "Busca 'electricista', 'fontanero', 'carpintero'...",
+      "popularTitle": "Oficios Populares",
+      "popularSubtitle": "Encuentra profesionales por su oficio principal o especialidad"
+    }
   }
 }

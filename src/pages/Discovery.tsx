@@ -127,10 +127,10 @@ const Discovery = () => {
         {/* Hero Section */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary-dark to-copper bg-clip-text text-transparent">
-            Find the Perfect Service
+            Find What You Need, Your Way
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Browse our menu of professional services with transparent pricing and instant booking
+            Know your exact job? Browse specific services. Exploring options? Browse by professional trade.
           </p>
         </div>
 
@@ -141,6 +141,11 @@ const Discovery = () => {
             onSearchChange={handleSearchChange}
             onFilterToggle={() => setShowFilters(!showFilters)}
             showFilters={showFilters}
+            placeholder={
+              viewMode === 'services' 
+                ? t('discovery.services.searchPlaceholder', "Search for 'sink repair', 'outlet installation'...")
+                : t('discovery.professionals.searchPlaceholder', "Search for 'electrician', 'plumber', 'carpenter'...")
+            }
           />
           {getActiveFilterCount() > 0 && (
             <Badge className="absolute -top-2 right-12 z-10" variant="default">
@@ -175,45 +180,60 @@ const Discovery = () => {
           </TabsList>
         </Tabs>
 
-        {/* AI Suggestions Banner */}
-        {viewMode === 'services' && !searchTerm && (
+        {/* Contextual Suggestions */}
+        {!searchTerm && (
           <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-copper/10 rounded-lg p-6 border border-primary/20">
             <div className="flex items-center gap-3 mb-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">Popular Services</h3>
+              <h3 className="font-semibold">
+                {viewMode === 'services' 
+                  ? t('discovery.services.popularTitle', 'Popular Services')
+                  : t('discovery.professionals.popularTitle', 'Popular Trades')}
+              </h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Start with these commonly requested services
+              {viewMode === 'services' 
+                ? t('discovery.services.popularSubtitle', 'Browse our most requested specific services')
+                : t('discovery.professionals.popularSubtitle', 'Find professionals by their main trade or specialty')}
             </p>
             <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSearchTerm('electrical')}
-              >
-                ⚡ Electrical Work
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSearchTerm('plumbing')}
-              >
-                🔧 Plumbing
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSearchTerm('painting')}
-              >
-                🎨 Painting
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSearchTerm('carpentry')}
-              >
-                🪚 Carpentry
-              </Button>
+              {viewMode === 'services' ? (
+                <>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('sink repair')}>
+                    🚰 Sink Repair
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('outlet installation')}>
+                    🔌 Outlet Installation
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('room painting')}>
+                    🎨 Room Painting
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('door hanging')}>
+                    🚪 Door Hanging
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('fence building')}>
+                    🪵 Fence Building
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('electrician')}>
+                    ⚡ Electrician
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('plumber')}>
+                    🔧 Plumber
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('carpenter')}>
+                    🪚 Carpenter
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('painter')}>
+                    🎨 Painter
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setSearchTerm('landscaper')}>
+                    🌿 Landscaper
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         )}

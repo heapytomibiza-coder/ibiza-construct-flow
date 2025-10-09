@@ -85,5 +85,21 @@
     "subtitle": "Browse services, compare professionals, and get quotes",
     "searchPlaceholder": "What service do you need?",
     "cta": "Get Started"
+  },
+  "discovery": {
+    "services": {
+      "title": "Browse Services",
+      "subtitle": "Know your job? Find specific services",
+      "searchPlaceholder": "Search for 'sink repair', 'outlet installation'...",
+      "popularTitle": "Popular Services",
+      "popularSubtitle": "Browse our most requested specific services"
+    },
+    "professionals": {
+      "title": "Browse Professionals",
+      "subtitle": "Explore by trade or expertise",
+      "searchPlaceholder": "Search for 'electrician', 'plumber', 'carpenter'...",
+      "popularTitle": "Popular Trades",
+      "popularSubtitle": "Find professionals by their main trade or specialty"
+    }
   }
 }

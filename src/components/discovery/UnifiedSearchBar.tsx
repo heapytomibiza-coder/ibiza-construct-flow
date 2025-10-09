@@ -9,13 +9,15 @@ interface UnifiedSearchBarProps {
   onSearchChange: (term: string) => void;
   onFilterToggle: () => void;
   showFilters: boolean;
+  placeholder?: string;
 }
 
 export const UnifiedSearchBar = ({ 
   searchTerm, 
   onSearchChange, 
   onFilterToggle, 
-  showFilters 
+  showFilters,
+  placeholder
 }: UnifiedSearchBarProps) => {
   const { t } = useTranslation('services');
   
@@ -25,7 +27,7 @@ export const UnifiedSearchBar = ({
         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
         <Input
           type="text"
-          placeholder={t('hero.searchPlaceholder', 'Search services or professionals...')}
+          placeholder={placeholder || t('hero.searchPlaceholder', 'Search services or professionals...')}
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-12 h-14 text-lg bg-card border-border focus:border-primary focus:ring-primary/20 rounded-xl shadow-sm"
