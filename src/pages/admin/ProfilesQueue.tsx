@@ -134,7 +134,7 @@ export default function ProfilesQueue() {
           </p>
         </div>
 
-        <AdminQueue<Verification>
+        <AdminQueue
           title="Verifications"
           description="Manage professional verification requests"
           columns={columns}
