@@ -23,6 +23,16 @@ export default function ProfessionalProfile() {
   const { user } = useAuth();
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
+  // Track profile view
+  const [sessionId] = useState(() => {
+    let sid = sessionStorage.getItem('session_id');
+    if (!sid) {
+      sid = crypto.randomUUID();
+      sessionStorage.setItem('session_id', sid);
+    }
+    return sid;
+  });
+
   const { data: profile, isLoading } = useQuery({
     queryKey: ['professional', professionalId],
     queryFn: async () => {
@@ -79,6 +89,12 @@ export default function ProfessionalProfile() {
         .eq('uploaded_by', professionalId)
         .in('photo_type', ['before', 'after']);
 
+      // Get profile view count
+      const { data: viewCountData } = await supabase
+        .rpc('get_profile_view_count', { p_professional_id: professionalId });
+      
+      const viewCount = viewCountData || 0;
+
       // Transform old portfolio images from storage (backward compatibility)
       const legacyPortfolioItems = Array.isArray(proProfile.portfolio_images) 
         ? proProfile.portfolio_images.map((url: string) => ({ url }))
@@ -95,10 +111,34 @@ export default function ProfessionalProfile() {
         skills: Array.isArray(proProfile.skills) ? proProfile.skills : [],
         portfolio_images: legacyPortfolioItems,
         new_portfolio_images: portfolioImages || [],
-        job_photos: jobPhotos || []
+        job_photos: jobPhotos || [],
+        view_count: viewCount
       };
     },
     enabled: !!professionalId
+  });
+
+  // Track this view (only once per session)
+  useState(() => {
+    if (professionalId && sessionId) {
+      // Track view asynchronously without blocking UI
+      supabase
+        .from('profile_views')
+        .select('id')
+        .eq('professional_id', professionalId)
+        .eq('session_id', sessionId)
+        .maybeSingle()
+        .then(({ data: existingView }) => {
+          if (!existingView) {
+            // Only insert if this session hasn't viewed this profile yet
+            supabase.from('profile_views').insert({
+              professional_id: professionalId,
+              viewer_id: user?.id || null,
+              session_id: sessionId
+            });
+          }
+        });
+    }
   });
 
   const handleContact = async () => {
@@ -192,7 +232,8 @@ export default function ProfessionalProfile() {
               about: profile.bio || '',
               workingHours: '9:00 AM - 6:00 PM',
               avatarUrl: profile.avatar_url,
-              verificationStatus: profile.verification_status
+              verificationStatus: profile.verification_status,
+              viewCount: profile.view_count
             }}
             onMessage={handleContact}
             onRequestQuote={handleRequestQuote}

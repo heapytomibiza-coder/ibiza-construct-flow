@@ -6650,6 +6650,36 @@ export type Database = {
           },
         ]
       }
+      profile_views: {
+        Row: {
+          id: string
+          ip_address: unknown | null
+          professional_id: string
+          session_id: string
+          user_agent: string | null
+          viewed_at: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          id?: string
+          ip_address?: unknown | null
+          professional_id: string
+          session_id: string
+          user_agent?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          id?: string
+          ip_address?: unknown | null
+          professional_id?: string
+          session_id?: string
+          user_agent?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           active_role: string | null
@@ -9930,6 +9960,14 @@ export type Database = {
       get_professional_earnings_summary: {
         Args: { p_professional_id: string }
         Returns: Json
+      }
+      get_profile_view_count: {
+        Args: { p_professional_id: string }
+        Returns: number
+      }
+      get_recent_profile_views: {
+        Args: { p_professional_id: string }
+        Returns: number
       }
       get_revenue_trend: {
         Args: { p_days?: number; p_user_id: string }

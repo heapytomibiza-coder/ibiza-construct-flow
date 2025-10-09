@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star, MapPin, Award, Mail, Clock, CheckCircle, Circle } from 'lucide-react';
+import { Star, MapPin, Award, Mail, Clock, CheckCircle, Circle, Eye } from 'lucide-react';
 import { useProfessionalAvailability } from '@/hooks/useProfessionalAvailability';
 
 interface ProfessionalData {
@@ -18,6 +18,7 @@ interface ProfessionalData {
   workingHours: string;
   avatarUrl?: string;
   verificationStatus?: string;
+  viewCount?: number;
 }
 
 interface ProfessionalProfileHeaderProps {
@@ -103,6 +104,12 @@ export const ProfessionalProfileHeader = ({
               <CheckCircle className="h-4 w-4" />
               <span>{professional.completedJobs}+ jobs completed</span>
             </div>
+            {professional.viewCount !== undefined && professional.viewCount > 0 && (
+              <div className="flex items-center gap-1 text-muted-foreground">
+                <Eye className="h-4 w-4" />
+                <span>{professional.viewCount.toLocaleString()} profile views</span>
+              </div>
+            )}
           </div>
           
           {professional.certifications && professional.certifications.length > 0 && (
