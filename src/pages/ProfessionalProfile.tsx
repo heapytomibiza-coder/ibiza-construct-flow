@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
 import { ProfessionalAboutSection } from '@/components/professionals/ProfessionalAboutSection';
-import { ProfessionalServicesList } from '@/components/professionals/ProfessionalServicesList';
+import { ServicesShowcase } from '@/components/professionals/ServicesShowcase';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
 import { ReviewsSection } from '@/components/reviews/ReviewsSection';
 import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
@@ -191,9 +191,9 @@ export default function ProfessionalProfile() {
             primaryTrade={profile.primary_trade}
           />
 
-          {/* Services List */}
+          {/* Services Showcase Section */}
           {profile.services.length > 0 && (
-            <ProfessionalServicesList
+            <ServicesShowcase
               services={profile.services as any}
               onRequestQuote={handleRequestQuote}
             />
