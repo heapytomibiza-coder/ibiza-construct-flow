@@ -16,48 +16,37 @@ export const DiscoveryTabs = ({ activeMode, onModeChange, className }: Discovery
   const { t } = useTranslation('services');
 
   return (
-    <div className={cn("flex justify-center", className)}>
-      <Tabs value={activeMode} onValueChange={(value) => onModeChange(value as DiscoveryMode)}>
-        <TabsList className="grid w-full grid-cols-3 max-w-2xl bg-background border border-border p-1">
-          <TabsTrigger 
-            value="services" 
-            className="flex flex-col items-start gap-0.5 sm:gap-1 h-auto py-2 sm:py-3 px-2 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <Wrench className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="font-semibold text-xs sm:text-sm">{t('discovery.services.title', 'Browse Services')}</span>
-            </div>
-            <span className="text-[10px] sm:text-xs text-muted-foreground font-normal hidden xs:block">
-              {t('discovery.services.subtitle', 'Know your job? Find specific services')}
-            </span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="professionals"
-            className="flex flex-col items-start gap-0.5 sm:gap-1 h-auto py-2 sm:py-3 px-2 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="font-semibold text-xs sm:text-sm">{t('discovery.professionals.title', 'Browse Professionals')}</span>
-            </div>
-            <span className="text-[10px] sm:text-xs text-muted-foreground font-normal hidden xs:block">
-              {t('discovery.professionals.subtitle', 'Explore by trade or expertise')}
-            </span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="both"
-            className="flex flex-col items-start gap-0.5 sm:gap-1 h-auto py-2 sm:py-3 px-2 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <Grid3X3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="font-semibold text-xs sm:text-sm hidden xs:inline">Both</span>
-              <span className="font-semibold text-xs sm:text-sm xs:hidden">All</span>
-            </div>
-            <span className="text-[10px] sm:text-xs text-muted-foreground font-normal hidden xs:block">
-              See everything
-            </span>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+    <div className={cn("sticky top-16 z-30 bg-background/95 backdrop-blur-md py-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:static sm:bg-transparent sm:backdrop-blur-none border-b sm:border-0", className)}>
+      <div className="flex justify-center">
+        <Tabs value={activeMode} onValueChange={(value) => onModeChange(value as DiscoveryMode)}>
+          <TabsList className="grid w-full grid-cols-2 max-w-md bg-background border border-border p-1 shadow-sm">
+            <TabsTrigger 
+              value="services" 
+              className="flex flex-col items-center justify-center gap-1 h-auto py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+            >
+              <div className="flex items-center gap-2">
+                <Wrench className="w-4 h-4" />
+                <span className="font-semibold text-sm">{t('discovery.services.title', 'Services')}</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground data-[state=active]:text-primary-foreground/80 font-normal hidden sm:block">
+                {t('discovery.services.subtitle', 'Specific jobs')}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="professionals"
+              className="flex flex-col items-center justify-center gap-1 h-auto py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+            >
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                <span className="font-semibold text-sm">{t('discovery.professionals.title', 'Pros')}</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground data-[state=active]:text-primary-foreground/80 font-normal hidden sm:block">
+                {t('discovery.professionals.subtitle', 'By trade')}
+              </span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
     </div>
   );
 };
