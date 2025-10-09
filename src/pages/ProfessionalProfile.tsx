@@ -41,6 +41,10 @@ import { ProfileSkeleton } from '@/components/professionals/ProfileSkeleton';
 import { ProfileError } from '@/components/professionals/ProfileError';
 import { PrintView } from '@/components/professionals/PrintView';
 import { AccessibilityToolbar } from '@/components/professionals/AccessibilityToolbar';
+import { ComparisonButton } from '@/components/professionals/ComparisonButton';
+import { ReferralCard } from '@/components/professionals/ReferralCard';
+import { PerformanceScore } from '@/components/professionals/PerformanceScore';
+import { LiveActivityFeed } from '@/components/professionals/LiveActivityFeed';
 import { motion } from 'framer-motion';
 import { useProfileAnalytics } from '@/hooks/useProfileAnalytics';
 
@@ -328,6 +332,16 @@ export default function ProfessionalProfile() {
               professionalName={profile.display_name}
               professionalId={professionalId!}
             />
+            <ComparisonButton
+              professionalId={professionalId!}
+              professionalName={profile.display_name}
+              professionalData={{
+                rating: profile.stats.average_rating,
+                reviewCount: profile.stats.total_reviews,
+                completedJobs: profile.stats.completed_bookings,
+                responseTime: `${profile.response_time_hours}h`
+              }}
+            />
             <PrintView professionalName={profile.display_name} />
           </motion.div>
 
@@ -343,6 +357,24 @@ export default function ProfessionalProfile() {
               repeatClientRate={85}
               projectsThisMonth={Math.floor(profile.stats.completed_bookings / 12) || 0}
             />
+          </motion.div>
+
+          {/* Performance Score & Live Activity - Two Column Layout */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          >
+            <PerformanceScore
+              rating={profile.stats.average_rating}
+              totalReviews={profile.stats.total_reviews}
+              completedJobs={profile.stats.completed_bookings}
+              onTimeRate={92}
+              responseTime={profile.response_time_hours}
+              repeatClientRate={85}
+            />
+            <LiveActivityFeed professionalName={profile.display_name} />
           </motion.div>
 
           {/* Trust & Performance Metrics */}
@@ -574,6 +606,18 @@ export default function ProfessionalProfile() {
                 console.log('Contact form submitted:', data);
                 handleContact();
               }}
+            />
+          </motion.div>
+
+          {/* Referral Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.63 }}
+          >
+            <ReferralCard
+              professionalId={professionalId!}
+              professionalName={profile.display_name}
             />
           </motion.div>
 

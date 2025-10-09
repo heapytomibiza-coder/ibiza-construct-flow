@@ -29,3 +29,7 @@ export { ProfileSkeleton } from './ProfileSkeleton';
 export { ProfileError } from './ProfileError';
 export { PrintView } from './PrintView';
 export { AccessibilityToolbar } from './AccessibilityToolbar';
+export { ComparisonButton } from './ComparisonButton';
+export { ReferralCard } from './ReferralCard';
+export { PerformanceScore } from './PerformanceScore';
+export { LiveActivityFeed } from './LiveActivityFeed';
