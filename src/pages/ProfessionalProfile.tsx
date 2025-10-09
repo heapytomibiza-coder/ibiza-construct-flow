@@ -11,7 +11,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
 import { ProfessionalAboutSection } from '@/components/professionals/ProfessionalAboutSection';
 import { CompactServiceCards } from '@/components/professionals/CompactServiceCards';
-import { EmptyServiceState } from '@/components/professionals/EmptyServiceState';
 import { EmptyPortfolioState } from '@/components/professionals/EmptyPortfolioState';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
 import { BeforeAfterGallery } from '@/components/professionals/BeforeAfterGallery';
@@ -341,17 +340,38 @@ export default function ProfessionalProfile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            {profile.services.length > 0 ? (
-              <CompactServiceCards
-                services={profile.services as any}
-                onRequestQuote={handleRequestQuote}
-              />
-            ) : (
-              <EmptyServiceState 
-                professionalId={professionalId!}
-                isOwner={user?.id === professionalId}
-              />
-            )}
+            <CompactServiceCards
+              services={profile.services.length > 0 ? profile.services as any : [
+                {
+                  id: 'example-1',
+                  micro_service_id: 'plumbing',
+                  service_name: 'Emergency Plumbing Repair',
+                  description: 'Fast response for urgent plumbing issues including leaks, blocked drains, and pipe repairs. Available 24/7 for emergencies.',
+                  pricing_structure: { price_range: { min: 80, max: 250 } },
+                  estimated_duration: '1-3 hours',
+                  is_active: true
+                },
+                {
+                  id: 'example-2',
+                  micro_service_id: 'bathroom-installation',
+                  service_name: 'Bathroom Installation',
+                  description: 'Complete bathroom fitting service including toilets, sinks, showers, and bathtubs. Quality workmanship guaranteed.',
+                  pricing_structure: { base_price: 500 },
+                  estimated_duration: '2-5 days',
+                  is_active: true
+                },
+                {
+                  id: 'example-3',
+                  micro_service_id: 'heating-service',
+                  service_name: 'Heating System Service',
+                  description: 'Annual boiler service, radiator maintenance, and heating system diagnostics. Keep your system running efficiently.',
+                  pricing_structure: { base_price: 120 },
+                  estimated_duration: '2-4 hours',
+                  is_active: true
+                }
+              ]}
+              onRequestQuote={handleRequestQuote}
+            />
           </motion.div>
 
           {/* Portfolio Gallery - Always Visible */}
