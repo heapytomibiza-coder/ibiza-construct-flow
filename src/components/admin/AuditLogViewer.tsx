@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AdminDrawer } from "@/components/admin/shared/AdminDrawer";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Download, Filter, Search, Shield, UserCog } from "lucide-react";
+import { Calendar as CalendarIcon, Download, Filter, Search, UserCog, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AuditLogEntry {
@@ -31,6 +32,8 @@ export function AuditLogViewer() {
   const [startDate, setStartDate] = useState<Date>(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data: auditLogs, isLoading, refetch } = useQuery({
     queryKey: ["admin-audit-log", entityType, adminId, startDate, endDate],
@@ -58,6 +61,11 @@ export function AuditLogViewer() {
     );
   });
 
+  const handleViewDetails = (log: AuditLogEntry) => {
+    setSelectedLog(log);
+    setDrawerOpen(true);
+  };
+
   const exportToCSV = () => {
     if (!filteredLogs) return;
 
@@ -82,22 +90,17 @@ export function AuditLogViewer() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Admin Audit Log
-            </CardTitle>
-            <CardDescription>Track all administrative actions and changes</CardDescription>
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Activity Timeline</CardTitle>
+            <Button onClick={exportToCSV} variant="outline" size="sm" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
           </div>
-          <Button onClick={exportToCSV} variant="outline" size="sm" className="gap-2">
-            <Download className="h-4 w-4" />
-            Export CSV
-          </Button>
-        </div>
-      </CardHeader>
+        </CardHeader>
       <CardContent className="space-y-4">
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -170,19 +173,19 @@ export function AuditLogViewer() {
             <div className="border rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-muted">
+                  <thead className="bg-muted/50">
                     <tr>
                       <th className="text-left p-3 font-medium">Timestamp</th>
                       <th className="text-left p-3 font-medium">Admin</th>
                       <th className="text-left p-3 font-medium">Action</th>
                       <th className="text-left p-3 font-medium">Entity</th>
-                      <th className="text-left p-3 font-medium">Details</th>
+                      <th className="text-left p-3 font-medium"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {filteredLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-muted/50">
-                        <td className="p-3 text-xs text-muted-foreground">
+                      <tr key={log.id} className="hover:bg-muted/50 transition-colors">
+                        <td className="p-3 text-xs text-muted-foreground whitespace-nowrap">
                           {format(new Date(log.created_at), "MMM dd, HH:mm:ss")}
                         </td>
                         <td className="p-3">
@@ -197,22 +200,25 @@ export function AuditLogViewer() {
                           <Badge variant="outline">{log.action}</Badge>
                         </td>
                         <td className="p-3 text-sm">
-                          {log.entity_type || "-"}
-                          {log.entity_id && (
-                            <span className="text-xs text-muted-foreground block truncate max-w-[200px]">
-                              {log.entity_id}
-                            </span>
-                          )}
+                          <div className="flex flex-col">
+                            <span className="font-medium">{log.entity_type || "-"}</span>
+                            {log.entity_id && (
+                              <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                {log.entity_id}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="p-3">
-                          {log.changes && (
-                            <details className="cursor-pointer">
-                              <summary className="text-xs text-muted-foreground">View Changes</summary>
-                              <pre className="text-xs mt-1 bg-muted p-2 rounded overflow-auto max-h-32">
-                                {JSON.stringify(log.changes, null, 2)}
-                              </pre>
-                            </details>
-                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewDetails(log)}
+                            className="gap-2"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -224,5 +230,75 @@ export function AuditLogViewer() {
         )}
       </CardContent>
     </Card>
+
+    <AdminDrawer
+      open={drawerOpen}
+      onOpenChange={setDrawerOpen}
+      title="Audit Entry Details"
+      description={selectedLog ? `Action: ${selectedLog.action}` : ""}
+    >
+      {selectedLog && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Timestamp</p>
+              <p className="text-sm mt-1">{format(new Date(selectedLog.created_at), "PPpp")}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Admin</p>
+              <p className="text-sm mt-1">{selectedLog.admin_email}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Action</p>
+              <p className="text-sm mt-1">
+                <Badge>{selectedLog.action}</Badge>
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Entity Type</p>
+              <p className="text-sm mt-1">{selectedLog.entity_type || "-"}</p>
+            </div>
+          </div>
+
+          {selectedLog.entity_id && (
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Entity ID</p>
+              <p className="text-sm mt-1 font-mono bg-muted p-2 rounded break-all">
+                {selectedLog.entity_id}
+              </p>
+            </div>
+          )}
+
+          {selectedLog.impersonation_session_id && (
+            <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <UserCog className="h-4 w-4 text-warning" />
+                <p className="text-sm font-medium">Impersonation Session</p>
+              </div>
+              <p className="text-xs text-muted-foreground font-mono">
+                {selectedLog.impersonation_session_id}
+              </p>
+            </div>
+          )}
+
+          {selectedLog.ip_address && (
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">IP Address</p>
+              <p className="text-sm mt-1 font-mono">{selectedLog.ip_address}</p>
+            </div>
+          )}
+
+          {selectedLog.changes && (
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-2">Changes</p>
+              <pre className="text-xs bg-muted p-4 rounded-lg overflow-auto max-h-96 border">
+                {JSON.stringify(selectedLog.changes, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+    </AdminDrawer>
+    </>
   );
 }

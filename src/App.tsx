@@ -70,7 +70,7 @@ const ProfessionalPortfolioPage = React.lazy(() => import("./pages/ProfessionalP
 const AdminVerificationsPage = React.lazy(() => import("./pages/AdminVerificationsPage"));
 const DisputeAnalyticsPage = React.lazy(() => import("./pages/admin/DisputeAnalyticsPage"));
 const AdminDisputeDetailPage = React.lazy(() => import("./pages/admin/AdminDisputeDetailPage"));
-const AdminAuditLogPage = React.lazy(() => import("./pages/admin/AdminAuditLogPage"));
+const AuditLog = React.lazy(() => import("./pages/admin/AuditLog"));
 const AdminHelpdeskPage = React.lazy(() => import("./pages/admin/AdminHelpdeskPage"));
 const AdminHelpdeskDetailPage = React.lazy(() => import("./pages/admin/AdminHelpdeskDetailPage"));
 const AdminReviewModerationPage = React.lazy(() => import("./pages/admin/AdminReviewModerationPage"));
@@ -322,9 +322,9 @@ function AppContent() {
               <AdminDisputeDetailPage />
             </RouteGuard>
           } />
-          <Route path="/admin/audit" element={
+          <Route path="/admin/audit-log" element={
             <RouteGuard requiredRole="admin">
-              <AdminAuditLogPage />
+              <AuditLog />
             </RouteGuard>
           } />
           <Route path="/admin/helpdesk" element={
