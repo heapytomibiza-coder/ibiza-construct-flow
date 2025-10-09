@@ -140,7 +140,7 @@ export function initRoleRealtime() {
  */
 export function getDashboardRoute(role: Role): string {
   const routes: Record<Role, string> = {
-    admin: '/dashboard/admin',
+    admin: '/admin',
     professional: '/dashboard/pro',
     client: '/dashboard/client'
   };
@@ -183,7 +183,7 @@ export async function getInitialDashboardRoute(
 
   // 3) Admin takes precedence if active
   if (hasRole('admin') && profile.active_role === 'admin') {
-    return { path: '/dashboard/admin', reason: 'admin_dashboard' };
+    return { path: '/admin', reason: 'admin_dashboard' };
   }
 
   // 4) Professional with onboarding check

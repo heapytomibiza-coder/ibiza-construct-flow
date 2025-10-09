@@ -32,7 +32,7 @@ export const getSettingsRoute = (
  */
 export const getDashboardForRole = (role: Role): string => {
   const routes: Record<Role, string> = {
-    admin: '/dashboard/admin',
+    admin: '/admin',
     professional: '/dashboard/pro',
     client: '/dashboard/client',
   };
