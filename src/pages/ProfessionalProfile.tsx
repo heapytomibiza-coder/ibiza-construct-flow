@@ -27,6 +27,7 @@ import { SocialProofBanner } from '@/components/professionals/SocialProofBanner'
 import { ProfileActions } from '@/components/professionals/ProfileActions';
 import { AchievementShowcase } from '@/components/professionals/AchievementShowcase';
 import { ScrollProgress } from '@/components/professionals/ScrollProgress';
+import { ProfessionalSEO } from '@/components/professionals/ProfessionalSEO';
 import { motion } from 'framer-motion';
 
 export default function ProfessionalProfile() {
@@ -226,6 +227,17 @@ export default function ProfessionalProfile() {
 
   return (
     <div className="min-h-screen bg-background">
+      <ProfessionalSEO
+        professionalName={profile.display_name}
+        professionalId={professionalId!}
+        bio={profile.bio}
+        tagline={profile.tagline}
+        rating={profile.stats.average_rating}
+        totalReviews={profile.stats.total_reviews}
+        primaryTrade={profile.primary_trade}
+        location={(profile.zones as string[])?.[0]}
+        imageUrl={profile.avatar_url}
+      />
       <ScrollProgress />
       <Header />
       

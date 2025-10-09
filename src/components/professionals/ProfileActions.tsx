@@ -40,16 +40,17 @@ export const ProfileActions = ({ professionalName, professionalId }: ProfileActi
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button
           variant="outline"
           size="sm"
           onClick={handleShare}
-          className="gap-2"
+          className="gap-2 touch-target"
         >
           <Share2 className="w-4 h-4" />
-          Share Profile
+          <span className="hidden sm:inline">Share Profile</span>
+          <span className="sm:hidden">Share</span>
         </Button>
       </motion.div>
 
@@ -58,7 +59,7 @@ export const ProfileActions = ({ professionalName, professionalId }: ProfileActi
           variant="outline"
           size="sm"
           onClick={handleSave}
-          className={`gap-2 ${isSaved ? 'bg-primary/10 border-primary text-primary' : ''}`}
+          className={`gap-2 touch-target ${isSaved ? 'bg-primary/10 border-primary text-primary' : ''}`}
         >
           {isSaved ? (
             <Heart className="w-4 h-4 fill-current" />
@@ -74,10 +75,11 @@ export const ProfileActions = ({ professionalName, professionalId }: ProfileActi
           variant="outline"
           size="sm"
           onClick={handleRecommend}
-          className="gap-2"
+          className="gap-2 touch-target"
         >
           <Mail className="w-4 h-4" />
-          Recommend
+          <span className="hidden sm:inline">Recommend</span>
+          <span className="sm:hidden">Share</span>
         </Button>
       </motion.div>
     </div>

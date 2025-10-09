@@ -42,8 +42,8 @@ export const SocialProofBanner = ({
   ];
 
   return (
-    <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background rounded-xl p-6 border border-primary/20">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background rounded-xl p-4 sm:p-6 border border-primary/20">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -55,19 +55,19 @@ export const SocialProofBanner = ({
               className="text-center"
             >
               <div className="flex justify-center mb-2">
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-br from-${stat.color.split('-')[1]}-100 to-${stat.color.split('-')[1]}-50 flex items-center justify-center`}>
-                  <Icon className={`w-6 h-6 ${stat.color}`} />
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-${stat.color.split('-')[1]}-100 to-${stat.color.split('-')[1]}-50 flex items-center justify-center`}>
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.color}`} />
                 </div>
               </div>
               <motion.p 
-                className="text-3xl font-bold mb-1"
+                className="text-2xl sm:text-3xl font-bold mb-1"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: index * 0.1 + 0.2, type: 'spring', stiffness: 200 }}
               >
                 {stat.value}
               </motion.p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
             </motion.div>
           );
         })}

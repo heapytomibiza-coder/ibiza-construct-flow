@@ -14,3 +14,4 @@ export { SocialProofBanner } from './SocialProofBanner';
 export { ProfileActions } from './ProfileActions';
 export { AchievementShowcase } from './AchievementShowcase';
 export { ScrollProgress } from './ScrollProgress';
+export { ProfessionalSEO } from './ProfessionalSEO';

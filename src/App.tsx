@@ -16,6 +16,7 @@ import { BundleAnalyzer, preloadRoute } from "./components/performance/BundleOpt
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initRealtime } from "./lib/realtimeSync";
 import { ImpersonationBanner } from "./components/admin/ImpersonationBanner";
+import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
 
@@ -501,8 +502,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AppContent />
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
