@@ -12,10 +12,11 @@ import { ProfessionalProfileHeader } from '@/components/services/ProfessionalPro
 import { ProfessionalAboutSection } from '@/components/professionals/ProfessionalAboutSection';
 import { ServicesShowcase } from '@/components/professionals/ServicesShowcase';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
-import { PortfolioGallery } from '@/components/professionals/PortfolioGallery';
 import { BeforeAfterGallery } from '@/components/professionals/BeforeAfterGallery';
 import { ReviewsSection } from '@/components/reviews/ReviewsSection';
 import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
+import { ProfessionalHeroSection } from '@/components/professionals/ProfessionalHeroSection';
+import { PortfolioMasonry } from '@/components/professionals/PortfolioMasonry';
 
 export default function ProfessionalProfile() {
   const { id: professionalId } = useParams();
@@ -36,10 +37,10 @@ export default function ProfessionalProfile() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ['professional', professionalId],
     queryFn: async () => {
-      // Fetch professional profile
+      // Fetch professional profile with new fields
       const { data: proProfile, error: proError } = await supabase
         .from('professional_profiles')
-        .select('*')
+        .select('*, cover_image_url, tagline, video_intro_url, work_philosophy, response_guarantee_hours, instant_booking_enabled')
         .eq('user_id', professionalId)
         .single();
 
@@ -217,7 +218,19 @@ export default function ProfessionalProfile() {
       <Header />
       
       <main className="container pt-32 pb-8 px-4">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-5xl mx-auto space-y-6">
+          {/* Hero Section */}
+          <ProfessionalHeroSection
+            coverImageUrl={profile.cover_image_url}
+            name={profile.display_name}
+            tagline={profile.tagline}
+            rating={profile.stats.average_rating}
+            responseGuaranteeHours={profile.response_guarantee_hours || 24}
+            isTopRated={profile.stats.average_rating >= 4.8 && profile.stats.total_reviews >= 50}
+            isRisingStar={profile.stats.total_reviews >= 10 && profile.stats.total_reviews < 50 && profile.stats.average_rating >= 4.5}
+            onRequestQuote={handleRequestQuote}
+          />
+
           {/* Enhanced Profile Header with Real-time Availability */}
           <ProfessionalProfileHeader
             professional={{
@@ -247,6 +260,7 @@ export default function ProfessionalProfile() {
             skills={profile.skills as string[]}
             coverageArea={profile.zones as string[]}
             primaryTrade={profile.primary_trade}
+            workPhilosophy={profile.work_philosophy}
           />
 
           {/* Services Showcase Section */}
@@ -257,8 +271,18 @@ export default function ProfessionalProfile() {
             />
           )}
 
-          {/* Portfolio Gallery - always show, component handles empty state */}
-          <PortfolioGallery images={profile.new_portfolio_images as any || []} />
+          {/* Portfolio Masonry Gallery */}
+          {profile.new_portfolio_images && profile.new_portfolio_images.length > 0 && (
+            <PortfolioMasonry 
+              images={profile.new_portfolio_images.map((img: any) => ({
+                url: img.image_url,
+                title: img.title,
+                category: img.category,
+                description: img.description
+              }))} 
+              title="Portfolio Showcase"
+            />
+          )}
 
           {/* Before & After Gallery from Completed Jobs */}
           {profile.job_photos && profile.job_photos.length > 0 && (

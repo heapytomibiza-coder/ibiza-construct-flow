@@ -9,6 +9,7 @@ interface ProfessionalAboutSectionProps {
   skills?: string[];
   coverageArea?: string[];
   primaryTrade?: string;
+  workPhilosophy?: string;
 }
 
 export const ProfessionalAboutSection = ({
@@ -17,7 +18,8 @@ export const ProfessionalAboutSection = ({
   certifications,
   skills,
   coverageArea,
-  primaryTrade
+  primaryTrade,
+  workPhilosophy
 }: ProfessionalAboutSectionProps) => {
   return (
     <Card>
@@ -29,6 +31,14 @@ export const ProfessionalAboutSection = ({
         {bio && (
           <div>
             <p className="text-muted-foreground leading-relaxed">{bio}</p>
+          </div>
+        )}
+
+        {/* Work Philosophy */}
+        {workPhilosophy && (
+          <div className="bg-gradient-to-br from-primary/5 to-primary/10 p-4 rounded-lg border border-primary/20">
+            <h4 className="font-semibold mb-2 text-primary">Work Philosophy</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed italic">{workPhilosophy}</p>
           </div>
         )}
 

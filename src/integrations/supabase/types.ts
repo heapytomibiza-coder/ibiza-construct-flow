@@ -5939,6 +5939,50 @@ export type Database = {
           },
         ]
       }
+      professional_badges: {
+        Row: {
+          badge_icon: string | null
+          badge_name: string
+          badge_type: string
+          created_at: string | null
+          earned_at: string | null
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          professional_user_id: string
+        }
+        Insert: {
+          badge_icon?: string | null
+          badge_name: string
+          badge_type: string
+          created_at?: string | null
+          earned_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          professional_user_id: string
+        }
+        Update: {
+          badge_icon?: string | null
+          badge_name?: string
+          badge_type?: string
+          created_at?: string | null
+          earned_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          professional_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_badges_professional_user_id_fkey"
+            columns: ["professional_user_id"]
+            isOneToOne: false
+            referencedRelation: "professional_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       professional_deals: {
         Row: {
           created_at: string
@@ -6147,21 +6191,28 @@ export type Database = {
           bank_details: Json | null
           bio: string | null
           business_name: string | null
+          cover_image_url: string | null
           created_at: string | null
           experience_years: number | null
           hourly_rate: number | null
+          instant_booking_enabled: boolean | null
           insurance_details: Json | null
           is_active: boolean | null
           languages: Json | null
           portfolio_images: Json | null
           primary_trade: string | null
+          response_guarantee_hours: number | null
           response_time_hours: number | null
           skills: Json | null
           subscription_tier: string | null
+          tagline: string | null
           updated_at: string | null
           user_id: string
           vat_number: string | null
           verification_status: string | null
+          video_intro_url: string | null
+          work_philosophy: string | null
+          work_process_steps: Json | null
           zones: Json | null
         }
         Insert: {
@@ -6169,21 +6220,28 @@ export type Database = {
           bank_details?: Json | null
           bio?: string | null
           business_name?: string | null
+          cover_image_url?: string | null
           created_at?: string | null
           experience_years?: number | null
           hourly_rate?: number | null
+          instant_booking_enabled?: boolean | null
           insurance_details?: Json | null
           is_active?: boolean | null
           languages?: Json | null
           portfolio_images?: Json | null
           primary_trade?: string | null
+          response_guarantee_hours?: number | null
           response_time_hours?: number | null
           skills?: Json | null
           subscription_tier?: string | null
+          tagline?: string | null
           updated_at?: string | null
           user_id: string
           vat_number?: string | null
           verification_status?: string | null
+          video_intro_url?: string | null
+          work_philosophy?: string | null
+          work_process_steps?: Json | null
           zones?: Json | null
         }
         Update: {
@@ -6191,21 +6249,28 @@ export type Database = {
           bank_details?: Json | null
           bio?: string | null
           business_name?: string | null
+          cover_image_url?: string | null
           created_at?: string | null
           experience_years?: number | null
           hourly_rate?: number | null
+          instant_booking_enabled?: boolean | null
           insurance_details?: Json | null
           is_active?: boolean | null
           languages?: Json | null
           portfolio_images?: Json | null
           primary_trade?: string | null
+          response_guarantee_hours?: number | null
           response_time_hours?: number | null
           skills?: Json | null
           subscription_tier?: string | null
+          tagline?: string | null
           updated_at?: string | null
           user_id?: string
           vat_number?: string | null
           verification_status?: string | null
+          video_intro_url?: string | null
+          work_philosophy?: string | null
+          work_process_steps?: Json | null
           zones?: Json | null
         }
         Relationships: [
