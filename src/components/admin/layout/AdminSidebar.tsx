@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { 
   Home, Users, Briefcase, Folder, MessageSquare, 
-  AlertTriangle, Activity, FileText, Settings, Star
+  AlertTriangle, Activity, FileText, Settings
 } from 'lucide-react';
 import {
   Sidebar,
@@ -12,6 +12,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +52,9 @@ export function AdminSidebar() {
 
   return (
     <Sidebar className={collapsed ? 'w-14' : 'w-64'} collapsible="icon">
+      <div className="p-2">
+        <SidebarTrigger className="w-full" />
+      </div>
       <SidebarContent>
         {navigationItems.map((group) => (
           <SidebarGroup key={group.group}>
