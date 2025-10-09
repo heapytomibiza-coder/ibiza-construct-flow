@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Home, Search, User, Bell, Settings } from 'lucide-react';
+import { Menu, X, Home, Search, User, Bell, Settings, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSafeArea } from '@/components/mobile/SafeAreaProvider';
 import { cn } from '@/lib/utils';
 import AuthModal from '@/components/auth/AuthModal';
 import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
+import { useTranslation } from 'react-i18next';
 
 interface MobileOptimizedHeaderProps {
   jobWizardEnabled?: boolean;
@@ -29,6 +31,7 @@ export const MobileOptimizedHeader = ({
   const isMobile = useIsMobile();
   const { insets } = useSafeArea();
   const navigate = useNavigate();
+  const { t } = useTranslation('navigation');
 
   const handleSignOut = async () => {
     await signOut();
@@ -172,47 +175,52 @@ export const MobileOptimizedHeader = ({
 
               {/* Navigation Links */}
               <div className="space-y-1">
-                <Link 
-                  to="/discovery" 
-                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Discovery
-                </Link>
+                {/* Discover - Collapsible with nested Services & Professionals */}
+                <Accordion type="single" collapsible className="border-none">
+                  <AccordionItem value="discover" className="border-none">
+                    <AccordionTrigger className="px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted hover:no-underline">
+                      {t('discovery')}
+                    </AccordionTrigger>
+                    <AccordionContent className="pl-3 space-y-1 pb-0">
+                      <Link 
+                        to="/services" 
+                        className="block px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {t('services')}
+                      </Link>
+                      <Link 
+                        to="/professionals" 
+                        className="block px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {t('professionals')}
+                      </Link>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+
+                {/* Top-level links */}
                 <Link 
                   to="/post" 
                   className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Post a Job
+                  {t('postProject')}
                 </Link>
                 <Link 
                   to="/job-board" 
                   className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Job Board
-                </Link>
-                <Link 
-                  to="/services" 
-                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Services
-                </Link>
-                <Link 
-                  to="/professionals" 
-                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Professionals
+                  {t('jobBoard')}
                 </Link>
                 <Link 
                   to="/how-it-works" 
                   className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  How It Works
+                  {t('howItWorks')}
                 </Link>
               </div>
 
