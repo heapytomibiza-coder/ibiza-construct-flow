@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { 
   Home, Users, Briefcase, Folder, MessageSquare, 
-  AlertTriangle, Activity, FileText, Settings
+  AlertTriangle, Activity, FileText, Settings, BarChart3
 } from 'lucide-react';
 import {
   Sidebar,
@@ -23,6 +23,7 @@ const navigationItems = [
     group: 'Overview',
     items: [
       { id: 'home', label: 'Home', icon: Home, path: '/admin/home', description: 'Dashboard & health' },
+      { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/admin/analytics', description: 'Reports & insights' },
     ],
   },
   {

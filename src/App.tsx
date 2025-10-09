@@ -35,6 +35,7 @@ const UnifiedClientDashboard = React.lazy(() => import("./components/dashboards/
 const UnifiedProfessionalDashboard = React.lazy(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
 const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
 const AdminHome = React.lazy(() => import("./pages/admin/AdminHome"));
+const Analytics = React.lazy(() => import("./pages/admin/Analytics"));
 const ProfilesQueue = React.lazy(() => import("./pages/admin/ProfilesQueue"));
 const JobsQueue = React.lazy(() => import("./pages/admin/JobsQueue"));
 const ReviewsQueue = React.lazy(() => import("./pages/admin/ReviewsQueue"));
@@ -249,6 +250,11 @@ function AppContent() {
           <Route path="/admin/home" element={
             <RouteGuard requiredRole="admin">
               <AdminHome />
+            </RouteGuard>
+          } />
+          <Route path="/admin/analytics" element={
+            <RouteGuard requiredRole="admin">
+              <Analytics />
             </RouteGuard>
           } />
           <Route path="/admin/profiles" element={
