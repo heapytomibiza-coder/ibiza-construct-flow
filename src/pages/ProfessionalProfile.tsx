@@ -21,7 +21,6 @@ import { PortfolioMasonry } from '@/components/professionals/PortfolioMasonry';
 import { TrustMetricsCard } from '@/components/professionals/TrustMetricsCard';
 import { WorkProcessTimeline } from '@/components/professionals/WorkProcessTimeline';
 import { QuickStatsGrid } from '@/components/professionals/QuickStatsGrid';
-import { FloatingCTABar } from '@/components/professionals/FloatingCTABar';
 import { AvailabilityPreview } from '@/components/professionals/AvailabilityPreview';
 import { SocialProofBanner } from '@/components/professionals/SocialProofBanner';
 import { ProfileActions } from '@/components/professionals/ProfileActions';
@@ -259,131 +258,108 @@ export default function ProfessionalProfile() {
       <Header />
       
       <main className="container pt-32 pb-8 px-4">
-        <div className="max-w-5xl mx-auto space-y-6">
-          {/* Hero Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <ProfessionalHeroSection
-              coverImageUrl={profile.cover_image_url}
-              name={profile.display_name}
-              tagline={profile.tagline}
-              rating={profile.stats.average_rating}
-              responseGuaranteeHours={profile.response_guarantee_hours || 24}
-              isTopRated={profile.stats.average_rating >= 4.8 && profile.stats.total_reviews >= 50}
-              isRisingStar={profile.stats.total_reviews >= 10 && profile.stats.total_reviews < 50 && profile.stats.average_rating >= 4.5}
-              onRequestQuote={handleRequestQuote}
-            />
-          </motion.div>
+        <div className="max-w-7xl mx-auto">
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
+            {/* Main Content - Left Side */}
+            <div className="space-y-6">
+              {/* Hero Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <ProfessionalHeroSection
+                  coverImageUrl={profile.cover_image_url}
+                  name={profile.display_name}
+                  tagline={profile.tagline}
+                  rating={profile.stats.average_rating}
+                  responseGuaranteeHours={profile.response_guarantee_hours || 24}
+                  isTopRated={profile.stats.average_rating >= 4.8 && profile.stats.total_reviews >= 50}
+                  isRisingStar={profile.stats.total_reviews >= 10 && profile.stats.total_reviews < 50 && profile.stats.average_rating >= 4.5}
+                  onRequestQuote={handleRequestQuote}
+                />
+              </motion.div>
 
-          {/* Social Proof Banner */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <SocialProofBanner
-              totalClients={profile.stats.completed_bookings}
-              satisfactionRate={95}
-              yearsInBusiness={profile.experience_years}
-              responseRate={98}
-            />
-          </motion.div>
+              {/* Social Proof Banner */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <SocialProofBanner
+                  totalClients={profile.stats.completed_bookings}
+                  satisfactionRate={95}
+                  yearsInBusiness={profile.experience_years}
+                  responseRate={98}
+                />
+              </motion.div>
 
-          {/* Verification Badges - Inline */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="flex justify-center -mt-2 mb-2"
-          >
-            <VerificationBadges
-              isVerified={profile.verification_status === 'verified'}
-              hasInsurance={true}
-              isBackgroundChecked={true}
-              isLicensed={true}
-            />
-          </motion.div>
+              {/* Verification Badges - Inline */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="flex justify-center -mt-2 mb-2"
+              >
+                <VerificationBadges
+                  isVerified={profile.verification_status === 'verified'}
+                  hasInsurance={true}
+                  isBackgroundChecked={true}
+                  isLicensed={true}
+                />
+              </motion.div>
 
-          {/* Enhanced Profile Header with Real-time Availability */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <ProfessionalProfileHeader
-              professional={{
-                id: professionalId!,
-                name: profile.display_name,
-                rating: profile.stats.average_rating,
-                reviewCount: profile.stats.total_reviews,
-                completedJobs: profile.stats.completed_bookings,
-                responseTime: `${profile.response_time_hours}h`,
-                location: (profile.zones as string[])?.[0] || 'Ibiza',
-                certifications: [],
-                about: profile.bio || '',
-                workingHours: '9:00 AM - 6:00 PM',
-                avatarUrl: profile.avatar_url,
-                verificationStatus: profile.verification_status,
-                viewCount: profile.view_count
-              }}
-              onMessage={handleContact}
-              onRequestQuote={handleRequestQuote}
-            />
-          </motion.div>
+              {/* Compact Services Section - Always Visible */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <CompactServiceCards
+                  services={profile.services.length > 0 ? profile.services as any : [
+                    {
+                      id: 'example-1',
+                      micro_service_id: 'plumbing',
+                      service_name: 'Emergency Plumbing Repair',
+                      description: 'Fast response for urgent plumbing issues including leaks, blocked drains, and pipe repairs. Available 24/7 for emergencies.',
+                      pricing_structure: { price_range: { min: 80, max: 250 } },
+                      estimated_duration: '1-3 hours',
+                      is_active: true,
+                      image_url: 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=800&h=600&fit=crop'
+                    },
+                    {
+                      id: 'example-2',
+                      micro_service_id: 'bathroom-installation',
+                      service_name: 'Bathroom Installation',
+                      description: 'Complete bathroom fitting service including toilets, sinks, showers, and bathtubs. Quality workmanship guaranteed.',
+                      pricing_structure: { base_price: 500 },
+                      estimated_duration: '2-5 days',
+                      is_active: true,
+                      image_url: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&h=600&fit=crop'
+                    },
+                    {
+                      id: 'example-3',
+                      micro_service_id: 'heating-service',
+                      service_name: 'Heating System Service',
+                      description: 'Annual boiler service, radiator maintenance, and heating system diagnostics. Keep your system running efficiently.',
+                      pricing_structure: { base_price: 120 },
+                      estimated_duration: '2-4 hours',
+                      is_active: true,
+                      image_url: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=600&fit=crop'
+                    }
+                  ]}
+                  onRequestQuote={handleRequestQuote}
+                />
+              </motion.div>
 
-          {/* Compact Services Section - Always Visible */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <CompactServiceCards
-              services={profile.services.length > 0 ? profile.services as any : [
-                {
-                  id: 'example-1',
-                  micro_service_id: 'plumbing',
-                  service_name: 'Emergency Plumbing Repair',
-                  description: 'Fast response for urgent plumbing issues including leaks, blocked drains, and pipe repairs. Available 24/7 for emergencies.',
-                  pricing_structure: { price_range: { min: 80, max: 250 } },
-                  estimated_duration: '1-3 hours',
-                  is_active: true,
-                  image_url: 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=800&h=600&fit=crop'
-                },
-                {
-                  id: 'example-2',
-                  micro_service_id: 'bathroom-installation',
-                  service_name: 'Bathroom Installation',
-                  description: 'Complete bathroom fitting service including toilets, sinks, showers, and bathtubs. Quality workmanship guaranteed.',
-                  pricing_structure: { base_price: 500 },
-                  estimated_duration: '2-5 days',
-                  is_active: true,
-                  image_url: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&h=600&fit=crop'
-                },
-                {
-                  id: 'example-3',
-                  micro_service_id: 'heating-service',
-                  service_name: 'Heating System Service',
-                  description: 'Annual boiler service, radiator maintenance, and heating system diagnostics. Keep your system running efficiently.',
-                  pricing_structure: { base_price: 120 },
-                  estimated_duration: '2-4 hours',
-                  is_active: true,
-                  image_url: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=600&fit=crop'
-                }
-              ]}
-              onRequestQuote={handleRequestQuote}
-            />
-          </motion.div>
-
-          {/* Portfolio Gallery - Always Visible */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-muted/30 -mx-4 px-4 py-8 rounded-xl"
-          >
+              {/* Portfolio Gallery - Always Visible */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="bg-muted/30 -mx-4 px-4 py-8 rounded-xl"
+              >
             {profile.new_portfolio_images && profile.new_portfolio_images.length > 0 ? (
               <div className="space-y-4">
                 <PortfolioFilter
@@ -410,161 +386,187 @@ export default function ProfessionalProfile() {
                 isOwner={user?.id === professionalId}
               />
             )}
-          </motion.div>
+              </motion.div>
 
-          {/* About & Process - Side by Side */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="grid grid-cols-1 lg:grid-cols-5 gap-6"
-          >
-            <div className="lg:col-span-3">
-              <ProfessionalAboutSection
-                bio={profile.bio}
-                yearsOfExperience={profile.experience_years}
-                certifications={[]}
-                skills={profile.skills as string[]}
-                coverageArea={profile.zones as string[]}
-                primaryTrade={profile.primary_trade}
-                workPhilosophy={profile.work_philosophy}
-              />
+              {/* About & Process - Side by Side */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="grid grid-cols-1 lg:grid-cols-5 gap-6"
+              >
+                <div className="lg:col-span-3">
+                  <ProfessionalAboutSection
+                    bio={profile.bio}
+                    yearsOfExperience={profile.experience_years}
+                    certifications={[]}
+                    skills={profile.skills as string[]}
+                    coverageArea={profile.zones as string[]}
+                    primaryTrade={profile.primary_trade}
+                    workPhilosophy={profile.work_philosophy}
+                  />
+                </div>
+                <div className="lg:col-span-2">
+                  <WorkProcessTimeline />
+                </div>
+              </motion.div>
+
+              {/* Performance Dashboard - Full Width */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+              >
+                <div className="lg:col-span-2">
+                  <PerformanceScore
+                    rating={profile.stats.average_rating}
+                    totalReviews={profile.stats.total_reviews}
+                    completedJobs={profile.stats.completed_bookings}
+                    onTimeRate={92}
+                    responseTime={profile.response_time_hours}
+                    repeatClientRate={85}
+                  />
+                </div>
+                <LiveActivityFeed professionalName={profile.display_name} />
+              </motion.div>
+
+              {/* Profile Actions - Compact Row */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.65 }}
+                className="flex justify-center flex-wrap gap-2"
+              >
+                <ProfileActions
+                  professionalName={profile.display_name}
+                  professionalId={professionalId!}
+                />
+                <ComparisonButton
+                  professionalId={professionalId!}
+                  professionalName={profile.display_name}
+                  professionalData={{
+                    rating: profile.stats.average_rating,
+                    reviewCount: profile.stats.total_reviews,
+                    completedJobs: profile.stats.completed_bookings,
+                    responseTime: `${profile.response_time_hours}h`
+                  }}
+                />
+                <PrintView professionalName={profile.display_name} />
+              </motion.div>
+
+              {/* Video Showcase */}
+              {profile.video_intro_url && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                >
+                  <VideoShowcase
+                    videoUrl={profile.video_intro_url}
+                    thumbnailUrl={profile.cover_image_url}
+                    title="Meet the Professional"
+                    description="Watch a brief introduction video"
+                  />
+                </motion.div>
+              )}
+
+              {/* Availability & Booking - Compact */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.75 }}
+              >
+                <AvailabilityPreview
+                  isAvailable={true}
+                  nextAvailableDate="Tomorrow, 10:00 AM"
+                  responseTime={`${profile.response_time_hours}h`}
+                  workingHours="Mon-Fri: 9AM - 6PM"
+                  currentWorkload="moderate"
+                  onBookConsultation={handleRequestQuote}
+                />
+              </motion.div>
+
+              {/* Before & After Gallery from Completed Jobs */}
+              {profile.job_photos && profile.job_photos.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 1.3 }}
+                >
+                  <BeforeAfterGallery photos={profile.job_photos as any} />
+                </motion.div>
+              )}
+
+              {/* Reviews Section - Enhanced */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
+                <ReviewsSection professionalId={professionalId!} />
+              </motion.div>
+
+              {/* Contact & Referral - Side by Side */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.85 }}
+                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+              >
+                <QuickContactForm
+                  professionalId={professionalId!}
+                  professionalName={profile.display_name}
+                  onSubmit={async (data) => {
+                    console.log('Contact form submitted:', data);
+                    handleContact();
+                  }}
+                />
+                <div className="space-y-6">
+                  <ReferralCard
+                    professionalId={professionalId!}
+                    professionalName={profile.display_name}
+                  />
+                  <SocialLinks professionalName={profile.display_name} />
+                </div>
+              </motion.div>
             </div>
-            <div className="lg:col-span-2">
-              <WorkProcessTimeline />
-            </div>
-          </motion.div>
 
-          {/* Performance Dashboard - Full Width */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-          >
-            <div className="lg:col-span-2">
-              <PerformanceScore
-                rating={profile.stats.average_rating}
-                totalReviews={profile.stats.total_reviews}
-                completedJobs={profile.stats.completed_bookings}
-                onTimeRate={92}
-                responseTime={profile.response_time_hours}
-                repeatClientRate={85}
-              />
-            </div>
-            <LiveActivityFeed professionalName={profile.display_name} />
-          </motion.div>
-
-          {/* Profile Actions - Compact Row */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.65 }}
-            className="flex justify-center flex-wrap gap-2"
-          >
-            <ProfileActions
-              professionalName={profile.display_name}
-              professionalId={professionalId!}
-            />
-            <ComparisonButton
-              professionalId={professionalId!}
-              professionalName={profile.display_name}
-              professionalData={{
-                rating: profile.stats.average_rating,
-                reviewCount: profile.stats.total_reviews,
-                completedJobs: profile.stats.completed_bookings,
-                responseTime: `${profile.response_time_hours}h`
-              }}
-            />
-            <PrintView professionalName={profile.display_name} />
-          </motion.div>
-
-          {/* Video Showcase */}
-          {profile.video_intro_url && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-            >
-              <VideoShowcase
-                videoUrl={profile.video_intro_url}
-                thumbnailUrl={profile.cover_image_url}
-                title="Meet the Professional"
-                description="Watch a brief introduction video"
-              />
-            </motion.div>
-          )}
-
-          {/* Availability & Booking - Compact */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.75 }}
-          >
-            <AvailabilityPreview
-              isAvailable={true}
-              nextAvailableDate="Tomorrow, 10:00 AM"
-              responseTime={`${profile.response_time_hours}h`}
-              workingHours="Mon-Fri: 9AM - 6PM"
-              currentWorkload="moderate"
-              onBookConsultation={handleRequestQuote}
-            />
-          </motion.div>
-
-          {/* Before & After Gallery from Completed Jobs */}
-          {profile.job_photos && profile.job_photos.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.3 }}
-            >
-              <BeforeAfterGallery photos={profile.job_photos as any} />
-            </motion.div>
-          )}
-
-          {/* Reviews Section - Enhanced */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-          >
-            <ReviewsSection professionalId={professionalId!} />
-          </motion.div>
-
-          {/* Contact & Referral - Side by Side */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.85 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-          >
-            <QuickContactForm
-              professionalId={professionalId!}
-              professionalName={profile.display_name}
-              onSubmit={async (data) => {
-                console.log('Contact form submitted:', data);
-                handleContact();
-              }}
-            />
-            <div className="space-y-6">
-              <ReferralCard
-                professionalId={professionalId!}
-                professionalName={profile.display_name}
-              />
-              <SocialLinks professionalName={profile.display_name} />
-            </div>
-          </motion.div>
+            {/* Sticky Sidebar - Right Side */}
+            <aside className="hidden lg:block">
+              <div className="sticky top-24">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <ProfessionalProfileHeader
+                    professional={{
+                      id: professionalId!,
+                      name: profile.display_name,
+                      rating: profile.stats.average_rating,
+                      reviewCount: profile.stats.total_reviews,
+                      completedJobs: profile.stats.completed_bookings,
+                      responseTime: `${profile.response_time_hours}h`,
+                      location: (profile.zones as string[])?.[0] || 'Ibiza',
+                      certifications: [],
+                      about: profile.bio || '',
+                      workingHours: '9:00 AM - 6:00 PM',
+                      avatarUrl: profile.avatar_url,
+                      verificationStatus: profile.verification_status,
+                      viewCount: profile.view_count
+                    }}
+                    onMessage={handleContact}
+                    onRequestQuote={handleRequestQuote}
+                  />
+                </motion.div>
+              </div>
+            </aside>
+          </div>
         </div>
       </main>
       
       <Footer />
-
-      {/* Floating CTA Bar */}
-      <FloatingCTABar
-        professionalName={profile.display_name}
-        onMessage={handleContact}
-        onRequestQuote={handleRequestQuote}
-      />
 
       {/* Quick Chat Widget */}
       <QuickChatWidget
