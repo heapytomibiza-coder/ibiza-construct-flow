@@ -9,6 +9,14 @@
   * {
     font-display: swap;
   }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply antialiased;
+  }
 }
 
 /* Mediterranean Luxury Design System for Constructive Solutions Ibiza

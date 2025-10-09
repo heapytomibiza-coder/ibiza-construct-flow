@@ -10,3 +10,7 @@ export { QuickStatsGrid } from './QuickStatsGrid';
 export { FloatingCTABar } from './FloatingCTABar';
 export { FeaturedTestimonial } from './FeaturedTestimonial';
 export { AvailabilityPreview } from './AvailabilityPreview';
+export { SocialProofBanner } from './SocialProofBanner';
+export { ProfileActions } from './ProfileActions';
+export { AchievementShowcase } from './AchievementShowcase';
+export { ScrollProgress } from './ScrollProgress';
