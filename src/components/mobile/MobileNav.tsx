@@ -8,9 +8,8 @@ export const MobileNav = () => {
   const { active, isProfessional } = useRole();
 
   const navItems = [
-    { icon: Home, label: 'Home', path: '/' },
+    { icon: Briefcase, label: 'Jobs', path: '/job-board' },
     { icon: Search, label: 'Search', path: '/search' },
-    { icon: Briefcase, label: 'Jobs', path: isProfessional ? '/professional/jobs' : '/client/jobs' },
     { icon: MessageSquare, label: 'Messages', path: '/messages' },
     { icon: User, label: 'Profile', path: isProfessional ? '/professional/profile' : '/client/profile' },
   ];

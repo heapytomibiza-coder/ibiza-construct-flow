@@ -65,8 +65,8 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('home')}
+            <Link to="/job-board" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              {t('jobBoard')}
             </Link>
             <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               {t('discovery')}
@@ -124,12 +124,6 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                       <Settings className="w-4 h-4 mr-2" />
                       {t('dashboard')}
                     </DropdownMenuItem>
-                    {isProfessional() && (
-                      <DropdownMenuItem onClick={() => navigate('/job-board')}>
-                        <Briefcase className="w-4 h-4 mr-2" />
-                        {t('jobBoard', 'Job Board')}
-                      </DropdownMenuItem>
-                    )}
                     {jobWizardEnabled && isClient() && (
                       <>
                         <DropdownMenuItem onClick={() => navigate('/post')}>
@@ -185,8 +179,8 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-sand-dark/20 pt-4">
             <nav className="flex flex-col space-y-4">
-              <Link to="/" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('home')}
+              <Link to="/job-board" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                {t('jobBoard')}
               </Link>
               <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 {t('discovery')}
@@ -204,11 +198,6 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                     <Link to={dashboardPath} className="btn-secondary">
                       {t('dashboard')}
                     </Link>
-                    {isProfessional() && (
-                      <Link to="/job-board" className="btn-secondary">
-                        {t('jobBoard', 'Job Board')}
-                      </Link>
-                    )}
                     {jobWizardEnabled && isClient() && (
                       <>
                         <Link to="/post" className="btn-hero">

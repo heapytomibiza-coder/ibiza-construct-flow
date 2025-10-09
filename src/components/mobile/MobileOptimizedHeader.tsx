@@ -173,11 +173,11 @@ export const MobileOptimizedHeader = ({
               {/* Navigation Links */}
               <div className="space-y-1">
                 <Link 
-                  to="/" 
+                  to="/job-board" 
                   className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Home
+                  Job Board
                 </Link>
                 <Link 
                   to="/services" 
