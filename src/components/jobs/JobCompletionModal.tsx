@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -100,7 +100,7 @@ export const JobCompletionModal: React.FC<JobCompletionModalProps> = ({
         await supabase.from('job_photos').insert({
           job_id: jobId,
           photo_type: 'before',
-          photo_url: photo,
+          image_url: photo,
           uploaded_by: professionalId
         });
       }
@@ -110,16 +110,13 @@ export const JobCompletionModal: React.FC<JobCompletionModalProps> = ({
         await supabase.from('job_photos').insert({
           job_id: jobId,
           photo_type: 'after',
-          photo_url: photo,
+          image_url: photo,
           uploaded_by: professionalId
         });
       }
 
       // Update job status
-      await supabase
-        .from('jobs')
-        .update({ status: 'complete_pending' })
-        .eq('id', jobId);
+      await supabase.from('jobs').update({ status: 'complete_pending' }).eq('id', jobId);
 
       toast.success('Job marked as complete! Client will review.');
       onComplete();
@@ -136,6 +133,9 @@ export const JobCompletionModal: React.FC<JobCompletionModalProps> = ({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Complete Job - Upload Photos</DialogTitle>
+          <DialogDescription>
+            Upload before and after photos of the completed work
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -145,13 +145,13 @@ export const JobCompletionModal: React.FC<JobCompletionModalProps> = ({
             <div
               {...getBeforeProps()}
               className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                isBeforeDebug ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+                isBeforeDrag ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
               } ${uploading || beforePhotos.length >= 5 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <input {...getBeforeInputs()} />
               <Camera className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
               <p className="text-sm font-medium">
-                {isBeforeDebug ? 'Drop here' : 'Click or drag before photos'}
+                {isBeforeDrag ? 'Drop here' : 'Click or drag before photos'}
               </p>
               <p className="text-xs text-muted-foreground">{beforePhotos.length}/5 uploaded</p>
             </div>
@@ -172,14 +172,14 @@ export const JobCompletionModal: React.FC<JobCompletionModalProps> = ({
             )}
           </div>
 
-          {/* After Photos - Required */}
+          {/* After Photos */}
           <div>
             <Label className="mb-2 block">After Photos (Required - Min 2)*</Label>
             <div
               {...getAfterProps()}
               className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
                 isAfterDrag ? 'border-primary bg-primary/5' : 'border-primary/30 hover:border-primary'
-              }`}
+              } ${uploading || afterPhotos.length >= 5 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <input {...getAfterInputs()} />
               <Camera className="w-8 h-8 mx-auto mb-2 text-primary" />
@@ -221,7 +221,9 @@ export const JobCompletionModal: React.FC<JobCompletionModalProps> = ({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={submitting}>Cancel</Button>
+          <Button variant="outline" onClick={onClose} disabled={submitting}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit} disabled={afterPhotos.length < 2 || submitting}>
             {submitting ? (
               <>
