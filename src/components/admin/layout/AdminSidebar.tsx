@@ -22,7 +22,7 @@ const navigationItems = [
   {
     group: 'Overview',
     items: [
-      { id: 'home', label: 'Home', icon: Home, path: '/admin/home', description: 'Dashboard & health' },
+      { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/admin', description: 'Overview & metrics' },
       { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/admin/analytics', description: 'Reports & insights' },
     ],
   },
@@ -40,7 +40,7 @@ const navigationItems = [
     group: 'System',
     items: [
       { id: 'health', label: 'Health', icon: Activity, path: '/admin/health', description: 'Automated checks' },
-      { id: 'audit', label: 'Audit', icon: FileText, path: '/admin/audit', description: 'Activity log' },
+      { id: 'audit', label: 'Audit', icon: FileText, path: '/admin/audit-log', description: 'Activity log' },
       { id: 'settings', label: 'Settings', icon: Settings, path: '/admin/settings', description: 'Roles & flags' },
     ],
   },
