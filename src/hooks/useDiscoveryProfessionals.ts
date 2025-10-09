@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface DiscoveryFilters {
@@ -14,11 +14,7 @@ export function useDiscoveryProfessionals(searchTerm: string, filters: Discovery
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadProfessionals();
-  }, [searchTerm, filters]);
-
-  const loadProfessionals = async () => {
+  const loadProfessionals = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -150,7 +146,11 @@ export function useDiscoveryProfessionals(searchTerm: string, filters: Discovery
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, filters.verified, filters.location, filters.minRating, filters.priceRange, filters.skills, filters.availability]);
+
+  useEffect(() => {
+    loadProfessionals();
+  }, [loadProfessionals]);
 
   return { professionals, loading, refresh: loadProfessionals };
 }
