@@ -8,3 +8,5 @@ export { TrustMetricsCard } from './TrustMetricsCard';
 export { WorkProcessTimeline } from './WorkProcessTimeline';
 export { QuickStatsGrid } from './QuickStatsGrid';
 export { FloatingCTABar } from './FloatingCTABar';
+export { FeaturedTestimonial } from './FeaturedTestimonial';
+export { AvailabilityPreview } from './AvailabilityPreview';

@@ -21,6 +21,8 @@ import { TrustMetricsCard } from '@/components/professionals/TrustMetricsCard';
 import { WorkProcessTimeline } from '@/components/professionals/WorkProcessTimeline';
 import { QuickStatsGrid } from '@/components/professionals/QuickStatsGrid';
 import { FloatingCTABar } from '@/components/professionals/FloatingCTABar';
+import { FeaturedTestimonial } from '@/components/professionals/FeaturedTestimonial';
+import { AvailabilityPreview } from '@/components/professionals/AvailabilityPreview';
 
 export default function ProfessionalProfile() {
   const { id: professionalId } = useParams();
@@ -287,6 +289,27 @@ export default function ProfessionalProfile() {
 
           {/* Work Process Timeline */}
           <WorkProcessTimeline />
+
+          {/* Featured Testimonial */}
+          {profile.reviews && profile.reviews.length > 0 && profile.reviews[0] && (
+            <FeaturedTestimonial
+              clientName="Satisfied Client"
+              rating={profile.reviews[0].rating || 5}
+              comment={profile.reviews[0].comment || "Great work and professional service!"}
+              projectType={profile.primary_trade}
+              date={new Date(profile.reviews[0].created_at).toLocaleDateString()}
+            />
+          )}
+
+          {/* Availability & Booking */}
+          <AvailabilityPreview
+            isAvailable={true}
+            nextAvailableDate="Tomorrow, 10:00 AM"
+            responseTime={`${profile.response_time_hours}h`}
+            workingHours="Mon-Fri: 9AM - 6PM"
+            currentWorkload="moderate"
+            onBookConsultation={handleRequestQuote}
+          />
 
           {/* Services Showcase Section */}
           {profile.services.length > 0 && (
