@@ -59,8 +59,8 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Rating Overview */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Rating Overview - Left Side */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -69,44 +69,42 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Overall Rating */}
-            <div className="text-center md:border-r">
-              <div className="text-5xl font-bold mb-2">{stats?.average_rating?.toFixed(1) || 0}</div>
-              <div className="flex items-center justify-center gap-1 mb-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={`w-5 h-5 ${
-                      star <= Math.round(stats?.average_rating || 0)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Based on {stats?.total_reviews || 0} {stats?.total_reviews === 1 ? 'review' : 'reviews'}
-              </p>
+          {/* Overall Rating */}
+          <div className="text-center mb-6">
+            <div className="text-5xl font-bold mb-2">{stats?.average_rating?.toFixed(1) || 0}</div>
+            <div className="flex items-center justify-center gap-1 mb-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-5 h-5 ${
+                    star <= Math.round(stats?.average_rating || 0)
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                />
+              ))}
             </div>
+            <p className="text-sm text-muted-foreground">
+              Based on {stats?.total_reviews || 0} {stats?.total_reviews === 1 ? 'review' : 'reviews'}
+            </p>
+          </div>
 
-            {/* Rating Distribution */}
-            <div className="space-y-2">
-              {[5, 4, 3, 2, 1].map((rating) =>
-                renderRatingBar(
-                  rating,
-                  stats?.rating_distribution?.[rating] || 0,
-                  stats?.total_reviews || 0
-                )
-              )}
-            </div>
+          {/* Rating Distribution */}
+          <div className="space-y-2">
+            {[5, 4, 3, 2, 1].map((rating) =>
+              renderRatingBar(
+                rating,
+                stats?.rating_distribution?.[rating] || 0,
+                stats?.total_reviews || 0
+              )
+            )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Reviews List */}
-      <Card>
-        <CardHeader>
+      {/* Reviews List - Right Side with Scroll */}
+      <Card className="flex flex-col">
+        <CardHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <CardTitle>All Reviews ({reviews.length})</CardTitle>
             <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
@@ -121,7 +119,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
             </Select>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-y-auto max-h-[600px]">
           {sortedReviews.length === 0 ? (
             <div className="text-center py-8">
               <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
