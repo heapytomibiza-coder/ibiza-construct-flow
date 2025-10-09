@@ -12,6 +12,8 @@ import { ProfessionalProfileHeader } from '@/components/services/ProfessionalPro
 import { ProfessionalAboutSection } from '@/components/professionals/ProfessionalAboutSection';
 import { ServicesShowcase } from '@/components/professionals/ServicesShowcase';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
+import { PortfolioGallery } from '@/components/professionals/PortfolioGallery';
+import { BeforeAfterGallery } from '@/components/professionals/BeforeAfterGallery';
 import { ReviewsSection } from '@/components/reviews/ReviewsSection';
 import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
 
@@ -63,8 +65,22 @@ export default function ProfessionalProfile() {
         .order('created_at', { ascending: false })
         .limit(10);
 
-      // Transform portfolio images from storage
-      const portfolioItems = Array.isArray(proProfile.portfolio_images) 
+      // Fetch portfolio images from new table
+      const { data: portfolioImages } = await supabase
+        .from('portfolio_images')
+        .select('*')
+        .eq('professional_id', professionalId)
+        .order('display_order', { ascending: true });
+
+      // Fetch job photos (before/after) for completed jobs
+      const { data: jobPhotos } = await supabase
+        .from('job_photos')
+        .select('*')
+        .eq('uploaded_by', professionalId)
+        .in('photo_type', ['before', 'after']);
+
+      // Transform old portfolio images from storage (backward compatibility)
+      const legacyPortfolioItems = Array.isArray(proProfile.portfolio_images) 
         ? proProfile.portfolio_images.map((url: string) => ({ url }))
         : [];
 
@@ -77,7 +93,9 @@ export default function ProfessionalProfile() {
         reviews: reviews || [],
         zones: Array.isArray(proProfile.zones) ? proProfile.zones : [],
         skills: Array.isArray(proProfile.skills) ? proProfile.skills : [],
-        portfolio_images: portfolioItems
+        portfolio_images: legacyPortfolioItems,
+        new_portfolio_images: portfolioImages || [],
+        job_photos: jobPhotos || []
       };
     },
     enabled: !!professionalId
@@ -199,9 +217,19 @@ export default function ProfessionalProfile() {
             />
           )}
 
-          {/* Portfolio Gallery */}
-          {profile.portfolio_images.length > 0 && (
+          {/* New Portfolio Gallery */}
+          {profile.new_portfolio_images && profile.new_portfolio_images.length > 0 && (
+            <PortfolioGallery images={profile.new_portfolio_images as any} />
+          )}
+
+          {/* Legacy Portfolio Gallery (backward compatibility) */}
+          {profile.portfolio_images.length > 0 && !profile.new_portfolio_images?.length && (
             <ProfessionalPortfolioGallery items={profile.portfolio_images} />
+          )}
+
+          {/* Before & After Gallery from Completed Jobs */}
+          {profile.job_photos && profile.job_photos.length > 0 && (
+            <BeforeAfterGallery photos={profile.job_photos as any} />
           )}
 
           {/* Reviews Section */}
