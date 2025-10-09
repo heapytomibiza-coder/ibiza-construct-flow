@@ -15,3 +15,8 @@ export { ProfileActions } from './ProfileActions';
 export { AchievementShowcase } from './AchievementShowcase';
 export { ScrollProgress } from './ScrollProgress';
 export { ProfessionalSEO } from './ProfessionalSEO';
+export { VideoShowcase } from './VideoShowcase';
+export { InteractiveCalendar } from './InteractiveCalendar';
+export { PortfolioFilter } from './PortfolioFilter';
+export { QuickChatWidget } from './QuickChatWidget';
+export { EnhancedReviewSection } from './EnhancedReviewSection';

@@ -28,6 +28,10 @@ import { ProfileActions } from '@/components/professionals/ProfileActions';
 import { AchievementShowcase } from '@/components/professionals/AchievementShowcase';
 import { ScrollProgress } from '@/components/professionals/ScrollProgress';
 import { ProfessionalSEO } from '@/components/professionals/ProfessionalSEO';
+import { VideoShowcase } from '@/components/professionals/VideoShowcase';
+import { InteractiveCalendar } from '@/components/professionals/InteractiveCalendar';
+import { PortfolioFilter } from '@/components/professionals/PortfolioFilter';
+import { QuickChatWidget } from '@/components/professionals/QuickChatWidget';
 import { motion } from 'framer-motion';
 
 export default function ProfessionalProfile() {
@@ -380,6 +384,22 @@ export default function ProfessionalProfile() {
             <WorkProcessTimeline />
           </motion.div>
 
+          {/* Video Showcase */}
+          {profile.video_intro_url && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.85 }}
+            >
+              <VideoShowcase
+                videoUrl={profile.video_intro_url}
+                thumbnailUrl={profile.cover_image_url}
+                title="Meet the Professional"
+                description="Watch a brief introduction video"
+              />
+            </motion.div>
+          )}
+
           {/* Featured Testimonial */}
           {profile.reviews && profile.reviews.length > 0 && profile.reviews[0] && (
             <motion.div
@@ -413,6 +433,20 @@ export default function ProfessionalProfile() {
             />
           </motion.div>
 
+          {/* Interactive Booking Calendar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.05 }}
+          >
+            <InteractiveCalendar
+              onSelectSlot={(date, time) => {
+                toast.success(`Selected: ${date.toLocaleDateString()} at ${time}`);
+                handleRequestQuote();
+              }}
+            />
+          </motion.div>
+
           {/* Services Showcase Section */}
           {profile.services.length > 0 && (
             <motion.div
@@ -434,15 +468,26 @@ export default function ProfessionalProfile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 1.2 }}
             >
-              <PortfolioMasonry 
-                images={profile.new_portfolio_images.map((img: any) => ({
-                  url: img.image_url,
-                  title: img.title,
-                  category: img.category,
-                  description: img.description
-                }))} 
-                title="Portfolio Showcase"
-              />
+              <div className="space-y-4">
+                <PortfolioFilter
+                  onFilterChange={(category) => {
+                    // Filter logic can be implemented here
+                    console.log('Filter by:', category);
+                  }}
+                  onViewChange={(view) => {
+                    console.log('View mode:', view);
+                  }}
+                />
+                <PortfolioMasonry 
+                  images={profile.new_portfolio_images.map((img: any) => ({
+                    url: img.image_url,
+                    title: img.title,
+                    category: img.category,
+                    description: img.description
+                  }))} 
+                  title="Portfolio Showcase"
+                />
+              </div>
             </motion.div>
           )}
 
@@ -475,6 +520,17 @@ export default function ProfessionalProfile() {
         professionalName={profile.display_name}
         onMessage={handleContact}
         onRequestQuote={handleRequestQuote}
+      />
+
+      {/* Quick Chat Widget */}
+      <QuickChatWidget
+        professionalName={profile.display_name}
+        professionalAvatar={profile.avatar_url}
+        responseTime={`${profile.response_time_hours}h`}
+        onSendMessage={(message) => {
+          toast.success('Message sent! We\'ll connect you shortly.');
+          handleContact();
+        }}
       />
 
       {/* Quote Request Modal */}
