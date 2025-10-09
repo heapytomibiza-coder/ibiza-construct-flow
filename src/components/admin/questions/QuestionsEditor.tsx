@@ -14,7 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2, GripVertical, Eye, Code } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-interface Question {
+export interface Question {
   id: string;
   label: string;
   type: 'radio' | 'checkbox' | 'text' | 'number' | 'yesno' | 'scale' | 'file';
@@ -26,9 +26,10 @@ interface QuestionsEditorProps {
   questions: Question[];
   onSave: (questions: Question[]) => void;
   onCancel: () => void;
+  isSaving?: boolean;
 }
 
-export function QuestionsEditor({ questions, onSave, onCancel }: QuestionsEditorProps) {
+export function QuestionsEditor({ questions, onSave, onCancel, isSaving = false }: QuestionsEditorProps) {
   const { toast } = useToast();
   const [editMode, setEditMode] = useState<'visual' | 'json'>('visual');
   const [localQuestions, setLocalQuestions] = useState<Question[]>(questions);
@@ -255,11 +256,11 @@ export function QuestionsEditor({ questions, onSave, onCancel }: QuestionsEditor
       </Tabs>
 
       <div className="flex justify-end gap-2 pt-4 border-t">
-        <Button variant="outline" onClick={onCancel}>
+        <Button variant="outline" onClick={onCancel} disabled={isSaving}>
           Cancel
         </Button>
-        <Button onClick={editMode === 'visual' ? handleSaveVisual : handleSaveJson}>
-          Save Questions
+        <Button onClick={editMode === 'visual' ? handleSaveVisual : handleSaveJson} disabled={isSaving}>
+          {isSaving ? 'Saving...' : 'Save Questions'}
         </Button>
       </div>
     </div>

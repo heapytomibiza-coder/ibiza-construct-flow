@@ -3,15 +3,17 @@
  */
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Plus, Edit } from 'lucide-react';
+import { Search, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { QuestionsEditor } from '@/components/admin/questions/QuestionsEditor';
+import { QuestionsEditor, Question } from '@/components/admin/questions/QuestionsEditor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AdminLayout } from '@/components/admin/layout/AdminLayout';
+import type { Json } from '@/integrations/supabase/types';
 
 interface MicroService {
   id: string;
@@ -19,14 +21,16 @@ interface MicroService {
   subcategory: string;
   micro_name: string;
   micro_id: string;
-  questions: any;
+  questions: Json;
 }
 
 export default function QuestionsManager() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMicroservice, setSelectedMicroservice] = useState<MicroService | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data: microservices, isLoading } = useQuery({
     queryKey: ['microservices-for-questions'],
@@ -52,16 +56,20 @@ export default function QuestionsManager() {
     setIsEditorOpen(true);
   };
 
-  const handleSave = async (questions: any[]) => {
+  const handleSave = async (questions: Question[]) => {
     if (!selectedMicroservice) return;
 
+    setIsSaving(true);
     try {
       const { error } = await supabase
         .from('micro_service_questions')
-        .update({ questions: questions })
+        .update({ questions: questions as unknown as Json })
         .eq('id', selectedMicroservice.id);
 
       if (error) throw error;
+
+      // Invalidate queries to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ['microservices-for-questions'] });
 
       toast({
         title: "Success",
@@ -76,11 +84,14 @@ export default function QuestionsManager() {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <AdminLayout>
+      <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Questions Manager</h1>
         <p className="text-muted-foreground">
@@ -149,13 +160,15 @@ export default function QuestionsManager() {
           </DialogHeader>
           {selectedMicroservice && (
             <QuestionsEditor
-              questions={Array.isArray(selectedMicroservice.questions) ? selectedMicroservice.questions : []}
+              questions={Array.isArray(selectedMicroservice.questions) ? selectedMicroservice.questions as unknown as Question[] : []}
               onSave={handleSave}
               onCancel={() => setIsEditorOpen(false)}
+              isSaving={isSaving}
             />
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
