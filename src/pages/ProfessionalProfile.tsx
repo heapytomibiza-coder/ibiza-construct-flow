@@ -121,7 +121,7 @@ export default function ProfessionalProfile() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="container py-8">
+        <main className="container pt-32 pb-8 px-4">
           <div className="max-w-4xl mx-auto space-y-6">
             <Skeleton className="h-48 w-full" />
             <Skeleton className="h-96 w-full" />
@@ -136,7 +136,7 @@ export default function ProfessionalProfile() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="container py-8 text-center">
+        <main className="container pt-32 pb-8 px-4 text-center">
           <h1 className="text-2xl font-bold mb-4">Professional not found</h1>
           <Button onClick={() => navigate('/discovery')}>Browse Professionals</Button>
         </main>
@@ -158,7 +158,7 @@ export default function ProfessionalProfile() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container py-8">
+      <main className="container pt-32 pb-8 px-4">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Enhanced Profile Header with Real-time Availability */}
           <ProfessionalProfileHeader
