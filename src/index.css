@@ -15,7 +15,38 @@
   }
   
   body {
-    @apply antialiased;
+        @apply antialiased;
+  }
+
+  /* High Contrast Mode */
+  body.high-contrast {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --primary: 240 100% 50%;
+    --border: 0 0% 0%;
+  }
+
+  body.high-contrast.dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --primary: 60 100% 50%;
+    --border: 0 0% 100%;
+  }
+
+  /* Reading Mode */
+  body.reading-mode * {
+    font-family: 'Georgia', 'Times New Roman', serif !important;
+    line-height: 1.8 !important;
+  }
+
+  body.reading-mode {
+    --background: 48 15% 98%;
+    --foreground: 0 0% 10%;
+  }
+
+  body.reading-mode.dark {
+    --background: 48 15% 8%;
+    --foreground: 48 15% 90%;
   }
 }
 
@@ -514,6 +545,40 @@ All colors MUST be HSL. Premium construction platform aesthetic.
 .animate-highlight {
   animation: highlight-pulse 2s ease-in-out 3;
   border-radius: 0.5rem;
+}
+
+/* Print Styles */
+@media print {
+  body.print-mode {
+    font-size: 12pt;
+    color: #000;
+    background: #fff;
+  }
+
+  .print\\:hidden,
+  header,
+  footer,
+  button,
+  .fixed,
+  .sticky {
+    display: none !important;
+  }
+
+  .card-luxury,
+  .premium-card {
+    border: 1px solid #ddd;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
 }
 
 }

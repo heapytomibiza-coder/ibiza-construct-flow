@@ -37,13 +37,21 @@ import { CertificationBadges } from '@/components/professionals/CertificationBad
 import { FAQSection } from '@/components/professionals/FAQSection';
 import { QuickContactForm } from '@/components/professionals/QuickContactForm';
 import { SocialLinks } from '@/components/professionals/SocialLinks';
+import { ProfileSkeleton } from '@/components/professionals/ProfileSkeleton';
+import { ProfileError } from '@/components/professionals/ProfileError';
+import { PrintView } from '@/components/professionals/PrintView';
+import { AccessibilityToolbar } from '@/components/professionals/AccessibilityToolbar';
 import { motion } from 'framer-motion';
+import { useProfileAnalytics } from '@/hooks/useProfileAnalytics';
 
 export default function ProfessionalProfile() {
   const { id: professionalId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  
+  // Analytics tracking
+  const { trackInteraction } = useProfileAnalytics(professionalId || '');
 
   // Track profile view
   const [sessionId] = useState(() => {
@@ -55,7 +63,7 @@ export default function ProfessionalProfile() {
     return sid;
   });
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading, error: queryError, refetch } = useQuery({
     queryKey: ['professional', professionalId],
     queryFn: async () => {
       // Fetch professional profile with new fields
@@ -163,11 +171,46 @@ export default function ProfessionalProfile() {
     }
   });
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <ProfileSkeleton />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (queryError || !profile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <ProfileError
+          error={queryError?.message || 'Professional profile not found'}
+          onRetry={() => refetch()}
+        />
+        <Footer />
+      </div>
+    );
+  }
+
+  const handleRequestQuote = () => {
+    if (!user) {
+      toast.error('Please sign in to request a quote');
+      navigate('/auth');
+      return;
+    }
+    trackInteraction('Request Quote', 'CTA Button');
+    setQuoteModalOpen(true);
+  };
+
   const handleContact = async () => {
     if (!user) {
       navigate('/auth');
       return;
     }
+    
+    trackInteraction('Contact Professional', 'Message Button');
     
     try {
       // Get or create conversation with this professional
@@ -195,43 +238,6 @@ export default function ProfessionalProfile() {
     } catch (error) {
       toast.error('Failed to start conversation. Please try again.');
     }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container pt-32 pb-8 px-4">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <Skeleton className="h-48 w-full" />
-            <Skeleton className="h-96 w-full" />
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container pt-32 pb-8 px-4 text-center">
-          <h1 className="text-2xl font-bold mb-4">Professional not found</h1>
-          <Button onClick={() => navigate('/discovery')}>Browse Professionals</Button>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  const handleRequestQuote = () => {
-    if (!user) {
-      toast.error('Please sign in to request a quote');
-      navigate('/auth');
-      return;
-    }
-    setQuoteModalOpen(true);
   };
 
   return (
@@ -316,12 +322,13 @@ export default function ProfessionalProfile() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex justify-center"
+            className="flex justify-center flex-wrap gap-3"
           >
             <ProfileActions
               professionalName={profile.display_name}
               professionalId={professionalId!}
             />
+            <PrintView professionalName={profile.display_name} />
           </motion.div>
 
           {/* Quick Stats Grid */}
@@ -610,6 +617,9 @@ export default function ProfessionalProfile() {
         serviceId={profile.services[0]?.id}
         serviceName={profile.services[0]?.micro_service_id}
       />
+
+      {/* Accessibility Toolbar */}
+      <AccessibilityToolbar />
     </div>
   );
 }
