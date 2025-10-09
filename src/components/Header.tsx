@@ -65,11 +65,14 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/job-board" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('jobBoard')}
-            </Link>
             <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               {t('discovery')}
+            </Link>
+            <Link to="/post" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              {t('postProject')}
+            </Link>
+            <Link to="/job-board" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              {t('jobBoard')}
             </Link>
             <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               {t('howItWorks')}
@@ -179,11 +182,14 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-sand-dark/20 pt-4">
             <nav className="flex flex-col space-y-4">
-              <Link to="/job-board" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('jobBoard')}
-              </Link>
               <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 {t('discovery')}
+              </Link>
+              <Link to="/post" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                {t('postProject')}
+              </Link>
+              <Link to="/job-board" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                {t('jobBoard')}
               </Link>
               <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 {t('howItWorks')}

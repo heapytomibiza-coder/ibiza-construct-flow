@@ -173,6 +173,20 @@ export const MobileOptimizedHeader = ({
               {/* Navigation Links */}
               <div className="space-y-1">
                 <Link 
+                  to="/discovery" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Discovery
+                </Link>
+                <Link 
+                  to="/post" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Post a Job
+                </Link>
+                <Link 
                   to="/job-board" 
                   className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
                   onClick={() => setIsMenuOpen(false)}
