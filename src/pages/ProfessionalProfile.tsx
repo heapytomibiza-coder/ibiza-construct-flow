@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
 import { ProfessionalAboutSection } from '@/components/professionals/ProfessionalAboutSection';
-import { ServicesShowcase } from '@/components/professionals/ServicesShowcase';
+import { CompactServiceCards } from '@/components/professionals/CompactServiceCards';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
 import { BeforeAfterGallery } from '@/components/professionals/BeforeAfterGallery';
 import { ReviewsSection } from '@/components/reviews/ReviewsSection';
@@ -21,20 +21,14 @@ import { TrustMetricsCard } from '@/components/professionals/TrustMetricsCard';
 import { WorkProcessTimeline } from '@/components/professionals/WorkProcessTimeline';
 import { QuickStatsGrid } from '@/components/professionals/QuickStatsGrid';
 import { FloatingCTABar } from '@/components/professionals/FloatingCTABar';
-import { FeaturedTestimonial } from '@/components/professionals/FeaturedTestimonial';
 import { AvailabilityPreview } from '@/components/professionals/AvailabilityPreview';
 import { SocialProofBanner } from '@/components/professionals/SocialProofBanner';
 import { ProfileActions } from '@/components/professionals/ProfileActions';
-import { AchievementShowcase } from '@/components/professionals/AchievementShowcase';
 import { ScrollProgress } from '@/components/professionals/ScrollProgress';
 import { ProfessionalSEO } from '@/components/professionals/ProfessionalSEO';
 import { VideoShowcase } from '@/components/professionals/VideoShowcase';
-import { InteractiveCalendar } from '@/components/professionals/InteractiveCalendar';
 import { PortfolioFilter } from '@/components/professionals/PortfolioFilter';
 import { QuickChatWidget } from '@/components/professionals/QuickChatWidget';
-import { TestimonialCarousel } from '@/components/professionals/TestimonialCarousel';
-import { CertificationBadges } from '@/components/professionals/CertificationBadges';
-import { FAQSection } from '@/components/professionals/FAQSection';
 import { QuickContactForm } from '@/components/professionals/QuickContactForm';
 import { SocialLinks } from '@/components/professionals/SocialLinks';
 import { ProfileSkeleton } from '@/components/professionals/ProfileSkeleton';
@@ -297,12 +291,12 @@ export default function ProfessionalProfile() {
             />
           </motion.div>
 
-          {/* Verification Badges */}
+          {/* Verification Badges - Inline */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="flex justify-center"
+            className="flex justify-center -mt-2 mb-2"
           >
             <VerificationBadges
               isVerified={profile.verification_status === 'verified'}
@@ -339,201 +333,31 @@ export default function ProfessionalProfile() {
             />
           </motion.div>
 
-          {/* Profile Actions */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex justify-center flex-wrap gap-3"
-          >
-            <ProfileActions
-              professionalName={profile.display_name}
-              professionalId={professionalId!}
-            />
-            <ComparisonButton
-              professionalId={professionalId!}
-              professionalName={profile.display_name}
-              professionalData={{
-                rating: profile.stats.average_rating,
-                reviewCount: profile.stats.total_reviews,
-                completedJobs: profile.stats.completed_bookings,
-                responseTime: `${profile.response_time_hours}h`
-              }}
-            />
-            <PrintView professionalName={profile.display_name} />
-          </motion.div>
-
-          {/* Quick Stats Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <QuickStatsGrid
-              avgProjectValue={2500}
-              avgResponseTime={`${profile.response_time_hours}h`}
-              repeatClientRate={85}
-              projectsThisMonth={Math.floor(profile.stats.completed_bookings / 12) || 0}
-            />
-          </motion.div>
-
-          {/* Performance Score & Live Activity - Two Column Layout */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.45 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-          >
-            <PerformanceScore
-              rating={profile.stats.average_rating}
-              totalReviews={profile.stats.total_reviews}
-              completedJobs={profile.stats.completed_bookings}
-              onTimeRate={92}
-              responseTime={profile.response_time_hours}
-              repeatClientRate={85}
-            />
-            <LiveActivityFeed professionalName={profile.display_name} />
-          </motion.div>
-
-          {/* Trust & Performance Metrics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            <TrustMetricsCard
-              completionRate={95}
-              onTimeDelivery={92}
-              responseRate={98}
-              repeatClientRate={85}
-              totalJobs={profile.stats.completed_bookings}
-              yearsActive={profile.experience_years}
-            />
-          </motion.div>
-
-          {/* Achievement Showcase */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
-            <AchievementShowcase />
-          </motion.div>
-
-          {/* About Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-          >
-            <ProfessionalAboutSection
-              bio={profile.bio}
-              yearsOfExperience={profile.experience_years}
-              certifications={[]}
-              skills={profile.skills as string[]}
-              coverageArea={profile.zones as string[]}
-              primaryTrade={profile.primary_trade}
-              workPhilosophy={profile.work_philosophy}
-            />
-          </motion.div>
-
-          {/* Work Process Timeline */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-          >
-            <WorkProcessTimeline />
-          </motion.div>
-
-          {/* Video Showcase */}
-          {profile.video_intro_url && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.85 }}
-            >
-              <VideoShowcase
-                videoUrl={profile.video_intro_url}
-                thumbnailUrl={profile.cover_image_url}
-                title="Meet the Professional"
-                description="Watch a brief introduction video"
-              />
-            </motion.div>
-          )}
-
-          {/* Featured Testimonial */}
-          {profile.reviews && profile.reviews.length > 0 && profile.reviews[0] && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.9 }}
-            >
-              <FeaturedTestimonial
-                clientName="Satisfied Client"
-                rating={profile.reviews[0].rating || 5}
-                comment={profile.reviews[0].comment || "Great work and professional service!"}
-                projectType={profile.primary_trade}
-                date={new Date(profile.reviews[0].created_at).toLocaleDateString()}
-              />
-            </motion.div>
-          )}
-
-          {/* Availability & Booking */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.0 }}
-          >
-            <AvailabilityPreview
-              isAvailable={true}
-              nextAvailableDate="Tomorrow, 10:00 AM"
-              responseTime={`${profile.response_time_hours}h`}
-              workingHours="Mon-Fri: 9AM - 6PM"
-              currentWorkload="moderate"
-              onBookConsultation={handleRequestQuote}
-            />
-          </motion.div>
-
-          {/* Interactive Booking Calendar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.05 }}
-          >
-            <InteractiveCalendar
-              onSelectSlot={(date, time) => {
-                toast.success(`Selected: ${date.toLocaleDateString()} at ${time}`);
-                handleRequestQuote();
-              }}
-            />
-          </motion.div>
-
-          {/* Services Showcase Section */}
+          {/* Compact Services Section - Prominent Position */}
           {profile.services.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <ServicesShowcase
+              <CompactServiceCards
                 services={profile.services as any}
                 onRequestQuote={handleRequestQuote}
               />
             </motion.div>
           )}
 
-          {/* Portfolio Masonry Gallery */}
+          {/* Portfolio Gallery - Prominent Position */}
           {profile.new_portfolio_images && profile.new_portfolio_images.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.2 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="bg-muted/30 -mx-4 px-4 py-8 rounded-xl"
             >
               <div className="space-y-4">
                 <PortfolioFilter
                   onFilterChange={(category) => {
-                    // Filter logic can be implemented here
                     console.log('Filter by:', category);
                   }}
                   onViewChange={(view) => {
@@ -553,6 +377,105 @@ export default function ProfessionalProfile() {
             </motion.div>
           )}
 
+          {/* About & Process - Side by Side */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="grid grid-cols-1 lg:grid-cols-5 gap-6"
+          >
+            <div className="lg:col-span-3">
+              <ProfessionalAboutSection
+                bio={profile.bio}
+                yearsOfExperience={profile.experience_years}
+                certifications={[]}
+                skills={profile.skills as string[]}
+                coverageArea={profile.zones as string[]}
+                primaryTrade={profile.primary_trade}
+                workPhilosophy={profile.work_philosophy}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <WorkProcessTimeline />
+            </div>
+          </motion.div>
+
+          {/* Performance Dashboard - Full Width */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          >
+            <div className="lg:col-span-2">
+              <PerformanceScore
+                rating={profile.stats.average_rating}
+                totalReviews={profile.stats.total_reviews}
+                completedJobs={profile.stats.completed_bookings}
+                onTimeRate={92}
+                responseTime={profile.response_time_hours}
+                repeatClientRate={85}
+              />
+            </div>
+            <LiveActivityFeed professionalName={profile.display_name} />
+          </motion.div>
+
+          {/* Profile Actions - Compact Row */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.65 }}
+            className="flex justify-center flex-wrap gap-2"
+          >
+            <ProfileActions
+              professionalName={profile.display_name}
+              professionalId={professionalId!}
+            />
+            <ComparisonButton
+              professionalId={professionalId!}
+              professionalName={profile.display_name}
+              professionalData={{
+                rating: profile.stats.average_rating,
+                reviewCount: profile.stats.total_reviews,
+                completedJobs: profile.stats.completed_bookings,
+                responseTime: `${profile.response_time_hours}h`
+              }}
+            />
+            <PrintView professionalName={profile.display_name} />
+          </motion.div>
+
+          {/* Video Showcase */}
+          {profile.video_intro_url && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+            >
+              <VideoShowcase
+                videoUrl={profile.video_intro_url}
+                thumbnailUrl={profile.cover_image_url}
+                title="Meet the Professional"
+                description="Watch a brief introduction video"
+              />
+            </motion.div>
+          )}
+
+          {/* Availability & Booking - Compact */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.75 }}
+          >
+            <AvailabilityPreview
+              isAvailable={true}
+              nextAvailableDate="Tomorrow, 10:00 AM"
+              responseTime={`${profile.response_time_hours}h`}
+              workingHours="Mon-Fri: 9AM - 6PM"
+              currentWorkload="moderate"
+              onBookConsultation={handleRequestQuote}
+            />
+          </motion.div>
+
           {/* Before & After Gallery from Completed Jobs */}
           {profile.job_photos && profile.job_photos.length > 0 && (
             <motion.div
@@ -564,58 +487,21 @@ export default function ProfessionalProfile() {
             </motion.div>
           )}
 
-          {/* Reviews Section */}
+          {/* Reviews Section - Enhanced */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.4 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
           >
             <ReviewsSection professionalId={professionalId!} />
           </motion.div>
 
-          {/* Testimonial Carousel */}
-          {profile.reviews && profile.reviews.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.45 }}
-            >
-              <TestimonialCarousel
-                testimonials={profile.reviews.slice(0, 5).map((review: any) => ({
-                  id: review.id,
-                  clientName: 'Satisfied Client',
-                  rating: review.rating,
-                  comment: review.comment,
-                  projectType: profile.primary_trade,
-                  date: new Date(review.created_at).toLocaleDateString()
-                }))}
-              />
-            </motion.div>
-          )}
-
-          {/* Certification Badges */}
+          {/* Contact & Referral - Side by Side */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.5 }}
-          >
-            <CertificationBadges />
-          </motion.div>
-
-          {/* FAQ Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.55 }}
-          >
-            <FAQSection professionalName={profile.display_name} />
-          </motion.div>
-
-          {/* Quick Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.6 }}
+            transition={{ duration: 0.5, delay: 0.85 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
           >
             <QuickContactForm
               professionalId={professionalId!}
@@ -625,27 +511,13 @@ export default function ProfessionalProfile() {
                 handleContact();
               }}
             />
-          </motion.div>
-
-          {/* Referral Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.63 }}
-          >
-            <ReferralCard
-              professionalId={professionalId!}
-              professionalName={profile.display_name}
-            />
-          </motion.div>
-
-          {/* Social Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.65 }}
-          >
-            <SocialLinks professionalName={profile.display_name} />
+            <div className="space-y-6">
+              <ReferralCard
+                professionalId={professionalId!}
+                professionalName={profile.display_name}
+              />
+              <SocialLinks professionalName={profile.display_name} />
+            </div>
           </motion.div>
         </div>
       </main>

@@ -38,3 +38,4 @@ export { VerificationBadges } from './VerificationBadges';
 export { MobileQuickActions } from './MobileQuickActions';
 export { ComparisonFloatingButton } from './ComparisonFloatingButton';
 export { SwipeableGallery } from './SwipeableGallery';
+export { CompactServiceCards } from './CompactServiceCards';
