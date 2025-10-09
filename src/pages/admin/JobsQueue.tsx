@@ -101,7 +101,7 @@ export default function JobsQueue() {
           </p>
         </div>
 
-        <AdminQueue<Job>
+        <AdminQueue
           title="Jobs"
           description="View and manage platform jobs"
           columns={columns}
