@@ -8,12 +8,12 @@ interface EmptyPortfolioStateProps {
 }
 
 const sampleImages = [
-  'https://images.unsplash.com/photo-1503387762-592a097a3ca1?w=400&h=300&fit=crop', // Construction site
-  'https://images.unsplash.com/photo-1584622650111-993a426abf8?w=400&h=300&fit=crop', // Kitchen/bathroom renovation
-  'https://images.unsplash.com/photo-1556912167-f97269e5e8d7?w=400&h=300&fit=crop', // Carpentry work
-  'https://images.unsplash.com/photo-1581-4-a-1-b-8-5-4-b-91-5-3-e-7-a?w=400&h=300&fit=crop', // Electrical/plumbing
-  'https://images.unsplash.com/photo-1513694203-8-b-the-5-a-1-a-3-b-4-8?w=400&h=300&fit=crop', // Woodworking
-  'https://images.unsplash.com/photo-1562-2-c-5-9-the-4-8-d-0-c-b-3-5?w=400&h=300&fit=crop', // Painting/finishing
+  'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1503174971373-b1f69850bded?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1584622650111-993a426abf7?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1565183997226-652d8a3c69ff?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=400&h=300&fit=crop',
 ];
 
 export const EmptyPortfolioState = ({ professionalId, isOwner }: EmptyPortfolioStateProps) => {
@@ -26,7 +26,7 @@ export const EmptyPortfolioState = ({ professionalId, isOwner }: EmptyPortfolioS
               <div className="relative w-80 h-60 rounded-lg overflow-hidden bg-muted">
                 <img 
                   src={img} 
-                  alt={`Construction work sample ${index + 1}`}
+                  alt={`Sample work ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
@@ -56,7 +56,7 @@ export const EmptyPortfolioState = ({ professionalId, isOwner }: EmptyPortfolioS
             <div className="relative w-80 h-60 rounded-lg overflow-hidden bg-muted">
               <img 
                 src={img} 
-                alt={`Construction work sample ${index + 1}`}
+                alt={`Portfolio sample ${index + 1}`}
                 className="w-full h-full object-cover"
               />
             </div>
