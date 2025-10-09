@@ -217,15 +217,8 @@ export default function ProfessionalProfile() {
             />
           )}
 
-          {/* New Portfolio Gallery */}
-          {profile.new_portfolio_images && profile.new_portfolio_images.length > 0 && (
-            <PortfolioGallery images={profile.new_portfolio_images as any} />
-          )}
-
-          {/* Legacy Portfolio Gallery (backward compatibility) */}
-          {profile.portfolio_images.length > 0 && !profile.new_portfolio_images?.length && (
-            <ProfessionalPortfolioGallery items={profile.portfolio_images} />
-          )}
+          {/* Portfolio Gallery - always show, component handles empty state */}
+          <PortfolioGallery images={profile.new_portfolio_images as any || []} />
 
           {/* Before & After Gallery from Completed Jobs */}
           {profile.job_photos && profile.job_photos.length > 0 && (
