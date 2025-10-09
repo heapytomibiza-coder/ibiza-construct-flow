@@ -43,60 +43,94 @@ export const PortfolioMasonry = ({ images, title = "Portfolio" }: PortfolioMason
 
   return (
     <>
-      <Card className="card-luxury p-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h3 className="text-2xl font-bold">{title}</h3>
-          
-          {categories.length > 1 && (
-            <div className="flex gap-2 flex-wrap">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={filter === category ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFilter(category)}
-                  className="capitalize"
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-          )}
+      <section className="space-y-8">
+        {/* Enhanced Header */}
+        <div className="space-y-3 text-center">
+          <h2 className="text-4xl font-bold tracking-tight">{title}</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Explore our collection of completed projects and see the quality of our work
+          </p>
         </div>
 
-        {/* Masonry Grid */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
-          {filteredImages.map((image, index) => (
-            <div 
-              key={index}
-              className="break-inside-avoid cursor-pointer group relative overflow-hidden rounded-lg bg-muted"
-              onClick={() => openLightbox(index)}
-            >
-              <img 
-                src={image.url} 
-                alt={image.title || `Portfolio ${index + 1}`}
-                className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  {image.title && (
-                    <p className="font-semibold text-lg mb-1">{image.title}</p>
-                  )}
-                  {image.category && (
-                    <p className="text-sm text-white/80 capitalize">{image.category}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredImages.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            No portfolio items to display
+        {/* Category Filters */}
+        {categories.length > 1 && (
+          <div className="flex justify-center gap-2 flex-wrap">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={filter === category ? 'default' : 'outline'}
+                size="lg"
+                onClick={() => setFilter(category)}
+                className="capitalize font-semibold"
+              >
+                {category}
+              </Button>
+            ))}
           </div>
         )}
-      </Card>
+
+        {/* Featured/Hero Image */}
+        {filteredImages.length > 0 && (
+          <div 
+            className="relative overflow-hidden rounded-2xl cursor-pointer group shadow-xl h-[400px] md:h-[500px]"
+            onClick={() => openLightbox(0)}
+          >
+            <img 
+              src={filteredImages[0].url} 
+              alt={filteredImages[0].title || 'Featured Work'}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent">
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                {filteredImages[0].title && (
+                  <p className="font-bold text-3xl mb-2">{filteredImages[0].title}</p>
+                )}
+                {filteredImages[0].description && (
+                  <p className="text-lg text-white/90">{filteredImages[0].description}</p>
+                )}
+                {filteredImages[0].category && (
+                  <p className="text-sm text-white/70 capitalize mt-2">{filteredImages[0].category}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Masonry Grid - remaining images */}
+        {filteredImages.length > 1 && (
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+            {filteredImages.slice(1).map((image, index) => (
+              <div 
+                key={index + 1}
+                className="break-inside-avoid cursor-pointer group relative overflow-hidden rounded-xl bg-muted shadow-lg"
+                onClick={() => openLightbox(index + 1)}
+              >
+                <img 
+                  src={image.url} 
+                  alt={image.title || `Portfolio ${index + 2}`}
+                  className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    {image.title && (
+                      <p className="font-semibold text-xl mb-1">{image.title}</p>
+                    )}
+                    {image.category && (
+                      <p className="text-sm text-white/80 capitalize">{image.category}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {filteredImages.length === 0 && (
+          <div className="text-center py-16 text-muted-foreground">
+            <p className="text-lg">No portfolio items to display for this category</p>
+          </div>
+        )}
+      </section>
 
       {/* Lightbox Dialog */}
       <Dialog open={selectedImage !== null} onOpenChange={closeLightbox}>

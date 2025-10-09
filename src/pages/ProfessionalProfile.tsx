@@ -11,6 +11,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
 import { ProfessionalAboutSection } from '@/components/professionals/ProfessionalAboutSection';
 import { CompactServiceCards } from '@/components/professionals/CompactServiceCards';
+import { EmptyServiceState } from '@/components/professionals/EmptyServiceState';
+import { EmptyPortfolioState } from '@/components/professionals/EmptyPortfolioState';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
 import { BeforeAfterGallery } from '@/components/professionals/BeforeAfterGallery';
 import { ReviewsSection } from '@/components/reviews/ReviewsSection';
@@ -333,28 +335,33 @@ export default function ProfessionalProfile() {
             />
           </motion.div>
 
-          {/* Compact Services Section - Prominent Position */}
-          {profile.services.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
+          {/* Compact Services Section - Always Visible */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            {profile.services.length > 0 ? (
               <CompactServiceCards
                 services={profile.services as any}
                 onRequestQuote={handleRequestQuote}
               />
-            </motion.div>
-          )}
+            ) : (
+              <EmptyServiceState 
+                professionalId={professionalId!}
+                isOwner={user?.id === professionalId}
+              />
+            )}
+          </motion.div>
 
-          {/* Portfolio Gallery - Prominent Position */}
-          {profile.new_portfolio_images && profile.new_portfolio_images.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="bg-muted/30 -mx-4 px-4 py-8 rounded-xl"
-            >
+          {/* Portfolio Gallery - Always Visible */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="bg-muted/30 -mx-4 px-4 py-8 rounded-xl"
+          >
+            {profile.new_portfolio_images && profile.new_portfolio_images.length > 0 ? (
               <div className="space-y-4">
                 <PortfolioFilter
                   onFilterChange={(category) => {
@@ -374,8 +381,13 @@ export default function ProfessionalProfile() {
                   title="Portfolio Showcase"
                 />
               </div>
-            </motion.div>
-          )}
+            ) : (
+              <EmptyPortfolioState 
+                professionalId={professionalId!}
+                isOwner={user?.id === professionalId}
+              />
+            )}
+          </motion.div>
 
           {/* About & Process - Side by Side */}
           <motion.div
