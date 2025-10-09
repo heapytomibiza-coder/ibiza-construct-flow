@@ -17,6 +17,10 @@ import { ReviewsSection } from '@/components/reviews/ReviewsSection';
 import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
 import { ProfessionalHeroSection } from '@/components/professionals/ProfessionalHeroSection';
 import { PortfolioMasonry } from '@/components/professionals/PortfolioMasonry';
+import { TrustMetricsCard } from '@/components/professionals/TrustMetricsCard';
+import { WorkProcessTimeline } from '@/components/professionals/WorkProcessTimeline';
+import { QuickStatsGrid } from '@/components/professionals/QuickStatsGrid';
+import { FloatingCTABar } from '@/components/professionals/FloatingCTABar';
 
 export default function ProfessionalProfile() {
   const { id: professionalId } = useParams();
@@ -252,6 +256,24 @@ export default function ProfessionalProfile() {
             onRequestQuote={handleRequestQuote}
           />
 
+          {/* Quick Stats Grid */}
+          <QuickStatsGrid
+            avgProjectValue={2500}
+            avgResponseTime={`${profile.response_time_hours}h`}
+            repeatClientRate={85}
+            projectsThisMonth={Math.floor(profile.stats.completed_bookings / 12) || 0}
+          />
+
+          {/* Trust & Performance Metrics */}
+          <TrustMetricsCard
+            completionRate={95}
+            onTimeDelivery={92}
+            responseRate={98}
+            repeatClientRate={85}
+            totalJobs={profile.stats.completed_bookings}
+            yearsActive={profile.experience_years}
+          />
+
           {/* About Section */}
           <ProfessionalAboutSection
             bio={profile.bio}
@@ -262,6 +284,9 @@ export default function ProfessionalProfile() {
             primaryTrade={profile.primary_trade}
             workPhilosophy={profile.work_philosophy}
           />
+
+          {/* Work Process Timeline */}
+          <WorkProcessTimeline />
 
           {/* Services Showcase Section */}
           {profile.services.length > 0 && (
@@ -295,6 +320,13 @@ export default function ProfessionalProfile() {
       </main>
       
       <Footer />
+
+      {/* Floating CTA Bar */}
+      <FloatingCTABar
+        professionalName={profile.display_name}
+        onMessage={handleContact}
+        onRequestQuote={handleRequestQuote}
+      />
 
       {/* Quote Request Modal */}
       <QuoteRequestModal

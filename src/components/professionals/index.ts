@@ -4,3 +4,7 @@ export { BeforeAfterGallery } from './BeforeAfterGallery';
 export { ProfessionalHeroSection } from './ProfessionalHeroSection';
 export { ProfessionalBadges } from './ProfessionalBadges';
 export { PortfolioMasonry } from './PortfolioMasonry';
+export { TrustMetricsCard } from './TrustMetricsCard';
+export { WorkProcessTimeline } from './WorkProcessTimeline';
+export { QuickStatsGrid } from './QuickStatsGrid';
+export { FloatingCTABar } from './FloatingCTABar';
