@@ -269,21 +269,16 @@ export default function ProfessionalProfile() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-              <ProfessionalHeroSection
-                coverImageUrl={profile.cover_image_url}
-                name={profile.display_name}
-                tagline={profile.tagline}
-                rating={profile.stats.average_rating}
-                responseGuaranteeHours={profile.response_guarantee_hours || 24}
-                isTopRated={profile.stats.average_rating >= 4.8 && profile.stats.total_reviews >= 50}
-                isRisingStar={profile.stats.total_reviews >= 10 && profile.stats.total_reviews < 50 && profile.stats.average_rating >= 4.5}
-                onRequestQuote={handleRequestQuote}
-                isOwner={user?.id === professionalId}
-                onUploadBackdrop={() => {
-                  // TODO: Implement backdrop upload
-                  toast.info('Backdrop upload coming soon');
-                }}
-              />
+                <ProfessionalHeroSection
+                  coverImageUrl={profile.cover_image_url}
+                  name={profile.display_name}
+                  tagline={profile.tagline}
+                  rating={profile.stats.average_rating}
+                  responseGuaranteeHours={profile.response_guarantee_hours || 24}
+                  isTopRated={profile.stats.average_rating >= 4.8 && profile.stats.total_reviews >= 50}
+                  isRisingStar={profile.stats.total_reviews >= 10 && profile.stats.total_reviews < 50 && profile.stats.average_rating >= 4.5}
+                  onRequestQuote={handleRequestQuote}
+                />
               </motion.div>
 
               {/* Social Proof Banner */}

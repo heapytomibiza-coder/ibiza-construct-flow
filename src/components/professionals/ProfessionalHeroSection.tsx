@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Star, Clock, Shield, TrendingUp, Zap, Upload } from 'lucide-react';
+import { Star, Clock, Shield, TrendingUp, Zap } from 'lucide-react';
 
 interface HeroSectionProps {
   coverImageUrl?: string;
@@ -11,8 +11,6 @@ interface HeroSectionProps {
   isTopRated?: boolean;
   isRisingStar?: boolean;
   onRequestQuote?: () => void;
-  isOwner?: boolean;
-  onUploadBackdrop?: () => void;
 }
 
 export const ProfessionalHeroSection = ({
@@ -23,14 +21,12 @@ export const ProfessionalHeroSection = ({
   responseGuaranteeHours = 24,
   isTopRated,
   isRisingStar,
-  onRequestQuote,
-  isOwner,
-  onUploadBackdrop
+  onRequestQuote
 }: HeroSectionProps) => {
   const defaultGradient = "bg-gradient-to-br from-primary/20 via-primary/10 to-background";
   
   return (
-    <div className="relative w-full overflow-hidden rounded-xl mb-4">
+    <div className="relative w-full overflow-hidden rounded-xl mb-6">
       {/* Background - Cover Image or Gradient */}
       <div className={`absolute inset-0 ${!coverImageUrl && defaultGradient}`}>
         {coverImageUrl && (
@@ -40,86 +36,73 @@ export const ProfessionalHeroSection = ({
               alt={`${name} cover`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
           </>
         )}
       </div>
 
-      {/* Owner Upload Backdrop Button */}
-      {isOwner && (
-        <Button
-          size="sm"
-          variant="secondary"
-          className="absolute top-4 right-4 z-10"
-          onClick={onUploadBackdrop}
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          Upload Backdrop
-        </Button>
-      )}
-
-      {/* Content - Compact Size */}
-      <div className="relative px-4 py-6 sm:px-6 sm:py-8">
+      {/* Content Overlay */}
+      <div className="relative px-6 py-12 md:py-16">
         <div className="max-w-4xl">
           {/* Badges Row */}
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="flex flex-wrap gap-2 mb-4">
             {isTopRated && (
-              <Badge className="text-xs py-0.5 px-2 bg-yellow-500 text-white border-0">
+              <Badge className="bg-yellow-500 text-white border-0 shadow-lg">
                 <Star className="w-3 h-3 mr-1" />
-                Top-Rated
+                Top Rated Professional
               </Badge>
             )}
             {isRisingStar && (
-              <Badge className="text-xs py-0.5 px-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+              <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 shadow-lg">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 Rising Star
               </Badge>
             )}
             {responseGuaranteeHours <= 24 && (
-              <Badge className="text-xs py-0.5 px-2 bg-blue-500 text-white border-0">
+              <Badge className="bg-blue-500 text-white border-0 shadow-lg">
                 <Zap className="w-3 h-3 mr-1" />
-                {responseGuaranteeHours}h
+                {responseGuaranteeHours}h Response Guarantee
               </Badge>
             )}
-            <Badge className="text-xs py-0.5 px-2 bg-green-500 text-white border-0">
+            <Badge className="bg-green-500 text-white border-0 shadow-lg">
               <Shield className="w-3 h-3 mr-1" />
-              Verified
+              Verified Professional
             </Badge>
           </div>
 
           {/* Name & Tagline */}
-          <h1 className={`text-2xl sm:text-3xl font-bold mb-2 ${coverImageUrl ? 'text-white' : 'text-foreground'}`}>
+          <h1 className={`text-4xl md:text-5xl font-bold mb-3 ${coverImageUrl ? 'text-white' : 'text-foreground'}`}>
             {name}
           </h1>
           
           {tagline && (
-            <p className={`text-sm sm:text-base mb-4 ${coverImageUrl ? 'text-white/90' : 'text-muted-foreground'}`}>
+            <p className={`text-lg md:text-xl mb-6 ${coverImageUrl ? 'text-white/90' : 'text-muted-foreground'}`}>
               {tagline}
             </p>
           )}
 
           {/* Quick Stats */}
-          <div className="flex flex-wrap gap-4 mb-4">
-            <div className={`flex items-center gap-1.5 ${coverImageUrl ? 'text-white' : 'text-foreground'}`}>
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-base font-bold">{rating}</span>
-              <span className={`text-sm ${coverImageUrl ? 'text-white/80' : 'text-muted-foreground'}`}>
+          <div className="flex flex-wrap gap-6 mb-6">
+            <div className={`flex items-center gap-2 ${coverImageUrl ? 'text-white' : 'text-foreground'}`}>
+              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              <span className="text-xl font-bold">{rating}</span>
+              <span className={coverImageUrl ? 'text-white/80' : 'text-muted-foreground'}>
                 rating
               </span>
             </div>
-            <div className={`flex items-center gap-1.5 text-sm ${coverImageUrl ? 'text-white' : 'text-foreground'}`}>
-              <Clock className="w-4 h-4" />
-              <span>Responds in {responseGuaranteeHours}h</span>
+            <div className={`flex items-center gap-2 ${coverImageUrl ? 'text-white' : 'text-foreground'}`}>
+              <Clock className="w-5 h-5" />
+              <span className="font-semibold">Responds within {responseGuaranteeHours}h</span>
             </div>
           </div>
 
           {/* CTA */}
           <Button 
-            size="default" 
+            size="lg" 
             onClick={onRequestQuote}
-            className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
           >
-            Get Free Quote
+            Get Your Free Quote
           </Button>
         </div>
       </div>
