@@ -349,7 +349,8 @@ export default function ProfessionalProfile() {
                   description: 'Fast response for urgent plumbing issues including leaks, blocked drains, and pipe repairs. Available 24/7 for emergencies.',
                   pricing_structure: { price_range: { min: 80, max: 250 } },
                   estimated_duration: '1-3 hours',
-                  is_active: true
+                  is_active: true,
+                  image_url: 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=800&h=600&fit=crop'
                 },
                 {
                   id: 'example-2',
@@ -358,7 +359,8 @@ export default function ProfessionalProfile() {
                   description: 'Complete bathroom fitting service including toilets, sinks, showers, and bathtubs. Quality workmanship guaranteed.',
                   pricing_structure: { base_price: 500 },
                   estimated_duration: '2-5 days',
-                  is_active: true
+                  is_active: true,
+                  image_url: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&h=600&fit=crop'
                 },
                 {
                   id: 'example-3',
@@ -367,7 +369,8 @@ export default function ProfessionalProfile() {
                   description: 'Annual boiler service, radiator maintenance, and heating system diagnostics. Keep your system running efficiently.',
                   pricing_structure: { base_price: 120 },
                   estimated_duration: '2-4 hours',
-                  is_active: true
+                  is_active: true,
+                  image_url: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=600&fit=crop'
                 }
               ]}
               onRequestQuote={handleRequestQuote}

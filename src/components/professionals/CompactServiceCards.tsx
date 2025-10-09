@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { 
   Euro, 
   Clock,
-  ArrowRight,
-  CheckCircle2
+  ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -19,6 +19,7 @@ interface Service {
   };
   estimated_duration?: string;
   is_active: boolean;
+  image_url?: string;
 }
 
 interface CompactServiceCardsProps {
@@ -43,71 +44,77 @@ export const CompactServiceCards = ({ services, onRequestQuote }: CompactService
         </p>
       </div>
 
-      {/* Compact Service List */}
-      <div className="space-y-4">
+      {/* Service Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {activeServices.map((service, index) => (
           <motion.div
             key={service.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-            className="group relative bg-card border-2 rounded-xl p-6 hover:border-primary/50 hover:shadow-lg transition-all duration-300"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
           >
-            <div className="flex items-start justify-between gap-6">
-              {/* Service Info */}
-              <div className="flex-1 space-y-3">
-                <div className="flex items-start gap-4">
-                  <CheckCircle2 className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                  <div className="flex-1">
-                    <h3 className="font-bold text-2xl group-hover:text-primary transition-colors mb-2">
-                      {service.service_name || service.micro_service_id}
-                    </h3>
-                    {service.description && (
-                      <p className="text-base text-muted-foreground leading-relaxed line-clamp-2">
-                        {service.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Pricing & Duration Tags */}
-                <div className="flex flex-wrap items-center gap-3 ml-10">
+            <Card className="group overflow-hidden border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+              {/* Service Image */}
+              <div className="relative h-48 overflow-hidden bg-muted">
+                <img 
+                  src={service.image_url || `https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=600&fit=crop`}
+                  alt={service.service_name || service.micro_service_id}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                
+                {/* Pricing Badge on Image */}
+                <div className="absolute top-4 right-4">
                   {service.pricing_structure?.base_price && (
-                    <Badge variant="secondary" className="font-bold text-base px-4 py-1.5">
-                      <Euro className="w-4 h-4 mr-1.5" />
+                    <Badge className="bg-primary text-primary-foreground font-bold text-base px-3 py-1.5 shadow-lg">
+                      <Euro className="w-4 h-4 mr-1" />
                       From €{service.pricing_structure.base_price}
                     </Badge>
                   )}
                   {service.pricing_structure?.price_range && (
-                    <Badge variant="secondary" className="font-bold text-base px-4 py-1.5">
-                      <Euro className="w-4 h-4 mr-1.5" />
+                    <Badge className="bg-primary text-primary-foreground font-bold text-base px-3 py-1.5 shadow-lg">
+                      <Euro className="w-4 h-4 mr-1" />
                       €{service.pricing_structure.price_range.min} - €{service.pricing_structure.price_range.max}
-                    </Badge>
-                  )}
-                  {service.estimated_duration && (
-                    <Badge variant="outline" className="text-sm px-3 py-1">
-                      <Clock className="w-3.5 h-3.5 mr-1.5" />
-                      {service.estimated_duration}
                     </Badge>
                   )}
                 </div>
               </div>
 
-              {/* CTA Button */}
-              {onRequestQuote && (
-                <Button
-                  onClick={() => onRequestQuote(service.id)}
-                  size="lg"
-                  className="flex-shrink-0 font-semibold"
-                >
-                  Get Quote
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              )}
-            </div>
+              {/* Card Content */}
+              <CardContent className="p-5 flex-1 flex flex-col">
+                <h3 className="font-bold text-xl mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                  {service.service_name || service.micro_service_id}
+                </h3>
+                
+                {service.description && (
+                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4 flex-1">
+                    {service.description}
+                  </p>
+                )}
 
-            {/* Hover effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none" />
+                {/* Duration Badge */}
+                {service.estimated_duration && (
+                  <div className="flex items-center gap-2 mb-4">
+                    <Badge variant="outline" className="text-xs">
+                      <Clock className="w-3 h-3 mr-1.5" />
+                      {service.estimated_duration}
+                    </Badge>
+                  </div>
+                )}
+
+                {/* CTA Button */}
+                {onRequestQuote && (
+                  <Button
+                    onClick={() => onRequestQuote(service.id)}
+                    className="w-full font-semibold group-hover:shadow-md"
+                    size="lg"
+                  >
+                    Get Quote
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>
