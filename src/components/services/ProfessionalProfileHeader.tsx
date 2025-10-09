@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star, MapPin, Award, Phone, Mail, Clock, CheckCircle, Circle } from 'lucide-react';
+import { Star, MapPin, Award, Mail, Clock, CheckCircle, Circle } from 'lucide-react';
 import { useProfessionalAvailability } from '@/hooks/useProfessionalAvailability';
 
 interface ProfessionalData {
@@ -23,7 +23,6 @@ interface ProfessionalData {
 interface ProfessionalProfileHeaderProps {
   professional: ProfessionalData;
   showContactButtons?: boolean;
-  onContact?: () => void;
   onMessage?: () => void;
   onRequestQuote?: () => void;
 }
@@ -31,7 +30,6 @@ interface ProfessionalProfileHeaderProps {
 export const ProfessionalProfileHeader = ({ 
   professional, 
   showContactButtons = true,
-  onContact,
   onMessage,
   onRequestQuote
 }: ProfessionalProfileHeaderProps) => {
@@ -123,10 +121,6 @@ export const ProfessionalProfileHeader = ({
           <div className="flex flex-col gap-3">
             <Button size="lg" onClick={onRequestQuote} className="bg-gradient-hero text-white">
               Request Quote
-            </Button>
-            <Button variant="outline" size="lg" onClick={onContact} className="bg-copper hover:bg-copper/90">
-              <Phone className="w-4 h-4 mr-2" />
-              Call Now
             </Button>
             <Button variant="outline" size="lg" onClick={onMessage}>
               <Mail className="w-4 h-4 mr-2" />

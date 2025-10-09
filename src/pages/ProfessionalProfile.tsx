@@ -194,7 +194,6 @@ export default function ProfessionalProfile() {
               avatarUrl: profile.avatar_url,
               verificationStatus: profile.verification_status
             }}
-            onContact={handleContact}
             onMessage={handleContact}
             onRequestQuote={handleRequestQuote}
           />
