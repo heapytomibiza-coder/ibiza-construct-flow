@@ -34,6 +34,14 @@ const RouteGuard = React.lazy(() => import("./components/RouteGuard"));
 const UnifiedClientDashboard = React.lazy(() => import("./components/dashboards/UnifiedClientDashboard"));
 const UnifiedProfessionalDashboard = React.lazy(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
 const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
+const AdminHome = React.lazy(() => import("./pages/admin/AdminHome"));
+const ProfilesQueue = React.lazy(() => import("./pages/admin/ProfilesQueue"));
+const JobsQueue = React.lazy(() => import("./pages/admin/JobsQueue"));
+const ReviewsQueue = React.lazy(() => import("./pages/admin/ReviewsQueue"));
+const DisputesQueue = React.lazy(() => import("./pages/admin/DisputesQueue"));
+const ServicesPage = React.lazy(() => import("./pages/admin/ServicesPage"));
+const HealthMonitor = React.lazy(() => import("./pages/admin/HealthMonitor"));
+const AdminSettingsPage = React.lazy(() => import("./pages/admin/AdminSettingsPage"));
 const AdminQuestions = React.lazy(() => import("./pages/AdminQuestions"));
 const PackCompareView = React.lazy(() => import("./components/admin/packs/PackCompareView").then(m => ({ default: m.PackCompareView })));
 const WebsiteSettings = React.lazy(() => import("./pages/admin/WebsiteSettings"));
@@ -236,6 +244,46 @@ function AppContent() {
           <Route path="/dashboard/admin" element={
             <RouteGuard requiredRole="admin">
               <AdminDashboardPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/home" element={
+            <RouteGuard requiredRole="admin">
+              <AdminHome />
+            </RouteGuard>
+          } />
+          <Route path="/admin/profiles" element={
+            <RouteGuard requiredRole="admin">
+              <ProfilesQueue />
+            </RouteGuard>
+          } />
+          <Route path="/admin/jobs" element={
+            <RouteGuard requiredRole="admin">
+              <JobsQueue />
+            </RouteGuard>
+          } />
+          <Route path="/admin/reviews" element={
+            <RouteGuard requiredRole="admin">
+              <ReviewsQueue />
+            </RouteGuard>
+          } />
+          <Route path="/admin/disputes" element={
+            <RouteGuard requiredRole="admin">
+              <DisputesQueue />
+            </RouteGuard>
+          } />
+          <Route path="/admin/services" element={
+            <RouteGuard requiredRole="admin">
+              <ServicesPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/health" element={
+            <RouteGuard requiredRole="admin">
+              <HealthMonitor />
+            </RouteGuard>
+          } />
+          <Route path="/admin/settings" element={
+            <RouteGuard requiredRole="admin">
+              <AdminSettingsPage />
             </RouteGuard>
           } />
           <Route path="/admin/questions" element={
