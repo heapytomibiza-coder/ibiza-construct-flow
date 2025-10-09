@@ -13,13 +13,13 @@ import {
 } from '@/components/ui/table';
 import { Search, SlidersHorizontal } from 'lucide-react';
 
-interface Column<T> {
+export interface Column<T> {
   key: string;
   label: string;
   render?: (item: T) => ReactNode;
 }
 
-interface FilterChip {
+export interface FilterChip {
   id: string;
   label: string;
   count?: number;
