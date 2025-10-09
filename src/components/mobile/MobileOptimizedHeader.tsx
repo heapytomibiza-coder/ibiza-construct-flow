@@ -37,7 +37,7 @@ export const MobileOptimizedHeader = ({
   };
 
   const getDashboardPath = () => {
-    if (isAdmin()) return '/dashboard/admin';
+    if (isAdmin()) return '/admin';
     if (isProfessional()) return '/dashboard/pro';  
     if (isClient()) return '/dashboard/client';
     return '/dashboard';

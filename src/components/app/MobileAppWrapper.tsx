@@ -21,7 +21,7 @@ const MobileAppWrapper = ({ children }: MobileAppWrapperProps) => {
   const user = true; // Temporary - will integrate auth properly later
 
   // Define routes that should have mobile navigation
-  const dashboardRoutes = ['/dashboard/pro', '/dashboard/client', '/dashboard/admin'];
+  const dashboardRoutes = ['/dashboard/pro', '/dashboard/client', '/dashboard/admin', '/admin'];
   const showMobileNav = isMobile && user && dashboardRoutes.some(route => 
     location.pathname.startsWith(route)
   );
@@ -38,6 +38,7 @@ const MobileAppWrapper = ({ children }: MobileAppWrapperProps) => {
     if (location.pathname.startsWith('/dashboard/pro')) return 'Professional Dashboard';
     if (location.pathname.startsWith('/dashboard/client')) return 'Client Dashboard';
     if (location.pathname.startsWith('/dashboard/admin')) return 'Admin Dashboard';
+    if (location.pathname.startsWith('/admin')) return 'Admin Console';
     if (location.pathname.startsWith('/post')) return 'Post Job';
     if (location.pathname.startsWith('/service')) return 'Service Details';
     return 'CS Ibiza';

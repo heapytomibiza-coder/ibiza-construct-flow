@@ -92,7 +92,7 @@ export function QuickDemoLogin() {
       const dashboardMap: Record<string, string> = {
         client: '/dashboard/client',
         professional: '/dashboard/pro',
-        admin: '/dashboard/admin'
+        admin: '/admin'
       };
 
       let targetUrl: string;

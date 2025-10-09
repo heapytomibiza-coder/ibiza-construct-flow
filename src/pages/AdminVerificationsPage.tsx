@@ -169,7 +169,7 @@ export default function AdminVerificationsPage() {
         {/* Breadcrumbs */}
         <Breadcrumbs 
           items={[
-            { label: 'Admin', href: '/dashboard/admin' },
+            { label: 'Admin', href: '/admin' },
             { label: 'Verifications' }
           ]}
         />

@@ -24,6 +24,7 @@ export const preloadRoute = (routePath: string) => {
     '/dashboard/pro': () => import('@/components/dashboards/UnifiedProfessionalDashboard'),
     '/dashboard/client': () => import('@/components/dashboards/UnifiedClientDashboard'),  
     '/dashboard/admin': () => import('@/pages/AdminDashboardPage'),
+    '/admin': () => import('@/pages/admin/Dashboard'),
     '/post': () => import('@/pages/PostJob'),
     '/discovery': () => import('@/pages/Discovery'),
   };

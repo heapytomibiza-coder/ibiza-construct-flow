@@ -22,7 +22,7 @@ export default function AdminDisputeDetailPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate("/dashboard/admin")}
+          onClick={() => navigate("/admin")}
           className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
