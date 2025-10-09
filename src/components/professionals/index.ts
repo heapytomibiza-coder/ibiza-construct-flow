@@ -20,3 +20,8 @@ export { InteractiveCalendar } from './InteractiveCalendar';
 export { PortfolioFilter } from './PortfolioFilter';
 export { QuickChatWidget } from './QuickChatWidget';
 export { EnhancedReviewSection } from './EnhancedReviewSection';
+export { TestimonialCarousel } from './TestimonialCarousel';
+export { CertificationBadges } from './CertificationBadges';
+export { FAQSection } from './FAQSection';
+export { QuickContactForm } from './QuickContactForm';
+export { SocialLinks } from './SocialLinks';

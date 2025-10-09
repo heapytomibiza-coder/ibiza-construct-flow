@@ -32,6 +32,11 @@ import { VideoShowcase } from '@/components/professionals/VideoShowcase';
 import { InteractiveCalendar } from '@/components/professionals/InteractiveCalendar';
 import { PortfolioFilter } from '@/components/professionals/PortfolioFilter';
 import { QuickChatWidget } from '@/components/professionals/QuickChatWidget';
+import { TestimonialCarousel } from '@/components/professionals/TestimonialCarousel';
+import { CertificationBadges } from '@/components/professionals/CertificationBadges';
+import { FAQSection } from '@/components/professionals/FAQSection';
+import { QuickContactForm } from '@/components/professionals/QuickContactForm';
+import { SocialLinks } from '@/components/professionals/SocialLinks';
 import { motion } from 'framer-motion';
 
 export default function ProfessionalProfile() {
@@ -509,6 +514,69 @@ export default function ProfessionalProfile() {
             transition={{ duration: 0.5, delay: 1.4 }}
           >
             <ReviewsSection professionalId={professionalId!} />
+          </motion.div>
+
+          {/* Testimonial Carousel */}
+          {profile.reviews && profile.reviews.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 1.45 }}
+            >
+              <TestimonialCarousel
+                testimonials={profile.reviews.slice(0, 5).map((review: any) => ({
+                  id: review.id,
+                  clientName: 'Satisfied Client',
+                  rating: review.rating,
+                  comment: review.comment,
+                  projectType: profile.primary_trade,
+                  date: new Date(review.created_at).toLocaleDateString()
+                }))}
+              />
+            </motion.div>
+          )}
+
+          {/* Certification Badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.5 }}
+          >
+            <CertificationBadges />
+          </motion.div>
+
+          {/* FAQ Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.55 }}
+          >
+            <FAQSection professionalName={profile.display_name} />
+          </motion.div>
+
+          {/* Quick Contact Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.6 }}
+          >
+            <QuickContactForm
+              professionalId={professionalId!}
+              professionalName={profile.display_name}
+              onSubmit={async (data) => {
+                console.log('Contact form submitted:', data);
+                handleContact();
+              }}
+            />
+          </motion.div>
+
+          {/* Social Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.65 }}
+          >
+            <SocialLinks professionalName={profile.display_name} />
           </motion.div>
         </div>
       </main>
