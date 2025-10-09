@@ -29,6 +29,7 @@ const navigationItems = [
   {
     group: 'Operations',
     items: [
+      { id: 'users', label: 'Users', icon: Users, path: '/admin/users', description: 'User management' },
       { id: 'profiles', label: 'Profiles', icon: Users, path: '/admin/profiles', description: 'Verification queue' },
       { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/admin/jobs', description: 'Job & booking queue' },
       { id: 'services', label: 'Services', icon: Folder, path: '/admin/services', description: 'Service catalog' },
