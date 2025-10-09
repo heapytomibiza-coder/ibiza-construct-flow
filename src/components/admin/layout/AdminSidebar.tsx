@@ -89,8 +89,8 @@ export function AdminSidebar() {
                           to={item.path}
                           className={({ isActive }) =>
                             isActive
-                              ? 'bg-accent text-accent-foreground font-medium'
-                              : 'hover:bg-accent/50'
+                              ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+                              : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground'
                           }
                         >
                           <Icon className="h-4 w-4" />
