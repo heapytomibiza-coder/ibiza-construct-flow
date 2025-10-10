@@ -26,7 +26,7 @@ export const JobsMarketplace: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
-  const [budgetFilter, setBudgetFilter] = useState('');
+  const [budgetFilter, setBudgetFilter] = useState('all');
   const [sortBy, setSortBy] = useState('created_at');
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
   const [selectedJobForOffer, setSelectedJobForOffer] = useState<string | null>(null);
@@ -89,7 +89,7 @@ export const JobsMarketplace: React.FC = () => {
     const matchesLocation = !locationFilter || 
       (job.location?.area?.toLowerCase().includes(locationFilter.toLowerCase()));
     
-    const matchesBudget = !budgetFilter || 
+    const matchesBudget = budgetFilter === 'all' || 
       (budgetFilter === 'low' && job.budget_value < 100) ||
       (budgetFilter === 'medium' && job.budget_value >= 100 && job.budget_value < 500) ||
       (budgetFilter === 'high' && job.budget_value >= 500);
@@ -210,7 +210,7 @@ export const JobsMarketplace: React.FC = () => {
                 <SelectValue placeholder="Budget range" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All budgets</SelectItem>
+                <SelectItem value="all">All budgets</SelectItem>
                 <SelectItem value="low">Under €100</SelectItem>
                 <SelectItem value="medium">€100 - €500</SelectItem>
                 <SelectItem value="high">€500+</SelectItem>
