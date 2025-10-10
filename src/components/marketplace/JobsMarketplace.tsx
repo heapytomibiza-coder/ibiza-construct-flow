@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Search, Filter, MapPin, Euro, Calendar, 
-  Grid, List, SortAsc, Briefcase, Clock
+  Grid, List, SortAsc, Briefcase, Clock, Tag
 } from 'lucide-react';
 import { JobListingCard } from './JobListingCard';
 import { SendOfferModal } from './SendOfferModal';
@@ -27,6 +27,7 @@ export const JobsMarketplace: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [budgetFilter, setBudgetFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('created_at');
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
   const [selectedJobForOffer, setSelectedJobForOffer] = useState<string | null>(null);
@@ -93,8 +94,13 @@ export const JobsMarketplace: React.FC = () => {
       (budgetFilter === 'low' && job.budget_value < 100) ||
       (budgetFilter === 'medium' && job.budget_value >= 100 && job.budget_value < 500) ||
       (budgetFilter === 'high' && job.budget_value >= 500);
+    
+    const matchesCategory = categoryFilter === 'all' || 
+      job.title.toLowerCase().includes(categoryFilter.toLowerCase()) ||
+      job.description.toLowerCase().includes(categoryFilter.toLowerCase()) ||
+      job.micro_id?.toLowerCase().includes(categoryFilter.toLowerCase());
 
-    return matchesSearch && matchesLocation && matchesBudget;
+    return matchesSearch && matchesLocation && matchesBudget && matchesCategory;
   });
 
   const handleSendOffer = async (jobId: string) => {
@@ -183,7 +189,7 @@ export const JobsMarketplace: React.FC = () => {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
               <Input
@@ -193,6 +199,26 @@ export const JobsMarketplace: React.FC = () => {
                 className="pl-10"
               />
             </div>
+            
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="bg-background">
+                <Tag className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                <SelectItem value="all">All categories</SelectItem>
+                <SelectItem value="cleaning">Cleaning</SelectItem>
+                <SelectItem value="plumbing">Plumbing</SelectItem>
+                <SelectItem value="electrical">Electrical</SelectItem>
+                <SelectItem value="painting">Painting</SelectItem>
+                <SelectItem value="carpentry">Carpentry</SelectItem>
+                <SelectItem value="gardening">Gardening</SelectItem>
+                <SelectItem value="moving">Moving & Delivery</SelectItem>
+                <SelectItem value="assembly">Assembly</SelectItem>
+                <SelectItem value="handyman">Handyman</SelectItem>
+                <SelectItem value="repair">Repair</SelectItem>
+              </SelectContent>
+            </Select>
             
             <div className="relative">
               <MapPin className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
@@ -205,11 +231,11 @@ export const JobsMarketplace: React.FC = () => {
             </div>
             
             <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background">
                 <Euro className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Budget range" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover z-50">
                 <SelectItem value="all">All budgets</SelectItem>
                 <SelectItem value="low">Under €100</SelectItem>
                 <SelectItem value="medium">€100 - €500</SelectItem>
@@ -218,11 +244,11 @@ export const JobsMarketplace: React.FC = () => {
             </Select>
             
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background">
                 <SortAsc className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover z-50">
                 <SelectItem value="created_at">Newest first</SelectItem>
                 <SelectItem value="budget_value">Highest budget</SelectItem>
                 <SelectItem value="title">Alphabetical</SelectItem>
