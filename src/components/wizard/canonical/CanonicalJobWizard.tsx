@@ -251,9 +251,8 @@ export const CanonicalJobWizard: React.FC = () => {
     setLoading(true);
     try {
       const budgetValue = parseBudgetValue(wizardState.logistics.budgetRange);
-      const budgetType = wizardState.logistics.budgetRange 
-        ? (budgetValue ? 'fixed' : 'range') 
-        : 'hourly';
+      // Use 'fixed' for ranges (actual range stored in answers.logistics.budgetRange)
+      const budgetType = wizardState.logistics.budgetRange ? 'fixed' : 'hourly';
 
       const { data: newJob, error } = await supabase
         .from('jobs')
