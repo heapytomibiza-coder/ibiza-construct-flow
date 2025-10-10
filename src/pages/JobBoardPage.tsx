@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 export default function JobBoardPage() {
-  const { profile, isProfessional } = useAuth();
+  const { profile } = useAuth();
   const navigate = useNavigate();
   
-  // Get subscription tier from profile - adjust based on your actual profile structure
+  // Get subscription tier from profile
   const subscriptionTier = (profile as any)?.subscription_tier || 'basic';
   
   return (
@@ -27,8 +27,8 @@ export default function JobBoardPage() {
           </p>
         </div>
 
-        {/* Subscription Tier Info (only for professionals) */}
-        {isProfessional() && (
+        {/* Subscription Tier Info */}
+        {subscriptionTier && (
           <>
             {subscriptionTier === 'basic' && (
               <Card className="p-4 mb-6 bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
