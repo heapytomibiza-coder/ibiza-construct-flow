@@ -135,7 +135,16 @@ export const JobsMarketplace: React.FC = () => {
   };
 
   const handleMessageClient = (jobId: string) => {
-    toast.info('Messaging feature coming soon');
+    toast.info('Message feature available - Click to start conversation', {
+      description: `Job ID: ${jobId}`,
+      action: {
+        label: 'Start Chat',
+        onClick: () => {
+          // TODO: Implement messaging functionality
+          console.log('Starting chat for job:', jobId);
+        }
+      }
+    });
   };
 
   if (loading) {

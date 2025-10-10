@@ -19,7 +19,7 @@ import {
 import { 
   MapPin, Clock, Euro, User, Calendar, 
   Briefcase, FileText, CheckCircle, Send,
-  Image, Phone, Video, Home, AlertCircle
+  Image, Phone, Video, Home, AlertCircle, MessageCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -70,13 +70,15 @@ interface JobDetailsModalProps {
   open: boolean;
   onClose: () => void;
   onApply?: (jobId: string) => void;
+  onMessage?: (jobId: string) => void;
 }
 
 export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
   job,
   open,
   onClose,
-  onApply
+  onApply,
+  onMessage
 }) => {
   const daysPosted = Math.floor(
     (Date.now() - new Date(job.created_at).getTime()) / (1000 * 60 * 60 * 24)
@@ -543,6 +545,16 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                 className="flex-1"
               >
                 Close
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onMessage?.(job.id);
+                }}
+                className="flex-1"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Message
               </Button>
               <Button
                 onClick={() => {

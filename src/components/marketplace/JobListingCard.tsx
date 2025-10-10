@@ -249,6 +249,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
           open={showDetailsModal}
           onClose={() => setShowDetailsModal(false)}
           onApply={onSendOffer}
+          onMessage={onMessage}
         />
       </CardContent>
     </Card>
