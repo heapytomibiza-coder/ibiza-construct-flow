@@ -32,22 +32,22 @@ export function useCalculatorPricing(selections: CalculatorSelections) {
       setLoading(true);
       try {
         // 1. Fetch cost template
-        const { data: template, error } = await supabase
-          .from('calculator_cost_templates' as any)
-          .select('*')
-          .eq('project_type', selections.projectType)
-          .eq('quality_tier', selections.qualityTier.tier_key)
-          .single();
+      const { data: template, error } = await supabase
+        .from('calculator_cost_templates' as any)
+        .select('*')
+        .eq('project_type', selections.projectType)
+        .eq('quality_tier', selections.qualityTier.tier_key)
+        .maybeSingle();
 
-        if (error || !template) {
-          console.error('Template fetch error:', error);
-          setLoading(false);
-          return;
-        }
+      if (error || !template) {
+        console.error('Template fetch error:', error);
+        setLoading(false);
+        return;
+      }
 
-        // 2. Calculate base price
-        const sizeAvg = (selections.sizePreset.size_min_sqm + selections.sizePreset.size_max_sqm) / 2;
-        let subtotal = template.base_rate_per_sqm * sizeAvg;
+      // 2. Calculate base price
+      const sizeAvg = (selections.sizePreset.size_min_sqm + selections.sizePreset.size_max_sqm) / 2;
+      let subtotal = template.base_rate_per_sqm * sizeAvg;
 
         // 3. Apply tier multiplier
         subtotal *= selections.qualityTier.multiplier;
