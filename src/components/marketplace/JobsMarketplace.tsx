@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Search, Filter, MapPin, Euro, Calendar, 
-  Grid, List, SortAsc, Briefcase, Clock, Tag
+  Search, Filter, Grid, List, SortAsc, Briefcase
 } from 'lucide-react';
 import { JobListingCard } from './JobListingCard';
 import { SendOfferModal } from './SendOfferModal';
+import { JobFiltersPanel } from './JobFiltersPanel';
+import { EmptyJobBoardState } from './EmptyJobBoardState';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,12 +32,21 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [locationFilter, setLocationFilter] = useState('');
-  const [budgetFilter, setBudgetFilter] = useState('all');
-  const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('created_at');
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
   const [selectedJobForOffer, setSelectedJobForOffer] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  
+  const [filters, setFilters] = useState({
+    categories: [] as string[],
+    budgetRange: [0, 5000] as [number, number],
+    startDate: 'all',
+    location: '',
+    hasPhotos: false,
+    highBudget: false,
+    highlyRated: false,
+    newToday: false
+  });
 
   // Update internal search when external prop changes
   React.useEffect(() => {
@@ -47,13 +56,13 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   // Apply quick filters
   React.useEffect(() => {
     if (quickFilter === 'high-budget') {
-      setBudgetFilter('high');
+      setFilters(prev => ({ ...prev, highBudget: true, budgetRange: [500, 5000] }));
     } else if (quickFilter === 'photos') {
-      // Will be handled in filtering logic
+      setFilters(prev => ({ ...prev, hasPhotos: true }));
     } else if (quickFilter === 'this-week') {
-      // Will be handled in filtering logic
+      setFilters(prev => ({ ...prev, startDate: 'this-week' }));
     } else if (quickFilter === 'asap') {
-      // Will be handled in filtering logic
+      setFilters(prev => ({ ...prev, startDate: 'asap' }));
     }
   }, [quickFilter]);
 
@@ -132,35 +141,52 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   };
 
   const filteredJobs = jobs.filter(job => {
+    // Search
     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.description.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesLocation = !locationFilter || 
-      (job.location?.area?.toLowerCase().includes(locationFilter.toLowerCase()));
+    // Category
+    const matchesCategory = filters.categories.length === 0 || 
+      filters.categories.includes(job.category);
     
-    const matchesBudget = budgetFilter === 'all' || 
-      (budgetFilter === 'low' && job.budget_value < 100) ||
-      (budgetFilter === 'medium' && job.budget_value >= 100 && job.budget_value < 500) ||
-      (budgetFilter === 'high' && job.budget_value >= 500);
+    // Budget range
+    const matchesBudget = job.budget_value >= filters.budgetRange[0] && 
+      job.budget_value <= filters.budgetRange[1];
     
-    const matchesCategory = categoryFilter === 'all' || 
-      job.title.toLowerCase().includes(categoryFilter.toLowerCase()) ||
-      job.description.toLowerCase().includes(categoryFilter.toLowerCase()) ||
-      job.micro_id?.toLowerCase().includes(categoryFilter.toLowerCase());
-
-    // Quick filter logic
+    // Location
+    const matchesLocation = !filters.location || 
+      (job.location?.area?.toLowerCase().includes(filters.location.toLowerCase()));
+    
+    // Start date
+    let matchesStartDate = true;
+    if (filters.startDate !== 'all') {
+      const startDate = job.answers?.logistics?.startDate;
+      const isASAP = job.answers?.logistics?.startDatePreset === 'asap';
+      
+      if (filters.startDate === 'asap') {
+        matchesStartDate = isASAP;
+      } else if (filters.startDate === 'this-week') {
+        matchesStartDate = startDate && new Date(startDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      } else if (filters.startDate === 'next-week') {
+        const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        const twoWeeksFromNow = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+        matchesStartDate = startDate && new Date(startDate) > weekFromNow && new Date(startDate) <= twoWeeksFromNow;
+      }
+    }
+    
+    // Special filters
     const hasPhotos = job.answers?.extras?.photos?.length > 0;
-    const matchesPhotoFilter = quickFilter !== 'photos' || hasPhotos;
+    const matchesPhotos = !filters.hasPhotos || hasPhotos;
     
-    const startDate = job.answers?.logistics?.startDate;
-    const isThisWeek = startDate && new Date(startDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const matchesWeekFilter = quickFilter !== 'this-week' || isThisWeek;
+    const matchesHighBudget = !filters.highBudget || job.budget_value >= 500;
     
-    const isASAP = job.answers?.logistics?.startDatePreset === 'asap';
-    const matchesASAPFilter = quickFilter !== 'asap' || isASAP;
+    const matchesHighlyRated = !filters.highlyRated || (job.client?.rating >= 4);
+    
+    const isNewToday = new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const matchesNewToday = !filters.newToday || isNewToday;
 
-    return matchesSearch && matchesLocation && matchesBudget && matchesCategory && 
-           matchesPhotoFilter && matchesWeekFilter && matchesASAPFilter;
+    return matchesSearch && matchesCategory && matchesBudget && matchesLocation && 
+           matchesStartDate && matchesPhotos && matchesHighBudget && matchesHighlyRated && matchesNewToday;
   });
 
   // Featured jobs (high budget + photos + recent)
@@ -235,119 +261,90 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Section Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-display font-bold text-foreground">
-            Available Projects
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {filteredJobs.length} opportunities • {featuredJobs.length} featured
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px] bg-background">
-              <SortAsc className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent className="bg-popover z-50">
-              <SelectItem value="created_at">Newest first</SelectItem>
-              <SelectItem value="budget_value">Highest budget</SelectItem>
-              <SelectItem value="title">Alphabetical</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button
-            variant={viewMode === 'card' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setViewMode('card')}
-          >
-            <Grid className="w-4 h-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'compact' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setViewMode('compact')}
-          >
-            <List className="w-4 h-4" />
-          </Button>
-        </div>
+    <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+      {/* Filter Panel - Desktop Sidebar */}
+      <div className="hidden lg:block">
+        <JobFiltersPanel
+          open={true}
+          onClose={() => {}}
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
-              <Input
-                placeholder="Search jobs..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="bg-background">
-                <Tag className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                <SelectItem value="all">All categories</SelectItem>
-                <SelectItem value="cleaning">Cleaning</SelectItem>
-                <SelectItem value="plumbing">Plumbing</SelectItem>
-                <SelectItem value="electrical">Electrical</SelectItem>
-                <SelectItem value="painting">Painting</SelectItem>
-                <SelectItem value="carpentry">Carpentry</SelectItem>
-                <SelectItem value="gardening">Gardening</SelectItem>
-                <SelectItem value="moving">Moving & Delivery</SelectItem>
-                <SelectItem value="assembly">Assembly</SelectItem>
-                <SelectItem value="handyman">Handyman</SelectItem>
-                <SelectItem value="repair">Repair</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <div className="relative">
-              <MapPin className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
-              <Input
-                placeholder="Location..."
-                value={locationFilter}
-                onChange={(e) => setLocationFilter(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-              <SelectTrigger className="bg-background">
-                <Euro className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Budget range" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                <SelectItem value="all">All budgets</SelectItem>
-                <SelectItem value="low">Under €100</SelectItem>
-                <SelectItem value="medium">€100 - €500</SelectItem>
-                <SelectItem value="high">€500+</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="bg-background">
-                <SortAsc className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                <SelectItem value="created_at">Newest first</SelectItem>
-                <SelectItem value="budget_value">Highest budget</SelectItem>
-                <SelectItem value="title">Alphabetical</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Main Content */}
+      <div className="space-y-6">
+        {/* Section Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-display font-bold text-foreground">
+              Available Projects
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {filteredJobs.length} opportunities • {featuredJobs.length} featured
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          
+          <div className="flex items-center gap-2">
+            {/* Mobile Filter Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(true)}
+              className="lg:hidden"
+            >
+              <Filter className="w-4 h-4 mr-2" />
+              Filters
+              {(filters.categories.length > 0 || filters.hasPhotos || filters.highBudget || filters.highlyRated || filters.newToday) && (
+                <Badge variant="secondary" className="ml-2">
+                  {filters.categories.length + 
+                   (filters.hasPhotos ? 1 : 0) + 
+                   (filters.highBudget ? 1 : 0) + 
+                   (filters.highlyRated ? 1 : 0) + 
+                   (filters.newToday ? 1 : 0)}
+                </Badge>
+              )}
+            </Button>
+
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[160px] bg-background">
+                <SortAsc className="w-4 h-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                <SelectItem value="created_at">Newest</SelectItem>
+                <SelectItem value="budget_value">Budget</SelectItem>
+                <SelectItem value="title">A-Z</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button
+              variant={viewMode === 'card' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('card')}
+            >
+              <Grid className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'compact' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('compact')}
+            >
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search jobs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
 
       {/* Featured Jobs Section */}
       {featuredJobs.length > 0 && (
@@ -380,38 +377,51 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
         </div>
       )}
 
-      {/* All Jobs Grid */}
-      <div className={`grid gap-6 ${viewMode === 'card' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-        {regularJobs.length > 0 ? (
-          regularJobs.map((job) => (
-            <div
-              key={job.id}
-              className={cn(
-                "animate-fade-in",
-                highlightJobId === job.id && "ring-2 ring-copper animate-pulse"
-              )}
-            >
-              <JobListingCard
-                job={job}
-                onSendOffer={handleSendOffer}
-                onMessage={handleMessageClient}
-                onSave={handleSaveJob}
-                viewMode={viewMode}
-              />
-            </div>
-          ))
-        ) : filteredJobs.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="p-8 text-center">
-              <Briefcase className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">No jobs found</h3>
-              <p className="text-muted-foreground">
-                Try adjusting your search criteria or check back later for new opportunities.
-              </p>
-            </CardContent>
-          </Card>
-        ) : null}
+        {/* All Jobs Grid */}
+        <div className={`grid gap-6 ${viewMode === 'card' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+          {regularJobs.length > 0 ? (
+            regularJobs.map((job) => (
+              <div
+                key={job.id}
+                className={cn(
+                  "animate-fade-in",
+                  highlightJobId === job.id && "ring-2 ring-copper animate-pulse"
+                )}
+              >
+                <JobListingCard
+                  job={job}
+                  onSendOffer={handleSendOffer}
+                  onMessage={handleMessageClient}
+                  onSave={handleSaveJob}
+                  viewMode={viewMode}
+                />
+              </div>
+            ))
+          ) : (
+            <EmptyJobBoardState
+              isFiltered={filters.categories.length > 0 || filters.hasPhotos || filters.highBudget}
+              onClearFilters={() => setFilters({
+                categories: [],
+                budgetRange: [0, 5000],
+                startDate: 'all',
+                location: '',
+                hasPhotos: false,
+                highBudget: false,
+                highlyRated: false,
+                newToday: false
+              })}
+            />
+          )}
+        </div>
       </div>
+
+      {/* Mobile Filter Panel */}
+      <JobFiltersPanel
+        open={showFilters}
+        onClose={() => setShowFilters(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
 
       {/* Send Offer Modal */}
       {selectedJobForOffer && (
