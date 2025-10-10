@@ -40,8 +40,7 @@ Deno.serve(async (req) => {
         professional_profiles!inner(user_id, subscription_tier)
       `)
       .eq('is_active', true)
-      .eq('micro_service_id', job.micro_id)
-      .order('professional_profiles.subscription_tier', { ascending: false }); // premium first
+      .eq('micro_service_id', job.micro_id);
 
     if (proError) {
       console.error('[notify-job-broadcast] Error fetching professionals:', proError);

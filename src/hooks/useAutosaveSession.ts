@@ -23,6 +23,8 @@ export function useAutosaveSession(formType: string, payload: any, enabled: bool
           form_type: formType,
           payload: latestPayload.current,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,form_type'
         });
       } catch (error) {
         console.error('Error saving form session:', error);
@@ -56,6 +58,8 @@ export function useAutosaveSession(formType: string, payload: any, enabled: bool
         form_type: formType,
         payload: latestPayload.current,
         updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,form_type'
       });
     } catch (error) {
       console.error('Error saving form session:', error);
