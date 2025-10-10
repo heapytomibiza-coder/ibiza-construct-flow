@@ -20,7 +20,7 @@ export default function DesignTest() {
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold mb-4 text-center">Design System Options</h1>
           <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Five different design directions for you to choose from. Each showcases the same components with different styling approaches.
+            Six different design directions for you to choose from. Each showcases the same components with different styling approaches.
           </p>
 
           <div className="space-y-24">
@@ -38,6 +38,9 @@ export default function DesignTest() {
 
             {/* OPTION E: Light Glassmorphism */}
             <OptionE />
+
+            {/* OPTION F: Purple Backdrop with White Cards */}
+            <OptionF />
           </div>
         </div>
       </div>
@@ -936,6 +939,232 @@ function OptionE() {
             </div>
           </div>
         ))}
+      </div>
+    </motion.section>
+  );
+}
+
+// OPTION F: Purple Backdrop with White Cards
+function OptionF() {
+  const colors = {
+    background: '#13111F',
+    card: '#FFFFFF',
+    text: '#1A1729',
+    textMuted: '#64748B',
+    border: 'rgba(159, 81, 243, 0.15)',
+    gradientPrimary: 'linear-gradient(135deg, #26B5CE 0%, #9F51F3 100%)',
+    gradientText: 'linear-gradient(135deg, #26B5CE 0%, #9F51F3 100%)',
+  };
+
+  const jobs = [
+    { 
+      id: 1, 
+      title: 'Modern Kitchen Renovation', 
+      location: 'Barcelona', 
+      budget: '12,000 - 15,000', 
+      posted: '2 hours ago',
+      category: 'Kitchen',
+      description: 'Looking for experienced contractor to renovate kitchen with modern appliances.'
+    },
+    { 
+      id: 2, 
+      title: 'Bathroom Upgrade', 
+      location: 'Madrid', 
+      budget: '8,000 - 10,000', 
+      posted: '5 hours ago',
+      category: 'Bathroom',
+      description: 'Need professional to install new fixtures and tiles in master bathroom.'
+    },
+    { 
+      id: 3, 
+      title: 'Living Room Redesign', 
+      location: 'Valencia', 
+      budget: '5,000 - 7,000', 
+      posted: '1 day ago',
+      category: 'Interior',
+      description: 'Transform living space with new flooring, paint, and lighting.'
+    },
+  ];
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="space-y-8"
+    >
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h2 className="text-3xl font-bold">Option F: Purple Backdrop with White Cards</h2>
+        <p className="text-muted-foreground">Dramatic purple background with clean white cards for maximum readability</p>
+      </div>
+
+      {/* Main Content */}
+      <div 
+        className="rounded-3xl p-8 md:p-12"
+        style={{ 
+          background: `linear-gradient(135deg, ${colors.background} 0%, #1A1536 50%, #13111F 100%)`,
+        }}
+      >
+        {/* Hero Section */}
+        <div 
+          className="rounded-2xl p-8 md:p-12 mb-8"
+          style={{ 
+            background: colors.card,
+            boxShadow: '0 20px 60px rgba(159, 81, 243, 0.25), 0 8px 24px rgba(38, 181, 206, 0.15)',
+          }}
+        >
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+              style={{ 
+                background: colors.gradientPrimary,
+                color: '#FFFFFF',
+                boxShadow: '0 4px 12px rgba(159, 81, 243, 0.3)',
+              }}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">Premium Projects Available</span>
+            </div>
+            
+            <h1 
+              className="text-5xl md:text-6xl font-bold"
+              style={{ 
+                background: colors.gradientText,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Find Your Perfect Project
+            </h1>
+            
+            <p className="text-lg" style={{ color: colors.textMuted }}>
+              Connect with homeowners who need your expertise. Browse premium renovation projects in your area.
+            </p>
+
+            <div className="flex flex-wrap gap-4 justify-center pt-4">
+              <button 
+                className="px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-2xl"
+                style={{ 
+                  background: colors.gradientPrimary,
+                  color: '#FFFFFF',
+                  boxShadow: '0 8px 24px rgba(159, 81, 243, 0.35), 0 4px 12px rgba(38, 181, 206, 0.25)',
+                }}
+              >
+                Browse Projects
+              </button>
+              <button 
+                className="px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105"
+                style={{ 
+                  background: colors.card,
+                  color: colors.text,
+                  border: `2px solid ${colors.border}`,
+                  boxShadow: '0 4px 12px rgba(159, 81, 243, 0.1)',
+                }}
+              >
+                Learn More
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Job Cards Grid */}
+        <div className="grid md:grid-cols-3 gap-6">
+          {jobs.map((job) => (
+            <div 
+              key={job.id}
+              className="rounded-2xl overflow-hidden transition-all hover:scale-105 cursor-pointer"
+              style={{ 
+                background: colors.card,
+                border: `1px solid ${colors.border}`,
+                boxShadow: '0 12px 40px rgba(159, 81, 243, 0.2), 0 4px 16px rgba(38, 181, 206, 0.1)',
+              }}
+            >
+              {/* Card Header with Gradient */}
+              <div 
+                className="h-32 relative"
+                style={{ 
+                  background: colors.gradientPrimary,
+                }}
+              >
+                <div className="absolute top-3 right-3">
+                  <span 
+                    className="px-3 py-1 rounded-full text-xs font-semibold"
+                    style={{ 
+                      background: colors.card,
+                      color: colors.text,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    }}
+                  >
+                    {job.category}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card Content */}
+              <div className="p-6 space-y-4">
+                <div>
+                  <h3 className="text-xl font-bold mb-2" style={{ color: colors.text }}>
+                    {job.title}
+                  </h3>
+                  <p className="text-sm" style={{ color: colors.textMuted }}>
+                    {job.description}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm" style={{ color: colors.textMuted }}>
+                    <MapPin className="w-4 h-4" style={{ color: '#26B5CE' }} />
+                    {job.location}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: colors.text }}>
+                    <Euro className="w-4 h-4" style={{ color: '#9F51F3' }} />
+                    {job.budget}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm" style={{ color: colors.textMuted }}>
+                    <Clock className="w-4 h-4" style={{ color: '#26B5CE' }} />
+                    {job.posted}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button 
+                    className="flex-1 px-4 py-2.5 rounded-xl font-medium transition-all hover:scale-105"
+                    style={{ 
+                      background: colors.gradientPrimary,
+                      color: '#FFFFFF',
+                      boxShadow: '0 6px 20px rgba(159, 81, 243, 0.3), 0 3px 10px rgba(38, 181, 206, 0.2)',
+                    }}
+                  >
+                    Apply Now
+                  </button>
+                  <button 
+                    className="px-4 py-2.5 rounded-xl transition-all hover:scale-110"
+                    style={{ 
+                      background: colors.card,
+                      color: colors.text,
+                      border: `1px solid ${colors.border}`,
+                      boxShadow: '0 2px 8px rgba(159, 81, 243, 0.1)',
+                    }}
+                  >
+                    <Heart className="w-4 h-4" />
+                  </button>
+                  <button 
+                    className="px-4 py-2.5 rounded-xl transition-all hover:scale-110"
+                    style={{ 
+                      background: colors.card,
+                      color: colors.text,
+                      border: `1px solid ${colors.border}`,
+                      boxShadow: '0 2px 8px rgba(159, 81, 243, 0.1)',
+                    }}
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </motion.section>
   );
