@@ -196,6 +196,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   }}
                   disabled={(date) => date < new Date()}
                   initialFocus
+                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
@@ -236,6 +237,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   return date < minDate;
                 }}
                 initialFocus
+                className="pointer-events-auto"
               />
             </PopoverContent>
           </Popover>
@@ -305,6 +307,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                     onSelect={(date) => handleUpdate('consultationDate', date)}
                     disabled={(date) => date < new Date()}
                     initialFocus
+                    className="pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
