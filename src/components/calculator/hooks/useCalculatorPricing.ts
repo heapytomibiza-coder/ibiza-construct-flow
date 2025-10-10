@@ -47,40 +47,40 @@ export function useCalculatorPricing(selections: CalculatorSelections) {
 
       // 2. Calculate base price
       const sizeAvg = (selections.sizePreset.size_min_sqm + selections.sizePreset.size_max_sqm) / 2;
-      let subtotal = template.base_rate_per_sqm * sizeAvg;
+      let subtotal = (template as any).base_rate_per_sqm * sizeAvg;
 
-        // 3. Apply tier multiplier
-        subtotal *= selections.qualityTier.multiplier;
+      // 3. Apply tier multiplier
+      subtotal *= selections.qualityTier.multiplier;
 
-        // 4. Apply bundle uplifts
-        selections.scopeBundles.forEach(bundle => {
-          subtotal *= (1 + bundle.base_uplift_percentage / 100);
-        });
+      // 4. Apply bundle uplifts
+      selections.scopeBundles.forEach(bundle => {
+        subtotal *= (1 + bundle.base_uplift_percentage / 100);
+      });
 
-        // 5. Apply adders
-        selections.adders.forEach(adder => {
-          if (adder.price_type === 'fixed') {
-            subtotal += adder.price_value;
-          } else if (adder.price_type === 'percentage') {
-            subtotal *= (1 + adder.price_value / 100);
-          } else if (adder.price_type === 'per_sqm') {
-            subtotal += adder.price_value * sizeAvg;
-          }
-        });
-
-        // 6. Apply location factor
-        if (selections.locationFactor) {
-          subtotal *= (1 + selections.locationFactor.uplift_percentage / 100);
+      // 5. Apply adders
+      selections.adders.forEach(adder => {
+        if (adder.price_type === 'fixed') {
+          subtotal += adder.price_value;
+        } else if (adder.price_type === 'percentage') {
+          subtotal *= (1 + adder.price_value / 100);
+        } else if (adder.price_type === 'per_sqm') {
+          subtotal += adder.price_value * sizeAvg;
         }
+      });
 
-        // 7. Calculate breakdown
-        const breakdown: PricingBreakdown = {
-          labour: subtotal * (template.labour_percentage / 100),
-          materials: subtotal * (template.materials_percentage / 100),
-          permits: subtotal * (template.permits_percentage / 100),
-          contingency: subtotal * (template.contingency_percentage / 100),
-          disposal: subtotal * (template.disposal_percentage / 100)
-        };
+      // 6. Apply location factor
+      if (selections.locationFactor) {
+        subtotal *= (1 + selections.locationFactor.uplift_percentage / 100);
+      }
+
+      // 7. Calculate breakdown
+      const breakdown: PricingBreakdown = {
+        labour: subtotal * ((template as any).labour_percentage / 100),
+        materials: subtotal * ((template as any).materials_percentage / 100),
+        permits: subtotal * ((template as any).permits_percentage / 100),
+        contingency: subtotal * ((template as any).contingency_percentage / 100),
+        disposal: subtotal * ((template as any).disposal_percentage / 100)
+      };
 
         const total = Object.values(breakdown).reduce((a, b) => a + b, 0);
 

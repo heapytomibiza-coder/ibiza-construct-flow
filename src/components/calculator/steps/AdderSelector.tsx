@@ -30,7 +30,7 @@ export function AdderSelector({ projectType, selected, onSelect }: AdderSelector
         .order('sort_order');
 
       if (!error && data) {
-        setAdders(data);
+        setAdders(data as any);
       }
       setLoading(false);
     };
@@ -68,8 +68,8 @@ export function AdderSelector({ projectType, selected, onSelect }: AdderSelector
     );
   }
 
-  const commonAdders = adders.filter(a => a.is_common);
-  const advancedAdders = adders.filter(a => !a.is_common);
+  const commonAdders = adders.filter((a: any) => a.is_common);
+  const advancedAdders = adders.filter((a: any) => !a.is_common);
 
   return (
     <div className="space-y-6">

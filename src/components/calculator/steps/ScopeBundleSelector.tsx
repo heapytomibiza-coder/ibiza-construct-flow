@@ -27,9 +27,9 @@ export function ScopeBundleSelector({ projectType, selected, onSelect }: ScopeBu
         .order('sort_order');
 
       if (!error && data) {
-        setBundles(data);
+        setBundles(data as any);
         // Auto-select default bundle
-        const defaultBundle = data.find(b => b.is_default);
+        const defaultBundle = (data as any).find((b: any) => b.is_default);
         if (defaultBundle && selected.length === 0) {
           onSelect([defaultBundle]);
         }

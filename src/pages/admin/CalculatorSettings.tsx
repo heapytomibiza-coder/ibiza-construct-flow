@@ -5,12 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Ruler, Award, Package, Plus, MapPin, Calculator } from 'lucide-react';
-import { SizePresetsManager } from '@/components/admin/calculator/SizePresetsManager';
-import { QualityTiersManager } from '@/components/admin/calculator/QualityTiersManager';
-import { ScopeBundlesManager } from '@/components/admin/calculator/ScopeBundlesManager';
-import { AddersManager } from '@/components/admin/calculator/AddersManager';
-import { LocationsManager } from '@/components/admin/calculator/LocationsManager';
-import { CostTemplatesManager } from '@/components/admin/calculator/CostTemplatesManager';
+// Admin managers temporarily disabled until Supabase types regenerate
+// import { SizePresetsManager } from '@/components/admin/calculator/SizePresetsManager';
+// import { QualityTiersManager } from '@/components/admin/calculator/QualityTiersManager';
+// import { ScopeBundlesManager } from '@/components/admin/calculator/ScopeBundlesManager';
+// import { AddersManager } from '@/components/admin/calculator/AddersManager';
+// import { LocationsManager } from '@/components/admin/calculator/LocationsManager';
+// import { CostTemplatesManager } from '@/components/admin/calculator/CostTemplatesManager';
 
 export default function CalculatorSettings() {
   const { toast } = useToast();
@@ -55,27 +56,62 @@ export default function CalculatorSettings() {
           </TabsList>
 
           <TabsContent value="presets" className="mt-6">
-            <SizePresetsManager />
+            <Card>
+              <CardHeader>
+                <CardTitle>Size Presets</CardTitle>
+                <CardDescription>Admin interface will be available once Supabase types regenerate</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  The calculator database tables have been created. Please wait a moment for the types to regenerate, then refresh the page.
+                </p>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="tiers" className="mt-6">
-            <QualityTiersManager />
+            <Card>
+              <CardHeader>
+                <CardTitle>Quality Tiers</CardTitle>
+                <CardDescription>Admin interface will be available once Supabase types regenerate</CardDescription>
+              </CardHeader>
+            </Card>
           </TabsContent>
 
           <TabsContent value="bundles" className="mt-6">
-            <ScopeBundlesManager />
+            <Card>
+              <CardHeader>
+                <CardTitle>Scope Bundles</CardTitle>
+                <CardDescription>Admin interface will be available once Supabase types regenerate</CardDescription>
+              </CardHeader>
+            </Card>
           </TabsContent>
 
           <TabsContent value="adders" className="mt-6">
-            <AddersManager />
+            <Card>
+              <CardHeader>
+                <CardTitle>Adders</CardTitle>
+                <CardDescription>Admin interface will be available once Supabase types regenerate</CardDescription>
+              </CardHeader>
+            </Card>
           </TabsContent>
 
           <TabsContent value="locations" className="mt-6">
-            <LocationsManager />
+            <Card>
+              <CardHeader>
+                <CardTitle>Location Factors</CardTitle>
+                <CardDescription>Admin interface will be available once Supabase types regenerate</CardDescription>
+              </CardHeader>
+            </Card>
           </TabsContent>
 
           <TabsContent value="templates" className="mt-6">
-            <CostTemplatesManager />
+            <Card>
+              <CardHeader>
+                <CardTitle>Cost Templates</CardTitle>
+                <CardDescription>Admin interface will be available once Supabase types regenerate</CardDescription>
+              </CardHeader>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

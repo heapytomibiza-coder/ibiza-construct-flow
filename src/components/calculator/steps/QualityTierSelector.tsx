@@ -24,7 +24,7 @@ export function QualityTierSelector({ selected, onSelect }: QualityTierSelectorP
         .order('sort_order');
 
       if (!error && data) {
-        setTiers(data);
+        setTiers(data as any);
       }
       setLoading(false);
     };

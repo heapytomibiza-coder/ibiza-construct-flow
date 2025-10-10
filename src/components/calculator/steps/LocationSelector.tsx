@@ -25,9 +25,9 @@ export function LocationSelector({ selected, onSelect }: LocationSelectorProps) 
         .order('sort_order');
 
       if (!error && data) {
-        setLocations(data);
+        setLocations(data as any);
         // Auto-select default location
-        const defaultLocation = data.find(l => l.is_default);
+        const defaultLocation = (data as any).find((l: any) => l.is_default);
         if (defaultLocation && !selected) {
           onSelect(defaultLocation);
         }

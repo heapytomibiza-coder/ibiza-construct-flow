@@ -26,7 +26,7 @@ export function SizePresetSelector({ projectType, selected, onSelect }: SizePres
         .order('sort_order');
 
       if (!error && data) {
-        setPresets(data);
+        setPresets(data as any);
       }
       setLoading(false);
     };
