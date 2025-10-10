@@ -20,7 +20,7 @@ export default function DesignTest() {
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold mb-4 text-center">Design System Options</h1>
           <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Four different design directions for you to choose from. Each showcases the same components with different styling approaches.
+            Five different design directions for you to choose from. Each showcases the same components with different styling approaches.
           </p>
 
           <div className="space-y-24">
@@ -35,6 +35,9 @@ export default function DesignTest() {
 
             {/* OPTION D: Gradient Glassmorphism */}
             <OptionD />
+
+            {/* OPTION E: Light Glassmorphism */}
+            <OptionE />
           </div>
         </div>
       </div>
@@ -728,6 +731,203 @@ function OptionD() {
                     backdropFilter: 'blur(24px)',
                     color: colors.text,
                     border: '1px solid rgba(159, 81, 243, 0.2)',
+                  }}
+                >
+                  <MessageSquare className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.section>
+  );
+}
+
+// OPTION E: Light Glassmorphism with Shadows
+function OptionE() {
+  const colors = {
+    bg: '#F8F9FA',
+    bgOverlay: '#FFFFFF',
+    text: '#1A1729',
+    textMuted: '#4A5568',
+    glass: 'rgba(255, 255, 255, 0.85)',
+    cardBg: 'rgba(255, 255, 255, 0.9)',
+  };
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.8 }}
+      className="space-y-8"
+      style={{ backgroundColor: colors.bg, padding: '2rem', borderRadius: '1.5rem' }}
+    >
+      {/* Header */}
+      <div className="text-center pb-6 border-b" style={{ borderColor: 'rgba(38, 181, 206, 0.2)' }}>
+        <h2 className="text-3xl font-bold mb-2" style={{ color: colors.text }}>
+          Option E: Light Glassmorphism
+        </h2>
+        <p style={{ color: colors.textMuted }}>Airy & Premium - Light Glass with Elegant Shadows</p>
+      </div>
+
+      {/* Hero Section */}
+      <div 
+        className="relative rounded-3xl overflow-hidden"
+        style={{ 
+          backgroundColor: colors.bgOverlay,
+          boxShadow: '0 20px 60px rgba(38, 181, 206, 0.15), 0 8px 24px rgba(159, 81, 243, 0.1)',
+        }}
+      >
+        <div 
+          className="p-12 text-center"
+          style={{
+            background: colors.glass,
+            backdropFilter: 'blur(24px)',
+            border: '1px solid rgba(38, 181, 206, 0.2)',
+          }}
+        >
+          <div 
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 transition-all"
+            style={{ 
+              background: colors.glass,
+              backdropFilter: 'blur(24px)',
+              border: '1px solid rgba(38, 181, 206, 0.3)',
+              boxShadow: '0 4px 16px rgba(38, 181, 206, 0.2), 0 2px 8px rgba(159, 81, 243, 0.15)',
+            }}
+          >
+            <Star className="w-4 h-4" style={{ color: '#26B5CE' }} />
+            <span style={{ color: colors.text, fontSize: '14px', fontWeight: '500' }}>
+              Ibiza's #1 Rated Network
+            </span>
+          </div>
+          
+          <h1 
+            className="text-6xl font-bold mb-4"
+            style={{ 
+              background: 'linear-gradient(135deg, #26B5CE 0%, #9F51F3 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Building the Island.<br />Building Your Dreams.
+          </h1>
+          
+          <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: colors.textMuted }}>
+            Connect with Ibiza's most trusted construction professionals
+          </p>
+
+          <div className="flex gap-3 justify-center">
+            <button 
+              className="px-8 py-3 rounded-xl font-medium transition-all hover:scale-105 hover:shadow-2xl"
+              style={{ 
+                background: 'linear-gradient(135deg, #26B5CE 0%, #9F51F3 100%)',
+                color: '#FFFFFF',
+                boxShadow: '0 8px 24px rgba(38, 181, 206, 0.35), 0 4px 12px rgba(159, 81, 243, 0.25)',
+                border: 'none',
+              }}
+            >
+              Post Your Project
+            </button>
+            <button 
+              className="px-8 py-3 rounded-xl font-medium transition-all hover:scale-105 hover:shadow-xl"
+              style={{ 
+                background: colors.glass,
+                backdropFilter: 'blur(24px)',
+                color: colors.text,
+                border: '1px solid rgba(159, 81, 243, 0.3)',
+                boxShadow: '0 4px 16px rgba(159, 81, 243, 0.15)',
+              }}
+            >
+              Browse Services
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Job Cards Grid */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {[1, 2].map((i) => (
+          <div
+            key={i}
+            className="rounded-2xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl"
+            style={{ 
+              background: colors.cardBg,
+              backdropFilter: 'blur(24px)',
+              border: '1px solid rgba(38, 181, 206, 0.2)',
+              boxShadow: '0 10px 40px rgba(38, 181, 206, 0.12), 0 4px 16px rgba(159, 81, 243, 0.08)',
+            }}
+          >
+            <div 
+              className="h-40 relative"
+              style={{ 
+                background: 'linear-gradient(135deg, rgba(38, 181, 206, 0.3) 0%, rgba(159, 81, 243, 0.3) 50%, rgba(63, 43, 153, 0.3) 100%)',
+              }}
+            />
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="font-bold text-xl flex-1" style={{ color: colors.text }}>
+                  Swimming Pool Installation
+                </h3>
+                <span 
+                  className="px-3 py-1 rounded-full text-xs font-semibold transition-all"
+                  style={{ 
+                    backgroundColor: '#26B5CE',
+                    color: '#FFFFFF',
+                    boxShadow: '0 4px 12px rgba(38, 181, 206, 0.3)',
+                  }}
+                >
+                  NEW
+                </span>
+              </div>
+              
+              <p className="text-sm mb-4" style={{ color: colors.textMuted }}>
+                Looking for experienced pool installer for luxury villa project in Ibiza town.
+              </p>
+
+              <div className="flex items-center gap-4 mb-5 text-sm font-medium" style={{ color: colors.text }}>
+                <div className="flex items-center gap-1">
+                  <Euro className="w-4 h-4" style={{ color: '#26B5CE' }} />
+                  <span className="font-bold">€12,500</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" style={{ color: '#9F51F3' }} />
+                  <span>Ibiza Town</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button 
+                  className="flex-1 px-4 py-2.5 rounded-xl font-medium transition-all hover:scale-105 hover:shadow-xl"
+                  style={{ 
+                    background: 'linear-gradient(135deg, #26B5CE 0%, #9F51F3 100%)',
+                    color: '#FFFFFF',
+                    boxShadow: '0 6px 20px rgba(38, 181, 206, 0.35), 0 3px 10px rgba(159, 81, 243, 0.25)',
+                  }}
+                >
+                  Apply
+                </button>
+                <button 
+                  className="px-4 py-2.5 rounded-xl transition-all hover:scale-110 hover:shadow-lg"
+                  style={{ 
+                    background: colors.glass,
+                    backdropFilter: 'blur(24px)',
+                    color: colors.text,
+                    border: '1px solid rgba(159, 81, 243, 0.2)',
+                    boxShadow: '0 2px 8px rgba(159, 81, 243, 0.1)',
+                  }}
+                >
+                  <Heart className="w-4 h-4" />
+                </button>
+                <button 
+                  className="px-4 py-2.5 rounded-xl transition-all hover:scale-110 hover:shadow-lg"
+                  style={{ 
+                    background: colors.glass,
+                    backdropFilter: 'blur(24px)',
+                    color: colors.text,
+                    border: '1px solid rgba(159, 81, 243, 0.2)',
+                    boxShadow: '0 2px 8px rgba(159, 81, 243, 0.1)',
                   }}
                 >
                   <MessageSquare className="w-4 h-4" />
