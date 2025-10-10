@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   MapPin, Clock, Euro, User, Calendar, 
-  MessageSquare, Heart, Share2, Sparkles, Eye
+  MessageSquare, Heart, Share2, Sparkles, Eye, Star
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JobPaymentWidget } from '@/components/jobs/JobPaymentWidget';
 import { JobDetailsModal } from './JobDetailsModal';
+import { ServiceCategoryBadge } from './ServiceCategoryBadge';
+import { JobMetadataBadges } from './JobMetadataBadges';
+import { getServiceVisuals } from '@/data/serviceCategoryImages';
 
 interface JobListingCardProps {
   job: {
@@ -31,6 +35,9 @@ interface JobListingCardProps {
     };
     answers?: any;
     micro_id?: string;
+    category?: string;
+    subcategory?: string;
+    micro?: string;
   };
   onSendOffer?: (jobId: string) => void;
   onMessage?: (jobId: string) => void;
@@ -49,6 +56,12 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
 }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const isNew = new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+  
+  // Get service visuals
+  const serviceVisuals = getServiceVisuals(job.category);
+  const heroImage = job.answers?.extras?.photos?.[0] || serviceVisuals.hero;
+  const photoCount = job.answers?.extras?.photos?.length || 0;
+  const answerCount = job.answers?.microAnswers ? Object.keys(job.answers.microAnswers).length : 0;
   
   if (viewMode === 'compact') {
     return (
@@ -113,135 +126,153 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   }
 
   return (
-    <Card className={cn("hover:shadow-lg transition-all duration-200", className)}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <CardTitle className="text-lg">{job.title}</CardTitle>
-              {isNew && (
-                <Badge className="bg-gradient-to-r from-copper to-copper-dark text-white text-xs animate-pulse">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  NEW
-                </Badge>
+    <Card className={cn("group hover:shadow-xl transition-all duration-300 overflow-hidden", className)}>
+      {/* Hero Image Section */}
+      <div className="relative h-48 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center transform group-hover:scale-105 transition-transform duration-300"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
+        <div className={cn("absolute inset-0 bg-gradient-to-t", serviceVisuals.color, "opacity-60")} />
+        
+        {/* Floating badges on hero */}
+        <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
+          <ServiceCategoryBadge
+            category={job.category}
+            subcategory={job.subcategory}
+            micro={job.micro}
+            icon={serviceVisuals.icon}
+          />
+          
+          <div className="flex gap-2">
+            {isNew && (
+              <Badge className="backdrop-blur-md bg-background/90 border-2 border-background shadow-lg animate-pulse">
+                <Sparkles className="w-3 h-3 mr-1" />
+                NEW
+              </Badge>
+            )}
+            <Badge 
+              variant={job.status === 'open' ? 'default' : 'secondary'}
+              className="backdrop-blur-md bg-background/90 border-2 border-background shadow-lg capitalize"
+            >
+              {job.status}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Photo count indicator */}
+        {photoCount > 0 && (
+          <Badge 
+            variant="secondary" 
+            className="absolute bottom-4 right-4 backdrop-blur-md bg-background/90 border-2 border-background shadow-lg"
+          >
+            📷 {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
+          </Badge>
+        )}
+      </div>
+
+      <CardContent className="p-5">
+        {/* Title */}
+        <h3 className="text-lg font-bold text-foreground mb-3 line-clamp-2">
+          {job.title}
+        </h3>
+
+        {/* Client Info */}
+        <div className="flex items-center gap-3 mb-3">
+          <Avatar className="w-10 h-10 ring-2 ring-background">
+            <AvatarImage src={job.client.avatar} alt={job.client.name} />
+            <AvatarFallback className="bg-gradient-hero text-white text-sm">
+              {job.client.name.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-sm truncate">{job.client.name}</p>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {job.client.rating && (
+                <div className="flex items-center gap-0.5">
+                  <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                  <span>{job.client.rating.toFixed(1)}</span>
+                </div>
+              )}
+              {job.client.jobs_completed && (
+                <span>• {job.client.jobs_completed} jobs</span>
               )}
             </div>
-            
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <User className="w-4 h-4" />
-                <span>{job.client.name}</span>
-                {job.client.rating && (
-                  <span className="text-yellow-500">★ {job.client.rating}</span>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                <span>Posted {new Date(job.created_at).toLocaleDateString()}</span>
-              </div>
-
-              {/* Payment status widget */}
-              <JobPaymentWidget jobId={job.id} />
-            </div>
           </div>
-          
-          <Badge 
-            variant={job.status === 'open' ? 'default' : 'secondary'}
-            className="capitalize"
-          >
-            {job.status}
-          </Badge>
+          <JobPaymentWidget jobId={job.id} />
         </div>
-      </CardHeader>
 
-      <CardContent>
-        <p className="text-muted-foreground mb-4 line-clamp-3">
+        {/* Description */}
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
           {job.description}
         </p>
 
-        <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-muted/50 rounded-lg">
+        {/* Budget & Location Grid */}
+        <div className="grid grid-cols-2 gap-3 mb-4 p-3 bg-gradient-to-br from-muted/50 to-muted/30 rounded-lg">
           <div>
-            <p className="text-sm text-muted-foreground">Budget</p>
-            <p className="font-semibold text-lg text-primary">
+            <p className="text-xs text-muted-foreground mb-1">Budget</p>
+            <p className="font-bold text-base text-primary">
               €{job.budget_value}
               {job.budget_type === 'hourly' && (
-                <span className="text-sm font-normal">/hour</span>
+                <span className="text-xs font-normal">/hr</span>
               )}
             </p>
           </div>
           
           {job.location && (
             <div>
-              <p className="text-sm text-muted-foreground">Location</p>
+              <p className="text-xs text-muted-foreground mb-1">Location</p>
               <div className="flex items-center gap-1">
-                <MapPin className="w-4 h-4 text-muted-foreground" />
-                <span className="font-medium">{job.location.area}</span>
+                <MapPin className="w-3 h-3 text-muted-foreground" />
+                <span className="font-medium text-sm truncate">{job.location.area}</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Additional job details from answers */}
-        {job.answers && Object.keys(job.answers).length > 0 && (
-          <div className="mb-4">
-            <p className="text-sm font-medium mb-2">Requirements:</p>
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(job.answers).slice(0, 3).map(([key, value]) => (
-                <Badge key={key} variant="outline" className="text-xs">
-                  {String(value).substring(0, 20)}
-                  {String(value).length > 20 && '...'}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Metadata Badges */}
+        <JobMetadataBadges
+          startDate={job.answers?.logistics?.startDate || job.answers?.logistics?.preferredDate}
+          location={job.location?.area}
+          photoCount={photoCount}
+          answerCount={answerCount}
+          className="mb-4"
+        />
 
-        <div className="flex items-center justify-between pt-3 border-t">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onSave?.(job.id)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Heart className="w-4 h-4" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onMessage?.(job.id)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <MessageSquare className="w-4 h-4" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Share2 className="w-4 h-4" />
-            </Button>
-          </div>
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 pt-3 border-t">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onSave?.(job.id)}
+            className="flex-1"
+          >
+            <Heart className="w-4 h-4" />
+          </Button>
           
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowDetailsModal(true)}
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              View Details
-            </Button>
-            
-            <Button 
-              onClick={() => onSendOffer?.(job.id)}
-              className="bg-gradient-hero text-white"
-            >
-              Send Offer
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onMessage?.(job.id)}
+            className="flex-1"
+          >
+            <MessageSquare className="w-4 h-4" />
+          </Button>
+          
+          <Button
+            variant="outline"
+            onClick={() => setShowDetailsModal(true)}
+            className="flex-1"
+          >
+            Details
+          </Button>
+          
+          <Button 
+            onClick={() => onSendOffer?.(job.id)}
+            className="flex-1 bg-gradient-hero text-white hover:opacity-90"
+          >
+            Apply
+          </Button>
         </div>
         
         <JobDetailsModal

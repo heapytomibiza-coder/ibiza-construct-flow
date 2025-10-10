@@ -40,17 +40,34 @@ export const JobsMarketplace: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch ALL open jobs - no tier filtering
-      const { data, error } = await supabase
+      // Fetch ALL open jobs
+      const { data: jobsData, error: jobsError } = await supabase
         .from('jobs')
         .select('*')
         .eq('status', 'open')
         .order(sortBy, { ascending: false });
 
-      if (error) throw error;
+      if (jobsError) throw jobsError;
 
-      // Get client profiles separately
-      const clientIds = data?.map(job => job.client_id).filter(Boolean) || [];
+      // Get unique micro_ids
+      const microIds = [...new Set(jobsData?.map(job => job.micro_id).filter(Boolean) || [])];
+      
+      // Fetch service data for these micros
+      let servicesMap: any = {};
+      if (microIds.length > 0) {
+        const { data: servicesData } = await supabase
+          .from('services_micro')
+          .select('id, category, subcategory, micro')
+          .in('id', microIds);
+        
+        servicesMap = (servicesData || []).reduce((acc: any, service: any) => {
+          acc[service.id] = service;
+          return acc;
+        }, {});
+      }
+
+      // Get client profiles
+      const clientIds = jobsData?.map(job => job.client_id).filter(Boolean) || [];
       let clientProfiles: any = {};
       
       if (clientIds.length > 0) {
@@ -65,15 +82,21 @@ export const JobsMarketplace: React.FC = () => {
         }, {});
       }
 
-      const formattedJobs = data?.map(job => ({
-        ...job,
-        client: {
-          name: clientProfiles[job.client_id]?.full_name || 'Anonymous Client',
-          avatar: clientProfiles[job.client_id]?.avatar_url,
-          rating: 4.5, // Mock rating
-          jobs_completed: Math.floor(Math.random() * 50) + 1
-        }
-      })) || [];
+      const formattedJobs = jobsData?.map(job => {
+        const serviceData = servicesMap[job.micro_id];
+        return {
+          ...job,
+          category: serviceData?.category,
+          subcategory: serviceData?.subcategory,
+          micro: serviceData?.micro,
+          client: {
+            name: clientProfiles[job.client_id]?.full_name || 'Anonymous Client',
+            avatar: clientProfiles[job.client_id]?.avatar_url,
+            rating: 4.5, // Mock rating
+            jobs_completed: Math.floor(Math.random() * 50) + 1
+          }
+        };
+      }) || [];
 
       setJobs(formattedJobs);
     } catch (error: any) {
@@ -337,14 +360,15 @@ export const JobsMarketplace: React.FC = () => {
         </Card>
       </div>
 
-      {/* Job Listings */}
-      <div className={`grid gap-4 ${viewMode === 'card' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
+      {/* Job Listings - 3 Column Grid */}
+      <div className={`grid gap-6 ${viewMode === 'card' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
             <div
               key={job.id}
               className={cn(
-                highlightJobId === job.id && "ring-2 ring-copper animate-highlight"
+                "animate-fade-in",
+                highlightJobId === job.id && "ring-2 ring-copper animate-pulse"
               )}
             >
               <JobListingCard

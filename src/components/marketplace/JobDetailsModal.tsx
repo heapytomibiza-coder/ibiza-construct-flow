@@ -23,6 +23,9 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { JobPhotoGallery } from './JobPhotoGallery';
+import { ServiceCategoryBadge } from './ServiceCategoryBadge';
+import { getServiceVisuals } from '@/data/serviceCategoryImages';
 
 interface JobDetailsModalProps {
   job: {
@@ -66,6 +69,9 @@ interface JobDetailsModalProps {
       };
     };
     micro_id?: string;
+    category?: string;
+    subcategory?: string;
+    micro?: string;
   };
   open: boolean;
   onClose: () => void;
@@ -120,17 +126,45 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
   const microAnswers = job.answers?.microAnswers;
   const logistics = job.answers?.logistics;
   const extras = job.answers?.extras;
+  const serviceVisuals = getServiceVisuals(job.category);
 
   const hasMicroAnswers = microAnswers && Object.keys(microAnswers).length > 0;
   const hasLogistics = logistics && (logistics.location || logistics.customLocation || logistics.accessDetails);
   const hasSchedule = logistics && (logistics.startDate || logistics.completionDate || logistics.preferredDate || logistics.consultationType);
   const hasExtras = extras && (extras.photos?.length || extras.notes || extras.permitsConcern);
+  const hasPhotos = extras?.photos && extras.photos.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] p-0">
         <ScrollArea className="max-h-[90vh]">
-          <div className="p-6">
+          <div className="p-0">
+            {/* Photo Gallery */}
+            {hasPhotos && (
+              <JobPhotoGallery photos={extras.photos!} className="mb-0" />
+            )}
+
+            {/* Service Category Header */}
+            {job.category && (
+              <div className={cn(
+                "p-6 bg-gradient-to-r",
+                serviceVisuals.color,
+                "text-white"
+              )}>
+                <ServiceCategoryBadge
+                  category={job.category}
+                  subcategory={job.subcategory}
+                  micro={job.micro}
+                  icon={serviceVisuals.icon}
+                  className="mb-3 text-white border-white/20"
+                />
+                <h4 className="text-sm font-medium opacity-90">
+                  {job.category} → {job.subcategory} → {job.micro}
+                </h4>
+              </div>
+            )}
+
+            <div className="p-6">
             {/* Header Section */}
             <DialogHeader className="space-y-4 mb-6">
               <div className="flex items-start justify-between">
@@ -567,6 +601,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                 <Send className="w-4 h-4 mr-2" />
                 Apply Now
               </Button>
+            </div>
             </div>
           </div>
         </ScrollArea>
