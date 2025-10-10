@@ -18,7 +18,15 @@ import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
-export const JobsMarketplace: React.FC = () => {
+interface JobsMarketplaceProps {
+  searchQuery?: string;
+  quickFilter?: string;
+}
+
+export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
+  searchQuery: externalSearchQuery = '',
+  quickFilter = ''
+}) => {
   const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
   const highlightJobId = searchParams.get('highlight');
@@ -31,6 +39,24 @@ export const JobsMarketplace: React.FC = () => {
   const [sortBy, setSortBy] = useState('created_at');
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
   const [selectedJobForOffer, setSelectedJobForOffer] = useState<string | null>(null);
+
+  // Update internal search when external prop changes
+  React.useEffect(() => {
+    setSearchQuery(externalSearchQuery);
+  }, [externalSearchQuery]);
+
+  // Apply quick filters
+  React.useEffect(() => {
+    if (quickFilter === 'high-budget') {
+      setBudgetFilter('high');
+    } else if (quickFilter === 'photos') {
+      // Will be handled in filtering logic
+    } else if (quickFilter === 'this-week') {
+      // Will be handled in filtering logic
+    } else if (quickFilter === 'asap') {
+      // Will be handled in filtering logic
+    }
+  }, [quickFilter]);
 
   useEffect(() => {
     loadJobs();
@@ -123,8 +149,30 @@ export const JobsMarketplace: React.FC = () => {
       job.description.toLowerCase().includes(categoryFilter.toLowerCase()) ||
       job.micro_id?.toLowerCase().includes(categoryFilter.toLowerCase());
 
-    return matchesSearch && matchesLocation && matchesBudget && matchesCategory;
+    // Quick filter logic
+    const hasPhotos = job.answers?.extras?.photos?.length > 0;
+    const matchesPhotoFilter = quickFilter !== 'photos' || hasPhotos;
+    
+    const startDate = job.answers?.logistics?.startDate;
+    const isThisWeek = startDate && new Date(startDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const matchesWeekFilter = quickFilter !== 'this-week' || isThisWeek;
+    
+    const isASAP = job.answers?.logistics?.startDatePreset === 'asap';
+    const matchesASAPFilter = quickFilter !== 'asap' || isASAP;
+
+    return matchesSearch && matchesLocation && matchesBudget && matchesCategory && 
+           matchesPhotoFilter && matchesWeekFilter && matchesASAPFilter;
   });
+
+  // Featured jobs (high budget + photos + recent)
+  const featuredJobs = filteredJobs.filter(job => {
+    const hasPhotos = job.answers?.extras?.photos?.length > 0;
+    const isHighBudget = job.budget_value >= 500;
+    const isRecent = new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+    return hasPhotos && isHighBudget && isRecent;
+  }).slice(0, 3);
+
+  const regularJobs = filteredJobs.filter(job => !featuredJobs.includes(job));
 
   const handleSendOffer = async (jobId: string) => {
     if (!user) {
@@ -189,18 +237,30 @@ export const JobsMarketplace: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Section Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">
-            Available Jobs
-          </h1>
-          <p className="text-muted-foreground">
-            {filteredJobs.length} jobs available in your area
+          <h2 className="text-xl font-display font-bold text-foreground">
+            Available Projects
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {filteredJobs.length} opportunities • {featuredJobs.length} featured
           </p>
         </div>
         
         <div className="flex items-center gap-2">
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-[180px] bg-background">
+              <SortAsc className="w-4 h-4 mr-2" />
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover z-50">
+              <SelectItem value="created_at">Newest first</SelectItem>
+              <SelectItem value="budget_value">Highest budget</SelectItem>
+              <SelectItem value="title">Alphabetical</SelectItem>
+            </SelectContent>
+          </Select>
+          
           <Button
             variant={viewMode === 'card' ? 'default' : 'outline'}
             size="sm"
@@ -293,77 +353,41 @@ export const JobsMarketplace: React.FC = () => {
       {/* Subscription Upsell Banner */}
       <SubscriptionUpsellBanner />
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Briefcase className="w-5 h-5 text-blue-600" />
+      {/* Featured Jobs Section */}
+      {featuredJobs.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Badge className="bg-gradient-hero text-white">
+              ⭐ Featured Opportunities
+            </Badge>
+            <p className="text-sm text-muted-foreground">
+              High-value jobs with detailed requirements
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredJobs.map((job) => (
+              <div
+                key={job.id}
+                className="ring-2 ring-copper/50 rounded-lg"
+              >
+                <JobListingCard
+                  job={job}
+                  onSendOffer={handleSendOffer}
+                  onMessage={handleMessageClient}
+                  onSave={handleSaveJob}
+                  viewMode="card"
+                />
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Jobs</p>
-                <p className="text-xl font-bold">{filteredJobs.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <Euro className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Avg Budget</p>
-                <p className="text-xl font-bold">
-                  €{Math.round(filteredJobs.reduce((acc, job) => acc + job.budget_value, 0) / filteredJobs.length || 0)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-5 h-5 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Posted Today</p>
-                <p className="text-xl font-bold">
-                  {filteredJobs.filter(job => 
-                    new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-                  ).length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Areas</p>
-                <p className="text-xl font-bold">
-                  {new Set(filteredJobs.map(job => job.location?.area).filter(Boolean)).size}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {/* Job Listings - 3 Column Grid */}
+      {/* All Jobs Grid */}
       <div className={`grid gap-6 ${viewMode === 'card' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-        {filteredJobs.length > 0 ? (
-          filteredJobs.map((job) => (
+        {regularJobs.length > 0 ? (
+          regularJobs.map((job) => (
             <div
               key={job.id}
               className={cn(
@@ -380,7 +404,7 @@ export const JobsMarketplace: React.FC = () => {
               />
             </div>
           ))
-        ) : (
+        ) : filteredJobs.length === 0 ? (
           <Card className="col-span-full">
             <CardContent className="p-8 text-center">
               <Briefcase className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
@@ -390,7 +414,7 @@ export const JobsMarketplace: React.FC = () => {
               </p>
             </CardContent>
           </Card>
-        )}
+        ) : null}
       </div>
 
       {/* Send Offer Modal */}
