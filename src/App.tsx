@@ -98,6 +98,8 @@ const SecuritySettingsPage = React.lazy(() => import("./pages/admin/SecuritySett
 const IntelligencePage = React.lazy(() => import("./pages/admin/IntelligencePage"));
 const IntegrationHubPage = React.lazy(() => import("./pages/admin/IntegrationHubPage"));
 const PerformanceMonitorPage = React.lazy(() => import("./pages/admin/PerformanceMonitorPage"));
+const Calculator = React.lazy(() => import("./pages/Calculator"));
+const CalculatorSettings = React.lazy(() => import("./pages/admin/CalculatorSettings"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -147,6 +149,7 @@ function AppContent() {
                 <Suspense fallback={<SkeletonLoader variant="card" />}>
                   <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/calculator" element={<Calculator />} />
           <Route path="/discovery" element={<Discovery />} />
           <Route path="/professional/:id" element={<ProfessionalProfile />} />
           <Route path="/professionals/:id" element={<ProfessionalProfile />} />
@@ -465,6 +468,11 @@ function AppContent() {
           <Route path="/admin/performance" element={
             <RouteGuard requiredRole="admin">
               <PerformanceMonitorPage />
+            </RouteGuard>
+          } />
+          <Route path="/admin/calculator" element={
+            <RouteGuard requiredRole="admin">
+              <CalculatorSettings />
             </RouteGuard>
           } />
           
