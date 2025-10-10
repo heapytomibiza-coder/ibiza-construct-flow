@@ -30,7 +30,6 @@ export const EmptyPortfolioState = ({ professionalId, isOwner }: EmptyPortfolioS
         <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop" alt="Kitchen renovation example" className="w-full h-32 object-cover rounded-lg opacity-50" />
         <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&h=300&fit=crop" alt="Carpentry work example" className="w-full h-32 object-cover rounded-lg opacity-50" />
       </div>
-      <h3 className="text-xl font-semibold mb-2">Portfolio Coming Soon</h3>
       <p className="text-muted-foreground mb-6 max-w-md mx-auto">
         This professional is building their portfolio. Contact them to see examples of their work.
       </p>
