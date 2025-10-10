@@ -10,10 +10,18 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { 
   MapPin, Clock, Euro, User, Calendar, 
-  Briefcase, FileText, CheckCircle, Send
+  Briefcase, FileText, CheckCircle, Send,
+  Image, Phone, Video, Home, AlertCircle
 } from 'lucide-react';
+import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 interface JobDetailsModalProps {
@@ -35,7 +43,28 @@ interface JobDetailsModalProps {
       rating?: number;
       jobs_completed?: number;
     };
-    answers?: any;
+    answers?: {
+      microAnswers?: Record<string, any>;
+      logistics?: {
+        location?: string;
+        customLocation?: string;
+        startDate?: string;
+        completionDate?: string;
+        preferredDate?: string;
+        alternativeDate?: string;
+        dateFlexibility?: string;
+        consultationType?: 'site_visit' | 'phone_call' | 'video_call';
+        consultationDate?: string;
+        consultationTime?: string;
+        accessDetails?: string[];
+        budgetRange?: string;
+      };
+      extras?: {
+        photos?: string[];
+        notes?: string;
+        permitsConcern?: boolean;
+      };
+    };
     micro_id?: string;
   };
   open: boolean;
@@ -52,6 +81,48 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
   const daysPosted = Math.floor(
     (Date.now() - new Date(job.created_at).getTime()) / (1000 * 60 * 60 * 24)
   );
+
+  // Helper functions
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Not specified';
+    try {
+      return format(new Date(dateString), 'PPP');
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatAccessDetails = (details?: string[]) => {
+    if (!details || details.length === 0) return null;
+    return details;
+  };
+
+  const getConsultationIcon = (type?: string) => {
+    switch (type) {
+      case 'site_visit': return Home;
+      case 'phone_call': return Phone;
+      case 'video_call': return Video;
+      default: return Calendar;
+    }
+  };
+
+  const getConsultationLabel = (type?: string) => {
+    switch (type) {
+      case 'site_visit': return 'Site Visit';
+      case 'phone_call': return 'Phone Call';
+      case 'video_call': return 'Video Call';
+      default: return 'Consultation';
+    }
+  };
+
+  const microAnswers = job.answers?.microAnswers;
+  const logistics = job.answers?.logistics;
+  const extras = job.answers?.extras;
+
+  const hasMicroAnswers = microAnswers && Object.keys(microAnswers).length > 0;
+  const hasLogistics = logistics && (logistics.location || logistics.customLocation || logistics.accessDetails);
+  const hasSchedule = logistics && (logistics.startDate || logistics.completionDate || logistics.preferredDate || logistics.consultationType);
+  const hasExtras = extras && (extras.photos?.length || extras.notes || extras.permitsConcern);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -179,34 +250,254 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
               </div>
             </div>
 
-            {/* Requirements & Details */}
-            {job.answers && Object.keys(job.answers).length > 0 && (
+            {/* Detailed Requirements Accordion */}
+            {(hasMicroAnswers || hasLogistics || hasSchedule || hasExtras) && (
               <>
                 <Separator className="my-6" />
                 <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Briefcase className="w-5 h-5 text-primary" />
-                    <h3 className="text-lg font-semibold">Additional Requirements</h3>
-                  </div>
-                  <div className="grid gap-3">
-                    {Object.entries(job.answers).map(([key, value]) => (
-                      <Card key={key} className="bg-muted/30">
-                        <CardContent className="p-4">
-                          <div className="flex items-start gap-3">
-                            <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                            <div>
-                              <p className="font-medium capitalize mb-1">
-                                {key.replace(/_/g, ' ')}
-                              </p>
+                  <Accordion type="multiple" defaultValue={["scope", "logistics", "schedule", "extras"]} className="w-full">
+                    
+                    {/* Scope & Specifications */}
+                    {hasMicroAnswers && (
+                      <AccordionItem value="scope" className="border rounded-lg mb-3 px-4">
+                        <AccordionTrigger className="hover:no-underline">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="text-left">
+                              <h3 className="font-semibold">Scope & Specifications</h3>
                               <p className="text-sm text-muted-foreground">
-                                {String(value)}
+                                Service-specific requirements
                               </p>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4">
+                          <div className="space-y-3">
+                            {Object.entries(microAnswers).map(([key, value]) => (
+                              <div key={key} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+                                <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                                <div className="flex-1">
+                                  <p className="font-medium capitalize mb-1">
+                                    {key.replace(/_/g, ' ')}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
+
+                    {/* Site & Logistics */}
+                    {hasLogistics && (
+                      <AccordionItem value="logistics" className="border rounded-lg mb-3 px-4">
+                        <AccordionTrigger className="hover:no-underline">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <MapPin className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="text-left">
+                              <h3 className="font-semibold">Site & Logistics</h3>
+                              <p className="text-sm text-muted-foreground">
+                                Location and access details
+                              </p>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4">
+                          <div className="space-y-4">
+                            {(logistics.location || logistics.customLocation) && (
+                              <div className="p-4 rounded-lg bg-muted/30">
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  <MapPin className="w-4 h-4 text-primary" />
+                                  Location
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {logistics.customLocation || logistics.location}
+                                </p>
+                              </div>
+                            )}
+                            {logistics.accessDetails && formatAccessDetails(logistics.accessDetails) && (
+                              <div className="p-4 rounded-lg bg-muted/30">
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  <Home className="w-4 h-4 text-primary" />
+                                  Access Details
+                                </h4>
+                                <ul className="space-y-1">
+                                  {formatAccessDetails(logistics.accessDetails)?.map((detail, idx) => (
+                                    <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                                      <span className="text-primary mt-1">•</span>
+                                      <span className="capitalize">{detail.replace(/_/g, ' ')}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {logistics.budgetRange && (
+                              <div className="p-4 rounded-lg bg-muted/30">
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  <Euro className="w-4 h-4 text-primary" />
+                                  Budget Range
+                                </h4>
+                                <p className="text-sm text-muted-foreground capitalize">
+                                  {logistics.budgetRange.replace(/_/g, ' ')}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
+
+                    {/* Schedule & Timeline */}
+                    {hasSchedule && (
+                      <AccordionItem value="schedule" className="border rounded-lg mb-3 px-4">
+                        <AccordionTrigger className="hover:no-underline">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <Calendar className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="text-left">
+                              <h3 className="font-semibold">Schedule & Timeline</h3>
+                              <p className="text-sm text-muted-foreground">
+                                Project timing and consultation
+                              </p>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4">
+                          <div className="space-y-4">
+                            {(logistics.startDate || logistics.preferredDate) && (
+                              <div className="p-4 rounded-lg bg-muted/30">
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  <Calendar className="w-4 h-4 text-primary" />
+                                  Start Date
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {formatDate(logistics.startDate || logistics.preferredDate)}
+                                </p>
+                                {logistics.dateFlexibility && (
+                                  <p className="text-xs text-muted-foreground mt-1 capitalize">
+                                    Flexibility: {logistics.dateFlexibility.replace(/_/g, ' ')}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                            {(logistics.completionDate || logistics.alternativeDate) && (
+                              <div className="p-4 rounded-lg bg-muted/30">
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  <Clock className="w-4 h-4 text-primary" />
+                                  Completion Date
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {formatDate(logistics.completionDate || logistics.alternativeDate)}
+                                </p>
+                              </div>
+                            )}
+                            {logistics.consultationType && (
+                              <div className="p-4 rounded-lg bg-muted/30">
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  {React.createElement(getConsultationIcon(logistics.consultationType), {
+                                    className: "w-4 h-4 text-primary"
+                                  })}
+                                  Consultation
+                                </h4>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  {getConsultationLabel(logistics.consultationType)}
+                                </p>
+                                {logistics.consultationDate && (
+                                  <p className="text-xs text-muted-foreground">
+                                    {formatDate(logistics.consultationDate)}
+                                    {logistics.consultationTime && ` at ${logistics.consultationTime}`}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
+
+                    {/* Photos & Additional Notes */}
+                    {hasExtras && (
+                      <AccordionItem value="extras" className="border rounded-lg mb-3 px-4">
+                        <AccordionTrigger className="hover:no-underline">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <Image className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="text-left flex-1">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-semibold">Photos & Additional Notes</h3>
+                                {extras.photos && extras.photos.length > 0 && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    {extras.photos.length} {extras.photos.length === 1 ? 'photo' : 'photos'}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                Reference images and extra information
+                              </p>
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4">
+                          <div className="space-y-4">
+                            {extras.photos && extras.photos.length > 0 && (
+                              <div>
+                                <h4 className="font-medium mb-3 flex items-center gap-2">
+                                  <Image className="w-4 h-4 text-primary" />
+                                  Reference Photos
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                  {extras.photos.map((photo, idx) => (
+                                    <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border-2 border-border hover:border-primary transition-colors">
+                                      <img
+                                        src={photo}
+                                        alt={`Reference photo ${idx + 1}`}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {extras.notes && (
+                              <div className="p-4 rounded-lg bg-muted/30">
+                                <h4 className="font-medium mb-2 flex items-center gap-2">
+                                  <FileText className="w-4 h-4 text-primary" />
+                                  Additional Notes
+                                </h4>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                  {extras.notes}
+                                </p>
+                              </div>
+                            )}
+                            {extras.permitsConcern && (
+                              <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                                <div className="flex items-start gap-2">
+                                  <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                  <div>
+                                    <h4 className="font-medium text-yellow-700 mb-1">
+                                      Permits Required
+                                    </h4>
+                                    <p className="text-sm text-yellow-700/80">
+                                      This project may require permits or regulatory approval
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
+                  </Accordion>
                 </div>
               </>
             )}
