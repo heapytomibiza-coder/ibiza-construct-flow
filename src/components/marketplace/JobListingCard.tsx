@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   MapPin, Clock, Euro, User, Calendar, 
-  MessageSquare, Heart, Share2, Sparkles
+  MessageSquare, Heart, Share2, Sparkles, Eye
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JobPaymentWidget } from '@/components/jobs/JobPaymentWidget';
+import { JobDetailsModal } from './JobDetailsModal';
 
 interface JobListingCardProps {
   job: {
@@ -46,6 +47,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   className,
   viewMode = 'card'
 }) => {
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const isNew = new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
   
   if (viewMode === 'compact') {
@@ -224,13 +226,30 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             </Button>
           </div>
           
-          <Button 
-            onClick={() => onSendOffer?.(job.id)}
-            className="bg-gradient-hero text-white"
-          >
-            Send Offer
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDetailsModal(true)}
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              View Details
+            </Button>
+            
+            <Button 
+              onClick={() => onSendOffer?.(job.id)}
+              className="bg-gradient-hero text-white"
+            >
+              Send Offer
+            </Button>
+          </div>
         </div>
+        
+        <JobDetailsModal
+          job={job}
+          open={showDetailsModal}
+          onClose={() => setShowDetailsModal(false)}
+          onApply={onSendOffer}
+        />
       </CardContent>
     </Card>
   );
