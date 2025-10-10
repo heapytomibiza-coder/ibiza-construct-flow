@@ -63,6 +63,7 @@ const SubscriptionSuccess = React.lazy(() => import("./pages/SubscriptionSuccess
 const SubscriptionCanceled = React.lazy(() => import("./pages/SubscriptionCanceled"));
 const Templates = React.lazy(() => import("./pages/Templates"));
 const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
+const DesignTest = React.lazy(() => import("./pages/DesignTest"));
 const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
 const ConversationPage = React.lazy(() => import("./pages/ConversationPage"));
 const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
@@ -256,6 +257,9 @@ function AppContent() {
         
         {/* Color Preview Page */}
         <Route path="/color-preview" element={<ColorPreview />} />
+        
+        {/* Design Test Page */}
+        <Route path="/test" element={<DesignTest />} />
         
         {/* Protected Dashboard Routes */}
         <Route path="/dashboard" element={
