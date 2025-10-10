@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sliders, Image, TrendingUp, Star, Zap } from 'lucide-react';
+import { X, Sliders, Image, TrendingUp, Star, Zap, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,6 +35,7 @@ export const JobFiltersPanel: React.FC<JobFiltersPanelProps> = ({
   onFiltersChange
 }) => {
   const [categoryStats, setCategoryStats] = useState<any[]>([]);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -131,6 +132,14 @@ export const JobFiltersPanel: React.FC<JobFiltersPanelProps> = ({
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    className="hidden lg:flex"
+                  >
+                    {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+                  </Button>
                   <Sliders className="w-5 h-5 text-copper" />
                   <h3 className="font-semibold">Filters</h3>
                   {activeFilterCount > 0 && (
@@ -140,7 +149,7 @@ export const JobFiltersPanel: React.FC<JobFiltersPanelProps> = ({
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  {activeFilterCount > 0 && (
+                  {activeFilterCount > 0 && !isCollapsed && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -161,8 +170,9 @@ export const JobFiltersPanel: React.FC<JobFiltersPanelProps> = ({
                 </div>
               </div>
 
-              <ScrollArea className="flex-1">
-                <div className="p-4 space-y-6">
+              {!isCollapsed && (
+                <ScrollArea className="flex-1">
+                  <div className="p-4 space-y-6">
                   {/* Service Categories */}
                   <div>
                     <Label className="text-sm font-medium mb-3 block">
@@ -315,12 +325,14 @@ export const JobFiltersPanel: React.FC<JobFiltersPanelProps> = ({
                         />
                       </div>
                     </div>
+                    </div>
                   </div>
-                </div>
-              </ScrollArea>
+                </ScrollArea>
+              )}
 
               {/* Footer */}
-              <div className="p-4 border-t border-border">
+              {!isCollapsed && (
+                <div className="p-4 border-t border-border">
                 <Button
                   className="w-full bg-gradient-hero text-white"
                   onClick={onClose}
@@ -328,6 +340,7 @@ export const JobFiltersPanel: React.FC<JobFiltersPanelProps> = ({
                   Apply Filters
                 </Button>
               </div>
+              )}
             </div>
           </motion.div>
         </>
