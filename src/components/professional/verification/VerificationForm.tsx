@@ -56,7 +56,8 @@ export const VerificationForm = ({ professionalId, onSuccess }: VerificationForm
     setSubmitting(true);
 
     try {
-      const { error } = await supabase
+      // Create verification request
+      const { error: verificationError } = await supabase
         .from('professional_verifications' as any)
         .insert({
           professional_id: professionalId,
@@ -65,9 +66,20 @@ export const VerificationForm = ({ professionalId, onSuccess }: VerificationForm
           notes: notes || null,
         });
 
-      if (error) throw error;
+      if (verificationError) throw verificationError;
 
-      toast.success('Verification request submitted successfully');
+      // Update professional profile phase to verification_pending
+      const { error: profileError } = await supabase
+        .from('professional_profiles')
+        .update({
+          onboarding_phase: 'verification_pending',
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', professionalId);
+
+      if (profileError) throw profileError;
+
+      toast.success('Verification request submitted successfully! We\'ll review it within 1-2 business days.');
       setSelectedMethod('');
       setNotes('');
       onSuccess?.();
