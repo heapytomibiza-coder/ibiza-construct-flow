@@ -15,7 +15,7 @@ interface CalculatorResultsProps {
 }
 
 export function CalculatorResults({ selections, onReset, onDismissTip }: CalculatorResultsProps) {
-  const { pricing } = useCalculatorPricing(selections);
+  const { pricing, loading } = useCalculatorPricing(selections);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -45,6 +45,17 @@ export function CalculatorResults({ selections, onReset, onDismissTip }: Calcula
     // TODO: Prefill job wizard with calculator data
     navigate('/post-job');
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-8 pb-24">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Calculating your project estimate...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!pricing) {
     return null;
@@ -99,6 +110,30 @@ export function CalculatorResults({ selections, onReset, onDismissTip }: Calcula
           dismissedTips={selections.dismissedTips}
           onDismissTip={onDismissTip}
         />
+      )}
+
+      {/* AI Recommendations */}
+      {pricing.recommendations && pricing.recommendations.length > 0 && (
+        <div className="bg-gradient-to-br from-blue-500/5 to-purple-500/5 border border-blue-200/20 rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <svg className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Smart Recommendations
+          </h3>
+          <div className="space-y-2">
+            {pricing.recommendations.map((rec, idx) => (
+              <div key={idx} className="flex items-start gap-2 text-sm">
+                <span className="text-blue-500 mt-0.5">•</span>
+                <span className="text-foreground/90">
+                  {rec === 'structural_assessment' && 'Consider adding a structural assessment for your extension project'}
+                  {rec === 'premium_upgrades' && 'Premium tier projects often benefit from underfloor heating and premium fixtures'}
+                  {rec === 'extended_scope_benefits' && 'Extended scope packages reduce coordination hassles and ensure cohesive finishes'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Actions */}

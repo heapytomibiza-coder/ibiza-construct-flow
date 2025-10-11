@@ -1,5 +1,8 @@
 project_id = "kcncrtayycwdwrxcgler"
 
+[functions.calculate-project-cost]
+verify_jwt = false
+
 [functions.reset-demo-passwords]
 verify_jwt = false
 

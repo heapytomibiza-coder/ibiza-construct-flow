@@ -25,7 +25,7 @@ export function AdderSelector({ projectType, selected, onSelect }: AdderSelector
       const { data, error } = await supabase
         .from('calculator_adders' as any)
         .select('*')
-        .contains('applies_to', [projectType])
+        .eq('project_type', projectType)
         .eq('is_active', true)
         .order('sort_order');
 

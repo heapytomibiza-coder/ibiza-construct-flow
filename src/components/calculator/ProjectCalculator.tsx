@@ -1,4 +1,5 @@
 import { useCalculatorState } from './hooks/useCalculatorState';
+import { useCalculatorPricing } from './hooks/useCalculatorPricing';
 import { ProjectTypeSelector } from './steps/ProjectTypeSelector';
 import { SizePresetSelector } from './steps/SizePresetSelector';
 import { QualityTierSelector } from './steps/QualityTierSelector';
@@ -8,6 +9,7 @@ import { AdderSelector } from './steps/AdderSelector';
 import { LivePriceDisplay } from './results/LivePriceDisplay';
 import { CalculatorResults } from './results/CalculatorResults';
 import { ProgressIndicator } from './ui/ProgressIndicator';
+import { LivePricingIndicator } from './ui/LivePricingIndicator';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -23,6 +25,9 @@ export function ProjectCalculator() {
     resetCalculator,
     dismissTip
   } = useCalculatorState();
+
+  // Track live pricing status
+  const { loading: pricingLoading } = useCalculatorPricing(selections);
 
   return (
     <div className="min-h-screen bg-[#13111F] py-12">
@@ -116,6 +121,11 @@ export function ProjectCalculator() {
         {/* Live Price (visible from step 2 onwards) */}
         {currentStep >= 2 && currentStep <= totalSteps && (
           <LivePriceDisplay selections={selections} />
+        )}
+
+        {/* Live Pricing Indicator */}
+        {currentStep >= 3 && currentStep < 7 && (
+          <LivePricingIndicator isCalculating={pricingLoading} />
         )}
       </div>
     </div>
