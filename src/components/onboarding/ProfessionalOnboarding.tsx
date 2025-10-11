@@ -11,8 +11,10 @@ import { cn } from '@/lib/utils';
 import { CategoryIconCards } from './CategoryIconCards';
 import { AvailabilityChips } from './AvailabilityChips';
 import { ServiceTreeSelector } from '@/components/services/ServiceTreeSelector';
+import { ServiceTreeMobile } from '@/components/services/ServiceTreeMobile';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/useMediaQuery';
 
 interface ProfessionalOnboardingProps {
   onComplete: (data: OnboardingData) => void;
@@ -34,6 +36,7 @@ const IBIZA_ZONES = [
 ];
 
 export const ProfessionalOnboarding = ({ onComplete, initialData }: ProfessionalOnboardingProps) => {
+  const isMobile = useIsMobile();
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [professionalId, setProfessionalId] = useState<string | null>(null);
@@ -156,13 +159,23 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
       title: 'Build Your Service Menu',
       description: 'Select exactly what services you offer',
       component: professionalId ? (
-        <ServiceTreeSelector
-          professionalId={professionalId}
-          preselectedCategories={data.skills}
-          onComplete={() => {
-            setCurrentStep(currentStep + 1);
-          }}
-        />
+        isMobile ? (
+          <ServiceTreeMobile
+            professionalId={professionalId}
+            preselectedCategories={data.skills}
+            onComplete={() => {
+              setCurrentStep(currentStep + 1);
+            }}
+          />
+        ) : (
+          <ServiceTreeSelector
+            professionalId={professionalId}
+            preselectedCategories={data.skills}
+            onComplete={() => {
+              setCurrentStep(currentStep + 1);
+            }}
+          />
+        )
       ) : (
         <div className="flex items-center justify-center p-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
