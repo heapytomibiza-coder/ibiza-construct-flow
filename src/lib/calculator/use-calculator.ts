@@ -15,7 +15,8 @@ import {
   locationFactors,
   projectTypes,
 } from './data-model';
-import { calculatePricing, type PricingResult } from './pricing-engine';
+import { useCalculatorPricing } from './hooks/useCalculatorPricing';
+import type { PricingResult } from './results/types';
 
 const STORAGE_KEY = 'calculator_state';
 
@@ -68,14 +69,8 @@ export function useCalculator() {
   // Location options
   const locationOptions = useMemo<LocationFactor[]>(() => locationFactors, []);
 
-  // Calculate pricing
-  const pricing = useMemo<PricingResult | null>(() => {
-    try {
-      return calculatePricing(state);
-    } catch {
-      return null;
-    }
-  }, [state]);
+  // Calculate pricing using hook
+  const pricing = useCalculatorPricing({ state });
 
   // Update functions
   const setProjectType = useCallback((projectType: ProjectType) => {
