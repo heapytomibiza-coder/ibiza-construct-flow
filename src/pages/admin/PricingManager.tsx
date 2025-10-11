@@ -6,7 +6,8 @@ import { BasePricingTable } from '@/components/admin/pricing/BasePricingTable';
 import { AdderManagement } from '@/components/admin/pricing/AdderManagement';
 import { SeasonalAdjustments } from '@/components/admin/pricing/SeasonalAdjustments';
 import { PricingAuditLog } from '@/components/admin/pricing/PricingAuditLog';
-import { Settings, DollarSign, Calendar, History } from 'lucide-react';
+import { PricingInsights } from '@/components/admin/pricing/PricingInsights';
+import { Settings, DollarSign, Calendar, History, TrendingUp } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 export default function PricingManager() {
@@ -36,7 +37,7 @@ export default function PricingManager() {
 
         <div className="container mx-auto py-8 px-4">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsList className="grid w-full grid-cols-5 mb-8">
               <TabsTrigger value="base-pricing" className="gap-2">
                 <DollarSign className="h-4 w-4" />
                 Base Pricing
@@ -48,6 +49,10 @@ export default function PricingManager() {
               <TabsTrigger value="seasonal" className="gap-2">
                 <Calendar className="h-4 w-4" />
                 Seasonal
+              </TabsTrigger>
+              <TabsTrigger value="insights" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Insights
               </TabsTrigger>
               <TabsTrigger value="audit" className="gap-2">
                 <History className="h-4 w-4" />
@@ -93,6 +98,20 @@ export default function PricingManager() {
                 </CardHeader>
                 <CardContent>
                   <SeasonalAdjustments />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="insights">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pricing Accuracy & Real Data</CardTitle>
+                  <CardDescription>
+                    Track actual vs estimated costs to improve calculator accuracy
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <PricingInsights />
                 </CardContent>
               </Card>
             </TabsContent>

@@ -6915,6 +6915,48 @@ export type Database = {
         }
         Relationships: []
       }
+      project_completions: {
+        Row: {
+          actual_cost: number | null
+          completion_date: string | null
+          created_at: string | null
+          estimated_cost: number
+          id: string
+          notes: string | null
+          project_type: string
+          session_id: string
+          updated_at: string | null
+          user_id: string | null
+          variance_percentage: number | null
+        }
+        Insert: {
+          actual_cost?: number | null
+          completion_date?: string | null
+          created_at?: string | null
+          estimated_cost: number
+          id?: string
+          notes?: string | null
+          project_type: string
+          session_id: string
+          updated_at?: string | null
+          user_id?: string | null
+          variance_percentage?: number | null
+        }
+        Update: {
+          actual_cost?: number | null
+          completion_date?: string | null
+          created_at?: string | null
+          estimated_cost?: number
+          id?: string
+          notes?: string | null
+          project_type?: string
+          session_id?: string
+          updated_at?: string | null
+          user_id?: string | null
+          variance_percentage?: number | null
+        }
+        Relationships: []
+      }
       properties: {
         Row: {
           access_notes: string | null
@@ -9803,6 +9845,18 @@ export type Database = {
           rate: number | null
           to_currency: string | null
           updated_at: string | null
+        }
+        Relationships: []
+      }
+      pricing_variance_summary: {
+        Row: {
+          avg_actual: number | null
+          avg_estimated: number | null
+          avg_variance: number | null
+          earliest_completion: string | null
+          latest_completion: string | null
+          project_type: string | null
+          total_projects: number | null
         }
         Relationships: []
       }
