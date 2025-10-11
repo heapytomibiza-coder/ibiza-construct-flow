@@ -1,53 +1,15 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { CalculatorCard } from '../ui/CalculatorCard';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { LocationFactor } from '../hooks/useCalculatorState';
+import type { LocationFactor } from '@/lib/calculator/data-model';
 import { MapPin } from 'lucide-react';
 import { EducationTooltip } from '../ui/EducationTooltip';
 
 interface LocationSelectorProps {
+  locations: LocationFactor[];
   selected?: LocationFactor;
   onSelect: (location: LocationFactor) => void;
 }
 
-export function LocationSelector({ selected, onSelect }: LocationSelectorProps) {
-  const [locations, setLocations] = useState<LocationFactor[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLocations = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('calculator_location_factors' as any)
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order');
-
-      if (!error && data) {
-        setLocations(data as any);
-        // Auto-select default location
-        const defaultLocation = (data as any).find((l: any) => l.is_default);
-        if (defaultLocation && !selected) {
-          onSelect(defaultLocation);
-        }
-      }
-      setLoading(false);
-    };
-
-    fetchLocations();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-64" />
-        <div className="grid md:grid-cols-2 gap-4">
-          {[1, 2].map(i => <Skeleton key={i} className="h-32" />)}
-        </div>
-      </div>
-    );
-  }
+export function LocationSelector({ locations, selected, onSelect }: LocationSelectorProps) {
 
   return (
     <div className="space-y-6">
@@ -56,7 +18,7 @@ export function LocationSelector({ selected, onSelect }: LocationSelectorProps) 
         <p className="text-muted-foreground">Location affects material costs and logistics</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-3 gap-4">
         {locations.map(location => (
           <CalculatorCard
             key={location.id}
@@ -67,21 +29,21 @@ export function LocationSelector({ selected, onSelect }: LocationSelectorProps) 
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold text-lg">{location.display_name}</h3>
+                  <h3 className="font-semibold text-lg">{location.name}</h3>
                 </div>
-                {location.logistics_notes && (
-                  <EducationTooltip content={location.logistics_notes} />
+                {location.notes && (
+                  <EducationTooltip content={location.notes} />
                 )}
               </div>
 
-              {location.uplift_percentage > 0 && (
+              {location.upliftPercentage > 0 && (
                 <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm">
-                  +{location.uplift_percentage}% premium
+                  +{(location.upliftPercentage * 100).toFixed(0)}% premium
                 </div>
               )}
 
-              {location.logistics_notes && (
-                <p className="text-sm text-muted-foreground">{location.logistics_notes}</p>
+              {location.notes && (
+                <p className="text-sm text-muted-foreground">{location.notes}</p>
               )}
             </div>
           </CalculatorCard>

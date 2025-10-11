@@ -1,75 +1,33 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { CalculatorCard } from '../ui/CalculatorCard';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { Adder } from '../hooks/useCalculatorState';
+import type { CalculatorAdder } from '@/lib/calculator/data-model';
 import { Checkbox } from '@/components/ui/checkbox';
 import { EducationTooltip } from '../ui/EducationTooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 
 interface AdderSelectorProps {
-  projectType: string;
-  selected: Adder[];
-  onSelect: (adders: Adder[]) => void;
+  adders: CalculatorAdder[];
+  selected: string[];
+  onToggle: (adderId: string) => void;
 }
 
-export function AdderSelector({ projectType, selected, onSelect }: AdderSelectorProps) {
-  const [adders, setAdders] = useState<Adder[]>([]);
-  const [loading, setLoading] = useState(true);
+export function AdderSelector({ adders, selected, onToggle }: AdderSelectorProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  useEffect(() => {
-    const fetchAdders = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('calculator_adders' as any)
-        .select('*')
-        .eq('project_type', projectType)
-        .eq('is_active', true)
-        .order('sort_order');
-
-      if (!error && data) {
-        setAdders(data as any);
-      }
-      setLoading(false);
-    };
-
-    fetchAdders();
-  }, [projectType]);
-
-  const toggleAdder = (adder: Adder) => {
-    const isSelected = selected.some(a => a.id === adder.id);
-    if (isSelected) {
-      onSelect(selected.filter(a => a.id !== adder.id));
+  const formatPrice = (adder: CalculatorAdder) => {
+    if (adder.priceType === 'fixed') {
+      return `€${adder.priceValue.toLocaleString()}`;
+    } else if (adder.priceType === 'percentage') {
+      return `+${(adder.priceValue * 100).toFixed(0)}%`;
     } else {
-      onSelect([...selected, adder]);
+      return `€${adder.priceValue}/m²`;
     }
   };
 
-  const formatPrice = (adder: Adder) => {
-    if (adder.price_type === 'fixed') {
-      return `€${adder.price_value.toLocaleString()}`;
-    } else if (adder.price_type === 'percentage') {
-      return `+${adder.price_value}%`;
-    } else {
-      return `€${adder.price_value}/m²`;
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-64" />
-        <div className="grid md:grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
-        </div>
-      </div>
-    );
-  }
-
-  const commonAdders = adders.filter((a: any) => a.is_common);
-  const advancedAdders = adders.filter((a: any) => !a.is_common);
+  // For now, treat all adders as common (no advanced filtering)
+  const commonAdders = adders;
+  const advancedAdders: CalculatorAdder[] = [];
 
   return (
     <div className="space-y-6">
@@ -81,13 +39,13 @@ export function AdderSelector({ projectType, selected, onSelect }: AdderSelector
       <div className="space-y-4">
         <div className="grid md:grid-cols-2 gap-3">
           {commonAdders.map(adder => {
-            const isSelected = selected.some(a => a.id === adder.id);
+            const isSelected = selected.includes(adder.id);
             return (
               <CalculatorCard key={adder.id} selected={isSelected}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-medium truncate">{adder.display_name}</h4>
+                      <h4 className="font-medium truncate">{adder.name}</h4>
                       {adder.tooltip && <EducationTooltip content={adder.tooltip} />}
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">{adder.description}</p>
@@ -95,7 +53,7 @@ export function AdderSelector({ projectType, selected, onSelect }: AdderSelector
                   </div>
                   <Checkbox
                     checked={isSelected}
-                    onCheckedChange={() => toggleAdder(adder)}
+                    onCheckedChange={() => onToggle(adder.id)}
                   />
                 </div>
               </CalculatorCard>
@@ -112,13 +70,13 @@ export function AdderSelector({ projectType, selected, onSelect }: AdderSelector
             <CollapsibleContent className="mt-4">
               <div className="grid md:grid-cols-2 gap-3">
                 {advancedAdders.map(adder => {
-                  const isSelected = selected.some(a => a.id === adder.id);
+                  const isSelected = selected.includes(adder.id);
                   return (
                     <CalculatorCard key={adder.id} selected={isSelected}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium truncate">{adder.display_name}</h4>
+                            <h4 className="font-medium truncate">{adder.name}</h4>
                             {adder.tooltip && <EducationTooltip content={adder.tooltip} />}
                           </div>
                           <p className="text-sm text-muted-foreground mb-2">{adder.description}</p>
@@ -126,7 +84,7 @@ export function AdderSelector({ projectType, selected, onSelect }: AdderSelector
                         </div>
                         <Checkbox
                           checked={isSelected}
-                          onCheckedChange={() => toggleAdder(adder)}
+                          onCheckedChange={() => onToggle(adder.id)}
                         />
                       </div>
                     </CalculatorCard>

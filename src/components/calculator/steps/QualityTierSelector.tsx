@@ -1,48 +1,15 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { CalculatorCard } from '../ui/CalculatorCard';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { QualityTier } from '../hooks/useCalculatorState';
+import type { QualityTier } from '@/lib/calculator/data-model';
 import { Check } from 'lucide-react';
 import { TierImageCarousel } from '../ui/TierImageCarousel';
 
 interface QualityTierSelectorProps {
+  tiers: QualityTier[];
   selected?: QualityTier;
   onSelect: (tier: QualityTier) => void;
 }
 
-export function QualityTierSelector({ selected, onSelect }: QualityTierSelectorProps) {
-  const [tiers, setTiers] = useState<QualityTier[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchTiers = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('calculator_quality_tiers' as any)
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order');
-
-      if (!error && data) {
-        setTiers(data as any);
-      }
-      setLoading(false);
-    };
-
-    fetchTiers();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-64" />
-        <div className="grid md:grid-cols-3 gap-4">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-64" />)}
-        </div>
-      </div>
-    );
-  }
+export function QualityTierSelector({ tiers, selected, onSelect }: QualityTierSelectorProps) {
 
   return (
     <div className="space-y-6">
@@ -60,34 +27,26 @@ export function QualityTierSelector({ selected, onSelect }: QualityTierSelectorP
           >
             <div className="space-y-4">
               {/* Tier Image Carousel */}
-              {tier.image_urls && tier.image_urls.length > 0 && (
+              {tier.imageUrls && tier.imageUrls.length > 0 && (
                 <TierImageCarousel 
-                  images={tier.image_urls} 
-                  tierName={tier.display_name}
+                  images={tier.imageUrls} 
+                  tierName={tier.name}
                 />
               )}
 
               <div>
-                <h3 className="font-semibold text-xl mb-1">{tier.display_name}</h3>
+                <h3 className="font-semibold text-xl mb-1">{tier.name}</h3>
                 <p className="text-sm text-muted-foreground">{tier.description}</p>
               </div>
 
               <div className="space-y-2">
-                {tier.features.map((feature, idx) => (
+                {tier.highlights.map((highlight, idx) => (
                   <div key={idx} className="flex items-start gap-2">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">{feature}</span>
+                    <span className="text-sm">{highlight}</span>
                   </div>
                 ))}
               </div>
-
-              {tier.brand_examples && tier.brand_examples.length > 0 && (
-                <div className="pt-3 border-t">
-                  <p className="text-xs text-muted-foreground">
-                    Brands: {tier.brand_examples.join(', ')}
-                  </p>
-                </div>
-              )}
             </div>
           </CalculatorCard>
         ))}
