@@ -10,14 +10,17 @@ import { LivePriceDisplay } from './results/LivePriceDisplay';
 import { CalculatorResults } from './results/CalculatorResults';
 import { ProgressIndicator } from './ui/ProgressIndicator';
 import { LivePricingIndicator } from './ui/LivePricingIndicator';
+import { SessionIndicator } from './ui/SessionIndicator';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export function ProjectCalculator() {
   const {
     currentStep,
     selections,
     totalSteps,
+    hasRestoredSession,
     updateSelection,
     goToNext,
     goBack,
@@ -26,15 +29,35 @@ export function ProjectCalculator() {
     dismissTip
   } = useCalculatorState();
 
+  const [lastAccessed, setLastAccessed] = useState<string | undefined>();
+
+  useEffect(() => {
+    const stored = localStorage.getItem('calculator_session');
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        setLastAccessed(data.lastAccessed);
+      } catch {}
+    }
+  }, []);
+
   // Track live pricing status
   const { loading: pricingLoading } = useCalculatorPricing(selections);
 
   return (
     <div className="min-h-screen bg-[#13111F] py-12">
       <div className="container max-w-4xl mx-auto px-4">
+        {/* Session Indicator */}
+        {hasRestoredSession && currentStep === 1 && (
+          <SessionIndicator 
+            onStartOver={resetCalculator}
+            lastAccessed={lastAccessed}
+          />
+        )}
+
         {/* Progress */}
-        {currentStep <= totalSteps && (
-          <ProgressIndicator current={currentStep} total={totalSteps} />
+        {currentStep < totalSteps && (
+          <ProgressIndicator current={currentStep} total={totalSteps - 1} />
         )}
 
         {/* Step Content */}
@@ -94,7 +117,7 @@ export function ProjectCalculator() {
         </div>
 
         {/* Navigation */}
-        {currentStep <= totalSteps && (
+        {currentStep < totalSteps && (
           <div className="fixed bottom-24 left-0 right-0 bg-background/80 backdrop-blur-sm border-t p-4">
             <div className="container max-w-4xl mx-auto flex justify-between gap-4">
               <Button
@@ -111,7 +134,7 @@ export function ProjectCalculator() {
                 disabled={!canProceed}
                 className="gap-2"
               >
-                {currentStep === totalSteps ? 'View Results' : 'Continue'}
+                {currentStep === 6 ? 'View Results' : 'Continue'}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
@@ -119,12 +142,12 @@ export function ProjectCalculator() {
         )}
 
         {/* Live Price (visible from step 2 onwards) */}
-        {currentStep >= 2 && currentStep <= totalSteps && (
+        {currentStep >= 2 && currentStep < totalSteps && (
           <LivePriceDisplay selections={selections} />
         )}
 
         {/* Live Pricing Indicator */}
-        {currentStep >= 3 && currentStep < 7 && (
+        {currentStep >= 3 && currentStep < totalSteps && (
           <LivePricingIndicator isCalculating={pricingLoading} />
         )}
       </div>

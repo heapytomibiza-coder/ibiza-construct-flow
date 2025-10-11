@@ -68,7 +68,7 @@ export interface CalculatorSelections {
 }
 
 const STORAGE_KEY = 'calculator_session';
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 7;
 
 export function useCalculatorState() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -98,16 +98,31 @@ export function useCalculatorState() {
     return { scopeBundles: [], adders: [], dismissedTips: [] };
   });
 
+  const [hasRestoredSession, setHasRestoredSession] = useState(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        return !!(data.selections && Object.keys(data.selections).some(key => 
+          key !== 'dismissedTips' && data.selections[key] && 
+          (Array.isArray(data.selections[key]) ? data.selections[key].length > 0 : true)
+        ));
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
+
   // Auto-save to localStorage
   useEffect(() => {
     const data = {
       sessionToken,
       selections,
-      currentStep,
       lastAccessed: new Date().toISOString()
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [selections, currentStep, sessionToken]);
+  }, [selections, sessionToken]);
 
   const updateSelection = useCallback(<K extends keyof CalculatorSelections>(
     key: K,
@@ -160,6 +175,7 @@ export function useCalculatorState() {
     selections,
     sessionToken,
     totalSteps: TOTAL_STEPS,
+    hasRestoredSession,
     updateSelection,
     goToNext,
     goBack,
