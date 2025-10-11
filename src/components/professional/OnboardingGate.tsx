@@ -23,6 +23,7 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
   const navigate = useNavigate();
   const [profileState, setProfileState] = useState<ProfileState | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasConfiguredServices, setHasConfiguredServices] = useState<boolean | null>(null);
 
   useEffect(() => {
     loadProfileState();
@@ -73,7 +74,31 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
     }
   };
 
-  if (loading) {
+  const checkServiceConfiguration = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('professional_services')
+        .select('id')
+        .eq('professional_id', userId)
+        .eq('is_active', true)
+        .limit(1);
+      
+      if (error) throw error;
+      setHasConfiguredServices((data?.length || 0) > 0);
+    } catch (error) {
+      console.error('Error checking service configuration:', error);
+      setHasConfiguredServices(false);
+    }
+  };
+
+  useEffect(() => {
+    if (profileState?.verificationStatus === 'verified' || 
+        profileState?.onboardingPhase === 'service_configured') {
+      checkServiceConfiguration();
+    }
+  }, [profileState]);
+
+  if (loading || (profileState?.verificationStatus === 'verified' && hasConfiguredServices === null)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -196,6 +221,56 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
               >
                 <FileText className="w-4 h-4 mr-2" />
                 Resubmit Documents
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Gate 4.5: Services not configured (verified but no services)
+  if (
+    profileState.verificationStatus === 'verified' && 
+    hasConfiguredServices === false
+  ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background to-muted/20">
+        <div className="max-w-2xl w-full space-y-6">
+          <OnboardingProgressBar currentPhase="service_setup" />
+          <Card className="w-full border-primary">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Wrench className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle>Configure Your Services</CardTitle>
+              <CardDescription>
+                Step 3 of 3: Select which services you offer to start receiving job matches
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="bg-primary/5 border-primary/20">
+                <AlertCircle className="h-4 w-4 text-primary" />
+                <AlertDescription>
+                  <strong>Required:</strong> You must configure at least one service 
+                  to complete onboarding and start receiving jobs. This helps our 
+                  matching algorithm connect you with the right clients.
+                </AlertDescription>
+              </Alert>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>• Select categories you work in (e.g., Plumbing, Electrical)</p>
+                <p>• Choose subcategories (e.g., Leak Repairs, Installations)</p>
+                <p>• Pick specific services you offer (e.g., Burst Pipe Repair)</p>
+                <p className="text-xs italic mt-3">Takes about 5-10 minutes</p>
+              </div>
+              <Button
+                onClick={() => navigate('/professional/service-setup')}
+                size="lg"
+                className="w-full"
+              >
+                <Wrench className="w-4 h-4 mr-2" />
+                Configure Services Now
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </CardContent>
           </Card>
