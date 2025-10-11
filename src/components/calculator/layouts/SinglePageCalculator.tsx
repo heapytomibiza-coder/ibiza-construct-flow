@@ -165,68 +165,7 @@ export function SinglePageCalculator() {
 
         {/* Right Column - Results (Sticky) */}
         <div className="lg:sticky lg:top-4 lg:self-start">
-          <CalculatorCard className="p-6">
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-2xl font-bold mb-2">Estimated Cost</h3>
-                <p className="text-4xl font-bold text-primary mb-2">
-                  €{calculator.pricing.lowEstimate.toLocaleString()} - €{calculator.pricing.highEstimate.toLocaleString()}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Base: €{calculator.pricing.total.toLocaleString()}
-                </p>
-              </div>
-
-              <div className="border-t pt-4">
-                <h4 className="font-semibold mb-3">Timeline</h4>
-                <p className="text-lg">
-                  {calculator.pricing.timeline.minDays} - {calculator.pricing.timeline.maxDays} days
-                </p>
-              </div>
-
-              {calculator.pricing.breakdown && (
-                <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-3">Cost Breakdown</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Labour</span>
-                      <span className="font-medium">€{calculator.pricing.breakdown.labour.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Materials</span>
-                      <span className="font-medium">€{calculator.pricing.breakdown.materials.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Permits</span>
-                      <span className="font-medium">€{calculator.pricing.breakdown.permits.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Contingency</span>
-                      <span className="font-medium">€{calculator.pricing.breakdown.contingency.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Disposal</span>
-                      <span className="font-medium">€{calculator.pricing.breakdown.disposal.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {calculator.pricing.notes.length > 0 && (
-                <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-3">Notes</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    {calculator.pricing.notes.map((note, idx) => (
-                      <li key={idx} className="flex gap-2">
-                        <span>•</span>
-                        <span>{note}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </CalculatorCard>
+          <CalculatorResults pricing={calculator.pricing} />
         </div>
       </div>
     </>

@@ -1,175 +1,68 @@
-import { useState } from 'react';
-import { Check, X, ChevronDown, ChevronUp, Hammer, Wrench, Zap, Droplets, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Check, X } from 'lucide-react';
+import type { PricingResultProps } from '@/lib/calculator/results/types';
 
-interface InclusionItem {
-  text: string;
-  icon?: 'hammer' | 'wrench' | 'zap' | 'droplets';
-  category?: string;
-}
+export function InclusionExclusionList({ pricing }: PricingResultProps) {
+  const { bundles } = pricing;
 
-interface ExclusionItem extends InclusionItem {
-  canAddAsAdder?: boolean;
-  addPrice?: number;
-  adderKey?: string;
-}
-
-interface InclusionExclusionListProps {
-  included: string[];
-  excluded: string[];
-  onAddExclusionAsAdder?: (item: string) => void;
-  compact?: boolean;
-}
-
-const ICON_MAP = {
-  hammer: Hammer,
-  wrench: Wrench,
-  zap: Zap,
-  droplets: Droplets,
-};
-
-const getCategoryIcon = (text: string): keyof typeof ICON_MAP | undefined => {
-  const lowerText = text.toLowerCase();
-  if (lowerText.includes('electric') || lowerText.includes('lighting')) return 'zap';
-  if (lowerText.includes('plumb') || lowerText.includes('water')) return 'droplets';
-  if (lowerText.includes('structural') || lowerText.includes('wall')) return 'hammer';
-  return 'wrench';
-};
-
-export function InclusionExclusionList({ 
-  included, 
-  excluded, 
-  onAddExclusionAsAdder,
-  compact = false 
-}: InclusionExclusionListProps) {
-  const [showAllIncluded, setShowAllIncluded] = useState(false);
-  const [showAllExcluded, setShowAllExcluded] = useState(false);
-
-  const INITIAL_SHOW_COUNT = compact ? 4 : 6;
-  
-  const displayedIncluded = showAllIncluded 
-    ? included 
-    : included.slice(0, INITIAL_SHOW_COUNT);
-  
-  const displayedExcluded = showAllExcluded 
-    ? excluded 
-    : excluded.slice(0, INITIAL_SHOW_COUNT);
-
-  const renderItem = (
-    item: string, 
-    index: number, 
-    isIncluded: boolean,
-    canAdd?: boolean
-  ) => {
-    const IconComponent = ICON_MAP[getCategoryIcon(item) || 'wrench'];
-
-    return (
-      <li 
-        key={index} 
-        className={cn(
-          "flex items-start gap-3 py-2 transition-colors",
-          "hover:bg-muted/50 px-3 -mx-3 rounded-md"
-        )}
-      >
-        <div className={cn(
-          "mt-0.5 flex-shrink-0",
-          isIncluded ? "text-primary" : "text-muted-foreground"
-        )}>
-          <IconComponent className="h-4 w-4" />
-        </div>
-        <span className="text-sm flex-1">{item}</span>
-        {!isIncluded && canAdd && onAddExclusionAsAdder && (
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 text-xs gap-1 flex-shrink-0"
-            onClick={() => onAddExclusionAsAdder(item)}
-          >
-            <Plus className="h-3 w-3" />
-            Add
-          </Button>
-        )}
-      </li>
-    );
-  };
+  if (bundles.length === 0) return null;
 
   return (
-    <div className="space-y-6">
-      {/* Included Items */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <Check className="h-4 w-4 text-primary" />
-          </div>
-          <h4 className="font-semibold">What's Included</h4>
-        </div>
-        <ul className="space-y-1">
-          {displayedIncluded.map((item, idx) => 
-            renderItem(item, idx, true)
-          )}
-        </ul>
-        {included.length > INITIAL_SHOW_COUNT && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowAllIncluded(!showAllIncluded)}
-            className="mt-2 text-xs gap-1"
-          >
-            {showAllIncluded ? (
-              <>
-                <ChevronUp className="h-3 w-3" />
-                Show Less
-              </>
-            ) : (
-              <>
-                <ChevronDown className="h-3 w-3" />
-                View All {included.length} Items
-              </>
-            )}
-          </Button>
-        )}
-      </div>
+    <div className="space-y-4 pt-4 border-t">
+      <h4 className="font-semibold">What's Included</h4>
 
-      {/* Excluded Items */}
-      {excluded.length > 0 && (
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center">
-              <X className="h-4 w-4 text-destructive" />
-            </div>
-            <h4 className="font-semibold">Not Included</h4>
-          </div>
-          <ul className="space-y-1">
-            {displayedExcluded.map((item, idx) => 
-              renderItem(item, idx, false, true)
+      {bundles.map((bundle) => (
+        <div key={bundle.id} className="space-y-3">
+          <div>
+            <h5 className="font-medium text-sm mb-2">{bundle.name}</h5>
+            
+            {/* Included items */}
+            {bundle.included.length > 0 && (
+              <div className="space-y-1 mb-3">
+                <p className="text-xs text-primary font-medium flex items-center gap-1">
+                  <Check className="h-3 w-3" />
+                  Included
+                </p>
+                <ul className="space-y-1">
+                  {bundle.included.map((item, idx) => (
+                    <li key={idx} className="text-sm text-muted-foreground pl-5">
+                      • {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
+
+            {/* Excluded items */}
+            {bundle.excluded.length > 0 && (
+              <div className="space-y-1">
+                <p className="text-xs text-destructive font-medium flex items-center gap-1">
+                  <X className="h-3 w-3" />
+                  Not Included
+                </p>
+                <ul className="space-y-1">
+                  {bundle.excluded.slice(0, 3).map((item, idx) => (
+                    <li key={idx} className="text-sm text-muted-foreground pl-5">
+                      • {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+
+      {pricing.adders.length > 0 && (
+        <div className="mt-4 pt-4 border-t">
+          <h5 className="font-medium text-sm mb-2">Additional Selections</h5>
+          <ul className="space-y-1">
+            {pricing.adders.map((adder) => (
+              <li key={adder.id} className="text-sm text-muted-foreground flex items-center gap-2">
+                <Check className="h-3 w-3 text-primary" />
+                {adder.name}
+              </li>
+            ))}
           </ul>
-          {excluded.length > INITIAL_SHOW_COUNT && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowAllExcluded(!showAllExcluded)}
-              className="mt-2 text-xs gap-1"
-            >
-              {showAllExcluded ? (
-                <>
-                  <ChevronUp className="h-3 w-3" />
-                  Show Less
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="h-3 w-3" />
-                  View All {excluded.length} Items
-                </>
-              )}
-            </Button>
-          )}
-          {onAddExclusionAsAdder && (
-            <p className="text-xs text-muted-foreground mt-3 px-3">
-              Items marked "Add" can be included for an additional cost
-            </p>
-          )}
         </div>
       )}
     </div>

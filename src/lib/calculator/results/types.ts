@@ -26,3 +26,7 @@ export interface PricingResult {
   qualityTier: QualityTier;
   notes: string[];
 }
+
+export interface PricingResultProps {
+  pricing: PricingResult;
+}

@@ -1,55 +1,49 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import type { PricingBreakdown } from '../hooks/useCalculatorPricing';
+import type { PricingResultProps } from '@/lib/calculator/results/types';
 
-interface PriceBreakdownChartProps {
-  breakdown: PricingBreakdown;
-}
+export function PriceBreakdownChart({ pricing }: PricingResultProps) {
+  const { breakdown, total } = pricing;
 
-const COLORS = {
-  labour: 'hsl(var(--primary))',
-  materials: 'hsl(var(--secondary))',
-  permits: 'hsl(var(--accent))',
-  contingency: 'hsl(var(--muted))',
-  disposal: 'hsl(var(--destructive))'
-};
-
-const LABELS = {
-  labour: 'Labour',
-  materials: 'Materials',
-  permits: 'Permits & Admin',
-  contingency: 'Contingency',
-  disposal: 'Waste Disposal'
-};
-
-export function PriceBreakdownChart({ breakdown }: PriceBreakdownChartProps) {
-  const data = Object.entries(breakdown).map(([key, value]) => ({
-    name: LABELS[key as keyof typeof LABELS],
-    value: value,
-    color: COLORS[key as keyof typeof COLORS]
-  }));
+  const items = [
+    { label: 'Labour', value: breakdown.labour, color: 'bg-blue-500' },
+    { label: 'Materials', value: breakdown.materials, color: 'bg-green-500' },
+    { label: 'Permits', value: breakdown.permits, color: 'bg-yellow-500' },
+    { label: 'Contingency', value: breakdown.contingency, color: 'bg-orange-500' },
+    { label: 'Disposal', value: breakdown.disposal, color: 'bg-red-500' },
+  ];
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <PieChart>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-          outerRadius={100}
-          fill="#8884d8"
-          dataKey="value"
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={entry.color} />
-          ))}
-        </Pie>
-        <Tooltip
-          formatter={(value: number) => `€${value.toLocaleString()}`}
-        />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="space-y-4 pt-4 border-t">
+      <h4 className="font-semibold">Cost Breakdown</h4>
+      
+      {/* Visual bar */}
+      <div className="flex h-8 rounded-lg overflow-hidden">
+        {items.map((item) => (
+          <div
+            key={item.label}
+            className={item.color}
+            style={{ width: `${(item.value / total) * 100}%` }}
+            title={`${item.label}: €${item.value.toLocaleString()}`}
+          />
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div className="space-y-2">
+        {items.map((item) => (
+          <div key={item.label} className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <div className={`w-3 h-3 rounded-sm ${item.color}`} />
+              <span className="text-muted-foreground">{item.label}</span>
+            </div>
+            <span className="font-medium">€{item.value.toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-between font-semibold pt-2 border-t">
+        <span>Total</span>
+        <span>€{total.toLocaleString()}</span>
+      </div>
+    </div>
   );
 }
