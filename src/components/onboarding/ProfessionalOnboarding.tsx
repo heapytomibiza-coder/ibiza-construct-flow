@@ -211,8 +211,9 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
       component: professionalId ? (
         <ServiceCategorySelector 
           professionalId={professionalId}
+          preselectedCategories={data.skills}
           onComplete={() => {
-            // Continue to next step after saving services
+            setCurrentStep(currentStep + 1);
           }}
         />
       ) : (
@@ -332,12 +333,16 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
   ];
 
   const handleNext = async () => {
-    if (!validateStep(currentStep)) {
+    // Skip validation for Step 2 (service selection) as it has its own completion flow
+    if (currentStep !== 2 && !validateStep(currentStep)) {
       return;
     }
 
     if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1);
+      // Step 2 handles its own navigation via onComplete
+      if (currentStep !== 2) {
+        setCurrentStep(currentStep + 1);
+      }
     } else {
       // Clear session on completion
       try {

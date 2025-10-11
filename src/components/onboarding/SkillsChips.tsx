@@ -1,78 +1,77 @@
-import { useEffect, useState } from 'react';
-import { Hammer, Wrench, Paintbrush, Zap, Droplet, Package, Building2, Ruler, Home } from 'lucide-react';
+import { getMainCategories, getSpecialistCategories, getServiceIconName } from '@/utils/serviceHelpers';
 import { QuickSelectionChips } from '@/components/services/QuickSelectionChips';
-import { supabase } from '@/integrations/supabase/client';
+import { 
+  Hammer, Wrench, Paintbrush, Zap, Droplet, Package, Building2, Ruler, 
+  Home, Grid3x3, Layers, Trees, Waves, Wind, HardHat, DoorOpen, Bath, FileText 
+} from 'lucide-react';
 
 interface SkillsChipsProps {
   selectedOptions: string[];
   onSelectionChange: (options: string[]) => void;
 }
 
-const categoryIcons: Record<string, any> = {
-  'Electrician': <Zap className="w-4 h-4" />,
-  'Carpenter': <Hammer className="w-4 h-4" />,
-  'Plumber': <Droplet className="w-4 h-4" />,
-  'Builder': <Building2 className="w-4 h-4" />,
-  'Architects & Design': <Ruler className="w-4 h-4" />,
-  'Commercial Projects': <Building2 className="w-4 h-4" />,
-  'Flooring Specialist': <Package className="w-4 h-4" />,
-  'Floors, Doors & Windows': <Home className="w-4 h-4" />,
-  'Bricklayer/Mason': <Wrench className="w-4 h-4" />,
-  'Painter': <Paintbrush className="w-4 h-4" />,
+const getIconComponent = (iconName: string) => {
+  const icons: Record<string, React.ReactNode> = {
+    'Hammer': <Hammer className="w-4 h-4" />,
+    'Droplets': <Droplet className="w-4 h-4" />,
+    'Zap': <Zap className="w-4 h-4" />,
+    'Wrench': <Wrench className="w-4 h-4" />,
+    'Paintbrush': <Paintbrush className="w-4 h-4" />,
+    'Grid3x3': <Grid3x3 className="w-4 h-4" />,
+    'Layers': <Layers className="w-4 h-4" />,
+    'Home': <Home className="w-4 h-4" />,
+    'Trees': <Trees className="w-4 h-4" />,
+    'Waves': <Waves className="w-4 h-4" />,
+    'Wind': <Wind className="w-4 h-4" />,
+    'Ruler': <Ruler className="w-4 h-4" />,
+    'HardHat': <HardHat className="w-4 h-4" />,
+    'DoorOpen': <DoorOpen className="w-4 h-4" />,
+    'Bath': <Bath className="w-4 h-4" />,
+    'Building2': <Building2 className="w-4 h-4" />,
+    'FileText': <FileText className="w-4 h-4" />,
+  };
+  return icons[iconName] || <Wrench className="w-4 h-4" />;
 };
 
 export const SkillsChips = ({ selectedOptions, onSelectionChange }: SkillsChipsProps) => {
-  const [categories, setCategories] = useState<Array<{ id: string; label: string; icon?: React.ReactNode; popular?: boolean }>>([]);
-  const [loading, setLoading] = useState(true);
+  const mainCategories = getMainCategories();
+  const specialistCategories = getSpecialistCategories();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('services_micro')
-          .select('category')
-          .order('category');
+  const mainOptions = mainCategories.map(cat => ({
+    id: cat,
+    label: cat,
+    icon: getIconComponent(getServiceIconName(cat)),
+    popular: ['Builder', 'Plumber', 'Electrician'].includes(cat)
+  }));
 
-        if (error) throw error;
+  const specialistOptions = specialistCategories.map(cat => ({
+    id: cat,
+    label: cat,
+    icon: getIconComponent(getServiceIconName(cat)),
+    popular: false
+  }));
 
-        // Get unique categories
-        const uniqueCategories = Array.from(new Set(data?.map(item => item.category) || []));
-        
-        // Map to chip format
-        const categoryOptions = uniqueCategories.map(cat => ({
-          id: cat,
-          label: cat,
-          icon: categoryIcons[cat],
-          popular: ['Builder', 'Electrician', 'Carpenter'].includes(cat)
-        }));
-
-        setCategories(categoryOptions);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="p-6 card-luxury rounded-lg">
-        <p className="text-muted-foreground">Loading services...</p>
-      </div>
-    );
-  }
+  const allOptions = [...mainOptions, ...specialistOptions];
 
   return (
-    <QuickSelectionChips
-      title="Your Skills & Services"
-      subtitle="Select the main service categories you offer"
-      options={categories}
-      selectedOptions={selectedOptions}
-      onSelectionChange={onSelectionChange}
-      multiSelect={true}
-    />
+    <div className="space-y-4">
+      <QuickSelectionChips
+        title="Main Services"
+        subtitle="Core trades and services"
+        options={mainOptions}
+        selectedOptions={selectedOptions}
+        onSelectionChange={onSelectionChange}
+        multiSelect={true}
+      />
+      
+      <QuickSelectionChips
+        title="Specialist Services"
+        subtitle="Specialized and professional services"
+        options={specialistOptions}
+        selectedOptions={selectedOptions}
+        onSelectionChange={onSelectionChange}
+        multiSelect={true}
+      />
+    </div>
   );
 };
