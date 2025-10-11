@@ -118,7 +118,7 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate('/professional/verify')} size="lg" className="w-full">
+            <Button onClick={() => navigate('/professional/verification')} size="lg" className="w-full">
               Upload Verification Documents
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -184,7 +184,7 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
           </CardHeader>
           <CardContent>
             <Button
-              onClick={() => navigate('/professional/verify')}
+              onClick={() => navigate('/professional/verification')}
               variant="default"
               size="lg"
               className="w-full"
