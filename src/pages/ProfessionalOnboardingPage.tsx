@@ -37,7 +37,7 @@ export default function ProfessionalOnboardingPage() {
           user_id: user.id,
           tagline: data.tagline,
           bio: data.bio,
-          years_of_experience: data.experienceYears,
+          experience_years: data.experienceYears,
           intro_categories: data.categories, // High-level categories
           service_regions: data.regions,
           availability: data.availability,
@@ -46,7 +46,7 @@ export default function ProfessionalOnboardingPage() {
           verification_status: 'pending',
           is_active: false, // Not live until service_configured
           updated_at: new Date().toISOString()
-        });
+        } as any);
 
       if (professionalProfileError) throw professionalProfileError;
 
