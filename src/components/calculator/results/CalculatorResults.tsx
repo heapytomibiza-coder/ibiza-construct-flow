@@ -1,17 +1,20 @@
 import { useCalculatorPricing } from '../hooks/useCalculatorPricing';
 import type { CalculatorSelections } from '../hooks/useCalculatorState';
 import { PriceBreakdownChart } from './PriceBreakdownChart';
+import { InclusionExclusionList } from './InclusionExclusionList';
+import { ContextualEducationPanel } from './ContextualEducationPanel';
 import { Button } from '@/components/ui/button';
-import { Share2, Download, Briefcase, Check, X } from 'lucide-react';
+import { Share2, Download, Briefcase } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
 interface CalculatorResultsProps {
   selections: CalculatorSelections;
   onReset: () => void;
+  onDismissTip: (tipId: string) => void;
 }
 
-export function CalculatorResults({ selections, onReset }: CalculatorResultsProps) {
+export function CalculatorResults({ selections, onReset, onDismissTip }: CalculatorResultsProps) {
   const { pricing } = useCalculatorPricing(selections);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -78,37 +81,25 @@ export function CalculatorResults({ selections, onReset }: CalculatorResultsProp
           <PriceBreakdownChart breakdown={pricing.breakdown} />
         </div>
 
-        {/* What's Included */}
+        {/* What's Included - Enhanced */}
         <div className="bg-card border rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">Scope of Work</h3>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm font-medium text-primary mb-2 flex items-center gap-2">
-                <Check className="h-4 w-4" /> Included
-              </p>
-              <ul className="space-y-1">
-                {allIncluded.slice(0, 6).map((item, idx) => (
-                  <li key={idx} className="text-sm text-muted-foreground pl-6">
-                    • {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-destructive mb-2 flex items-center gap-2">
-                <X className="h-4 w-4" /> Not Included
-              </p>
-              <ul className="space-y-1">
-                {allExcluded.slice(0, 4).map((item, idx) => (
-                  <li key={idx} className="text-sm text-muted-foreground pl-6">
-                    • {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          <InclusionExclusionList
+            included={allIncluded}
+            excluded={allExcluded}
+            compact
+          />
         </div>
       </div>
+
+      {/* Contextual Education Panel */}
+      {selections.dismissedTips && (
+        <ContextualEducationPanel
+          selections={selections}
+          dismissedTips={selections.dismissedTips}
+          onDismissTip={onDismissTip}
+        />
+      )}
 
       {/* Actions */}
       <div className="bg-gradient-to-r from-teal-500/10 to-purple-500/10 border rounded-lg p-6">

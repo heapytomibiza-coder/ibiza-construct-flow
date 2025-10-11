@@ -19,6 +19,11 @@ export interface QualityTier {
   features: string[];
   brand_examples: string[];
   image_urls: string[];
+  education_content?: {
+    title: string;
+    content: string;
+    tips?: string[];
+  };
 }
 
 export interface ScopeBundle {
@@ -29,6 +34,7 @@ export interface ScopeBundle {
   excluded_items: string[];
   base_uplift_percentage: number;
   is_default: boolean;
+  education_blurbs?: any[];
 }
 
 export interface Adder {
@@ -40,6 +46,7 @@ export interface Adder {
   tooltip: string;
   price_type: 'fixed' | 'percentage' | 'per_sqm';
   price_value: number;
+  education_tip?: string;
 }
 
 export interface LocationFactor {
@@ -57,6 +64,7 @@ export interface CalculatorSelections {
   scopeBundles: ScopeBundle[];
   locationFactor?: LocationFactor;
   adders: Adder[];
+  dismissedTips?: string[];
 }
 
 const STORAGE_KEY = 'calculator_session';
@@ -82,12 +90,12 @@ export function useCalculatorState() {
     if (stored) {
       try {
         const data = JSON.parse(stored);
-        return data.selections || { scopeBundles: [], adders: [] };
+        return data.selections || { scopeBundles: [], adders: [], dismissedTips: [] };
       } catch {
-        return { scopeBundles: [], adders: [] };
+        return { scopeBundles: [], adders: [], dismissedTips: [] };
       }
     }
-    return { scopeBundles: [], adders: [] };
+    return { scopeBundles: [], adders: [], dismissedTips: [] };
   });
 
   // Auto-save to localStorage
@@ -121,9 +129,16 @@ export function useCalculatorState() {
   }, []);
 
   const resetCalculator = useCallback(() => {
-    setSelections({ scopeBundles: [], adders: [] });
+    setSelections({ scopeBundles: [], adders: [], dismissedTips: [] });
     setCurrentStep(1);
     localStorage.removeItem(STORAGE_KEY);
+  }, []);
+
+  const dismissTip = useCallback((tipId: string) => {
+    setSelections(prev => ({
+      ...prev,
+      dismissedTips: [...(prev.dismissedTips || []), tipId]
+    }));
   }, []);
 
   const isStepComplete = useCallback((step: number): boolean => {
@@ -150,6 +165,7 @@ export function useCalculatorState() {
     goBack,
     goToStep,
     resetCalculator,
+    dismissTip,
     isStepComplete,
     canProceed
   };

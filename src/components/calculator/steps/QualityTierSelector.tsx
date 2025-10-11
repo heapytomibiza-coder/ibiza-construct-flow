@@ -4,6 +4,7 @@ import { CalculatorCard } from '../ui/CalculatorCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { QualityTier } from '../hooks/useCalculatorState';
 import { Check } from 'lucide-react';
+import { TierImageCarousel } from '../ui/TierImageCarousel';
 
 interface QualityTierSelectorProps {
   selected?: QualityTier;
@@ -58,6 +59,14 @@ export function QualityTierSelector({ selected, onSelect }: QualityTierSelectorP
             onClick={() => onSelect(tier)}
           >
             <div className="space-y-4">
+              {/* Tier Image Carousel */}
+              {tier.image_urls && tier.image_urls.length > 0 && (
+                <TierImageCarousel 
+                  images={tier.image_urls} 
+                  tierName={tier.display_name}
+                />
+              )}
+
               <div>
                 <h3 className="font-semibold text-xl mb-1">{tier.display_name}</h3>
                 <p className="text-sm text-muted-foreground">{tier.description}</p>

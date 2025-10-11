@@ -20,7 +20,8 @@ export function ProjectCalculator() {
     goToNext,
     goBack,
     canProceed,
-    resetCalculator
+    resetCalculator,
+    dismissTip
   } = useCalculatorState();
 
   return (
@@ -78,12 +79,13 @@ export function ProjectCalculator() {
             />
           )}
 
-          {currentStep === 7 && (
-            <CalculatorResults
-              selections={selections}
-              onReset={resetCalculator}
-            />
-          )}
+        {currentStep === 7 && (
+          <CalculatorResults 
+            selections={selections} 
+            onReset={resetCalculator}
+            onDismissTip={dismissTip}
+          />
+        )}
         </div>
 
         {/* Navigation */}
