@@ -6289,6 +6289,7 @@ export type Database = {
           onboarding_phase: string | null
           portfolio_images: Json | null
           primary_trade: string | null
+          rejection_reason: string | null
           response_guarantee_hours: number | null
           response_time_hours: number | null
           service_regions: Json | null
@@ -6321,6 +6322,7 @@ export type Database = {
           onboarding_phase?: string | null
           portfolio_images?: Json | null
           primary_trade?: string | null
+          rejection_reason?: string | null
           response_guarantee_hours?: number | null
           response_time_hours?: number | null
           service_regions?: Json | null
@@ -6353,6 +6355,7 @@ export type Database = {
           onboarding_phase?: string | null
           portfolio_images?: Json | null
           primary_trade?: string | null
+          rejection_reason?: string | null
           response_guarantee_hours?: number | null
           response_time_hours?: number | null
           service_regions?: Json | null
