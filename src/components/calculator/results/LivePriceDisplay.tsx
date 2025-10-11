@@ -1,28 +1,27 @@
-import { Clock } from 'lucide-react';
-import type { PricingResultProps } from '@/lib/calculator/results/types';
+import { CalendarDays } from "lucide-react"
 
-export function LivePriceDisplay({ pricing }: PricingResultProps) {
+import { LivePricingIndicator } from "../ui/LivePricingIndicator"
+
+import type { PricingResultProps } from "@/lib/calculator/results/types"
+
+export const LivePriceDisplay = ({ pricing }: PricingResultProps) => {
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-2xl font-bold mb-2">Estimated Cost</h3>
-        <p className="text-4xl font-bold text-primary mb-2">
-          €{pricing.lowEstimate.toLocaleString()} - €{pricing.highEstimate.toLocaleString()}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Base estimate: €{pricing.total.toLocaleString()} ±5%
-        </p>
-      </div>
-
-      <div className="flex items-center gap-2 pt-4 border-t">
-        <Clock className="h-5 w-5 text-muted-foreground" />
+      <LivePricingIndicator
+        total={pricing.total}
+        lowEstimate={pricing.lowEstimate}
+        highEstimate={pricing.highEstimate}
+        base={pricing.base}
+      />
+      <div className="flex items-center gap-3 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/60 p-4 text-sm text-indigo-900">
+        <CalendarDays className="h-5 w-5" aria-hidden="true" />
         <div>
-          <p className="text-sm text-muted-foreground">Timeline</p>
-          <p className="text-lg font-semibold">
-            {pricing.timeline.minDays} - {pricing.timeline.maxDays} days
+          <p className="font-medium">Typical programme</p>
+          <p className="text-xs text-indigo-700">
+            {pricing.timeline.minDays} – {pricing.timeline.maxDays} days including commissioning
           </p>
         </div>
       </div>
     </div>
-  );
+  )
 }

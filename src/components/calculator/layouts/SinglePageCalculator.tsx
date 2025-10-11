@@ -64,8 +64,9 @@ export function SinglePageCalculator() {
                 subtitle="Choose the renovation you're planning"
               />
               <ProjectTypeSelector
-                selected={calculator.state.projectType}
-                onSelect={calculator.setProjectType}
+                value={calculator.state.projectType}
+                options={calculator.projectTypeOptions}
+                onChange={calculator.setProjectType}
               />
             </div>
 
@@ -80,9 +81,9 @@ export function SinglePageCalculator() {
               />
               {calculator.state.projectType ? (
               <SizePresetSelector
-                presets={calculator.sizePresetOptions}
-                selected={calculator.selectedSizePreset}
-                onSelect={(preset) => calculator.selectSizePreset(preset.id)}
+                value={calculator.state.sizePresetId}
+                options={calculator.sizePresetOptions}
+                onChange={calculator.selectSizePreset}
               />
               ) : (
                 <p className="text-sm text-muted-foreground">Select a project type first</p>
@@ -99,9 +100,9 @@ export function SinglePageCalculator() {
                 subtitle="Choose your preferred finish quality"
               />
               <QualityTierSelector
-                tiers={calculator.qualityTierOptions}
-                selected={calculator.selectedQualityTier}
-                onSelect={(tier) => calculator.selectQualityTier(tier.id)}
+                value={calculator.state.qualityTierId}
+                options={calculator.qualityTierOptions}
+                onChange={calculator.selectQualityTier}
               />
             </div>
 
@@ -116,9 +117,9 @@ export function SinglePageCalculator() {
               />
               {calculator.state.projectType ? (
                 <ScopeBundleSelector
-                  bundles={calculator.scopeBundleOptions}
-                  selected={calculator.state.scopeBundleIds}
-                  onToggle={calculator.toggleScopeBundle}
+                  value={calculator.state.scopeBundleIds}
+                  options={calculator.scopeBundleOptions}
+                  onChange={calculator.toggleScopeBundle}
                 />
               ) : (
                 <p className="text-sm text-muted-foreground">Select a project type first</p>
@@ -135,9 +136,9 @@ export function SinglePageCalculator() {
                 subtitle="Select your location"
               />
               <LocationSelector
-                locations={calculator.locationOptions}
-                selected={calculator.selectedLocation}
-                onSelect={(location) => calculator.selectLocation(location.id)}
+                value={calculator.state.locationId}
+                options={calculator.locationOptions}
+                onChange={calculator.selectLocation}
               />
             </div>
 
@@ -152,9 +153,9 @@ export function SinglePageCalculator() {
               />
               {calculator.state.projectType ? (
                 <AdderSelector
-                  adders={calculator.adderOptions}
-                  selected={calculator.state.adderIds}
-                  onToggle={calculator.toggleAdder}
+                  value={calculator.state.adderIds}
+                  options={calculator.adderOptions}
+                  onChange={calculator.toggleAdder}
                 />
               ) : (
                 <p className="text-sm text-muted-foreground">Select a project type first</p>

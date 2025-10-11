@@ -1,56 +1,57 @@
-import { CalculatorCard } from '../ui/CalculatorCard';
-import type { QualityTier } from '@/lib/calculator/data-model';
-import { Check } from 'lucide-react';
-import { TierImageCarousel } from '../ui/TierImageCarousel';
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
-interface QualityTierSelectorProps {
-  tiers: QualityTier[];
-  selected?: QualityTier;
-  onSelect: (tier: QualityTier) => void;
+import type { QualityTier } from "@/lib/calculator/data-model"
+
+import { TierImageCarousel } from "../ui/TierImageCarousel"
+import { EducationTooltip } from "../ui/EducationTooltip"
+
+type QualityTierSelectorProps = {
+  value: string
+  options: QualityTier[]
+  onChange: (qualityTierId: string) => void
 }
 
-export function QualityTierSelector({ tiers, selected, onSelect }: QualityTierSelectorProps) {
-
+export const QualityTierSelector = ({ value, options, onChange }: QualityTierSelectorProps) => {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold mb-2">What quality level?</h2>
-        <p className="text-muted-foreground">Choose the finish quality that matches your vision</p>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Quality tier</h3>
+        <EducationTooltip label="How tiers work" description="Multipliers adjust finish level, warranties, and brand sets." />
       </div>
-
-      <div className="grid md:grid-cols-3 gap-4">
-        {tiers.map(tier => (
-          <CalculatorCard
-            key={tier.id}
-            selected={selected?.id === tier.id}
-            onClick={() => onSelect(tier)}
-          >
-            <div className="space-y-4">
-              {/* Tier Image Carousel */}
-              {tier.imageUrls && tier.imageUrls.length > 0 && (
-                <TierImageCarousel 
-                  images={tier.imageUrls} 
-                  tierName={tier.name}
-                />
-              )}
-
-              <div>
-                <h3 className="font-semibold text-xl mb-1">{tier.name}</h3>
-                <p className="text-sm text-muted-foreground">{tier.description}</p>
+      <div className="grid gap-4 lg:grid-cols-3">
+        {options.map((tier) => {
+          const isActive = tier.id === value
+          return (
+            <Button
+              key={tier.id}
+              onClick={() => onChange(tier.id)}
+              type="button"
+              variant={isActive ? "default" : "outline"}
+              className="flex h-auto flex-col gap-4 rounded-3xl border-2 p-4 text-left"
+            >
+              <TierImageCarousel images={tier.imageUrls} className="w-full" />
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-base font-semibold">{tier.name}</div>
+                  <p className="text-xs text-muted-foreground">{tier.description}</p>
+                </div>
+                <Badge variant="outline" className="rounded-full">
+                  ×{tier.multiplier.toFixed(2)}
+                </Badge>
               </div>
-
-              <div className="space-y-2">
-                {tier.highlights.map((highlight, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">{highlight}</span>
-                  </div>
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                {tier.highlights.map((highlight) => (
+                  <li key={highlight} className="flex items-start gap-2">
+                    <span className="mt-1 h-1 w-1 rounded-full bg-indigo-400" aria-hidden="true" />
+                    {highlight}
+                  </li>
                 ))}
-              </div>
-            </div>
-          </CalculatorCard>
-        ))}
+              </ul>
+            </Button>
+          )
+        })}
       </div>
     </div>
-  );
+  )
 }

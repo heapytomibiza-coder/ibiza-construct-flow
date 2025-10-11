@@ -1,70 +1,43 @@
-import { Check, X } from 'lucide-react';
-import type { PricingResultProps } from '@/lib/calculator/results/types';
+import { CheckCircle2, CircleX } from "lucide-react"
 
-export function InclusionExclusionList({ pricing }: PricingResultProps) {
-  const { bundles } = pricing;
+import type { PricingResultProps } from "@/lib/calculator/results/types"
 
-  if (bundles.length === 0) return null;
+export const InclusionExclusionList = ({ pricing }: PricingResultProps) => {
+  const included = Array.from(new Set(pricing.bundles.flatMap((bundle) => bundle.included)))
+  const excluded = Array.from(new Set(pricing.bundles.flatMap((bundle) => bundle.excluded)))
+
+  if (!included.length && !excluded.length) {
+    return null
+  }
 
   return (
-    <div className="space-y-4 pt-4 border-t">
-      <h4 className="font-semibold">What's Included</h4>
-
-      {bundles.map((bundle) => (
-        <div key={bundle.id} className="space-y-3">
-          <div>
-            <h5 className="font-medium text-sm mb-2">{bundle.name}</h5>
-            
-            {/* Included items */}
-            {bundle.included.length > 0 && (
-              <div className="space-y-1 mb-3">
-                <p className="text-xs text-primary font-medium flex items-center gap-1">
-                  <Check className="h-3 w-3" />
-                  Included
-                </p>
-                <ul className="space-y-1">
-                  {bundle.included.map((item, idx) => (
-                    <li key={idx} className="text-sm text-muted-foreground pl-5">
-                      • {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Excluded items */}
-            {bundle.excluded.length > 0 && (
-              <div className="space-y-1">
-                <p className="text-xs text-destructive font-medium flex items-center gap-1">
-                  <X className="h-3 w-3" />
-                  Not Included
-                </p>
-                <ul className="space-y-1">
-                  {bundle.excluded.slice(0, 3).map((item, idx) => (
-                    <li key={idx} className="text-sm text-muted-foreground pl-5">
-                      • {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+        <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-emerald-700">
+          <CheckCircle2 className="h-4 w-4" aria-hidden="true" /> Included
         </div>
-      ))}
-
-      {pricing.adders.length > 0 && (
-        <div className="mt-4 pt-4 border-t">
-          <h5 className="font-medium text-sm mb-2">Additional Selections</h5>
-          <ul className="space-y-1">
-            {pricing.adders.map((adder) => (
-              <li key={adder.id} className="text-sm text-muted-foreground flex items-center gap-2">
-                <Check className="h-3 w-3 text-primary" />
-                {adder.name}
-              </li>
-            ))}
-          </ul>
+        <ul className="space-y-2 text-sm text-emerald-900">
+          {included.map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="space-y-3 rounded-xl border border-rose-200 bg-rose-50/70 p-4">
+        <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-rose-600">
+          <CircleX className="h-4 w-4" aria-hidden="true" /> Not included
         </div>
-      )}
+        <ul className="space-y-2 text-sm text-rose-900">
+          {excluded.map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-rose-500" aria-hidden="true" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
-  );
+  )
 }

@@ -1,72 +1,37 @@
-import { CalculatorCard } from '../ui/CalculatorCard';
-import type { ScopeBundle } from '@/lib/calculator/data-model';
-import { Check, X } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from "@/components/ui/switch"
 
-interface ScopeBundleSelectorProps {
-  bundles: ScopeBundle[];
-  selected: string[];
-  onToggle: (bundleId: string) => void;
+import type { ScopeBundle } from "@/lib/calculator/data-model"
+
+type ScopeBundleSelectorProps = {
+  value: string[]
+  options: ScopeBundle[]
+  onChange: (scopeBundleId: string) => void
 }
 
-export function ScopeBundleSelector({ bundles, selected, onToggle }: ScopeBundleSelectorProps) {
-
+export const ScopeBundleSelector = ({ value, options, onChange }: ScopeBundleSelectorProps) => {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold mb-2">What's included?</h2>
-        <p className="text-muted-foreground">Select the scope of work for your project</p>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        {bundles.map(bundle => {
-          const isSelected = selected.includes(bundle.id);
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Scope bundles</h3>
+      <div className="space-y-3">
+        {options.map((bundle) => {
+          const isActive = value.includes(bundle.id)
           return (
-            <CalculatorCard key={bundle.id} selected={isSelected}>
-              <div className="space-y-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-semibold text-lg">{bundle.name}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{bundle.description}</p>
-                  </div>
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={() => onToggle(bundle.id)}
-                  />
+            <div key={bundle.id} className="flex items-start gap-4 rounded-2xl border border-muted bg-card p-4">
+              <Switch checked={isActive} onCheckedChange={() => onChange(bundle.id)} />
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <p className="text-base font-semibold">{bundle.name}</p>
+                  {bundle.defaultSelected ? (
+                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Recommended</span>
+                  ) : null}
                 </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm font-medium text-primary mb-2 flex items-center gap-2">
-                      <Check className="h-4 w-4" /> Included
-                    </p>
-                    <ul className="space-y-1">
-                      {bundle.included.map((item, idx) => (
-                        <li key={idx} className="text-sm text-muted-foreground pl-6">
-                          • {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-medium text-destructive mb-2 flex items-center gap-2">
-                      <X className="h-4 w-4" /> Not Included
-                    </p>
-                    <ul className="space-y-1">
-                      {bundle.excluded.slice(0, 3).map((item, idx) => (
-                        <li key={idx} className="text-sm text-muted-foreground pl-6">
-                          • {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground">{bundle.description}</p>
+                <p className="text-xs text-muted-foreground">Base rate +€{bundle.basePricePerSqm.toFixed(0)} per m²</p>
               </div>
-            </CalculatorCard>
-          );
+            </div>
+          )
         })}
       </div>
     </div>
-  );
+  )
 }

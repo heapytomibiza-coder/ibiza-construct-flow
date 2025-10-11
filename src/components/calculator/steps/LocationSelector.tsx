@@ -1,54 +1,55 @@
-import { CalculatorCard } from '../ui/CalculatorCard';
-import type { LocationFactor } from '@/lib/calculator/data-model';
-import { MapPin } from 'lucide-react';
-import { EducationTooltip } from '../ui/EducationTooltip';
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
-interface LocationSelectorProps {
-  locations: LocationFactor[];
-  selected?: LocationFactor;
-  onSelect: (location: LocationFactor) => void;
+import type { LocationFactor } from "@/lib/calculator/data-model"
+
+type LocationSelectorProps = {
+  value: string
+  options: LocationFactor[]
+  onChange: (locationId: string) => void
 }
 
-export function LocationSelector({ locations, selected, onSelect }: LocationSelectorProps) {
-
+export const LocationSelector = ({ value, options, onChange }: LocationSelectorProps) => {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold mb-2">Where's the project?</h2>
-        <p className="text-muted-foreground">Location affects material costs and logistics</p>
-      </div>
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Location factor</h3>
+      <RadioGroup value={value} onValueChange={onChange} className="grid gap-3 sm:grid-cols-3">
+        {options.map((location) => {
+          const isActive = location.id === value
+          const id = `location-${location.id}`
 
-      <div className="grid md:grid-cols-3 gap-4">
-        {locations.map(location => (
-          <CalculatorCard
-            key={location.id}
-            selected={selected?.id === location.id}
-            onClick={() => onSelect(location)}
-          >
-            <div className="space-y-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold text-lg">{location.name}</h3>
+          return (
+            <div
+              key={location.id}
+              className={`rounded-2xl border-2 p-4 transition ${
+                isActive
+                  ? "border-indigo-500 bg-indigo-500/10 text-indigo-950"
+                  : "border-muted bg-card text-muted-foreground hover:border-indigo-200"
+              }`}
+            >
+              <RadioGroupItem value={location.id} id={id} className="sr-only" />
+              <Label htmlFor={id} className="flex cursor-pointer flex-col gap-3 text-left">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{location.name}</div>
+                    <p className="text-xs text-muted-foreground">{location.notes}</p>
+                  </div>
+                  <div
+                    className={`h-3 w-3 rounded-full border ${
+                      isActive ? "border-indigo-600 bg-indigo-600" : "border-muted"
+                    }`}
+                  />
                 </div>
-                {location.notes && (
-                  <EducationTooltip content={location.notes} />
-                )}
-              </div>
-
-              {location.upliftPercentage > 0 && (
-                <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm">
-                  +{(location.upliftPercentage * 100).toFixed(0)}% premium
-                </div>
-              )}
-
-              {location.notes && (
-                <p className="text-sm text-muted-foreground">{location.notes}</p>
-              )}
+                <p className="text-xs font-medium text-indigo-600">
+                  {location.upliftPercentage > 0
+                    ? `+${(location.upliftPercentage * 100).toFixed(0)}% uplift`
+                    : "No uplift"}
+                </p>
+              </Label>
             </div>
-          </CalculatorCard>
-        ))}
-      </div>
+          )
+        })}
+      </RadioGroup>
     </div>
-  );
+  )
 }

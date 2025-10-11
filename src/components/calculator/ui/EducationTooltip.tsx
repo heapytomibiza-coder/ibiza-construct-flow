@@ -1,23 +1,28 @@
-import { Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from "lucide-react"
 
-interface EducationTooltipProps {
-  content: string;
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+
+import { Badge } from "@/components/ui/badge"
+
+type EducationTooltipProps = {
+  label: string
+  description: string
 }
 
-export function EducationTooltip({ content }: EducationTooltipProps) {
+export const EducationTooltip = ({ label, description }: EducationTooltipProps) => {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={120}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors">
-            <Info className="h-4 w-4" />
-          </button>
+          <Badge className="flex cursor-help items-center gap-1 rounded-full bg-indigo-100 px-2.5 py-1 text-indigo-700">
+            <Info className="h-4 w-4" aria-hidden="true" />
+            <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
+          </Badge>
         </TooltipTrigger>
-        <TooltipContent className="max-w-xs">
-          <p className="text-sm">{content}</p>
+        <TooltipContent className="max-w-xs text-sm text-muted-foreground">
+          {description}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
+  )
 }

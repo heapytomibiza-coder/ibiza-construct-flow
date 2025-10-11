@@ -1,100 +1,55 @@
-import { CalculatorCard } from '../ui/CalculatorCard';
-import type { CalculatorAdder } from '@/lib/calculator/data-model';
-import { Checkbox } from '@/components/ui/checkbox';
-import { EducationTooltip } from '../ui/EducationTooltip';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
 
-interface AdderSelectorProps {
-  adders: CalculatorAdder[];
-  selected: string[];
-  onToggle: (adderId: string) => void;
+import type { CalculatorAdder } from "@/lib/calculator/data-model"
+
+type AdderSelectorProps = {
+  value: string[]
+  options: CalculatorAdder[]
+  onChange: (adderId: string) => void
 }
 
-export function AdderSelector({ adders, selected, onToggle }: AdderSelectorProps) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
+const CATEGORY_LABELS: Record<CalculatorAdder["category"], string> = {
+  structural: "Structural",
+  mep: "MEP",
+  finishes: "Finishes",
+}
 
-  const formatPrice = (adder: CalculatorAdder) => {
-    if (adder.priceType === 'fixed') {
-      return `€${adder.priceValue.toLocaleString()}`;
-    } else if (adder.priceType === 'percentage') {
-      return `+${(adder.priceValue * 100).toFixed(0)}%`;
-    } else {
-      return `€${adder.priceValue}/m²`;
-    }
-  };
+const PRICE_LABEL = {
+  fixed: (value: number) => `+€${value.toFixed(0)}`,
+  per_sqm: (value: number) => `+€${value.toFixed(0)} / m²`,
+  percentage: (value: number) => `+${(value * 100).toFixed(0)}%`,
+}
 
-  // For now, treat all adders as common (no advanced filtering)
-  const commonAdders = adders;
-  const advancedAdders: CalculatorAdder[] = [];
+export const AdderSelector = ({ value, options, onChange }: AdderSelectorProps) => {
+  if (!options.length) {
+    return null
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold mb-2">Any extras?</h2>
-        <p className="text-muted-foreground">Add optional upgrades and special requirements</p>
-      </div>
-
-      <div className="space-y-4">
-        <div className="grid md:grid-cols-2 gap-3">
-          {commonAdders.map(adder => {
-            const isSelected = selected.includes(adder.id);
-            return (
-              <CalculatorCard key={adder.id} selected={isSelected}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-medium truncate">{adder.name}</h4>
-                      {adder.tooltip && <EducationTooltip content={adder.tooltip} />}
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">{adder.description}</p>
-                    <p className="text-sm font-semibold text-primary">{formatPrice(adder)}</p>
-                  </div>
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={() => onToggle(adder.id)}
-                  />
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">One-tap adders</h3>
+      <div className="space-y-3">
+        {options.map((adder) => {
+          const isActive = value.includes(adder.id)
+          return (
+            <div key={adder.id} className="flex items-start gap-4 rounded-2xl border border-muted bg-card p-4">
+              <Switch checked={isActive} onCheckedChange={() => onChange(adder.id)} />
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-base font-semibold">{adder.name}</p>
+                  <Badge variant="secondary">{CATEGORY_LABELS[adder.category]}</Badge>
+                  <Badge variant="outline">{PRICE_LABEL[adder.priceType](adder.priceValue)}</Badge>
                 </div>
-              </CalculatorCard>
-            );
-          })}
-        </div>
-
-        {advancedAdders.length > 0 && (
-          <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
-            <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
-              <span>Advanced Options</span>
-              <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-4">
-              <div className="grid md:grid-cols-2 gap-3">
-                {advancedAdders.map(adder => {
-                  const isSelected = selected.includes(adder.id);
-                  return (
-                    <CalculatorCard key={adder.id} selected={isSelected}>
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium truncate">{adder.name}</h4>
-                            {adder.tooltip && <EducationTooltip content={adder.tooltip} />}
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-2">{adder.description}</p>
-                          <p className="text-sm font-semibold text-primary">{formatPrice(adder)}</p>
-                        </div>
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={() => onToggle(adder.id)}
-                        />
-                      </div>
-                    </CalculatorCard>
-                  );
-                })}
+                <p className="text-sm text-muted-foreground">{adder.description}</p>
+                {adder.tooltip ? (
+                  <p className="text-xs text-muted-foreground">{adder.tooltip}</p>
+                ) : null}
               </div>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
+            </div>
+          )
+        })}
       </div>
     </div>
-  );
+  )
 }

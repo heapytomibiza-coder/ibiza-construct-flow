@@ -1,25 +1,19 @@
-import { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import type { ComponentProps } from "react"
 
-interface CalculatorCardProps {
-  children: ReactNode;
-  className?: string;
-  selected?: boolean;
-  onClick?: () => void;
-}
+import { cn } from "@/lib/utils"
 
-export function CalculatorCard({ children, className, selected, onClick }: CalculatorCardProps) {
+import { Card } from "@/components/ui/card"
+
+type CalculatorCardProps = ComponentProps<typeof Card>
+
+export const CalculatorCard = ({ className, ...props }: CalculatorCardProps) => {
   return (
-    <div
+    <Card
       className={cn(
-        "bg-card border rounded-lg p-6 transition-all duration-200",
-        selected && "ring-2 ring-primary shadow-lg shadow-primary/20",
-        onClick && "cursor-pointer hover:border-primary/50",
+        "border-none bg-gradient-to-br from-indigo-500/10 via-background to-background shadow-xl",
         className
       )}
-      onClick={onClick}
-    >
-      {children}
-    </div>
-  );
+      {...props}
+    />
+  )
 }

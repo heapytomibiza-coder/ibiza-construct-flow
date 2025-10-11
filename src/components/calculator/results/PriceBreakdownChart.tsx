@@ -1,49 +1,47 @@
-import type { PricingResultProps } from '@/lib/calculator/results/types';
+import { Fragment } from "react"
 
-export function PriceBreakdownChart({ pricing }: PricingResultProps) {
-  const { breakdown, total } = pricing;
+import type { PricingResultProps } from "@/lib/calculator/results/types"
 
-  const items = [
-    { label: 'Labour', value: breakdown.labour, color: 'bg-blue-500' },
-    { label: 'Materials', value: breakdown.materials, color: 'bg-green-500' },
-    { label: 'Permits', value: breakdown.permits, color: 'bg-yellow-500' },
-    { label: 'Contingency', value: breakdown.contingency, color: 'bg-orange-500' },
-    { label: 'Disposal', value: breakdown.disposal, color: 'bg-red-500' },
-  ];
+const BREAKDOWN_LABELS: Record<string, string> = {
+  labour: "Labour",
+  materials: "Materials",
+  permits: "Permits",
+  contingency: "Contingency",
+  disposal: "Waste & logistics",
+}
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value)
+
+export const PriceBreakdownChart = ({ pricing }: PricingResultProps) => {
+  const total = Object.values(pricing.breakdown).reduce((sum, value) => sum + value, 0)
 
   return (
-    <div className="space-y-4 pt-4 border-t">
-      <h4 className="font-semibold">Cost Breakdown</h4>
-      
-      {/* Visual bar */}
-      <div className="flex h-8 rounded-lg overflow-hidden">
-        {items.map((item) => (
-          <div
-            key={item.label}
-            className={item.color}
-            style={{ width: `${(item.value / total) * 100}%` }}
-            title={`${item.label}: €${item.value.toLocaleString()}`}
-          />
-        ))}
-      </div>
-
-      {/* Legend */}
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Where your budget goes</h3>
       <div className="space-y-2">
-        {items.map((item) => (
-          <div key={item.label} className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-sm ${item.color}`} />
-              <span className="text-muted-foreground">{item.label}</span>
-            </div>
-            <span className="font-medium">€{item.value.toLocaleString()}</span>
-          </div>
-        ))}
-      </div>
+        {Object.entries(pricing.breakdown).map(([key, value]) => {
+          const label = BREAKDOWN_LABELS[key] ?? key
+          const percentage = total ? Math.round((value / total) * 100) : 0
 
-      <div className="flex justify-between font-semibold pt-2 border-t">
-        <span>Total</span>
-        <span>€{total.toLocaleString()}</span>
+          return (
+            <Fragment key={key}>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{label}</span>
+                <span>
+                  {percentage}% · {formatCurrency(value)}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+            </Fragment>
+          )
+        })}
       </div>
     </div>
-  );
+  )
 }
