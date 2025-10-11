@@ -111,6 +111,7 @@ const NotificationSettings = React.lazy(() => import("./pages/settings/Notificat
 const ClientSettings = React.lazy(() => import("./pages/settings/ClientSettings"));
 const ProfessionalSettings = React.lazy(() => import("./pages/settings/ProfessionalSettings"));
 const ServiceSetupWizard = React.lazy(() => import("./pages/ServiceSetupWizard"));
+const ProfessionalPayoutSetup = React.lazy(() => import("./pages/ProfessionalPayoutSetup"));
 
 function AppContent() {
   // Initialize Web Vitals monitoring
@@ -185,6 +186,11 @@ function AppContent() {
           <Route path="/professional/service-setup" element={
             <RouteGuard requiredRole="professional">
               <ServiceSetupWizard />
+            </RouteGuard>
+          } />
+          <Route path="/professional/payout-setup" element={
+            <RouteGuard requiredRole="professional">
+              <ProfessionalPayoutSetup />
             </RouteGuard>
           } />
           <Route path="/professional/services" element={

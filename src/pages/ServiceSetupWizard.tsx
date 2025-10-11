@@ -153,9 +153,9 @@ export default function ServiceSetupWizard() {
               <div className="space-y-6 py-8">
                 <div className="text-center space-y-3">
                   <CheckCircle className="w-16 h-16 text-primary mx-auto" />
-                  <h3 className="text-2xl font-bold">Almost There!</h3>
+                  <h3 className="text-2xl font-bold">You're Almost Live!</h3>
                   <p className="text-muted-foreground max-w-md mx-auto">
-                    Set up Stripe Connect to receive payments. You can do this later from your settings.
+                    Last step: connect your bank account to receive payments from clients. Takes 2 minutes.
                   </p>
                 </div>
 
@@ -166,18 +166,21 @@ export default function ServiceSetupWizard() {
                     disabled={isLoading}
                     size="lg"
                   >
-                    Set Up Later
+                    Skip for Now
                   </Button>
                   <Button
-                    onClick={() => {
-                      navigate('/professional/payout-setup');
-                    }}
+                    onClick={() => navigate('/professional/payout-setup')}
+                    disabled={isLoading}
                     size="lg"
                   >
-                    Set Up Payout Now
+                    Connect Bank Account
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
+
+                <p className="text-xs text-center text-muted-foreground">
+                  You can always set this up later from Settings → Payouts
+                </p>
               </div>
             )}
           </CardContent>
