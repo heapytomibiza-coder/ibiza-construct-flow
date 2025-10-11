@@ -81,9 +81,12 @@ export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
     <div className="max-w-4xl mx-auto space-y-8 p-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">Introduction</h1>
+        <h1 className="text-3xl font-bold">Profile Setup</h1>
         <p className="text-muted-foreground">
-          Quick fit check — we'll verify you in the next step
+          Tell us about yourself — you'll add detailed services after verification
+        </p>
+        <p className="text-xs text-muted-foreground mt-2">
+          Step 1 of 3: Basic Profile → Verification → Service Catalog
         </p>
       </div>
 
@@ -147,10 +150,10 @@ export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
           <div className="space-y-3">
             <div>
               <Label>
-                Service Categories <span className="text-destructive">*</span>
+                Your Main Skill Areas <span className="text-destructive">*</span>
               </Label>
               <p className="text-sm text-muted-foreground">
-                Tap your main skills — you'll add specific services after verification
+                Select broad categories (e.g., "Plumbing", "Electrical"). You'll choose specific services like "Leak Repair" or "Outlet Installation" in Step 3.
               </p>
             </div>
             <CategoryIconCards

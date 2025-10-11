@@ -1,17 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  AlertCircle, 
-  Clock, 
-  CheckCircle, 
-  FileText, 
-  Wrench,
-  ArrowRight 
-} from 'lucide-react';
+import { Loader2, FileText, Clock, XCircle, CheckCircle, AlertCircle, Wrench, ArrowRight } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { OnboardingProgressBar } from '@/components/onboarding/OnboardingProgressBar';
 import { Badge } from '@/components/ui/badge';
 
 interface OnboardingGateProps {
@@ -81,8 +75,8 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
 
   if (loading) {
     return (
-      <div className="min-h-[400px] flex items-center justify-center">
-        <Clock className="w-8 h-8 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -98,137 +92,154 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
     );
   }
 
-  // Gate 1: Awaiting documents (intro submitted, not verified yet)
-  if (
-    profileState.onboardingPhase === 'intro_submitted' &&
-    profileState.verificationStatus === 'pending'
-  ) {
+  // Gate 1: Awaiting documents (intro_submitted, pending)
+  if (profileState.onboardingPhase === 'intro_submitted' && profileState.verificationStatus === 'pending') {
     return (
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
-        <Card className="border-blue-200 bg-blue-50/50">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <FileText className="w-10 h-10 text-blue-600" />
-              <div>
-                <CardTitle className="text-xl">Next Step: Upload Documents</CardTitle>
-                <CardDescription>
-                  We'll review your credentials (usually 1-2 business days)
-                </CardDescription>
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background to-muted/20">
+        <div className="max-w-2xl w-full space-y-6">
+          <OnboardingProgressBar currentPhase="verification" />
+          <Card className="w-full">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <FileText className="w-6 h-6 text-primary" />
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate('/professional/verification')} size="lg" className="w-full">
-              Upload Verification Documents
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </CardContent>
-        </Card>
+              <CardTitle>Upload Verification Documents</CardTitle>
+              <CardDescription>
+                Step 2 of 3: Your profile is saved. Now we need to verify your credentials.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground text-center">
+                We'll review your documents and get back to you within 1-2 business days.
+              </p>
+              <Button 
+                onClick={() => navigate('/professional/verification')} 
+                size="lg" 
+                className="w-full"
+              >
+                Upload Documents
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
-  // Gate 2: Under review
-  if (
-    profileState.onboardingPhase === 'verification_pending' &&
-    profileState.verificationStatus === 'pending'
-  ) {
+  // Gate 2: Under review (verification_pending, pending)
+  if (profileState.onboardingPhase === 'verification_pending' && profileState.verificationStatus === 'pending') {
     return (
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
-        <Card className="border-yellow-200 bg-yellow-50/50">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <Clock className="w-10 h-10 text-yellow-600 animate-pulse" />
-              <div>
-                <CardTitle className="text-xl">Under Review</CardTitle>
-                <CardDescription>
-                  Thanks! We're reviewing your documents. We'll email you ASAP.
-                </CardDescription>
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background to-muted/20">
+        <div className="max-w-2xl w-full space-y-6">
+          <OnboardingProgressBar currentPhase="verification_review" />
+          <Card className="w-full">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                <Clock className="w-6 h-6 text-primary" />
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between p-4 bg-white rounded-lg border">
-              <span className="text-sm font-medium">Status</span>
-              <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">
-                In Progress
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+              <CardTitle>Verification In Progress</CardTitle>
+              <CardDescription>
+                Step 2 of 3: Your documents are being reviewed (typically 1-2 business days)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border">
+                <span className="text-sm font-medium">Status</span>
+                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                  Under Review
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground text-center mt-4">
+                We'll email you once your verification is complete.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
-  // Gate 3: Rejected (action needed)
+  // Gate 3: Rejected (rejected)
   if (profileState.verificationStatus === 'rejected') {
     return (
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Action Needed:</strong> We couldn't verify your documents.
-            <br />
-            <span className="text-sm mt-1 block">
-              Reason: {profileState.rejectionReason || 'No reason provided'}
-            </span>
-          </AlertDescription>
-        </Alert>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Fix & Resubmit</CardTitle>
-            <CardDescription>
-              Please review the reason above and upload updated documents
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              onClick={() => navigate('/professional/verification')}
-              variant="default"
-              size="lg"
-              className="w-full"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              Resubmit Documents
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background to-muted/20">
+        <div className="max-w-2xl w-full space-y-6">
+          <OnboardingProgressBar currentPhase="verification" />
+          <Card className="w-full border-destructive">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+                <XCircle className="w-6 h-6 text-destructive" />
+              </div>
+              <CardTitle>Verification Not Approved</CardTitle>
+              <CardDescription>
+                We couldn't verify your documents. Please review and resubmit.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profileState.rejectionReason && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Reason:</strong> {profileState.rejectionReason}
+                  </AlertDescription>
+                </Alert>
+              )}
+              <p className="text-sm text-muted-foreground text-center">
+                Please address the issue above and upload updated documents.
+              </p>
+              <Button
+                onClick={() => navigate('/professional/verification')}
+                variant="default"
+                size="lg"
+                className="w-full"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Resubmit Documents
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
-  // Gate 4: Verified but service setup incomplete
-  if (
-    profileState.verificationStatus === 'verified' &&
-    profileState.onboardingPhase === 'verified'
-  ) {
+  // Gate 4: Verified but service setup incomplete (verified, verified)
+  if (profileState.verificationStatus === 'verified' && profileState.onboardingPhase === 'verified') {
     return (
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
-        <Card className="border-green-200 bg-green-50/50">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-10 h-10 text-green-600" />
-              <div>
-                <CardTitle className="text-xl">You're Verified ✅</CardTitle>
-                <CardDescription>
-                  Great! Now set up your services to start receiving jobs
-                </CardDescription>
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background to-muted/20">
+        <div className="max-w-2xl w-full space-y-6">
+          <OnboardingProgressBar currentPhase="service_setup" />
+          <Card className="w-full">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="w-6 h-6 text-primary" />
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Button
-              onClick={() => navigate('/professional/service-setup')}
-              size="lg"
-              className="w-full"
-            >
-              <Wrench className="w-4 h-4 mr-2" />
-              Set Up Your Services
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </CardContent>
-        </Card>
+              <CardTitle>Complete Your Service Setup</CardTitle>
+              <CardDescription>
+                Step 3 of 3: You're verified! Now let's build your detailed service catalog and pricing.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="bg-primary/5 border-primary/20">
+                <CheckCircle className="h-4 w-4 text-primary" />
+                <AlertDescription>
+                  <strong>Congratulations!</strong> Your credentials have been verified. 
+                  Complete your service setup to start receiving jobs.
+                </AlertDescription>
+              </Alert>
+              <Button
+                onClick={() => navigate('/professional/service-setup')}
+                size="lg"
+                className="w-full"
+              >
+                <Wrench className="w-4 h-4 mr-2" />
+                Set Up Your Services
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }

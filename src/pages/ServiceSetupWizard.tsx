@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Tag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ServiceTreeSelector } from '@/components/services/ServiceTreeSelector';
 import { useAuth } from '@/hooks/useAuth';
+import { Badge } from '@/components/ui/badge';
+import { OnboardingProgressBar } from '@/components/onboarding/OnboardingProgressBar';
 
 const STEPS = [
   { id: 1, title: 'Services', description: 'Choose what you offer' },
@@ -21,6 +23,30 @@ export default function ServiceSetupWizard() {
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [introCategories, setIntroCategories] = useState<string[]>([]);
+
+  // Fetch intro categories on mount
+  useEffect(() => {
+    const fetchIntroCategories = async () => {
+      if (!user?.id) return;
+      
+      const { data, error } = await supabase
+        .from('professional_profiles')
+        .select('intro_categories')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (data && data.intro_categories) {
+        // Ensure it's an array of strings
+        const categories = Array.isArray(data.intro_categories) 
+          ? data.intro_categories.filter(c => typeof c === 'string') as string[]
+          : [];
+        setIntroCategories(categories);
+      }
+    };
+    
+    fetchIntroCategories();
+  }, [user?.id]);
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -64,7 +90,10 @@ export default function ServiceSetupWizard() {
 
   return (
     <div className="min-h-screen bg-background py-8">
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="max-w-5xl mx-auto px-4 space-y-8">
+        {/* Progress Bar */}
+        <OnboardingProgressBar currentPhase="service_setup" />
+        
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Service Setup</h1>
@@ -119,10 +148,37 @@ export default function ServiceSetupWizard() {
           </CardHeader>
           <CardContent>
             {currentStep === 1 && user && (
-              <ServiceTreeSelector
-                professionalId={user.id}
-                onComplete={handleNext}
-              />
+              <div className="space-y-6">
+                {/* Show intro categories context */}
+                {introCategories.length > 0 && (
+                  <div className="bg-muted/50 rounded-lg p-4 border border-muted">
+                    <div className="flex items-start gap-3">
+                      <Tag className="w-5 h-5 text-primary mt-0.5" />
+                      <div className="flex-1 space-y-2">
+                        <p className="text-sm font-medium">
+                          Building on your selected skill areas:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {introCategories.map((category) => (
+                            <Badge key={category} variant="secondary">
+                              {category}
+                            </Badge>
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Now choose the specific services you offer within these categories (e.g., "Leak Repair", "Outlet Installation")
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <ServiceTreeSelector
+                  professionalId={user.id}
+                  preselectedCategories={introCategories}
+                  onComplete={handleNext}
+                />
+              </div>
             )}
 
             {currentStep === 2 && (
