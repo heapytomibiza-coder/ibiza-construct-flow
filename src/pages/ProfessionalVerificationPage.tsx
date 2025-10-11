@@ -7,12 +7,15 @@ import { DocumentUpload } from '@/components/documents/DocumentUpload';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Breadcrumbs } from '@/components/common/Breadcrumbs';
-import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProfessionalVerificationPage() {
   const navigate = useNavigate();
   const [professionalId, setProfessionalId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [skipping, setSkipping] = useState(false);
 
   useEffect(() => {
     loadProfessionalProfile();
@@ -57,6 +60,31 @@ export default function ProfessionalVerificationPage() {
     );
   }
 
+  const handleSkipVerification = async () => {
+    try {
+      setSkipping(true);
+      
+      // Update onboarding phase to indicate verification was skipped
+      const { error } = await supabase
+        .from('professional_profiles')
+        .update({
+          onboarding_phase: 'service_configured',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', professionalId);
+
+      if (error) throw error;
+
+      toast.success('You can complete verification anytime from your dashboard');
+      navigate('/dashboard/pro');
+    } catch (error) {
+      console.error('Error skipping verification:', error);
+      toast.error('Failed to skip verification');
+    } finally {
+      setSkipping(false);
+    }
+  };
+
   if (!professionalId) {
     return (
       <div className="container max-w-6xl py-8">
@@ -81,12 +109,29 @@ export default function ProfessionalVerificationPage() {
           ]}
         />
 
-        <div>
-          <h1 className="text-3xl font-bold">Professional Verification</h1>
-          <p className="text-muted-foreground mt-2">
-            Complete your verification to start receiving job opportunities
-          </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Professional Verification</h1>
+            <p className="text-muted-foreground mt-2">
+              Complete your verification to start receiving job opportunities
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={handleSkipVerification}
+            disabled={skipping}
+          >
+            Skip for Now
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
         </div>
+
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            You can complete verification later from your dashboard. Verified professionals get priority in search results and build more trust with clients.
+          </AlertDescription>
+        </Alert>
 
         <Tabs defaultValue="status" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
