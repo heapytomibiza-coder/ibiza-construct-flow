@@ -79,11 +79,11 @@ export function SinglePageCalculator() {
                 subtitle="Select the approximate size of your space"
               />
               {calculator.state.projectType ? (
-                <SizePresetSelector
-                  presets={calculator.sizePresetOptions}
-                  selected={calculator.sizePresetOptions.find(p => p.id === calculator.state.sizePresetId)}
-                  onSelect={calculator.selectSizePreset}
-                />
+              <SizePresetSelector
+                presets={calculator.sizePresetOptions}
+                selected={calculator.selectedSizePreset}
+                onSelect={(preset) => calculator.selectSizePreset(preset.id)}
+              />
               ) : (
                 <p className="text-sm text-muted-foreground">Select a project type first</p>
               )}
@@ -100,8 +100,8 @@ export function SinglePageCalculator() {
               />
               <QualityTierSelector
                 tiers={calculator.qualityTierOptions}
-                selected={calculator.qualityTierOptions.find(t => t.id === calculator.state.qualityTierId)}
-                onSelect={calculator.selectQualityTier}
+                selected={calculator.selectedQualityTier}
+                onSelect={(tier) => calculator.selectQualityTier(tier.id)}
               />
             </div>
 
@@ -136,8 +136,8 @@ export function SinglePageCalculator() {
               />
               <LocationSelector
                 locations={calculator.locationOptions}
-                selected={calculator.locationOptions.find(l => l.id === calculator.state.locationId)}
-                onSelect={calculator.selectLocation}
+                selected={calculator.selectedLocation}
+                onSelect={(location) => calculator.selectLocation(location.id)}
               />
             </div>
 
