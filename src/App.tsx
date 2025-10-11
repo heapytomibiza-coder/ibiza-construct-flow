@@ -290,7 +290,7 @@ function AppContent() {
           </RouteGuard>
         } />
         <Route path="/dashboard/pro" element={
-          <RouteGuard requiredRole="professional" requireOnboardingComplete>
+          <RouteGuard requiredRole="professional">
             <UnifiedProfessionalDashboard />
           </RouteGuard>
         } />
