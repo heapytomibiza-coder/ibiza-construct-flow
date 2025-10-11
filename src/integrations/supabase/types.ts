@@ -6279,7 +6279,7 @@ export type Database = {
           business_name: string | null
           cover_image_url: string | null
           created_at: string | null
-          experience_years: number | null
+          experience_years: string | null
           hourly_rate: number | null
           instant_booking_enabled: boolean | null
           insurance_details: Json | null
@@ -6312,7 +6312,7 @@ export type Database = {
           business_name?: string | null
           cover_image_url?: string | null
           created_at?: string | null
-          experience_years?: number | null
+          experience_years?: string | null
           hourly_rate?: number | null
           instant_booking_enabled?: boolean | null
           insurance_details?: Json | null
@@ -6345,7 +6345,7 @@ export type Database = {
           business_name?: string | null
           cover_image_url?: string | null
           created_at?: string | null
-          experience_years?: number | null
+          experience_years?: string | null
           hourly_rate?: number | null
           instant_booking_enabled?: boolean | null
           insurance_details?: Json | null

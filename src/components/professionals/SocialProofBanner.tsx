@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 interface SocialProofBannerProps {
   totalClients?: number;
   satisfactionRate?: number;
-  yearsInBusiness?: number;
+  yearsInBusiness?: string | number;
   responseRate?: number;
 }
 
 export const SocialProofBanner = ({
   totalClients = 150,
   satisfactionRate = 98,
-  yearsInBusiness = 5,
+  yearsInBusiness = '5',
   responseRate = 100
 }: SocialProofBannerProps) => {
   const stats = [
@@ -29,7 +29,7 @@ export const SocialProofBanner = ({
     },
     {
       icon: TrendingUp,
-      value: `${yearsInBusiness}+`,
+      value: typeof yearsInBusiness === 'string' ? `${yearsInBusiness} years` : `${yearsInBusiness}+`,
       label: 'Years Experience',
       color: 'text-purple-500'
     },

@@ -4,7 +4,7 @@ import { Award, MapPin, Calendar, Shield } from 'lucide-react';
 
 interface ProfessionalAboutSectionProps {
   bio?: string;
-  yearsOfExperience?: number;
+  yearsOfExperience?: string | number;
   certifications?: string[];
   skills?: string[];
   coverageArea?: string[];
@@ -58,7 +58,9 @@ export const ProfessionalAboutSection = ({
               <Calendar className="w-5 h-5 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">Experience</p>
-                <p className="font-semibold">{yearsOfExperience} years</p>
+                <p className="font-semibold">
+                  {typeof yearsOfExperience === 'string' ? yearsOfExperience : `${yearsOfExperience}`} years
+                </p>
               </div>
             </div>
           )}
