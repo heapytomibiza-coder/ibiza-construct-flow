@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { SkillsChips } from './SkillsChips';
 import { AvailabilityChips } from './AvailabilityChips';
+import { ServiceCategorySelector } from '@/components/services/ServiceCategorySelector';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ProfessionalOnboardingProps {
@@ -33,6 +34,7 @@ const IBIZA_ZONES = [
 export const ProfessionalOnboarding = ({ onComplete, initialData }: ProfessionalOnboardingProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [professionalId, setProfessionalId] = useState<string | null>(null);
   const [data, setData] = useState<OnboardingData>({
     displayName: initialData?.displayName || '',
     skills: initialData?.skills || [],
@@ -41,6 +43,17 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
     hourlyRate: initialData?.hourlyRate || 30,
     availability: initialData?.availability || [],
   });
+
+  // Get user ID on mount
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setProfessionalId(user.id);
+      }
+    };
+    getUserId();
+  }, []);
 
   // Auto-save to form_sessions
   useEffect(() => {
@@ -100,7 +113,9 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
       }
     }
 
-    if (step === 2) {
+    // Step 2 is service selection - handled by ServiceCategorySelector component
+
+    if (step === 3) {
       if (!data.bio?.trim()) {
         newErrors.bio = 'Please tell us about yourself';
       }
@@ -187,6 +202,22 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
               </p>
             )}
           </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Service Selection',
+      description: 'Choose the specific services you want to offer',
+      component: professionalId ? (
+        <ServiceCategorySelector 
+          professionalId={professionalId}
+          onComplete={() => {
+            // Continue to next step after saving services
+          }}
+        />
+      ) : (
+        <div className="flex items-center justify-center p-12">
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       ),
     },
