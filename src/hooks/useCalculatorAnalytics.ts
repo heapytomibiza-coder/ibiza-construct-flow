@@ -12,12 +12,16 @@ export function useCalculatorAnalytics(sessionId: string) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
+      // Get view mode from localStorage
+      const viewMode = localStorage.getItem('calculator_view_mode') || 'wizard';
+
       await (supabase as any).from('calculator_analytics').insert({
         session_id: sessionId,
         user_id: user?.id || null,
         event_type: eventType,
         event_data: {
           selections,
+          view_mode: viewMode,
           ...additionalData
         },
         step_number: stepNumber,
