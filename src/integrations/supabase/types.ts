@@ -6283,12 +6283,15 @@ export type Database = {
           hourly_rate: number | null
           instant_booking_enabled: boolean | null
           insurance_details: Json | null
+          intro_categories: Json | null
           is_active: boolean | null
           languages: Json | null
+          onboarding_phase: string | null
           portfolio_images: Json | null
           primary_trade: string | null
           response_guarantee_hours: number | null
           response_time_hours: number | null
+          service_regions: Json | null
           skills: Json | null
           subscription_tier: string | null
           tagline: string | null
@@ -6312,12 +6315,15 @@ export type Database = {
           hourly_rate?: number | null
           instant_booking_enabled?: boolean | null
           insurance_details?: Json | null
+          intro_categories?: Json | null
           is_active?: boolean | null
           languages?: Json | null
+          onboarding_phase?: string | null
           portfolio_images?: Json | null
           primary_trade?: string | null
           response_guarantee_hours?: number | null
           response_time_hours?: number | null
+          service_regions?: Json | null
           skills?: Json | null
           subscription_tier?: string | null
           tagline?: string | null
@@ -6341,12 +6347,15 @@ export type Database = {
           hourly_rate?: number | null
           instant_booking_enabled?: boolean | null
           insurance_details?: Json | null
+          intro_categories?: Json | null
           is_active?: boolean | null
           languages?: Json | null
+          onboarding_phase?: string | null
           portfolio_images?: Json | null
           primary_trade?: string | null
           response_guarantee_hours?: number | null
           response_time_hours?: number | null
+          service_regions?: Json | null
           skills?: Json | null
           subscription_tier?: string | null
           tagline?: string | null
