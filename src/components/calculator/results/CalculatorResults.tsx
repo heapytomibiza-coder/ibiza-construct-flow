@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { useCalculatorPricing } from '../hooks/useCalculatorPricing';
+import { useCalculatorToJobWizard } from '../hooks/useCalculatorToJobWizard';
+import { useCalculatorSaveShare } from '../hooks/useCalculatorSaveShare';
 import type { CalculatorSelections } from '../hooks/useCalculatorState';
 import { PriceBreakdownChart } from './PriceBreakdownChart';
 import { InclusionExclusionList } from './InclusionExclusionList';
 import { ContextualEducationPanel } from './ContextualEducationPanel';
+import { PDFExport } from './PDFExport';
+import { SaveConfigDialog } from './SaveConfigDialog';
 import { Button } from '@/components/ui/button';
-import { Share2, Download, Briefcase } from 'lucide-react';
+import { Share2, Save, Briefcase } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 
 interface CalculatorResultsProps {
   selections: CalculatorSelections;
@@ -17,7 +21,9 @@ interface CalculatorResultsProps {
 export function CalculatorResults({ selections, onReset, onDismissTip }: CalculatorResultsProps) {
   const { pricing, loading } = useCalculatorPricing(selections);
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const { startJobWizard } = useCalculatorToJobWizard();
+  const { generateShareLink } = useCalculatorSaveShare();
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const handleShare = async () => {
     const params = new URLSearchParams({
@@ -42,8 +48,11 @@ export function CalculatorResults({ selections, onReset, onDismissTip }: Calcula
   };
 
   const handlePostJob = () => {
-    // TODO: Prefill job wizard with calculator data
-    navigate('/post-job');
+    startJobWizard(selections, pricing);
+  };
+
+  const handleSave = () => {
+    setShowSaveDialog(true);
   };
 
   if (loading) {
@@ -148,10 +157,11 @@ export function CalculatorResults({ selections, onReset, onDismissTip }: Calcula
             <Share2 className="h-4 w-4" />
             Share Results
           </Button>
-          <Button size="lg" variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            Download PDF
+          <Button size="lg" variant="outline" onClick={handleSave} className="gap-2">
+            <Save className="h-4 w-4" />
+            Save Configuration
           </Button>
+          <PDFExport selections={selections} pricing={pricing} />
           <Button size="lg" variant="ghost" onClick={onReset}>
             Start Over
           </Button>
@@ -161,6 +171,14 @@ export function CalculatorResults({ selections, onReset, onDismissTip }: Calcula
           access, and specific material choices.
         </p>
       </div>
+
+      {/* Save Configuration Dialog */}
+      <SaveConfigDialog
+        open={showSaveDialog}
+        onOpenChange={setShowSaveDialog}
+        selections={selections}
+        pricing={pricing}
+      />
     </div>
   );
 }

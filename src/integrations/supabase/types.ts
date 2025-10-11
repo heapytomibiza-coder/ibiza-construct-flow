@@ -1365,6 +1365,92 @@ export type Database = {
         }
         Relationships: []
       }
+      calculator_saved_configs: {
+        Row: {
+          config_name: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_public: boolean | null
+          pricing_snapshot: Json | null
+          project_type: string
+          selections: Json
+          session_id: string | null
+          share_token: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          config_name?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          pricing_snapshot?: Json | null
+          project_type: string
+          selections: Json
+          session_id?: string | null
+          share_token?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          config_name?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          pricing_snapshot?: Json | null
+          project_type?: string
+          selections?: Json
+          session_id?: string | null
+          share_token?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      calculator_share_events: {
+        Row: {
+          accessed_at: string | null
+          config_id: string | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          recipient_email: string | null
+          share_method: string
+          user_agent: string | null
+        }
+        Insert: {
+          accessed_at?: string | null
+          config_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          recipient_email?: string | null
+          share_method: string
+          user_agent?: string | null
+        }
+        Update: {
+          accessed_at?: string | null
+          config_id?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          recipient_email?: string | null
+          share_method?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calculator_share_events_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "calculator_saved_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_events: {
         Row: {
           attendees: string[] | null
