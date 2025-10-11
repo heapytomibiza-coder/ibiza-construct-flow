@@ -259,8 +259,34 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
                   Hourly Rate (€) <span className="text-destructive">*</span>
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Recommended: €25-€60/hour
+                  Market average: €35-€50/hour
                 </p>
+                <div className="flex gap-2 mb-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setData({ ...data, hourlyRate: 30 })}
+                  >
+                    €30
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setData({ ...data, hourlyRate: 45 })}
+                  >
+                    €45
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setData({ ...data, hourlyRate: 60 })}
+                  >
+                    €60
+                  </Button>
+                </div>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">€</span>
                   <Input
@@ -282,7 +308,39 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
+                <Label>
+                  Availability <span className="text-destructive">*</span>
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Quick presets:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setData({ ...data, availability: ['weekdays', 'mornings', 'afternoons'] })}
+                  >
+                    9-5 Weekdays
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setData({ ...data, availability: ['evenings', 'weekends'] })}
+                  >
+                    Evenings & Weekends
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setData({ ...data, availability: ['flexible', 'emergency'] })}
+                  >
+                    24/7 Available
+                  </Button>
+                </div>
                 <AvailabilityChips
                   selectedOptions={data.availability}
                   onSelectionChange={(availability) => setData({ ...data, availability })}
@@ -302,68 +360,138 @@ export const ProfessionalOnboarding = ({ onComplete, initialData }: Professional
     {
       title: 'Review & Launch',
       description: 'Final check before going live',
-      component: (
-        <div className="space-y-6">
-          <div className="text-center space-y-2">
-            <CheckCircle className="w-16 h-16 text-primary mx-auto" />
-            <h3 className="text-2xl font-bold">🎉 You're Ready to Launch!</h3>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Your profile is looking great! Review your details below.
-            </p>
-          </div>
+      component: (() => {
+        // Calculate profile strength
+        let score = 0;
+        if (data.displayName?.trim()) score += 10;
+        if (data.bio?.length >= 100) score += 15;
+        else if (data.bio?.length >= 50) score += 10;
+        if (data.zones.length >= 3) score += 15;
+        else if (data.zones.length >= 2) score += 10;
+        else if (data.zones.length >= 1) score += 5;
+        if (data.skills.length >= 2) score += 20;
+        else if (data.skills.length >= 1) score += 10;
+        if (data.hourlyRate >= 25 && data.hourlyRate <= 75) score += 20;
+        else if (data.hourlyRate > 0) score += 10;
+        if (data.availability.length >= 3) score += 20;
+        else if (data.availability.length >= 1) score += 10;
+        
+        const profileStrength = Math.min(score, 100);
+        const strengthColor = profileStrength >= 80 ? 'text-green-600' : profileStrength >= 60 ? 'text-yellow-600' : 'text-orange-600';
+        
+        // Calculate earnings potential (rough estimate)
+        const avgJobsPerMonth = Math.min(data.zones.length * 4 + data.skills.length * 2, 15);
+        const minEarnings = avgJobsPerMonth * data.hourlyRate * 2;
+        const maxEarnings = avgJobsPerMonth * data.hourlyRate * 4;
 
-          <div className="max-w-2xl mx-auto">
-            <div className="p-6 border rounded-lg space-y-4 bg-muted/30">
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Display Name</div>
-                <div className="font-semibold">{data.displayName}</div>
-              </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Service Categories</div>
-                <div className="flex flex-wrap gap-2">
-                  {data.skills.map(skill => (
-                    <Badge key={skill} variant="default">
-                      {skill}
+        return (
+          <div className="space-y-6">
+            <div className="text-center space-y-3">
+              <CheckCircle className="w-16 h-16 text-primary mx-auto" />
+              <h3 className="text-2xl font-bold">🎉 You're Ready to Launch!</h3>
+              
+              {/* Profile Strength */}
+              <div className="max-w-md mx-auto">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Your Profile Strength</span>
+                  <span className={`text-lg font-bold ${strengthColor}`}>{profileStrength}/100</span>
+                </div>
+                <Progress value={profileStrength} className="h-3" />
+                <div className="flex flex-wrap gap-2 mt-3 justify-center">
+                  {data.skills.length >= 2 && (
+                    <Badge variant="default" className="text-xs">
+                      ✅ Multiple categories
                     </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Service Zones</div>
-                <div className="flex flex-wrap gap-2">
-                  {data.zones.map(zone => (
-                    <Badge key={zone} variant="secondary">
-                      {zone}
+                  )}
+                  {data.zones.length >= 2 && (
+                    <Badge variant="default" className="text-xs">
+                      ✅ Good coverage
                     </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Bio</div>
-                <div className="text-sm">{data.bio}</div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Hourly Rate</div>
-                  <div className="font-semibold">€{data.hourlyRate}/hour</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Availability</div>
-                  <div className="text-sm">{data.availability.join(', ')}</div>
+                  )}
+                  {data.bio?.length >= 100 && (
+                    <Badge variant="default" className="text-xs">
+                      ✅ Detailed bio
+                    </Badge>
+                  )}
+                  {profileStrength < 100 && (
+                    <Badge variant="outline" className="text-xs">
+                      💡 Add more details to reach 100%
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="text-center text-sm text-muted-foreground mt-4">
+            {/* Earnings Potential */}
+            <Card className="max-w-2xl mx-auto bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  📈 Your First Month Potential
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-primary">{avgJobsPerMonth-3}-{avgJobsPerMonth}</div>
+                    <div className="text-xs text-muted-foreground">Job Matches</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-primary">€{minEarnings}-€{maxEarnings}</div>
+                    <div className="text-xs text-muted-foreground">Est. Earnings</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-primary">&lt;2hrs</div>
+                    <div className="text-xs text-muted-foreground">Avg. Response</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Matching Configuration */}
+            <Card className="max-w-2xl mx-auto">
+              <CardHeader>
+                <CardTitle className="text-base">🎯 Matching Algorithm Setup</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">High-level Filter</div>
+                  <div className="flex flex-wrap gap-1">
+                    {data.skills.map(skill => (
+                      <Badge key={skill} variant="default" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">Geographic Coverage</div>
+                  <div className="flex flex-wrap gap-1">
+                    {data.zones.map(zone => (
+                      <Badge key={zone} variant="secondary" className="text-xs">
+                        {zone}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+                  <div>
+                    <div className="text-xs text-muted-foreground">Rate</div>
+                    <div className="font-semibold">€{data.hourlyRate}/hour</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Availability</div>
+                    <div className="text-xs">{data.availability.length} time slots</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="text-center text-sm text-muted-foreground">
               💡 You can update these details anytime from your profile settings
             </div>
           </div>
-        </div>
-      ),
+        );
+      })(),
     },
   ];
 
