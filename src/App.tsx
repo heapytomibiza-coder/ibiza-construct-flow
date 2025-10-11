@@ -100,6 +100,8 @@ const IntegrationHubPage = React.lazy(() => import("./pages/admin/IntegrationHub
 const PerformanceMonitorPage = React.lazy(() => import("./pages/admin/PerformanceMonitorPage"));
 const Calculator = React.lazy(() => import("./pages/Calculator"));
 const CalculatorSettings = React.lazy(() => import("./pages/admin/CalculatorSettings"));
+const PricingManager = React.lazy(() => import("./pages/admin/PricingManager"));
+const CalculatorAnalytics = React.lazy(() => import("./pages/admin/CalculatorAnalytics"));
 
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
@@ -473,6 +475,16 @@ function AppContent() {
           <Route path="/admin/calculator" element={
             <RouteGuard requiredRole="admin">
               <CalculatorSettings />
+            </RouteGuard>
+          } />
+          <Route path="/admin/calculator/pricing" element={
+            <RouteGuard requiredRole="admin">
+              <PricingManager />
+            </RouteGuard>
+          } />
+          <Route path="/admin/calculator/analytics" element={
+            <RouteGuard requiredRole="admin">
+              <CalculatorAnalytics />
             </RouteGuard>
           } />
           
