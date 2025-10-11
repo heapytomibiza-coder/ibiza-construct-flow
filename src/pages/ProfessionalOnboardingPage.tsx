@@ -35,10 +35,13 @@ export default function ProfessionalOnboardingPage() {
         .from('professional_profiles')
         .upsert({
           user_id: user.id,
+          tagline: data.tagline,
           bio: data.bio,
+          years_of_experience: data.experienceYears,
           intro_categories: data.categories, // High-level categories
           service_regions: data.regions,
           availability: data.availability,
+          cover_image_url: data.coverImageUrl,
           onboarding_phase: 'intro_submitted',
           verification_status: 'pending',
           is_active: false, // Not live until service_configured

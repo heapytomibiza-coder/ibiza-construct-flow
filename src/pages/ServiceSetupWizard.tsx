@@ -10,11 +10,13 @@ import { ServiceTreeSelector } from '@/components/services/ServiceTreeSelector';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
 import { OnboardingProgressBar } from '@/components/onboarding/OnboardingProgressBar';
+import { PricingSetupForm } from '@/components/onboarding/PricingSetupForm';
+import { ProfessionalDetailsForm } from '@/components/onboarding/ProfessionalDetailsForm';
 
 const STEPS = [
   { id: 1, title: 'Services', description: 'Choose what you offer' },
   { id: 2, title: 'Pricing', description: 'Set your rates' },
-  { id: 3, title: 'Questions', description: 'Booking requirements' },
+  { id: 3, title: 'Details', description: 'Professional profile' },
   { id: 4, title: 'Payout', description: 'Get paid' },
 ];
 
@@ -181,28 +183,18 @@ export default function ServiceSetupWizard() {
               </div>
             )}
 
-            {currentStep === 2 && (
-              <div className="space-y-4 py-8 text-center">
-                <p className="text-muted-foreground">
-                  Pricing configuration coming soon. For now, proceed to next step.
-                </p>
-                <Button onClick={handleNext} size="lg">
-                  Continue
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
+            {currentStep === 2 && user && (
+              <PricingSetupForm
+                professionalId={user.id}
+                onComplete={handleNext}
+              />
             )}
 
-            {currentStep === 3 && (
-              <div className="space-y-4 py-8 text-center">
-                <p className="text-muted-foreground">
-                  Booking questions library coming soon. For now, proceed to payout setup.
-                </p>
-                <Button onClick={handleNext} size="lg">
-                  Continue
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
+            {currentStep === 3 && user && (
+              <ProfessionalDetailsForm
+                professionalId={user.id}
+                onComplete={handleNext}
+              />
             )}
 
             {currentStep === 4 && (

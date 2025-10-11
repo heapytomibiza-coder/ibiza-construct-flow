@@ -22,6 +22,15 @@ const AVAILABILITY_OPTIONS = [
   { value: 'flexible', label: 'Flexible' },
 ];
 
+const EXPERIENCE_OPTIONS = [
+  { value: '0-1', label: '0-1 years' },
+  { value: '1-3', label: '1-3 years' },
+  { value: '3-5', label: '3-5 years' },
+  { value: '5-10', label: '5-10 years' },
+  { value: '10-15', label: '10-15 years' },
+  { value: '15+', label: '15+ years' },
+];
+
 interface IntroOnboardingProps {
   onSubmit: (data: IntroData) => void;
   isLoading?: boolean;
@@ -29,19 +38,25 @@ interface IntroOnboardingProps {
 
 export interface IntroData {
   displayName: string;
+  tagline: string;
   bio: string;
+  experienceYears: string;
   categories: string[];
   regions: string[];
   availability: string[];
+  coverImageUrl?: string;
 }
 
 export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
   const [data, setData] = useState<IntroData>({
     displayName: '',
+    tagline: '',
     bio: '',
+    experienceYears: '',
     categories: [],
     regions: [],
     availability: [],
+    coverImageUrl: undefined,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -50,6 +65,15 @@ export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
 
     if (!data.displayName.trim()) {
       newErrors.displayName = 'Name is required';
+    }
+    if (!data.tagline.trim()) {
+      newErrors.tagline = 'Tagline is required';
+    }
+    if (data.tagline.length > 60) {
+      newErrors.tagline = 'Keep it under 60 characters';
+    }
+    if (!data.experienceYears) {
+      newErrors.experienceYears = 'Select your experience level';
     }
     if (!data.bio.trim() || data.bio.length < 20) {
       newErrors.bio = 'Please write at least 20 characters about yourself';
@@ -109,6 +133,64 @@ export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
                 <p className="text-sm text-destructive flex items-center gap-1 mt-1">
                   <AlertCircle className="w-3 h-3" />
                   {errors.displayName}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="tagline">
+                Tagline <span className="text-destructive">*</span>
+                <span className="text-xs text-muted-foreground ml-2">(Max 60 chars)</span>
+              </Label>
+              <p className="text-sm text-muted-foreground mb-2">
+                A short, catchy headline for your profile
+              </p>
+              <Input
+                id="tagline"
+                value={data.tagline}
+                onChange={(e) => setData({ ...data, tagline: e.target.value })}
+                placeholder="Expert Plumber · Fast Response · 24/7 Available"
+                maxLength={60}
+                className={errors.tagline ? 'border-destructive' : ''}
+              />
+              <div className="flex justify-between items-center mt-1">
+                <div>
+                  {errors.tagline && (
+                    <p className="text-sm text-destructive flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.tagline}
+                    </p>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {data.tagline.length}/60
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="experienceYears">
+                Years of Experience <span className="text-destructive">*</span>
+              </Label>
+              <select
+                id="experienceYears"
+                value={data.experienceYears}
+                onChange={(e) => setData({ ...data, experienceYears: e.target.value })}
+                className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                  errors.experienceYears ? 'border-destructive' : ''
+                }`}
+              >
+                <option value="">Select experience level</option>
+                {EXPERIENCE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {errors.experienceYears && (
+                <p className="text-sm text-destructive flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {errors.experienceYears}
                 </p>
               )}
             </div>
