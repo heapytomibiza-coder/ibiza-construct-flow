@@ -1,48 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { ProfessionalOnboarding, OnboardingData } from '@/components/onboarding/ProfessionalOnboarding';
+import { IntroOnboarding, IntroData } from '@/components/onboarding/IntroOnboarding';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { getAuthRoute } from '@/lib/navigation';
 
 export default function ProfessionalOnboardingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [initialData, setInitialData] = useState<Partial<OnboardingData>>();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Restore session on mount
-  useEffect(() => {
-    const restoreSession = async () => {
-      if (!user) return;
-
-      try {
-        const { data: session } = await supabase
-          .from('form_sessions')
-          .select('payload')
-          .eq('user_id', user.id)
-          .eq('form_type', 'professional_onboarding')
-          .single();
-
-        if (session?.payload) {
-          setInitialData(session.payload as Partial<OnboardingData>);
-          toast.info('Restored your previous progress');
-        }
-      } catch (error) {
-        // No session found, start fresh
-      }
-    };
-
-    restoreSession();
-  }, [user]);
-
-  const handleComplete = async (data: OnboardingData) => {
+  const handleSubmit = async (data: IntroData) => {
     if (!user) {
-      toast.error('Please sign in to complete onboarding');
-      navigate(getAuthRoute('signin'));
+      toast.error('Please sign in to continue');
+      navigate('/auth');
       return;
     }
 
+    setIsLoading(true);
     try {
       // Update profiles table with display name
       const { error: profileUpdateError } = await supabase
@@ -55,59 +30,36 @@ export default function ProfessionalOnboardingPage() {
 
       if (profileUpdateError) throw profileUpdateError;
 
-      // Save to professional_profiles
+      // Create/update professional profile with Phase 1 data
       const { error: professionalProfileError } = await supabase
         .from('professional_profiles')
         .upsert({
           user_id: user.id,
           bio: data.bio,
-          skills: data.skills,
-          zones: data.zones,
-          hourly_rate: data.hourlyRate,
+          intro_categories: data.categories, // High-level categories
+          service_regions: data.regions,
           availability: data.availability,
+          onboarding_phase: 'intro_submitted',
           verification_status: 'pending',
-          is_active: true,
+          is_active: false, // Not live until service_configured
           updated_at: new Date().toISOString()
         });
 
       if (professionalProfileError) throw professionalProfileError;
 
-      // Mark profile_basic step as complete in checklist
-      const { error: checklistError } = await supabase
-        .from('onboarding_checklist')
-        .update({ 
-          completed_at: new Date().toISOString(),
-          started_at: new Date().toISOString()
-        })
-        .eq('professional_id', user.id)
-        .eq('step', 'profile_basic');
-
-      if (checklistError) {
-        console.error('Checklist update error:', checklistError);
-        // Don't throw - checklist is optional
-      }
-
-      // Mark availability as complete too since it's in the onboarding flow
-      const { error: availabilityChecklistError } = await supabase
-        .from('onboarding_checklist')
-        .update({ 
-          completed_at: new Date().toISOString(),
-          started_at: new Date().toISOString()
-        })
-        .eq('professional_id', user.id)
-        .eq('step', 'availability');
-
-      if (availabilityChecklistError) {
-        console.error('Availability checklist update error:', availabilityChecklistError);
-      }
-
-      toast.success('Profile created! Welcome to the network 🎉');
+      toast.success('Thanks! Next: Upload your verification docs', {
+        duration: 4000,
+      });
+      
+      // Route to dashboard, which will show the OnboardingGate
       navigate('/dashboard/pro');
     } catch (error: any) {
       console.error('Onboarding error:', error);
-      toast.error(error.message || 'Failed to complete onboarding');
+      toast.error(error.message || 'Failed to submit');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return <ProfessionalOnboarding onComplete={handleComplete} initialData={initialData} />;
+  return <IntroOnboarding onSubmit={handleSubmit} isLoading={isLoading} />;
 }

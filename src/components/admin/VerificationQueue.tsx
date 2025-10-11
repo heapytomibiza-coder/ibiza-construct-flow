@@ -13,11 +13,14 @@ export function VerificationQueue() {
   const queryClient = useQueryClient();
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
 
-  const { data: pendingVerifications, isLoading } = useQuery({
-    queryKey: ['pending-verifications'],
+  const [filterStatus, setFilterStatus] = useState<string>('pending');
+
+  const { data: verifications, isLoading } = useQuery({
+    queryKey: ['verifications', filterStatus],
     queryFn: async () => {
       const client: any = supabase;
-      const { data, error } = await client
+      
+      let query = client
         .from('professional_verifications')
         .select(`
           *,
@@ -28,9 +31,13 @@ export function VerificationQueue() {
             email
           )
         `)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false });
 
+      if (filterStatus !== 'all') {
+        query = query.eq('status', filterStatus);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     }
@@ -94,23 +101,55 @@ export function VerificationQueue() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Verification Queue</h2>
-        <p className="text-muted-foreground">Review and approve professional verifications</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Verification Queue</h2>
+          <p className="text-muted-foreground">Review and approve professional verifications</p>
+        </div>
+        <div className="flex gap-2">
+          <Badge
+            variant={filterStatus === 'pending' ? 'default' : 'outline'}
+            className="cursor-pointer"
+            onClick={() => setFilterStatus('pending')}
+          >
+            Pending
+          </Badge>
+          <Badge
+            variant={filterStatus === 'approved' ? 'default' : 'outline'}
+            className="cursor-pointer"
+            onClick={() => setFilterStatus('approved')}
+          >
+            Approved
+          </Badge>
+          <Badge
+            variant={filterStatus === 'rejected' ? 'default' : 'outline'}
+            className="cursor-pointer"
+            onClick={() => setFilterStatus('rejected')}
+          >
+            Rejected
+          </Badge>
+          <Badge
+            variant={filterStatus === 'all' ? 'default' : 'outline'}
+            className="cursor-pointer"
+            onClick={() => setFilterStatus('all')}
+          >
+            All
+          </Badge>
+        </div>
       </div>
 
-      {!pendingVerifications || pendingVerifications.length === 0 ? (
+      {!verifications || verifications.length === 0 ? (
         <Card>
           <CardContent className="py-8">
             <div className="text-center text-muted-foreground">
               <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No pending verifications</p>
+              <p>No {filterStatus === 'all' ? '' : filterStatus} verifications</p>
             </div>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
-          {pendingVerifications.map((verification: any) => (
+          {verifications.map((verification: any) => (
             <Card key={verification.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">

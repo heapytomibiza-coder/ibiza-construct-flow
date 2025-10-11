@@ -4,6 +4,7 @@ import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useDashboardPreference } from '@/hooks/useDashboardPreference';
 import SimpleProfessionalDashboard from './SimpleProfessionalDashboard';
 import ProfessionalDashboard from './ProfessionalDashboard';
+import { OnboardingGate } from '@/components/professional/OnboardingGate';
 
 interface UnifiedProfessionalDashboardProps {
   user?: any;
@@ -40,23 +41,30 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
     );
   }
 
-  // Render appropriate dashboard based on mode and feature flags
-  if (dashboardMode === 'simple') {
+  // Wrap dashboard in OnboardingGate to handle phase-based routing
+  const DashboardContent = () => {
+    if (dashboardMode === 'simple') {
+      return (
+        <SimpleProfessionalDashboard
+          user={user}
+          profile={profile}
+          onToggleMode={handleModeToggle}
+        />
+      );
+    }
+
     return (
-      <SimpleProfessionalDashboard
+      <ProfessionalDashboard
         user={user}
         profile={profile}
-        onToggleMode={handleModeToggle}
       />
     );
-  }
+  };
 
-  // Default to enhanced/full dashboard
   return (
-    <ProfessionalDashboard
-      user={user}
-      profile={profile}
-    />
+    <OnboardingGate userId={user.id}>
+      <DashboardContent />
+    </OnboardingGate>
   );
 };
 
