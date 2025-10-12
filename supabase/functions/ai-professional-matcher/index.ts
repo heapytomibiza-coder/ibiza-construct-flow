@@ -1,11 +1,20 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+interface MatchRequest {
+  jobId?: string;
+  microId?: string;
+  location?: any;
+  budget?: number;
+  urgency?: string;
+  description?: string;
+  limit?: number;
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,178 +22,188 @@ serve(async (req) => {
   }
 
   try {
-    const { jobRequirements, location, budget, urgency } = await req.json();
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
-    if (!jobRequirements) {
-      return new Response(JSON.stringify({ error: "Job requirements are required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const { jobId, microId, location, budget, urgency, description, limit = 10 }: MatchRequest = await req.json();
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    console.log('Matching request:', { jobId, microId, location, budget, urgency, limit });
 
-    // Get available professionals with their profiles
-    const { data: professionals } = await supabase
+    // Build base query for professionals
+    let query = supabase
       .from('professional_profiles')
       .select(`
         *,
-        profiles:user_id (
+        user:profiles!professional_profiles_user_id_fkey(
           id,
           full_name,
-          display_name
+          display_name,
+          avatar_url,
+          location
+        ),
+        services:professional_services(
+          micro_service_id,
+          is_active,
+          micro_service:services_micro(
+            id,
+            name,
+            slug
+          )
+        ),
+        stats:professional_stats(
+          average_rating,
+          total_reviews,
+          completion_rate,
+          response_time_hours
         )
       `)
-      .eq('verification_status', 'verified')
-      .limit(20);
-
-    // Get AI prompt template
-    const { data: promptData } = await supabase
-      .from('ai_prompts')
-      .select('*')
-      .eq('name', 'professional_matcher')
       .eq('is_active', true)
-      .order('version', { ascending: false })
-      .limit(1)
-      .single();
+      .eq('verification_status', 'verified');
 
-    if (!promptData) {
-      throw new Error('Professional matcher prompt template not found');
+    const { data: professionals, error } = await query;
+
+    if (error) {
+      console.error('Error fetching professionals:', error);
+      throw error;
     }
 
-    // Log AI run start
-    const { data: aiRun } = await supabase
-      .from('ai_runs')
-      .insert([{
-        operation_type: 'professional_matching',
-        prompt_template_id: promptData.id,
-        input_data: { jobRequirements, location, budget, urgency, professionalCount: professionals?.length || 0 },
-        status: 'running'
-      }])
-      .select()
-      .single();
+    console.log(`Found ${professionals?.length || 0} professionals`);
 
-    const startTime = Date.now();
+    // Score and rank professionals
+    const scoredProfessionals = professionals?.map(prof => {
+      let score = 0;
+      const user = Array.isArray(prof.user) ? prof.user[0] : prof.user;
+      const stats = Array.isArray(prof.stats) ? prof.stats[0] : prof.stats;
+      const services = prof.services || [];
 
-    // Get the LOVABLE_API_KEY from environment
-    const apiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!apiKey) {
-      throw new Error("AI service unavailable");
-    }
+      // Service match (highest weight)
+      if (microId) {
+        const hasService = services.some((s: any) => 
+          s.is_active && s.micro_service?.id === microId
+        );
+        if (hasService) score += 50;
+      }
 
-    // Prepare simplified professional data for AI analysis
-    const simplifiedProfessionals = professionals?.map(prof => ({
-      id: prof.user_id,
-      name: prof.profiles?.full_name || prof.profiles?.display_name || 'Anonymous',
-      skills: prof.skills || [],
-      experienceYears: prof.experience_years || 0,
-      hourlyRate: prof.hourly_rate || 0,
-      bio: prof.bio?.substring(0, 200) || '', // Truncate for token efficiency
-      zones: prof.zones || [],
-      languages: prof.languages || ['en'],
-      primaryTrade: prof.primary_trade || ''
-    })) || [];
+      // Rating score
+      if (stats && (stats as any).average_rating) {
+        score += (stats as any).average_rating * 8;
+      }
 
-    // Prepare prompt with data
-    let prompt = promptData.template;
-    prompt = prompt.replace('{{job_requirements}}', JSON.stringify(jobRequirements, null, 2));
-    prompt = prompt.replace('{{location}}', location || 'Not specified');
-    prompt = prompt.replace('{{budget}}', budget || 'Not specified');
-    prompt = prompt.replace('{{urgency}}', urgency || 'standard');
-    prompt = prompt.replace('{{professionals}}', JSON.stringify(simplifiedProfessionals, null, 2));
+      // Completion rate
+      if (stats && (stats as any).completion_rate) {
+        score += (stats as any).completion_rate * 0.2;
+      }
 
-    // Call the Lovable AI Gateway
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: "You are an expert job matching specialist for service marketplaces. Analyze professional profiles against job requirements and rank them by suitability. Provide clear explanations for each match with confidence scores between 0 and 1."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-      }),
-    });
+      // Response time (faster = better)
+      if (stats && (stats as any).response_time_hours) {
+        const responseHours = (stats as any).response_time_hours;
+        if (responseHours < 2) score += 10;
+        else if (responseHours < 6) score += 7;
+        else if (responseHours < 24) score += 4;
+      }
 
-    const executionTime = Date.now() - startTime;
+      // Location proximity (simple city match for now)
+      if (location && user?.location) {
+        const jobCity = typeof location === 'string' ? location : location.city;
+        const profCity = typeof user.location === 'string' ? user.location : user.location.city;
+        if (jobCity && profCity && jobCity.toLowerCase() === profCity.toLowerCase()) {
+          score += 15;
+        }
+      }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI Gateway error:", errorText);
-      
-      await supabase
-        .from('ai_runs')
-        .update({
-          status: 'failed',
-          error_message: errorText,
-          execution_time_ms: executionTime
-        })
-        .eq('id', aiRun.id);
+      // Budget compatibility
+      if (budget && prof.hourly_rate) {
+        const hourlyRate = prof.hourly_rate;
+        if (hourlyRate <= budget * 1.2) { // Within 20% of budget
+          score += 10;
+        }
+      }
 
-      return new Response(JSON.stringify({ error: "Failed to match professionals" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      // Instant booking bonus
+      if (prof.instant_booking_enabled) {
+        score += 5;
+      }
+
+      // Review count bonus (shows experience)
+      if (stats && (stats as any).total_reviews) {
+        const reviews = (stats as any).total_reviews;
+        if (reviews > 50) score += 5;
+        else if (reviews > 20) score += 3;
+        else if (reviews > 5) score += 1;
+      }
+
+      return {
+        ...prof,
+        matchScore: score,
+        matchReasons: generateMatchReasons(prof, microId, location, budget, stats, services)
+      };
+    }) || [];
+
+    // Sort by score and limit
+    const topMatches = scoredProfessionals
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, limit);
+
+    console.log(`Returning ${topMatches.length} top matches`);
+
+    // If we have a jobId, log the match event
+    if (jobId) {
+      await supabase.from('analytics_events').insert({
+        event_name: 'professional_match',
+        event_category: 'matching',
+        event_properties: {
+          job_id: jobId,
+          match_count: topMatches.length,
+          top_score: topMatches[0]?.matchScore || 0
+        }
       });
     }
 
-    const data = await response.json();
-    const analysis = data.choices?.[0]?.message?.content;
+    return new Response(
+      JSON.stringify({
+        matches: topMatches,
+        totalCount: professionals?.length || 0,
+        matchedCount: topMatches.length
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
-    if (!analysis) {
-      throw new Error("No matching analysis generated");
-    }
-
-    // Create structured result with fallback scoring
-    const matches = simplifiedProfessionals.map((professional, index) => ({
-      professionalId: professional.id,
-      name: professional.name,
-      matchScore: Math.max(0.1, Math.random() * 0.9), // Fallback scoring - would be replaced by AI parsing
-      explanation: `Match based on skills and experience (Professional ${index + 1})`,
-      strengths: professional.skills.slice(0, 3),
-      concerns: [],
-      rank: index + 1
-    })).sort((a, b) => b.matchScore - a.matchScore);
-
-    const result = {
-      analysis,
-      matches: matches.slice(0, 10), // Top 10 matches
-      totalCandidates: simplifiedProfessionals.length,
-      averageMatchScore: matches.reduce((sum, match) => sum + match.matchScore, 0) / matches.length,
-      timestamp: new Date().toISOString()
-    };
-
-    // Log successful run
-    await supabase
-      .from('ai_runs')
-      .update({
-        status: 'completed',
-        output_data: result,
-        execution_time_ms: executionTime,
-        confidence_score: result.averageMatchScore
-      })
-      .eq('id', aiRun.id);
-
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-
-  } catch (error: any) {
-    console.error("Error in AI professional matcher:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  } catch (error) {
+    console.error('Error in ai-professional-matcher:', error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
   }
 });
+
+function generateMatchReasons(prof: any, microId: string, location: any, budget: number, stats: any, services: any[]): string[] {
+  const reasons: string[] = [];
+  
+  if (microId && services.some((s: any) => s.is_active && s.micro_service?.id === microId)) {
+    reasons.push('Verified specialist for this service');
+  }
+  
+  if (stats && stats.average_rating >= 4.5) {
+    reasons.push(`Highly rated (${stats.average_rating.toFixed(1)}★)`);
+  }
+  
+  if (stats && stats.completion_rate >= 95) {
+    reasons.push('Excellent completion rate');
+  }
+  
+  if (stats && stats.response_time_hours < 6) {
+    reasons.push('Fast response time');
+  }
+  
+  if (prof.instant_booking_enabled) {
+    reasons.push('Instant booking available');
+  }
+  
+  return reasons;
+}

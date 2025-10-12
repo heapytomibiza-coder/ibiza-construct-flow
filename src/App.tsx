@@ -62,6 +62,7 @@ const ProfessionalAvailabilityPage = React.lazy(() => import("./pages/Profession
 const EscrowManagementPage = React.lazy(() => import("./pages/EscrowManagementPage"));
 const ProfessionalEarningsPage = React.lazy(() => import("./pages/ProfessionalEarningsPage"));
 const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
+const JobMatchesPage = React.lazy(() => import("./pages/JobMatchesPage"));
 const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
 const Contact = React.lazy(() => import("./pages/Contact"));
 const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategories"));
@@ -177,6 +178,7 @@ function AppContent() {
         <Route path="/escrow/:contractId" element={<EscrowManagementPage />} />
         <Route path="/earnings" element={<ProfessionalEarningsPage />} />
         <Route path="/jobs/:jobId" element={<JobDetailPage />} />
+        <Route path="/jobs/:jobId/matches" element={<JobMatchesPage />} />
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />

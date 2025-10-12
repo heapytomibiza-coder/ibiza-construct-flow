@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Users, MapPin, Star, Zap, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,18 +34,40 @@ export const ProfessionalMatcher: React.FC<ProfessionalMatcherProps> = ({
 
   const loadMatches = async () => {
     try {
-      // For now, show a preview with mock data
-      // Real professional matching will be implemented via the ai-professional-matcher function
-      const defaultCount = 3;
+      setLoading(true);
+      
+      // Call the AI professional matcher function
+      const { data, error } = await supabase.functions.invoke('ai-professional-matcher', {
+        body: {
+          microId,
+          location,
+          limit: 5
+        }
+      });
+
+      if (error) {
+        console.error('Error calling matcher:', error);
+        throw error;
+      }
+
+      const matches = data?.matches || [];
+      const topProfessionals = matches.slice(0, 3).map((match: any) => {
+        const user = Array.isArray(match.user) ? match.user[0] : match.user;
+        const stats = Array.isArray(match.stats) ? match.stats[0] : match.stats;
+        
+        return {
+          id: match.user_id,
+          name: match.business_name || user?.full_name || user?.display_name || 'Professional',
+          rating: stats?.average_rating || 0,
+          distance: location && user?.location ? calculateDistance(location, user.location) : undefined,
+          matchScore: match.matchScore,
+          matchReasons: match.matchReasons
+        };
+      });
 
       setMatches({
-        count: defaultCount,
-        topProfessionals: Array.from({ length: defaultCount }, (_, i) => ({
-          id: `pro-${i}`,
-          name: `Professional ${String.fromCharCode(65 + i)}`,
-          rating: 4.5 + Math.random() * 0.5,
-          distance: location ? `${(Math.random() * 10 + 1).toFixed(1)} miles` : undefined
-        }))
+        count: data?.matchedCount || 0,
+        topProfessionals
       });
     } catch (error) {
       console.error('Error loading matches:', error);
@@ -52,6 +75,16 @@ export const ProfessionalMatcher: React.FC<ProfessionalMatcherProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const calculateDistance = (loc1: any, loc2: any): string | undefined => {
+    const city1 = typeof loc1 === 'string' ? loc1 : loc1?.city;
+    const city2 = typeof loc2 === 'string' ? loc2 : loc2?.city;
+    
+    if (city1 && city2 && city1.toLowerCase() === city2.toLowerCase()) {
+      return 'Same city';
+    }
+    return undefined;
   };
 
   if (loading) {
@@ -127,6 +160,16 @@ export const ProfessionalMatcher: React.FC<ProfessionalMatcherProps> = ({
         <p className="text-xs text-muted-foreground text-center pt-2 border-t">
           These professionals will be notified when you post your job
         </p>
+        
+        {microId && (
+          <Button
+            variant="outline"
+            className="w-full mt-3"
+            onClick={() => window.location.href = `/jobs/${microId}/matches`}
+          >
+            View All Matches
+          </Button>
+        )}
       </div>
     </Card>
   );
