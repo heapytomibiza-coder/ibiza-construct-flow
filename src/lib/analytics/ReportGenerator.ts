@@ -202,7 +202,7 @@ export class ReportGenerator {
     cohortSize: number = 7 // days
   ): RetentionCohort[] {
     const cohorts: Map<string, RetentionCohort> = new Map();
-    const userFirstSeen: Map<string, Date> = new Map();
+    const userFirstSeen: Map<string, number> = new Map();
 
     // Find first seen date for each user
     events.forEach(event => {
@@ -316,8 +316,10 @@ export class ReportGenerator {
     dateRange: DateRange,
     filters?: AnalyticsFilter[]
   ): AnalyticsEvent[] {
+    const startTime = dateRange.start.getTime();
+    const endTime = dateRange.end.getTime();
     let filtered = events.filter(
-      event => event.timestamp >= dateRange.start && event.timestamp <= dateRange.end
+      event => event.timestamp >= startTime && event.timestamp <= endTime
     );
 
     if (filters) {
@@ -352,7 +354,8 @@ export class ReportGenerator {
   /**
    * Get cohort date
    */
-  private getCohortDate(date: Date, cohortSize: number): Date {
+  private getCohortDate(timestamp: number, cohortSize: number): Date {
+    const date = new Date(timestamp);
     const cohortDate = new Date(date);
     cohortDate.setDate(cohortDate.getDate() - (cohortDate.getDate() % cohortSize));
     cohortDate.setHours(0, 0, 0, 0);

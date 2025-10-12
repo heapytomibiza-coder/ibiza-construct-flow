@@ -1,59 +1,64 @@
 /**
  * Analytics Hook
- * Phase 22: Advanced Analytics & Monitoring System
+ * Phase 27: Analytics & Reporting System
  * 
- * React hook for tracking analytics events
+ * Main hook for analytics tracking
  */
 
-import { useCallback, useEffect } from 'react';
-import { analyticsManager } from '@/lib/analytics';
-import { EventType, EventPriority } from '@/lib/analytics/types';
+import { useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { eventTracker } from '@/lib/analytics';
+import { EventCategory } from '@/lib/analytics/types';
 
 export function useAnalytics() {
+  const location = useLocation();
+  const { user } = useAuth();
+
+  // Track page views automatically
+  useEffect(() => {
+    eventTracker.trackPageView(location.pathname);
+  }, [location.pathname]);
+
+  // Track event
   const track = useCallback((
     eventName: string,
-    properties?: Record<string, any>,
-    type: EventType = 'user_action',
-    priority: EventPriority = 'medium'
-  ) => {
-    analyticsManager.track(eventName, properties, type, priority);
-  }, []);
-
-  const trackPageView = useCallback((
-    page?: string,
+    category?: EventCategory,
     properties?: Record<string, any>
   ) => {
-    analyticsManager.trackPageView(page, properties);
-  }, []);
+    eventTracker.track(eventName, category, properties, user?.id);
+  }, [user?.id]);
 
+  // Track action
+  const trackAction = useCallback((
+    action: string,
+    properties?: Record<string, any>
+  ) => {
+    eventTracker.trackAction(action, properties, user?.id);
+  }, [user?.id]);
+
+  // Track conversion
   const trackConversion = useCallback((
-    goal: string,
+    conversionType: string,
     value?: number,
-    currency?: string,
     properties?: Record<string, any>
   ) => {
-    analyticsManager.trackConversion(goal, value, currency, properties);
-  }, []);
+    eventTracker.trackConversion(conversionType, value, properties, user?.id);
+  }, [user?.id]);
 
-  const identify = useCallback((
-    userId: string,
-    traits?: Record<string, any>
+  // Track engagement
+  const trackEngagement = useCallback((
+    metric: string,
+    value: number,
+    properties?: Record<string, any>
   ) => {
-    analyticsManager.identify(userId, traits);
-  }, []);
-
-  const captureError = useCallback((
-    error: Error,
-    context?: any
-  ) => {
-    analyticsManager.captureError(error, context);
-  }, []);
+    eventTracker.trackEngagement(metric, value, properties, user?.id);
+  }, [user?.id]);
 
   return {
     track,
-    trackPageView,
+    trackAction,
     trackConversion,
-    identify,
-    captureError,
+    trackEngagement,
   };
 }

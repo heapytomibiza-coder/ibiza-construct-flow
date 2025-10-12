@@ -21,7 +21,7 @@ export class EventTracker {
       trackUserActions: true,
       trackPerformance: true,
       trackErrors: true,
-      samplingRate: 1.0,
+      sampleRate: 1.0,
       sessionTimeout: 30 * 60 * 1000, // 30 minutes
       ...config,
     };
@@ -77,7 +77,7 @@ export class EventTracker {
     userId?: string
   ): AnalyticsEvent {
     // Apply sampling rate
-    if (Math.random() > this.config.samplingRate) {
+    if (Math.random() > this.config.sampleRate) {
       return {} as AnalyticsEvent;
     }
 
@@ -88,7 +88,7 @@ export class EventTracker {
       eventName,
       category,
       properties,
-      timestamp: new Date(),
+      timestamp: Date.now(),
       source: 'web',
     };
 
@@ -218,8 +218,10 @@ export class EventTracker {
    * Get events in time range
    */
   getEventsInRange(start: Date, end: Date): AnalyticsEvent[] {
+    const startTime = start.getTime();
+    const endTime = end.getTime();
     return this.events.filter(
-      event => event.timestamp >= start && event.timestamp <= end
+      event => event.timestamp >= startTime && event.timestamp <= endTime
     );
   }
 
