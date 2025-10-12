@@ -22,8 +22,8 @@ export const GlobalAIChatBot = () => {
     };
 
     // Add specific context based on route
-    if (path.includes('/job/')) {
-      const jobId = path.split('/job/')[1];
+    if (path.startsWith('/jobs/')) {
+      const jobId = path.split('/jobs/')[1]?.split('/')[0];
       context.job_id = jobId;
     }
 

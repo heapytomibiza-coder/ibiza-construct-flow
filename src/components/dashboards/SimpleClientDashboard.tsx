@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getJobRoute } from '@/lib/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -398,7 +399,7 @@ const JobsTab = ({ bookings, loading }: any) => {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    onClick={() => navigate(`/jobs/${booking.id}`)}
+                    onClick={() => navigate(getJobRoute(booking.id))}
                   >
                     View
                   </Button>

@@ -30,7 +30,7 @@ export const usePrefetchOnHover = () => {
 // const { prefetchOnHover } = usePrefetchOnHover();
 // 
 // <Link 
-//   to="/job/123" 
+//   to="/jobs/123" 
 //   {...prefetchOnHover(prefetchJobDetails, '123')}
 // >
 //   View Job

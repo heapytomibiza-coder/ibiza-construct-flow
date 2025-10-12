@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Search, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getJobRoute } from '@/lib/navigation';
 import { format } from 'date-fns';
 
 export default function AdminJobsPage() {
@@ -95,7 +96,7 @@ export default function AdminJobsPage() {
                       <span>Created: {format(new Date(job.created_at), 'MMM d, yyyy')}</span>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => navigate(`/jobs/${job.id}`)}>
+                  <Button variant="outline" size="sm" onClick={() => navigate(getJobRoute(job.id))}>
                     <Eye className="h-4 w-4 mr-1" />
                     View
                   </Button>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, TrendingUp, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getJobRoute } from '@/lib/navigation';
 
 interface SmartMatchBannerProps {
   jobId?: string;
@@ -98,7 +99,7 @@ export const SmartMatchBanner: React.FC<SmartMatchBannerProps> = ({
             </p>
             <div className="flex items-center gap-3">
               <Button 
-                onClick={() => navigate(`/jobs/${jobId}/matches`)}
+                onClick={() => navigate(getJobRoute(jobId, 'matches'))}
                 size="sm"
               >
                 View All Matches

@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, MapPin, DollarSign, Clock, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getJobRoute } from '@/lib/navigation';
 import { JobFilters } from '@/components/discovery/JobFilters';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -123,7 +124,7 @@ export default function DiscoveryPage() {
                 <Card
                   key={job.id}
                   className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate(`/jobs/${job.id}`)}
+                  onClick={() => navigate(getJobRoute(job.id))}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">

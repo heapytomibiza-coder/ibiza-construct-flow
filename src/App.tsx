@@ -182,6 +182,12 @@ function AppContent() {
                 <Suspense fallback={<SkeletonLoader variant="card" />}>
                   <Routes>
           <Route path="/" element={<Index />} />
+          
+          {/* Legacy route redirects */}
+          <Route path="/job/:id" element={<Navigate to="/jobs/:id" replace />} />
+          <Route path="/admin/v2/*" element={<Navigate to="/admin/*" replace />} />
+          <Route path="/bookings" element={<Navigate to="/dashboard" replace />} />
+          
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/discovery" element={<DiscoveryPage />} />
           <Route path="/professionals" element={<BrowseProfessionalsPage />} />

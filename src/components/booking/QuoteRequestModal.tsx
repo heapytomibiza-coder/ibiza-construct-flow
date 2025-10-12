@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getJobRoute } from '@/lib/navigation';
 import {
   Dialog,
   DialogContent,
@@ -117,7 +118,7 @@ export const QuoteRequestModal = ({
           entity_id: job.id,
           title: 'New Quote Request',
           description: `${user.email || 'A client'} requested a quote for "${formData.title.trim()}"`,
-          action_url: `/jobs/${job.id}`,
+          action_url: getJobRoute(job.id),
           notification_type: 'quote',
           priority: 'high'
         });
@@ -132,7 +133,7 @@ export const QuoteRequestModal = ({
       setPreferredDates([]);
       
       toast.success('Quote request sent! The professional will submit their quote soon.');
-      navigate(`/jobs/${job.id}`);
+      navigate(getJobRoute(job.id));
     } catch (error) {
       console.error('Error creating quote request:', error);
       toast.error('Failed to send quote request. Please try again.');

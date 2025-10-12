@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, Sparkles } from 'lucide-react';
+import { getJobRoute } from '@/lib/navigation';
 import { MatchedProfessionalCard } from '@/components/matching/MatchedProfessionalCard';
 
 export default function JobMatchesPage() {
@@ -58,7 +59,7 @@ export default function JobMatchesPage() {
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={() => navigate(`/jobs/${jobId}`)}
+            onClick={() => navigate(getJobRoute(jobId))}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
