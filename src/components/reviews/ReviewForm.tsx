@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Star } from 'lucide-react';
 
 interface ReviewFormProps {
@@ -10,72 +11,80 @@ interface ReviewFormProps {
   isSubmitting: boolean;
 }
 
-export const ReviewForm = ({ revieweeName, onSubmit, isSubmitting }: ReviewFormProps) => {
-  const [rating, setRating] = useState(0);
+export function ReviewForm({ revieweeName, onSubmit, isSubmitting }: ReviewFormProps) {
+  const [rating, setRating] = useState(5);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState('');
 
   const handleSubmit = () => {
-    if (rating > 0) {
-      onSubmit(rating, comment.trim());
-      setRating(0);
-      setComment('');
+    if (comment.trim()) {
+      onSubmit(rating, comment);
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Leave a Review for {revieweeName}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <p className="text-sm font-medium mb-2">Rating</p>
-          <div className="flex items-center gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onMouseEnter={() => setHoveredRating(star)}
-                onMouseLeave={() => setHoveredRating(0)}
-                onClick={() => setRating(star)}
-                className="transition-transform hover:scale-110"
-              >
-                <Star
-                  className={`w-8 h-8 ${
-                    star <= (hoveredRating || rating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-300'
-                  }`}
-                />
-              </button>
-            ))}
-            {rating > 0 && (
-              <span className="ml-2 text-sm text-muted-foreground">
-                {rating} {rating === 1 ? 'star' : 'stars'}
-              </span>
-            )}
-          </div>
-        </div>
+    <Card className="p-6 space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Leave a Review for {revieweeName}</h3>
+        <p className="text-sm text-muted-foreground">
+          Share your experience to help others make informed decisions
+        </p>
+      </div>
 
-        <div>
-          <p className="text-sm font-medium mb-2">Comment (optional)</p>
-          <Textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Share your experience..."
-            rows={4}
-          />
+      <div className="space-y-2">
+        <Label>Overall Rating</Label>
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              type="button"
+              onMouseEnter={() => setHoveredRating(star)}
+              onMouseLeave={() => setHoveredRating(0)}
+              onClick={() => setRating(star)}
+              className="transition-transform hover:scale-110"
+            >
+              <Star
+                className={`w-8 h-8 cursor-pointer ${
+                  star <= (hoveredRating || rating)
+                    ? 'fill-yellow-500 text-yellow-500'
+                    : 'text-gray-300'
+                }`}
+              />
+            </button>
+          ))}
         </div>
+        <p className="text-sm text-muted-foreground">
+          {rating === 5 && 'Excellent'}
+          {rating === 4 && 'Very Good'}
+          {rating === 3 && 'Good'}
+          {rating === 2 && 'Fair'}
+          {rating === 1 && 'Poor'}
+        </p>
+      </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="comment">Your Review</Label>
+        <Textarea
+          id="comment"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Share details about your experience..."
+          rows={6}
+          maxLength={1000}
+        />
+        <p className="text-xs text-muted-foreground text-right">
+          {comment.length}/1000 characters
+        </p>
+      </div>
+
+      <div className="flex justify-end gap-3">
         <Button
           onClick={handleSubmit}
-          disabled={rating === 0 || isSubmitting}
-          className="w-full"
+          disabled={!comment.trim() || isSubmitting}
         >
           {isSubmitting ? 'Submitting...' : 'Submit Review'}
         </Button>
-      </CardContent>
+      </div>
     </Card>
   );
-};
+}
