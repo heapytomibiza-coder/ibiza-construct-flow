@@ -1,6 +1,6 @@
 /**
  * Centralized Hook Exports
- * Phase 4-13: Hook & State Management Consolidation
+ * Phase 4-15: Hook & State Management Consolidation
  * 
  * This file provides a single entry point for all custom hooks
  * organized by domain/feature area
@@ -24,6 +24,9 @@ export * from './api';
 
 // Phase 13: Store Hooks
 export * from './stores';
+
+// Phase 15: Performance Hooks
+export * from './performance';
 
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
