@@ -829,6 +829,42 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       automation_executions: {
         Row: {
           completed_at: string | null
@@ -2116,6 +2152,33 @@ export type Database = {
           severity?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      data_deletion_requests: {
+        Row: {
+          id: string
+          notes: string | null
+          processed_at: string | null
+          requested_at: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          requested_at?: string | null
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          requested_at?: string | null
+          status?: string
+          user_id?: string | null
         }
         Relationships: []
       }

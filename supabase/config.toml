@@ -150,5 +150,8 @@ verify_jwt = false
 [functions.log-client-event]
 verify_jwt = false
 
+[functions.audit-log]
+verify_jwt = true
+
 [functions.cache-manager]
 verify_jwt = true
