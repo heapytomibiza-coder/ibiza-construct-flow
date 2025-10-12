@@ -65,6 +65,9 @@ export { useIntegration, useWebhook } from './integration';
 // Phase 30: AI Hooks
 export { useAI, useConversation, usePrompt } from './ai';
 
+// Phase 31: Monitoring Hooks
+export { useMetrics, useLogger, usePerformance, useAlerts } from './monitoring';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
