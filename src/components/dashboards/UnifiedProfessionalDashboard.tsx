@@ -9,6 +9,7 @@ import { AIRecommendations } from '@/components/ai/AIRecommendations';
 import { ProfessionalAnalytics } from '@/components/analytics/ProfessionalAnalytics';
 import { BusinessInsights } from '@/components/analytics/BusinessInsights';
 import { EventAnalyticsDashboard } from '@/components/analytics/EventAnalyticsDashboard';
+import { EnhancedNotificationCenter } from '@/components/notifications/EnhancedNotificationCenter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedProfessionalDashboardProps {
@@ -68,6 +69,9 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
 
   return (
     <OnboardingGate userId={user.id}>
+      <div className="flex items-center justify-end mb-4">
+        <EnhancedNotificationCenter userId={user.id} />
+      </div>
       <Tabs defaultValue="dashboard" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>

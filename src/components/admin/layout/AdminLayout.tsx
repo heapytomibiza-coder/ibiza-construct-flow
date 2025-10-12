@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminBreadcrumbs } from './AdminBreadcrumbs';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { EnhancedNotificationCenter } from '@/components/notifications/EnhancedNotificationCenter';
 import { useAuth } from '@/hooks/useAuth';
 
 interface AdminLayoutProps {
@@ -20,7 +20,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <main className="flex-1 flex flex-col">
           <header className="h-14 border-b bg-background flex items-center justify-between px-6">
             <AdminBreadcrumbs />
-            {user && <NotificationCenter userId={user.id} />}
+            {user && <EnhancedNotificationCenter userId={user.id} />}
           </header>
           
           <div className="flex-1 p-6">
