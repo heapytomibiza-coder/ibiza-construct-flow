@@ -2,7 +2,7 @@ import React, { Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { SafeAreaProvider } from "@/components/mobile/SafeAreaProvider";
 import { MobileGestures } from "@/components/mobile/MobileGestures";
 import { OfflineIndicator } from "@/components/common/OfflineIndicator";
@@ -18,6 +18,7 @@ import { initRealtime } from "./lib/realtimeSync";
 import { ImpersonationBanner } from "./components/admin/ImpersonationBanner";
 import { HelmetProvider } from "react-helmet-async";
 import { CookieConsent } from "./components/layout/CookieConsent";
+import { AdminLayout } from "./components/admin/layout/AdminLayout";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,16 @@ const PaymentProcessingPage = React.lazy(() => import("./pages/PaymentProcessing
 const EscrowManagementPage = React.lazy(() => import("./pages/EscrowManagementPage"));
 const ProfessionalEarningsPage = React.lazy(() => import("./pages/ProfessionalEarningsPage"));
 const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
+
+// New unified admin pages
+const NewAdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboardPage"));
+const NewAdminUsers = React.lazy(() => import("./pages/admin/AdminUsersPage"));
+const NewAdminJobs = React.lazy(() => import("./pages/admin/AdminJobsPage"));
+const NewAdminBookings = React.lazy(() => import("./pages/admin/AdminBookingsPage"));
+const NewAdminProfiles = React.lazy(() => import("./pages/admin/AdminProfilesPage"));
+const NewAdminDisputes = React.lazy(() => import("./pages/admin/AdminDisputesPage"));
+const NewAdminAnalytics = React.lazy(() => import("./pages/admin/AdminAnalyticsPage"));
+const NewAdminSettings = React.lazy(() => import("./pages/admin/AdminSettingsPage"));
 const JobMatchesPage = React.lazy(() => import("./pages/JobMatchesPage"));
 const MessagingPage = React.lazy(() => import("./pages/MessagingPage"));
 const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
@@ -535,6 +546,24 @@ function AppContent() {
               <CalculatorAnalytics />
             </RouteGuard>
           } />
+          
+          {/* New Unified Admin Routes with AdminLayout */}
+          <Route path="/admin/v2" element={
+            <RouteGuard requiredRole="admin">
+              <AdminLayout>
+                <Outlet />
+              </AdminLayout>
+            </RouteGuard>
+          }>
+            <Route index element={<NewAdminDashboard />} />
+            <Route path="users" element={<NewAdminUsers />} />
+            <Route path="jobs" element={<NewAdminJobs />} />
+            <Route path="bookings" element={<NewAdminBookings />} />
+            <Route path="profiles" element={<NewAdminProfiles />} />
+            <Route path="disputes" element={<NewAdminDisputes />} />
+            <Route path="analytics" element={<NewAdminAnalytics />} />
+            <Route path="settings" element={<NewAdminSettings />} />
+          </Route>
           
           {/* Settings Routes - Role-Aware */}
           <Route path="/settings" element={
