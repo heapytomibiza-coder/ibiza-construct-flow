@@ -1,52 +1,43 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Mail, User, MessageSquare, Send, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, InputFormField, TextareaFormField } from '@/components/forms';
+import { emailSchema, nameSchema, messageSchema } from '@/lib/validation';
+import { useToast } from '@/hooks/use-toast';
+
+// Contact form validation schema
+const contactFormSchema = z.object({
+  name: nameSchema,
+  email: emailSchema,
+  message: messageSchema,
+});
+
+type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 const Contact = () => {
   const { t } = useTranslation('pages');
-  const [formData, setFormData] = React.useState({
-    name: '',
-    email: '',
-    message: '',
-  });
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<'idle' | 'success' | 'error'>('idle');
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters';
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    
-    if (!formData.message.trim()) {
-      newErrors.message = 'Message is required';
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = 'Message must be at least 10 characters';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      message: '',
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-    
+  const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
@@ -55,31 +46,26 @@ const Contact = () => {
       // For now, just simulate submission
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log('Contact form submitted:', formData);
+      console.log('Contact form submitted:', data);
       setSubmitStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-      setErrors({});
+      form.reset();
+      
+      toast({
+        title: 'Message sent successfully!',
+        description: "We'll get back to you as soon as possible.",
+        variant: 'default',
+      });
     } catch (error) {
       console.error('Contact form error:', error);
       setSubmitStatus('error');
+      
+      toast({
+        title: 'Failed to send message',
+        description: 'Please try again later or contact us directly.',
+        variant: 'destructive',
+      });
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error for this field when user starts typing
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
     }
   };
   
@@ -106,113 +92,105 @@ const Contact = () => {
           </div>
 
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">{t('contact.form.title')}</h2>
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t('contact.form.name')}</label>
-                  <input 
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                      errors.name ? 'border-red-500' : 'border-border'
-                    }`}
-                    placeholder={t('contact.form.namePlaceholder')}
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t('contact.form.email')}</label>
-                  <input 
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                      errors.email ? 'border-red-500' : 'border-border'
-                    }`}
-                    placeholder={t('contact.form.emailPlaceholder')}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t('contact.form.message')}</label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                      errors.message ? 'border-red-500' : 'border-border'
-                    }`}
-                    placeholder={t('contact.form.messagePlaceholder')}
-                  ></textarea>
-                  {errors.message && (
-                    <p className="text-red-500 text-sm mt-1">{errors.message}</p>
-                  )}
-                </div>
+            <Card className="border-2">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                  <MessageSquare className="h-6 w-6 text-primary" />
+                  {t('contact.form.title')}
+                </CardTitle>
+                <CardDescription>{t('contact.form.description', 'Fill out the form below and we\'ll get back to you soon')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <InputFormField
+                      control={form.control}
+                      name="name"
+                      label={t('contact.form.name')}
+                      placeholder={t('contact.form.namePlaceholder')}
+                      icon={<User className="h-4 w-4" />}
+                    />
 
-                {submitStatus === 'success' && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
-                    Thank you! Your message has been sent successfully.
+                    <InputFormField
+                      control={form.control}
+                      name="email"
+                      label={t('contact.form.email')}
+                      type="email"
+                      placeholder={t('contact.form.emailPlaceholder')}
+                      icon={<Mail className="h-4 w-4" />}
+                    />
+
+                    <TextareaFormField
+                      control={form.control}
+                      name="message"
+                      label={t('contact.form.message')}
+                      placeholder={t('contact.form.messagePlaceholder')}
+                      rows={6}
+                    />
+
+                    {submitStatus === 'success' && (
+                      <div className="flex items-center gap-2 p-4 bg-green-50 border-2 border-green-200 rounded-lg text-green-800 font-medium">
+                        <CheckCircle className="h-5 w-5" />
+                        <span>Thank you! Your message has been sent successfully.</span>
+                      </div>
+                    )}
+
+                    <Button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="w-full gap-2"
+                      size="lg"
+                    >
+                      {isSubmitting ? (
+                        <>Sending...</>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4" />
+                          {t('contact.form.submit')}
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 bg-muted/30">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold">Contact Information</CardTitle>
+                <CardDescription>Get in touch with us directly</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="font-semibold mb-2 flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-primary" />
+                      Email
+                    </h3>
+                    <p className="text-muted-foreground">info@csibiza.com</p>
                   </div>
-                )}
-
-                {submitStatus === 'error' && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-                    Sorry, there was an error sending your message. Please try again.
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">Phone</h3>
+                    <p className="text-muted-foreground">+34 971 XXX XXX</p>
                   </div>
-                )}
-                
-                <button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Sending...' : t('contact.form.submit')}
-                </button>
-              </form>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-semibold mb-2">Email</h3>
-                  <p className="text-muted-foreground">info@csibiza.com</p>
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">Location</h3>
+                    <p className="text-muted-foreground">Ibiza, Balearic Islands<br />Spain</p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">Business Hours</h3>
+                    <p className="text-muted-foreground">
+                      Monday - Friday: 9:00 AM - 6:00 PM<br />
+                      Saturday: 9:00 AM - 2:00 PM<br />
+                      Sunday: Closed
+                    </p>
+                  </div>
                 </div>
-                
-                <div>
-                  <h3 className="font-semibold mb-2">Phone</h3>
-                  <p className="text-muted-foreground">+34 971 XXX XXX</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold mb-2">Location</h3>
-                  <p className="text-muted-foreground">Ibiza, Balearic Islands<br />Spain</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold mb-2">Business Hours</h3>
-                  <p className="text-muted-foreground">
-                    Monday - Friday: 9:00 AM - 6:00 PM<br />
-                    Saturday: 9:00 AM - 2:00 PM<br />
-                    Sunday: Closed
-                  </p>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
