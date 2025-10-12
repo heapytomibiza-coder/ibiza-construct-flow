@@ -199,6 +199,35 @@ export const DefinitiveJobWizard: React.FC<JobWizardProps> = ({ onComplete, onCa
 
       if (error) throw error;
 
+      // Notify matching professionals
+      try {
+        console.log('🔔 Notifying matching professionals...');
+        const micro_slug = `${wizardState.selectedCategory}-${wizardState.selectedSubcategory}-${wizardState.selectedMicro}`
+          .toLowerCase()
+          .replace(/\s+/g, '-');
+        
+        const { data: notifyData, error: notifyError } = await supabase.functions.invoke(
+          'notify-matching-pros',
+          {
+            body: {
+              job_id: job.id,
+              micro_slug,
+              title: wizardState.jobTitle,
+              description: wizardState.professionalDescription || 'Job description',
+              location: wizardState.location,
+            },
+          }
+        );
+
+        if (notifyError) {
+          console.error('⚠️ Notification error (non-blocking):', notifyError);
+        } else {
+          console.log('✅ Notified professionals:', notifyData);
+        }
+      } catch (notifyErr) {
+        console.error('⚠️ Failed to notify professionals (non-blocking):', notifyErr);
+      }
+
       // Clear draft after successful submission
       clearDraft();
       toast.success(t('wizard.messages.jobPostedSuccess'));
