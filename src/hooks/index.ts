@@ -34,6 +34,9 @@ export * from './i18n';
 // Phase 17: Search Hooks
 export * from './search';
 
+// Phase 18: Collaboration Hooks
+export * from './collaboration';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
