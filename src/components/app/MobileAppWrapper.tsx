@@ -6,6 +6,7 @@ import { MobileOptimizedHeader } from '@/components/mobile/MobileOptimizedHeader
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 import { PWAInstallPrompt } from '@/components/pwa/PWAInstallPrompt';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
+import { BackButton } from '@/components/navigation/BackButton';
 
 interface MobileAppWrapperProps {
   children: React.ReactNode;
@@ -55,6 +56,13 @@ const MobileAppWrapper = ({ children }: MobileAppWrapperProps) => {
         )}
         
         <main className={showMobileNav ? 'mb-16' : undefined}>
+          {/* Global back button */}
+          <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+            <div className="container max-w-7xl mx-auto px-4 py-3">
+              <BackButton />
+            </div>
+          </div>
+          
           {children}
         </main>
 
