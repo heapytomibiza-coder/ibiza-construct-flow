@@ -18,7 +18,7 @@ interface Category {
 
 interface CategorySelectorProps {
   selectedCategory?: string;
-  onSelect: (categorySlug: string) => void;
+  onSelect: (categorySlug: string, categoryId: string) => void;
   filterGroups?: string[]; // Optional: filter by category_group
   className?: string;
   onNext?: () => void; // Optional: auto-advance after selection
@@ -150,8 +150,8 @@ export const CategorySelector = ({
                       ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20"
                       : "border-border hover:border-primary/50"
                   )}
-              onClick={() => {
-                onSelect(category.slug);
+               onClick={() => {
+                onSelect(category.slug, category.id);
                 if (onNext) {
                   setTimeout(() => onNext(), 400); // Auto-advance after selection
                 }
@@ -161,7 +161,7 @@ export const CategorySelector = ({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      onSelect(category.slug);
+                      onSelect(category.slug, category.id);
                     }
                   }}
                   aria-pressed={isSelected}

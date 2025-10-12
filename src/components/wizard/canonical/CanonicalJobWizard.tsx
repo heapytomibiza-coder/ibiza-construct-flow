@@ -18,7 +18,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 import { CategorySelector } from '@/components/wizard/db-powered/CategorySelector';
-import { SubcategoryStep } from './SubcategoryStep';
+import { SubcategorySelector } from '@/components/wizard/db-powered/SubcategorySelector';
 import { MicroStep } from './MicroStep';
 import { QuestionsStep } from './QuestionsStep';
 import { LogisticsStep } from './LogisticsStep';
@@ -27,7 +27,9 @@ import { ReviewStep } from './ReviewStep';
 
 interface WizardState {
   mainCategory: string;
+  mainCategoryId: string;
   subcategory: string;
+  subcategoryId: string;
   microName: string;
   microId: string;
   answers: Record<string, any>;
@@ -71,7 +73,9 @@ export const CanonicalJobWizard: React.FC = () => {
   
   const [wizardState, setWizardState] = useState<WizardState>({
     mainCategory: '',
+    mainCategoryId: '',
     subcategory: '',
+    subcategoryId: '',
     microName: '',
     microId: '',
     answers: {},
@@ -178,14 +182,15 @@ export const CanonicalJobWizard: React.FC = () => {
     setCurrentStep(s => Math.max(s - 1, 1));
   }, []);
 
-  // Stable updaters for wizardState (all defined at top level)
-  const handleCategorySelect = useCallback((category: string) => {
-    console.log('🎯 MainCategoryStep onSelect called:', category);
+  const handleCategorySelect = useCallback((categoryName: string, categoryId: string) => {
+    console.log('🎯 CategorySelector onSelect called:', { categoryName, categoryId });
     flushSync(() => {
       setWizardState(prev => ({ 
         ...prev, 
-        mainCategory: category, 
-        subcategory: '', 
+        mainCategory: categoryName,
+        mainCategoryId: categoryId,
+        subcategory: '',
+        subcategoryId: '',
         microName: '', 
         microId: '' 
       }));
@@ -193,11 +198,13 @@ export const CanonicalJobWizard: React.FC = () => {
     setCurrentStep(2); // Auto-advance to subcategory
   }, []);
 
-  const handleSubcategorySelect = useCallback((sub: string) => {
+  const handleSubcategorySelect = useCallback((subcategoryName: string, subcategoryId: string) => {
+    console.log('🎯 SubcategorySelector onSelect called:', { subcategoryName, subcategoryId });
     flushSync(() => {
       setWizardState(prev => ({ 
         ...prev, 
-        subcategory: sub, 
+        subcategory: subcategoryName,
+        subcategoryId: subcategoryId,
         microName: '', 
         microId: '' 
       }));
@@ -345,14 +352,15 @@ export const CanonicalJobWizard: React.FC = () => {
         );
 
       case 2:
-        if (!wizardState.mainCategory) {
+        if (!wizardState.mainCategory || !wizardState.mainCategoryId) {
           return <div className="text-center text-red-500">Error: No category selected. Please go back.</div>;
         }
         return (
-          <SubcategoryStep
-            key={`sub:${wizardState.mainCategory || 'none'}`}
-            mainCategory={wizardState.mainCategory}
-            selectedSubcategory={wizardState.subcategory}
+          <SubcategorySelector
+            key={`sub:${wizardState.mainCategoryId || 'none'}`}
+            categoryId={wizardState.mainCategoryId}
+            categoryName={wizardState.mainCategory}
+            selectedSubcategoryId={wizardState.subcategoryId}
             onSelect={handleSubcategorySelect}
             onNext={handleNext}
             onBack={handleBack}
