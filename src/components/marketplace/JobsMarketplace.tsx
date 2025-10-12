@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   quickFilter = ''
 }) => {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const highlightJobId = searchParams.get('highlight');
   const [jobs, setJobs] = useState<any[]>([]);
@@ -235,16 +236,14 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   };
 
   const handleMessageClient = (jobId: string) => {
-    toast.info('Message feature available - Click to start conversation', {
-      description: `Job ID: ${jobId}`,
-      action: {
-        label: 'Start Chat',
-        onClick: () => {
-          // TODO: Implement messaging functionality
-          console.log('Starting chat for job:', jobId);
-        }
-      }
-    });
+    const job = jobs.find(j => j.id === jobId);
+    if (!job?.client_id) {
+      toast.error('Unable to start conversation');
+      return;
+    }
+    
+    // Navigate to messages page with professional parameter to start conversation
+    navigate(`/messages?professional=${job.client_id}`);
   };
 
   if (loading) {
