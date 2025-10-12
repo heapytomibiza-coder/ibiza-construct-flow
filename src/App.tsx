@@ -170,13 +170,13 @@ function AppContent() {
         <SafeAreaProvider>
           <Toaster />
           <Sonner />
-          <CookieConsent />
           <BrowserRouter
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true
           }}
         >
+            <CookieConsent />
             <MobileGestures enableSwipeNavigation={true} enablePullToRefresh={true}>
               <ImpersonationBanner />
               <SkipToContent />
