@@ -60,6 +60,8 @@ const BookingPage = React.lazy(() => import("./pages/BookingPage"));
 const BookingManagementPage = React.lazy(() => import("./pages/BookingManagementPage"));
 const ProfessionalAvailabilityPage = React.lazy(() => import("./pages/ProfessionalAvailabilityPage"));
 const ProfessionalCalendarPage = React.lazy(() => import("./pages/ProfessionalCalendarPage"));
+const ContractManagementPage = React.lazy(() => import("./pages/ContractManagementPage"));
+const PaymentProcessingPage = React.lazy(() => import("./pages/PaymentProcessingPage"));
 const EscrowManagementPage = React.lazy(() => import("./pages/EscrowManagementPage"));
 const ProfessionalEarningsPage = React.lazy(() => import("./pages/ProfessionalEarningsPage"));
 const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
@@ -178,6 +180,9 @@ function AppContent() {
         <Route path="/bookings" element={<BookingManagementPage />} />
         <Route path="/availability" element={<ProfessionalAvailabilityPage />} />
         <Route path="/calendar" element={<ProfessionalCalendarPage />} />
+        <Route path="/contracts" element={<ContractManagementPage />} />
+        <Route path="/contracts/:contractId" element={<ContractManagementPage />} />
+        <Route path="/contracts/:contractId/fund" element={<PaymentProcessingPage />} />
         <Route path="/escrow/:contractId" element={<EscrowManagementPage />} />
         <Route path="/earnings" element={<ProfessionalEarningsPage />} />
         <Route path="/jobs/:jobId" element={<JobDetailPage />} />
