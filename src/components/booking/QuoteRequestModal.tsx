@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAuth } from '@/hooks/useAuth';
-import { useBookingRequests } from '@/hooks/useBookingRequests';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -47,7 +47,6 @@ export const QuoteRequestModal = ({
 }: QuoteRequestModalProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { createRequest } = useBookingRequests({ userId: user?.id, userRole: 'client' });
   
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -87,15 +86,41 @@ export const QuoteRequestModal = ({
 
     setLoading(true);
     try {
-      await createRequest({
-        professional_id: professionalId,
-        service_id: serviceId || 'general',
+      // Create job with quote request details
+      const jobData = {
+        client_id: user.id,
         title: formData.title.trim(),
         description: formData.description.trim(),
-        location_details: formData.location_details.trim() || undefined,
-        special_requirements: formData.special_requirements.trim() || undefined,
-        preferred_dates: preferredDates.map(d => d.toISOString())
-      });
+        status: 'open',
+        micro_id: serviceId || null,
+        location_details: formData.location_details.trim() || null,
+        special_requirements: formData.special_requirements.trim() || null,
+        preferred_dates: preferredDates.length > 0 ? preferredDates.map(d => d.toISOString()) : null,
+        origin: 'professional_request'
+      };
+
+      const { data: job, error: jobError } = await supabase
+        .from('jobs')
+        .insert(jobData)
+        .select()
+        .single();
+
+      if (jobError) throw jobError;
+
+      // Send notification to professional
+      await supabase
+        .from('activity_feed')
+        .insert({
+          user_id: professionalId,
+          event_type: 'quote_requested',
+          entity_type: 'job',
+          entity_id: job.id,
+          title: 'New Quote Request',
+          description: `${user.email || 'A client'} requested a quote for "${formData.title.trim()}"`,
+          action_url: `/jobs/${job.id}`,
+          notification_type: 'quote',
+          priority: 'high'
+        });
 
       onOpenChange(false);
       setFormData({
@@ -106,7 +131,8 @@ export const QuoteRequestModal = ({
       });
       setPreferredDates([]);
       
-      toast.success('Quote request sent! You\'ll be notified when the professional responds.');
+      toast.success('Quote request sent! The professional will submit their quote soon.');
+      navigate(`/jobs/${job.id}`);
     } catch (error) {
       console.error('Error creating quote request:', error);
       toast.error('Failed to send quote request. Please try again.');

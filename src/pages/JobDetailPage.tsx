@@ -10,14 +10,17 @@ import { Label } from '@/components/ui/label';
 import { JobCompletionCard } from '@/components/jobs/JobCompletionCard';
 import { JobVerificationDialog } from '@/components/jobs/JobVerificationDialog';
 import { ReviewDialog } from '@/components/reviews/ReviewDialog';
+import { JobQuotesView } from '@/components/jobs/JobQuotesView';
+import { SubmitQuoteDialog } from '@/components/jobs/SubmitQuoteDialog';
 import { useState } from 'react';
-import { Loader2, MapPin, Calendar, DollarSign, User } from 'lucide-react';
+import { Loader2, MapPin, Calendar, DollarSign, User, FileText } from 'lucide-react';
 
 export default function JobDetailPage() {
   const { jobId } = useParams<{ jobId: string }>();
   const { user } = useAuth();
   const [verificationOpen, setVerificationOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [quoteDialogOpen, setQuoteDialogOpen] = useState(false);
 
   const { data: job, isLoading, refetch } = useQuery({
     queryKey: ['job-detail', jobId],
@@ -170,6 +173,26 @@ export default function JobDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Quotes Section */}
+          {(isClient || job.status === 'open') && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Quotes</CardTitle>
+                  {!isClient && job.status === 'open' && (
+                    <Button onClick={() => setQuoteDialogOpen(true)} size="sm">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Submit Quote
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <JobQuotesView jobId={job.id} isClient={isClient} />
+              </CardContent>
+            </Card>
+          )}
+
           {/* Completion Card - For Professionals */}
           {isProfessional && job.status === 'in_progress' && (
             <JobCompletionCard
@@ -296,6 +319,14 @@ export default function JobDetailPage() {
           />
         </>
       )}
+
+      {/* Submit Quote Dialog */}
+      <SubmitQuoteDialog
+        jobId={job.id}
+        jobTitle={job.title}
+        open={quoteDialogOpen}
+        onOpenChange={setQuoteDialogOpen}
+      />
     </div>
   );
 }
