@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { FileText, DollarSign, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ReviewPrompt } from '@/components/reviews/ReviewPrompt';
+import { getContractRoute } from '@/lib/navigation';
 
 const statusColors = {
   pending: 'bg-yellow-500',
@@ -206,14 +207,14 @@ export default function ContractManagementPage() {
 
                     <div className="flex gap-2 pt-4 border-t">
                       <Button
-                        onClick={() => navigate(`/contracts/${contract.id}`)}
+                        onClick={() => navigate(getContractRoute(contract.id))}
                         className="flex-1"
                       >
                         View Details
                       </Button>
                       {contract.escrow_status === 'pending' && isClient && (
                         <Button
-                          onClick={() => navigate(`/contracts/${contract.id}/fund`)}
+                          onClick={() => navigate(getContractRoute(contract.id, 'fund'))}
                           variant="outline"
                         >
                           <DollarSign className="w-4 h-4 mr-2" />

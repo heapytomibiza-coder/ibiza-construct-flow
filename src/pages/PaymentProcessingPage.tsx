@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard, DollarSign, Shield, ArrowLeft } from 'lucide-react';
+import { getContractRoute } from '@/lib/navigation';
 
 export default function PaymentProcessingPage() {
   const { contractId } = useParams();
@@ -71,7 +72,7 @@ export default function PaymentProcessingPage() {
         title: 'Payment initiated',
         description: 'Complete the payment in the new tab',
       });
-      setTimeout(() => navigate(`/contracts/${contractId}`), 2000);
+      setTimeout(() => navigate(getContractRoute(contractId!)), 2000);
     },
     onError: (error: any) => {
       toast({
@@ -103,7 +104,7 @@ export default function PaymentProcessingPage() {
     <div className="container mx-auto p-6 max-w-2xl">
       <Button
         variant="ghost"
-        onClick={() => navigate(`/contracts/${contractId}`)}
+        onClick={() => navigate(getContractRoute(contractId!))}
         className="mb-4"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />

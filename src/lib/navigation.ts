@@ -51,6 +51,11 @@ export const getProfessionalRoute = (
 
 /**
  * Get admin route for specific section
+ * @param section - The admin section to navigate to
+ * @returns The admin route path
+ * @example
+ * getAdminRoute('users') // '/admin/users'
+ * getAdminRoute('disputes') // '/admin/disputes'
  */
 export const getAdminRoute = (
   section: 'questions' | 'website-settings' | 'verifications' | 'users' | 'jobs' | 'profiles' | 'disputes' | 'analytics' | 'settings' | 'contracts'
@@ -60,6 +65,12 @@ export const getAdminRoute = (
 
 /**
  * Get contract route
+ * @param contractId - The UUID of the contract
+ * @param action - Optional action to perform on the contract (e.g., 'fund')
+ * @returns The contract route path
+ * @example
+ * getContractRoute('123e4567-e89b-12d3-a456-426614174000') // '/contracts/123e4567-e89b-12d3-a456-426614174000'
+ * getContractRoute('123e4567-e89b-12d3-a456-426614174000', 'fund') // '/contracts/123e4567-e89b-12d3-a456-426614174000/fund'
  */
 export const getContractRoute = (contractId: string, action?: 'fund'): string => {
   if (action === 'fund') return `/contracts/${contractId}/fund`;
@@ -68,6 +79,12 @@ export const getContractRoute = (contractId: string, action?: 'fund'): string =>
 
 /**
  * Get job route
+ * @param jobId - The UUID of the job
+ * @param page - Optional page within the job (e.g., 'matches')
+ * @returns The job route path
+ * @example
+ * getJobRoute('123e4567-e89b-12d3-a456-426614174000') // '/jobs/123e4567-e89b-12d3-a456-426614174000'
+ * getJobRoute('123e4567-e89b-12d3-a456-426614174000', 'matches') // '/jobs/123e4567-e89b-12d3-a456-426614174000/matches'
  */
 export const getJobRoute = (jobId: string, page?: 'matches'): string => {
   if (page === 'matches') return `/jobs/${jobId}/matches`;
