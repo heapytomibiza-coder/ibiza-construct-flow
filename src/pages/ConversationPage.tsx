@@ -25,7 +25,9 @@ export const ConversationPage = () => {
   }
 
   const conversation = conversations.find(c => c.id === conversationId);
-  const otherUserId = conversation?.participants.find(p => p !== user?.id);
+  const otherUserId = conversation?.participant_1_id === user?.id 
+    ? conversation?.participant_2_id 
+    : conversation?.participant_1_id;
   const [otherUserProfile, setOtherUserProfile] = useState<{ id: string; name: string } | undefined>();
 
   useEffect(() => {

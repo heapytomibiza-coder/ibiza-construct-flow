@@ -12,7 +12,9 @@ export const MessagesTab = () => {
   const { conversations, loading } = useConversationList(user?.id);
 
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
-  const otherUserId = selectedConversation?.participants.find(p => p !== user?.id);
+  const otherUserId = selectedConversation?.participant_1_id === user?.id 
+    ? selectedConversation?.participant_2_id 
+    : selectedConversation?.participant_1_id;
 
   if (loading) {
     return (

@@ -63,7 +63,9 @@ const ConversationsList: React.FC<ConversationsListProps> = ({ onConversationSel
           ) : (
             <div className="space-y-2">
               {conversations.map((conversation) => {
-                const otherParticipantId = conversation.participants.find(p => p !== user?.id);
+                const otherParticipantId = conversation.participant_1_id === user?.id 
+                  ? conversation.participant_2_id 
+                  : conversation.participant_1_id;
                 const hasUnread = (conversation.unread_count || 0) > 0;
                 
                 return (

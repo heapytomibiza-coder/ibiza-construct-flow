@@ -58,7 +58,6 @@ export const MessagingContainer = ({ userId }: MessagingContainerProps) => {
         {selectedConversationId && recipientId ? (
           <MessageThread
             conversationId={selectedConversationId}
-            userId={userId}
             recipientId={recipientId}
           />
         ) : (
