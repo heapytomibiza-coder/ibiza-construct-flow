@@ -57,6 +57,8 @@ const ProfessionalOnboardingPage = React.lazy(() => import("./pages/Professional
 const BookingPage = React.lazy(() => import("./pages/BookingPage"));
 const BookingManagementPage = React.lazy(() => import("./pages/BookingManagementPage"));
 const ProfessionalAvailabilityPage = React.lazy(() => import("./pages/ProfessionalAvailabilityPage"));
+const EscrowManagementPage = React.lazy(() => import("./pages/EscrowManagementPage"));
+const ProfessionalEarningsPage = React.lazy(() => import("./pages/ProfessionalEarningsPage"));
 const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
 const Contact = React.lazy(() => import("./pages/Contact"));
 const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategories"));
@@ -167,8 +169,10 @@ function AppContent() {
           <Route path="/professional/:id" element={<ProfessionalProfile />} />
           <Route path="/professionals/:id" element={<ProfessionalProfile />} />
           <Route path="/book" element={<BookingPage />} />
-          <Route path="/bookings" element={<BookingManagementPage />} />
-          <Route path="/availability" element={<ProfessionalAvailabilityPage />} />
+        <Route path="/bookings" element={<BookingManagementPage />} />
+        <Route path="/availability" element={<ProfessionalAvailabilityPage />} />
+        <Route path="/escrow/:contractId" element={<EscrowManagementPage />} />
+        <Route path="/earnings" element={<ProfessionalEarningsPage />} />
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
