@@ -18,6 +18,7 @@ import { ViewReviewDialog } from '@/components/reviews/ViewReviewDialog';
 import { JobPaymentButton } from '@/components/jobs/JobPaymentButton';
 import { JobPaymentStatus } from '@/components/jobs/JobPaymentStatus';
 import { JobQuotesView } from '@/components/jobs/JobQuotesView';
+import { ContractOverview } from '@/components/contracts/ContractOverview';
 
 interface Job {
   id: string;
@@ -370,6 +371,7 @@ export default function JobDetailPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList>
             <TabsTrigger value="quotes">Quotes</TabsTrigger>
+            <TabsTrigger value="contract">Contract</TabsTrigger>
             <TabsTrigger value="applicants">Applicants ({applicants.length})</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
@@ -380,6 +382,14 @@ export default function JobDetailPage() {
           {/* Quotes Tab */}
           <TabsContent value="quotes" className="space-y-4">
             <JobQuotesView jobId={id!} isClient={true} />
+          </TabsContent>
+
+          {/* Contract Tab */}
+          <TabsContent value="contract" className="space-y-4">
+            <ContractOverview 
+              jobId={id!}
+              onFundEscrow={() => setActiveTab('payments')}
+            />
           </TabsContent>
 
           {/* Applicants Tab */}

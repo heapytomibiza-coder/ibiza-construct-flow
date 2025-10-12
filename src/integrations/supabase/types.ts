@@ -10425,6 +10425,10 @@ export type Database = {
         Args: { p_flag_key: string; p_user_id: string }
         Returns: boolean
       }
+      split_milestone_into_phases: {
+        Args: { p_contract_id: string; p_phases: Json }
+        Returns: undefined
+      }
       track_analytics_event: {
         Args: {
           p_event_category?: string
