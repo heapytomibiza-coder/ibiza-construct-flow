@@ -59,6 +59,9 @@ export { useNotifications as useNotificationsList, useNotificationPreferences } 
 // Phase 28: Workflow Hooks
 export { useWorkflow, useAutomation } from './workflow';
 
+// Phase 29: Integration Hooks
+export { useIntegration, useWebhook } from './integration';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
