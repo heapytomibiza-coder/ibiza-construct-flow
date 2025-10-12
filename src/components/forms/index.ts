@@ -1,16 +1,14 @@
-// Form Components Barrel Export
-// Phase 7: Form Components Standardization & Validation
+/**
+ * Form Components Module
+ * Phase 19: Form Builder & Validation System
+ * 
+ * Centralized exports for form components
+ */
 
-export { InputFormField, TextareaFormField } from './FormFieldWrapper';
+// Phase 19: New form system
+export { FieldRenderer } from './FieldRenderer';
+export { FormBuilder } from './FormBuilder';
+export { MultiStepForm } from './MultiStepForm';
 
-// Re-export shadcn form components for convenience
-export {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormField,
-} from '@/components/ui/form';
+// Backward compatibility: react-hook-form wrappers
+export { Form, InputFormField, TextareaFormField } from './Form';

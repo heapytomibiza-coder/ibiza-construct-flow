@@ -37,6 +37,9 @@ export * from './search';
 // Phase 18: Collaboration Hooks
 export * from './collaboration';
 
+// Phase 19: Form Hooks
+export * from './forms';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
