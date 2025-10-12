@@ -52,6 +52,8 @@ const PostJob = React.lazy(() => import("./pages/PostJob"));
 const JobBoardPage = React.lazy(() => import("./pages/JobBoardPage"));
 const PostJobSuccessPage = React.lazy(() => import("./pages/PostJobSuccessPage"));
 const Discovery = React.lazy(() => import("./pages/Discovery"));
+const DiscoveryPage = React.lazy(() => import("./pages/DiscoveryPage"));
+const BrowseProfessionalsPage = React.lazy(() => import("./pages/BrowseProfessionalsPage"));
 const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
 const ProfessionalOnboardingPage = React.lazy(() => import("./pages/ProfessionalOnboardingPage"));
 const BookingPage = React.lazy(() => import("./pages/BookingPage"));
@@ -165,7 +167,8 @@ function AppContent() {
                   <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/calculator" element={<Calculator />} />
-          <Route path="/discovery" element={<Discovery />} />
+          <Route path="/discovery" element={<DiscoveryPage />} />
+          <Route path="/professionals" element={<BrowseProfessionalsPage />} />
           <Route path="/professional/:id" element={<ProfessionalProfile />} />
           <Route path="/professionals/:id" element={<ProfessionalProfile />} />
           <Route path="/book" element={<BookingPage />} />
