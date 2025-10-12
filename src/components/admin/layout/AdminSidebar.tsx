@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
-import { usePendingVerifications } from '@/hooks/usePendingVerifications';
+import { usePendingVerifications } from '@/hooks/admin';
 
 const navigationItems = [
   {
@@ -64,7 +64,7 @@ const navigationItems = [
 
 export function AdminSidebar() {
   const { state } = useSidebar();
-  const { pendingCount } = usePendingVerifications();
+  const { data: pendingCount = 0 } = usePendingVerifications();
   const collapsed = state === 'collapsed';
 
   return (
