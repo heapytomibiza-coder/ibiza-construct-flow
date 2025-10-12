@@ -23,11 +23,11 @@ export const ServiceCategoryBadge: React.FC<ServiceCategoryBadgeProps> = ({
     <Badge 
       variant="secondary" 
       className={cn(
-        "backdrop-blur-md bg-background/90 border-2 border-background shadow-lg text-xs font-medium",
+        "backdrop-blur-sm bg-background/95 border-2 border-primary/20 shadow-md text-xs font-semibold hover:bg-background/100 transition-colors",
         className
       )}
     >
-      {icon && <span className="mr-1">{icon}</span>}
+      {icon && <span className="mr-1.5">{icon}</span>}
       <span>
         {category}
         {subcategory && ` • ${subcategory}`}

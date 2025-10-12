@@ -33,29 +33,29 @@ export const JobMetadataBadges: React.FC<JobMetadataBadgesProps> = ({
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
       {startDate && getStartDateLabel(startDate) && (
-        <Badge variant="outline" className="text-xs">
-          <Calendar className="w-3 h-3 mr-1" />
+        <Badge variant="outline" className="text-xs font-medium border-primary/30">
+          <Calendar className="w-3.5 h-3.5 mr-1.5 text-primary" />
           Starts: {getStartDateLabel(startDate)}
         </Badge>
       )}
       
       {location && (
-        <Badge variant="outline" className="text-xs">
-          <MapPin className="w-3 h-3 mr-1" />
+        <Badge variant="outline" className="text-xs font-medium border-primary/30">
+          <MapPin className="w-3.5 h-3.5 mr-1.5 text-primary" />
           {location}
         </Badge>
       )}
       
       {photoCount > 0 && (
-        <Badge variant="outline" className="text-xs bg-primary/5">
-          <Image className="w-3 h-3 mr-1" />
+        <Badge variant="secondary" className="text-xs font-semibold bg-primary/10 text-primary border-primary/20">
+          <Image className="w-3.5 h-3.5 mr-1.5" />
           {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
         </Badge>
       )}
       
       {answerCount > 0 && (
-        <Badge variant="outline" className="text-xs">
-          <FileText className="w-3 h-3 mr-1" />
+        <Badge variant="outline" className="text-xs font-medium border-muted">
+          <FileText className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
           {answerCount} details
         </Badge>
       )}
