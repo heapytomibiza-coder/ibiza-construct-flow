@@ -62,6 +62,9 @@ export { useWorkflow, useAutomation } from './workflow';
 // Phase 29: Integration Hooks
 export { useIntegration, useWebhook } from './integration';
 
+// Phase 30: AI Hooks
+export { useAI, useConversation, usePrompt } from './ai';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
