@@ -218,8 +218,8 @@ export default function ProfessionalProfile() {
       const { data: existing } = await supabase
         .from('conversations')
         .select('*')
-        .contains('participants', [user.id, professionalId!])
-        .single();
+        .or(`and(participant_1_id.eq.${user.id},participant_2_id.eq.${professionalId}),and(participant_1_id.eq.${professionalId},participant_2_id.eq.${user.id})`)
+        .maybeSingle();
 
       if (existing) {
         navigate(`/messages?conversation=${existing.id}`);
@@ -227,8 +227,8 @@ export default function ProfessionalProfile() {
         const { data: newConv, error } = await supabase
           .from('conversations')
           .insert({
-            participants: [user.id, professionalId!],
-            metadata: { professional_profile: true }
+            participant_1_id: user.id,
+            participant_2_id: professionalId!
           })
           .select()
           .single();

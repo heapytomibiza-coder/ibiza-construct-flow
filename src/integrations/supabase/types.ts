@@ -1911,33 +1911,43 @@ export type Database = {
       }
       conversations: {
         Row: {
+          contract_id: string | null
           created_at: string | null
           id: string
           job_id: string | null
           last_message_at: string | null
-          metadata: Json | null
-          participants: string[]
+          participant_1_id: string
+          participant_2_id: string
           updated_at: string | null
         }
         Insert: {
+          contract_id?: string | null
           created_at?: string | null
           id?: string
           job_id?: string | null
           last_message_at?: string | null
-          metadata?: Json | null
-          participants: string[]
+          participant_1_id: string
+          participant_2_id: string
           updated_at?: string | null
         }
         Update: {
+          contract_id?: string | null
           created_at?: string | null
           id?: string
           job_id?: string | null
           last_message_at?: string | null
-          metadata?: Json | null
-          participants?: string[]
+          participant_1_id?: string
+          participant_2_id?: string
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "conversations_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "conversations_job_id_fkey"
             columns: ["job_id"]
@@ -4255,15 +4265,7 @@ export type Database = {
           virus_scan_date?: string | null
           virus_scan_status?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "message_attachment_metadata_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       message_rate_limits: {
         Row: {
@@ -4319,15 +4321,7 @@ export type Database = {
           reaction?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "message_reactions_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       message_reports: {
         Row: {
@@ -4365,13 +4359,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "message_reports_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "message_reports_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
@@ -4406,71 +4393,41 @@ export type Database = {
           message_id?: string
           parent_message_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "message_threads_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "message_threads_parent_message_id_fkey"
-            columns: ["parent_message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       messages: {
         Row: {
           attachments: Json | null
           content: string
-          contract_id: string | null
-          conversation_id: string | null
-          created_at: string
-          edited_at: string | null
+          conversation_id: string
+          created_at: string | null
           id: string
-          is_edited: boolean | null
-          job_id: string | null
-          message_type: string
           read_at: string | null
           recipient_id: string
           sender_id: string
-          thread_id: string | null
+          updated_at: string | null
         }
         Insert: {
           attachments?: Json | null
           content: string
-          contract_id?: string | null
-          conversation_id?: string | null
-          created_at?: string
-          edited_at?: string | null
+          conversation_id: string
+          created_at?: string | null
           id?: string
-          is_edited?: boolean | null
-          job_id?: string | null
-          message_type?: string
           read_at?: string | null
           recipient_id: string
           sender_id: string
-          thread_id?: string | null
+          updated_at?: string | null
         }
         Update: {
           attachments?: Json | null
           content?: string
-          contract_id?: string | null
-          conversation_id?: string | null
-          created_at?: string
-          edited_at?: string | null
+          conversation_id?: string
+          created_at?: string | null
           id?: string
-          is_edited?: boolean | null
-          job_id?: string | null
-          message_type?: string
           read_at?: string | null
           recipient_id?: string
           sender_id?: string
-          thread_id?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -4478,13 +4435,6 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_thread_id_fkey"
-            columns: ["thread_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
         ]
@@ -7378,15 +7328,7 @@ export type Database = {
           read_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "read_receipts_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       referral_codes: {
         Row: {
@@ -9275,15 +9217,7 @@ export type Database = {
           started_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "typing_indicators_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_achievements: {
         Row: {
@@ -9811,15 +9745,7 @@ export type Database = {
           status?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "video_calls_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       webhook_endpoints: {
         Row: {

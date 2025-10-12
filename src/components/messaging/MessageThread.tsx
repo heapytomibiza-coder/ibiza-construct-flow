@@ -1,228 +1,155 @@
-import { useEffect, useRef, useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useMessaging } from '@/hooks/useMessaging';
-import { useMessageSafety } from '@/hooks/useMessageSafety';
-import { MessageBubble } from './MessageBubble';
-import { TypingIndicator } from './TypingIndicator';
-import { MessageInput } from './MessageInput';
-import { BlockUserDialog } from './BlockUserDialog';
-import { ReportMessageDialog } from './ReportMessageDialog';
-import { Loader2, MessageSquare, ShieldAlert, AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState } from "react";
+import { useMessages } from "@/hooks/useMessages";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Send, Loader2 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 interface MessageThreadProps {
   conversationId: string;
-  userId: string;
   recipientId: string;
+  recipientName?: string;
+  recipientAvatar?: string;
 }
 
 export const MessageThread = ({
   conversationId,
-  userId,
   recipientId,
+  recipientName,
+  recipientAvatar,
 }: MessageThreadProps) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isSending, setIsSending] = useState(false);
-  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [rateLimitWarning, setRateLimitWarning] = useState<string | null>(null);
+  const { user } = useAuth();
+  const { messages, isLoading, sendMessage, isSending } = useMessages(conversationId);
+  const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const {
-    messages,
-    messagesLoading,
-    typingUsers,
-    sendMessage,
-    markAsRead,
-    updateTypingStatus,
-    addReaction,
-    deleteMessage,
-  } = useMessaging(userId, conversationId);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  const {
-    checkIfBlocked,
-    checkRateLimit,
-    checkSpamContent
-  } = useMessageSafety(userId);
-
-  // Scroll to bottom on new messages
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollToBottom();
   }, [messages]);
 
-  // Mark messages as read when conversation opens
-  useEffect(() => {
-    if (conversationId) {
-      markAsRead(conversationId);
-    }
-  }, [conversationId, markAsRead]);
+  const handleSend = async () => {
+    if (!newMessage.trim() || isSending) return;
 
-  // Check if user is blocked
-  useEffect(() => {
-    const checkBlockStatus = async () => {
-      if (recipientId) {
-        const blocked = await checkIfBlocked(recipientId);
-        setIsBlocked(blocked);
-      }
-    };
-    checkBlockStatus();
-  }, [recipientId, checkIfBlocked]);
-
-  const handleSendMessage = async (content: string, attachments?: any[]) => {
-    // Check if blocked
-    if (isBlocked) {
-      setRateLimitWarning('Cannot send messages to this user.');
-      return;
-    }
-
-    // Check rate limit
-    const rateCheck = await checkRateLimit();
-    if (!rateCheck.allowed) {
-      if (rateCheck.reason === 'rate_limit_exceeded') {
-        setRateLimitWarning('You\'ve reached the message limit. Please try again later.');
-      } else if (rateCheck.retry_after) {
-        const minutes = Math.ceil(rateCheck.retry_after / 60);
-        setRateLimitWarning(`Rate limited. Try again in ${minutes} minutes.`);
-      }
-      return;
-    }
-
-    // Check spam
-    const spamCheck = await checkSpamContent(content);
-    if (spamCheck.is_spam && spamCheck.severity === 'high') {
-      setRateLimitWarning('Message contains prohibited content.');
-      return;
-    }
-
-    setIsSending(true);
-    setRateLimitWarning(null);
-    try {
-      await sendMessage({
+    sendMessage(
+      {
         conversationId,
         recipientId,
-        content,
-        attachments,
-      });
-    } finally {
-      setIsSending(false);
+        content: newMessage.trim(),
+      },
+      {
+        onSuccess: () => {
+          setNewMessage("");
+        },
+      }
+    );
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
     }
   };
 
-  const handleTyping = (isTyping: boolean) => {
-    updateTypingStatus(isTyping);
-  };
-
-  const handleReportMessage = (messageId: string) => {
-    setSelectedMessageId(messageId);
-    setReportDialogOpen(true);
-  };
-
-  const handleBlockUser = () => {
-    setBlockDialogOpen(true);
-  };
-
-  if (messagesLoading) {
+  if (isLoading) {
     return (
-      <Card className="h-full flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin" />
-      </Card>
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   return (
-    <>
-      <Card className="h-full flex flex-col">
-        {isBlocked && (
-          <Alert variant="destructive" className="m-4">
-            <ShieldAlert className="h-4 w-4" />
-            <AlertDescription>
-              This user has blocked you. You cannot send messages.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {rateLimitWarning && (
-          <Alert variant="destructive" className="m-4">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription className="flex items-center justify-between">
-              {rateLimitWarning}
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setRateLimitWarning(null)}
-              >
-                Dismiss
-              </Button>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-          {messages && messages.length > 0 ? (
-            <div className="space-y-4">
-              {messages.map((message: any) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                  isOwn={message.sender_id === userId}
-                  onReact={(reaction) =>
-                    addReaction({ messageId: message.id, reaction })
-                  }
-                  onDelete={() => deleteMessage(message.id)}
-                />
-              ))}
-              {typingUsers.size > 0 && <TypingIndicator />}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-              <MessageSquare className="w-12 h-12 mb-3 opacity-50" />
-              <p className="font-medium">No messages yet</p>
-              <p className="text-sm">Send a message to start the conversation</p>
-            </div>
-          )}
-        </ScrollArea>
-
-        <div className="p-4 border-t space-y-2">
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleBlockUser}
-              className="gap-2"
-            >
-              <ShieldAlert className="h-4 w-4" />
-              Block User
-            </Button>
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="border-b px-6 py-4">
+        <div className="flex items-center gap-3">
+          <Avatar>
+            <AvatarImage src={recipientAvatar} />
+            <AvatarFallback>
+              {recipientName?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h3 className="font-semibold">{recipientName || "User"}</h3>
+            <p className="text-sm text-muted-foreground">Active now</p>
           </div>
-          <MessageInput
-            onSend={handleSendMessage}
-            onTyping={handleTyping}
-            disabled={isSending || isBlocked}
-          />
         </div>
-      </Card>
+      </div>
 
-      <BlockUserDialog
-        open={blockDialogOpen}
-        onOpenChange={setBlockDialogOpen}
-        targetUserId={recipientId}
-        targetUserName="User"
-        onBlocked={() => setIsBlocked(true)}
-      />
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        {messages.length === 0 ? (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            <p>No messages yet. Start the conversation!</p>
+          </div>
+        ) : (
+          messages.map((message) => {
+            const isOwn = message.sender_id === user?.id;
+            return (
+              <div
+                key={message.id}
+                className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[70%] rounded-lg px-4 py-2 ${
+                    isOwn
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted"
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap break-words">
+                    {message.content}
+                  </p>
+                  <p
+                    className={`text-xs mt-1 ${
+                      isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
+                    }`}
+                  >
+                    {formatDistanceToNow(new Date(message.created_at), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+              </div>
+            );
+          })
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-      {selectedMessageId && (
-        <ReportMessageDialog
-          open={reportDialogOpen}
-          onOpenChange={setReportDialogOpen}
-          messageId={selectedMessageId}
-          onReported={() => setReportDialogOpen(false)}
-        />
-      )}
-    </>
+      {/* Input */}
+      <div className="border-t px-6 py-4">
+        <div className="flex gap-2">
+          <Textarea
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a message..."
+            className="resize-none"
+            rows={2}
+            disabled={isSending}
+          />
+          <Button
+            onClick={handleSend}
+            disabled={!newMessage.trim() || isSending}
+            size="icon"
+            className="self-end"
+          >
+            {isSending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };

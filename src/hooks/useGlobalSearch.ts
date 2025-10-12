@@ -71,8 +71,8 @@ export function useGlobalSearch() {
       // Search conversations
       const { data: conversations } = await supabase
         .from('conversations')
-        .select('id, metadata')
-        .contains('participants', [user.id])
+        .select('id')
+        .or(`participant_1_id.eq.${user.id},participant_2_id.eq.${user.id}`)
         .limit(5);
 
       if (conversations) {

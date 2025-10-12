@@ -20,7 +20,7 @@ export const MessagingContainer = ({ userId }: MessagingContainerProps) => {
     try {
       const { data: conversation, error } = await supabase
         .from('conversations')
-        .select('participants')
+        .select('participant_1_id, participant_2_id')
         .eq('id', conversationId)
         .single();
 
@@ -30,9 +30,9 @@ export const MessagingContainer = ({ userId }: MessagingContainerProps) => {
       }
 
       // Find the other participant (recipient)
-      const otherParticipant = conversation?.participants?.find(
-        (id: string) => id !== userId
-      );
+      const otherParticipant = conversation?.participant_1_id === userId
+        ? conversation?.participant_2_id
+        : conversation?.participant_1_id;
       
       if (otherParticipant) {
         setRecipientId(otherParticipant);

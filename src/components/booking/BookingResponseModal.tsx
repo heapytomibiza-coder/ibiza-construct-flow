@@ -65,17 +65,8 @@ export function BookingResponseModal({
 
       if (updateError) throw updateError;
 
-      // Send message to client
-      const { error: messageError } = await supabase
-        .from('messages')
-        .insert({
-          sender_id: (await supabase.auth.getUser()).data.user?.id,
-          recipient_id: bookingRequest.client_id,
-          content: `Professional Response for "${bookingRequest.title}"\n\n${message}${quote ? `\n\nQuoted Price: €${quote}` : ''}`,
-          message_type: 'booking_response'
-        });
-
-      if (messageError) throw messageError;
+      // Note: Messaging will be handled through the new messaging system
+      // Clients can reach out via the Messages page
 
       toast({
         title: "Response Sent",

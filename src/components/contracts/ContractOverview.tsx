@@ -4,13 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useContract } from '@/hooks/useContract';
-import { FileText, DollarSign, Calendar, User, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { FileText, DollarSign, Calendar, User, CheckCircle, Clock, AlertCircle, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { SplitMilestonesDialog } from './SplitMilestonesDialog';
 import { FundEscrowDialog } from './FundEscrowDialog';
 import { MilestonesList } from './MilestonesList';
 import { useAuth } from '@/hooks/useAuth';
+import { useConversations } from '@/hooks/useMessages';
+import { useNavigate } from 'react-router-dom';
 
 interface ContractOverviewProps {
   jobId: string;
@@ -22,6 +24,27 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
   const { contract, contractLoading } = useContract(jobId);
   const [showSplitDialog, setShowSplitDialog] = useState(false);
   const [showFundDialog, setShowFundDialog] = useState(false);
+  const { createConversation, isCreating } = useConversations();
+  const navigate = useNavigate();
+
+  const handleStartConversation = () => {
+    if (!contract || !user?.id) return;
+    
+    const otherUserId = user.id === contract.client_id ? contract.tasker_id : contract.client_id;
+    
+    createConversation(
+      {
+        otherUserId,
+        jobId: contract.job_id,
+        contractId: contract.id,
+      },
+      {
+        onSuccess: () => {
+          navigate('/messages');
+        },
+      }
+    );
+  };
 
   if (contractLoading) {
     return (
@@ -158,24 +181,36 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
           </div>
 
           {/* Action Buttons */}
-          {needsFunding && isClient && (
-            <div className="pt-4">
-              <div className="flex items-start gap-3 p-4 bg-yellow-500/10 rounded-lg border border-yellow-200 mb-4">
-                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
-                <div className="flex-1">
-                  <div className="font-medium text-yellow-900">Action Required</div>
-                  <div className="text-sm text-yellow-700">
-                    Please fund the escrow to allow the professional to start work
-                  </div>
-                </div>
-              </div>
+          <div className="flex gap-2 pt-4">
+            {needsFunding && isClient && (
               <Button 
                 onClick={() => setShowFundDialog(true)}
-                className="w-full"
+                className="flex-1"
                 size="lg"
               >
                 Fund Escrow (€{contract.agreed_amount.toFixed(2)})
               </Button>
+            )}
+            <Button
+              variant="outline"
+              onClick={handleStartConversation}
+              disabled={isCreating}
+              className={needsFunding && isClient ? "" : "flex-1"}
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Message {isProfessional ? 'Client' : 'Professional'}
+            </Button>
+          </div>
+
+          {needsFunding && isClient && (
+            <div className="flex items-start gap-3 p-4 bg-yellow-500/10 rounded-lg border border-yellow-200">
+              <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+              <div className="flex-1">
+                <div className="font-medium text-yellow-900">Action Required</div>
+                <div className="text-sm text-yellow-700">
+                  Please fund the escrow to allow the professional to start work
+                </div>
+              </div>
             </div>
           )}
 
