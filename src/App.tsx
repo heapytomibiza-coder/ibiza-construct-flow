@@ -58,7 +58,7 @@ const BrowseProfessionalsPage = React.lazy(() => import("./pages/BrowseProfessio
 const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
 const ProfessionalOnboardingPage = React.lazy(() => import("./pages/ProfessionalOnboardingPage"));
 const BookingPage = React.lazy(() => import("./pages/BookingPage"));
-const BookingManagementPage = React.lazy(() => import("./pages/BookingManagementPage"));
+// Legacy BookingManagementPage removed - use unified job_quotes system
 const ProfessionalAvailabilityPage = React.lazy(() => import("./pages/ProfessionalAvailabilityPage"));
 const ProfessionalCalendarPage = React.lazy(() => import("./pages/ProfessionalCalendarPage"));
 const ContractManagementPage = React.lazy(() => import("./pages/ContractManagementPage"));
@@ -188,7 +188,7 @@ function AppContent() {
           <Route path="/professional/:id" element={<ProfessionalProfile />} />
           <Route path="/professionals/:id" element={<ProfessionalProfile />} />
           <Route path="/book" element={<BookingPage />} />
-        <Route path="/bookings" element={<BookingManagementPage />} />
+        {/* Legacy /bookings route removed - redirects handled by dashboard */}
         <Route path="/availability" element={<ProfessionalAvailabilityPage />} />
         <Route path="/calendar" element={<ProfessionalCalendarPage />} />
         <Route path="/contracts" element={<ContractManagementPage />} />

@@ -98,15 +98,30 @@ export const useProfessionalStats = (professionalId?: string) => {
           stats = newStats;
         }
 
-        // Fetch recent bookings
-        const { data: bookingsData, error: bookingsError } = await supabase
-          .from('booking_requests')
-          .select('id, title, status, created_at, total_estimated_price')
+        // Fetch recent job quotes (replacing legacy booking_requests)
+        const { data: quotesData, error: quotesError } = await supabase
+          .from('job_quotes')
+          .select(`
+            id,
+            status,
+            created_at,
+            quote_amount,
+            job:jobs!job_id(id, title)
+          `)
           .eq('professional_id', professionalId)
           .order('created_at', { ascending: false })
           .limit(5);
 
-        if (bookingsError) throw bookingsError;
+        if (quotesError) throw quotesError;
+
+        // Transform quotes data to match expected format
+        const bookingsData = (quotesData || []).map(quote => ({
+          id: quote.id,
+          title: quote.job?.title || 'Job',
+          status: quote.status,
+          created_at: quote.created_at,
+          total_estimated_price: quote.quote_amount
+        }));
 
         // Fetch recent reviews
         const { data: reviewsData, error: reviewsError } = await supabase

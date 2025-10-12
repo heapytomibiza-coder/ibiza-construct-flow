@@ -92,15 +92,15 @@ export const AISmartRecommendations = ({
     if (!user) return null;
 
     try {
-      // Get user's recent activity (bookings, searches, etc.)
-      const { data: bookings } = await supabase
-        .from('booking_requests')
-        .select('service_type, professional_id')
+      // Get user's recent job activity (replacing legacy booking_requests)
+      const { data: jobs } = await supabase
+        .from('jobs')
+        .select('micro_id, status')
         .eq('client_id', user.id)
         .order('created_at', { ascending: false })
         .limit(5);
 
-      return bookings || [];
+      return jobs || [];
     } catch (error) {
       console.error('Error getting user history:', error);
       return null;

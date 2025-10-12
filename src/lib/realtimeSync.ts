@@ -12,9 +12,10 @@ export function initRealtime(queryClient: QueryClient) {
       console.log('[Realtime] Offers table changed, invalidating cache');
       queryClient.invalidateQueries({ queryKey: ['offers'] });
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'booking_requests' }, () => {
-      console.log('[Realtime] Booking requests changed, invalidating cache');
-      queryClient.invalidateQueries({ queryKey: ['offers'] });
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'job_quotes' }, () => {
+      console.log('[Realtime] Job quotes changed, invalidating cache');
+      queryClient.invalidateQueries({ queryKey: ['job-quotes'] });
+      queryClient.invalidateQueries({ queryKey: ['professional-job-quotes'] });
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'contracts' }, () => {
       console.log('[Realtime] Contracts changed, invalidating cache');

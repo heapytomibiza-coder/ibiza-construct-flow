@@ -1,3 +1,11 @@
+/**
+ * @deprecated This hook is deprecated and maintained only for legacy data viewing.
+ * Use useProfessionalJobQuotes or useJobQuotes instead for the unified quote system.
+ * 
+ * Legacy booking_requests table is no longer actively used for new quotes.
+ * All new quote functionality uses the job_quotes table.
+ */
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -32,6 +40,9 @@ interface UseBookingRequestsParams {
   userRole?: 'client' | 'professional';
 }
 
+/**
+ * @deprecated Use useProfessionalJobQuotes or useJobQuotes instead
+ */
 export const useBookingRequests = ({ userId, userRole }: UseBookingRequestsParams) => {
   const [requests, setRequests] = useState<BookingRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,85 +120,24 @@ export const useBookingRequests = ({ userId, userRole }: UseBookingRequestsParam
     };
   };
 
-  const createRequest = async (requestData: {
-    professional_id: string;
-    service_id: string;
-    title: string;
-    description: string;
-    location_details?: string;
-    special_requirements?: string;
-    preferred_dates?: any[];
-    selected_items?: any[];
-  }) => {
-    if (!userId) {
-      throw new Error('User not authenticated');
-    }
-
-    const { data, error } = await supabase
-      .from('booking_requests')
-      .insert({
-        client_id: userId,
-        ...requestData,
-        status: 'pending'
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    
-    toast.success('Quote request sent successfully!');
-    return data;
+  const createRequest = async () => {
+    throw new Error('Creating new booking requests is deprecated. Use job_quotes system instead.');
   };
 
-  const updateRequestStatus = async (requestId: string, status: string) => {
-    const { error } = await supabase
-      .from('booking_requests')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', requestId);
-
-    if (error) throw error;
-    toast.success('Status updated successfully');
+  const updateRequestStatus = async () => {
+    throw new Error('Updating booking requests is deprecated. Use job_quotes system instead.');
   };
 
-  const sendQuote = async (requestId: string, quote: number, notes: string) => {
-    const { error } = await supabase
-      .from('booking_requests')
-      .update({
-        professional_quote: quote,
-        professional_notes: notes,
-        status: 'quoted',
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', requestId);
-
-    if (error) throw error;
-    toast.success('Quote sent successfully!');
+  const sendQuote = async () => {
+    throw new Error('Sending quotes through booking_requests is deprecated. Use job_quotes system instead.');
   };
 
-  const acceptQuote = async (requestId: string) => {
-    const { error } = await supabase
-      .from('booking_requests')
-      .update({
-        status: 'accepted',
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', requestId);
-
-    if (error) throw error;
-    toast.success('Quote accepted!');
+  const acceptQuote = async () => {
+    throw new Error('Accepting quotes through booking_requests is deprecated. Use job_quotes system instead.');
   };
 
-  const declineQuote = async (requestId: string) => {
-    const { error } = await supabase
-      .from('booking_requests')
-      .update({
-        status: 'declined',
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', requestId);
-
-    if (error) throw error;
-    toast.success('Quote declined');
+  const declineQuote = async () => {
+    throw new Error('Declining quotes through booking_requests is deprecated. Use job_quotes system instead.');
   };
 
   return {

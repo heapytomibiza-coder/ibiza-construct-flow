@@ -14,7 +14,6 @@ import {
 import { toast } from 'sonner';
 import { ServiceCreationForm } from '@/components/services/ServiceCreationForm';
 import { DocumentUpload } from '@/components/documents/DocumentUpload';
-import { BookingResponseModal } from '@/components/booking/BookingResponseModal';
 
 const ProfessionalDashboard = ({ user, profile }: any) => {
   const [applications, setApplications] = useState([]);
@@ -441,17 +440,6 @@ const ProfessionalDashboard = ({ user, profile }: any) => {
           />
         )}
       </main>
-
-      {/* Booking Response Modal */}
-      <BookingResponseModal
-        open={isBookingModalOpen}
-        onOpenChange={setIsBookingModalOpen}
-        bookingRequest={selectedBookingRequest}
-        onResponseSent={() => {
-          setIsBookingModalOpen(false);
-          fetchProfessionalData();
-        }}
-      />
     </div>
   );
 };

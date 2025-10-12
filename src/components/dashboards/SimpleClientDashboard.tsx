@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useTour } from '@/components/common/Tour';
-import { ClientBookingsSection } from '@/components/booking/ClientBookingsSection';
 import { ClientPaymentSection } from '@/components/payment/ClientPaymentSection';
 import { 
   Briefcase, 
@@ -451,10 +450,12 @@ const PaymentsTab = ({ userId }: { userId: string }) => (
   </div>
 );
 
-// Bookings Tab Component
+// Bookings Tab Component - Legacy booking_requests removed, use Jobs tab instead
 const BookingsTab = ({ userId }: { userId: string }) => (
-  <div className="space-y-6">
-    <ClientBookingsSection clientId={userId} />
+  <div className="space-y-6 text-center py-12">
+    <p className="text-muted-foreground">
+      Legacy bookings have been moved. Please use the "Jobs" tab to view your active jobs.
+    </p>
   </div>
 );
 
