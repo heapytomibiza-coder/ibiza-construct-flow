@@ -6,6 +6,8 @@ import SimpleClientDashboard from './SimpleClientDashboard';
 import EnhancedClientDashboard from './EnhancedClientDashboard';
 import ClientDashboard from './ClientDashboard';
 import { AIRecommendations } from '@/components/ai/AIRecommendations';
+import { BusinessInsights } from '@/components/analytics/BusinessInsights';
+import { EventAnalyticsDashboard } from '@/components/analytics/EventAnalyticsDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedClientDashboardProps {
@@ -78,13 +80,23 @@ const UnifiedClientDashboard: React.FC<UnifiedClientDashboardProps> = ({
 
   return (
     <Tabs defaultValue="dashboard" className="w-full">
-      <TabsList>
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-        <TabsTrigger value="recommendations">AI Insights</TabsTrigger>
+        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <TabsTrigger value="insights">Insights</TabsTrigger>
+        <TabsTrigger value="recommendations">AI</TabsTrigger>
       </TabsList>
       
       <TabsContent value="dashboard" className="mt-6">
         <DashboardContent />
+      </TabsContent>
+      
+      <TabsContent value="analytics" className="mt-6">
+        <EventAnalyticsDashboard userId={user.id} scope="user" />
+      </TabsContent>
+      
+      <TabsContent value="insights" className="mt-6">
+        <BusinessInsights userId={user.id} userType="client" />
       </TabsContent>
       
       <TabsContent value="recommendations" className="mt-6">

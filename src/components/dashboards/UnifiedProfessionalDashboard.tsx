@@ -7,6 +7,8 @@ import ProfessionalDashboard from './ProfessionalDashboard';
 import { OnboardingGate } from '@/components/professional/OnboardingGate';
 import { AIRecommendations } from '@/components/ai/AIRecommendations';
 import { ProfessionalAnalytics } from '@/components/analytics/ProfessionalAnalytics';
+import { BusinessInsights } from '@/components/analytics/BusinessInsights';
+import { EventAnalyticsDashboard } from '@/components/analytics/EventAnalyticsDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedProfessionalDashboardProps {
@@ -67,18 +69,24 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
   return (
     <OnboardingGate userId={user.id}>
       <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="recommendations">AI Insights</TabsTrigger>
+          <TabsTrigger value="insights">Insights</TabsTrigger>
+          <TabsTrigger value="recommendations">AI</TabsTrigger>
         </TabsList>
         
         <TabsContent value="dashboard" className="mt-6">
           <DashboardContent />
         </TabsContent>
         
-        <TabsContent value="analytics" className="mt-6">
+        <TabsContent value="analytics" className="space-y-4 mt-6">
           <ProfessionalAnalytics professionalId={user.id} />
+          <EventAnalyticsDashboard userId={user.id} scope="user" />
+        </TabsContent>
+        
+        <TabsContent value="insights" className="mt-6">
+          <BusinessInsights userId={user.id} userType="professional" />
         </TabsContent>
         
         <TabsContent value="recommendations" className="mt-6">
