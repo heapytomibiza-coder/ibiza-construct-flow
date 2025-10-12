@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle, Circle, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProfileCompletionTrackerProps {
   profile: any;
@@ -12,9 +13,34 @@ interface ProfileCompletionTrackerProps {
 
 export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerProps) => {
   const navigate = useNavigate();
+  const [hasServices, setHasServices] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkServices = async () => {
+      if (!profile?.id) return;
+      
+      const { data, error } = await supabase
+        .from('professional_services')
+        .select('id')
+        .eq('professional_id', profile.id)
+        .eq('is_active', true)
+        .limit(1);
+      
+      setHasServices((data?.length || 0) > 0);
+    };
+
+    checkServices();
+  }, [profile?.id]);
 
   const completionItems = useMemo(() => {
     return [
+      {
+        id: 'services',
+        label: 'Configure services you offer',
+        completed: hasServices === true,
+        required: true,
+        loading: hasServices === null
+      },
       {
         id: 'bio',
         label: 'Add professional bio',
@@ -52,7 +78,7 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
         required: false
       }
     ];
-  }, [profile]);
+  }, [profile, hasServices]);
 
   const completionPercentage = useMemo(() => {
     const total = completionItems.length;
