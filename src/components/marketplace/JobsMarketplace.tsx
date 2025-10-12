@@ -9,7 +9,7 @@ import {
   Search, Filter, Grid, List, SortAsc, Briefcase
 } from 'lucide-react';
 import { JobListingCard } from './JobListingCard';
-import { SendOfferModal } from './SendOfferModal';
+import { SubmitQuoteDialog } from '@/components/jobs/SubmitQuoteDialog';
 import { JobFiltersPanel } from './JobFiltersPanel';
 import { EmptyJobBoardState } from './EmptyJobBoardState';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,7 +34,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('created_at');
   const [viewMode, setViewMode] = useState<'card' | 'compact'>('card');
-  const [selectedJobForOffer, setSelectedJobForOffer] = useState<string | null>(null);
+  const [selectedJobForOffer, setSelectedJobForOffer] = useState<{ jobId: string; jobTitle: string } | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   
   const [filters, setFilters] = useState({
@@ -218,7 +218,11 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
       return;
     }
     
-    setSelectedJobForOffer(jobId);
+    // Find the job to get its title
+    const job = jobs.find(j => j.id === jobId);
+    if (!job) return;
+    
+    setSelectedJobForOffer({ jobId, jobTitle: job.title });
   };
 
   const handleOfferSent = () => {
@@ -423,12 +427,13 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
         onFiltersChange={setFilters}
       />
 
-      {/* Send Offer Modal */}
+      {/* Submit Quote Dialog */}
       {selectedJobForOffer && (
-        <SendOfferModal
-          jobId={selectedJobForOffer}
-          onClose={() => setSelectedJobForOffer(null)}
-          onOfferSent={handleOfferSent}
+        <SubmitQuoteDialog
+          jobId={selectedJobForOffer.jobId}
+          jobTitle={selectedJobForOffer.jobTitle}
+          open={true}
+          onOpenChange={(open) => !open && setSelectedJobForOffer(null)}
         />
       )}
     </div>

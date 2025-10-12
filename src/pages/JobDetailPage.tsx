@@ -17,6 +17,7 @@ import { MilestoneReviewDialog } from '@/components/reviews/MilestoneReviewDialo
 import { ViewReviewDialog } from '@/components/reviews/ViewReviewDialog';
 import { JobPaymentButton } from '@/components/jobs/JobPaymentButton';
 import { JobPaymentStatus } from '@/components/jobs/JobPaymentStatus';
+import { JobQuotesView } from '@/components/jobs/JobQuotesView';
 
 interface Job {
   id: string;
@@ -368,12 +369,18 @@ export default function JobDetailPage() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList>
+            <TabsTrigger value="quotes">Quotes</TabsTrigger>
             <TabsTrigger value="applicants">Applicants ({applicants.length})</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="timeline">Timeline</TabsTrigger>
             <TabsTrigger value="files">Files ({clientFiles.length})</TabsTrigger>
             <TabsTrigger value="details">Job Details</TabsTrigger>
           </TabsList>
+
+          {/* Quotes Tab */}
+          <TabsContent value="quotes" className="space-y-4">
+            <JobQuotesView jobId={id!} isClient={true} />
+          </TabsContent>
 
           {/* Applicants Tab */}
           <TabsContent value="applicants" className="space-y-4">

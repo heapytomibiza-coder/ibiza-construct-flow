@@ -3808,6 +3808,68 @@ export type Database = {
           },
         ]
       }
+      job_quotes: {
+        Row: {
+          accepted_at: string | null
+          attachments: Json | null
+          created_at: string
+          currency: string
+          estimated_duration_hours: number | null
+          estimated_start_date: string | null
+          id: string
+          job_id: string
+          professional_id: string
+          proposal_message: string
+          quote_amount: number
+          rejected_at: string | null
+          rejection_reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          attachments?: Json | null
+          created_at?: string
+          currency?: string
+          estimated_duration_hours?: number | null
+          estimated_start_date?: string | null
+          id?: string
+          job_id: string
+          professional_id: string
+          proposal_message: string
+          quote_amount: number
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          attachments?: Json | null
+          created_at?: string
+          currency?: string
+          estimated_duration_hours?: number | null
+          estimated_start_date?: string | null
+          id?: string
+          job_id?: string
+          professional_id?: string
+          proposal_message?: string
+          quote_amount?: number
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_quotes_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_state_transitions: {
         Row: {
           created_at: string | null
