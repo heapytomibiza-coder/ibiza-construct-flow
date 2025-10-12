@@ -17,6 +17,7 @@ import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
 import { LanguageSwitcher } from '@/components/header/LanguageSwitcher';
 import { MobileOptimizedHeader } from '@/components/mobile/MobileOptimizedHeader';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { Badge } from '@/components/ui/badge';
 import { useConversationList } from '@/hooks/useConversationList';
 import { MessageSquare } from 'lucide-react';
@@ -84,7 +85,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             <LanguageSwitcher />
             {user ? (
               <>
-                {isProfessional() && <NotificationBell />}
+                <NotificationDropdown />
                 {(isClient() || isProfessional()) && (
                   <Button 
                     variant="ghost" 

@@ -1097,6 +1097,7 @@ export type Database = {
         Row: {
           client_id: string
           created_at: string
+          deprecated_at: string | null
           description: string | null
           id: string
           location_details: string | null
@@ -1115,6 +1116,7 @@ export type Database = {
         Insert: {
           client_id: string
           created_at?: string
+          deprecated_at?: string | null
           description?: string | null
           id?: string
           location_details?: string | null
@@ -1133,6 +1135,7 @@ export type Database = {
         Update: {
           client_id?: string
           created_at?: string
+          deprecated_at?: string | null
           description?: string | null
           id?: string
           location_details?: string | null
@@ -6223,6 +6226,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "professional_earnings_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "legacy_booking_requests"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "professional_earnings_contract_id_fkey"
             columns: ["contract_id"]
             isOneToOne: false
@@ -6454,6 +6464,13 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "booking_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "legacy_booking_requests"
             referencedColumns: ["id"]
           },
           {
@@ -9844,6 +9861,24 @@ export type Database = {
           from_currency: string | null
           rate: number | null
           to_currency: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
+      legacy_booking_requests: {
+        Row: {
+          client_id: string | null
+          client_name: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          professional_id: string | null
+          professional_name: string | null
+          professional_quote: number | null
+          service_id: string | null
+          status: string | null
+          title: string | null
+          total_estimated_price: number | null
           updated_at: string | null
         }
         Relationships: []
