@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom
 import { SafeAreaProvider } from "@/components/mobile/SafeAreaProvider";
 import { MobileGestures } from "@/components/mobile/MobileGestures";
 import { OfflineIndicator } from "@/components/common/OfflineIndicator";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { SkipToContent } from "@/components/accessibility/SkipToContent";
 import { useWebVitals } from "@/hooks/useWebVitals";
 import { useLanguage } from "@/hooks/useLanguage";
 import { ErrorBoundary } from "./components/error/ErrorBoundary";
@@ -177,7 +179,9 @@ function AppContent() {
         >
             <MobileGestures enableSwipeNavigation={true} enablePullToRefresh={true}>
               <ImpersonationBanner />
+              <SkipToContent />
               <OfflineIndicator />
+              <InstallPrompt />
               <MobileAppWrapper>
                 <Suspense fallback={<SkeletonLoader variant="card" />}>
                   <Routes>
