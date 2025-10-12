@@ -1,75 +1,75 @@
-import { supabase } from "@/integrations/supabase/client";
+/**
+ * Rate Limiter
+ * Phase 24: Advanced Security & Authorization System
+ */
 
-export interface RateLimitResult {
-  allowed: boolean;
-  remaining?: number;
-  reset_at?: string;
-  blocked_until?: string;
-  retry_after?: number;
-  reason?: string;
+import { RateLimitConfig, RateLimitStatus } from './types';
+
+interface RateLimitRecord {
+  count: number;
+  resetAt: number;
 }
 
-/**
- * Check rate limit for the current user on a specific endpoint
- */
-export async function checkRateLimit(
-  endpoint: string,
-  maxRequests: number = 100,
-  windowMinutes: number = 60
-): Promise<RateLimitResult> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      return { allowed: false, reason: 'unauthenticated' };
+export class RateLimiter {
+  private records: Map<string, RateLimitRecord> = new Map();
+  private config: RateLimitConfig;
+
+  constructor(config: RateLimitConfig) {
+    this.config = config;
+  }
+
+  isAllowed(key: string): boolean {
+    const now = Date.now();
+    const record = this.records.get(key);
+
+    if (!record || now >= record.resetAt) {
+      this.records.set(key, {
+        count: 1,
+        resetAt: now + this.config.windowMs,
+      });
+      return true;
     }
 
-    const { data, error } = await supabase.rpc('check_api_rate_limit' as any, {
-      p_user_id: user.id,
-      p_endpoint: endpoint,
-      p_max_requests: maxRequests,
-      p_window_minutes: windowMinutes
-    }) as { data: RateLimitResult | null; error: any };
-
-    if (error) {
-      console.error('Rate limit check failed:', error);
-      // Fail open - allow request but log the error
-      return { allowed: true };
+    if (record.count < this.config.maxRequests) {
+      record.count++;
+      return true;
     }
 
-    return data as RateLimitResult;
-  } catch (error) {
-    console.error('Rate limit check error:', error);
-    // Fail open - allow request but log the error
-    return { allowed: true };
+    return false;
+  }
+
+  getStatus(key: string): RateLimitStatus {
+    const now = Date.now();
+    const record = this.records.get(key);
+
+    if (!record || now >= record.resetAt) {
+      return {
+        limit: this.config.maxRequests,
+        remaining: this.config.maxRequests,
+        reset: now + this.config.windowMs,
+      };
+    }
+
+    return {
+      limit: this.config.maxRequests,
+      remaining: Math.max(0, this.config.maxRequests - record.count),
+      reset: record.resetAt,
+    };
+  }
+
+  reset(key: string): void {
+    this.records.delete(key);
   }
 }
 
-/**
- * Higher-order function to wrap API calls with rate limiting
- */
-export function withRateLimit<T>(
-  endpoint: string,
-  fn: () => Promise<T>,
-  options?: { maxRequests?: number; windowMinutes?: number }
-): () => Promise<T> {
-  return async () => {
-    const rateLimitResult = await checkRateLimit(
-      endpoint,
-      options?.maxRequests,
-      options?.windowMinutes
-    );
-
-    if (!rateLimitResult.allowed) {
-      throw new Error(
-        `Rate limit exceeded. ${
-          rateLimitResult.blocked_until
-            ? `Try again after ${new Date(rateLimitResult.blocked_until).toLocaleTimeString()}`
-            : 'Please try again later'
-        }`
-      );
-    }
-
-    return fn();
+export function createRateLimiter(preset: 'strict' | 'moderate' | 'lenient'): RateLimiter {
+  const presets: Record<string, RateLimitConfig> = {
+    strict: { maxRequests: 10, windowMs: 60000 },
+    moderate: { maxRequests: 30, windowMs: 60000 },
+    lenient: { maxRequests: 100, windowMs: 60000 },
   };
+  return new RateLimiter(presets[preset]);
 }
+
+export const apiRateLimiter = createRateLimiter('moderate');
+export const authRateLimiter = createRateLimiter('strict');

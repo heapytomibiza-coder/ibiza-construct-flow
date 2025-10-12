@@ -49,6 +49,9 @@ export * from './cache';
 // Phase 22: Analytics Hooks
 export * from './analytics';
 
+// Phase 24: Security Hooks
+export * from './security';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
