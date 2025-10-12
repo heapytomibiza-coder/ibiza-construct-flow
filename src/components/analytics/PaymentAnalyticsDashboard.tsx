@@ -6,7 +6,7 @@ import { usePaymentAnalytics } from '@/hooks/usePaymentAnalytics';
 import { RevenueChart } from './RevenueChart';
 import { PaymentMethodChart } from './PaymentMethodChart';
 import { TopRevenueSourcesTable } from './TopRevenueSourcesTable';
-import { AnalyticsMetricCard } from './AnalyticsMetricCard';
+import { MetricCard } from './MetricCard';
 import { Download, TrendingUp, CreditCard, CheckCircle, XCircle, DollarSign, Percent } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -86,25 +86,25 @@ export function PaymentAnalyticsDashboard() {
       {/* Key Metrics */}
       {analytics && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <AnalyticsMetricCard
+          <MetricCard
             title="Total Revenue"
             value={`$${analytics.total_revenue.toFixed(2)}`}
             icon={DollarSign}
             trend={analytics.total_revenue > 0 ? 'up' : 'neutral'}
           />
-          <AnalyticsMetricCard
+          <MetricCard
             title="Total Payments"
             value={analytics.total_payments.toString()}
             icon={CreditCard}
             description={`${analytics.successful_payments} successful`}
           />
-          <AnalyticsMetricCard
+          <MetricCard
             title="Conversion Rate"
             value={`${analytics.conversion_rate.toFixed(1)}%`}
             icon={TrendingUp}
             trend={analytics.conversion_rate > 80 ? 'up' : analytics.conversion_rate > 50 ? 'neutral' : 'down'}
           />
-          <AnalyticsMetricCard
+          <MetricCard
             title="Avg Transaction"
             value={`$${analytics.average_transaction_value.toFixed(2)}`}
             icon={DollarSign}

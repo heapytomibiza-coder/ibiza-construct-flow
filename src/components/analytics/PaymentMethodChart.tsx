@@ -43,9 +43,11 @@ export function PaymentMethodChart({ data }: PaymentMethodChartProps) {
           cy="50%"
           labelLine={false}
           label={({ name, percentage }) => `${name}: ${percentage}%`}
-          outerRadius={80}
+          outerRadius={90}
           fill="hsl(var(--primary))"
           dataKey="value"
+          strokeWidth={2}
+          stroke="hsl(var(--background))"
         >
           {chartData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -56,9 +58,17 @@ export function PaymentMethodChart({ data }: PaymentMethodChartProps) {
             backgroundColor: 'hsl(var(--card))',
             border: '1px solid hsl(var(--border))',
             borderRadius: '8px',
+            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+          }}
+          labelStyle={{ color: 'hsl(var(--foreground))' }}
+          itemStyle={{ color: 'hsl(var(--foreground))' }}
+        />
+        <Legend 
+          wrapperStyle={{ 
+            fontSize: '14px',
+            color: 'hsl(var(--foreground))'
           }}
         />
-        <Legend />
       </PieChart>
     </ResponsiveContainer>
   );

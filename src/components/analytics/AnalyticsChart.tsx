@@ -23,22 +23,32 @@ export const AnalyticsChart = ({
 
   return (
     <div className="w-full h-[300px]">
-      {title && <h3 className="text-sm font-medium mb-4">{title}</h3>}
+      {title && <h3 className="text-sm font-semibold mb-4 text-foreground">{title}</h3>}
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke="hsl(var(--muted))" 
+            opacity={0.3}
+          />
           <XAxis
             dataKey={xKey}
             tickFormatter={formatXAxis}
-            className="text-xs"
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+            stroke="hsl(var(--border))"
           />
-          <YAxis className="text-xs" />
+          <YAxis 
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+            stroke="hsl(var(--border))"
+          />
           <Tooltip
             contentStyle={{
               backgroundColor: 'hsl(var(--card))',
               border: '1px solid hsl(var(--border))',
-              borderRadius: '6px',
+              borderRadius: '8px',
+              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
             }}
+            labelStyle={{ color: 'hsl(var(--foreground))' }}
             labelFormatter={formatXAxis}
           />
           <Line
@@ -47,7 +57,7 @@ export const AnalyticsChart = ({
             stroke={color}
             strokeWidth={2}
             dot={{ fill: color, r: 4 }}
-            activeDot={{ r: 6 }}
+            activeDot={{ r: 6, stroke: color, strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>

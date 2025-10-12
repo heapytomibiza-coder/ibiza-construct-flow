@@ -21,32 +21,41 @@ export const RevenueChart = ({ data, showForecast }: RevenueChartProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Revenue Trend</CardTitle>
+        <CardTitle className="text-lg font-semibold">Revenue Trend</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="hsl(var(--muted))" 
+              opacity={0.3}
+            />
             <XAxis 
               dataKey="date"
-              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+              stroke="hsl(var(--border))"
             />
             <YAxis 
-              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+              stroke="hsl(var(--border))"
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '8px'
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
               }}
+              labelStyle={{ color: 'hsl(var(--foreground))' }}
             />
             <Line 
               type="monotone" 
               dataKey="revenue" 
               stroke="hsl(var(--primary))" 
               strokeWidth={2}
-              dot={{ fill: 'hsl(var(--primary))' }}
+              dot={{ fill: 'hsl(var(--primary))', r: 4 }}
+              activeDot={{ r: 6, stroke: 'hsl(var(--primary))', strokeWidth: 2 }}
             />
           </LineChart>
         </ResponsiveContainer>
