@@ -23,8 +23,8 @@ export const preloadRoute = (routePath: string) => {
   const routeMap: Record<string, () => Promise<any>> = {
     '/dashboard/pro': () => import('@/components/dashboards/UnifiedProfessionalDashboard'),
     '/dashboard/client': () => import('@/components/dashboards/UnifiedClientDashboard'),  
-    '/dashboard/admin': () => import('@/pages/AdminDashboardPage'),
-    '/admin': () => import('@/pages/admin/Dashboard'),
+    '/dashboard/admin': () => import('@/pages/admin/AdminDashboardPage'),
+    '/admin': () => import('@/pages/admin/AdminDashboardPage'),
     '/post': () => import('@/pages/PostJob'),
     '/discovery': () => import('@/pages/Discovery'),
   };

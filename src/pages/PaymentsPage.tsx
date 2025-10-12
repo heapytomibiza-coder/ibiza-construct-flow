@@ -19,12 +19,8 @@ import { CreditCard, Wallet, History, BarChart3, Bell, Settings, Receipt, Trendi
 
 export const PaymentsPage = () => {
   const { user } = useAuth();
-
-  if (!user) {
-    return null;
-  }
-
-  // Determine if user is a professional based on their active role
+  
+  // Move hooks BEFORE any conditional returns (React Rules of Hooks)
   const [isProfessional, setIsProfessional] = React.useState(false);
 
   React.useEffect(() => {
@@ -39,6 +35,11 @@ export const PaymentsPage = () => {
     };
     checkRole();
   }, [user]);
+
+  // Now safe to return early after all hooks
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-sand pt-20 pb-20">

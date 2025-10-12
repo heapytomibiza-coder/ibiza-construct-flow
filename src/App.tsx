@@ -40,7 +40,7 @@ const RoleSwitcher = React.lazy(() => import("./pages/RoleSwitcher"));
 const RouteGuard = React.lazy(() => import("./components/RouteGuard"));
 const UnifiedClientDashboard = React.lazy(() => import("./components/dashboards/UnifiedClientDashboard"));
 const UnifiedProfessionalDashboard = React.lazy(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
-const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
+const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboardPage"));
 
 // Admin Pages
 const AdminHome = React.lazy(() => import("./pages/admin/AdminHome"));
@@ -59,7 +59,6 @@ const AdminVerificationsPage = React.lazy(() => import("./pages/AdminVerificatio
 const DisputeAnalyticsPage = React.lazy(() => import("./pages/admin/DisputeAnalyticsPage"));
 const AdminDisputeDetailPage = React.lazy(() => import("./pages/admin/AdminDisputeDetailPage"));
 const AuditLog = React.lazy(() => import("./pages/admin/AuditLog"));
-const AdminDashboard = React.lazy(() => import("./pages/admin/Dashboard"));
 const AdminUsers = React.lazy(() => import("./pages/admin/Users"));
 const AdminServices = React.lazy(() => import("./pages/admin/Services"));
 const AdminJobs = React.lazy(() => import("./pages/admin/Jobs"));
@@ -90,6 +89,7 @@ const PostJob = React.lazy(() => import("./pages/PostJob"));
 const JobBoardPage = React.lazy(() => import("./pages/JobBoardPage"));
 const PostJobSuccessPage = React.lazy(() => import("./pages/PostJobSuccessPage"));
 const Discovery = React.lazy(() => import("./pages/Discovery"));
+const DiscoveryPage = React.lazy(() => import("./pages/DiscoveryPage"));
 const BrowseProfessionalsPage = React.lazy(() => import("./pages/BrowseProfessionalsPage"));
 const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
 const ProfessionalOnboardingPage = React.lazy(() => import("./pages/ProfessionalOnboardingPage"));
@@ -195,6 +195,7 @@ function AppContent() {
                     <Route path="/" element={<Index />} />
                     <Route path="/calculator" element={<Calculator />} />
                     <Route path="/discovery" element={<Discovery />} />
+                    <Route path="/jobs-discovery" element={<DiscoveryPage />} />
                     <Route path="/professionals" element={<BrowseProfessionalsPage />} />
                     <Route path="/book" element={<BookingPage />} />
                     <Route path="/specialist-categories" element={<SpecialistCategories />} />
@@ -362,7 +363,7 @@ function AppContent() {
                     } />
                     <Route path="/dashboard/admin" element={
                       <RouteGuard requiredRole="admin">
-                        <AdminDashboardPage />
+                        <AdminDashboard />
                       </RouteGuard>
                     } />
                     
