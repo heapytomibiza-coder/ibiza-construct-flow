@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { SubscriptionStatusWidget } from '@/components/marketplace/SubscriptionStatusWidget';
 import { ProfileCompletionTracker } from '@/components/professional/ProfileCompletionTracker';
 import { VerificationStatusCard } from '@/components/professional/VerificationStatusCard';
-import { ProfessionalQuotesSection } from '@/components/booking/ProfessionalQuotesSection';
+import { ProfessionalJobQuotesSection } from '@/components/professional/ProfessionalJobQuotesSection';
 import { ProfessionalEarningsSection } from '@/components/payment/ProfessionalEarningsSection';
 import { ProfessionalReviewsManagement } from '@/components/reviews/ProfessionalReviewsManagement';
 import { CalendarView } from '@/components/calendar/CalendarView';
@@ -399,7 +399,7 @@ const EarningsTab = ({ userId }: { userId: string }) => (
 // Quotes Tab Component
 const QuotesTab = ({ userId }: { userId: string }) => (
   <div className="space-y-6">
-    <ProfessionalQuotesSection professionalId={userId} />
+    <ProfessionalJobQuotesSection professionalId={userId} />
   </div>
 );
 
