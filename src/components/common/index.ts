@@ -1,5 +1,5 @@
 // Common Shared Components Barrel Export
-// Phase 9: Admin & Dashboard Components Organization
+// Phase 9-10: Admin & Dashboard Components Organization + Production Readiness
 
 // Navigation & Layout
 export { Breadcrumbs } from './Breadcrumbs';
@@ -13,3 +13,8 @@ export { default as Cascader } from './Cascader';
 
 // Onboarding & Tours
 export { Tour, useTour } from './Tour';
+
+// Phase 10: Production Readiness
+export { ErrorBoundary } from './ErrorBoundary';
+export * from './LoadingStates';
+export * from './EmptyStates';
