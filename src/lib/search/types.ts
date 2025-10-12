@@ -86,6 +86,39 @@ export interface SearchConfig {
   boostFields?: Record<string, number>;
   minSearchLength?: number;
   maxResults?: number;
+  stemming?: boolean;
+}
+
+export interface Facet {
+  field: string;
+  label: string;
+  options: FacetOption[];
+  type?: 'checkbox' | 'radio' | 'range' | 'select';
+}
+
+export interface FacetOption {
+  value: string;
+  label: string;
+  count: number;
+}
+
+export interface SortOption {
+  field: string;
+  direction: 'asc' | 'desc';
+}
+
+export interface SearchOptions {
+  query: string;
+  filters?: SearchFilter[];
+  sort?: SortOption;
+  page?: number;
+  limit?: number;
+}
+
+export interface SearchHistoryItem {
+  id: string;
+  query: string;
+  timestamp: Date;
 }
 
 export interface FilterGroup {

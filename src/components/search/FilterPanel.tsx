@@ -88,7 +88,7 @@ export function FilterPanel({
                   removable
                   onRemove={() => onFilterRemove(filter.field)}
                 >
-                  {filter.label || filter.field}
+                  {filter.field}
                 </Badge>
               ))}
             </div>
