@@ -52,6 +52,9 @@ export * from './analytics';
 // Phase 24: Security Hooks
 export * from './security';
 
+// Phase 25: Notification Hooks  
+export { useNotifications as useNotificationsList, useNotificationPreferences } from './notifications';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
