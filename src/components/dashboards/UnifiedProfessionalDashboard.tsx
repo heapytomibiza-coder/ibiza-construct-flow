@@ -5,6 +5,9 @@ import { useDashboardPreference } from '@/hooks/useDashboardPreference';
 import SimpleProfessionalDashboard from './SimpleProfessionalDashboard';
 import ProfessionalDashboard from './ProfessionalDashboard';
 import { OnboardingGate } from '@/components/professional/OnboardingGate';
+import { AIRecommendations } from '@/components/ai/AIRecommendations';
+import { ProfessionalAnalytics } from '@/components/analytics/ProfessionalAnalytics';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedProfessionalDashboardProps {
   user?: any;
@@ -63,7 +66,25 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
 
   return (
     <OnboardingGate userId={user.id}>
-      <DashboardContent />
+      <Tabs defaultValue="dashboard" className="w-full">
+        <TabsList>
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="recommendations">AI Insights</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="dashboard" className="mt-6">
+          <DashboardContent />
+        </TabsContent>
+        
+        <TabsContent value="analytics" className="mt-6">
+          <ProfessionalAnalytics professionalId={user.id} />
+        </TabsContent>
+        
+        <TabsContent value="recommendations" className="mt-6">
+          <AIRecommendations userId={user.id} userType="professional" />
+        </TabsContent>
+      </Tabs>
     </OnboardingGate>
   );
 };

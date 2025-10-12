@@ -5,6 +5,8 @@ import { useDashboardPreference } from '@/hooks/useDashboardPreference';
 import SimpleClientDashboard from './SimpleClientDashboard';
 import EnhancedClientDashboard from './EnhancedClientDashboard';
 import ClientDashboard from './ClientDashboard';
+import { AIRecommendations } from '@/components/ai/AIRecommendations';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedClientDashboardProps {
   user?: any;
@@ -44,32 +46,51 @@ const UnifiedClientDashboard: React.FC<UnifiedClientDashboardProps> = ({
     );
   }
 
-  // Render appropriate dashboard based on mode and feature flags
-  if (dashboardMode === 'simple') {
+  // Render appropriate dashboard with tabs
+  const DashboardContent = () => {
+    if (dashboardMode === 'simple') {
+      return (
+        <SimpleClientDashboard
+          user={user}
+          profile={profile}
+          onToggleMode={handleModeToggle}
+        />
+      );
+    }
+
+    if (dashboardMode === 'enhanced' && enhancedDashboardEnabled) {
+      return (
+        <EnhancedClientDashboard
+          user={user}
+          profile={profile}
+        />
+      );
+    }
+
+    // Fallback to classic dashboard
     return (
-      <SimpleClientDashboard
+      <ClientDashboard
         user={user}
         profile={profile}
-        onToggleMode={handleModeToggle}
       />
     );
-  }
+  };
 
-  if (dashboardMode === 'enhanced' && enhancedDashboardEnabled) {
-    return (
-      <EnhancedClientDashboard
-        user={user}
-        profile={profile}
-      />
-    );
-  }
-
-  // Fallback to classic dashboard
   return (
-    <ClientDashboard
-      user={user}
-      profile={profile}
-    />
+    <Tabs defaultValue="dashboard" className="w-full">
+      <TabsList>
+        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+        <TabsTrigger value="recommendations">AI Insights</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="dashboard" className="mt-6">
+        <DashboardContent />
+      </TabsContent>
+      
+      <TabsContent value="recommendations" className="mt-6">
+        <AIRecommendations userId={user.id} userType="client" />
+      </TabsContent>
+    </Tabs>
   );
 };
 
