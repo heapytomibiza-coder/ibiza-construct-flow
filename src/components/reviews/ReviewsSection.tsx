@@ -14,7 +14,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   professionalId,
   canRespond = false,
 }) => {
-  const { reviews, loading, stats, respondToReview } = useReviews({ professionalId });
+  const { reviews, loading, stats, respondToReview } = useReviews(professionalId, 'professional');
   const [sortBy, setSortBy] = useState<'recent' | 'highest' | 'lowest'>('recent');
 
   const sortedReviews = [...reviews].sort((a, b) => {
@@ -128,12 +128,11 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
           ) : (
             <div className="space-y-4">
               {sortedReviews.map((review) => (
-                <ReviewCard
-                  key={review.id}
-                  review={review}
-                  canRespond={canRespond}
-                  onRespond={respondToReview}
-                />
+              <ReviewCard
+                key={review.id}
+                review={review}
+                onRespond={canRespond ? respondToReview : undefined}
+              />
               ))}
             </div>
           )}

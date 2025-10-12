@@ -264,9 +264,11 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
           revieweeName={professionalName}
           onSubmit={(rating, comment) => {
             submitReview({
+              jobId: contract.job_id,
               contractId: contract.id,
               revieweeId: contract?.tasker_id || '',
               rating,
+              title: `Review for ${professionalName}`,
               comment,
             });
             setShowReviewForm(false);

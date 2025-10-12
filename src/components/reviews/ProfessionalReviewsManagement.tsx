@@ -11,7 +11,7 @@ interface ProfessionalReviewsManagementProps {
 export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManagementProps> = ({
   professionalId,
 }) => {
-  const { reviews, loading, stats, respondToReview } = useReviews({ professionalId });
+  const { reviews, loading, stats, respondToReview } = useReviews(professionalId, 'professional');
 
   const pendingResponses = reviews.filter(r => !r.response_text);
 
@@ -71,12 +71,11 @@ export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManageme
           <CardContent>
             <div className="space-y-4">
               {pendingResponses.map((review) => (
-                <ReviewCard
-                  key={review.id}
-                  review={review}
-                  canRespond={true}
-                  onRespond={respondToReview}
-                />
+            <ReviewCard
+              key={review.id}
+              review={review}
+              onRespond={respondToReview}
+            />
               ))}
             </div>
           </CardContent>
@@ -100,7 +99,6 @@ export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManageme
                 <ReviewCard
                   key={review.id}
                   review={review}
-                  canRespond={!review.response_text}
                   onRespond={respondToReview}
                 />
               ))}

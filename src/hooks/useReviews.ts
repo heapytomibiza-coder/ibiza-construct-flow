@@ -4,16 +4,20 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface Review {
   id: string;
-  job_id?: string;
+  job_id: string;
   contract_id?: string;
   reviewer_id: string;
   reviewee_id: string;
   rating: number;
+  title?: string;
   comment?: string;
-  response?: string;
+  response_text?: string;
+  response_at?: string;
   is_verified: boolean;
   created_at: string;
   updated_at: string;
+  category_ratings?: any;
+  helpful_count?: number;
 }
 
 export const useReviews = (entityId?: string, entityType: 'job' | 'contract' | 'professional' = 'professional') => {
@@ -55,22 +59,26 @@ export const useReviews = (entityId?: string, entityType: 'job' | 'contract' | '
       contractId,
       revieweeId,
       rating,
+      title,
       comment,
     }: {
-      jobId?: string;
+      jobId: string;
       contractId?: string;
       revieweeId: string;
       rating: number;
+      title?: string;
       comment?: string;
     }) => {
       const { data, error } = await supabase
         .from("reviews")
         .insert({
           job_id: jobId,
-          contract_id: contractId,
+          contract_id: contractId || null,
           reviewee_id: revieweeId,
+          reviewer_id: (await supabase.auth.getUser()).data.user?.id || '',
           rating,
-          comment,
+          title: title || null,
+          comment: comment || null,
           is_verified: true,
         })
         .select()
@@ -99,7 +107,10 @@ export const useReviews = (entityId?: string, entityType: 'job' | 'contract' | '
     mutationFn: async ({ reviewId, response }: { reviewId: string; response: string }) => {
       const { data, error} = await supabase
         .from("reviews")
-        .update({ response })
+        .update({ 
+          response_text: response,
+          response_at: new Date().toISOString()
+        })
         .eq("id", reviewId)
         .select()
         .single();
@@ -135,12 +146,22 @@ export const useReviews = (entityId?: string, entityType: 'job' | 'contract' | '
   return {
     reviews,
     isLoading,
+    loading: isLoading, // Alias for compatibility
     submitReview: submitReview.mutate,
     isSubmitting: submitReview.isPending,
-    respondToReview: respondToReview.mutate,
+    respondToReview: (reviewId: string, response: string) => 
+      respondToReview.mutate({ reviewId, response }),
     isResponding: respondToReview.isPending,
     averageRating,
     ratingDistribution,
     totalReviews: reviews?.length || 0,
+    stats: {
+      averageRating,
+      average_rating: averageRating, // Alias for compatibility
+      totalReviews: reviews?.length || 0,
+      total_reviews: reviews?.length || 0, // Alias for compatibility  
+      ratingDistribution,
+      rating_distribution: ratingDistribution, // Alias for compatibility
+    },
   };
 };

@@ -21,7 +21,7 @@ export const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({
   professionalId,
   professionalName,
 }) => {
-  const { submitReview } = useReviews({});
+  const { submitReview } = useReviews(contractId, 'contract');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -36,8 +36,8 @@ export const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({
     setSubmitting(true);
     try {
       await submitReview({
-        job_id: contractId, // Using contract_id as job_id for now
-        reviewee_id: professionalId,
+        jobId: contractId,
+        revieweeId: professionalId,
         rating,
         title: `Review for ${professionalName}`,
         comment: comment.trim(),

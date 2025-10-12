@@ -12,7 +12,7 @@ interface ReviewCardProps {
     id: string;
     rating: number;
     comment?: string;
-    response?: string;
+    response_text?: string;
     created_at: string;
     reviewer: {
       id: string;
@@ -25,7 +25,7 @@ interface ReviewCardProps {
       full_name?: string;
       display_name?: string;
     };
-  };
+  } | any;
   onRespond?: (reviewId: string, response: string) => void;
   isResponding?: boolean;
 }
@@ -35,7 +35,7 @@ export const ReviewCard = ({ review, onRespond, isResponding }: ReviewCardProps)
   const [showResponseForm, setShowResponseForm] = useState(false);
   const [responseText, setResponseText] = useState('');
 
-  const canRespond = user?.id === review.reviewee.id && !review.response && onRespond;
+  const canRespond = user?.id === review.reviewee?.id && !review.response_text && onRespond;
 
   const handleSubmitResponse = () => {
     if (responseText.trim() && onRespond) {
@@ -83,13 +83,13 @@ export const ReviewCard = ({ review, onRespond, isResponding }: ReviewCardProps)
             <p className="text-sm text-foreground mb-4">{review.comment}</p>
           )}
 
-          {review.response && (
+          {review.response_text && (
             <div className="bg-muted rounded-lg p-4 mt-4">
               <div className="flex items-center gap-2 mb-2">
                 <MessageSquare className="w-4 h-4 text-muted-foreground" />
-                <p className="text-sm font-medium">Response from {review.reviewee.full_name || review.reviewee.display_name}</p>
+                <p className="text-sm font-medium">Response from {review.reviewee?.full_name || review.reviewee?.display_name}</p>
               </div>
-              <p className="text-sm text-muted-foreground">{review.response}</p>
+              <p className="text-sm text-muted-foreground">{review.response_text}</p>
             </div>
           )}
 
