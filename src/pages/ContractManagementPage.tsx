@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { FileText, DollarSign, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { ReviewPrompt } from '@/components/reviews/ReviewPrompt';
 
 const statusColors = {
   pending: 'bg-yellow-500',
@@ -23,6 +24,17 @@ export default function ContractManagementPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('all');
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Get current user
+  useQuery({
+    queryKey: ['current-user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+      return user;
+    },
+  });
 
   const { data: contracts, isLoading } = useQuery({
     queryKey: ['contracts'],
@@ -41,11 +53,12 @@ export default function ContractManagementPage() {
       // Fetch related data separately
       const enrichedContracts = await Promise.all(
         data.map(async (contract) => {
-          const [jobRes, clientRes, proRes, milestonesRes] = await Promise.all([
+          const [jobRes, clientRes, proRes, milestonesRes, reviewRes] = await Promise.all([
             supabase.from('jobs').select('id, title, description').eq('id', contract.job_id).maybeSingle(),
             supabase.from('profiles').select('id, full_name, avatar_url').eq('id', contract.client_id).maybeSingle(),
             supabase.from('profiles').select('id, full_name, avatar_url').eq('id', contract.tasker_id).maybeSingle(),
             supabase.from('escrow_milestones').select('*').eq('contract_id', contract.id),
+            supabase.from('professional_reviews').select('id').eq('professional_id', contract.tasker_id).eq('client_id', user.id).maybeSingle(),
           ]);
 
           return {
@@ -54,6 +67,7 @@ export default function ContractManagementPage() {
             client: clientRes.data,
             professional: proRes.data,
             milestones: milestonesRes.data || [],
+            hasReview: !!reviewRes.data,
           };
         })
       );
@@ -172,6 +186,21 @@ export default function ContractManagementPage() {
                             </div>
                           ))}
                         </div>
+                      </div>
+                    )}
+
+                    {/* Review Section - For Clients after contract completion */}
+                    {contract.escrow_status === 'released' && 
+                     currentUserId === contract.client_id && 
+                     !contract.hasReview && 
+                     contract.professional && (
+                      <div className="mt-4 pt-4 border-t">
+                        <ReviewPrompt
+                          contractId={contract.id}
+                          professionalId={contract.tasker_id}
+                          professionalName={contract.professional.full_name}
+                          onReviewSubmitted={() => queryClient.invalidateQueries({ queryKey: ['contracts'] })}
+                        />
                       </div>
                     )}
 
