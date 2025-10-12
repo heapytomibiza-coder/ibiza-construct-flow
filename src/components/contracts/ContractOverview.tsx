@@ -8,6 +8,8 @@ import { FileText, DollarSign, Calendar, User, CheckCircle, Clock, AlertCircle }
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { SplitMilestonesDialog } from './SplitMilestonesDialog';
+import { FundEscrowDialog } from './FundEscrowDialog';
+import { MilestonesList } from './MilestonesList';
 import { useAuth } from '@/hooks/useAuth';
 
 interface ContractOverviewProps {
@@ -19,6 +21,7 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
   const { user } = useAuth();
   const { contract, contractLoading } = useContract(jobId);
   const [showSplitDialog, setShowSplitDialog] = useState(false);
+  const [showFundDialog, setShowFundDialog] = useState(false);
 
   if (contractLoading) {
     return (
@@ -57,6 +60,7 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
 
   const needsFunding = contract.escrow_status === 'pending';
   const canSplit = milestones.length === 1 && isClient && needsFunding;
+  const userRole = isProfessional ? 'professional' : isClient ? 'client' : null;
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -135,10 +139,10 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
             </div>
           </div>
 
-          {/* Milestones Summary */}
+          {/* Milestones */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-medium">Payment Milestones ({milestones.length})</h4>
+              <h4 className="font-medium">Payment Milestones</h4>
               {canSplit && (
                 <Button 
                   variant="outline" 
@@ -150,30 +154,7 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
               )}
             </div>
 
-            <div className="space-y-2">
-              {milestones.map((milestone: any, index: number) => (
-                <div key={milestone.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <div className="font-medium">{milestone.description}</div>
-                      <div className="text-sm text-muted-foreground">
-                        €{milestone.amount.toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                  <Badge variant={
-                    milestone.status === 'approved' ? 'default' : 
-                    milestone.status === 'completed' ? 'secondary' : 
-                    'outline'
-                  }>
-                    {milestone.status}
-                  </Badge>
-                </div>
-              ))}
-            </div>
+            {userRole && <MilestonesList contractId={contract.id} userRole={userRole} />}
           </div>
 
           {/* Action Buttons */}
@@ -189,7 +170,7 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
                 </div>
               </div>
               <Button 
-                onClick={onFundEscrow}
+                onClick={() => setShowFundDialog(true)}
                 className="w-full"
                 size="lg"
               >
@@ -220,6 +201,14 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
           totalAmount={contract.agreed_amount}
         />
       )}
+
+      <FundEscrowDialog
+        open={showFundDialog}
+        onOpenChange={setShowFundDialog}
+        contractId={contract.id}
+        amount={contract.agreed_amount}
+        jobTitle={contract.job_id}
+      />
     </>
   );
 }
