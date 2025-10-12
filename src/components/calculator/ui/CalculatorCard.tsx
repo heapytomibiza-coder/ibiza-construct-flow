@@ -10,7 +10,7 @@ export const CalculatorCard = ({ className, ...props }: CalculatorCardProps) => 
   return (
     <Card
       className={cn(
-        "border-none bg-gradient-to-br from-indigo-500/10 via-background to-background shadow-xl",
+        "border-2 border-primary/10 bg-gradient-to-br from-primary/5 via-background to-background shadow-lg hover:shadow-xl transition-shadow",
         className
       )}
       {...props}
