@@ -1,151 +1,131 @@
-import { Search, X, Filter, Save } from 'lucide-react';
+/**
+ * Search Bar Component
+ * Phase 17: Advanced Search & Filtering System
+ * 
+ * Enhanced search input with autocomplete and history
+ */
+
+import { useState, useRef, useEffect } from 'react';
+import { Search, X, Clock, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { useState } from 'react';
-import { Label } from '@/components/ui/label';
-import { useSavedSearches } from '@/hooks/useSavedSearches';
-import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface SearchBarProps {
-  query: string;
-  onQueryChange: (query: string) => void;
-  searchType: 'professional' | 'job' | 'service';
-  onSearchTypeChange: (type: 'professional' | 'job' | 'service') => void;
-  onClear: () => void;
-  onFilterClick: () => void;
-  activeFiltersCount?: number;
-  filters?: any;
+  value: string;
+  onChange: (value: string) => void;
+  onSearch?: (value: string) => void;
+  placeholder?: string;
+  suggestions?: string[];
+  recentSearches?: string[];
+  className?: string;
 }
 
-export const SearchBar = ({
-  query,
-  onQueryChange,
-  searchType,
-  onSearchTypeChange,
-  onClear,
-  onFilterClick,
-  activeFiltersCount = 0,
-  filters
-}: SearchBarProps) => {
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [searchName, setSearchName] = useState('');
-  const { saveSearch } = useSavedSearches();
-  const { toast } = useToast();
+export function SearchBar({
+  value,
+  onChange,
+  onSearch,
+  placeholder = 'Search...',
+  suggestions = [],
+  recentSearches = [],
+  className,
+}: SearchBarProps) {
+  const [isFocused, setIsFocused] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSaveSearch = async () => {
-    if (!searchName.trim()) {
-      toast({
-        title: 'Name required',
-        description: 'Please enter a name for this search',
-        variant: 'destructive'
-      });
-      return;
+  const hasContent = value.trim().length > 0;
+  const hasSuggestions = suggestions.length > 0 || recentSearches.length > 0;
+
+  useEffect(() => {
+    setShowSuggestions(isFocused && (hasContent || recentSearches.length > 0));
+  }, [isFocused, hasContent, recentSearches.length]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (hasContent) {
+      onSearch?.(value);
+      setShowSuggestions(false);
     }
+  };
 
-    await saveSearch(searchName, query, searchType, filters || {}, false);
-    setSaveDialogOpen(false);
-    setSearchName('');
+  const handleClear = () => {
+    onChange('');
+    inputRef.current?.focus();
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    onChange(suggestion);
+    onSearch?.(suggestion);
+    setShowSuggestions(false);
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex gap-2">
-        <Select value={searchType} onValueChange={onSearchTypeChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="professional">Professionals</SelectItem>
-            <SelectItem value="job">Jobs</SelectItem>
-            <SelectItem value="service">Services</SelectItem>
-          </SelectContent>
-        </Select>
+    <div className={cn('relative', className)}>
+      <form onSubmit={handleSubmit} className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+          placeholder={placeholder}
+          className="pl-10 pr-10"
+        />
+        {hasContent && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleClear}
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </form>
 
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={`Search ${searchType}s...`}
-            value={query}
-            onChange={(e) => onQueryChange(e.target.value)}
-            className="pl-10 pr-10"
-          />
-          {query && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-              onClick={onClear}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+      {showSuggestions && hasSuggestions && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-popover border rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
+          {recentSearches.length > 0 && !hasContent && (
+            <div className="p-2">
+              <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>Recent Searches</span>
+              </div>
+              {recentSearches.map((search, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(search)}
+                  className="w-full text-left px-3 py-2 hover:bg-accent rounded-sm transition-colors"
+                >
+                  {search}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {suggestions.length > 0 && hasContent && (
+            <div className="p-2">
+              <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                <TrendingUp className="h-4 w-4" />
+                <span>Suggestions</span>
+              </div>
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="w-full text-left px-3 py-2 hover:bg-accent rounded-sm transition-colors"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           )}
         </div>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onFilterClick}
-          className="relative"
-        >
-          <Filter className="h-4 w-4" />
-          {activeFiltersCount > 0 && (
-            <Badge
-              variant="destructive"
-              className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
-            >
-              {activeFiltersCount}
-            </Badge>
-          )}
-        </Button>
-
-        {query && (
-          <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Save className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Save Search</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="search-name">Search Name</Label>
-                  <Input
-                    id="search-name"
-                    placeholder="My saved search"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <p>Query: {query}</p>
-                  <p>Type: {searchType}</p>
-                </div>
-                <Button onClick={handleSaveSearch} className="w-full">
-                  Save Search
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
+      )}
     </div>
   );
-};
+}

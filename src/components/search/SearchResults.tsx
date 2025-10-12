@@ -1,113 +1,84 @@
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star, MapPin, CheckCircle2, Loader2 } from 'lucide-react';
-import { SearchResult } from '@/hooks/useSearch';
-import { Button } from '@/components/ui/button';
+/**
+ * Search Results Component
+ * Phase 17: Advanced Search & Filtering System
+ * 
+ * Display search results with pagination
+ */
 
-interface SearchResultsProps {
-  results: SearchResult[];
-  loading: boolean;
-  onResultClick?: (result: SearchResult) => void;
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+interface SearchResultsProps<T> {
+  results: T[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+  onNextPage: () => void;
+  onPreviousPage: () => void;
+  renderItem: (item: T, index: number) => React.ReactNode;
+  emptyMessage?: string;
 }
 
-export const SearchResults = ({
+export function SearchResults<T>({
   results,
-  loading,
-  onResultClick
-}: SearchResultsProps) => {
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  total,
+  page,
+  limit,
+  hasMore,
+  onNextPage,
+  onPreviousPage,
+  renderItem,
+  emptyMessage = 'No results found',
+}: SearchResultsProps<T>) {
+  const startIndex = (page - 1) * limit + 1;
+  const endIndex = Math.min(page * limit, total);
 
   if (results.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">No results found</p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Try adjusting your search or filters
-        </p>
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <p className="text-muted-foreground">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="text-sm text-muted-foreground">
-        {results.length} result{results.length !== 1 ? 's' : ''} found
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <span>
+          Showing {startIndex}-{endIndex} of {total} results
+        </span>
       </div>
 
-      <div className="grid gap-4">
-        {results.map((result) => (
-          <Card
-            key={result.id}
-            className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => onResultClick?.(result)}
+      <div className="space-y-2">
+        {results.map((item, index) => renderItem(item, index))}
+      </div>
+
+      {total > limit && (
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onPreviousPage}
+            disabled={page === 1}
           >
-            <div className="flex gap-4">
-              {result.type === 'professional' && (
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={result.avatar} alt={result.title} />
-                  <AvatarFallback>{result.title.slice(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-              )}
-
-              <div className="flex-1 space-y-2">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">{result.title}</h3>
-                      {result.verified && (
-                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                      )}
-                    </div>
-                    {result.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                        {result.description}
-                      </p>
-                    )}
-                  </div>
-                  <Badge variant="secondary">{result.type}</Badge>
-                </div>
-
-                <div className="flex items-center gap-4 text-sm">
-                  {result.rating !== undefined && (
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{result.rating.toFixed(1)}</span>
-                    </div>
-                  )}
-
-                  {result.location && (
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{result.location}</span>
-                    </div>
-                  )}
-
-                  {result.price !== undefined && (
-                    <div className="font-semibold">
-                      ${result.price.toLocaleString()}
-                    </div>
-                  )}
-
-                  {result.availability && (
-                    <Badge
-                      variant={result.availability === 'available' ? 'default' : 'secondary'}
-                    >
-                      {result.availability}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {Math.ceil(total / limit)}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onNextPage}
+            disabled={!hasMore}
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      )}
     </div>
   );
-};
+}

@@ -31,6 +31,9 @@ export * from './performance';
 // Phase 16: i18n Hooks
 export * from './i18n';
 
+// Phase 17: Search Hooks
+export * from './search';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
