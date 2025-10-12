@@ -679,4 +679,12 @@ All colors MUST be HSL. Premium construction platform aesthetic.
   outline-offset: 2px;
 }
 
+/* Interactive tour highlight */
+.tour-highlight {
+  position: relative;
+  z-index: 41 !important;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
 }
