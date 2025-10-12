@@ -1,11 +1,9 @@
-// Analytics Components Barrel Export
-// Phase 5: Analytics & Chart Components Consolidation
+/**
+ * Analytics Components Module
+ * Phase 22: Advanced Analytics & Monitoring System
+ * 
+ * Centralized exports for analytics components
+ */
 
-export { MetricCard } from './MetricCard';
-export { AnalyticsChart } from './AnalyticsChart';
-export { RevenueChart } from './RevenueChart';
-export { PaymentMethodChart } from './PaymentMethodChart';
-
-// Legacy exports for backwards compatibility
-// TODO: Update imports across codebase to use MetricCard directly
-export { MetricCard as AnalyticsMetricCard } from './MetricCard';
+export { AnalyticsProvider } from './AnalyticsProvider';
+export { ErrorBoundary } from './ErrorBoundary';

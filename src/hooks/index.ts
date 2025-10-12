@@ -46,6 +46,9 @@ export * from './websocket';
 // Phase 21: Cache Hooks
 export * from './cache';
 
+// Phase 22: Analytics Hooks
+export * from './analytics';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
