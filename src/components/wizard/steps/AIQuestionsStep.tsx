@@ -1,6 +1,6 @@
 /**
- * Step 2: AI Questions
- * Enhanced question interface with semantic design
+ * Step 2: No-Typing Q&A
+ * MVP Feature: Card-based selections with "Not sure" option
  */
 
 import React, { useEffect, useState } from 'react';
@@ -9,17 +9,15 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Loader2, Sparkles, CheckCircle2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 import { cn } from '@/lib/utils';
 import { PhotoUpload } from '../PhotoUpload';
 import { PriceEstimator } from '../PriceEstimator';
 import { JobTemplates } from '../JobTemplates';
+import { QuestionCard } from '../questions/QuestionCard';
 
 interface AIQuestionsStepProps {
   microId: string;
@@ -98,101 +96,11 @@ const AIQuestionsStep: React.FC<AIQuestionsStepProps> = ({
     if (templateData.photos) onPhotosChange(templateData.photos);
   };
 
-  const renderQuestion = (question: any) => {
-    const value = answers[question.id];
-
-    switch (question.type) {
-      case 'text':
-      case 'string':
-        return (
-          <Input
-            value={value || ''}
-            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-            placeholder="Type your answer..."
-            className="text-base h-12 border-2 focus:border-accent transition-colors"
-          />
-        );
-
-      case 'textarea':
-        return (
-          <Textarea
-            value={value || ''}
-            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-            placeholder="Provide details..."
-            className="min-h-[120px] text-base border-2 focus:border-accent transition-colors"
-          />
-        );
-
-      case 'select':
-      case 'radio':
-        return (
-          <RadioGroup value={value || ''} onValueChange={(val) => handleAnswerChange(question.id, val)}>
-            <div className="space-y-3">
-              {question.options?.map((option: string) => (
-                <div key={option} className="flex items-center space-x-3">
-                  <RadioGroupItem value={option} id={`${question.id}-${option}`} />
-                  <Label 
-                    htmlFor={`${question.id}-${option}`} 
-                    className="text-base font-normal cursor-pointer flex-1 py-3 hover:text-foreground transition-colors"
-                  >
-                    {option}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </RadioGroup>
-        );
-
-      case 'multi':
-      case 'checkbox':
-        const checkboxValue = value || [];
-        return (
-          <div className="space-y-3">
-            {question.options?.map((option: string) => (
-              <div key={option} className="flex items-center space-x-3">
-                <Checkbox
-                  id={`${question.id}-${option}`}
-                  checked={checkboxValue.includes(option)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      handleAnswerChange(question.id, [...checkboxValue, option]);
-                    } else {
-                      handleAnswerChange(question.id, checkboxValue.filter((v: string) => v !== option));
-                    }
-                  }}
-                />
-                <Label 
-                  htmlFor={`${question.id}-${option}`} 
-                  className="text-base font-normal cursor-pointer flex-1 py-3 hover:text-foreground transition-colors"
-                >
-                  {option}
-                </Label>
-              </div>
-            ))}
-          </div>
-        );
-
-      case 'number':
-        return (
-          <Input
-            type="number"
-            value={value || ''}
-            onChange={(e) => handleAnswerChange(question.id, parseFloat(e.target.value))}
-            placeholder="Enter a number..."
-            className="text-base h-12 border-2 focus:border-accent transition-colors"
-          />
-        );
-
-      default:
-        return (
-          <Input
-            value={value || ''}
-            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-            placeholder="Type your answer..."
-            className="text-base h-12 border-2 focus:border-accent transition-colors"
-          />
-        );
-    }
+  const handleNotSure = (questionId: string) => {
+    handleAnswerChange(questionId, 'not_sure');
+    toast.info('Marked as "Not sure" - professionals will clarify this detail', {
+      duration: 2000
+    });
   };
 
   const requiredQuestions = questions.filter(q => q.required);
@@ -273,35 +181,34 @@ const AIQuestionsStep: React.FC<AIQuestionsStepProps> = ({
           {/* Questions */}
           <div className="space-y-6">
             {questions.map((question, index) => {
-              const isAnswered = answers[question.id] !== undefined && answers[question.id] !== '';
-              
+              // Transform question options to QuestionCard format
+              const transformedOptions = question.options?.map((opt: any) => {
+                if (typeof opt === 'string') {
+                  return { value: opt, label: opt };
+                }
+                return {
+                  value: opt.value,
+                  label: opt.label,
+                  description: opt.description
+                };
+              });
+
               return (
-                <Card 
-                  key={question.id} 
-                  className={cn(
-                    "p-6 border-2 transition-all duration-200",
-                    isAnswered ? "border-accent/20 bg-accent/5" : "border-border"
-                  )}
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <Label className="text-lg font-semibold flex items-center gap-2">
-                        <span className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
-                          {index + 1}
-                        </span>
-                        {question.label}
-                        {question.required && <span className="text-destructive">*</span>}
-                      </Label>
-                      {isAnswered && (
-                        <Badge variant="outline" className="text-xs bg-accent/10 text-accent border-accent/20">
-                          <CheckCircle2 className="w-3 h-3 mr-1" />
-                          Answered
-                        </Badge>
-                      )}
-                    </div>
-                    {renderQuestion(question)}
-                  </div>
-                </Card>
+                <QuestionCard
+                  key={question.id}
+                  questionId={question.id}
+                  question={question.label}
+                  type={question.type === 'select' || question.type === 'radio' ? 'single' : 
+                        question.type === 'multi' || question.type === 'checkbox' ? 'multiple' : 
+                        question.type}
+                  options={transformedOptions}
+                  value={answers[question.id]}
+                  required={question.required}
+                  helpText={question.helpText}
+                  onChange={(value) => handleAnswerChange(question.id, value)}
+                  onNotSure={() => handleNotSure(question.id)}
+                  questionNumber={index + 1}
+                />
               );
             })}
           </div>
