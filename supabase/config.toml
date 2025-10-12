@@ -141,5 +141,11 @@ verify_jwt = true
 [functions.process-notification-digest]
 verify_jwt = false
 
+[functions.webhook-handler]
+verify_jwt = false
+
+[functions.rate-limiter]
+verify_jwt = false
+
 [functions.cache-manager]
 verify_jwt = true

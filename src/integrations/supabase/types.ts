@@ -7322,6 +7322,27 @@ export type Database = {
           },
         ]
       }
+      rate_limit_tracking: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          identifier: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          identifier: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          identifier?: string
+        }
+        Relationships: []
+      }
       rating_summary: {
         Row: {
           average_rating: number | null
@@ -9799,6 +9820,50 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_deliveries: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          event_type: string
+          id: string
+          payload: Json | null
+          response_body: string | null
+          status_code: number | null
+          subscription_id: string | null
+          success: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          event_type: string
+          id?: string
+          payload?: Json | null
+          response_body?: string | null
+          status_code?: number | null
+          subscription_id?: string | null
+          success?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          response_body?: string | null
+          status_code?: number | null
+          subscription_id?: string | null
+          success?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_endpoints: {
         Row: {
           created_at: string | null
@@ -9832,6 +9897,39 @@ export type Database = {
           secret?: string
           url?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      webhook_subscriptions: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          is_active: boolean | null
+          secret_key: string
+          updated_at: string | null
+          user_id: string | null
+          webhook_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          is_active?: boolean | null
+          secret_key: string
+          updated_at?: string | null
+          user_id?: string | null
+          webhook_url: string
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          is_active?: boolean | null
+          secret_key?: string
+          updated_at?: string | null
+          user_id?: string | null
+          webhook_url?: string
         }
         Relationships: []
       }
