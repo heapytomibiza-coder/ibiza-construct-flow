@@ -17,6 +17,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initRealtime } from "./lib/realtimeSync";
 import { ImpersonationBanner } from "./components/admin/ImpersonationBanner";
 import { HelmetProvider } from "react-helmet-async";
+import { CookieConsent } from "./components/layout/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -103,6 +104,11 @@ const CalculatorSettings = React.lazy(() => import("./pages/admin/CalculatorSett
 const PricingManager = React.lazy(() => import("./pages/admin/PricingManager"));
 const CalculatorAnalytics = React.lazy(() => import("./pages/admin/CalculatorAnalytics"));
 
+// Legal Pages
+const TermsOfService = React.lazy(() => import("./pages/TermsOfService"));
+const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy"));
+const CookiePolicy = React.lazy(() => import("./pages/CookiePolicy"));
+
 // Settings Pages
 const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
 const ProfileSettings = React.lazy(() => import("./pages/settings/ProfileSettings"));
@@ -140,6 +146,7 @@ function AppContent() {
         <SafeAreaProvider>
           <Toaster />
           <Sonner />
+          <CookieConsent />
           <BrowserRouter
           future={{
             v7_startTransition: true,
@@ -161,6 +168,11 @@ function AppContent() {
           <Route path="/specialist-categories" element={<SpecialistCategories />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/contact" element={<Contact />} />
+          
+          {/* Legal Pages */}
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
           
           {/* Auth Flow Routes - Consolidated */}
           <Route path="/auth" element={<UnifiedAuth />} />
