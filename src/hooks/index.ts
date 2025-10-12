@@ -68,6 +68,9 @@ export { useAI, useConversation, usePrompt } from './ai';
 // Phase 31: Monitoring Hooks
 export { useMetrics, useLogger, usePerformance, useAlerts } from './monitoring';
 
+// Phase 32: Feature Flags Hooks
+export { useFeatureFlags, useFeatureFlag, useABTest, useConfig } from './features';
+
 // Feature-specific hooks should be imported from their respective modules:
 // - Calculator: '@/components/calculator/hooks'
 // - Notifications: '@/components/notifications/hooks'
