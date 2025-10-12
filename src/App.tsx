@@ -20,9 +20,11 @@ import { initRealtime } from "./lib/realtimeSync";
 import { ImpersonationBanner } from "./components/admin/ImpersonationBanner";
 import { HelmetProvider } from "react-helmet-async";
 import { CookieConsent } from "./components/layout/CookieConsent";
-import { AdminLayout } from "./components/admin/layout/AdminLayout";
 
 const queryClient = new QueryClient();
+
+// Shared route fallback component
+const RouteFallback = () => <SkeletonLoader variant="card" count={3} />;
 
 // Lazy load components for better performance
 const Index = React.lazy(() => import("./pages/Index"));
@@ -39,6 +41,8 @@ const RouteGuard = React.lazy(() => import("./components/RouteGuard"));
 const UnifiedClientDashboard = React.lazy(() => import("./components/dashboards/UnifiedClientDashboard"));
 const UnifiedProfessionalDashboard = React.lazy(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
 const AdminDashboardPage = React.lazy(() => import("./pages/AdminDashboardPage"));
+
+// Admin Pages
 const AdminHome = React.lazy(() => import("./pages/admin/AdminHome"));
 const Analytics = React.lazy(() => import("./pages/admin/Analytics"));
 const ProfilesQueue = React.lazy(() => import("./pages/admin/ProfilesQueue"));
@@ -51,58 +55,12 @@ const AdminSettingsPage = React.lazy(() => import("./pages/admin/AdminSettingsPa
 const AdminQuestions = React.lazy(() => import("./pages/AdminQuestions"));
 const PackCompareView = React.lazy(() => import("./components/admin/packs/PackCompareView").then(m => ({ default: m.PackCompareView })));
 const WebsiteSettings = React.lazy(() => import("./pages/admin/WebsiteSettings"));
-const PostJob = React.lazy(() => import("./pages/PostJob"));
-const JobBoardPage = React.lazy(() => import("./pages/JobBoardPage"));
-const PostJobSuccessPage = React.lazy(() => import("./pages/PostJobSuccessPage"));
-const Discovery = React.lazy(() => import("./pages/Discovery"));
-const DiscoveryPage = React.lazy(() => import("./pages/DiscoveryPage"));
-const BrowseProfessionalsPage = React.lazy(() => import("./pages/BrowseProfessionalsPage"));
-const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
-const ProfessionalOnboardingPage = React.lazy(() => import("./pages/ProfessionalOnboardingPage"));
-const BookingPage = React.lazy(() => import("./pages/BookingPage"));
-// Legacy BookingManagementPage removed - use unified job_quotes system
-const ProfessionalAvailabilityPage = React.lazy(() => import("./pages/ProfessionalAvailabilityPage"));
-const ProfessionalCalendarPage = React.lazy(() => import("./pages/ProfessionalCalendarPage"));
-const ContractManagementPage = React.lazy(() => import("./pages/ContractManagementPage"));
-const PaymentProcessingPage = React.lazy(() => import("./pages/PaymentProcessingPage"));
-const EscrowManagementPage = React.lazy(() => import("./pages/EscrowManagementPage"));
-const ProfessionalEarningsPage = React.lazy(() => import("./pages/ProfessionalEarningsPage"));
-const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
-
-// New unified admin pages
-const NewAdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboardPage"));
-const NewAdminUsers = React.lazy(() => import("./pages/admin/AdminUsersPage"));
-const NewAdminJobs = React.lazy(() => import("./pages/admin/AdminJobsPage"));
-const NewAdminBookings = React.lazy(() => import("./pages/admin/AdminBookingsPage"));
-const NewAdminProfiles = React.lazy(() => import("./pages/admin/AdminProfilesPage"));
-const NewAdminDisputes = React.lazy(() => import("./pages/admin/AdminDisputesPage"));
-const NewAdminAnalytics = React.lazy(() => import("./pages/admin/AdminAnalyticsPage"));
-const NewAdminSettings = React.lazy(() => import("./pages/admin/AdminSettingsPage"));
-const JobMatchesPage = React.lazy(() => import("./pages/JobMatchesPage"));
-const MessagingPage = React.lazy(() => import("./pages/MessagingPage"));
-const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
-const Contact = React.lazy(() => import("./pages/Contact"));
-const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategories"));
-const PaymentSuccess = React.lazy(() => import("./pages/PaymentSuccess"));
-const PaymentCanceled = React.lazy(() => import("./pages/PaymentCanceled"));
-const SubscriptionSuccess = React.lazy(() => import("./pages/SubscriptionSuccess"));
-const SubscriptionCanceled = React.lazy(() => import("./pages/SubscriptionCanceled"));
-const Templates = React.lazy(() => import("./pages/Templates"));
-const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
-const DesignTest = React.lazy(() => import("./pages/DesignTest"));
-const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
-const ConversationPage = React.lazy(() => import("./pages/ConversationPage"));
-const PaymentsPage = React.lazy(() => import("./pages/PaymentsPage"));
-const ProfessionalVerificationPage = React.lazy(() => import("./pages/ProfessionalVerificationPage"));
-const ProfessionalServicesPage = React.lazy(() => import("./pages/ProfessionalServicesPage"));
-const ProfessionalPortfolioPage = React.lazy(() => import("./pages/ProfessionalPortfolioPage"));
 const AdminVerificationsPage = React.lazy(() => import("./pages/AdminVerificationsPage"));
 const DisputeAnalyticsPage = React.lazy(() => import("./pages/admin/DisputeAnalyticsPage"));
 const AdminDisputeDetailPage = React.lazy(() => import("./pages/admin/AdminDisputeDetailPage"));
 const AuditLog = React.lazy(() => import("./pages/admin/AuditLog"));
 const AdminDashboard = React.lazy(() => import("./pages/admin/Dashboard"));
 const AdminUsers = React.lazy(() => import("./pages/admin/Users"));
-const AdminSettings = React.lazy(() => import("./pages/admin/Settings"));
 const AdminServices = React.lazy(() => import("./pages/admin/Services"));
 const AdminJobs = React.lazy(() => import("./pages/admin/Jobs"));
 const AdminBookings = React.lazy(() => import("./pages/admin/Bookings"));
@@ -123,10 +81,55 @@ const SecuritySettingsPage = React.lazy(() => import("./pages/admin/SecuritySett
 const IntelligencePage = React.lazy(() => import("./pages/admin/IntelligencePage"));
 const IntegrationHubPage = React.lazy(() => import("./pages/admin/IntegrationHubPage"));
 const PerformanceMonitorPage = React.lazy(() => import("./pages/admin/PerformanceMonitorPage"));
-const Calculator = React.lazy(() => import("./pages/Calculator"));
 const CalculatorSettings = React.lazy(() => import("./pages/admin/CalculatorSettings"));
 const PricingManager = React.lazy(() => import("./pages/admin/PricingManager"));
 const CalculatorAnalytics = React.lazy(() => import("./pages/admin/CalculatorAnalytics"));
+
+// Job & Professional Pages
+const PostJob = React.lazy(() => import("./pages/PostJob"));
+const JobBoardPage = React.lazy(() => import("./pages/JobBoardPage"));
+const PostJobSuccessPage = React.lazy(() => import("./pages/PostJobSuccessPage"));
+const Discovery = React.lazy(() => import("./pages/Discovery"));
+const BrowseProfessionalsPage = React.lazy(() => import("./pages/BrowseProfessionalsPage"));
+const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
+const ProfessionalOnboardingPage = React.lazy(() => import("./pages/ProfessionalOnboardingPage"));
+const ProfessionalVerificationPage = React.lazy(() => import("./pages/ProfessionalVerificationPage"));
+const ProfessionalServicesPage = React.lazy(() => import("./pages/ProfessionalServicesPage"));
+const ProfessionalPortfolioPage = React.lazy(() => import("./pages/ProfessionalPortfolioPage"));
+const ProfessionalAvailabilityPage = React.lazy(() => import("./pages/ProfessionalAvailabilityPage"));
+const ProfessionalCalendarPage = React.lazy(() => import("./pages/ProfessionalCalendarPage"));
+const ProfessionalEarningsPage = React.lazy(() => import("./pages/ProfessionalEarningsPage"));
+const ServiceSetupWizard = React.lazy(() => import("./pages/ServiceSetupWizard"));
+const ProfessionalPayoutSetup = React.lazy(() => import("./pages/ProfessionalPayoutSetup"));
+
+// Contract & Payment Pages
+const BookingPage = React.lazy(() => import("./pages/BookingPage"));
+const ContractManagementPage = React.lazy(() => import("./pages/ContractManagementPage"));
+const PaymentProcessingPage = React.lazy(() => import("./pages/PaymentProcessingPage"));
+const EscrowManagementPage = React.lazy(() => import("./pages/EscrowManagementPage"));
+const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
+const JobMatchesPage = React.lazy(() => import("./pages/JobMatchesPage"));
+const PaymentSuccess = React.lazy(() => import("./pages/PaymentSuccess"));
+const PaymentCanceled = React.lazy(() => import("./pages/PaymentCanceled"));
+const SubscriptionSuccess = React.lazy(() => import("./pages/SubscriptionSuccess"));
+const SubscriptionCanceled = React.lazy(() => import("./pages/SubscriptionCanceled"));
+const PaymentsPage = React.lazy(() => import("./pages/PaymentsPage"));
+
+// Messaging
+const MessagingPage = React.lazy(() => import("./pages/MessagingPage"));
+const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
+const ConversationPage = React.lazy(() => import("./pages/ConversationPage"));
+
+// Public Pages
+const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
+const Contact = React.lazy(() => import("./pages/Contact"));
+const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategories"));
+const Calculator = React.lazy(() => import("./pages/Calculator"));
+
+// Other Pages
+const Templates = React.lazy(() => import("./pages/Templates"));
+const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
+const DesignTest = React.lazy(() => import("./pages/DesignTest"));
 
 // Legal Pages
 const TermsOfService = React.lazy(() => import("./pages/TermsOfService"));
@@ -140,8 +143,6 @@ const AccountSettings = React.lazy(() => import("./pages/settings/AccountSetting
 const NotificationSettings = React.lazy(() => import("./pages/settings/NotificationSettings"));
 const ClientSettings = React.lazy(() => import("./pages/settings/ClientSettings"));
 const ProfessionalSettings = React.lazy(() => import("./pages/settings/ProfessionalSettings"));
-const ServiceSetupWizard = React.lazy(() => import("./pages/ServiceSetupWizard"));
-const ProfessionalPayoutSetup = React.lazy(() => import("./pages/ProfessionalPayoutSetup"));
 
 function AppContent() {
   // Initialize Web Vitals monitoring
@@ -150,14 +151,17 @@ function AppContent() {
   // Initialize language management for SEO
   useLanguage();
   
-  
-  // Enable job wizard for implementation
+  // Feature flag for job wizard control
   const jobWizardEnabled = useFeature('ff.jobWizardV2', true);
   
   // Preload critical routes and initialize realtime on app start
   useEffect(() => {
+    // Preload common routes
     preloadRoute('/dashboard/pro');
+    preloadRoute('/dashboard/client');
     preloadRoute('/post');
+    preloadRoute('/job-board');
+    preloadRoute('/discovery');
     
     // Initialize realtime sync for cross-tab updates
     const cleanup = initRealtime(queryClient);
@@ -168,14 +172,16 @@ function AppContent() {
     <ErrorBoundary>
       <TooltipProvider>
         <SafeAreaProvider>
+          {/* Radix Toaster: For imperative useToast() hook calls */}
           <Toaster />
+          {/* Sonner: For declarative toast() function calls */}
           <Sonner />
           <BrowserRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true
-          }}
-        >
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
             <CookieConsent />
             <MobileGestures enableSwipeNavigation={true} enablePullToRefresh={true}>
               <ImpersonationBanner />
@@ -183,399 +189,279 @@ function AppContent() {
               <OfflineIndicator />
               <InstallPrompt />
               <MobileAppWrapper>
-                <Suspense fallback={<SkeletonLoader variant="card" />}>
+                <Suspense fallback={<RouteFallback />}>
                   <Routes>
-          <Route path="/" element={<Index />} />
-          
-          {/* Legacy route redirects */}
-          <Route path="/job/:id" element={<Navigate to="/jobs/:id" replace />} />
-          <Route path="/admin/v2/*" element={<Navigate to="/admin/*" replace />} />
-          <Route path="/bookings" element={<Navigate to="/dashboard" replace />} />
-          
-          <Route path="/calculator" element={<Calculator />} />
-          <Route path="/discovery" element={<DiscoveryPage />} />
-          <Route path="/professionals" element={<BrowseProfessionalsPage />} />
-          <Route path="/professional/:id" element={<ProfessionalProfile />} />
-          <Route path="/professionals/:id" element={<ProfessionalProfile />} />
-          <Route path="/book" element={<BookingPage />} />
-        {/* Legacy /bookings route removed - redirects handled by dashboard */}
-        <Route path="/availability" element={<ProfessionalAvailabilityPage />} />
-        <Route path="/calendar" element={<ProfessionalCalendarPage />} />
-        <Route path="/contracts" element={<ContractManagementPage />} />
-        <Route path="/contracts/:contractId" element={<ContractManagementPage />} />
-        <Route path="/contracts/:contractId/fund" element={<PaymentProcessingPage />} />
-        <Route path="/escrow/:contractId" element={<EscrowManagementPage />} />
-        <Route path="/earnings" element={<ProfessionalEarningsPage />} />
-        <Route path="/jobs/:jobId" element={<JobDetailPage />} />
-        <Route path="/jobs/:jobId/matches" element={<JobMatchesPage />} />
-        <Route path="/messaging" element={<MessagingPage />} />
-        <Route path="/messaging/:conversationId" element={<MessagingPage />} />
-          <Route path="/specialist-categories" element={<SpecialistCategories />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/contact" element={<Contact />} />
-          
-          {/* Legal Pages */}
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/cookie-policy" element={<CookiePolicy />} />
-          
-          {/* Auth Flow Routes - Consolidated */}
-          <Route path="/auth" element={<UnifiedAuth />} />
-          <Route path="/auth/verify-email" element={<VerifyEmail />} />
-          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-          <Route path="/auth/reset-password" element={<ResetPassword />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/auth/quick-start" element={<QuickStart />} />
-          
-          {/* Professional Onboarding - No completion requirement here */}
-          <Route path="/onboarding/professional" element={
-            <RouteGuard requiredRole="professional" requireOnboardingComplete={false}>
-              <ProfessionalOnboardingPage />
-            </RouteGuard>
-          } />
-          
-          {/* Professional Management Pages */}
-          <Route path="/professional/verification" element={
-            <RouteGuard requiredRole="professional">
-              <ProfessionalVerificationPage />
-            </RouteGuard>
-          } />
-          <Route path="/professional/service-setup" element={
-            <RouteGuard requiredRole="professional">
-              <ServiceSetupWizard />
-            </RouteGuard>
-          } />
-          <Route path="/professional/payout-setup" element={
-            <RouteGuard requiredRole="professional">
-              <ProfessionalPayoutSetup />
-            </RouteGuard>
-          } />
-          <Route path="/professional/services" element={
-            <RouteGuard requiredRole="professional">
-              <ProfessionalServicesPage />
-            </RouteGuard>
-          } />
-          <Route path="/professional/portfolio" element={
-            <RouteGuard requiredRole="professional">
-              <ProfessionalPortfolioPage />
-            </RouteGuard>
-          } />
-          
-          {/* Role Switcher */}
-          <Route path="/role-switcher" element={<RoleSwitcher />} />
-          
-          {/* Payment Pages */}
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-canceled" element={<PaymentCanceled />} />
-          <Route path="/subscription-success" element={<SubscriptionSuccess />} />
-          <Route path="/subscription-canceled" element={<SubscriptionCanceled />} />
-          
-          {/* Job Wizard - Always Registered */}
-            <Route 
-              path="/post" 
-              element={
-                <RouteGuard requiredRole="client">
-                  <Suspense fallback={<SkeletonLoader variant="card" count={3} />}>
-                    <PostJob />
-                  </Suspense>
-                </RouteGuard>
-              } 
-            />
-        
-        {/* Templates Page */}
-        <Route path="/templates" element={
-          <RouteGuard requiredRole="client">
-            <Templates />
-          </RouteGuard>
-        } />
-        
-        {/* Job Board - All professionals can see all jobs */}
-        <Route path="/job-board" element={
-          <RouteGuard requiredRole="professional">
-            <JobBoardPage />
-          </RouteGuard>
-        } />
-        
-        {/* Post Job Success Page */}
-        <Route path="/post/success" element={
-          <RouteGuard requiredRole="client">
-            <PostJobSuccessPage />
-          </RouteGuard>
-        } />
-        
-        {/* Messages Routes */}
-        <Route path="/messages" element={
-          <RouteGuard>
-            <MessagesPage />
-          </RouteGuard>
-        } />
-        <Route path="/messages/:conversationId" element={
-          <RouteGuard>
-            <ConversationPage />
-          </RouteGuard>
-        } />
-        
-        {/* Job Detail Page - Standardized Route */}
-        
-        {/* Payments Page */}
-        <Route path="/payments" element={
-          <RouteGuard>
-            <PaymentsPage />
-          </RouteGuard>
-        } />
-        
-        {/* Color Preview Page */}
-        <Route path="/color-preview" element={<ColorPreview />} />
-        
-        {/* Design Test Page */}
-        <Route path="/test" element={<DesignTest />} />
-        
-        {/* Protected Dashboard Routes */}
-        <Route path="/dashboard" element={
-          <RouteGuard>
-            <Dashboard />
-          </RouteGuard>
-        } />
-        <Route path="/dashboard/client" element={
-          <RouteGuard requiredRole="client">
-            <UnifiedClientDashboard />
-          </RouteGuard>
-        } />
-        <Route path="/dashboard/pro" element={
-          <RouteGuard requiredRole="professional">
-            <UnifiedProfessionalDashboard />
-          </RouteGuard>
-        } />
-          <Route path="/dashboard/admin" element={
-            <RouteGuard requiredRole="admin">
-              <AdminDashboardPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin" element={
-            <RouteGuard requiredRole="admin">
-              <AdminDashboard />
-            </RouteGuard>
-          } />
-          <Route path="/admin/home" element={
-            <RouteGuard requiredRole="admin">
-              <AdminHome />
-            </RouteGuard>
-          } />
-          <Route path="/admin/analytics" element={
-            <RouteGuard requiredRole="admin">
-              <Analytics />
-            </RouteGuard>
-          } />
-          <Route path="/admin/users" element={
-            <RouteGuard requiredRole="admin">
-              <AdminUsers />
-            </RouteGuard>
-          } />
-          <Route path="/admin/profiles" element={
-            <RouteGuard requiredRole="admin">
-              <ProfilesQueue />
-            </RouteGuard>
-          } />
-          <Route path="/admin/jobs" element={
-            <RouteGuard requiredRole="admin">
-              <AdminJobs />
-            </RouteGuard>
-          } />
-          <Route path="/admin/reviews" element={
-            <RouteGuard requiredRole="admin">
-              <ReviewsQueue />
-            </RouteGuard>
-          } />
-          <Route path="/admin/disputes" element={
-            <RouteGuard requiredRole="admin">
-              <DisputesQueue />
-            </RouteGuard>
-          } />
-          <Route path="/admin/services" element={
-            <RouteGuard requiredRole="admin">
-              <AdminServices />
-            </RouteGuard>
-          } />
-          <Route path="/admin/health" element={
-            <RouteGuard requiredRole="admin">
-              <HealthMonitor />
-            </RouteGuard>
-          } />
-          <Route path="/admin/settings" element={
-            <RouteGuard requiredRole="admin">
-              <AdminSettingsPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/bookings" element={
-            <RouteGuard requiredRole="admin">
-              <AdminBookings />
-            </RouteGuard>
-          } />
-          <Route path="/admin/database" element={
-            <RouteGuard requiredRole="admin">
-              <AdminDatabaseOverview />
-            </RouteGuard>
-          } />
-          <Route path="/admin/user-inspector" element={
-            <RouteGuard requiredRole="admin">
-              <AdminUserInspector />
-            </RouteGuard>
-          } />
-          <Route path="/admin/service-manager" element={
-            <RouteGuard requiredRole="admin">
-              <AdminServiceManager />
-            </RouteGuard>
-          } />
-          <Route path="/admin/documents" element={
-            <RouteGuard requiredRole="admin">
-              <AdminDocumentReview />
-            </RouteGuard>
-          } />
-          <Route path="/admin/feature-flags" element={
-            <RouteGuard requiredRole="admin">
-              <AdminFeatureFlags />
-            </RouteGuard>
-          } />
-          <Route path="/admin/test-runner" element={
-            <RouteGuard requiredRole="admin">
-              <AdminTestRunner />
-            </RouteGuard>
-          } />
-          <Route path="/admin/profile-moderation" element={
-            <RouteGuard requiredRole="admin">
-              <AdminProfileModeration />
-            </RouteGuard>
-          } />
-          <Route path="/admin/questions" element={
-            <RouteGuard requiredRole="admin">
-              <QuestionsManager />
-            </RouteGuard>
-          } />
-          <Route path="/admin-questions" element={
-            <RouteGuard requiredRole="admin">
-              <AdminQuestions />
-            </RouteGuard>
-          } />
-          <Route path="/admin/questions/compare/:slug" element={
-            <RouteGuard requiredRole="admin">
-              <PackCompareView />
-            </RouteGuard>
-          } />
-          <Route path="/admin/website-settings" element={
-            <RouteGuard requiredRole="admin">
-              <WebsiteSettings />
-            </RouteGuard>
-          } />
-          <Route path="/admin/verifications" element={
-            <RouteGuard requiredRole="admin">
-              <AdminVerificationsPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/analytics/disputes" element={
-            <RouteGuard requiredRole="admin">
-              <DisputeAnalyticsPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/disputes/:id" element={
-            <RouteGuard requiredRole="admin">
-              <AdminDisputeDetailPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/settings" element={
-            <RouteGuard requiredRole="admin">
-              <AdminSettings />
-            </RouteGuard>
-          } />
-          <Route path="/admin/audit-log" element={
-            <RouteGuard requiredRole="admin">
-              <AuditLog />
-            </RouteGuard>
-          } />
-          <Route path="/admin/helpdesk" element={
-            <RouteGuard requiredRole="admin">
-              <AdminHelpdeskPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/helpdesk/:ticketId" element={
-            <RouteGuard requiredRole="admin">
-              <AdminHelpdeskDetailPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/moderation/reviews" element={
-            <RouteGuard requiredRole="admin">
-              <AdminReviewModerationPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/reports" element={
-            <RouteGuard requiredRole="admin">
-              <AdminReportsPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/overview" element={
-            <RouteGuard requiredRole="admin">
-              <AdminOverviewPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/security" element={
-            <RouteGuard requiredRole="admin">
-              <SecuritySettingsPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/intelligence" element={
-            <RouteGuard requiredRole="admin">
-              <IntelligencePage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/integrations" element={
-            <RouteGuard requiredRole="admin">
-              <IntegrationHubPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/performance" element={
-            <RouteGuard requiredRole="admin">
-              <PerformanceMonitorPage />
-            </RouteGuard>
-          } />
-          <Route path="/admin/calculator" element={
-            <RouteGuard requiredRole="admin">
-              <CalculatorSettings />
-            </RouteGuard>
-          } />
-          <Route path="/admin/calculator/pricing" element={
-            <RouteGuard requiredRole="admin">
-              <PricingManager />
-            </RouteGuard>
-          } />
-          <Route path="/admin/calculator/analytics" element={
-            <RouteGuard requiredRole="admin">
-              <CalculatorAnalytics />
-            </RouteGuard>
-          } />
-          
-          {/* Settings Routes - Role-Aware */}
-          <Route path="/settings" element={
-            <RouteGuard>
-              <SettingsLayout />
-            </RouteGuard>
-          }>
-            <Route index element={<Navigate to="/settings/profile" replace />} />
-            <Route path="profile" element={<ProfileSettings />} />
-            <Route path="account" element={<AccountSettings />} />
-            <Route path="notifications" element={<NotificationSettings />} />
-            <Route path="client" element={
-              <RouteGuard requiredRole="client">
-                <ClientSettings />
-              </RouteGuard>
-            } />
-            <Route path="professional" element={
-              <RouteGuard requiredRole="professional">
-                <ProfessionalSettings />
-              </RouteGuard>
-            } />
-          </Route>
-          
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+                    {/* Public Routes */}
+                    <Route path="/" element={<Index />} />
+                    <Route path="/calculator" element={<Calculator />} />
+                    <Route path="/discovery" element={<Discovery />} />
+                    <Route path="/professionals" element={<BrowseProfessionalsPage />} />
+                    <Route path="/book" element={<BookingPage />} />
+                    <Route path="/specialist-categories" element={<SpecialistCategories />} />
+                    <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/contact" element={<Contact />} />
+                    
+                    {/* Professional Profile Routes - Canonical */}
+                    <Route path="/professionals/:id" element={<ProfessionalProfile />} />
+                    {/* Legacy redirect for /professional/:id */}
+                    <Route path="/professional/:id" element={<Navigate to="/professionals/:id" replace />} />
+                    
+                    {/* Legacy route redirects */}
+                    <Route path="/job/:id" element={<Navigate to="/jobs/:id" replace />} />
+                    <Route path="/admin/v2/*" element={<Navigate to="/admin/*" replace />} />
+                    <Route path="/bookings" element={<Navigate to="/dashboard" replace />} />
+                    
+                    {/* Legal Pages */}
+                    <Route path="/terms" element={<TermsOfService />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/cookie-policy" element={<CookiePolicy />} />
+                    
+                    {/* Auth Flow Routes */}
+                    <Route path="/auth" element={<UnifiedAuth />} />
+                    <Route path="/auth/verify-email" element={<VerifyEmail />} />
+                    <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/auth/reset-password" element={<ResetPassword />} />
+                    <Route path="/auth/callback" element={<AuthCallback />} />
+                    <Route path="/auth/quick-start" element={<QuickStart />} />
+                    
+                    {/* Professional Onboarding - No completion requirement */}
+                    <Route path="/onboarding/professional" element={
+                      <RouteGuard requiredRole="professional" requireOnboardingComplete={false}>
+                        <ProfessionalOnboardingPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Professional Management Pages */}
+                    <Route path="/professional/verification" element={
+                      <RouteGuard requiredRole="professional">
+                        <ProfessionalVerificationPage />
+                      </RouteGuard>
+                    } />
+                    <Route path="/professional/service-setup" element={
+                      <RouteGuard requiredRole="professional">
+                        <ServiceSetupWizard />
+                      </RouteGuard>
+                    } />
+                    <Route path="/professional/payout-setup" element={
+                      <RouteGuard requiredRole="professional">
+                        <ProfessionalPayoutSetup />
+                      </RouteGuard>
+                    } />
+                    <Route path="/professional/services" element={
+                      <RouteGuard requiredRole="professional">
+                        <ProfessionalServicesPage />
+                      </RouteGuard>
+                    } />
+                    <Route path="/professional/portfolio" element={
+                      <RouteGuard requiredRole="professional">
+                        <ProfessionalPortfolioPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Role Switcher */}
+                    <Route path="/role-switcher" element={<RoleSwitcher />} />
+                    
+                    {/* Payment Pages */}
+                    <Route path="/payment-success" element={<PaymentSuccess />} />
+                    <Route path="/payment-canceled" element={<PaymentCanceled />} />
+                    <Route path="/subscription-success" element={<SubscriptionSuccess />} />
+                    <Route path="/subscription-canceled" element={<SubscriptionCanceled />} />
+                    
+                    {/* Job Posting - Gated by Feature Flag */}
+                    {jobWizardEnabled ? (
+                      <Route 
+                        path="/post" 
+                        element={
+                          <RouteGuard requiredRole="client">
+                            <Suspense fallback={<RouteFallback />}>
+                              <PostJob />
+                            </Suspense>
+                          </RouteGuard>
+                        } 
+                      />
+                    ) : (
+                      <Route path="/post" element={<Navigate to="/dashboard/client" replace />} />
+                    )}
+                    
+                    {/* Templates Page */}
+                    <Route path="/templates" element={
+                      <RouteGuard requiredRole="client">
+                        <Templates />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Job Board - All professionals can see all jobs */}
+                    <Route path="/job-board" element={
+                      <RouteGuard requiredRole="professional">
+                        <JobBoardPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Post Job Success Page */}
+                    <Route path="/post/success" element={
+                      <RouteGuard requiredRole="client">
+                        <PostJobSuccessPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Messages Routes */}
+                    <Route path="/messages" element={
+                      <RouteGuard>
+                        <MessagesPage />
+                      </RouteGuard>
+                    } />
+                    <Route path="/messages/:conversationId" element={
+                      <RouteGuard>
+                        <ConversationPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Messaging Routes */}
+                    <Route path="/messaging" element={<MessagingPage />} />
+                    <Route path="/messaging/:conversationId" element={<MessagingPage />} />
+                    
+                    {/* Job & Contract Routes */}
+                    <Route path="/jobs/:jobId" element={<JobDetailPage />} />
+                    <Route path="/jobs/:jobId/matches" element={<JobMatchesPage />} />
+                    <Route path="/contracts" element={<ContractManagementPage />} />
+                    <Route path="/contracts/:contractId" element={<ContractManagementPage />} />
+                    <Route path="/contracts/:contractId/fund" element={<PaymentProcessingPage />} />
+                    <Route path="/escrow/:contractId" element={<EscrowManagementPage />} />
+                    
+                    {/* Professional Routes */}
+                    <Route path="/availability" element={<ProfessionalAvailabilityPage />} />
+                    <Route path="/calendar" element={<ProfessionalCalendarPage />} />
+                    <Route path="/earnings" element={<ProfessionalEarningsPage />} />
+                    
+                    {/* Payments Page */}
+                    <Route path="/payments" element={
+                      <RouteGuard>
+                        <PaymentsPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Test Pages */}
+                    <Route path="/color-preview" element={<ColorPreview />} />
+                    <Route path="/test" element={<DesignTest />} />
+                    
+                    {/* Protected Dashboard Routes */}
+                    <Route path="/dashboard" element={
+                      <RouteGuard>
+                        <Dashboard />
+                      </RouteGuard>
+                    } />
+                    <Route path="/dashboard/client" element={
+                      <RouteGuard requiredRole="client">
+                        <UnifiedClientDashboard />
+                      </RouteGuard>
+                    } />
+                    <Route path="/dashboard/pro" element={
+                      <RouteGuard requiredRole="professional">
+                        <UnifiedProfessionalDashboard />
+                      </RouteGuard>
+                    } />
+                    <Route path="/dashboard/admin" element={
+                      <RouteGuard requiredRole="admin">
+                        <AdminDashboardPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Admin Routes - Nested under /admin parent */}
+                    <Route path="/admin" element={
+                      <ErrorBoundary fallback={<div className="p-6 text-center">Admin section error. Please contact support.</div>}>
+                        <RouteGuard requiredRole="admin">
+                          <Suspense fallback={<RouteFallback />}>
+                            <Outlet />
+                          </Suspense>
+                        </RouteGuard>
+                      </ErrorBoundary>
+                    }>
+                      {/* Admin Home/Overview */}
+                      <Route index element={<AdminDashboard />} />
+                      <Route path="home" element={<AdminHome />} />
+                      <Route path="overview" element={<AdminOverviewPage />} />
+                      
+                      {/* Core Management */}
+                      <Route path="users" element={<AdminUsers />} />
+                      <Route path="profiles" element={<ProfilesQueue />} />
+                      <Route path="jobs" element={<AdminJobs />} />
+                      <Route path="bookings" element={<AdminBookings />} />
+                      <Route path="reviews" element={<ReviewsQueue />} />
+                      <Route path="disputes" element={<DisputesQueue />} />
+                      <Route path="disputes/:id" element={<AdminDisputeDetailPage />} />
+                      <Route path="services" element={<AdminServices />} />
+                      
+                      {/* Analytics & Monitoring */}
+                      <Route path="analytics" element={<Analytics />} />
+                      <Route path="analytics/disputes" element={<DisputeAnalyticsPage />} />
+                      <Route path="performance" element={<PerformanceMonitorPage />} />
+                      <Route path="intelligence" element={<IntelligencePage />} />
+                      
+                      {/* Configuration */}
+                      <Route path="settings" element={<AdminSettingsPage />} />
+                      <Route path="security" element={<SecuritySettingsPage />} />
+                      <Route path="feature-flags" element={<AdminFeatureFlags />} />
+                      <Route path="integrations" element={<IntegrationHubPage />} />
+                      
+                      {/* Tools */}
+                      <Route path="health" element={<HealthMonitor />} />
+                      <Route path="database" element={<AdminDatabaseOverview />} />
+                      <Route path="user-inspector" element={<AdminUserInspector />} />
+                      <Route path="test-runner" element={<AdminTestRunner />} />
+                      <Route path="audit-log" element={<AuditLog />} />
+                      
+                      {/* Content Management */}
+                      <Route path="questions" element={<QuestionsManager />} />
+                      <Route path="questions/compare/:slug" element={<PackCompareView />} />
+                      <Route path="website-settings" element={<WebsiteSettings />} />
+                      <Route path="service-manager" element={<AdminServiceManager />} />
+                      <Route path="documents" element={<AdminDocumentReview />} />
+                      <Route path="profile-moderation" element={<AdminProfileModeration />} />
+                      <Route path="moderation/reviews" element={<AdminReviewModerationPage />} />
+                      <Route path="verifications" element={<AdminVerificationsPage />} />
+                      
+                      {/* Support */}
+                      <Route path="helpdesk" element={<AdminHelpdeskPage />} />
+                      <Route path="helpdesk/:ticketId" element={<AdminHelpdeskDetailPage />} />
+                      <Route path="reports" element={<AdminReportsPage />} />
+                      
+                      {/* Calculator Admin */}
+                      <Route path="calculator" element={<CalculatorSettings />} />
+                      <Route path="calculator/pricing" element={<PricingManager />} />
+                      <Route path="calculator/analytics" element={<CalculatorAnalytics />} />
+                    </Route>
+                    
+                    {/* Legacy admin route for backward compatibility */}
+                    <Route path="/admin-questions" element={
+                      <RouteGuard requiredRole="admin">
+                        <AdminQuestions />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Settings Routes - Role-Aware */}
+                    <Route path="/settings" element={
+                      <RouteGuard>
+                        <SettingsLayout />
+                      </RouteGuard>
+                    }>
+                      <Route index element={<Navigate to="/settings/profile" replace />} />
+                      <Route path="profile" element={<ProfileSettings />} />
+                      <Route path="account" element={<AccountSettings />} />
+                      <Route path="notifications" element={<NotificationSettings />} />
+                      <Route path="client" element={
+                        <RouteGuard requiredRole="client">
+                          <ClientSettings />
+                        </RouteGuard>
+                      } />
+                      <Route path="professional" element={
+                        <RouteGuard requiredRole="professional">
+                          <ProfessionalSettings />
+                        </RouteGuard>
+                      } />
+                    </Route>
+                    
+                    {/* Catch-all 404 Route - MUST BE LAST */}
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
               </MobileAppWrapper>
@@ -584,7 +470,7 @@ function AppContent() {
           </BrowserRouter>
         </SafeAreaProvider>
       </TooltipProvider>
-      </ErrorBoundary>
+    </ErrorBoundary>
   );
 }
 
