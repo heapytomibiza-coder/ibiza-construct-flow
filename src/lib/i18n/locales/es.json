@@ -1,0 +1,62 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "clear": "Limpiar",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "dashboard": "Panel",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse"
+  },
+  "auth": {
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "rememberMe": "Recuérdame",
+    "loginTitle": "Bienvenido de Nuevo",
+    "loginSubtitle": "Inicia sesión en tu cuenta",
+    "signupTitle": "Crear Cuenta",
+    "signupSubtitle": "Comienza hoy",
+    "logoutConfirm": "¿Estás seguro de que quieres cerrar sesión?"
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "invalidEmail": "Dirección de correo inválida",
+    "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "invalidUrl": "Formato de URL inválido"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar todas como leídas",
+    "noNotifications": "No hay notificaciones aún",
+    "newNotification": "Tienes una nueva notificación"
+  },
+  "errors": {
+    "somethingWrong": "Algo salió mal",
+    "tryAgain": "Por favor intenta de nuevo",
+    "notFound": "No encontrado",
+    "unauthorized": "Acceso no autorizado",
+    "forbidden": "Acceso prohibido"
+  }
+}
