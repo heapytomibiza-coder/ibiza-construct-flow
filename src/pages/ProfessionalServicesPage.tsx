@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Trash2, AlertCircle } from 'lucide-react';
 import { useOnboardingChecklist } from '@/hooks/useOnboardingChecklist';
+import { ServiceCascadeSelector } from '@/components/services/ServiceCascadeSelector';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { Database } from '@/integrations/supabase/types';
 
 type ProfessionalService = Database['public']['Tables']['professional_services']['Row'];
@@ -17,9 +17,8 @@ export default function ProfessionalServicesPage() {
   const { toast } = useToast();
   const { markStepComplete } = useOnboardingChecklist();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [services, setServices] = useState<ProfessionalService[]>([]);
-  const [newServiceName, setNewServiceName] = useState('');
+  const [serviceDetails, setServiceDetails] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     loadServices();
@@ -41,11 +40,41 @@ export default function ProfessionalServicesPage() {
 
       const { data, error } = await supabase
         .from('professional_services')
-        .select('*')
+        .select(`
+          *,
+          service_micro_categories:micro_service_id (
+            id,
+            name,
+            subcategory_id,
+            service_subcategories:subcategory_id (
+              id,
+              name,
+              category_id,
+              service_categories:category_id (
+                id,
+                name
+              )
+            )
+          )
+        `)
         .eq('professional_id', user.id)
         .eq('is_active', true);
 
       if (error) throw error;
+      
+      // Build service details map
+      const detailsMap = new Map<string, string>();
+      data?.forEach((service: any) => {
+        const micro = service.service_micro_categories;
+        if (micro) {
+          const sub = micro.service_subcategories;
+          const cat = sub?.service_categories;
+          const fullPath = `${cat?.name || ''} > ${sub?.name || ''} > ${micro.name || ''}`;
+          detailsMap.set(service.id, fullPath);
+        }
+      });
+      
+      setServiceDetails(detailsMap);
       setServices(data || []);
     } catch (error: any) {
       console.error('Error loading services:', error);
@@ -59,19 +88,8 @@ export default function ProfessionalServicesPage() {
     }
   };
 
-  const handleAddService = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newServiceName.trim()) {
-      toast({
-        title: 'Service name required',
-        description: 'Please enter a service name',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+  const handleServiceSelect = async (microCategoryId: string, fullPath: string) => {
     try {
-      setSaving(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
@@ -79,7 +97,7 @@ export default function ProfessionalServicesPage() {
         .from('professional_services')
         .insert({
           professional_id: user.id,
-          micro_service_id: newServiceName,
+          micro_service_id: microCategoryId,
           is_active: true,
           pricing_structure: {},
           service_areas: {},
@@ -91,7 +109,8 @@ export default function ProfessionalServicesPage() {
       if (error) throw error;
 
       setServices(prev => [...prev, data]);
-      setNewServiceName('');
+      serviceDetails.set(data.id, fullPath);
+      setServiceDetails(new Map(serviceDetails));
 
       toast({
         title: 'Service added',
@@ -104,8 +123,6 @@ export default function ProfessionalServicesPage() {
         description: error.message || 'Failed to add service',
         variant: 'destructive',
       });
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -186,27 +203,19 @@ export default function ProfessionalServicesPage() {
         <CardHeader>
           <CardTitle>Add a Service</CardTitle>
           <CardDescription>
-            Define the services you provide
+            Select from our service categories or suggest a new one
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAddService} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="service-name">Service Name *</Label>
-              <Input
-                id="service-name"
-                placeholder="e.g., Plumbing Repair, House Cleaning, Electrical Work"
-                value={newServiceName}
-                onChange={(e) => setNewServiceName(e.target.value)}
-                required
-              />
-            </div>
+          <Alert className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Select a main category, then subcategory, then the specific service you offer. 
+              Can't find what you're looking for? Click "Suggest New" to add it for admin review.
+            </AlertDescription>
+          </Alert>
 
-            <Button type="submit" disabled={saving}>
-              <Plus className="mr-2 h-4 w-4" />
-              {saving ? 'Adding...' : 'Add Service'}
-            </Button>
-          </form>
+          <ServiceCascadeSelector onServiceSelect={handleServiceSelect} />
         </CardContent>
       </Card>
 
@@ -222,7 +231,14 @@ export default function ProfessionalServicesPage() {
                   key={service.id}
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
-                  <h4 className="font-semibold">{service.micro_service_id}</h4>
+                  <div>
+                    <h4 className="font-semibold">
+                      {serviceDetails.get(service.id)?.split(' > ').pop() || service.micro_service_id}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      {serviceDetails.get(service.id) || 'Service category'}
+                    </p>
+                  </div>
                   <Button
                     variant="ghost"
                     size="sm"
