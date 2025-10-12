@@ -1,44 +1,32 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { EnhancedReviewCard } from "./EnhancedReviewCard";
-import { RatingSummary } from "./RatingSummary";
-import { useEnhancedReviews } from "@/hooks/useEnhancedReviews";
-import { Star, Filter } from "lucide-react";
+import { ReviewCard } from './ReviewCard';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Star, TrendingUp } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 interface ReviewsListProps {
-  userId: string;
-  canRespond?: boolean;
-  currentUserId?: string;
+  reviews: any[];
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution?: Record<number, number>;
+  onRespond?: (reviewId: string, response: string) => void;
+  isResponding?: boolean;
 }
 
-export const ReviewsList = ({ userId, canRespond, currentUserId }: ReviewsListProps) => {
-  const [minRating, setMinRating] = useState<number | undefined>(undefined);
-  const { reviews, isLoading, ratingSummary } = useEnhancedReviews(userId, minRating);
-
-  if (isLoading) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Loading reviews...</p>
-      </div>
-    );
-  }
-
+export const ReviewsList = ({
+  reviews,
+  averageRating,
+  totalReviews,
+  ratingDistribution,
+  onRespond,
+  isResponding,
+}: ReviewsListProps) => {
   if (!reviews || reviews.length === 0) {
     return (
-      <Card className="p-12 text-center">
-        <Star className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-        <h3 className="text-lg font-semibold mb-2">No Reviews Yet</h3>
-        <p className="text-muted-foreground">
-          This professional hasn't received any reviews yet.
-        </p>
+      <Card>
+        <CardContent className="py-8 text-center">
+          <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+          <p className="text-muted-foreground">No reviews yet</p>
+        </CardContent>
       </Card>
     );
   }
@@ -46,55 +34,59 @@ export const ReviewsList = ({ userId, canRespond, currentUserId }: ReviewsListPr
   return (
     <div className="space-y-6">
       {/* Rating Summary */}
-      {ratingSummary && <RatingSummary summary={ratingSummary} />}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            Rating Summary
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Average Rating */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-4xl font-bold">{averageRating.toFixed(1)}</span>
+                <Star className="w-8 h-8 fill-yellow-400 text-yellow-400" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Based on {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
+              </p>
+            </div>
 
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Filter Reviews</span>
+            {/* Rating Distribution */}
+            {ratingDistribution && (
+              <div className="space-y-2">
+                {[5, 4, 3, 2, 1].map((star) => {
+                  const count = ratingDistribution[star] || 0;
+                  const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
+                  return (
+                    <div key={star} className="flex items-center gap-2">
+                      <span className="text-sm w-12">{star} stars</span>
+                      <Progress value={percentage} className="flex-1" />
+                      <span className="text-sm text-muted-foreground w-8 text-right">
+                        {count}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-
-          <Select
-            value={minRating?.toString() || "all"}
-            onValueChange={(value) => 
-              setMinRating(value === "all" ? undefined : parseInt(value))
-            }
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All ratings" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All ratings</SelectItem>
-              <SelectItem value="5">5 stars only</SelectItem>
-              <SelectItem value="4">4+ stars</SelectItem>
-              <SelectItem value="3">3+ stars</SelectItem>
-              <SelectItem value="2">2+ stars</SelectItem>
-              <SelectItem value="1">1+ star</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        </CardContent>
       </Card>
 
-      {/* Reviews */}
+      {/* Reviews List */}
       <div className="space-y-4">
-        {reviews.map((review: any) => (
-          <EnhancedReviewCard
+        {reviews.map((review) => (
+          <ReviewCard
             key={review.id}
             review={review}
-            canRespond={canRespond}
-            currentUserId={currentUserId}
+            onRespond={onRespond}
+            isResponding={isResponding}
           />
         ))}
       </div>
-
-      {/* Load More (placeholder) */}
-      {reviews.length >= 20 && (
-        <div className="text-center">
-          <Button variant="outline">Load More Reviews</Button>
-        </div>
-      )}
     </div>
   );
 };

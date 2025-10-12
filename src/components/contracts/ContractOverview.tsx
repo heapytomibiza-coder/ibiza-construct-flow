@@ -4,12 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useContract } from '@/hooks/useContract';
-import { FileText, DollarSign, Calendar, User, CheckCircle, Clock, AlertCircle, MessageCircle } from 'lucide-react';
+import { useReviews } from '@/hooks/useReviews';
+import { FileText, DollarSign, Calendar, User, CheckCircle, Clock, AlertCircle, MessageCircle, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { SplitMilestonesDialog } from './SplitMilestonesDialog';
 import { FundEscrowDialog } from './FundEscrowDialog';
 import { MilestonesList } from './MilestonesList';
+import { ReviewForm } from '@/components/reviews/ReviewForm';
+import { ReviewsList } from '@/components/reviews/ReviewsList';
 import { useAuth } from '@/hooks/useAuth';
 import { useConversations } from '@/hooks/useMessages';
 import { useNavigate } from 'react-router-dom';
@@ -24,8 +27,21 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
   const { contract, contractLoading } = useContract(jobId);
   const [showSplitDialog, setShowSplitDialog] = useState(false);
   const [showFundDialog, setShowFundDialog] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const { createConversation, isCreating } = useConversations();
   const navigate = useNavigate();
+
+  // Reviews
+  const {
+    reviews,
+    averageRating,
+    totalReviews,
+    ratingDistribution,
+    submitReview,
+    isSubmitting,
+    respondToReview,
+    isResponding,
+  } = useReviews(contract?.id, 'contract');
 
   const handleStartConversation = () => {
     if (!contract || !user?.id) return;
@@ -84,6 +100,11 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
   const needsFunding = contract.escrow_status === 'pending';
   const canSplit = milestones.length === 1 && isClient && needsFunding;
   const userRole = isProfessional ? 'professional' : isClient ? 'client' : null;
+  const professionalName = professional?.full_name || professional?.display_name || 'Professional';
+  
+  const canLeaveReview =
+    contract?.escrow_status === 'released' &&
+    !reviews?.some((r) => r.reviewer_id === user?.id);
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -200,6 +221,15 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
               <MessageCircle className="h-4 w-4 mr-2" />
               Message {isProfessional ? 'Client' : 'Professional'}
             </Button>
+            {canLeaveReview && (
+              <Button
+                variant="outline"
+                onClick={() => setShowReviewForm(true)}
+              >
+                <Star className="h-4 w-4 mr-2" />
+                Leave Review
+              </Button>
+            )}
           </div>
 
           {needsFunding && isClient && (
@@ -227,6 +257,34 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
           )}
         </CardContent>
       </Card>
+
+      {/* Review Section */}
+      {showReviewForm && canLeaveReview && (
+        <ReviewForm
+          revieweeName={professionalName}
+          onSubmit={(rating, comment) => {
+            submitReview({
+              contractId: contract.id,
+              revieweeId: contract?.tasker_id || '',
+              rating,
+              comment,
+            });
+            setShowReviewForm(false);
+          }}
+          isSubmitting={isSubmitting}
+        />
+      )}
+
+      {totalReviews > 0 && (
+        <ReviewsList
+          reviews={reviews || []}
+          averageRating={averageRating}
+          totalReviews={totalReviews}
+          ratingDistribution={ratingDistribution}
+          onRespond={respondToReview}
+          isResponding={isResponding}
+        />
+      )}
 
       {canSplit && (
         <SplitMilestonesDialog

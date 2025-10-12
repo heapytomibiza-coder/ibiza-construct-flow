@@ -1,230 +1,81 @@
-import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Star, Upload, X } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Star } from 'lucide-react';
 
-export interface ReviewFormData {
-  rating: number;
-  comment: string;
-  photos: File[];
-  categoryRatings?: Record<string, number>;
+interface ReviewFormProps {
+  revieweeName: string;
+  onSubmit: (rating: number, comment: string) => void;
+  isSubmitting: boolean;
 }
 
-export interface ReviewFormProps {
-  onSubmit: (data: ReviewFormData) => Promise<void>;
-  maxPhotos?: number;
-  maxPhotoSize?: number; // in MB
-  categories?: string[]; // e.g., ['Communication', 'Quality', 'Timeliness']
-  loading?: boolean;
-}
-
-export default function ReviewForm({ 
-  onSubmit, 
-  maxPhotos = 3,
-  maxPhotoSize = 5,
-  categories = [],
-  loading = false
-}: ReviewFormProps) {
-  const [rating, setRating] = useState(5);
-  const [hoverRating, setHoverRating] = useState(0);
+export const ReviewForm = ({ revieweeName, onSubmit, isSubmitting }: ReviewFormProps) => {
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState('');
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [categoryRatings, setCategoryRatings] = useState<Record<string, number>>({});
-  const { toast } = useToast();
 
-  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    
-    // Validate file sizes
-    const oversized = files.filter(f => f.size > maxPhotoSize * 1024 * 1024);
-    if (oversized.length > 0) {
-      toast({
-        title: "File too large",
-        description: `Photos must be under ${maxPhotoSize}MB each`,
-        variant: "destructive",
-      });
-      return;
+  const handleSubmit = () => {
+    if (rating > 0) {
+      onSubmit(rating, comment.trim());
+      setRating(0);
+      setComment('');
     }
-
-    // Limit number of photos
-    const newPhotos = [...photos, ...files].slice(0, maxPhotos);
-    setPhotos(newPhotos);
-  };
-
-  const removePhoto = (index: number) => {
-    setPhotos(photos.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = async () => {
-    if (!comment.trim()) {
-      toast({
-        title: "Comment required",
-        description: "Please share your experience",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    await onSubmit({ 
-      rating, 
-      comment: comment.trim(), 
-      photos,
-      categoryRatings: categories.length > 0 ? categoryRatings : undefined
-    });
-  };
-
-  const setCategoryRating = (category: string, value: number) => {
-    setCategoryRatings(prev => ({ ...prev, [category]: value }));
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Leave a Review</CardTitle>
+        <CardTitle>Leave a Review for {revieweeName}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Overall rating */}
-        <div className="space-y-2">
-          <Label>Overall Rating</Label>
+        <div>
+          <p className="text-sm font-medium mb-2">Rating</p>
           <div className="flex items-center gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
                 type="button"
+                onMouseEnter={() => setHoveredRating(star)}
+                onMouseLeave={() => setHoveredRating(0)}
                 onClick={() => setRating(star)}
-                onMouseEnter={() => setHoverRating(star)}
-                onMouseLeave={() => setHoverRating(0)}
                 className="transition-transform hover:scale-110"
               >
                 <Star
-                  className={`h-8 w-8 ${
-                    star <= (hoverRating || rating)
+                  className={`w-8 h-8 ${
+                    star <= (hoveredRating || rating)
                       ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-muted-foreground'
+                      : 'text-gray-300'
                   }`}
                 />
               </button>
             ))}
-            <span className="ml-2 text-sm text-muted-foreground">
-              {rating} star{rating !== 1 ? 's' : ''}
-            </span>
+            {rating > 0 && (
+              <span className="ml-2 text-sm text-muted-foreground">
+                {rating} {rating === 1 ? 'star' : 'stars'}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Category ratings */}
-        {categories.length > 0 && (
-          <div className="space-y-3 pt-2">
-            <Label>Rate by Category</Label>
-            {categories.map((category) => (
-              <div key={category} className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">{category}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {categoryRatings[category] || 0}/5
-                  </span>
-                </div>
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setCategoryRating(category, star)}
-                      className="transition-transform hover:scale-110"
-                    >
-                      <Star
-                        className={`h-5 w-5 ${
-                          star <= (categoryRatings[category] || 0)
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-muted-foreground'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Comment */}
-        <div className="space-y-2">
-          <Label htmlFor="comment">Your Review</Label>
+        <div>
+          <p className="text-sm font-medium mb-2">Comment (optional)</p>
           <Textarea
-            id="comment"
-            maxLength={500}
-            placeholder="Share details about your experience..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="min-h-32"
+            placeholder="Share your experience..."
+            rows={4}
           />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>Be specific and honest</span>
-            <span>{comment.length}/500</span>
-          </div>
         </div>
 
-        {/* Photo upload */}
-        <div className="space-y-2">
-          <Label>Photos (optional)</Label>
-          <div className="space-y-2">
-            {photos.length < maxPhotos && (
-              <div>
-                <Input
-                  type="file"
-                  id="photo-upload"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFiles}
-                  className="hidden"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('photo-upload')?.click()}
-                  className="w-full"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Add Photos (up to {maxPhotos}, max {maxPhotoSize}MB each)
-                </Button>
-              </div>
-            )}
-
-            {photos.length > 0 && (
-              <div className="grid grid-cols-3 gap-2">
-                {photos.map((file, idx) => (
-                  <div key={idx} className="relative group">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`Upload ${idx + 1}`}
-                      className="w-full h-24 object-cover rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(idx)}
-                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Submit */}
-        <Button 
-          onClick={handleSubmit} 
-          disabled={loading || !comment.trim()}
+        <Button
+          onClick={handleSubmit}
+          disabled={rating === 0 || isSubmitting}
           className="w-full"
         >
-          {loading ? 'Submitting...' : 'Submit Review'}
+          {isSubmitting ? 'Submitting...' : 'Submit Review'}
         </Button>
       </CardContent>
     </Card>
   );
-}
+};

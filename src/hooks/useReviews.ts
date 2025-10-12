@@ -1,222 +1,146 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export interface Review {
   id: string;
-  job_id: string;
+  job_id?: string;
+  contract_id?: string;
   reviewer_id: string;
-  reviewer_name: string;
-  reviewer_avatar?: string;
   reviewee_id: string;
   rating: number;
-  title: string;
-  comment: string;
-  category_ratings?: Record<string, number>;
+  comment?: string;
+  response?: string;
   is_verified: boolean;
-  helpful_count: number;
-  unhelpful_count: number;
-  response_text?: string;
-  response_at?: string;
   created_at: string;
-  moderation_status: string;
+  updated_at: string;
 }
 
-export interface ReviewStats {
-  total_reviews: number;
-  average_rating: number;
-  rating_distribution: Record<string, number>;
-  category_averages: Record<string, number>;
-  response_rate: number;
-}
-
-export function useReviews(params?: { userId?: string; professionalId?: string }) {
-  const userId = params?.userId || params?.professionalId;
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [stats, setStats] = useState<ReviewStats | null>(null);
-  const [loading, setLoading] = useState(false);
+export const useReviews = (entityId?: string, entityType: 'job' | 'contract' | 'professional' = 'professional') => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (userId) {
-      fetchReviews();
-      fetchStats();
-    }
-  }, [userId]);
+  const { data: reviews, isLoading } = useQuery({
+    queryKey: ["reviews", entityType, entityId],
+    queryFn: async () => {
+      if (!entityId) return [];
 
-  const fetchReviews = async (filters?: { min_rating?: number; limit?: number; offset?: number }) => {
-    if (!userId) return;
-    
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.rpc('get_reviews_for_user', {
-        p_user_id: userId,
-        p_min_rating: filters?.min_rating,
-        p_limit: filters?.limit || 20,
-        p_offset: filters?.offset || 0,
-      });
+      let query = supabase
+        .from("reviews")
+        .select(`
+          *,
+          reviewer:profiles!reviews_reviewer_id_fkey(id, full_name, display_name, avatar_url),
+          reviewee:profiles!reviews_reviewee_id_fkey(id, full_name, display_name, avatar_url)
+        `)
+        .order("created_at", { ascending: false });
 
+      if (entityType === 'job') {
+        query = query.eq('job_id', entityId);
+      } else if (entityType === 'contract') {
+        query = query.eq('contract_id', entityId);
+      } else if (entityType === 'professional') {
+        query = query.eq('reviewee_id', entityId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
-      setReviews((data || []).map(review => ({
-        ...review,
-        reviewee_id: userId || '', // Add reviewee_id from the userId parameter
-        category_ratings: review.category_ratings as Record<string, number> | undefined,
-        unhelpful_count: 0,
-        moderation_status: 'approved'
-      })));
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load reviews',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data as Review[];
+    },
+    enabled: !!entityId,
+  });
 
-  const fetchStats = async () => {
-    if (!userId) return;
-
-    try {
+  const submitReview = useMutation({
+    mutationFn: async ({
+      jobId,
+      contractId,
+      revieweeId,
+      rating,
+      comment,
+    }: {
+      jobId?: string;
+      contractId?: string;
+      revieweeId: string;
+      rating: number;
+      comment?: string;
+    }) => {
       const { data, error } = await supabase
-        .from('rating_summary')
-        .select('*')
-        .eq('user_id', userId)
+        .from("reviews")
+        .insert({
+          job_id: jobId,
+          contract_id: contractId,
+          reviewee_id: revieweeId,
+          rating,
+          comment,
+          is_verified: true,
+        })
+        .select()
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error;
-      setStats(data as any);
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    }
-  };
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+      toast({
+        title: "Review submitted",
+        description: "Thank you for your feedback!",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to submit review",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
-  const submitReview = async (reviewData: {
-    job_id: string;
-    reviewee_id: string;
-    rating: number;
-    title?: string;
-    comment: string;
-    category_ratings?: Record<string, number>;
-  }) => {
-    try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) throw new Error('Not authenticated');
-
-      const { error } = await supabase
-        .from('reviews')
-        .insert({
-          ...reviewData,
-          reviewer_id: user.data.user.id,
-        });
+  const respondToReview = useMutation({
+    mutationFn: async ({ reviewId, response }: { reviewId: string; response: string }) => {
+      const { data, error} = await supabase
+        .from("reviews")
+        .update({ response })
+        .eq("id", reviewId)
+        .select()
+        .single();
 
       if (error) throw error;
-      
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
       toast({
-        title: 'Success',
-        description: 'Review submitted successfully',
+        title: "Response posted",
+        description: "Your response has been added to the review.",
       });
-      
-      await fetchReviews();
-      await fetchStats();
-    } catch (error: any) {
-      console.error('Error submitting review:', error);
+    },
+    onError: (error: any) => {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to submit review',
-        variant: 'destructive',
+        title: "Failed to post response",
+        description: error.message,
+        variant: "destructive",
       });
-      throw error;
-    }
-  };
+    },
+  });
 
-  const respondToReview = async (reviewId: string, responseText: string) => {
-    try {
-      const { error } = await supabase
-        .from('reviews')
-        .update({
-          response_text: responseText,
-          response_at: new Date().toISOString(),
-        })
-        .eq('id', reviewId);
+  const averageRating = reviews?.length
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
 
-      if (error) throw error;
-      
-      toast({
-        title: 'Success',
-        description: 'Response posted successfully',
-      });
-      
-      await fetchReviews();
-    } catch (error) {
-      console.error('Error responding to review:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to post response',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const markReviewHelpful = async (reviewId: string, isHelpful: boolean) => {
-    try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) throw new Error('Not authenticated');
-
-      const { error } = await supabase
-        .from('review_helpfulness')
-        .upsert({
-          review_id: reviewId,
-          user_id: user.data.user.id,
-          is_helpful: isHelpful,
-        });
-
-      if (error) throw error;
-      await fetchReviews();
-    } catch (error) {
-      console.error('Error marking review helpful:', error);
-    }
-  };
-
-  const reportReview = async (reviewId: string, reason: string) => {
-    try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) throw new Error('Not authenticated');
-
-      const { error } = await supabase
-        .from('review_reports')
-        .insert({
-          review_id: reviewId,
-          reported_by: user.data.user.id,
-          reason,
-        });
-
-      if (error) throw error;
-      
-      toast({
-        title: 'Success',
-        description: 'Review reported successfully',
-      });
-    } catch (error) {
-      console.error('Error reporting review:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to report review',
-        variant: 'destructive',
-      });
-    }
-  };
+  const ratingDistribution = reviews?.reduce((acc, review) => {
+    acc[review.rating] = (acc[review.rating] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
 
   return {
     reviews,
-    stats,
-    loading,
-    fetchReviews,
-    submitReview,
-    respondToReview,
-    markReviewHelpful,
-    reportReview,
+    isLoading,
+    submitReview: submitReview.mutate,
+    isSubmitting: submitReview.isPending,
+    respondToReview: respondToReview.mutate,
+    isResponding: respondToReview.isPending,
+    averageRating,
+    ratingDistribution,
+    totalReviews: reviews?.length || 0,
   };
-}
+};
