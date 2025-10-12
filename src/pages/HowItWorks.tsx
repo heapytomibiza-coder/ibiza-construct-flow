@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Search, MessageSquare, CheckCircle, Wand2, Shield, Star, Users, Clock, MapPin, Camera, CreditCard, UserCheck, Settings, ChevronDown, ChevronUp, Bell } from 'lucide-react';
@@ -134,6 +135,14 @@ const HowItWorks = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>How It Works - Client & Professional Guide | CS Ibiza</title>
+        <meta 
+          name="description" 
+          content="Learn how CS Ibiza connects clients with professionals. Step-by-step guide for posting jobs, finding professionals, and completing projects." 
+        />
+        <link rel="canonical" href="https://csibiza.com/how-it-works" />
+      </Helmet>
       <Header />
       <main className="pt-20">
         {/* Hero Section */}

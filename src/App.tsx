@@ -352,14 +352,18 @@ function AppContent() {
                       </RouteGuard>
                     } />
                     <Route path="/dashboard/client" element={
-                      <RouteGuard requiredRole="client">
-                        <UnifiedClientDashboard />
-                      </RouteGuard>
+                      <ErrorBoundary fallback={<div className="p-6 text-center">Client dashboard error. Please refresh or contact support.</div>}>
+                        <RouteGuard requiredRole="client">
+                          <UnifiedClientDashboard />
+                        </RouteGuard>
+                      </ErrorBoundary>
                     } />
                     <Route path="/dashboard/pro" element={
-                      <RouteGuard requiredRole="professional">
-                        <UnifiedProfessionalDashboard />
-                      </RouteGuard>
+                      <ErrorBoundary fallback={<div className="p-6 text-center">Professional dashboard error. Please refresh or contact support.</div>}>
+                        <RouteGuard requiredRole="professional">
+                          <UnifiedProfessionalDashboard />
+                        </RouteGuard>
+                      </ErrorBoundary>
                     } />
                     <Route path="/dashboard/admin" element={
                       <RouteGuard requiredRole="admin">

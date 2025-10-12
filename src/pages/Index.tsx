@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { Helmet } from 'react-helmet-async';
 
 const Index = () => {
   const { t } = useTranslation('components');
@@ -23,6 +24,14 @@ const Index = () => {
   
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>CS Ibiza - Professional Construction & Renovation Services in Ibiza</title>
+        <meta 
+          name="description" 
+          content="Connect with verified construction professionals in Ibiza. Get instant quotes for renovations, repairs, and building projects. Trusted by homeowners and businesses." 
+        />
+        <link rel="canonical" href="https://csibiza.com/" />
+      </Helmet>
       <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
       
       <main>
