@@ -1,78 +1,96 @@
 /**
- * Search System Types
- * Phase 17: Advanced Search & Filtering System
- * 
- * Type definitions for search, filtering, and faceted search
+ * Search Types
+ * Phase 26: Advanced Search & Filtering System
  */
 
-export interface SearchOptions {
+export interface SearchableItem {
+  id: string;
+  type: string;
+  title: string;
+  description?: string;
+  content?: string;
+  tags?: string[];
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+export interface SearchQuery {
   query: string;
+  type?: string | string[];
   filters?: SearchFilter[];
-  sort?: SortOption;
-  page?: number;
+  sort?: SearchSort;
   limit?: number;
+  offset?: number;
 }
 
 export interface SearchFilter {
   field: string;
   operator: FilterOperator;
   value: any;
-  label?: string;
 }
 
 export type FilterOperator = 
-  | 'equals'
-  | 'notEquals'
-  | 'contains'
-  | 'startsWith'
-  | 'endsWith'
-  | 'greaterThan'
-  | 'lessThan'
-  | 'greaterThanOrEqual'
-  | 'lessThanOrEqual'
-  | 'in'
-  | 'notIn'
-  | 'between'
-  | 'isEmpty'
-  | 'isNotEmpty';
+  | 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' 
+  | 'in' | 'nin' | 'contains' | 'startsWith' | 'endsWith' | 'between';
 
-export interface SortOption {
+export interface SearchSort {
   field: string;
   direction: 'asc' | 'desc';
 }
 
-export interface SearchResult<T = any> {
+export interface SearchResult<T = SearchableItem> {
   items: T[];
   total: number;
-  page: number;
-  limit: number;
-  hasMore: boolean;
+  took: number;
+  facets?: SearchFacets;
 }
 
-export interface SearchSuggestion {
-  id: string;
-  text: string;
-  type: 'query' | 'result' | 'recent';
-  metadata?: Record<string, any>;
+export interface SearchFacets {
+  [field: string]: FacetValue[];
 }
 
-export interface FacetOption {
-  value: string;
-  label: string;
+export interface FacetValue {
+  value: any;
   count: number;
-}
-
-export interface Facet {
-  field: string;
-  label: string;
-  options: FacetOption[];
-  type: 'checkbox' | 'radio' | 'range' | 'select';
 }
 
 export interface SavedSearch {
   id: string;
+  userId: string;
   name: string;
-  query: string;
-  filters: SearchFilter[];
+  query: SearchQuery;
   createdAt: Date;
+  updatedAt?: Date;
+  executeCount?: number;
+  lastExecutedAt?: Date;
+}
+
+export interface SearchHistory {
+  id: string;
+  userId: string;
+  query: string;
+  timestamp: Date;
+  resultsCount: number;
+}
+
+export interface SearchIndex {
+  [key: string]: Set<string>;
+}
+
+export interface SearchConfig {
+  caseSensitive?: boolean;
+  fuzzyMatch?: boolean;
+  fuzzyThreshold?: number;
+  stopWords?: string[];
+  boostFields?: Record<string, number>;
+  minSearchLength?: number;
+  maxResults?: number;
+}
+
+export interface FilterGroup {
+  id: string;
+  name: string;
+  filters: SearchFilter[];
+  operator: 'AND' | 'OR';
 }

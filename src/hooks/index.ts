@@ -32,6 +32,7 @@ export * from './performance';
 export * from './i18n';
 
 // Phase 17: Search Hooks
+// Renamed to avoid conflicts with Phase 26
 export * from './search';
 
 // Phase 18: Collaboration Hooks
