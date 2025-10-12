@@ -123,7 +123,7 @@ export default function DiscoveryPage() {
                 <Card
                   key={job.id}
                   className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate(`/job/${job.id}`)}
+                  onClick={() => navigate(`/jobs/${job.id}`)}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">

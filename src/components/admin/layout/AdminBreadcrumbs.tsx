@@ -1,13 +1,31 @@
 import { useLocation, Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function AdminBreadcrumbs() {
   const location = useLocation();
+  const { t } = useTranslation();
   const pathSegments = location.pathname.split('/').filter(Boolean);
+
+  // Label mapping for common routes
+  const labelMap: Record<string, string> = {
+    'admin': t('navigation.dashboard'),
+    'jobs': 'Jobs',
+    'users': 'Users',
+    'profiles': 'Profiles',
+    'disputes': 'Disputes',
+    'analytics': 'Analytics',
+    'settings': t('navigation.settings'),
+    'questions': 'Questions',
+    'website-settings': 'Website Settings',
+    'verifications': 'Verifications',
+    'contracts': 'Contracts',
+    'bookings': 'Bookings',
+  };
 
   const breadcrumbs = pathSegments.map((segment, index) => {
     const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
-    const label = segment.charAt(0).toUpperCase() + segment.slice(1);
+    const label = labelMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
     
     return { path, label };
   });

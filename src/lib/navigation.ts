@@ -53,7 +53,23 @@ export const getProfessionalRoute = (
  * Get admin route for specific section
  */
 export const getAdminRoute = (
-  section: 'questions' | 'website-settings' | 'verifications'
+  section: 'questions' | 'website-settings' | 'verifications' | 'users' | 'jobs' | 'profiles' | 'disputes' | 'analytics' | 'settings' | 'contracts'
 ): string => {
   return `/admin/${section}`;
+};
+
+/**
+ * Get contract route
+ */
+export const getContractRoute = (contractId: string, action?: 'fund'): string => {
+  if (action === 'fund') return `/contracts/${contractId}/fund`;
+  return `/contracts/${contractId}`;
+};
+
+/**
+ * Get job route
+ */
+export const getJobRoute = (jobId: string, page?: 'matches'): string => {
+  if (page === 'matches') return `/jobs/${jobId}/matches`;
+  return `/jobs/${jobId}`;
 };

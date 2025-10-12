@@ -13,5 +13,8 @@
   "templates": "Templates",
   "profile": "Profile",
   "settings": "Settings",
-  "jobBoard": "Job Board"
+  "jobBoard": "Job Board",
+  "jobs": "Jobs",
+  "contracts": "Contracts",
+  "payments": "Payments"
 }

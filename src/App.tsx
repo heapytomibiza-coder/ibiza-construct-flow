@@ -305,12 +305,7 @@ function AppContent() {
           </RouteGuard>
         } />
         
-        {/* Job Detail Page */}
-        <Route path="/job/:id" element={
-          <RouteGuard requiredRole="client">
-            <JobDetailPage />
-          </RouteGuard>
-        } />
+        {/* Job Detail Page - Standardized Route */}
         
         {/* Payments Page */}
         <Route path="/payments" element={
@@ -546,24 +541,6 @@ function AppContent() {
               <CalculatorAnalytics />
             </RouteGuard>
           } />
-          
-          {/* New Unified Admin Routes with AdminLayout */}
-          <Route path="/admin/v2" element={
-            <RouteGuard requiredRole="admin">
-              <AdminLayout>
-                <Outlet />
-              </AdminLayout>
-            </RouteGuard>
-          }>
-            <Route index element={<NewAdminDashboard />} />
-            <Route path="users" element={<NewAdminUsers />} />
-            <Route path="jobs" element={<NewAdminJobs />} />
-            <Route path="bookings" element={<NewAdminBookings />} />
-            <Route path="profiles" element={<NewAdminProfiles />} />
-            <Route path="disputes" element={<NewAdminDisputes />} />
-            <Route path="analytics" element={<NewAdminAnalytics />} />
-            <Route path="settings" element={<NewAdminSettings />} />
-          </Route>
           
           {/* Settings Routes - Role-Aware */}
           <Route path="/settings" element={

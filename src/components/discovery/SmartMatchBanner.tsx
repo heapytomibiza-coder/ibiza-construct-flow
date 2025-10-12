@@ -98,7 +98,7 @@ export const SmartMatchBanner: React.FC<SmartMatchBannerProps> = ({
             </p>
             <div className="flex items-center gap-3">
               <Button 
-                onClick={() => navigate(`/job/${jobId}/matches`)}
+                onClick={() => navigate(`/jobs/${jobId}/matches`)}
                 size="sm"
               >
                 View All Matches

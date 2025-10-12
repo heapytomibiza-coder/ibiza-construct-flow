@@ -399,7 +399,7 @@ const JobsTab = ({ bookings, loading }: any) => {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    onClick={() => navigate(`/job/${booking.id}`)}
+                    onClick={() => navigate(`/jobs/${booking.id}`)}
                   >
                     View
                   </Button>

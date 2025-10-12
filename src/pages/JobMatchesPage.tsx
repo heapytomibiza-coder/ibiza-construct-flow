@@ -58,7 +58,7 @@ export default function JobMatchesPage() {
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={() => navigate(`/job/${jobId}`)}
+            onClick={() => navigate(`/jobs/${jobId}`)}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

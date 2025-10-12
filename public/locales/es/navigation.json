@@ -13,5 +13,8 @@
   "templates": "Plantillas",
   "profile": "Perfil",
   "settings": "Configuración",
-  "jobBoard": "Tablón de Empleos"
+  "jobBoard": "Tablón de Empleos",
+  "jobs": "Trabajos",
+  "contracts": "Contratos",
+  "payments": "Pagos"
 }
