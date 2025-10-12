@@ -10,9 +10,7 @@ import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { SkipToContent } from "@/components/accessibility/SkipToContent";
 import { useWebVitals } from "@/hooks/useWebVitals";
 import { useLanguage } from "@/hooks/useLanguage";
-import { ErrorBoundary } from "./components/error/ErrorBoundary";
 import MobileAppWrapper from "./components/app/MobileAppWrapper";
-import { SkeletonLoader } from "./components/loading/SkeletonLoader";
 import { useFeature } from "./contexts/FeatureFlagsContext";
 import { BundleAnalyzer, preloadRoute } from "./components/performance/BundleOptimizer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,129 +18,132 @@ import { initRealtime } from "./lib/realtimeSync";
 import { ImpersonationBanner } from "./components/admin/ImpersonationBanner";
 import { HelmetProvider } from "react-helmet-async";
 import { CookieConsent } from "./components/layout/CookieConsent";
+import { ErrorBoundary, PageLoader } from "@/components/common";
+import { lazyWithRetry } from "@/lib/utils/lazyLoad";
+import { ROUTE_PATHS, ROUTE_GROUPS } from "@/config/routes.config";
 
 const queryClient = new QueryClient();
 
-// Shared route fallback component
-const RouteFallback = () => <SkeletonLoader variant="card" count={3} />;
+// Phase 11: Enhanced route fallback with standardized loading
+const RouteFallback = () => <PageLoader />;
 
-// Lazy load components for better performance
-const Index = React.lazy(() => import("./pages/Index"));
-const Dashboard = React.lazy(() => import("./pages/Dashboard"));
-const NotFound = React.lazy(() => import("./pages/NotFound"));
-const UnifiedAuth = React.lazy(() => import("./pages/UnifiedAuth"));
-const VerifyEmail = React.lazy(() => import("./pages/VerifyEmail"));
-const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
-const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
-const AuthCallback = React.lazy(() => import("./pages/AuthCallback"));
-const QuickStart = React.lazy(() => import("./pages/QuickStart"));
-const RoleSwitcher = React.lazy(() => import("./pages/RoleSwitcher"));
-const RouteGuard = React.lazy(() => import("./components/RouteGuard"));
-const UnifiedClientDashboard = React.lazy(() => import("./components/dashboards/UnifiedClientDashboard"));
-const UnifiedProfessionalDashboard = React.lazy(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
-const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboardPage"));
+// Phase 11: Lazy load components with retry logic for better reliability
+const Index = lazyWithRetry(() => import("./pages/Index"));
+const Dashboard = lazyWithRetry(() => import("./pages/Dashboard"));
+const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
+const UnifiedAuth = lazyWithRetry(() => import("./pages/UnifiedAuth"));
+const VerifyEmail = lazyWithRetry(() => import("./pages/VerifyEmail"));
+const ForgotPassword = lazyWithRetry(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazyWithRetry(() => import("./pages/ResetPassword"));
+const AuthCallback = lazyWithRetry(() => import("./pages/AuthCallback"));
+const QuickStart = lazyWithRetry(() => import("./pages/QuickStart"));
+const RoleSwitcher = lazyWithRetry(() => import("./pages/RoleSwitcher"));
+const RouteGuard = lazyWithRetry(() => import("./components/RouteGuard"));
+const UnifiedClientDashboard = lazyWithRetry(() => import("./components/dashboards/UnifiedClientDashboard"));
+const UnifiedProfessionalDashboard = lazyWithRetry(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
+const AdminDashboard = lazyWithRetry(() => import("./pages/admin/AdminDashboardPage"));
 
 // Admin Pages
-const AdminHome = React.lazy(() => import("./pages/admin/AdminHome"));
-const Analytics = React.lazy(() => import("./pages/admin/Analytics"));
-const ProfilesQueue = React.lazy(() => import("./pages/admin/ProfilesQueue"));
-const JobsQueue = React.lazy(() => import("./pages/admin/JobsQueue"));
-const ReviewsQueue = React.lazy(() => import("./pages/admin/ReviewsQueue"));
-const DisputesQueue = React.lazy(() => import("./pages/admin/DisputesQueue"));
-const ServicesPage = React.lazy(() => import("./pages/admin/ServicesPage"));
-const HealthMonitor = React.lazy(() => import("./pages/admin/HealthMonitor"));
-const AdminSettingsPage = React.lazy(() => import("./pages/admin/AdminSettingsPage"));
-const AdminQuestions = React.lazy(() => import("./pages/AdminQuestions"));
-const PackCompareView = React.lazy(() => import("./components/admin/packs/PackCompareView").then(m => ({ default: m.PackCompareView })));
-const WebsiteSettings = React.lazy(() => import("./pages/admin/WebsiteSettings"));
-const AdminVerificationsPage = React.lazy(() => import("./pages/AdminVerificationsPage"));
-const DisputeAnalyticsPage = React.lazy(() => import("./pages/admin/DisputeAnalyticsPage"));
-const AdminDisputeDetailPage = React.lazy(() => import("./pages/admin/AdminDisputeDetailPage"));
-const AuditLog = React.lazy(() => import("./pages/admin/AuditLog"));
-const AdminUsers = React.lazy(() => import("./pages/admin/Users"));
-const AdminServices = React.lazy(() => import("./pages/admin/Services"));
-const AdminJobs = React.lazy(() => import("./pages/admin/Jobs"));
-const AdminBookings = React.lazy(() => import("./pages/admin/Bookings"));
-const AdminDatabaseOverview = React.lazy(() => import("./pages/admin/DatabaseOverview"));
-const AdminUserInspector = React.lazy(() => import("./pages/admin/UserInspector"));
-const AdminServiceManager = React.lazy(() => import("./pages/admin/ServiceManager"));
-const AdminDocumentReview = React.lazy(() => import("./pages/admin/DocumentReview"));
-const AdminFeatureFlags = React.lazy(() => import("./pages/admin/FeatureFlags"));
-const AdminTestRunner = React.lazy(() => import("./pages/admin/TestRunner"));
-const AdminProfileModeration = React.lazy(() => import("./pages/admin/ProfileModeration"));
-const QuestionsManager = React.lazy(() => import("./pages/admin/QuestionsManager"));
-const AdminHelpdeskPage = React.lazy(() => import("./pages/admin/AdminHelpdeskPage"));
-const AdminHelpdeskDetailPage = React.lazy(() => import("./pages/admin/AdminHelpdeskDetailPage"));
-const AdminReviewModerationPage = React.lazy(() => import("./pages/admin/AdminReviewModerationPage"));
-const AdminReportsPage = React.lazy(() => import("./pages/admin/AdminReportsPage"));
-const AdminOverviewPage = React.lazy(() => import("./pages/admin/AdminOverviewPage"));
-const SecuritySettingsPage = React.lazy(() => import("./pages/admin/SecuritySettingsPage"));
-const IntelligencePage = React.lazy(() => import("./pages/admin/IntelligencePage"));
-const IntegrationHubPage = React.lazy(() => import("./pages/admin/IntegrationHubPage"));
-const PerformanceMonitorPage = React.lazy(() => import("./pages/admin/PerformanceMonitorPage"));
-const CalculatorSettings = React.lazy(() => import("./pages/admin/CalculatorSettings"));
-const PricingManager = React.lazy(() => import("./pages/admin/PricingManager"));
-const CalculatorAnalytics = React.lazy(() => import("./pages/admin/CalculatorAnalytics"));
+const AdminHome = lazyWithRetry(() => import("./pages/admin/AdminHome"));
+const Analytics = lazyWithRetry(() => import("./pages/admin/Analytics"));
+const ProfilesQueue = lazyWithRetry(() => import("./pages/admin/ProfilesQueue"));
+const JobsQueue = lazyWithRetry(() => import("./pages/admin/JobsQueue"));
+const ReviewsQueue = lazyWithRetry(() => import("./pages/admin/ReviewsQueue"));
+const DisputesQueue = lazyWithRetry(() => import("./pages/admin/DisputesQueue"));
+const ServicesPage = lazyWithRetry(() => import("./pages/admin/ServicesPage"));
+const HealthMonitor = lazyWithRetry(() => import("./pages/admin/HealthMonitor"));
+const AdminSettingsPage = lazyWithRetry(() => import("./pages/admin/AdminSettingsPage"));
+const AdminQuestions = lazyWithRetry(() => import("./pages/AdminQuestions"));
+const PackCompareView = lazyWithRetry(() => import("./components/admin/packs/PackCompareView").then(m => ({ default: m.PackCompareView })));
+const WebsiteSettings = lazyWithRetry(() => import("./pages/admin/WebsiteSettings"));
+const AdminVerificationsPage = lazyWithRetry(() => import("./pages/AdminVerificationsPage"));
+const DisputeAnalyticsPage = lazyWithRetry(() => import("./pages/admin/DisputeAnalyticsPage"));
+const AdminDisputeDetailPage = lazyWithRetry(() => import("./pages/admin/AdminDisputeDetailPage"));
+const AuditLog = lazyWithRetry(() => import("./pages/admin/AuditLog"));
+const AdminUsers = lazyWithRetry(() => import("./pages/admin/Users"));
+const AdminServices = lazyWithRetry(() => import("./pages/admin/Services"));
+const AdminJobs = lazyWithRetry(() => import("./pages/admin/Jobs"));
+const AdminBookings = lazyWithRetry(() => import("./pages/admin/Bookings"));
+const AdminDatabaseOverview = lazyWithRetry(() => import("./pages/admin/DatabaseOverview"));
+const AdminUserInspector = lazyWithRetry(() => import("./pages/admin/UserInspector"));
+const AdminServiceManager = lazyWithRetry(() => import("./pages/admin/ServiceManager"));
+const AdminDocumentReview = lazyWithRetry(() => import("./pages/admin/DocumentReview"));
+const AdminFeatureFlags = lazyWithRetry(() => import("./pages/admin/FeatureFlags"));
+const AdminTestRunner = lazyWithRetry(() => import("./pages/admin/TestRunner"));
+const AdminProfileModeration = lazyWithRetry(() => import("./pages/admin/ProfileModeration"));
+const QuestionsManager = lazyWithRetry(() => import("./pages/admin/QuestionsManager"));
+const AdminHelpdeskPage = lazyWithRetry(() => import("./pages/admin/AdminHelpdeskPage"));
+const AdminHelpdeskDetailPage = lazyWithRetry(() => import("./pages/admin/AdminHelpdeskDetailPage"));
+const AdminReviewModerationPage = lazyWithRetry(() => import("./pages/admin/AdminReviewModerationPage"));
+const AdminReportsPage = lazyWithRetry(() => import("./pages/admin/AdminReportsPage"));
+const AdminOverviewPage = lazyWithRetry(() => import("./pages/admin/AdminOverviewPage"));
+const SecuritySettingsPage = lazyWithRetry(() => import("./pages/admin/SecuritySettingsPage"));
+const IntelligencePage = lazyWithRetry(() => import("./pages/admin/IntelligencePage"));
+const IntegrationHubPage = lazyWithRetry(() => import("./pages/admin/IntegrationHubPage"));
+const PerformanceMonitorPage = lazyWithRetry(() => import("./pages/admin/PerformanceMonitorPage"));
+const CalculatorSettings = lazyWithRetry(() => import("./pages/admin/CalculatorSettings"));
+const PricingManager = lazyWithRetry(() => import("./pages/admin/PricingManager"));
+const CalculatorAnalytics = lazyWithRetry(() => import("./pages/admin/CalculatorAnalytics"));
 
 // Job & Professional Pages
-const PostJob = React.lazy(() => import("./pages/PostJob"));
-const JobBoardPage = React.lazy(() => import("./pages/JobBoardPage"));
-const PostJobSuccessPage = React.lazy(() => import("./pages/PostJobSuccessPage"));
-const Discovery = React.lazy(() => import("./pages/Discovery"));
-const DiscoveryPage = React.lazy(() => import("./pages/DiscoveryPage"));
-const BrowseProfessionalsPage = React.lazy(() => import("./pages/BrowseProfessionalsPage"));
-const ProfessionalProfile = React.lazy(() => import("./pages/ProfessionalProfile"));
-const ProfessionalOnboardingPage = React.lazy(() => import("./pages/ProfessionalOnboardingPage"));
-const ProfessionalVerificationPage = React.lazy(() => import("./pages/ProfessionalVerificationPage"));
-const ProfessionalServicesPage = React.lazy(() => import("./pages/ProfessionalServicesPage"));
-const ProfessionalPortfolioPage = React.lazy(() => import("./pages/ProfessionalPortfolioPage"));
-const ProfessionalAvailabilityPage = React.lazy(() => import("./pages/ProfessionalAvailabilityPage"));
-const ProfessionalCalendarPage = React.lazy(() => import("./pages/ProfessionalCalendarPage"));
-const ProfessionalEarningsPage = React.lazy(() => import("./pages/ProfessionalEarningsPage"));
-const ServiceSetupWizard = React.lazy(() => import("./pages/ServiceSetupWizard"));
-const ProfessionalPayoutSetup = React.lazy(() => import("./pages/ProfessionalPayoutSetup"));
+const PostJob = lazyWithRetry(() => import("./pages/PostJob"));
+const JobBoardPage = lazyWithRetry(() => import("./pages/JobBoardPage"));
+const PostJobSuccessPage = lazyWithRetry(() => import("./pages/PostJobSuccessPage"));
+const Discovery = lazyWithRetry(() => import("./pages/Discovery"));
+const DiscoveryPage = lazyWithRetry(() => import("./pages/DiscoveryPage"));
+const BrowseProfessionalsPage = lazyWithRetry(() => import("./pages/BrowseProfessionalsPage"));
+const ProfessionalProfile = lazyWithRetry(() => import("./pages/ProfessionalProfile"));
+const ProfessionalOnboardingPage = lazyWithRetry(() => import("./pages/ProfessionalOnboardingPage"));
+const ProfessionalVerificationPage = lazyWithRetry(() => import("./pages/ProfessionalVerificationPage"));
+const ProfessionalServicesPage = lazyWithRetry(() => import("./pages/ProfessionalServicesPage"));
+const ProfessionalPortfolioPage = lazyWithRetry(() => import("./pages/ProfessionalPortfolioPage"));
+const ProfessionalAvailabilityPage = lazyWithRetry(() => import("./pages/ProfessionalAvailabilityPage"));
+const ProfessionalCalendarPage = lazyWithRetry(() => import("./pages/ProfessionalCalendarPage"));
+const ProfessionalEarningsPage = lazyWithRetry(() => import("./pages/ProfessionalEarningsPage"));
+const ServiceSetupWizard = lazyWithRetry(() => import("./pages/ServiceSetupWizard"));
+const ProfessionalPayoutSetup = lazyWithRetry(() => import("./pages/ProfessionalPayoutSetup"));
 
 // Contract & Payment Pages
-const BookingPage = React.lazy(() => import("./pages/BookingPage"));
-const ContractManagementPage = React.lazy(() => import("./pages/ContractManagementPage"));
-const PaymentProcessingPage = React.lazy(() => import("./pages/PaymentProcessingPage"));
-const EscrowManagementPage = React.lazy(() => import("./pages/EscrowManagementPage"));
-const JobDetailPage = React.lazy(() => import("./pages/JobDetailPage"));
-const JobMatchesPage = React.lazy(() => import("./pages/JobMatchesPage"));
-const PaymentSuccess = React.lazy(() => import("./pages/PaymentSuccess"));
-const PaymentCanceled = React.lazy(() => import("./pages/PaymentCanceled"));
-const SubscriptionSuccess = React.lazy(() => import("./pages/SubscriptionSuccess"));
-const SubscriptionCanceled = React.lazy(() => import("./pages/SubscriptionCanceled"));
-const PaymentsPage = React.lazy(() => import("./pages/PaymentsPage"));
+const BookingPage = lazyWithRetry(() => import("./pages/BookingPage"));
+const ContractManagementPage = lazyWithRetry(() => import("./pages/ContractManagementPage"));
+const PaymentProcessingPage = lazyWithRetry(() => import("./pages/PaymentProcessingPage"));
+const EscrowManagementPage = lazyWithRetry(() => import("./pages/EscrowManagementPage"));
+const JobDetailPage = lazyWithRetry(() => import("./pages/JobDetailPage"));
+const JobMatchesPage = lazyWithRetry(() => import("./pages/JobMatchesPage"));
+const PaymentSuccess = lazyWithRetry(() => import("./pages/PaymentSuccess"));
+const PaymentCanceled = lazyWithRetry(() => import("./pages/PaymentCanceled"));
+const SubscriptionSuccess = lazyWithRetry(() => import("./pages/SubscriptionSuccess"));
+const SubscriptionCanceled = lazyWithRetry(() => import("./pages/SubscriptionCanceled"));
+const PaymentsPage = lazyWithRetry(() => import("./pages/PaymentsPage"));
 
 // Messaging
-const MessagingPage = React.lazy(() => import("./pages/MessagingPage"));
-const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
-const ConversationPage = React.lazy(() => import("./pages/ConversationPage"));
+const MessagingPage = lazyWithRetry(() => import("./pages/MessagingPage"));
+const MessagesPage = lazyWithRetry(() => import("./pages/MessagesPage"));
+const ConversationPage = lazyWithRetry(() => import("./pages/ConversationPage"));
 
 // Public Pages
-const HowItWorks = React.lazy(() => import("./pages/HowItWorks"));
-const Contact = React.lazy(() => import("./pages/Contact"));
-const SpecialistCategories = React.lazy(() => import("./pages/SpecialistCategories"));
-const Calculator = React.lazy(() => import("./pages/Calculator"));
+const HowItWorks = lazyWithRetry(() => import("./pages/HowItWorks"));
+const Contact = lazyWithRetry(() => import("./pages/Contact"));
+const SpecialistCategories = lazyWithRetry(() => import("./pages/SpecialistCategories"));
+const Calculator = lazyWithRetry(() => import("./pages/Calculator"));
 
 // Other Pages
-const Templates = React.lazy(() => import("./pages/Templates"));
-const ColorPreview = React.lazy(() => import("./pages/ColorPreview"));
-const DesignTest = React.lazy(() => import("./pages/DesignTest"));
+const Templates = lazyWithRetry(() => import("./pages/Templates"));
+const ColorPreview = lazyWithRetry(() => import("./pages/ColorPreview"));
+const DesignTest = lazyWithRetry(() => import("./pages/DesignTest"));
 
 // Legal Pages
-const TermsOfService = React.lazy(() => import("./pages/TermsOfService"));
-const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy"));
-const CookiePolicy = React.lazy(() => import("./pages/CookiePolicy"));
+const TermsOfService = lazyWithRetry(() => import("./pages/TermsOfService"));
+const PrivacyPolicy = lazyWithRetry(() => import("./pages/PrivacyPolicy"));
+const CookiePolicy = lazyWithRetry(() => import("./pages/CookiePolicy"));
 
 // Settings Pages
-const SettingsLayout = React.lazy(() => import("./pages/settings/SettingsLayout"));
-const ProfileSettings = React.lazy(() => import("./pages/settings/ProfileSettings"));
-const AccountSettings = React.lazy(() => import("./pages/settings/AccountSettings"));
-const NotificationSettings = React.lazy(() => import("./pages/settings/NotificationSettings"));
-const ClientSettings = React.lazy(() => import("./pages/settings/ClientSettings"));
-const ProfessionalSettings = React.lazy(() => import("./pages/settings/ProfessionalSettings"));
+const SettingsLayout = lazyWithRetry(() => import("./pages/settings/SettingsLayout"));
+const ProfileSettings = lazyWithRetry(() => import("./pages/settings/ProfileSettings"));
+const AccountSettings = lazyWithRetry(() => import("./pages/settings/AccountSettings"));
+const NotificationSettings = lazyWithRetry(() => import("./pages/settings/NotificationSettings"));
+const ClientSettings = lazyWithRetry(() => import("./pages/settings/ClientSettings"));
+const ProfessionalSettings = lazyWithRetry(() => import("./pages/settings/ProfessionalSettings"));
 
 function AppContent() {
   // Initialize Web Vitals monitoring
