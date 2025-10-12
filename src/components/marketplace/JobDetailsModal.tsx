@@ -164,40 +164,39 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
               </div>
             )}
 
-            <div className="p-6">
+            <div className="p-8">
             {/* Header Section */}
-            <DialogHeader className="space-y-4 mb-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <DialogTitle className="text-2xl font-bold mb-2">
-                    {job.title}
-                  </DialogTitle>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge 
-                      variant={job.status === 'open' ? 'default' : 'secondary'}
-                      className="capitalize"
-                    >
-                      {job.status}
+            <DialogHeader className="space-y-5 mb-8">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 flex-wrap mb-2">
+                  <Badge 
+                    variant={job.status === 'open' ? 'default' : 'secondary'}
+                    className="capitalize font-semibold"
+                  >
+                    {job.status}
+                  </Badge>
+                  {daysPosted === 0 ? (
+                    <Badge className="bg-gradient-to-r from-copper to-copper-dark text-white font-semibold">
+                      Posted Today
                     </Badge>
-                    {daysPosted === 0 ? (
-                      <Badge className="bg-gradient-to-r from-copper to-copper-dark text-white">
-                        Posted Today
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline">
-                        Posted {daysPosted} {daysPosted === 1 ? 'day' : 'days'} ago
-                      </Badge>
-                    )}
-                  </div>
+                  ) : (
+                    <Badge variant="outline" className="font-medium">
+                      Posted {daysPosted} {daysPosted === 1 ? 'day' : 'days'} ago
+                    </Badge>
+                  )}
                 </div>
+                <DialogTitle className="text-3xl font-bold leading-tight">
+                  {job.title}
+                </DialogTitle>
               </div>
             </DialogHeader>
 
             {/* Client Info Card */}
-            <Card className="mb-6 bg-gradient-to-br from-background to-muted/20">
+            <Card className="mb-8 border-2 bg-gradient-to-br from-background to-muted/20">
               <CardContent className="p-6">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">Client</p>
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-hero flex items-center justify-center text-white text-2xl font-bold">
+                  <div className="w-20 h-20 rounded-full bg-gradient-hero flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                     {job.client.avatar ? (
                       <img src={job.client.avatar} alt={job.client.name} className="w-full h-full rounded-full object-cover" />
                     ) : (
@@ -205,18 +204,20 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{job.client.name}</h3>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                    <h3 className="font-bold text-xl mb-1">{job.client.name}</h3>
+                    <div className="flex items-center gap-4 text-sm">
                       {job.client.rating && (
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-500">★</span>
-                          <span>{job.client.rating.toFixed(1)}</span>
+                        <div className="flex items-center gap-1.5 font-medium">
+                          <span className="text-yellow-500 text-base">★</span>
+                          <span className="text-foreground">{job.client.rating.toFixed(1)}</span>
+                          <span className="text-muted-foreground">rating</span>
                         </div>
                       )}
                       {job.client.jobs_completed && (
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-4 h-4" />
-                          <span>{job.client.jobs_completed} jobs completed</span>
+                        <div className="flex items-center gap-1.5 font-medium">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span className="text-foreground">{job.client.jobs_completed}</span>
+                          <span className="text-muted-foreground">jobs done</span>
                         </div>
                       )}
                     </div>
@@ -226,43 +227,43 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
             </Card>
 
             {/* Budget & Location Grid */}
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <Card className="border-2 border-primary/20">
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <Card className="border-2 border-primary/30 shadow-sm">
                 <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Euro className="w-5 h-5 text-primary" />
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center">
+                      <Euro className="w-6 h-6 text-primary" />
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Budget</p>
-                      <p className="text-2xl font-bold text-primary">
+                    <div className="flex-1">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Budget</p>
+                      <p className="text-3xl font-bold text-primary leading-none">
                         €{job.budget_value}
                         {job.budget_type === 'hourly' && (
-                          <span className="text-sm font-normal">/hour</span>
+                          <span className="text-lg font-semibold text-muted-foreground ml-1">/hr</span>
                         )}
                       </p>
                     </div>
                   </div>
-                  <Badge variant="secondary" className="capitalize">
+                  <Badge variant="secondary" className="capitalize font-medium">
                     {job.budget_type} price
                   </Badge>
                 </CardContent>
               </Card>
 
               {job.location && (
-                <Card>
+                <Card className="border-2 shadow-sm">
                   <CardContent className="p-6">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                        <MapPin className="w-5 h-5 text-muted-foreground" />
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
+                        <MapPin className="w-6 h-6 text-muted-foreground" />
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Location</p>
-                        <p className="text-lg font-semibold">{job.location.area}</p>
+                      <div className="flex-1">
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Location</p>
+                        <p className="text-xl font-bold leading-tight">{job.location.area}</p>
                       </div>
                     </div>
                     {job.location.address && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground leading-relaxed">
                         {job.location.address}
                       </p>
                     )}
@@ -271,54 +272,59 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
               )}
             </div>
 
-            <Separator className="my-6" />
+            <Separator className="my-8" />
 
             {/* Job Description */}
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-4">
-                <FileText className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-semibold">Job Description</h3>
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold">What the Client Needs</h3>
               </div>
-              <div className="prose prose-sm max-w-none">
-                <p className="text-foreground leading-relaxed whitespace-pre-wrap">
-                  {job.description}
-                </p>
-              </div>
+              <Card className="bg-muted/30 border-0">
+                <CardContent className="p-6">
+                  <p className="text-base text-foreground leading-relaxed whitespace-pre-wrap">
+                    {job.description}
+                  </p>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Detailed Requirements Accordion */}
             {(hasMicroAnswers || hasLogistics || hasSchedule || hasExtras) && (
               <>
-                <Separator className="my-6" />
-                <div className="mb-6">
-                  <Accordion type="multiple" defaultValue={["scope", "logistics", "schedule", "extras"]} className="w-full">
+                <Separator className="my-8" />
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-6">Project Details</h3>
+                  <Accordion type="multiple" defaultValue={["scope", "logistics", "schedule", "extras"]} className="w-full space-y-4">
                     
                     {/* Scope & Specifications */}
                     {hasMicroAnswers && (
-                      <AccordionItem value="scope" className="border rounded-lg mb-3 px-4">
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <FileText className="w-5 h-5 text-primary" />
+                      <AccordionItem value="scope" className="border-2 rounded-xl px-6 shadow-sm">
+                        <AccordionTrigger className="hover:no-underline py-5">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                              <FileText className="w-6 h-6 text-primary" />
                             </div>
                             <div className="text-left">
-                              <h3 className="font-semibold">Scope & Specifications</h3>
-                              <p className="text-sm text-muted-foreground">
+                              <h4 className="font-bold text-lg">Scope & Specifications</h4>
+                              <p className="text-sm text-muted-foreground font-normal">
                                 Service-specific requirements
                               </p>
                             </div>
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="pt-4">
+                        <AccordionContent className="pt-2 pb-6">
                           <div className="space-y-3">
                             {Object.entries(microAnswers).map(([key, value]) => (
-                              <div key={key} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+                              <div key={key} className="flex items-start gap-3 p-4 rounded-lg bg-muted/40 border">
                                 <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                                 <div className="flex-1">
-                                  <p className="font-medium capitalize mb-1">
+                                  <p className="font-semibold capitalize mb-1.5 text-base">
                                     {key.replace(/_/g, ' ')}
                                   </p>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm text-muted-foreground leading-relaxed">
                                     {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                                   </p>
                                 </div>
@@ -331,15 +337,15 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
 
                     {/* Site & Logistics */}
                     {hasLogistics && (
-                      <AccordionItem value="logistics" className="border rounded-lg mb-3 px-4">
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <MapPin className="w-5 h-5 text-primary" />
+                      <AccordionItem value="logistics" className="border-2 rounded-xl px-6 shadow-sm">
+                        <AccordionTrigger className="hover:no-underline py-5">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                              <MapPin className="w-6 h-6 text-primary" />
                             </div>
                             <div className="text-left">
-                              <h3 className="font-semibold">Site & Logistics</h3>
-                              <p className="text-sm text-muted-foreground">
+                              <h4 className="font-bold text-lg">Site & Logistics</h4>
+                              <p className="text-sm text-muted-foreground font-normal">
                                 Location and access details
                               </p>
                             </div>
@@ -392,15 +398,15 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
 
                     {/* Schedule & Timeline */}
                     {hasSchedule && (
-                      <AccordionItem value="schedule" className="border rounded-lg mb-3 px-4">
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <Calendar className="w-5 h-5 text-primary" />
+                      <AccordionItem value="schedule" className="border-2 rounded-xl px-6 shadow-sm">
+                        <AccordionTrigger className="hover:no-underline py-5">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                              <Calendar className="w-6 h-6 text-primary" />
                             </div>
                             <div className="text-left">
-                              <h3 className="font-semibold">Schedule & Timeline</h3>
-                              <p className="text-sm text-muted-foreground">
+                              <h4 className="font-bold text-lg">Schedule & Timeline</h4>
+                              <p className="text-sm text-muted-foreground font-normal">
                                 Project timing and consultation
                               </p>
                             </div>
