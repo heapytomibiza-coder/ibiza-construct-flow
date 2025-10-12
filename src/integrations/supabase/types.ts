@@ -8676,34 +8676,43 @@ export type Database = {
       }
       service_categories: {
         Row: {
+          category_group: string | null
           created_at: string | null
           description: string | null
           display_order: number | null
-          icon: string | null
+          icon_emoji: string | null
           id: string
           is_active: boolean | null
+          is_featured: boolean | null
+          metadata: Json | null
           name: string
           slug: string
           updated_at: string | null
         }
         Insert: {
+          category_group?: string | null
           created_at?: string | null
           description?: string | null
           display_order?: number | null
-          icon?: string | null
+          icon_emoji?: string | null
           id?: string
           is_active?: boolean | null
+          is_featured?: boolean | null
+          metadata?: Json | null
           name: string
           slug: string
           updated_at?: string | null
         }
         Update: {
+          category_group?: string | null
           created_at?: string | null
           description?: string | null
           display_order?: number | null
-          icon?: string | null
+          icon_emoji?: string | null
           id?: string
           is_active?: boolean | null
+          is_featured?: boolean | null
+          metadata?: Json | null
           name?: string
           slug?: string
           updated_at?: string | null

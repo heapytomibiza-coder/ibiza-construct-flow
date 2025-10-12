@@ -17,7 +17,7 @@ import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
-import { MainCategoryStep } from './MainCategoryStep';
+import { CategorySelector } from '@/components/wizard/db-powered/CategorySelector';
 import { SubcategoryStep } from './SubcategoryStep';
 import { MicroStep } from './MicroStep';
 import { QuestionsStep } from './QuestionsStep';
@@ -327,11 +327,21 @@ export const CanonicalJobWizard: React.FC = () => {
       switch (currentStep) {
       case 1:
         return (
-          <MainCategoryStep
-            selectedCategory={wizardState.mainCategory}
-            onSelect={handleCategorySelect}
-            onNext={handleNext}
-          />
+          <div className="max-w-6xl mx-auto space-y-6">
+            <div className="text-center space-y-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                What type of work do you need?
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Choose the category that best fits your project
+              </p>
+            </div>
+            <CategorySelector
+              selectedCategory={wizardState.mainCategory}
+              onSelect={handleCategorySelect}
+              onNext={handleNext}
+            />
+          </div>
         );
 
       case 2:

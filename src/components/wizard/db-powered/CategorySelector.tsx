@@ -21,6 +21,7 @@ interface CategorySelectorProps {
   onSelect: (categorySlug: string) => void;
   filterGroups?: string[]; // Optional: filter by category_group
   className?: string;
+  onNext?: () => void; // Optional: auto-advance after selection
 }
 
 const GROUP_LABELS: Record<string, string> = {
@@ -45,7 +46,8 @@ export const CategorySelector = ({
   selectedCategory, 
   onSelect,
   filterGroups,
-  className 
+  className,
+  onNext
 }: CategorySelectorProps) => {
   const { data: categories = [], isLoading, error } = useQuery<Category[]>({
     queryKey: ['service-categories', filterGroups],
@@ -148,7 +150,12 @@ export const CategorySelector = ({
                       ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20"
                       : "border-border hover:border-primary/50"
                   )}
-                  onClick={() => onSelect(category.slug)}
+              onClick={() => {
+                onSelect(category.slug);
+                if (onNext) {
+                  setTimeout(() => onNext(), 400); // Auto-advance after selection
+                }
+              }}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
