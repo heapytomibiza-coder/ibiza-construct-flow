@@ -1,81 +1,57 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import {
-  Home, Wrench, Paintbrush, Zap, Droplet, Hammer,
-  TreePine, Trees, Waves, Wind, Lightbulb, Sun,
-  HardHat, Building, Building2, DoorOpen, Bath, FileText,
-  Grid3X3, Layers
-} from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CategoryPillNavProps {
   selectedCategory: string | null;
   onSelectCategory: (category: string | null) => void;
 }
 
-const ICON_MAP: Record<string, any> = {
-  Home, Wrench, Paintbrush, Zap, Droplet, Hammer,
-  TreePine, Trees, Waves, Wind, Lightbulb, Sun,
-  HardHat, Building, Building2, DoorOpen, Bath, FileText,
-  Grid3X3, Layers
-};
-
-const MAIN_CATEGORIES = [
-  'Builder',
-  'Plumber',
-  'Electrician',
-  'Carpenter',
-  'Handyman',
-  'Painter',
-  'Tiler',
-  'Plasterer',
-  'Roofer',
-  'Landscaper',
-  'Pool Builder',
-  'HVAC',
-];
-
-const SPECIALIST_CATEGORIES = [
-  'Architects & Design',
-  'Structural Works',
-  'Floors, Doors & Windows',
-  'Kitchen & Bathroom',
-  'Commercial Projects',
-  'Legal & Regulatory',
-];
-
-const CATEGORY_ICONS: Record<string, keyof typeof ICON_MAP> = {
-  'Builder': 'HardHat',
-  'Plumber': 'Droplet',
-  'Electrician': 'Zap',
-  'Carpenter': 'Hammer',
-  'Handyman': 'Wrench',
-  'Painter': 'Paintbrush',
-  'Tiler': 'Grid3X3',
-  'Plasterer': 'Layers',
-  'Roofer': 'Home',
-  'Landscaper': 'Trees',
-  'Pool Builder': 'Waves',
-  'HVAC': 'Wind',
-  'Architects & Design': 'Lightbulb',
-  'Structural Works': 'Building2',
-  'Floors, Doors & Windows': 'DoorOpen',
-  'Kitchen & Bathroom': 'Bath',
-  'Commercial Projects': 'Building',
-  'Legal & Regulatory': 'FileText',
-};
+interface ServiceCategory {
+  id: string;
+  name: string;
+  slug: string;
+  icon_emoji: string;
+  category_group: string;
+  is_featured: boolean;
+}
 
 export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
   selectedCategory,
   onSelectCategory,
 }) => {
-  const renderCategoryPill = (category: string) => {
-    const IconComponent = ICON_MAP[CATEGORY_ICONS[category] || 'Wrench'];
-    const isSelected = selectedCategory === category;
+  // Fetch categories from database
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ['service-categories-nav'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('service_categories')
+        .select('id, name, slug, icon_emoji, category_group, is_featured')
+        .eq('is_active', true)
+        .order('display_order');
+      
+      if (error) throw error;
+      return (data || []) as ServiceCategory[];
+    }
+  });
+
+  // Group categories
+  const mainServices = categories.filter(c => 
+    ['STRUCTURAL', 'MEP', 'FINISHES', 'EXTERIOR'].includes(c.category_group)
+  );
+  
+  const specialistServices = categories.filter(c => 
+    ['PROFESSIONAL', 'SERVICES'].includes(c.category_group)
+  );
+
+  const renderCategoryPill = (category: ServiceCategory) => {
+    const isSelected = selectedCategory === category.name;
 
     return (
       <Badge
-        key={category}
+        key={category.id}
         variant={isSelected ? 'default' : 'outline'}
         className={cn(
           'cursor-pointer transition-all px-3 py-2 text-sm font-medium',
@@ -84,13 +60,25 @@ export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
             ? 'bg-primary text-primary-foreground border-primary' 
             : 'hover:bg-primary/10 hover:border-primary/50'
         )}
-        onClick={() => onSelectCategory(isSelected ? null : category)}
+        onClick={() => onSelectCategory(isSelected ? null : category.name)}
       >
-        <IconComponent className="w-4 h-4 mr-1.5" />
-        {category}
+        <span className="text-base mr-1.5">{category.icon_emoji}</span>
+        {category.name}
       </Badge>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 py-4">
+        <div className="flex flex-wrap gap-2">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="h-9 w-32 bg-muted animate-pulse rounded-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 py-4">
@@ -111,25 +99,29 @@ export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
         </Badge>
       </div>
 
-      {/* Main Categories */}
-      <div className="space-y-2">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          Main Services
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {MAIN_CATEGORIES.map(renderCategoryPill)}
+      {/* Main Services */}
+      {mainServices.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Main Services
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {mainServices.map(renderCategoryPill)}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Specialist Categories */}
-      <div className="space-y-2">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          Specialist Services
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {SPECIALIST_CATEGORIES.map(renderCategoryPill)}
+      {/* Specialist Services */}
+      {specialistServices.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Specialist Services
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {specialistServices.map(renderCategoryPill)}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

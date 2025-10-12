@@ -2,24 +2,24 @@
 
 export const getServiceSlugByCategory = (category: string): string => {
   const slugMap: Record<string, string> = {
-    'Builder': 'builder',
-    'Plumber': 'plumber',
-    'Electrician': 'electrician',
-    'Carpenter': 'carpenter',
-    'Handyman': 'handyman',
-    'Painter': 'painter',
-    'Tiler': 'tiler',
-    'Plasterer': 'plasterer',
-    'Roofer': 'roofer',
-    'Landscaper': 'landscaper',
-    'Pool Builder': 'pool-builder',
-    'HVAC': 'hvac',
-    'Architects & Design': 'architects-design',
-    'Structural Works': 'structural-works',
-    'Floors, Doors & Windows': 'floors-doors-windows',
-    'Kitchen & Bathroom': 'kitchen-bathroom',
-    'Commercial Projects': 'commercial-projects',
-    'Legal & Regulatory': 'legal-regulatory'
+    // New 17-category taxonomy
+    'Architecture & Design Services': 'architecture-design',
+    'Building & Construction Services': 'building-construction',
+    'Carpentry & Joinery Services': 'carpentry-joinery',
+    'Roofing & Guttering Services': 'roofing-guttering',
+    'Electrical & Technology Services': 'electrical-technology',
+    'Plumbing & Heating Services': 'plumbing-heating',
+    'Air Conditioning & Climate Control Services': 'air-conditioning-climate',
+    'Landscaping & Outdoor Construction': 'landscaping-outdoor',
+    'Plastering, Painting & Decorating Services': 'plastering-painting-decorating',
+    'Flooring, Tiling & Surface Finishes': 'flooring-tiling-surfaces',
+    'Doors, Windows & Glazing Services': 'doors-windows-glazing',
+    'Metalwork, Welding & Fabrication Services': 'metalwork-welding-fabrication',
+    'Project Management & Consultation Services': 'project-management-consultation',
+    'Handyman & DIY Jobs': 'handyman-diy',
+    'Interior Styling & Custom Furniture': 'interior-styling-furniture',
+    'Property Maintenance & Facility Management': 'property-maintenance-facility',
+    'Legal & Property Services': 'legal-property',
   };
   
   return slugMap[category] || category.toLowerCase().replace(/\s+/g, '-');
@@ -27,27 +27,27 @@ export const getServiceSlugByCategory = (category: string): string => {
 
 export const getCategoryBySlug = (slug: string): string => {
   const categoryMap: Record<string, string> = {
-    'builder': 'Builder',
-    'plumber': 'Plumber',
-    'electrician': 'Electrician',
-    'carpenter': 'Carpenter',
-    'handyman': 'Handyman',
-    'painter': 'Painter',
-    'tiler': 'Tiler',
-    'plasterer': 'Plasterer',
-    'roofer': 'Roofer',
-    'landscaper': 'Landscaper',
-    'pool-builder': 'Pool Builder',
-    'hvac': 'HVAC',
-    'architects-design': 'Architects & Design',
-    'structural-works': 'Structural Works',
-    'floors-doors-windows': 'Floors, Doors & Windows',
-    'kitchen-bathroom': 'Kitchen & Bathroom',
-    'commercial-projects': 'Commercial Projects',
-    'legal-regulatory': 'Legal & Regulatory'
+    // New 17-category taxonomy
+    'architecture-design': 'Architecture & Design Services',
+    'building-construction': 'Building & Construction Services',
+    'carpentry-joinery': 'Carpentry & Joinery Services',
+    'roofing-guttering': 'Roofing & Guttering Services',
+    'electrical-technology': 'Electrical & Technology Services',
+    'plumbing-heating': 'Plumbing & Heating Services',
+    'air-conditioning-climate': 'Air Conditioning & Climate Control Services',
+    'landscaping-outdoor': 'Landscaping & Outdoor Construction',
+    'plastering-painting-decorating': 'Plastering, Painting & Decorating Services',
+    'flooring-tiling-surfaces': 'Flooring, Tiling & Surface Finishes',
+    'doors-windows-glazing': 'Doors, Windows & Glazing Services',
+    'metalwork-welding-fabrication': 'Metalwork, Welding & Fabrication Services',
+    'project-management-consultation': 'Project Management & Consultation Services',
+    'handyman-diy': 'Handyman & DIY Jobs',
+    'interior-styling-furniture': 'Interior Styling & Custom Furniture',
+    'property-maintenance-facility': 'Property Maintenance & Facility Management',
+    'legal-property': 'Legal & Property Services',
   };
   
-  return categoryMap[slug] || 'Handyman';
+  return categoryMap[slug] || 'Handyman & DIY Jobs';
 };
 
 export const formatServicePrice = (min: number, max?: number): string => {
@@ -67,27 +67,27 @@ export const formatServicePrice = (min: number, max?: number): string => {
 
 export const getServiceIconName = (category: string): string => {
   const iconMap: Record<string, string> = {
-    'Builder': 'Hammer',
-    'Plumber': 'Droplets',
-    'Electrician': 'Zap',
-    'Carpenter': 'Wrench',
-    'Handyman': 'Wrench',
-    'Painter': 'Paintbrush',
-    'Tiler': 'Grid3x3',
-    'Plasterer': 'Layers',
-    'Roofer': 'Home',
-    'Landscaper': 'Trees',
-    'Pool Builder': 'Waves',
-    'HVAC': 'Wind',
-    'Architects & Design': 'Ruler',
-    'Structural Works': 'HardHat',
-    'Floors, Doors & Windows': 'DoorOpen',
-    'Kitchen & Bathroom': 'Bath',
-    'Commercial Projects': 'Building2',
-    'Legal & Regulatory': 'FileText'
+    // New 17-category taxonomy (emoji icons)
+    'Architecture & Design Services': '🏛️',
+    'Building & Construction Services': '🏗️',
+    'Carpentry & Joinery Services': '🪵',
+    'Roofing & Guttering Services': '🧱',
+    'Electrical & Technology Services': '⚡',
+    'Plumbing & Heating Services': '💧',
+    'Air Conditioning & Climate Control Services': '❄️',
+    'Landscaping & Outdoor Construction': '🌿',
+    'Plastering, Painting & Decorating Services': '🖌️',
+    'Flooring, Tiling & Surface Finishes': '🪞',
+    'Doors, Windows & Glazing Services': '🚪',
+    'Metalwork, Welding & Fabrication Services': '🧰',
+    'Project Management & Consultation Services': '🧭',
+    'Handyman & DIY Jobs': '🔧',
+    'Interior Styling & Custom Furniture': '🪶',
+    'Property Maintenance & Facility Management': '🧩',
+    'Legal & Property Services': '⚖️',
   };
   
-  return iconMap[category] || 'Wrench';
+  return iconMap[category] || '🔧';
 };
 
 export const isMainCategory = (category: string): boolean => {
@@ -113,20 +113,28 @@ export const isSpecialistCategory = (category: string): boolean => {
 
 export const getMainCategories = (): string[] => {
   return [
-    'Builder', 'Plumber', 'Electrician', 'Carpenter',
-    'Handyman', 'Painter', 'Tiler', 'Plasterer',
-    'Roofer', 'Landscaper', 'Pool Builder', 'HVAC'
+    'Building & Construction Services',
+    'Carpentry & Joinery Services',
+    'Roofing & Guttering Services',
+    'Electrical & Technology Services',
+    'Plumbing & Heating Services',
+    'Air Conditioning & Climate Control Services',
+    'Landscaping & Outdoor Construction',
+    'Plastering, Painting & Decorating Services',
+    'Flooring, Tiling & Surface Finishes',
+    'Doors, Windows & Glazing Services',
+    'Metalwork, Welding & Fabrication Services',
+    'Handyman & DIY Jobs',
   ];
 };
 
 export const getSpecialistCategories = (): string[] => {
   return [
-    'Architects & Design',
-    'Structural Works',
-    'Floors, Doors & Windows',
-    'Kitchen & Bathroom',
-    'Commercial Projects',
-    'Legal & Regulatory'
+    'Architecture & Design Services',
+    'Project Management & Consultation Services',
+    'Interior Styling & Custom Furniture',
+    'Property Maintenance & Facility Management',
+    'Legal & Property Services',
   ];
 };
 
