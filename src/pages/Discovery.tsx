@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import { UnifiedSearchBar } from '@/components/discovery/UnifiedSearchBar';
 import { DiscoveryTabs } from '@/components/discovery/DiscoveryTabs';
 import { MobileDiscoveryHero } from '@/components/discovery/MobileDiscoveryHero';
+import { CategoryPillNav } from '@/components/discovery/CategoryPillNav';
 import { EmptyState } from '@/components/discovery/EmptyState';
 import { PopularServicesSection } from '@/components/discovery/PopularServicesSection';
 import { DiscoveryServiceCard } from '@/components/discovery/DiscoveryServiceCard';
@@ -44,6 +45,7 @@ const Discovery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'services' | 'professionals'>('services');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>({
     selectedTaxonomy: null,
     specialists: [],
@@ -85,6 +87,25 @@ const Discovery = () => {
 
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters(newFilters);
+  };
+
+  const handleCategorySelect = (category: string | null) => {
+    setSelectedCategory(category);
+    if (category) {
+      setFilters(prev => ({
+        ...prev,
+        selectedTaxonomy: {
+          category,
+          subcategory: '',
+          micro: '',
+        },
+      }));
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        selectedTaxonomy: null,
+      }));
+    }
   };
 
   const getActiveFilterCount = () => {
@@ -169,6 +190,12 @@ const Discovery = () => {
             />
           </SheetContent>
         </Sheet>
+
+        {/* Category Pills Navigation */}
+        <CategoryPillNav
+          selectedCategory={selectedCategory}
+          onSelectCategory={handleCategorySelect}
+        />
 
         {/* View Mode Tabs - Now Sticky on Mobile */}
         <DiscoveryTabs
