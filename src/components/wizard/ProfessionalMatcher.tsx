@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ export const ProfessionalMatcher: React.FC<ProfessionalMatcherProps> = ({
   microId,
   location
 }) => {
+  const navigate = useNavigate();
   const [matches, setMatches] = useState<MatchPreview | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -165,7 +167,7 @@ export const ProfessionalMatcher: React.FC<ProfessionalMatcherProps> = ({
           <Button
             variant="outline"
             className="w-full mt-3"
-            onClick={() => window.location.href = `/jobs/${microId}/matches`}
+            onClick={() => navigate(`/jobs/${microId}/matches`)}
           >
             View All Matches
           </Button>
