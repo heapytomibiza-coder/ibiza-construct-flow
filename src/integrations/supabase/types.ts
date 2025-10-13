@@ -8938,15 +8938,18 @@ export type Database = {
           category_type: string | null
           created_at: string
           ibiza_specific: boolean | null
+          icon_emoji: string | null
           id: string
           is_active: boolean | null
           micro: string
+          name_es: string | null
           priority_level: string | null
           question_source: string | null
           questions_logistics: Json
           questions_micro: Json
           sort_index: number | null
           subcategory: string
+          typical_duration_hours: number | null
           updated_at: string
           updated_by: string | null
         }
@@ -8955,15 +8958,18 @@ export type Database = {
           category_type?: string | null
           created_at?: string
           ibiza_specific?: boolean | null
+          icon_emoji?: string | null
           id?: string
           is_active?: boolean | null
           micro: string
+          name_es?: string | null
           priority_level?: string | null
           question_source?: string | null
           questions_logistics?: Json
           questions_micro?: Json
           sort_index?: number | null
           subcategory: string
+          typical_duration_hours?: number | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -8972,15 +8978,18 @@ export type Database = {
           category_type?: string | null
           created_at?: string
           ibiza_specific?: boolean | null
+          icon_emoji?: string | null
           id?: string
           is_active?: boolean | null
           micro?: string
+          name_es?: string | null
           priority_level?: string | null
           question_source?: string | null
           questions_logistics?: Json
           questions_micro?: Json
           sort_index?: number | null
           subcategory?: string
+          typical_duration_hours?: number | null
           updated_at?: string
           updated_by?: string | null
         }

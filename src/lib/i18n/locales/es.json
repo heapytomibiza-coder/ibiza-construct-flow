@@ -58,5 +58,20 @@
     "notFound": "No encontrado",
     "unauthorized": "Acceso no autorizado",
     "forbidden": "Acceso prohibido"
+  },
+  "services": {
+    "architecture": {
+      "category": "Arquitectura y Diseño",
+      "subcategories": {
+        "architecturalPlanning": "Planificación y Diseño Arquitectónico",
+        "structuralTechnical": "Diseño Estructural y Técnico",
+        "interiorDesign": "Diseño Interior y Distribución de Espacios",
+        "landscapeOutdoor": "Diseño de Paisajismo y Exteriores",
+        "sustainableEco": "Diseño Sostenible y Ecológico",
+        "documentationVisualization": "Documentación y Visualización",
+        "consultationSurveying": "Consultoría y Topografía"
+      },
+      "ibizaPriority": "Servicio prioritario en Ibiza"
+    }
   }
 }
