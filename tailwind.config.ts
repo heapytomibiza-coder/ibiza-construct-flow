@@ -65,7 +65,7 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Sage Green Palette
+        // Sage Green Eco Palette
         sage: {
           DEFAULT: "hsl(var(--sage))",
           light: "hsl(var(--sage-light))",
@@ -79,16 +79,16 @@ export default {
           light: "hsl(var(--sage-deep-light))",
           dark: "hsl(var(--sage-deep-dark))",
         },
-        // Tech-Inspired Palette
-        "tech-navy": "hsl(var(--tech-navy))",
-        "tech-blue": "hsl(var(--tech-blue))",
-        "cool-slate": "hsl(var(--cool-slate))",
-        "steel-gray": "hsl(var(--steel-gray))",
-        "electric-blue": "hsl(var(--electric-blue))",
-        "deep-navy": "hsl(var(--deep-navy))",
-        "golden-amber": "hsl(var(--golden-amber))",
-        "sandy-gold": "hsl(var(--sandy-gold))",
-        "warm-gold": "hsl(var(--warm-gold))",
+        // Earth Tones
+        earth: {
+          DEFAULT: "hsl(var(--earth))",
+          dark: "hsl(var(--earth-dark))",
+        },
+        mint: "hsl(var(--mint))",
+        forest: {
+          DEFAULT: "hsl(var(--forest))",
+          deep: "hsl(var(--forest-deep))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -108,26 +108,21 @@ export default {
         'gradient-hero': 'var(--gradient-hero)',
         'gradient-card': 'var(--gradient-card)',
         'gradient-premium': 'var(--gradient-premium)',
-        'gradient-tech': 'var(--gradient-tech)',
-        'gradient-electric': 'var(--gradient-electric)',
-        'gradient-golden': 'var(--gradient-golden)',
-        'gradient-sandy': 'var(--gradient-sandy)',
+        'gradient-nature': 'var(--gradient-nature)',
+        'gradient-sage': 'var(--gradient-sage)',
+        'gradient-earth': 'var(--gradient-earth)',
       },
       boxShadow: {
         'luxury': 'var(--shadow-luxury)',
         'card': 'var(--shadow-card)',
         'elegant': 'var(--shadow-elegant)',
-        'tech': 'var(--shadow-tech)',
-        'electric': 'var(--shadow-electric)',
-        'golden': 'var(--shadow-golden)',
-        'sandy': 'var(--shadow-sandy)',
+        'hover': 'var(--shadow-hover)',
         // Interactive states
-        'hover': '0 10px 20px -5px hsl(var(--sage) / 0.2)',
         'focus': '0 0 0 3px hsl(var(--sage) / 0.25)',
         'active': '0 5px 10px -3px hsl(var(--sage) / 0.3)',
         // Micro-interaction shadows
-        'micro': '0 2px 4px -1px hsl(var(--sage-deep) / 0.1)',
-        'micro-hover': '0 4px 8px -2px hsl(var(--sage-deep) / 0.15)',
+        'micro': '0 2px 4px -1px hsl(var(--sage) / 0.1)',
+        'micro-hover': '0 4px 8px -2px hsl(var(--sage) / 0.15)',
       },
       transitionTimingFunction: {
         'luxury': 'var(--transition-luxury)',
