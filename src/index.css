@@ -111,73 +111,73 @@ All colors MUST be HSL. Premium construction platform aesthetic.
     --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-inset-left: env(safe-area-inset-left, 0px);
 
-    /* Warm Construction Palette - Professional & Approachable */
-    --background: 30 20% 96%; /* Warm off-white */
-    --foreground: 25 30% 15%; /* Deep warm brown */
+    /* Sandy Beige Palette - Sophisticated & Warm */
+    --background: 40 25% 97%; /* Soft cream */
+    --foreground: 30 15% 25%; /* Warm charcoal */
 
     --card: 0 0% 100%;
-    --card-foreground: 25 30% 15%;
+    --card-foreground: 30 15% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 25 30% 15%;
+    --popover-foreground: 30 15% 25%;
 
-    /* Primary: Warm Terracotta */
-    --primary: 15 65% 55%;
+    /* Primary: Sandy Tan */
+    --primary: 35 35% 60%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 15 70% 65%;
-    --primary-dark: 15 70% 45%;
+    --primary-glow: 35 40% 70%;
+    --primary-dark: 35 40% 50%;
 
-    /* Secondary: Soft Sand */  
-    --secondary: 35 25% 88%;
-    --secondary-foreground: 25 30% 15%;
+    /* Secondary: Light Sand */  
+    --secondary: 40 20% 90%;
+    --secondary-foreground: 30 15% 25%;
 
-    /* Accent: Deep Terracotta */
-    --accent: 15 75% 48%;
+    /* Accent: Warm Sand */
+    --accent: 38 38% 58%;
     --accent-foreground: 0 0% 100%;
 
-    --muted: 30 15% 92%;
-    --muted-foreground: 25 20% 40%;
+    --muted: 40 18% 94%;
+    --muted-foreground: 30 10% 45%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 30 20% 85%;
-    --input: 30 20% 85%;
-    --ring: 15 65% 55%;
+    --border: 40 18% 88%;
+    --input: 40 18% 88%;
+    --ring: 35 35% 60%;
 
-    /* Warm Construction Design Tokens */
-    --sage: 15 65% 55%;
-    --sage-light: 15 60% 68%;
-    --sage-dark: 15 70% 45%;
+    /* Sandy Design Tokens */
+    --sage: 35 35% 60%;
+    --sage-light: 35 35% 72%;
+    --sage-dark: 35 40% 50%;
     
-    --sage-muted: 35 25% 88%;
-    --sage-muted-light: 30 20% 94%;
-    --sage-muted-dark: 30 25% 78%;
+    --sage-muted: 40 20% 90%;
+    --sage-muted-light: 40 15% 95%;
+    --sage-muted-dark: 38 22% 82%;
     
-    --sage-deep: 25 30% 15%;
-    --sage-deep-light: 25 25% 25%;
-    --sage-deep-dark: 20 35% 12%;
+    --sage-deep: 30 15% 25%;
+    --sage-deep-light: 30 12% 35%;
+    --sage-deep-dark: 28 18% 18%;
 
-    /* Warm Earth Tones */
-    --earth: 35 35% 85%;
-    --earth-dark: 30 40% 75%;
-    --mint: 35 20% 88%;
-    --forest: 25 40% 30%;
-    --forest-deep: 20 45% 22%;
+    /* Warm Sandy Earth Tones */
+    --earth: 40 25% 88%;
+    --earth-dark: 38 30% 78%;
+    --mint: 40 15% 90%;
+    --forest: 30 25% 35%;
+    --forest-deep: 28 30% 28%;
 
-    /* Gradients - Warm & Professional */
-    --gradient-hero: linear-gradient(135deg, hsl(15 65% 55%) 0%, hsl(15 70% 45%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(30 20% 94%) 0%, hsl(0 0% 100%) 100%);
-    --gradient-premium: linear-gradient(135deg, hsl(15 65% 55%) 0%, hsl(15 60% 68%) 100%);
-    --gradient-nature: linear-gradient(135deg, hsl(15 65% 55%) 0%, hsl(35 20% 88%) 50%, hsl(35 35% 85%) 100%);
-    --gradient-sage: linear-gradient(135deg, hsl(15 65% 55%) 0%, hsl(15 70% 45%) 100%);
-    --gradient-earth: linear-gradient(135deg, hsl(35 35% 85%) 0%, hsl(0 0% 100%) 100%);
+    /* Gradients - Sandy & Sophisticated */
+    --gradient-hero: linear-gradient(135deg, hsl(35 35% 60%) 0%, hsl(35 40% 50%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(40 15% 95%) 0%, hsl(0 0% 100%) 100%);
+    --gradient-premium: linear-gradient(135deg, hsl(35 35% 60%) 0%, hsl(35 35% 72%) 100%);
+    --gradient-nature: linear-gradient(135deg, hsl(35 35% 60%) 0%, hsl(40 15% 90%) 50%, hsl(40 25% 88%) 100%);
+    --gradient-sage: linear-gradient(135deg, hsl(35 35% 60%) 0%, hsl(35 40% 50%) 100%);
+    --gradient-earth: linear-gradient(135deg, hsl(40 25% 88%) 0%, hsl(0 0% 100%) 100%);
 
-    /* Shadows - Warm Tones */
-    --shadow-luxury: 0 20px 25px -5px hsl(15 65% 55% / 0.15), 0 10px 10px -5px hsl(15 65% 55% / 0.08);
-    --shadow-card: 0 2px 8px -2px hsl(15 65% 55% / 0.12), 0 4px 12px -4px hsl(15 65% 55% / 0.08);
-    --shadow-elegant: 0 10px 30px -5px hsl(15 65% 55% / 0.18);
-    --shadow-hover: 0 8px 16px -4px hsl(15 65% 55% / 0.2);
+    /* Shadows - Sandy Tones */
+    --shadow-luxury: 0 20px 25px -5px hsl(35 35% 60% / 0.15), 0 10px 10px -5px hsl(35 35% 60% / 0.08);
+    --shadow-card: 0 2px 8px -2px hsl(35 35% 60% / 0.12), 0 4px 12px -4px hsl(35 35% 60% / 0.08);
+    --shadow-elegant: 0 10px 30px -5px hsl(35 35% 60% / 0.18);
+    --shadow-hover: 0 8px 16px -4px hsl(35 35% 60% / 0.2);
 
     /* Typography */
     --font-display: 'Playfair Display', serif;
