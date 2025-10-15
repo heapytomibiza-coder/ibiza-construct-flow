@@ -111,73 +111,73 @@ All colors MUST be HSL. Premium construction platform aesthetic.
     --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-inset-left: env(safe-area-inset-left, 0px);
 
-    /* Sage Green Eco Palette - Clean & Natural */
-    --background: 150 15% 98%; /* Soft sage white */
-    --foreground: 150 25% 20%; /* Deep forest text */
+    /* Warm Construction Palette - Professional & Approachable */
+    --background: 30 20% 96%; /* Warm off-white */
+    --foreground: 25 30% 15%; /* Deep warm brown */
 
     --card: 0 0% 100%;
-    --card-foreground: 150 25% 20%;
+    --card-foreground: 25 30% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 150 25% 20%;
+    --popover-foreground: 25 30% 15%;
 
-    /* Primary: Sage Green */
-    --primary: 150 30% 45%;
+    /* Primary: Warm Terracotta */
+    --primary: 15 65% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 150 35% 55%; /* Light sage glow */
-    --primary-dark: 150 35% 35%;
+    --primary-glow: 15 70% 65%;
+    --primary-dark: 15 70% 45%;
 
-    /* Secondary: Earth Tones */  
-    --secondary: 150 20% 92%;
-    --secondary-foreground: 150 25% 20%;
+    /* Secondary: Soft Sand */  
+    --secondary: 35 25% 88%;
+    --secondary-foreground: 25 30% 15%;
 
-    /* Accent: Rich Sage */
-    --accent: 150 35% 40%;
+    /* Accent: Deep Terracotta */
+    --accent: 15 75% 48%;
     --accent-foreground: 0 0% 100%;
 
-    --muted: 150 15% 96%;
-    --muted-foreground: 150 15% 45%;
+    --muted: 30 15% 92%;
+    --muted-foreground: 25 20% 40%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 150 20% 88%;
-    --input: 150 20% 88%;
-    --ring: 150 30% 45%;
+    --border: 30 20% 85%;
+    --input: 30 20% 85%;
+    --ring: 15 65% 55%;
 
-    /* Sage Green Design Tokens */
-    --sage: 150 30% 45%;
-    --sage-light: 150 30% 60%;
-    --sage-dark: 150 35% 35%;
+    /* Warm Construction Design Tokens */
+    --sage: 15 65% 55%;
+    --sage-light: 15 60% 68%;
+    --sage-dark: 15 70% 45%;
     
-    --sage-muted: 150 20% 92%;
-    --sage-muted-light: 150 15% 96%;
-    --sage-muted-dark: 150 25% 82%;
+    --sage-muted: 35 25% 88%;
+    --sage-muted-light: 30 20% 94%;
+    --sage-muted-dark: 30 25% 78%;
     
-    --sage-deep: 150 25% 20%;
-    --sage-deep-light: 150 25% 30%;
-    --sage-deep-dark: 150 30% 15%;
+    --sage-deep: 25 30% 15%;
+    --sage-deep-light: 25 25% 25%;
+    --sage-deep-dark: 20 35% 12%;
 
-    /* Eco-Friendly Earth Tones */
-    --earth: 28 35% 92%;
-    --earth-dark: 28 40% 85%;
-    --mint: 150 25% 88%;
-    --forest: 150 40% 35%;
-    --forest-deep: 150 45% 28%;
+    /* Warm Earth Tones */
+    --earth: 35 35% 85%;
+    --earth-dark: 30 40% 75%;
+    --mint: 35 20% 88%;
+    --forest: 25 40% 30%;
+    --forest-deep: 20 45% 22%;
 
-    /* Gradients - Eco-Friendly */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--sage)) 0%, hsl(var(--forest)) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(var(--sage-muted-light)) 0%, hsl(0 0% 100%) 100%);
-    --gradient-premium: linear-gradient(135deg, hsl(var(--sage)) 0%, hsl(var(--sage-light)) 100%);
-    --gradient-nature: linear-gradient(135deg, hsl(var(--sage)) 0%, hsl(var(--mint)) 50%, hsl(var(--earth)) 100%);
-    --gradient-sage: linear-gradient(135deg, hsl(var(--sage)) 0%, hsl(var(--forest)) 100%);
-    --gradient-earth: linear-gradient(135deg, hsl(var(--earth)) 0%, hsl(0 0% 100%) 100%);
+    /* Gradients - Warm & Professional */
+    --gradient-hero: linear-gradient(135deg, hsl(15 65% 55%) 0%, hsl(15 70% 45%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(30 20% 94%) 0%, hsl(0 0% 100%) 100%);
+    --gradient-premium: linear-gradient(135deg, hsl(15 65% 55%) 0%, hsl(15 60% 68%) 100%);
+    --gradient-nature: linear-gradient(135deg, hsl(15 65% 55%) 0%, hsl(35 20% 88%) 50%, hsl(35 35% 85%) 100%);
+    --gradient-sage: linear-gradient(135deg, hsl(15 65% 55%) 0%, hsl(15 70% 45%) 100%);
+    --gradient-earth: linear-gradient(135deg, hsl(35 35% 85%) 0%, hsl(0 0% 100%) 100%);
 
-    /* Shadows - Natural Tones */
-    --shadow-luxury: 0 20px 25px -5px hsl(var(--sage) / 0.15), 0 10px 10px -5px hsl(var(--sage) / 0.08);
-    --shadow-card: 0 2px 8px -2px hsl(var(--sage) / 0.12), 0 4px 12px -4px hsl(var(--sage) / 0.08);
-    --shadow-elegant: 0 10px 30px -5px hsl(var(--sage) / 0.18);
-    --shadow-hover: 0 8px 16px -4px hsl(var(--sage) / 0.2);
+    /* Shadows - Warm Tones */
+    --shadow-luxury: 0 20px 25px -5px hsl(15 65% 55% / 0.15), 0 10px 10px -5px hsl(15 65% 55% / 0.08);
+    --shadow-card: 0 2px 8px -2px hsl(15 65% 55% / 0.12), 0 4px 12px -4px hsl(15 65% 55% / 0.08);
+    --shadow-elegant: 0 10px 30px -5px hsl(15 65% 55% / 0.18);
+    --shadow-hover: 0 8px 16px -4px hsl(15 65% 55% / 0.2);
 
     /* Typography */
     --font-display: 'Playfair Display', serif;
