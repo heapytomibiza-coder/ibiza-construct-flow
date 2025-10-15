@@ -35,7 +35,7 @@ const Hero = () => {
           height={1080}
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-charcoal-dark/80 via-charcoal/60 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-sage-dark/85 via-sage/70 to-sage-muted/40"></div>
       </div>
 
       {/* Content */}
@@ -44,7 +44,7 @@ const Hero = () => {
           <div className="flex items-center space-x-2 mb-6">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 text-copper fill-current" />
+                <Star key={i} className="w-5 h-5 text-sage-muted-light fill-current" />
               ))}
             </div>
             <span className="text-white/90 text-sm font-medium">{(badge as unknown as string) || t('badge')}</span>
@@ -53,7 +53,7 @@ const Hero = () => {
           <h1 className="text-display text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             {(title as unknown as string) || t('title')}<br />
             {(subtitle as unknown as string) || t('subtitle')}<br />
-            <span className="text-copper">{t('highlight')}</span>
+            <span className="text-sage-muted-light">{t('highlight')}</span>
           </h1>
 
           <p className="text-body text-xl md:text-2xl text-white/90 mb-8 max-w-2xl leading-relaxed">
@@ -63,15 +63,15 @@ const Hero = () => {
           {/* Trust Indicators */}
           <div className="flex flex-wrap items-center gap-6 mb-8">
             <div className="flex items-center space-x-2">
-              <Shield className="w-5 h-5 text-copper" />
+              <Shield className="w-5 h-5 text-sage-muted-light" />
               <span className="text-white/90 text-sm font-medium">{t('trustIndicators.safepay')}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Clock className="w-5 h-5 text-copper" />
+              <Clock className="w-5 h-5 text-sage-muted-light" />
               <span className="text-white/90 text-sm font-medium">{t('trustIndicators.response')}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Star className="w-5 h-5 text-copper" />
+              <Star className="w-5 h-5 text-sage-muted-light" />
               <span className="text-white/90 text-sm font-medium">{t('trustIndicators.verified')}</span>
             </div>
           </div>

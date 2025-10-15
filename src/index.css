@@ -111,51 +111,51 @@ All colors MUST be HSL. Premium construction platform aesthetic.
     --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-inset-left: env(safe-area-inset-left, 0px);
 
-    /* Mediterranean Luxury Color Palette */
-    --background: 41 22% 96%; /* Warm sand white */
-    --foreground: 220 13% 18%; /* Sophisticated charcoal */
+    /* Sage Green Eco Palette */
+    --background: 0 0% 100%; /* Clean white */
+    --foreground: 150 8% 25%; /* Deep sage text */
 
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
+    --card-foreground: 150 8% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
+    --popover-foreground: 150 8% 25%;
 
-    /* Primary: Elegant Charcoal */
-    --primary: 220 13% 18%;
-    --primary-foreground: 41 22% 96%;
-    --primary-glow: 19 74% 52%; /* Copper glow for gradients */
+    /* Primary: Sage Green */
+    --primary: 147 28% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 147 28% 62%; /* Light sage glow */
 
-    /* Secondary: Warm Sand */  
-    --secondary: 41 22% 88%;
-    --secondary-foreground: 220 13% 18%;
+    /* Secondary: Light Sage */  
+    --secondary: 147 15% 90%;
+    --secondary-foreground: 150 8% 25%;
 
-    /* Copper Accent */
-    --accent: 19 74% 52%;
+    /* Accent: Deep Sage Green */
+    --accent: 147 35% 45%;
     --accent-foreground: 0 0% 100%;
 
-    --muted: 41 22% 90%;
-    --muted-foreground: 220 8% 46%;
+    --muted: 147 15% 95%;
+    --muted-foreground: 150 8% 50%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 41 22% 85%;
-    --input: 41 22% 85%;
-    --ring: 19 74% 52%;
+    --border: 147 15% 85%;
+    --input: 147 15% 85%;
+    --ring: 147 28% 52%;
 
-    /* Premium Design Tokens */
-    --copper: 19 74% 52%;
-    --copper-light: 19 74% 65%;
-    --copper-dark: 19 74% 42%;
+    /* Sage Green Design Tokens */
+    --sage: 147 28% 52%;
+    --sage-light: 147 28% 65%;
+    --sage-dark: 147 35% 42%;
     
-    --sand: 41 22% 88%;
-    --sand-light: 41 22% 94%;
-    --sand-dark: 41 22% 78%;
+    --sage-muted: 147 15% 90%;
+    --sage-muted-light: 147 15% 95%;
+    --sage-muted-dark: 147 15% 80%;
     
-    --charcoal: 220 13% 18%;
-    --charcoal-light: 220 13% 25%;
-    --charcoal-dark: 220 13% 12%;
+    --sage-deep: 150 8% 25%;
+    --sage-deep-light: 150 8% 35%;
+    --sage-deep-dark: 150 8% 18%;
 
     /* Tech-Inspired Palette (Augment Code Style) */
     --tech-navy: 220 25% 8%;
@@ -169,18 +169,18 @@ All colors MUST be HSL. Premium construction platform aesthetic.
     --warm-gold: 38 92% 50%;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--copper)) 0%, hsl(var(--copper-dark)) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(var(--sand-light)) 0%, hsl(var(--sand)) 100%);
-    --gradient-premium: linear-gradient(135deg, hsl(var(--charcoal)) 0%, hsl(var(--charcoal-light)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--sage)) 0%, hsl(var(--sage-dark)) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--sage-muted-light)) 0%, hsl(var(--sage-muted)) 100%);
+    --gradient-premium: linear-gradient(135deg, hsl(var(--sage-dark)) 0%, hsl(var(--sage)) 100%);
     --gradient-tech: linear-gradient(135deg, hsl(var(--tech-navy)) 0%, hsl(var(--deep-navy)) 100%);
     --gradient-electric: linear-gradient(135deg, hsl(var(--electric-blue)) 0%, hsl(var(--tech-blue)) 100%);
     --gradient-golden: linear-gradient(135deg, hsl(var(--golden-amber)) 0%, hsl(var(--warm-gold)) 100%);
     --gradient-sandy: linear-gradient(135deg, hsl(var(--sandy-gold)) 0%, hsl(var(--golden-amber)) 100%);
 
     /* Shadows */
-    --shadow-luxury: 0 20px 25px -5px hsl(var(--copper) / 0.1), 0 10px 10px -5px hsl(var(--copper) / 0.04);
-    --shadow-card: 0 10px 15px -3px hsl(var(--charcoal) / 0.1), 0 4px 6px -2px hsl(var(--charcoal) / 0.05);
-    --shadow-elegant: 0 25px 50px -12px hsl(var(--charcoal) / 0.25);
+    --shadow-luxury: 0 20px 25px -5px hsl(var(--sage) / 0.15), 0 10px 10px -5px hsl(var(--sage) / 0.08);
+    --shadow-card: 0 4px 6px -1px hsl(var(--sage-deep) / 0.1), 0 2px 4px -1px hsl(var(--sage-deep) / 0.06);
+    --shadow-elegant: 0 10px 30px -5px hsl(var(--sage-deep) / 0.2);
     --shadow-tech: 0 20px 40px -10px hsl(var(--tech-blue) / 0.3);
     --shadow-electric: 0 10px 30px -5px hsl(var(--electric-blue) / 0.4);
     --shadow-golden: 0 10px 30px -5px hsl(var(--golden-amber) / 0.4);
@@ -270,24 +270,24 @@ All colors MUST be HSL. Premium construction platform aesthetic.
   .btn-hero {
     @apply bg-gradient-hero text-white px-8 py-4 rounded-lg font-semibold 
            shadow-luxury hover:shadow-elegant transition-all duration-500 ease-out
-           hover:scale-105 focus:outline-none focus:ring-2 focus:ring-copper/50;
+           hover:scale-105 focus:outline-none focus:ring-2 focus:ring-sage/50;
   }
 
   .btn-premium {
     @apply bg-gradient-premium text-white px-6 py-3 rounded-lg font-medium 
            shadow-card hover:shadow-luxury transition-all duration-300 ease-in-out
-           hover:bg-charcoal-light focus:outline-none focus:ring-2 focus:ring-charcoal/50;
+           hover:bg-sage-dark focus:outline-none focus:ring-2 focus:ring-sage/50;
   }
 
   .btn-secondary {
-    @apply bg-gradient-card text-charcoal px-6 py-3 rounded-lg font-medium 
+    @apply bg-gradient-card text-sage-deep px-6 py-3 rounded-lg font-medium 
            shadow-card hover:shadow-luxury transition-all duration-300 ease-in-out
-           hover:bg-sand-dark focus:outline-none focus:ring-2 focus:ring-sand-dark/50;
+           hover:bg-sage-muted-dark focus:outline-none focus:ring-2 focus:ring-sage/50;
   }
 
   .card-luxury {
     @apply bg-gradient-card shadow-card hover:shadow-luxury 
-           transition-all duration-500 ease-out rounded-xl p-6 border border-sand-dark/20;
+           transition-all duration-500 ease-out rounded-xl p-6 border border-sage-muted/30;
   }
 
   .text-display {

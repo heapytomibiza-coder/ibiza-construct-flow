@@ -65,21 +65,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Mediterranean Luxury Palette
-        copper: {
-          DEFAULT: "hsl(var(--copper))",
-          light: "hsl(var(--copper-light))",
-          dark: "hsl(var(--copper-dark))",
+        // Sage Green Palette
+        sage: {
+          DEFAULT: "hsl(var(--sage))",
+          light: "hsl(var(--sage-light))",
+          dark: "hsl(var(--sage-dark))",
+          muted: "hsl(var(--sage-muted))",
+          'muted-light': "hsl(var(--sage-muted-light))",
+          'muted-dark': "hsl(var(--sage-muted-dark))",
         },
-        sand: {
-          DEFAULT: "hsl(var(--sand))",
-          light: "hsl(var(--sand-light))",
-          dark: "hsl(var(--sand-dark))",
-        },
-        charcoal: {
-          DEFAULT: "hsl(var(--charcoal))",
-          light: "hsl(var(--charcoal-light))",
-          dark: "hsl(var(--charcoal-dark))",
+        'sage-deep': {
+          DEFAULT: "hsl(var(--sage-deep))",
+          light: "hsl(var(--sage-deep-light))",
+          dark: "hsl(var(--sage-deep-dark))",
         },
         // Tech-Inspired Palette
         "tech-navy": "hsl(var(--tech-navy))",
@@ -124,12 +122,12 @@ export default {
         'golden': 'var(--shadow-golden)',
         'sandy': 'var(--shadow-sandy)',
         // Interactive states
-        'hover': '0 10px 20px -5px hsl(var(--copper) / 0.15)',
-        'focus': '0 0 0 3px hsl(var(--copper) / 0.2)',
-        'active': '0 5px 10px -3px hsl(var(--copper) / 0.25)',
+        'hover': '0 10px 20px -5px hsl(var(--sage) / 0.2)',
+        'focus': '0 0 0 3px hsl(var(--sage) / 0.25)',
+        'active': '0 5px 10px -3px hsl(var(--sage) / 0.3)',
         // Micro-interaction shadows
-        'micro': '0 2px 4px -1px hsl(var(--charcoal) / 0.1)',
-        'micro-hover': '0 4px 8px -2px hsl(var(--charcoal) / 0.15)',
+        'micro': '0 2px 4px -1px hsl(var(--sage-deep) / 0.1)',
+        'micro-hover': '0 4px 8px -2px hsl(var(--sage-deep) / 0.15)',
       },
       transitionTimingFunction: {
         'luxury': 'var(--transition-luxury)',
