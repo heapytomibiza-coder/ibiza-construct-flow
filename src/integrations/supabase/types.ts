@@ -8680,7 +8680,9 @@ export type Database = {
           created_at: string | null
           description: string | null
           display_order: number | null
+          examples: string[] | null
           icon_emoji: string | null
+          icon_name: string | null
           id: string
           is_active: boolean | null
           is_featured: boolean | null
@@ -8694,7 +8696,9 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           display_order?: number | null
+          examples?: string[] | null
           icon_emoji?: string | null
+          icon_name?: string | null
           id?: string
           is_active?: boolean | null
           is_featured?: boolean | null
@@ -8708,7 +8712,9 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           display_order?: number | null
+          examples?: string[] | null
           icon_emoji?: string | null
+          icon_name?: string | null
           id?: string
           is_active?: boolean | null
           is_featured?: boolean | null
