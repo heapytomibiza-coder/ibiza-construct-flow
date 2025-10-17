@@ -55,6 +55,7 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
           .from('service_subcategories')
           .select('id, name, display_order')
           .eq('category_id', categoryId)
+          .eq('is_active', true)
           .order('display_order', { ascending: true });
 
         if (error) {
