@@ -139,50 +139,47 @@ export const CategorySelector = ({
               }}
               aria-pressed={isSelected}
             >
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col items-center text-center space-y-3">
+                {/* Category Name */}
+                <h3 className={cn(
+                  "font-semibold text-base leading-tight w-full",
+                  isSelected ? "text-primary" : "text-foreground"
+                )}>
+                  {category.name}
+                </h3>
+                
                 {/* Icon */}
                 {IconComponent && (
                   <div className={cn(
-                    "flex-shrink-0 p-3.5 rounded-xl",
+                    "p-3 rounded-full transition-colors",
                     isSelected 
                       ? "bg-primary/10 text-primary" 
                       : "bg-muted text-muted-foreground"
                   )}>
-                    <IconComponent className="h-9 w-9" />
+                    <IconComponent className="h-7 w-7" />
                   </div>
                 )}
                 
-                {/* Content */}
-                <div className="flex-1 min-w-0 space-y-1.5">
-                  {/* Category Name */}
-                  <h3 className={cn(
-                    "font-semibold text-lg leading-tight",
-                    isSelected ? "text-primary" : "text-foreground"
-                  )}>
-                    {category.name}
-                  </h3>
-                  
-                  {/* Examples */}
-                  {category.examples && category.examples.length > 0 && (
-                    <div className="space-y-0.5">
-                      {category.examples.slice(0, 3).map((example, idx) => (
-                        <p key={idx} className="text-xs text-muted-foreground/80 leading-relaxed">
-                          {example}
-                        </p>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {/* Featured Badge */}
-                  {category.is_featured && (
-                    <Badge 
-                      variant="secondary" 
-                      className="text-[10px] px-2 py-0.5 mt-2"
-                    >
-                      Popular
-                    </Badge>
-                  )}
-                </div>
+                {/* Examples */}
+                {category.examples && category.examples.length > 0 && (
+                  <div className="space-y-0.5 w-full">
+                    {category.examples.slice(0, 3).map((example, idx) => (
+                      <p key={idx} className="text-xs text-muted-foreground/80">
+                        {example}
+                      </p>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Featured Badge */}
+                {category.is_featured && (
+                  <Badge 
+                    variant="secondary" 
+                    className="text-[10px] px-2 py-0.5"
+                  >
+                    Popular
+                  </Badge>
+                )}
               </div>
             </Card>
           );
