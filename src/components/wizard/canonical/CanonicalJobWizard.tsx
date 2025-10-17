@@ -391,8 +391,10 @@ export const CanonicalJobWizard: React.FC = () => {
       case 4:
         return (
           <QuestionsStep
-            microId={wizardState.microIds[0] || ''}
-            microName={wizardState.microNames.join(' + ')}
+            microIds={wizardState.microIds}
+            microNames={wizardState.microNames}
+            category={wizardState.mainCategory}
+            subcategory={wizardState.subcategory}
             answers={wizardState.answers}
             onAnswersChange={handleAnswersChange}
             onNext={handleNext}

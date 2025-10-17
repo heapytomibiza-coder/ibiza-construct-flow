@@ -15,8 +15,10 @@ import { AISmartFill } from '@/components/wizard/AISmartFill';
 import { useJobPresets } from '@/hooks/useJobPresets';
 
 interface QuestionsStepProps {
-  microId: string;
-  microName: string;
+  microIds: string[];
+  microNames: string[];
+  category?: string;
+  subcategory?: string;
   answers: Record<string, any>;
   onAnswersChange: (answers: Record<string, any>) => void;
   onNext: () => void;
@@ -24,8 +26,10 @@ interface QuestionsStepProps {
 }
 
 export const QuestionsStep: React.FC<QuestionsStepProps> = ({
-  microId,
-  microName,
+  microIds,
+  microNames,
+  category,
+  subcategory,
   answers,
   onAnswersChange,
   onNext,
@@ -35,14 +39,15 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [invalidRequired, setInvalidRequired] = useState<string[]>([]);
-  const [packSource, setPackSource] = useState<'pack' | 'ai' | 'fallback'>('fallback');
+  const [packSource, setPackSource] = useState<'pack' | 'ai' | 'ai_contextual' | 'fallback'>('fallback');
   const [showAISmartFill, setShowAISmartFill] = useState(false);
   
-  const { presets, usePreset } = useJobPresets(microId);
+  const primaryMicroId = microIds[0] || '';
+  const { presets, usePreset } = useJobPresets(primaryMicroId);
 
   useEffect(() => {
     loadQuestions();
-  }, [microId]);
+  }, [microIds.join(','), microNames.join(',')]);
 
   const getFallbackQuestions = (): AIQuestion[] => {
     return [
@@ -77,50 +82,45 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       setLoading(true);
       setError(null);
       
-      if (!microId || !microName) {
-        console.warn('No microId or microName provided, using fallback questions');
+      if (microIds.length === 0 || microNames.length === 0) {
+        console.warn('No micro services selected, using fallback questions');
         setQuestions(getFallbackQuestions());
         setPackSource('fallback');
         setLoading(false);
         return;
       }
 
-      // Try to get questions from new micro_service_questions table
-      const { data: microQuestionsData, error: microError } = await supabase
-        .from('micro_service_questions')
-        .select('questions')
-        .eq('micro_id', microId)
-        .maybeSingle();
+      // Use AI to generate contextual questions based on selected services
+      console.log('Generating contextual questions for:', microNames);
+      
+      const { data, error: functionError } = await supabase.functions.invoke(
+        'generate-contextual-questions',
+        {
+          body: {
+            microNames,
+            category,
+            subcategory
+          }
+        }
+      );
 
-      if (!microError && microQuestionsData?.questions && Array.isArray(microQuestionsData.questions)) {
-        const dbQuestions = transformDatabaseToAIQuestions(microQuestionsData.questions);
-        if (dbQuestions.length > 0) {
-          setQuestions(dbQuestions);
-          setPackSource('pack');
+      if (functionError) {
+        console.error('Error calling contextual questions function:', functionError);
+        throw functionError;
+      }
+
+      if (data?.questions && Array.isArray(data.questions)) {
+        const contextualQuestions = transformDatabaseToAIQuestions(data.questions);
+        if (contextualQuestions.length > 0) {
+          setQuestions(contextualQuestions);
+          setPackSource(data.source === 'ai_contextual' ? 'ai_contextual' : 'fallback');
           setLoading(false);
           return;
         }
       }
 
-      // Fallback: try by micro name if ID lookup failed
-      const { data: nameData, error: nameError } = await supabase
-        .from('micro_service_questions')
-        .select('questions')
-        .ilike('micro_name', microName)
-        .maybeSingle();
-
-      if (!nameError && nameData?.questions && Array.isArray(nameData.questions)) {
-        const dbQuestions = transformDatabaseToAIQuestions(nameData.questions);
-        if (dbQuestions.length > 0) {
-          setQuestions(dbQuestions);
-          setPackSource('pack');
-          setLoading(false);
-          return;
-        }
-      }
-
-      // If no questions found in database, use fallback
-      console.warn('No questions found in database, using fallback questions');
+      // If AI generation failed, use fallback
+      console.warn('No questions generated, using fallback questions');
       setQuestions(getFallbackQuestions());
       setPackSource('fallback');
       
@@ -128,6 +128,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       console.warn('Error loading questions, using fallback:', error.message);
       setQuestions(getFallbackQuestions());
       setPackSource('fallback');
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -248,12 +249,19 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         </Button>
 
         <div className="space-y-4">
-          <Badge variant="outline" className="mb-4">{microName}</Badge>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {microNames.map((name, idx) => (
+              <Badge key={idx} variant="outline">{name}</Badge>
+            ))}
+          </div>
           <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
             Tell us about your project
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
-            Answer a few quick questions to help professionals understand your needs
+            {microNames.length > 1 
+              ? 'Answer questions to help professionals understand your complete project scope'
+              : 'Answer a few quick questions to help professionals understand your needs'
+            }
           </p>
           
           {/* AI Smart-Fill Button */}
@@ -280,17 +288,26 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           {/* Recent Presets */}
           {presets.length > 0 && (
             <PresetChips
-              presetType={microId}
+              presetType={primaryMicroId}
               onSelectPreset={async (presetData) => {
                 onAnswersChange(presetData);
               }}
             />
           )}
           
+          {packSource === 'ai_contextual' && (
+            <Alert className="bg-blue-50 border-blue-200">
+              <AlertDescription className="text-blue-800 flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Questions tailored to your selected services
+              </AlertDescription>
+            </Alert>
+          )}
+          
           {packSource === 'pack' && (
             <Alert className="bg-green-50 border-green-200">
               <AlertDescription className="text-green-800">
-                Using optimized question pack for {microName}
+                Using optimized question pack
               </AlertDescription>
             </Alert>
           )}
@@ -307,7 +324,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           {showAISmartFill && (
             <AISmartFill
               selections={answers}
-              serviceType={microName}
+              serviceType={microNames.join(' + ')}
               onGenerated={(data) => {
                 onAnswersChange({ ...answers, ...data });
                 setShowAISmartFill(false);
