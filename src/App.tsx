@@ -126,6 +126,7 @@ const HowItWorks = lazyWithRetry(() => import("./pages/HowItWorks"));
 const Contact = lazyWithRetry(() => import("./pages/Contact"));
 const SpecialistCategories = lazyWithRetry(() => import("./pages/SpecialistCategories"));
 const Calculator = lazyWithRetry(() => import("./pages/Calculator"));
+const Install = lazyWithRetry(() => import("./pages/Install"));
 
 // Other Pages
 const Templates = lazyWithRetry(() => import("./pages/Templates"));
@@ -194,6 +195,7 @@ function AppContent() {
                   <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<Index />} />
+                    <Route path="/install" element={<Install />} />
                     <Route path="/calculator" element={<Calculator />} />
                     <Route path="/discovery" element={<Discovery />} />
                     <Route path="/jobs-discovery" element={<DiscoveryPage />} />
