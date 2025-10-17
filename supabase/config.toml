@@ -30,6 +30,9 @@ verify_jwt = false
 [functions.generate-questions]
 verify_jwt = false
 
+[functions.generate-contextual-questions]
+verify_jwt = false
+
 [functions.estimate-price]
 verify_jwt = false
 
