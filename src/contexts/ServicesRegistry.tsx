@@ -216,17 +216,37 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
   const toSlug = (s: string) =>
     s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-  // Fetch services from unified view (single source of truth)
+  // Fetch services from new taxonomy tables
   const { data: rawServices = [], isLoading: loading, error, refetch } = useQuery<ServiceNode[]>({
-    queryKey: ['services-registry', 'v1'],
+    queryKey: ['services-registry', 'v2'],
     queryFn: async (): Promise<ServiceNode[]> => {
+      // Fetch all micro-categories with their relationships
       const { data, error } = await supabase
-        .from('services_catalog')
-        .select('id, category, subcategory, micro')
-        .order('category, subcategory, micro');
+        .from('service_micro_categories')
+        .select(`
+          id,
+          name,
+          service_subcategories!inner(
+            name,
+            service_categories!inner(
+              name
+            )
+          )
+        `)
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
       
       if (error) throw error;
-      return data || [];
+      
+      // Transform to ServiceNode format
+      const services: ServiceNode[] = (data || []).map((item: any) => ({
+        id: item.id,
+        micro: item.name,
+        subcategory: item.service_subcategories?.name || '',
+        category: item.service_subcategories?.service_categories?.name || '',
+      }));
+      
+      return services;
     },
     staleTime: 1000 * 60 * 10, // 10 minutes
     gcTime: 1000 * 60 * 30, // 30 minutes

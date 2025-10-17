@@ -77,16 +77,34 @@ export function ProfessionalServiceCascadeWizard({
   const loadSubcategories = async () => {
     try {
       setLoading(true);
+      
+      // First get the category ID
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('service_categories')
+        .select('id')
+        .or(`slug.eq.${currentCategory},name.ilike.%${currentCategory}%`)
+        .limit(1)
+        .single();
+
+      if (categoryError || !categoryData) {
+        console.error('Error finding category:', categoryError);
+        setSubcategories([]);
+        setLoading(false);
+        return;
+      }
+
+      // Now get subcategories for this category
       const { data, error } = await supabase
-        .from('services_micro')
-        .select('subcategory')
-        .eq('category', currentCategory)
-        .eq('is_active', true);
+        .from('service_subcategories')
+        .select('name')
+        .eq('category_id', categoryData.id)
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
 
       if (error) throw error;
 
-      const uniqueSubcategories = [...new Set(data?.map(s => s.subcategory) || [])];
-      setSubcategories(uniqueSubcategories);
+      const subcategoryNames = data?.map(s => s.name) || [];
+      setSubcategories(subcategoryNames);
     } catch (error) {
       console.error('Error loading subcategories:', error);
       toast.error('Failed to load subcategories');
@@ -98,16 +116,56 @@ export function ProfessionalServiceCascadeWizard({
   const loadMicroServices = async () => {
     try {
       setLoading(true);
+      
+      // First get the category ID
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('service_categories')
+        .select('id')
+        .or(`slug.eq.${currentCategory},name.ilike.%${currentCategory}%`)
+        .limit(1)
+        .single();
+
+      if (categoryError || !categoryData) {
+        console.error('Error finding category:', categoryError);
+        setMicroServices([]);
+        setLoading(false);
+        return;
+      }
+
+      // Then get the subcategory ID
+      const { data: subcategoryData, error: subcategoryError } = await supabase
+        .from('service_subcategories')
+        .select('id')
+        .eq('category_id', categoryData.id)
+        .or(`slug.eq.${selectedSubcategory},name.ilike.%${selectedSubcategory}%`)
+        .limit(1)
+        .single();
+
+      if (subcategoryError || !subcategoryData) {
+        console.error('Error finding subcategory:', subcategoryError);
+        setMicroServices([]);
+        setLoading(false);
+        return;
+      }
+
+      // Now get micro-categories for this subcategory
       const { data, error } = await supabase
-        .from('services_micro')
-        .select('id, micro, subcategory')
-        .eq('category', currentCategory)
-        .eq('subcategory', selectedSubcategory)
+        .from('service_micro_categories')
+        .select('id, name, subcategory_id')
+        .eq('subcategory_id', subcategoryData.id)
         .eq('is_active', true)
-        .order('micro');
+        .order('display_order', { ascending: true });
 
       if (error) throw error;
-      setMicroServices(data || []);
+      
+      // Transform to match expected interface
+      const transformed = (data || []).map(item => ({
+        id: item.id,
+        micro: item.name,
+        subcategory: selectedSubcategory || ''
+      }));
+      
+      setMicroServices(transformed);
     } catch (error) {
       console.error('Error loading micro services:', error);
       toast.error('Failed to load services');
