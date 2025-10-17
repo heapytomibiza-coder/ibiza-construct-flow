@@ -2,13 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, HardHat, Droplet, Zap, Hammer, Wrench, Paintbrush, Square, Layers, Home, Leaf, Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, LucideIcon } from 'lucide-react';
+import { Loader2, HardHat, Droplet, Zap, Hammer, Wrench, Paintbrush, Square, Layers, Home, Leaf, Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, Truck, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Icon mapping for dynamic icon rendering
 const ICON_MAP: Record<string, LucideIcon> = {
   HardHat, Droplet, Zap, Hammer, Wrench, Paintbrush, Square, Layers, Home, Leaf, 
-  Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText
+  Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, Truck
 };
 
 interface Category {
