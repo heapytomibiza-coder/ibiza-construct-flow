@@ -47,45 +47,67 @@ export const MicroStep: React.FC<MicroStepProps> = ({
 
       setLoading(true);
       try {
-        // Fast path: exact match
-        let { data, error } = await supabase
-          .from('services_catalog')
-          .select('id, micro')
-          .eq('category', mainCategory)
-          .eq('subcategory', subcategory)
-          .not('micro', 'is', null)
-          .order('micro');
+        // First, get the category ID
+        const { data: categoryData, error: categoryError } = await supabase
+          .from('service_categories')
+          .select('id')
+          .or(`slug.eq.${mainCategory},name.ilike.%${mainCategory}%`)
+          .limit(1)
+          .single();
 
-        if (error) {
-          console.error('Error loading micro services (eq):', error);
-          data = null;
+        if (categoryError || !categoryData) {
+          console.error('Error finding category:', categoryError);
+          if (mounted) {
+            setMicros([]);
+            setLoading(false);
+          }
+          return;
         }
 
-        // Fallback: contains search if nothing found
-        if (!data || data.length === 0) {
-          const { data: fallbackData, error: fbErr } = await supabase
-            .from('services_catalog')
-            .select('id, micro')
-            .ilike('category', `%${mainCategory}%`)
-            .ilike('subcategory', `%${subcategory}%`)
-            .not('micro', 'is', null)
-            .order('micro');
+        // Then get the subcategory ID
+        const { data: subcategoryData, error: subcategoryError } = await supabase
+          .from('service_subcategories')
+          .select('id')
+          .eq('category_id', categoryData.id)
+          .or(`slug.eq.${subcategory.toLowerCase().replace(/\s+/g, '-')},name.eq.${subcategory}`)
+          .limit(1)
+          .single();
 
-          if (fbErr) {
-            console.error('Error loading micro services (ilike):', fbErr);
-          } else if (fallbackData) {
-            data = fallbackData;
+        if (subcategoryError || !subcategoryData) {
+          console.error('Error finding subcategory:', subcategoryError);
+          if (mounted) {
+            setMicros([]);
+            setLoading(false);
           }
+          return;
+        }
+
+        // Now get micro-categories for this subcategory
+        const { data, error } = await supabase
+          .from('service_micro_categories')
+          .select('id, name, slug, display_order')
+          .eq('subcategory_id', subcategoryData.id)
+          .eq('is_active', true)
+          .order('display_order', { ascending: true });
+
+        if (error) {
+          console.error('Error loading micro services:', error);
+          if (mounted) {
+            toast.error('Failed to load services. Please try again.');
+            setMicros([]);
+          }
+          return;
         }
 
         if (!mounted) return;
 
-        if (!data || data.length === 0) {
-          setMicros([]);
-          return;
-        }
-
-        setMicros(data);
+        // Map to expected format (id and micro fields)
+        const formattedData = (data || []).map(item => ({
+          id: item.id,
+          micro: item.name
+        }));
+        
+        setMicros(formattedData);
       } catch (error) {
         if (mounted) {
           console.error('Failed to load micro services:', error);

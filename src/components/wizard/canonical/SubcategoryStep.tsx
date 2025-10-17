@@ -45,42 +45,42 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
 
       setLoading(true);
       try {
-        // Fast path: exact match
-        let { data, error } = await supabase
-          .from('services_catalog')
-          .select('subcategory')
-          .eq('category', mainCategory)
-          .not('subcategory', 'is', null)
-          .order('subcategory', { ascending: true });
+        // First, get the category ID from the slug/name
+        const { data: categoryData, error: categoryError } = await supabase
+          .from('service_categories')
+          .select('id')
+          .or(`slug.eq.${mainCategory},name.ilike.%${mainCategory}%`)
+          .limit(1)
+          .single();
 
-        if (error) {
-          console.error('Error loading subcategories (eq):', error);
-          data = null;
+        if (categoryError || !categoryData) {
+          console.error('Error finding category:', categoryError);
+          if (mounted) {
+            setSubcategories([]);
+            setLoading(false);
+          }
+          return;
         }
 
-        // Fallback: contains search if nothing found
-        if (!data || data.length === 0) {
-          const likeTerm = `%${mainCategory}%`;
-          const { data: fallbackData, error: fbErr } = await supabase
-            .from('services_catalog')
-            .select('subcategory')
-            .ilike('category', likeTerm)
-            .not('subcategory', 'is', null)
-            .order('subcategory', { ascending: true });
+        // Now get subcategories for this category
+        const { data, error } = await supabase
+          .from('service_subcategories')
+          .select('id, name, slug, display_order')
+          .eq('category_id', categoryData.id)
+          .eq('is_active', true)
+          .order('display_order', { ascending: true });
 
-          if (fbErr) {
-            console.error('Error loading subcategories (ilike):', fbErr);
-          } else if (fallbackData) {
-            data = fallbackData;
+        if (error) {
+          console.error('Error loading subcategories:', error);
+          if (mounted) {
+            toast.error('Failed to load subcategories. Please try again.');
+            setSubcategories([]);
           }
+          return;
         }
 
         if (!mounted) return;
-
-        const unique = Array.from(
-          new Set((data ?? []).map((s: any) => s?.subcategory).filter(Boolean))
-        ) as string[];
-        setSubcategories(unique.map((name) => ({ name })));
+        setSubcategories(data || []);
       } catch (error) {
         if (mounted) {
           console.error('Failed to load subcategories:', error);
