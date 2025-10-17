@@ -61,11 +61,11 @@ export const MobileOptimizedHeader = ({
     <>
       <header 
         className={cn(
-          "fixed top-0 left-0 right-0 z-[100]",
+          "fixed top-0 left-0 right-0 !z-[200]",
           "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",  
           "border-b border-border"
         )}
-        style={{ paddingTop: `${insets.top}px` }}
+        style={{ paddingTop: `${insets.top}px`, position: 'fixed' }}
       >
         <div className="px-4 py-3">
           <div className="flex items-center justify-between min-h-[44px]">
