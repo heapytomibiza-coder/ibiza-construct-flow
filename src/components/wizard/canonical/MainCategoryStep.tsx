@@ -26,28 +26,31 @@ const ICON_MAP: Record<string, any> = {
   Grid3X3, Layers
 };
 
-const MAIN_CATEGORIES = [
-  'Builder',
-  'Plumber',
-  'Electrician',
-  'Carpenter',
-  'Handyman',
-  'Painter',
-  'Tiler',
-  'Plasterer',
-  'Roofer',
-  'Landscaper',
-  'Pool Builder',
-  'HVAC',
-];
+interface CategoryInfo {
+  name: string;
+  icon: keyof typeof ICON_MAP;
+  examples: string[];
+}
 
-const SPECIALIST_CATEGORIES = [
-  'Architects & Design',
-  'Structural Works',
-  'Floors, Doors & Windows',
-  'Kitchen & Bathroom',
-  'Commercial Projects',
-  'Legal & Regulatory',
+const ALL_CATEGORIES: CategoryInfo[] = [
+  { name: 'Builder', icon: 'HardHat', examples: ['New construction', 'Extensions', 'Renovations'] },
+  { name: 'Plumber', icon: 'Droplet', examples: ['Leak repairs', 'Pipe installation', 'Bathroom fitting'] },
+  { name: 'Electrician', icon: 'Zap', examples: ['Rewiring', 'Socket installation', 'Lighting'] },
+  { name: 'Carpenter', icon: 'Hammer', examples: ['Custom furniture', 'Door fitting', 'Decking'] },
+  { name: 'Handyman', icon: 'Wrench', examples: ['General repairs', 'Assembly', 'Odd jobs'] },
+  { name: 'Painter', icon: 'Paintbrush', examples: ['Interior painting', 'Exterior painting', 'Decorating'] },
+  { name: 'Tiler', icon: 'Grid3X3', examples: ['Floor tiling', 'Wall tiling', 'Bathroom tiles'] },
+  { name: 'Plasterer', icon: 'Layers', examples: ['Wall plastering', 'Ceiling repair', 'Rendering'] },
+  { name: 'Roofer', icon: 'Home', examples: ['Roof repairs', 'New roofing', 'Guttering'] },
+  { name: 'Landscaper', icon: 'Trees', examples: ['Garden design', 'Paving', 'Planting'] },
+  { name: 'Pool Builder', icon: 'Waves', examples: ['Pool installation', 'Pool maintenance', 'Repairs'] },
+  { name: 'HVAC', icon: 'Wind', examples: ['Air conditioning', 'Heating', 'Ventilation'] },
+  { name: 'Architects & Design', icon: 'Lightbulb', examples: ['Building plans', 'Interior design', '3D renders'] },
+  { name: 'Structural Works', icon: 'Building2', examples: ['Foundations', 'Steel work', 'Concrete'] },
+  { name: 'Floors, Doors & Windows', icon: 'DoorOpen', examples: ['Flooring', 'Window installation', 'Door fitting'] },
+  { name: 'Kitchen & Bathroom', icon: 'Bath', examples: ['Kitchen fitting', 'Bathroom design', 'Plumbing'] },
+  { name: 'Commercial Projects', icon: 'Building', examples: ['Office fit-outs', 'Retail spaces', 'Warehouses'] },
+  { name: 'Legal & Regulatory', icon: 'FileText', examples: ['Building permits', 'Planning', 'Compliance'] },
 ];
 
 export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
@@ -65,74 +68,51 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
     }
   }, [selectedCategory, onNext]);
 
-  // Map category names to icons (12 Main + 6 Specialist)
-  const getCategoryIcon = (category: string): keyof typeof ICON_MAP => {
-    const iconMap: Record<string, keyof typeof ICON_MAP> = {
-      // 12 Main Construction Categories
-      'Builder': 'HardHat',
-      'Plumber': 'Droplet',
-      'Electrician': 'Zap',
-      'Carpenter': 'Hammer',
-      'Handyman': 'Wrench',
-      'Painter': 'Paintbrush',
-      'Tiler': 'Grid3X3',
-      'Plasterer': 'Layers',
-      'Roofer': 'Home',
-      'Landscaper': 'Trees',
-      'Pool Builder': 'Waves',
-      'HVAC': 'Wind',
-      // 6 Specialist Categories
-      'Architects & Design': 'Lightbulb',
-      'Structural Works': 'Building2',
-      'Floors, Doors & Windows': 'DoorOpen',
-      'Kitchen & Bathroom': 'Bath',
-      'Commercial Projects': 'Building',
-      'Legal & Regulatory': 'FileText',
-    };
-    return iconMap[category] || 'Wrench';
+  const renderCategoryCard = (category: CategoryInfo) => {
+    const IconComponent = ICON_MAP[category.icon];
+    const isSelected = selectedCategory === category.name;
+
+    return (
+      <Card
+        key={category.name}
+        className={cn(
+          "cursor-pointer transition-all hover:scale-[1.02] hover:shadow-lg",
+          "border-2 p-6",
+          isSelected
+            ? "border-primary bg-primary/5 shadow-md"
+            : "border-border hover:border-primary/50"
+        )}
+        onClick={() => onSelect(category.name)}
+      >
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-start space-x-4">
+            <div className={cn(
+              "p-3 rounded-lg shrink-0",
+              isSelected ? "bg-primary/20" : "bg-muted"
+            )}>
+              <IconComponent className={cn(
+                "h-7 w-7",
+                isSelected ? "text-primary" : "text-muted-foreground"
+              )} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-base mb-2 text-foreground">
+                {category.name}
+              </h3>
+              <ul className="space-y-1">
+                {category.examples.map((example, idx) => (
+                  <li key={idx} className="text-xs text-muted-foreground flex items-start">
+                    <span className="mr-1.5 mt-0.5">•</span>
+                    <span>{example}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
   };
-
-  const renderCategoryGrid = (categories: string[], title: string) => (
-    <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-foreground/80">{title}</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {categories.map((category) => {
-          const iconName = getCategoryIcon(category);
-          const IconComponent = ICON_MAP[iconName];
-          const isSelected = selectedCategory === category;
-
-          return (
-            <Card
-              key={category}
-              className={cn(
-                "cursor-pointer transition-all hover:scale-105 hover:shadow-lg",
-                "border-2 p-4",
-                isSelected
-                  ? "border-primary bg-primary/5 shadow-md"
-                  : "border-border hover:border-primary/50"
-              )}
-              onClick={() => onSelect(category)}
-            >
-              <div className="flex flex-col items-center text-center space-y-2">
-                <div className={cn(
-                  "p-2.5 rounded-full",
-                  isSelected ? "bg-primary/20" : "bg-muted"
-                )}>
-                  <IconComponent className={cn(
-                    "h-6 w-6",
-                    isSelected ? "text-primary" : "text-muted-foreground"
-                  )} />
-                </div>
-                <span className="font-medium text-xs leading-tight">
-                  {category}
-                </span>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -145,9 +125,8 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
         </p>
       </div>
 
-      <div className="space-y-6">
-        {renderCategoryGrid(MAIN_CATEGORIES, "Main Services")}
-        {renderCategoryGrid(SPECIALIST_CATEGORIES, "Specialist Services")}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {ALL_CATEGORIES.map(renderCategoryCard)}
       </div>
 
       {/* Next Button */}
