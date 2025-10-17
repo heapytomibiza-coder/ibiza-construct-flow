@@ -14,9 +14,9 @@ import { cn } from '@/lib/utils';
 interface MicroStepProps {
   mainCategory: string;
   subcategory: string;
-  selectedMicro: string;
-  selectedMicroId: string;
-  onSelect: (micro: string, microId: string) => void;
+  selectedMicros: string[];
+  selectedMicroIds: string[];
+  onSelect: (micros: string[], microIds: string[]) => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -24,8 +24,8 @@ interface MicroStepProps {
 export const MicroStep: React.FC<MicroStepProps> = ({
   mainCategory,
   subcategory,
-  selectedMicro,
-  selectedMicroId,
+  selectedMicros,
+  selectedMicroIds,
   onSelect,
   onNext,
   onBack
@@ -152,11 +152,16 @@ export const MicroStep: React.FC<MicroStepProps> = ({
             <Badge variant="outline">{subcategory}</Badge>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
-            What specific task do you need?
+            What specific tasks do you need?
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
-            This will become your job title
+            Select one or more services (click to select/deselect)
           </p>
+          {selectedMicroIds.length > 0 && (
+            <p className="text-sm text-copper font-medium">
+              {selectedMicroIds.length} service{selectedMicroIds.length > 1 ? 's' : ''} selected
+            </p>
+          )}
         </div>
       </div>
 
@@ -169,7 +174,19 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {micros.map((micro) => {
-            const isSelected = selectedMicroId === micro.id;
+            const isSelected = selectedMicroIds.includes(micro.id);
+            
+            const handleClick = () => {
+              if (isSelected) {
+                // Remove from selection
+                const newMicros = selectedMicros.filter((_, i) => selectedMicroIds[i] !== micro.id);
+                const newIds = selectedMicroIds.filter(id => id !== micro.id);
+                onSelect(newMicros, newIds);
+              } else {
+                // Add to selection
+                onSelect([...selectedMicros, micro.micro], [...selectedMicroIds, micro.id]);
+              }
+            };
             
             return (
               <Card
@@ -179,7 +196,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
                   "flex items-center justify-center text-center",
                   isSelected && "ring-2 ring-copper shadow-md"
                 )}
-                onClick={() => onSelect(micro.micro, micro.id)}
+                onClick={handleClick}
               >
                 <div className="space-y-2 w-full">
                   <h3 className="font-semibold text-charcoal text-sm leading-tight">
@@ -195,7 +212,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
         </div>
       )}
 
-      {selectedMicroId && !loading && (
+      {selectedMicroIds.length > 0 && !loading && (
         <div className="flex justify-end pt-6">
           <Button
             size="lg"

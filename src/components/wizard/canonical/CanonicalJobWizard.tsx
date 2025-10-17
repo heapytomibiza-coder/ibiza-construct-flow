@@ -30,8 +30,8 @@ interface WizardState {
   mainCategoryId: string;
   subcategory: string;
   subcategoryId: string;
-  microName: string;
-  microId: string;
+  microNames: string[];
+  microIds: string[];
   answers: Record<string, any>;
   logistics: {
     location: string;
@@ -76,8 +76,8 @@ export const CanonicalJobWizard: React.FC = () => {
     mainCategoryId: '',
     subcategory: '',
     subcategoryId: '',
-    microName: '',
-    microId: '',
+    microNames: [],
+    microIds: [],
     answers: {},
     logistics: {
       location: '',
@@ -164,10 +164,10 @@ export const CanonicalJobWizard: React.FC = () => {
     if (currentStep >= 3 && !wizardState.subcategory) {
       setCurrentStep(2);
     }
-    if (currentStep >= 4 && !wizardState.microId) {
+    if (currentStep >= 4 && wizardState.microIds.length === 0) {
       setCurrentStep(3);
     }
-  }, [currentStep, wizardState.mainCategory, wizardState.subcategory, wizardState.microId]);
+  }, [currentStep, wizardState.mainCategory, wizardState.subcategory, wizardState.microIds]);
 
   const progress = (currentStep / TOTAL_STEPS) * 100;
 
@@ -191,8 +191,8 @@ export const CanonicalJobWizard: React.FC = () => {
         mainCategoryId: categoryId,
         subcategory: '',
         subcategoryId: '',
-        microName: '', 
-        microId: '' 
+        microNames: [], 
+        microIds: [] 
       }));
     });
     setCurrentStep(2); // Auto-advance to subcategory
@@ -205,18 +205,18 @@ export const CanonicalJobWizard: React.FC = () => {
         ...prev, 
         subcategory: subcategoryName,
         subcategoryId: subcategoryId,
-        microName: '', 
-        microId: '' 
+        microNames: [], 
+        microIds: [] 
       }));
     });
     setCurrentStep(3); // Auto-advance to micro
   }, []);
 
-  const handleMicroSelect = useCallback((micro: string, microId: string) => {
+  const handleMicroSelect = useCallback((micros: string[], microIds: string[]) => {
     setWizardState(prev => ({ 
       ...prev, 
-      microName: micro, 
-      microId 
+      microNames: micros, 
+      microIds 
     }));
   }, []);
 
@@ -250,8 +250,8 @@ export const CanonicalJobWizard: React.FC = () => {
       return;
     }
 
-    if (!wizardState.microId) {
-      toast.error('Please select a service before submitting');
+    if (wizardState.microIds.length === 0) {
+      toast.error('Please select at least one service before submitting');
       return;
     }
 
@@ -260,16 +260,23 @@ export const CanonicalJobWizard: React.FC = () => {
       const budgetValue = parseBudgetValue(wizardState.logistics.budgetRange);
       // Use 'fixed' for ranges (actual range stored in answers.logistics.budgetRange)
       const budgetType = wizardState.logistics.budgetRange ? 'fixed' : 'hourly';
+      
+      // Combine micro names for title
+      const combinedTitle = wizardState.microNames.join(' + ');
+      // Use first micro ID (we could enhance this later to support multiple)
+      const primaryMicroId = wizardState.microIds[0];
 
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert([{
           client_id: user.id,
-          micro_id: wizardState.microId,
-          title: wizardState.microName,
-          description: wizardState.extras.notes || `${wizardState.microName} - ${wizardState.mainCategory} / ${wizardState.subcategory}`,
+          micro_id: primaryMicroId,
+          title: combinedTitle,
+          description: wizardState.extras.notes || `${combinedTitle} - ${wizardState.mainCategory} / ${wizardState.subcategory}`,
           answers: {
             microAnswers: wizardState.answers,
+            selectedMicros: wizardState.microNames,
+            selectedMicroIds: wizardState.microIds,
             logistics: {
               ...wizardState.logistics,
               startDate: wizardState.logistics.startDate?.toISOString(),
@@ -373,8 +380,8 @@ export const CanonicalJobWizard: React.FC = () => {
             key={`micro:${wizardState.mainCategory}|${wizardState.subcategory || 'none'}`}
             mainCategory={wizardState.mainCategory}
             subcategory={wizardState.subcategory}
-            selectedMicro={wizardState.microName}
-            selectedMicroId={wizardState.microId}
+            selectedMicros={wizardState.microNames}
+            selectedMicroIds={wizardState.microIds}
             onSelect={handleMicroSelect}
             onNext={handleNext}
             onBack={handleBack}
@@ -384,8 +391,8 @@ export const CanonicalJobWizard: React.FC = () => {
       case 4:
         return (
           <QuestionsStep
-            microId={wizardState.microId}
-            microName={wizardState.microName}
+            microId={wizardState.microIds[0] || ''}
+            microName={wizardState.microNames.join(' + ')}
             answers={wizardState.answers}
             onAnswersChange={handleAnswersChange}
             onNext={handleNext}
@@ -396,7 +403,7 @@ export const CanonicalJobWizard: React.FC = () => {
       case 5:
         return (
           <LogisticsStep
-            microName={wizardState.microName}
+            microName={wizardState.microNames.join(' + ')}
             logistics={wizardState.logistics}
             onLogisticsChange={handleLogisticsChange}
             onNext={handleNext}
@@ -407,7 +414,7 @@ export const CanonicalJobWizard: React.FC = () => {
       case 6:
         return (
           <ExtrasStep
-            microName={wizardState.microName}
+            microName={wizardState.microNames.join(' + ')}
             extras={wizardState.extras}
             onExtrasChange={handleExtrasChange}
             onNext={handleNext}
@@ -419,7 +426,7 @@ export const CanonicalJobWizard: React.FC = () => {
         return (
           <ReviewStep
             jobData={{
-              microName: wizardState.microName,
+              microName: wizardState.microNames.join(' + '),
               category: wizardState.mainCategory,
               subcategory: wizardState.subcategory,
               answers: wizardState.answers,
@@ -462,7 +469,7 @@ export const CanonicalJobWizard: React.FC = () => {
       case 2: 
         return { can: !!wizardState.subcategory, reason: 'Please select a subcategory' };
       case 3: 
-        return { can: !!wizardState.microId, reason: 'Please select a specific service' };
+        return { can: wizardState.microIds.length > 0, reason: 'Please select at least one service' };
       case 4: 
         return { can: true }; // Questions are optional
       case 5: 
