@@ -161,13 +161,13 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       </div>
 
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-20 bg-muted/30 animate-pulse rounded-lg" />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="h-28 bg-muted/30 animate-pulse rounded-xl" />
           ))}
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {micros.map((micro) => {
             const isSelected = selectedMicroId === micro.id;
             
@@ -175,19 +175,18 @@ export const MicroStep: React.FC<MicroStepProps> = ({
               <Card
                 key={micro.id}
                 className={cn(
-                  "p-4 cursor-pointer transition-all hover:shadow-md",
+                  "p-4 cursor-pointer transition-all hover:shadow-md min-h-[100px]",
+                  "flex items-center justify-center text-center",
                   isSelected && "ring-2 ring-copper shadow-md"
                 )}
                 onClick={() => onSelect(micro.micro, micro.id)}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-charcoal">
-                      {micro.micro}
-                    </h3>
-                  </div>
+                <div className="space-y-2 w-full">
+                  <h3 className="font-semibold text-charcoal text-sm leading-tight">
+                    {micro.micro}
+                  </h3>
                   {isSelected && (
-                    <CheckCircle2 className="w-6 h-6 text-copper flex-shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-copper mx-auto" />
                   )}
                 </div>
               </Card>
