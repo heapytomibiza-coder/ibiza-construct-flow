@@ -46,23 +46,10 @@ export const OptimizedImage = ({
     return () => observer.disconnect();
   }, [priority]);
 
-  // Generate WebP srcSet with fallback
-  const generateWebPSrcSet = (originalSrc: string) => {
-    // Check if it's already WebP
-    if (originalSrc.endsWith('.webp')) return originalSrc;
-    
-    const basePath = originalSrc.replace(/\.[^/.]+$/, '');
-    const sizes = [480, 768, 1024, 1280, 1920];
-    
-    return sizes.map(size => `${basePath}-${size}w.webp ${size}w`).join(', ');
-  };
-
-  const generateFallbackSrcSet = (originalSrc: string) => {
-    const basePath = originalSrc.replace(/\.[^/.]+$/, '');
-    const extension = originalSrc.split('.').pop();
-    const sizes = [480, 768, 1024, 1280, 1920];
-    
-    return sizes.map(size => `${basePath}-${size}w.${extension} ${size}w`).join(', ');
+  // Check if responsive variants exist (simplified approach)
+  const hasResponsiveVariants = (src: string) => {
+    // If it's a simple imported asset, don't try to generate srcSet
+    return false;
   };
 
   const handleLoad = () => {
@@ -110,37 +97,22 @@ export const OptimizedImage = ({
       
       {/* Only load image when in view */}
       {isInView && (
-        <picture>
-          {/* WebP version for modern browsers */}
-          <source
-            type="image/webp"
-            srcSet={generateWebPSrcSet(src)}
-            sizes={sizes}
-          />
-          
-          {/* Fallback for older browsers */}
-          <source
-            srcSet={generateFallbackSrcSet(src)}
-            sizes={sizes}
-          />
-          
-          <img
-            src={src}
-            alt={alt}
-            width={width}
-            height={height}
-            loading={priority ? 'eager' : 'lazy'}
-            decoding="async"
-            onLoad={handleLoad}
-            onError={handleError}
-            className={cn(
-              "transition-opacity duration-500",
-              isLoading ? "opacity-0" : "opacity-100",
-              className
-            )}
-            {...props}
-          />
-        </picture>
+        <img
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          onLoad={handleLoad}
+          onError={handleError}
+          className={cn(
+            "transition-opacity duration-500",
+            isLoading ? "opacity-0" : "opacity-100",
+            className
+          )}
+          {...props}
+        />
       )}
     </div>
   );
