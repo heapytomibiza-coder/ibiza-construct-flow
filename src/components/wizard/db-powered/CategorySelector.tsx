@@ -2,13 +2,25 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, HardHat, Droplet, Zap, Hammer, Wrench, Paintbrush, Square, Layers, Home, Leaf, Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, Truck, LucideIcon } from 'lucide-react';
+import { Loader2, HardHat, Droplet, Zap, Hammer, Wrench, Paintbrush, Square, Layers, Home, Leaf, Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, Truck, Grid3x3, Sheet, Palette, Lock, ClipboardList, Scale, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Icon mapping for dynamic icon rendering
 const ICON_MAP: Record<string, LucideIcon> = {
   HardHat, Droplet, Zap, Hammer, Wrench, Paintbrush, Square, Layers, Home, Leaf, 
-  Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, Truck
+  Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, Truck,
+  Grid3x3, Sheet, Palette, Lock, ClipboardList, Scale
+};
+
+// Group labels for better organization
+const GROUP_LABELS: Record<string, string> = {
+  core_construction: 'Core Construction Trades',
+  specialist_construction: 'Specialist Construction',
+  security_systems: 'Security & Systems',
+  design_planning: 'Design & Planning',
+  project_services: 'Project Services',
+  property_services: 'Property Services',
+  commercial: 'Commercial Projects'
 };
 
 interface Category {
@@ -103,88 +115,124 @@ export const CategorySelector = ({
     );
   }
 
+  // Group categories by category_group
+  const groupedCategories = categories.reduce((acc, category) => {
+    const group = category.category_group || 'other';
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(category);
+    return acc;
+  }, {} as Record<string, Category[]>);
+
+  // Define group order
+  const groupOrder = [
+    'core_construction',
+    'specialist_construction',
+    'security_systems',
+    'design_planning',
+    'project_services',
+    'property_services',
+    'commercial'
+  ];
+
   return (
-    <div className={cn("max-w-6xl mx-auto", className)}>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5">
-        {categories.map((category) => {
-          const isSelected = selectedCategory === category.slug;
-          const IconComponent = category.icon_name ? ICON_MAP[category.icon_name] : null;
-          
-          return (
-            <Card
-              key={category.id}
-              className={cn(
-                "cursor-pointer transition-all hover:scale-[1.01] hover:shadow-lg",
-                "border-2 p-5",
-                isSelected
-                  ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20"
-                  : "border-border hover:border-primary/50"
-              )}
-              onClick={() => {
-                onSelect(category.slug, category.id);
-                if (onNext) {
-                  setTimeout(() => onNext(), 400);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelect(category.slug, category.id);
-                  if (onNext) {
-                    setTimeout(() => onNext(), 400);
-                  }
-                }
-              }}
-              aria-pressed={isSelected}
-            >
-              <div className="flex flex-col items-center text-center space-y-3">
-                {/* Category Name */}
-                <h3 className={cn(
-                  "font-semibold text-base leading-tight w-full",
-                  isSelected ? "text-primary" : "text-foreground"
-                )}>
-                  {category.name}
-                </h3>
+    <div className={cn("max-w-6xl mx-auto space-y-8", className)}>
+      {groupOrder.map((groupKey) => {
+        const groupCategories = groupedCategories[groupKey];
+        if (!groupCategories || groupCategories.length === 0) return null;
+
+        return (
+          <div key={groupKey} className="space-y-4">
+            {/* Group Header */}
+            <div className="border-b pb-2">
+              <h2 className="text-lg font-semibold text-foreground">
+                {GROUP_LABELS[groupKey] || groupKey}
+              </h2>
+            </div>
+
+            {/* Category Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+              {groupCategories.map((category) => {
+                const isSelected = selectedCategory === category.slug;
+                const IconComponent = category.icon_name ? ICON_MAP[category.icon_name] : null;
                 
-                {/* Icon */}
-                {IconComponent && (
-                  <div className={cn(
-                    "p-3 rounded-full transition-colors",
-                    isSelected 
-                      ? "bg-primary/10 text-primary" 
-                      : "bg-muted text-muted-foreground"
-                  )}>
-                    <IconComponent className="h-7 w-7" />
-                  </div>
-                )}
-                
-                {/* Examples */}
-                {category.examples && category.examples.length > 0 && (
-                  <div className="space-y-0.5 w-full">
-                    {category.examples.slice(0, 3).map((example, idx) => (
-                      <p key={idx} className="text-xs text-muted-foreground/80">
-                        {example}
-                      </p>
-                    ))}
-                  </div>
-                )}
-                
-                {/* Featured Badge */}
-                {category.is_featured && (
-                  <Badge 
-                    variant="secondary" 
-                    className="text-[10px] px-2 py-0.5"
+                return (
+                  <Card
+                    key={category.id}
+                    className={cn(
+                      "cursor-pointer transition-all hover:scale-[1.01] hover:shadow-lg",
+                      "border-2 p-5",
+                      isSelected
+                        ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20"
+                        : "border-border hover:border-primary/50"
+                    )}
+                    onClick={() => {
+                      onSelect(category.slug, category.id);
+                      if (onNext) {
+                        setTimeout(() => onNext(), 400);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelect(category.slug, category.id);
+                        if (onNext) {
+                          setTimeout(() => onNext(), 400);
+                        }
+                      }
+                    }}
+                    aria-pressed={isSelected}
                   >
-                    Popular
-                  </Badge>
-                )}
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+                    <div className="flex flex-col items-center text-center space-y-3">
+                      {/* Category Name */}
+                      <h3 className={cn(
+                        "font-semibold text-base leading-tight w-full",
+                        isSelected ? "text-primary" : "text-foreground"
+                      )}>
+                        {category.name}
+                      </h3>
+                      
+                      {/* Icon */}
+                      {IconComponent && (
+                        <div className={cn(
+                          "p-3 rounded-full transition-colors",
+                          isSelected 
+                            ? "bg-primary/10 text-primary" 
+                            : "bg-muted text-muted-foreground"
+                        )}>
+                          <IconComponent className="h-7 w-7" />
+                        </div>
+                      )}
+                      
+                      {/* Examples */}
+                      {category.examples && category.examples.length > 0 && (
+                        <div className="space-y-0.5 w-full">
+                          {category.examples.slice(0, 3).map((example, idx) => (
+                            <p key={idx} className="text-xs text-muted-foreground/80">
+                              {example}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Featured Badge */}
+                      {category.is_featured && (
+                        <Badge 
+                          variant="secondary" 
+                          className="text-[10px] px-2 py-0.5"
+                        >
+                          Popular
+                        </Badge>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import type { ComponentType, SVGProps } from "react"
 
-import { Building2, Layers, ShowerHead, TreePine, UtensilsCrossed, Waves, Wind, Zap } from "lucide-react"
+import { Building2, Grid3x3, ShowerHead, TreePine, UtensilsCrossed, Waves, Wind, Zap } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
@@ -17,7 +17,7 @@ const ICON_MAP: Record<ProjectType, ComponentType<SVGProps<SVGSVGElement>>> = {
   bathroom: ShowerHead,
   extension: Building2,
   pool_outdoor: Waves,
-  terrace_decking: Layers,
+  terrace_decking: Grid3x3,
   electrical_rewire: Zap,
   ac_installation: Wind,
   garden_structures: TreePine,
