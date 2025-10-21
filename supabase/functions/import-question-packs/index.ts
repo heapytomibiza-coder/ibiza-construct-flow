@@ -71,6 +71,66 @@ function generateAiHint(label: string): string {
   return '';
 }
 
+function transformJSON(data: any) {
+  const microservices = data.microservices || [];
+  const packs: any[] = [];
+  
+  for (const micro of microservices) {
+    const microSlug = toSlug(micro.service);
+    const emoji = detectEmoji(micro.category || micro.service);
+    
+    const questions = (micro.questions || []).map((q: any, index: number) => {
+      // Map question types
+      let type = 'text';
+      switch (q.type) {
+        case 'multi_choice': type = 'multi'; break;
+        case 'single_choice': type = 'single'; break;
+        case 'number': type = 'number'; break;
+        case 'short_text': type = 'text'; break;
+        case 'file_upload': type = 'text'; break; // Handle as text with note
+        default: type = 'text';
+      }
+      
+      // Extract options
+      const options = (q.options || []).map((opt: any, optIndex: number) => ({
+        value: toSlug(opt).replace(/-+/g, '_'),
+        i18nKey: opt,
+        order: optIndex
+      }));
+      
+      return {
+        key: q.id || toKey(q.text, index),
+        type,
+        i18nKey: q.text,
+        required: q.required || false,
+        ...(options.length > 0 && { options }),
+        ...(q.min !== undefined && { min: q.min }),
+        ...(q.max !== undefined && { max: q.max }),
+        ...(q.unit && { unit: q.unit }),
+        aiHint: q.ai_prompt_template || generateAiHint(q.text)
+      };
+    });
+    
+    packs.push({
+      micro_slug: microSlug,
+      version: 1,
+      status: 'draft',
+      source: 'manual',
+      is_active: false,
+      content: {
+        id: crypto.randomUUID(),
+        category: micro.category || 'General',
+        name: micro.service,
+        slug: microSlug,
+        i18nPrefix: microSlug.replace(/-/g, '.'),
+        questions
+      }
+    });
+  }
+  
+  return packs;
+}
+
 function extractOptions(lines: string[], startIndex: number): { options: any[], nextIndex: number } {
   const options: any[] = [];
   let i = startIndex;
@@ -192,14 +252,21 @@ Deno.serve(async (req) => {
     }
 
     const formData = await req.formData();
+    const jsonText = formData.get('jsonText') as string;
     const pdfText = formData.get('pdfText') as string;
     
-    if (!pdfText) {
-      return json({ error: 'No PDF text provided' }, 400);
+    let packs: any[] = [];
+    
+    if (jsonText) {
+      console.log('Parsing JSON...');
+      const jsonData = JSON.parse(jsonText);
+      packs = transformJSON(jsonData);
+    } else if (pdfText) {
+      console.log('Parsing PDF text...');
+      packs = await parsePDF(pdfText);
+    } else {
+      return json({ error: 'No JSON or PDF data provided' }, 400);
     }
-
-    console.log('Parsing PDF text...');
-    const packs = await parsePDF(pdfText);
     
     console.log(`Parsed ${packs.length} packs with ${packs.reduce((sum, p) => sum + p.content.questions.length, 0)} total questions`);
     
@@ -214,7 +281,7 @@ Deno.serve(async (req) => {
     });
     
   } catch (error) {
-    console.error('Error parsing PDF:', error);
+    console.error('Error parsing:', error);
     return json({ error: error.message }, 500);
   }
 });

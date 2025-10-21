@@ -67,24 +67,32 @@ export default function ImportQuestions() {
     return fullText;
   };
 
-  const handleParsePDF = async () => {
+  const handleParse = async () => {
     if (!file) return;
 
     setParsing(true);
     try {
-      // Extract text from PDF
-      const pdfText = await extractTextFromPDF(file);
+      const isJSON = file.name.toLowerCase().endsWith('.json');
+      
+      let bodyData: any;
+      if (isJSON) {
+        const jsonText = await file.text();
+        bodyData = { jsonText };
+      } else {
+        const pdfText = await extractTextFromPDF(file);
+        bodyData = { pdfText };
+      }
       
       // Call edge function to parse
       const { data, error } = await supabase.functions.invoke('import-question-packs', {
-        body: { pdfText }
+        body: bodyData
       });
 
       if (error) throw error;
 
       setParsedPacks(data.packs);
       toast({
-        title: 'PDF Parsed Successfully',
+        title: `${isJSON ? 'JSON' : 'PDF'} Parsed Successfully`,
         description: `Found ${data.stats.totalPacks} micro-services with ${data.stats.totalQuestions} questions (avg ${data.stats.avgQuestionsPerPack} per pack)`
       });
     } catch (error) {
@@ -166,9 +174,9 @@ export default function ImportQuestions() {
   return (
     <div className="container mx-auto py-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Import Question Packs from PDF</h1>
+        <h1 className="text-3xl font-bold">Import Question Packs</h1>
         <p className="text-muted-foreground">
-          Upload your PDF to automatically extract and import question packs
+          Upload JSON or PDF to automatically extract and import question packs
         </p>
       </div>
 
@@ -178,16 +186,16 @@ export default function ImportQuestions() {
           <div className="flex items-center gap-4">
             <input
               type="file"
-              accept=".pdf"
+              accept=".pdf,.json"
               onChange={handleFileChange}
               className="hidden"
-              id="pdf-upload"
+              id="file-upload"
             />
-            <label htmlFor="pdf-upload">
+            <label htmlFor="file-upload">
               <Button variant="outline" className="cursor-pointer" asChild>
                 <span>
                   <Upload className="w-4 h-4 mr-2" />
-                  Choose PDF File
+                  Choose JSON or PDF File
                 </span>
               </Button>
             </label>
@@ -201,16 +209,16 @@ export default function ImportQuestions() {
           </div>
 
           {file && (
-            <Button onClick={handleParsePDF} disabled={parsing}>
+            <Button onClick={handleParse} disabled={parsing}>
               {parsing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Parsing PDF...
+                  Parsing {file.name.toLowerCase().endsWith('.json') ? 'JSON' : 'PDF'}...
                 </>
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Parse PDF
+                  Parse {file.name.toLowerCase().endsWith('.json') ? 'JSON' : 'PDF'}
                 </>
               )}
             </Button>

@@ -20,8 +20,10 @@ export function transformPackToQuestions(questions: QuestionDef[]): AIQuestion[]
     
     switch (q.type) {
       case 'text':
-      case 'number':
         type = 'text';
+        break;
+      case 'number':
+        type = 'text'; // Use text input for numbers with units
         break;
       case 'single':
       case 'yesno':
