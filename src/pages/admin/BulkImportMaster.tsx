@@ -1,16 +1,18 @@
 /**
- * One-time bulk import utility for microservices_master_v1.json
- * Imports all 115 micro-services directly into the database
+ * Bulk import utility with drag-and-drop support
+ * Supports both old format and master pack format
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckCircle2, Loader2, AlertCircle, Upload } from 'lucide-react';
+import { CheckCircle2, Loader2, AlertCircle, Upload, FileJson, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ImportStats {
@@ -18,6 +20,13 @@ interface ImportStats {
   successful: number;
   failed: number;
   progress: number;
+}
+
+interface UploadedFile {
+  name: string;
+  data: any;
+  format: 'master' | 'original';
+  preview: string;
 }
 
 function toSlug(text: string): string {
@@ -38,6 +47,7 @@ function toKey(text: string, index: number): string {
 
 export default function BulkImportMaster() {
   const [importing, setImporting] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [stats, setStats] = useState<ImportStats>({
     total: 0,
     successful: 0,
@@ -46,6 +56,59 @@ export default function BulkImportMaster() {
   });
   const [errors, setErrors] = useState<string[]>([]);
   const { toast } = useToast();
+
+  const detectFormat = (data: any): 'master' | 'original' => {
+    // Master format has microservices array
+    if (data.microservices && Array.isArray(data.microservices)) {
+      return 'master';
+    }
+    // Original format is an array of microservices
+    if (Array.isArray(data)) {
+      return 'original';
+    }
+    return 'master'; // Default
+  };
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target?.result as string);
+        const format = detectFormat(json);
+        const microservices = format === 'master' ? json.microservices : json;
+        
+        setUploadedFile({
+          name: file.name,
+          data: json,
+          format,
+          preview: `${microservices.length} services detected (${format} format)`
+        });
+
+        toast({
+          title: 'File Loaded',
+          description: `${microservices.length} services ready for import`,
+        });
+      } catch (error: any) {
+        toast({
+          title: 'Invalid JSON',
+          description: error.message,
+          variant: 'destructive'
+        });
+      }
+    };
+    reader.readAsText(file);
+  }, [toast]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'application/json': ['.json']
+    },
+    maxFiles: 1
+  });
 
   const transformMicroservice = (micro: any, index: number) => {
     const microSlug = toSlug(micro.service);
@@ -100,19 +163,23 @@ export default function BulkImportMaster() {
   };
 
   const handleBulkImport = async () => {
+    if (!uploadedFile) {
+      toast({
+        title: 'No File Uploaded',
+        description: 'Please upload a JSON file first',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setImporting(true);
     setErrors([]);
     setStats({ total: 0, successful: 0, failed: 0, progress: 0 });
 
     try {
-      // Fetch the JSON file
-      const response = await fetch('/data/microservices_master_v1.json');
-      if (!response.ok) {
-        throw new Error('Failed to load microservices_master_v1.json');
-      }
-
-      const data = await response.json();
-      const microservices = data.microservices || [];
+      const microservices = uploadedFile.format === 'master' 
+        ? uploadedFile.data.microservices 
+        : uploadedFile.data;
       
       setStats(prev => ({ ...prev, total: microservices.length }));
 
@@ -176,46 +243,92 @@ export default function BulkImportMaster() {
   return (
     <div className="container mx-auto py-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Master Micro-services Import</h1>
+        <h1 className="text-3xl font-bold">Bulk Question Pack Import</h1>
         <p className="text-muted-foreground">
-          Bulk import all 115 micro-services from microservices_master_v1.json
+          Upload and import microservices question packs from JSON files
         </p>
       </div>
 
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          <strong>One-time Import:</strong> This will import all 115 micro-services as approved and active.
-          Each micro-service will be immediately available in the job posting wizard.
+          <strong>Drag & Drop Import:</strong> Upload any JSON file containing microservices.
+          Supports both original format and master pack format (auto-detected).
         </AlertDescription>
       </Alert>
 
-      <Card className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="text-xl font-semibold">Import Status</h2>
-            <p className="text-sm text-muted-foreground">
-              File: microservices_master_v1.json
-            </p>
-          </div>
-          <Button 
-            onClick={handleBulkImport} 
-            disabled={importing}
-            size="lg"
+      {!uploadedFile ? (
+        <Card className="p-6">
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
+              isDragActive 
+                ? 'border-primary bg-primary/5' 
+                : 'border-muted-foreground/25 hover:border-primary/50'
+            }`}
           >
-            {importing ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Importing...
-              </>
-            ) : (
-              <>
-                <Upload className="w-4 h-4 mr-2" />
-                Start Import (115 Services)
-              </>
-            )}
-          </Button>
-        </div>
+            <Input {...getInputProps()} />
+            <FileJson className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">
+              {isDragActive ? 'Drop JSON file here' : 'Drag & drop JSON file'}
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              or click to browse files
+            </p>
+            <Badge variant="outline">Supports .json files only</Badge>
+          </div>
+        </Card>
+      ) : (
+        <Card className="p-6 space-y-6">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-3 flex-1">
+              <FileJson className="w-5 h-5 text-primary mt-1" />
+              <div className="space-y-1 flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold">{uploadedFile.name}</h3>
+                  <Badge variant="secondary">{uploadedFile.format} format</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">{uploadedFile.preview}</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setUploadedFile(null)}
+              disabled={importing}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <div className="flex items-center justify-between pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setUploadedFile(null)}
+              disabled={importing}
+            >
+              Upload Different File
+            </Button>
+            <Button 
+              onClick={handleBulkImport} 
+              disabled={importing}
+              size="lg"
+            >
+              {importing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Importing...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import {uploadedFile.preview.split(' ')[0]} Services
+                </>
+              )}
+            </Button>
+          </div>
+        </Card>
+      )}
 
         {importing && (
           <div className="space-y-4">
@@ -238,7 +351,8 @@ export default function BulkImportMaster() {
           </div>
         )}
 
-        {stats.successful > 0 && !importing && (
+      {stats.successful > 0 && !importing && (
+        <Card className="p-6">
           <Alert className="bg-green-50 border-green-200">
             <CheckCircle2 className="h-4 w-4 text-green-600" />
             <AlertDescription>
@@ -246,12 +360,14 @@ export default function BulkImportMaster() {
               <br />
               ✅ {stats.successful} micro-services imported and activated
               <br />
-              All services are now available in the job posting wizard at <strong>/post</strong>
+              All services are now available in the job posting wizard
             </AlertDescription>
           </Alert>
-        )}
+        </Card>
+      )}
 
-        {errors.length > 0 && (
+      {errors.length > 0 && (
+        <Card className="p-6">
           <div className="space-y-2">
             <h3 className="font-medium text-destructive">Errors ({errors.length}):</h3>
             <div className="max-h-48 overflow-y-auto space-y-1">
@@ -262,8 +378,8 @@ export default function BulkImportMaster() {
               ))}
             </div>
           </div>
-        )}
-      </Card>
+        </Card>
+      )}
 
       <Card className="p-6 space-y-4">
         <h3 className="font-semibold">What happens after import?</h3>
