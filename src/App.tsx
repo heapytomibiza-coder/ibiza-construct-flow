@@ -48,6 +48,7 @@ const AdminHome = lazyWithRetry(() => import("./pages/admin/AdminHome"));
 const Analytics = lazyWithRetry(() => import("./pages/admin/Analytics"));
 const ProfilesQueue = lazyWithRetry(() => import("./pages/admin/ProfilesQueue"));
 const JobsQueue = lazyWithRetry(() => import("./pages/admin/JobsQueue"));
+const BulkImport = lazyWithRetry(() => import("./pages/admin/BulkImport"));
 const ReviewsQueue = lazyWithRetry(() => import("./pages/admin/ReviewsQueue"));
 const DisputesQueue = lazyWithRetry(() => import("./pages/admin/DisputesQueue"));
 const ServicesPage = lazyWithRetry(() => import("./pages/admin/ServicesPage"));
@@ -421,6 +422,7 @@ function AppContent() {
                       {/* Content Management */}
                       <Route path="questions" element={<QuestionsManager />} />
                       <Route path="questions/compare/:slug" element={<PackCompareView />} />
+                      <Route path="bulk-import" element={<BulkImport />} />
                       <Route path="website-settings" element={<WebsiteSettings />} />
                       <Route path="service-manager" element={<AdminServiceManager />} />
                       <Route path="documents" element={<AdminDocumentReview />} />

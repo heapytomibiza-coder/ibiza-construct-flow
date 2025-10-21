@@ -1,0 +1,6495 @@
+{
+  "export_name": "TM Direct Ibiza – Microservices MASTER v1",
+  "generated_at": "2025-10-21T15:53:48.439096Z",
+  "version": "1.0",
+  "microservices_count": 115,
+  "microservices": [
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Interior Painting",
+      "service": "Walls, ceilings & trim painting",
+      "questions": [
+        {
+          "id": "ip_scope_rooms",
+          "text": "Which areas need painting?",
+          "type": "multi_choice",
+          "options": [
+            "Walls",
+            "Ceilings",
+            "Skirting/Trim",
+            "Doors",
+            "Windows/Frames"
+          ],
+          "required": true
+        },
+        {
+          "id": "ip_condition",
+          "text": "Current surface condition?",
+          "type": "single_choice",
+          "options": [
+            "Good (minor touch-ups)",
+            "Fair (cracks/holes)",
+            "Poor (flaking/peeling)"
+          ],
+          "required": true
+        },
+        {
+          "id": "ip_height",
+          "text": "Max ceiling height",
+          "type": "number",
+          "unit": "m",
+          "min": 2.0,
+          "max": 6.0,
+          "required": true
+        },
+        {
+          "id": "ip_prep_needed",
+          "text": "Preparation required?",
+          "type": "multi_choice",
+          "options": [
+            "Sanding",
+            "Filling",
+            "Stain blocking",
+            "Caulking",
+            "Primer coat"
+          ],
+          "required": false
+        },
+        {
+          "id": "ip_paint_type",
+          "text": "Paint preference",
+          "type": "single_choice",
+          "options": [
+            "Standard emulsion",
+            "Washable/scrubbable",
+            "Low-VOC/Eco",
+            "Mould-resistant"
+          ],
+          "required": true
+        },
+        {
+          "id": "ip_finish",
+          "text": "Finish level",
+          "type": "single_choice",
+          "options": [
+            "Matt",
+            "Eggshell",
+            "Satin",
+            "Semi-gloss",
+            "Gloss"
+          ],
+          "required": true
+        },
+        {
+          "id": "ip_colour",
+          "text": "Colour situation",
+          "type": "single_choice",
+          "options": [
+            "Match existing",
+            "Single new colour",
+            "Multiple colours/feature wall"
+          ],
+          "required": true
+        },
+        {
+          "id": "ip_access",
+          "text": "Access & protection needs",
+          "type": "multi_choice",
+          "options": [
+            "Furniture to move",
+            "Occupied property",
+            "Stairs/ladder work",
+            "Dust protection needed"
+          ],
+          "required": false
+        },
+        {
+          "id": "ip_photos",
+          "text": "Upload photos of each area",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "ip_scope_rooms",
+        "ip_condition",
+        "ip_height",
+        "ip_prep_needed",
+        "ip_paint_type",
+        "ip_finish",
+        "ip_colour",
+        "ip_access",
+        "ip_photos"
+      ],
+      "ai_prompt_template": "Create a job card for interior painting of {{ip_scope_rooms}} with surfaces in {{ip_condition}} condition. Ceiling height {{ip_height}}m. Prep: {{ip_prep_needed}}. Paint: {{ip_paint_type}} with {{ip_finish}} finish. Colours: {{ip_colour}}. Access: {{ip_access}}."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Interior Painting",
+      "service": "Full room or property repaint",
+      "questions": [
+        {
+          "id": "rp_scope",
+          "text": "Scope size",
+          "type": "single_choice",
+          "options": [
+            "1 room",
+            "2–3 rooms",
+            "4–6 rooms",
+            "Whole property"
+          ],
+          "required": true
+        },
+        {
+          "id": "rp_occ",
+          "text": "Is the property occupied?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Holiday let (tight turnaround)"
+          ],
+          "required": true
+        },
+        {
+          "id": "rp_rooms_types",
+          "text": "Rooms included",
+          "type": "multi_choice",
+          "options": [
+            "Bedrooms",
+            "Living areas",
+            "Kitchen",
+            "Bathrooms",
+            "Hall/Stairs/Landing"
+          ],
+          "required": true
+        },
+        {
+          "id": "rp_prep_level",
+          "text": "Prep level required",
+          "type": "single_choice",
+          "options": [
+            "Light",
+            "Moderate",
+            "Heavy (repairs/skim)"
+          ],
+          "required": true
+        },
+        {
+          "id": "rp_deadline",
+          "text": "Deadline/target dates",
+          "type": "short_text",
+          "required": false
+        },
+        {
+          "id": "rp_spray",
+          "text": "Open to spray application?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Unsure—advise me"
+          ],
+          "required": true
+        },
+        {
+          "id": "rp_photos",
+          "text": "Upload plan/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*",
+            "application/pdf"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "rp_scope",
+        "rp_occ",
+        "rp_rooms_types",
+        "rp_prep_level",
+        "rp_deadline",
+        "rp_spray",
+        "rp_photos"
+      ],
+      "ai_prompt_template": "Repaint project for {{rp_scope}} including {{rp_rooms_types}}. Property occupied: {{rp_occ}}. Prep: {{rp_prep_level}}. Spray: {{rp_spray}}. Deadline: {{rp_deadline}}."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Decorative Finishes",
+      "service": "Venetian plaster (Marmorino, Tadelakt, etc.)",
+      "questions": [
+        {
+          "id": "vp_area",
+          "text": "Surface area to finish (approx.)",
+          "type": "number",
+          "unit": "m²",
+          "min": 1,
+          "max": 500,
+          "required": true
+        },
+        {
+          "id": "vp_substrate",
+          "text": "Existing substrate",
+          "type": "single_choice",
+          "options": [
+            "Plaster",
+            "Board",
+            "Tile",
+            "Concrete",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "vp_finish_type",
+          "text": "Finish type",
+          "type": "single_choice",
+          "options": [
+            "Marmorino",
+            "Tadelakt (waterproof)",
+            "Polished plaster"
+          ],
+          "required": true
+        },
+        {
+          "id": "vp_sealer",
+          "text": "Sealer/wax requirement",
+          "type": "single_choice",
+          "options": [
+            "Matte",
+            "Satin",
+            "High gloss",
+            "Unsure—advise"
+          ],
+          "required": true
+        },
+        {
+          "id": "vp_colour",
+          "text": "Colour/tone preference",
+          "type": "short_text",
+          "required": false
+        },
+        {
+          "id": "vp_details",
+          "text": "Detailing",
+          "type": "multi_choice",
+          "options": [
+            "Feature wall",
+            "Wet area (bath/shower)",
+            "Curves/columns",
+            "Niche/alcoves"
+          ],
+          "required": false
+        },
+        {
+          "id": "vp_photos",
+          "text": "Upload area photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "vp_area",
+        "vp_substrate",
+        "vp_finish_type",
+        "vp_sealer",
+        "vp_colour",
+        "vp_details",
+        "vp_photos"
+      ],
+      "ai_prompt_template": "Decorative finish {{vp_finish_type}} on {{vp_area}}m² over {{vp_substrate}}. Sealer {{vp_sealer}}. Details: {{vp_details}}. Colour: {{vp_colour}}."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Surface Preparation",
+      "service": "Wallpaper removal",
+      "questions": [
+        {
+          "id": "wr_rooms",
+          "text": "Rooms/walls with wallpaper",
+          "type": "number",
+          "unit": "walls",
+          "min": 1,
+          "max": 40,
+          "required": true
+        },
+        {
+          "id": "wr_layers",
+          "text": "Number of wallpaper layers",
+          "type": "single_choice",
+          "options": [
+            "1",
+            "2",
+            "3+"
+          ],
+          "required": true
+        },
+        {
+          "id": "wr_type",
+          "text": "Wallpaper type",
+          "type": "single_choice",
+          "options": [
+            "Standard paper",
+            "Vinyl",
+            "Fabric-backed",
+            "Foil/metallic"
+          ],
+          "required": true
+        },
+        {
+          "id": "wr_steam_ok",
+          "text": "Steam stripping permitted?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Unsure"
+          ],
+          "required": true
+        },
+        {
+          "id": "wr_makegood",
+          "text": "Make-good after removal?",
+          "type": "multi_choice",
+          "options": [
+            "Skim coat",
+            "Fill & sand",
+            "Prime/seal",
+            "Ready for painter"
+          ],
+          "required": false
+        },
+        {
+          "id": "wr_photos",
+          "text": "Upload close-up photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "wr_rooms",
+        "wr_layers",
+        "wr_type",
+        "wr_steam_ok",
+        "wr_makegood",
+        "wr_photos"
+      ],
+      "ai_prompt_template": "Remove {{wr_layers}} layers of {{wr_type}} wallpaper from {{wr_rooms}} walls. Steam: {{wr_steam_ok}}. Make-good: {{wr_makegood}}."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Window Installation & Replacement",
+      "service": "Double & triple glazing",
+      "questions": [
+        {
+          "id": "dg_qty",
+          "text": "Number of window units",
+          "type": "number",
+          "unit": "units",
+          "min": 1,
+          "max": 100,
+          "required": true
+        },
+        {
+          "id": "dg_material",
+          "text": "Frame material",
+          "type": "single_choice",
+          "options": [
+            "uPVC",
+            "Aluminium",
+            "Timber"
+          ],
+          "required": true
+        },
+        {
+          "id": "dg_glass",
+          "text": "Glazing spec",
+          "type": "single_choice",
+          "options": [
+            "Double",
+            "Triple",
+            "Acoustic",
+            "Low-E/solar control"
+          ],
+          "required": true
+        },
+        {
+          "id": "dg_opening",
+          "text": "Opening style",
+          "type": "single_choice",
+          "options": [
+            "Casement",
+            "Tilt & turn",
+            "Fixed",
+            "Sash"
+          ],
+          "required": true
+        },
+        {
+          "id": "dg_sizes",
+          "text": "Provide sizes or drawings",
+          "type": "file_upload",
+          "file_types": [
+            "image/*",
+            "application/pdf"
+          ],
+          "required": false
+        },
+        {
+          "id": "dg_access",
+          "text": "Installation access",
+          "type": "single_choice",
+          "options": [
+            "Ground floor",
+            "Upper floor (scaffold)",
+            "Difficult access"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "dg_qty",
+        "dg_material",
+        "dg_glass",
+        "dg_opening",
+        "dg_sizes",
+        "dg_access"
+      ],
+      "ai_prompt_template": "Supply & install {{dg_glass}} glazing in {{dg_qty}} {{dg_material}} frames, {{dg_opening}} style. Access: {{dg_access}}."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Window Installation & Replacement",
+      "service": "Skylights & rooflights",
+      "questions": [
+        {
+          "id": "sky_qty",
+          "text": "Number of skylights",
+          "type": "number",
+          "unit": "units",
+          "min": 1,
+          "max": 20,
+          "required": true
+        },
+        {
+          "id": "sky_type",
+          "text": "Skylight type",
+          "type": "single_choice",
+          "options": [
+            "Fixed",
+            "Manual opening",
+            "Electric opening",
+            "Walk-on"
+          ],
+          "required": true
+        },
+        {
+          "id": "sky_roof",
+          "text": "Roof type",
+          "type": "single_choice",
+          "options": [
+            "Flat",
+            "Pitched (tile/slate)"
+          ],
+          "required": true
+        },
+        {
+          "id": "sky_flash",
+          "text": "Flashing/kerb requirement",
+          "type": "single_choice",
+          "options": [
+            "Standard kit",
+            "Custom curb",
+            "Existing curb in place"
+          ],
+          "required": true
+        },
+        {
+          "id": "sky_sizes",
+          "text": "Provide opening sizes",
+          "type": "short_text",
+          "required": false
+        },
+        {
+          "id": "sky_access",
+          "text": "Access for install",
+          "type": "single_choice",
+          "options": [
+            "Roof ladder",
+            "Scaffold",
+            "MEWP"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "sky_qty",
+        "sky_type",
+        "sky_roof",
+        "sky_flash",
+        "sky_sizes",
+        "sky_access"
+      ],
+      "ai_prompt_template": "Install {{sky_type}} {{sky_qty}} skylight(s) on a {{sky_roof}} roof with {{sky_flash}}. Access: {{sky_access}}."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Door Installation & Replacement",
+      "service": "Bi-fold & sliding doors",
+      "questions": [
+        {
+          "id": "bd_width",
+          "text": "Opening width",
+          "type": "number",
+          "unit": "mm",
+          "min": 1200,
+          "max": 8000,
+          "required": true
+        },
+        {
+          "id": "bd_height",
+          "text": "Opening height",
+          "type": "number",
+          "unit": "mm",
+          "min": 2000,
+          "max": 3500,
+          "required": true
+        },
+        {
+          "id": "bd_system",
+          "text": "System preference",
+          "type": "single_choice",
+          "options": [
+            "Bi-fold",
+            "Sliding (2-track)",
+            "Sliding (3-track)"
+          ],
+          "required": true
+        },
+        {
+          "id": "bd_thermal",
+          "text": "Thermal/acoustic priority",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "High thermal",
+            "Acoustic"
+          ],
+          "required": false
+        },
+        {
+          "id": "bd_threshold",
+          "text": "Threshold detail",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "Low/flush",
+            "Accessible"
+          ],
+          "required": true
+        },
+        {
+          "id": "bd_photos",
+          "text": "Upload opening photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "bd_width",
+        "bd_height",
+        "bd_system",
+        "bd_thermal",
+        "bd_threshold",
+        "bd_photos"
+      ],
+      "ai_prompt_template": "Supply & fit {{bd_system}} doors for opening {{bd_width}}mm x {{bd_height}}mm. Threshold: {{bd_threshold}}. Thermal: {{bd_thermal}}."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Glass & Glazing Works",
+      "service": "Glass balustrades & partitions",
+      "questions": [
+        {
+          "id": "gb_length",
+          "text": "Total linear length",
+          "type": "number",
+          "unit": "m",
+          "min": 1,
+          "max": 100,
+          "required": true
+        },
+        {
+          "id": "gb_type",
+          "text": "System type",
+          "type": "single_choice",
+          "options": [
+            "Frameless channel",
+            "Post & rail",
+            "Full-height partition"
+          ],
+          "required": true
+        },
+        {
+          "id": "gb_glass",
+          "text": "Glass spec",
+          "type": "single_choice",
+          "options": [
+            "Toughened",
+            "Laminated",
+            "Frosted",
+            "Acoustic laminated"
+          ],
+          "required": true
+        },
+        {
+          "id": "gb_location",
+          "text": "Location",
+          "type": "single_choice",
+          "options": [
+            "Stairs",
+            "Landing",
+            "Balcony",
+            "Office partition"
+          ],
+          "required": true
+        },
+        {
+          "id": "gb_photos",
+          "text": "Upload sketches/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*",
+            "application/pdf"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "gb_length",
+        "gb_type",
+        "gb_glass",
+        "gb_location",
+        "gb_photos"
+      ],
+      "ai_prompt_template": "Install {{gb_type}} {{gb_glass}} glass for {{gb_length}}m at {{gb_location}}."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Window & Door Repairs",
+      "service": "Seal replacement & leak fixes",
+      "questions": [
+        {
+          "id": "sr_issue",
+          "text": "Issue observed",
+          "type": "multi_choice",
+          "options": [
+            "Draughts",
+            "Water ingress",
+            "Condensation between panes",
+            "Perished gaskets"
+          ],
+          "required": true
+        },
+        {
+          "id": "sr_frame",
+          "text": "Frame material",
+          "type": "single_choice",
+          "options": [
+            "uPVC",
+            "Aluminium",
+            "Timber"
+          ],
+          "required": true
+        },
+        {
+          "id": "sr_qty",
+          "text": "Number of affected units",
+          "type": "number",
+          "unit": "units",
+          "min": 1,
+          "max": 50,
+          "required": true
+        },
+        {
+          "id": "sr_access",
+          "text": "Access level",
+          "type": "single_choice",
+          "options": [
+            "Internal only",
+            "External easy",
+            "External requires ladder/scaffold"
+          ],
+          "required": true
+        },
+        {
+          "id": "sr_photos",
+          "text": "Upload issue photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "sr_issue",
+        "sr_frame",
+        "sr_qty",
+        "sr_access",
+        "sr_photos"
+      ],
+      "ai_prompt_template": "Repair {{sr_issue}} on {{sr_frame}} frames; {{sr_qty}} unit(s). Access: {{sr_access}}."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Air Conditioning Installation",
+      "service": "Wall-mounted split systems",
+      "questions": [
+        {
+          "id": "ac_rooms",
+          "text": "Number of rooms/indoor units",
+          "type": "number",
+          "unit": "units",
+          "min": 1,
+          "max": 10,
+          "required": true
+        },
+        {
+          "id": "ac_room_sizes",
+          "text": "Room sizes (m²) per unit",
+          "type": "short_text",
+          "required": true
+        },
+        {
+          "id": "ac_power",
+          "text": "Power supply available",
+          "type": "single_choice",
+          "options": [
+            "Standard 240V",
+            "Dedicated circuit available",
+            "Unsure"
+          ],
+          "required": true
+        },
+        {
+          "id": "ac_location",
+          "text": "Outdoor unit location",
+          "type": "single_choice",
+          "options": [
+            "Ground-mounted",
+            "Wall bracket",
+            "Roof"
+          ],
+          "required": true
+        },
+        {
+          "id": "ac_pipe_runs",
+          "text": "Estimated pipe run per unit",
+          "type": "single_choice",
+          "options": [
+            "<5m",
+            "5–10m",
+            "10–20m",
+            ">20m"
+          ],
+          "required": true
+        },
+        {
+          "id": "ac_permits",
+          "text": "Planning/permission needed?",
+          "type": "single_choice",
+          "options": [
+            "No",
+            "Yes",
+            "Not sure"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "ac_rooms",
+        "ac_room_sizes",
+        "ac_power",
+        "ac_location",
+        "ac_pipe_runs",
+        "ac_permits"
+      ],
+      "ai_prompt_template": "Install wall-mounted split AC with {{ac_rooms}} indoor units (rooms {{ac_room_sizes}}). Outdoor {{ac_location}}, pipe runs {{ac_pipe_runs}}. Power {{ac_power}}. Permits: {{ac_permits}}."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Ventilation & Extraction",
+      "service": "MVHR (mechanical ventilation with heat recovery)",
+      "questions": [
+        {
+          "id": "mvhr_property",
+          "text": "Property type",
+          "type": "single_choice",
+          "options": [
+            "New build",
+            "Retrofit – house",
+            "Retrofit – apartment"
+          ],
+          "required": true
+        },
+        {
+          "id": "mvhr_rooms",
+          "text": "Rooms to connect",
+          "type": "multi_choice",
+          "options": [
+            "Bedrooms",
+            "Living areas",
+            "Kitchen extract",
+            "Bathrooms/WCs",
+            "Utility"
+          ],
+          "required": true
+        },
+        {
+          "id": "mvhr_space",
+          "text": "Plant/location space available",
+          "type": "single_choice",
+          "options": [
+            "Loft",
+            "Utility/plant room",
+            "Cupboard",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "mvhr_duct",
+          "text": "Duct route complexity",
+          "type": "single_choice",
+          "options": [
+            "Simple (straight runs)",
+            "Moderate",
+            "Complex (limited voids)"
+          ],
+          "required": true
+        },
+        {
+          "id": "mvhr_airtight",
+          "text": "Airtightness priority",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "High (Passivhaus-like)"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "mvhr_property",
+        "mvhr_rooms",
+        "mvhr_space",
+        "mvhr_duct",
+        "mvhr_airtight"
+      ],
+      "ai_prompt_template": "Design & install MVHR for {{mvhr_property}} connecting {{mvhr_rooms}}. Location: {{mvhr_space}}. Ducting: {{mvhr_duct}}. Airtightness: {{mvhr_airtight}}."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Maintenance & Servicing",
+      "service": "Full service contracts",
+      "questions": [
+        {
+          "id": "svc_units",
+          "text": "Number of AC/vent units on site",
+          "type": "number",
+          "unit": "units",
+          "min": 1,
+          "max": 50,
+          "required": true
+        },
+        {
+          "id": "svc_types",
+          "text": "Equipment types",
+          "type": "multi_choice",
+          "options": [
+            "Split AC",
+            "VRF/VRV",
+            "Ducted",
+            "MVHR",
+            "Extract fans"
+          ],
+          "required": true
+        },
+        {
+          "id": "svc_frequency",
+          "text": "Service frequency",
+          "type": "single_choice",
+          "options": [
+            "Annual",
+            "Bi-annual",
+            "Quarterly"
+          ],
+          "required": true
+        },
+        {
+          "id": "svc_hours",
+          "text": "Preferred service hours",
+          "type": "single_choice",
+          "options": [
+            "Working hours",
+            "Evenings/Weekends"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "svc_units",
+        "svc_types",
+        "svc_frequency",
+        "svc_hours"
+      ],
+      "ai_prompt_template": "Service contract for {{svc_units}} units ({{svc_types}}) on a {{svc_frequency}} basis. Hours: {{svc_hours}}."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Plumbing Installation",
+      "service": "Bathroom & kitchen installations",
+      "questions": [
+        {
+          "id": "pk_rooms",
+          "text": "Which rooms?",
+          "type": "multi_choice",
+          "options": [
+            "Bathroom",
+            "En-suite",
+            "WC",
+            "Kitchen",
+            "Utility"
+          ],
+          "required": true
+        },
+        {
+          "id": "pk_scope",
+          "text": "Scope",
+          "type": "multi_choice",
+          "options": [
+            "First fix pipework",
+            "Second fix fixtures",
+            "Full rip-out & refit"
+          ],
+          "required": true
+        },
+        {
+          "id": "pk_heating",
+          "text": "Hot water source",
+          "type": "single_choice",
+          "options": [
+            "Combi boiler",
+            "Cylinder/tank",
+            "Heat pump",
+            "Electric"
+          ],
+          "required": true
+        },
+        {
+          "id": "pk_tiles",
+          "text": "Tiling/shower waterproofing needed?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "required": true
+        },
+        {
+          "id": "pk_appliances",
+          "text": "Appliances/fixtures",
+          "type": "multi_choice",
+          "options": [
+            "Bath",
+            "Shower",
+            "WC",
+            "Basin",
+            "Dishwasher",
+            "Washing machine"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "pk_rooms",
+        "pk_scope",
+        "pk_heating",
+        "pk_tiles",
+        "pk_appliances"
+      ],
+      "ai_prompt_template": "Plumbing install for {{pk_rooms}} with {{pk_scope}}. Hot water: {{pk_heating}}. Tiling/waterproofing: {{pk_tiles}}. Fixtures: {{pk_appliances}}."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Heating Systems",
+      "service": "Underfloor heating (wet & electric)",
+      "questions": [
+        {
+          "id": "ufh_type",
+          "text": "System type",
+          "type": "single_choice",
+          "options": [
+            "Wet (hydronic)",
+            "Electric"
+          ],
+          "required": true
+        },
+        {
+          "id": "ufh_area",
+          "text": "Heated floor area",
+          "type": "number",
+          "unit": "m²",
+          "min": 5,
+          "max": 400,
+          "required": true
+        },
+        {
+          "id": "ufh_subfloor",
+          "text": "Subfloor",
+          "type": "single_choice",
+          "options": [
+            "Screed",
+            "Timber joists",
+            "Concrete slab"
+          ],
+          "required": true
+        },
+        {
+          "id": "ufh_covering",
+          "text": "Floor covering",
+          "type": "single_choice",
+          "options": [
+            "Tile/stone",
+            "Engineered wood",
+            "Laminate",
+            "Vinyl/LVT",
+            "Carpet (low tog)"
+          ],
+          "required": true
+        },
+        {
+          "id": "ufh_zones",
+          "text": "Number of zones",
+          "type": "number",
+          "unit": "zones",
+          "min": 1,
+          "max": 12,
+          "required": false
+        }
+      ],
+      "question_order": [
+        "ufh_type",
+        "ufh_area",
+        "ufh_subfloor",
+        "ufh_covering",
+        "ufh_zones"
+      ],
+      "ai_prompt_template": "Underfloor heating {{ufh_type}} over {{ufh_area}}m² on {{ufh_subfloor}} subfloor with {{ufh_covering}} finish. Zones: {{ufh_zones}}."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Electrical Installation",
+      "service": "Consumer unit & fuse board upgrades",
+      "questions": [
+        {
+          "id": "cu_existing",
+          "text": "Existing consumer unit condition",
+          "type": "single_choice",
+          "options": [
+            "Old rewireable fuses",
+            "Modern but undersized",
+            "Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "cu_circuits",
+          "text": "Number of circuits",
+          "type": "number",
+          "unit": "circuits",
+          "min": 4,
+          "max": 30,
+          "required": true
+        },
+        {
+          "id": "cu_rcd",
+          "text": "RCD/RCBO preference",
+          "type": "single_choice",
+          "options": [
+            "RCD + MCBs",
+            "All RCBOs",
+            "Best practice—advise"
+          ],
+          "required": true
+        },
+        {
+          "id": "cu_cert",
+          "text": "Certification required (EIC/EICR)?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Unsure"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "cu_existing",
+        "cu_circuits",
+        "cu_rcd",
+        "cu_cert"
+      ],
+      "ai_prompt_template": "Upgrade consumer unit from {{cu_existing}} to modern board with {{cu_circuits}} circuits, {{cu_rcd}}. Certification: {{cu_cert}}."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Smart Home & Automation",
+      "service": "Smart lighting & climate control",
+      "questions": [
+        {
+          "id": "sm_rooms",
+          "text": "Rooms to automate",
+          "type": "multi_choice",
+          "options": [
+            "Living areas",
+            "Bedrooms",
+            "Kitchen",
+            "Bathrooms",
+            "Garden"
+          ],
+          "required": true
+        },
+        {
+          "id": "sm_platform",
+          "text": "Preferred platform",
+          "type": "single_choice",
+          "options": [
+            "HomeKit",
+            "Google",
+            "Alexa",
+            "Other"
+          ],
+          "required": false
+        },
+        {
+          "id": "sm_sensors",
+          "text": "Sensors to include",
+          "type": "multi_choice",
+          "options": [
+            "Motion",
+            "Ambient light",
+            "Temperature/Humidity",
+            "Door/Window"
+          ],
+          "required": false
+        },
+        {
+          "id": "sm_scenes",
+          "text": "Scenes/automations desired",
+          "type": "short_text",
+          "required": false
+        }
+      ],
+      "question_order": [
+        "sm_rooms",
+        "sm_platform",
+        "sm_sensors",
+        "sm_scenes"
+      ],
+      "ai_prompt_template": "Design smart lighting/climate for {{sm_rooms}} on {{sm_platform}} with sensors {{sm_sensors}}. Scenes: {{sm_scenes}}."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Renewable Energy & Power Systems",
+      "service": "EV charging stations",
+      "questions": [
+        {
+          "id": "ev_power",
+          "text": "Supply available",
+          "type": "single_choice",
+          "options": [
+            "Single-phase",
+            "Three-phase",
+            "Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "ev_rate",
+          "text": "Charging rate desired",
+          "type": "single_choice",
+          "options": [
+            "7 kW",
+            "11 kW",
+            "22 kW"
+          ],
+          "required": true
+        },
+        {
+          "id": "ev_smart",
+          "text": "Smart/OCPP features",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Unsure"
+          ],
+          "required": false
+        },
+        {
+          "id": "ev_cable",
+          "text": "Connector preference",
+          "type": "single_choice",
+          "options": [
+            "Tethered",
+            "Untethered"
+          ],
+          "required": true
+        },
+        {
+          "id": "ev_location",
+          "text": "Installation location",
+          "type": "single_choice",
+          "options": [
+            "Garage",
+            "Driveway",
+            "Car park"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "ev_power",
+        "ev_rate",
+        "ev_smart",
+        "ev_cable",
+        "ev_location"
+      ],
+      "ai_prompt_template": "Install EV charger {{ev_rate}} using {{ev_power}} supply. Connector {{ev_cable}}. Location: {{ev_location}}. Smart: {{ev_smart}}."
+    },
+    {
+      "category": "CARPENTRY",
+      "subcategory": "Outdoor Woodwork",
+      "service": "Decking & terraces",
+      "questions": [
+        {
+          "id": "dk_area",
+          "text": "Decking area",
+          "type": "number",
+          "unit": "m²",
+          "min": 5,
+          "max": 300,
+          "required": true
+        },
+        {
+          "id": "dk_material",
+          "text": "Material preference",
+          "type": "single_choice",
+          "options": [
+            "Softwood",
+            "Hardwood",
+            "Composite"
+          ],
+          "required": true
+        },
+        {
+          "id": "dk_substructure",
+          "text": "Substructure needed?",
+          "type": "single_choice",
+          "options": [
+            "Yes – new frame",
+            "Use existing",
+            "Unsure"
+          ],
+          "required": true
+        },
+        {
+          "id": "dk_finish",
+          "text": "Finish/colour",
+          "type": "short_text",
+          "required": false
+        },
+        {
+          "id": "dk_steps",
+          "text": "Extras",
+          "type": "multi_choice",
+          "options": [
+            "Steps",
+            "Balustrade",
+            "Lighting",
+            "Planters"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "dk_area",
+        "dk_material",
+        "dk_substructure",
+        "dk_finish",
+        "dk_steps"
+      ],
+      "ai_prompt_template": "Build {{dk_material}} decking {{dk_area}}m² with substructure: {{dk_substructure}}. Extras: {{dk_steps}}. Finish: {{dk_finish}}."
+    },
+    {
+      "category": "CARPENTRY",
+      "subcategory": "Interior Carpentry",
+      "service": "Doors, frames & thresholds",
+      "questions": [
+        {
+          "id": "dr_qty",
+          "text": "Number of doors",
+          "type": "number",
+          "unit": "units",
+          "min": 1,
+          "max": 30,
+          "required": true
+        },
+        {
+          "id": "dr_type",
+          "text": "Door type",
+          "type": "single_choice",
+          "options": [
+            "Internal",
+            "External",
+            "Fire door (FD30/FD60)"
+          ],
+          "required": true
+        },
+        {
+          "id": "dr_finish",
+          "text": "Finish",
+          "type": "single_choice",
+          "options": [
+            "Primed",
+            "Painted",
+            "Veneer",
+            "Solid timber"
+          ],
+          "required": false
+        },
+        {
+          "id": "dr_hardware",
+          "text": "Hardware to fit",
+          "type": "multi_choice",
+          "options": [
+            "Handles",
+            "Hinges",
+            "Locks/Latches",
+            "Closers"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "dr_qty",
+        "dr_type",
+        "dr_finish",
+        "dr_hardware"
+      ],
+      "ai_prompt_template": "Supply/fit {{dr_type}} doors x{{dr_qty}}. Finish {{dr_finish}}. Hardware: {{dr_hardware}}."
+    },
+    {
+      "category": "FLOORING, TILING & SURFACE WORKS",
+      "subcategory": "Floor Installation",
+      "service": "Vinyl, linoleum & LVT flooring",
+      "questions": [
+        {
+          "id": "fl_area",
+          "text": "Floor area",
+          "type": "number",
+          "unit": "m²",
+          "min": 5,
+          "max": 500,
+          "required": true
+        },
+        {
+          "id": "fl_type",
+          "text": "Material",
+          "type": "single_choice",
+          "options": [
+            "Sheet vinyl",
+            "Linoleum",
+            "LVT (plank)",
+            "LVT (tile)"
+          ],
+          "required": true
+        },
+        {
+          "id": "fl_prep",
+          "text": "Subfloor preparation",
+          "type": "single_choice",
+          "options": [
+            "None",
+            "Latex screed",
+            "Plywood overlay",
+            "DPM"
+          ],
+          "required": true
+        },
+        {
+          "id": "fl_pattern",
+          "text": "Layout/pattern",
+          "type": "single_choice",
+          "options": [
+            "Straight",
+            "Herringbone",
+            "Feature border"
+          ],
+          "required": false
+        },
+        {
+          "id": "fl_skirtings",
+          "text": "Skirting details",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "Coved",
+            "Cap & cove (hygienic)"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "fl_area",
+        "fl_type",
+        "fl_prep",
+        "fl_pattern",
+        "fl_skirtings"
+      ],
+      "ai_prompt_template": "Install {{fl_type}} over {{fl_area}}m² with {{fl_prep}} prep. Pattern: {{fl_pattern}}. Skirtings: {{fl_skirtings}}."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Window Installation & Replacement",
+      "service": "Tilt & turn, casement, sash types",
+      "questions": [
+        {
+          "id": "wt_qty",
+          "text": "Quantity of windows",
+          "type": "number",
+          "unit": "units",
+          "min": 1,
+          "max": 50,
+          "required": true
+        },
+        {
+          "id": "wt_type",
+          "text": "Window type",
+          "type": "single_choice",
+          "options": [
+            "Tilt & turn",
+            "Casement",
+            "Sash"
+          ],
+          "required": true
+        },
+        {
+          "id": "wt_mat",
+          "text": "Frame material",
+          "type": "single_choice",
+          "options": [
+            "uPVC",
+            "Aluminium",
+            "Timber"
+          ],
+          "required": true
+        },
+        {
+          "id": "wt_glass",
+          "text": "Glazing performance",
+          "type": "single_choice",
+          "options": [
+            "Standard double",
+            "Triple",
+            "Acoustic",
+            "Solar/Low-E"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "wt_qty",
+        "wt_type",
+        "wt_mat",
+        "wt_glass"
+      ],
+      "ai_prompt_template": "Supply/install {{wt_type}} windows x{{wt_qty}} in {{wt_mat}} with {{wt_glass}} glazing."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Exterior Painting",
+      "service": "Masonry, render & stone finishes",
+      "questions": [
+        {
+          "id": "ep_area",
+          "text": "External area to paint",
+          "type": "number",
+          "unit": "m²",
+          "min": 10,
+          "max": 1000,
+          "required": true
+        },
+        {
+          "id": "ep_surface",
+          "text": "Surface type",
+          "type": "single_choice",
+          "options": [
+            "Masonry",
+            "Render",
+            "Stone"
+          ],
+          "required": true
+        },
+        {
+          "id": "ep_wash",
+          "text": "Power washing required?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "required": true
+        },
+        {
+          "id": "ep_coating",
+          "text": "Coating",
+          "type": "single_choice",
+          "options": [
+            "Breathable masonry",
+            "Elastomeric",
+            "Silicate/mineral"
+          ],
+          "required": true
+        },
+        {
+          "id": "ep_access",
+          "text": "Access",
+          "type": "single_choice",
+          "options": [
+            "Scaffold",
+            "MEWP",
+            "Tower",
+            "Ground only"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "ep_area",
+        "ep_surface",
+        "ep_wash",
+        "ep_coating",
+        "ep_access"
+      ],
+      "ai_prompt_template": "Exterior painting {{ep_surface}} {{ep_area}}m². Wash: {{ep_wash}}. Coating: {{ep_coating}}. Access: {{ep_access}}."
+    },
+    {
+      "category": "WALLPAPERING & WALL COVERINGS",
+      "subcategory": "Vinyl, textile & fabric wallcoverings",
+      "service": "Premium wallcovering install",
+      "questions": [
+        {
+          "id": "wc_walls",
+          "text": "Number of walls/areas",
+          "type": "number",
+          "unit": "walls",
+          "min": 1,
+          "max": 40,
+          "required": true
+        },
+        {
+          "id": "wc_material",
+          "text": "Material type",
+          "type": "single_choice",
+          "options": [
+            "Vinyl",
+            "Textile",
+            "Fabric-backed",
+            "Grasscloth"
+          ],
+          "required": true
+        },
+        {
+          "id": "wc_pattern",
+          "text": "Pattern complexity",
+          "type": "single_choice",
+          "options": [
+            "Plain",
+            "Medium match",
+            "Large repeat"
+          ],
+          "required": true
+        },
+        {
+          "id": "wc_lining",
+          "text": "Line walls first?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Unsure"
+          ],
+          "required": true
+        },
+        {
+          "id": "wc_photos",
+          "text": "Upload material spec/area photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*",
+            "application/pdf"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "wc_walls",
+        "wc_material",
+        "wc_pattern",
+        "wc_lining",
+        "wc_photos"
+      ],
+      "ai_prompt_template": "Install {{wc_material}} wallcoverings on {{wc_walls}} walls. Pattern: {{wc_pattern}}. Lining: {{wc_lining}}."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Testing, Safety & Certification",
+      "service": "Electrical Installation Condition Reports (EICR)",
+      "questions": [
+        {
+          "id": "eicr_prop",
+          "text": "Property size",
+          "type": "single_choice",
+          "options": [
+            "1 bed",
+            "2–3 bed",
+            "4–5 bed",
+            "6+ bed / HMO"
+          ],
+          "required": true
+        },
+        {
+          "id": "eicr_access",
+          "text": "Access to all circuits?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No/limited"
+          ],
+          "required": true
+        },
+        {
+          "id": "eicr_use",
+          "text": "Use case",
+          "type": "single_choice",
+          "options": [
+            "Landlord cert",
+            "Homeowner",
+            "Sale/purchase"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "eicr_prop",
+        "eicr_access",
+        "eicr_use"
+      ],
+      "ai_prompt_template": "EICR for {{eicr_prop}} property. Access: {{eicr_access}}. Reason: {{eicr_use}}."
+    },
+    {
+      "category": "ROOFING & GUTTERING SERVICES",
+      "subcategory": "Flat Roof Systems",
+      "service": "EPDM & liquid membrane systems",
+      "questions": [
+        {
+          "id": "rf_area",
+          "text": "Roof area",
+          "type": "number",
+          "unit": "m²",
+          "min": 10,
+          "max": 800,
+          "required": true
+        },
+        {
+          "id": "rf_substrate",
+          "text": "Existing substrate",
+          "type": "single_choice",
+          "options": [
+            "Timber deck",
+            "Concrete",
+            "Metal"
+          ],
+          "required": true
+        },
+        {
+          "id": "rf_insulation",
+          "text": "Insulation requirement",
+          "type": "single_choice",
+          "options": [
+            "None",
+            "Warm roof",
+            "Cold roof (ventilated)"
+          ],
+          "required": true
+        },
+        {
+          "id": "rf_outlets",
+          "text": "Drainage/outlets",
+          "type": "single_choice",
+          "options": [
+            "Existing OK",
+            "Needs new outlets",
+            "Gutters upgrade"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "rf_area",
+        "rf_substrate",
+        "rf_insulation",
+        "rf_outlets"
+      ],
+      "ai_prompt_template": "Install {{service}} over {{rf_area}}m² on {{rf_substrate}} with {{rf_insulation}} insulation. Drainage: {{rf_outlets}}."
+    },
+    {
+      "category": "DEMOLITION & SITE CLEARANCE",
+      "subcategory": "Demolition & Site Clearance",
+      "service": "Interior strip-outs",
+      "questions": [
+        {
+          "id": "dm_scope",
+          "text": "Scope elements",
+          "type": "multi_choice",
+          "options": [
+            "Non-structural walls",
+            "Ceilings",
+            "Floor finishes",
+            "Fixtures & fittings",
+            "MEP removal"
+          ],
+          "required": true
+        },
+        {
+          "id": "dm_waste",
+          "text": "Waste handling",
+          "type": "single_choice",
+          "options": [
+            "Client provides skip",
+            "Contractor to include"
+          ],
+          "required": true
+        },
+        {
+          "id": "dm_asbestos",
+          "text": "Any asbestos suspected?",
+          "type": "single_choice",
+          "options": [
+            "No",
+            "Yes",
+            "Unknown—survey needed"
+          ],
+          "required": true
+        },
+        {
+          "id": "dm_access",
+          "text": "Access & protection",
+          "type": "multi_choice",
+          "options": [
+            "Lift/stairs",
+            "Out-of-hours",
+            "Dust control",
+            "Noise restrictions"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "dm_scope",
+        "dm_waste",
+        "dm_asbestos",
+        "dm_access"
+      ],
+      "ai_prompt_template": "Interior strip-out covering {{dm_scope}}. Waste: {{dm_waste}}. Asbestos: {{dm_asbestos}}. Access: {{dm_access}}."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Exterior Painting",
+      "service": "Timber cladding & fencing coatings",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Approx. external surface area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 1000
+        },
+        {
+          "id": "timber_type",
+          "text": "Timber type",
+          "type": "single_choice",
+          "options": [
+            "Softwood",
+            "Hardwood",
+            "Engineered",
+            "Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "condition",
+          "text": "Current condition",
+          "type": "single_choice",
+          "options": [
+            "Bare/new",
+            "Previously coated (sound)",
+            "Peeling/flaking"
+          ],
+          "required": true
+        },
+        {
+          "id": "system",
+          "text": "Coating system",
+          "type": "single_choice",
+          "options": [
+            "Oil-based",
+            "Water-based",
+            "Microporous",
+            "Stain/Preserver"
+          ],
+          "required": true
+        },
+        {
+          "id": "prep",
+          "text": "Preparation level",
+          "type": "single_choice",
+          "options": [
+            "Clean & sand",
+            "Strip to bare",
+            "Spot repairs only"
+          ],
+          "required": true
+        },
+        {
+          "id": "access",
+          "text": "Access method",
+          "type": "single_choice",
+          "options": [
+            "Ladders",
+            "Towers",
+            "Scaffold",
+            "MEWP"
+          ],
+          "required": true
+        },
+        {
+          "id": "colour",
+          "text": "Colour/finish notes",
+          "type": "short_text",
+          "required": false
+        },
+        {
+          "id": "photos",
+          "text": "Upload close-ups and elevations",
+          "type": "file_upload",
+          "file_types": [
+            "image/*",
+            "application/pdf"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "timber_type",
+        "condition",
+        "system",
+        "prep",
+        "access",
+        "colour",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Timber cladding & fencing coatings."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Exterior Painting",
+      "service": "Metal gate & railing finishes",
+      "questions": [
+        {
+          "id": "lin",
+          "text": "Total linear metres",
+          "type": "number",
+          "required": true,
+          "unit": "m",
+          "min": 5,
+          "max": 500
+        },
+        {
+          "id": "substrate",
+          "text": "Substrate condition",
+          "type": "single_choice",
+          "options": [
+            "Bare steel",
+            "Galvanised",
+            "Previously painted"
+          ],
+          "required": true
+        },
+        {
+          "id": "corrosion",
+          "text": "Corrosion level",
+          "type": "single_choice",
+          "options": [
+            "None",
+            "Light surface rust",
+            "Heavy rust/scale"
+          ],
+          "required": true
+        },
+        {
+          "id": "system",
+          "text": "Coating system",
+          "type": "single_choice",
+          "options": [
+            "Primer + topcoat",
+            "Direct-to-metal",
+            "Powder coat (off-site)"
+          ],
+          "required": true
+        },
+        {
+          "id": "finish",
+          "text": "Finish",
+          "type": "single_choice",
+          "options": [
+            "Matt",
+            "Satin",
+            "Gloss"
+          ],
+          "required": true
+        },
+        {
+          "id": "access",
+          "text": "Access",
+          "type": "single_choice",
+          "options": [
+            "Street-side",
+            "Garden",
+            "High level (MEWP)"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload current condition photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "lin",
+        "substrate",
+        "corrosion",
+        "system",
+        "finish",
+        "access",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Metal gate & railing finishes."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Exterior Painting",
+      "service": "Weatherproofing & UV protection",
+      "questions": [
+        {
+          "id": "areas",
+          "text": "Areas to treat",
+          "type": "multi_choice",
+          "options": [
+            "Decking",
+            "Pergola",
+            "Cladding",
+            "Doors/Windows",
+            "Fences"
+          ],
+          "required": true
+        },
+        {
+          "id": "product",
+          "text": "Treatment type",
+          "type": "single_choice",
+          "options": [
+            "UV oil",
+            "Sealant",
+            "Water repellent",
+            "Elastomeric"
+          ],
+          "required": true
+        },
+        {
+          "id": "area",
+          "text": "Approx. total area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 800
+        },
+        {
+          "id": "exposure",
+          "text": "Sun/rain exposure",
+          "type": "single_choice",
+          "options": [
+            "Low",
+            "Medium",
+            "High",
+            "Coastal"
+          ],
+          "required": true
+        },
+        {
+          "id": "access",
+          "text": "Access complexity",
+          "type": "single_choice",
+          "options": [
+            "Simple",
+            "Moderate",
+            "Complex"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload overview & detail photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "areas",
+        "product",
+        "area",
+        "exposure",
+        "access",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Weatherproofing & UV protection."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Exterior Painting",
+      "service": "Power washing & prep work",
+      "questions": [
+        {
+          "id": "surfaces",
+          "text": "Surfaces to wash",
+          "type": "multi_choice",
+          "options": [
+            "Render",
+            "Masonry",
+            "Stone",
+            "Timber",
+            "Paving/Patio"
+          ],
+          "required": true
+        },
+        {
+          "id": "area",
+          "text": "Approx. area to wash",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 20,
+          "max": 2000
+        },
+        {
+          "id": "contaminants",
+          "text": "Contaminants",
+          "type": "single_choice",
+          "options": [
+            "General dirt",
+            "Mould/Algae",
+            "Salt/Coastal",
+            "Graffiti"
+          ],
+          "required": true
+        },
+        {
+          "id": "water",
+          "text": "Water access on site?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Unsure"
+          ],
+          "required": true
+        },
+        {
+          "id": "drain",
+          "text": "Runoff/drainage controls needed?",
+          "type": "single_choice",
+          "options": [
+            "No",
+            "Yes - standard",
+            "Yes - protected area"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload photos of areas",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "surfaces",
+        "area",
+        "contaminants",
+        "water",
+        "drain",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Power washing & prep work."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Decorative Finishes",
+      "service": "Stucco & textured finishes",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Coverage area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 5,
+          "max": 400
+        },
+        {
+          "id": "texture",
+          "text": "Texture level",
+          "type": "single_choice",
+          "options": [
+            "Fine",
+            "Medium",
+            "Heavy"
+          ],
+          "required": true
+        },
+        {
+          "id": "substrate",
+          "text": "Substrate",
+          "type": "single_choice",
+          "options": [
+            "Plaster",
+            "Board",
+            "Concrete",
+            "Masonry"
+          ],
+          "required": true
+        },
+        {
+          "id": "colour",
+          "text": "Colour/tone",
+          "type": "short_text",
+          "required": false
+        },
+        {
+          "id": "photos",
+          "text": "Upload reference and site photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*",
+            "application/pdf"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "texture",
+        "substrate",
+        "colour",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Stucco & textured finishes."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Decorative Finishes",
+      "service": "Murals & artistic effects",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Mural area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 2,
+          "max": 150
+        },
+        {
+          "id": "location",
+          "text": "Location",
+          "type": "single_choice",
+          "options": [
+            "Interior",
+            "Exterior"
+          ],
+          "required": true
+        },
+        {
+          "id": "style",
+          "text": "Style/theme description",
+          "type": "short_text",
+          "required": false
+        },
+        {
+          "id": "surface",
+          "text": "Surface",
+          "type": "single_choice",
+          "options": [
+            "Smooth plaster",
+            "Textured",
+            "Brick/Block",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "refs",
+          "text": "Upload reference images/designs",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "location",
+        "style",
+        "surface",
+        "refs"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Murals & artistic effects."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Decorative Finishes",
+      "service": "Feature walls & design patterns",
+      "questions": [
+        {
+          "id": "pattern",
+          "text": "Pattern type",
+          "type": "single_choice",
+          "options": [
+            "Stripes",
+            "Geometric",
+            "Panel effect",
+            "Colour block",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "qty",
+          "text": "Number of feature walls",
+          "type": "number",
+          "required": true,
+          "unit": "walls",
+          "min": 1,
+          "max": 12
+        },
+        {
+          "id": "finish",
+          "text": "Finish",
+          "type": "single_choice",
+          "options": [
+            "Matt",
+            "Eggshell",
+            "Satin",
+            "Gloss"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload room photos & sketches",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "pattern",
+        "qty",
+        "finish",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Feature walls & design patterns."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Decorative Finishes",
+      "service": "Metallic, pearlescent & limewash coatings",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Area to coat",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 5,
+          "max": 300
+        },
+        {
+          "id": "system",
+          "text": "System",
+          "type": "single_choice",
+          "options": [
+            "Metallic",
+            "Pearlescent",
+            "Limewash/Mineral"
+          ],
+          "required": true
+        },
+        {
+          "id": "substrate",
+          "text": "Substrate",
+          "type": "single_choice",
+          "options": [
+            "Plaster",
+            "Board",
+            "Brick/Stone"
+          ],
+          "required": true
+        },
+        {
+          "id": "effect",
+          "text": "Desired effect/brand preferences",
+          "type": "short_text",
+          "required": false
+        },
+        {
+          "id": "photos",
+          "text": "Upload photos & inspiration",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "system",
+        "substrate",
+        "effect",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Metallic, pearlescent & limewash coatings."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Surface Preparation",
+      "service": "Sanding & filling",
+      "questions": [
+        {
+          "id": "areas",
+          "text": "Areas",
+          "type": "multi_choice",
+          "options": [
+            "Walls",
+            "Ceilings",
+            "Woodwork",
+            "Stairs/HSL"
+          ],
+          "required": true
+        },
+        {
+          "id": "condition",
+          "text": "Defect level",
+          "type": "single_choice",
+          "options": [
+            "Light",
+            "Moderate",
+            "Heavy (repairs)"
+          ],
+          "required": true
+        },
+        {
+          "id": "dust",
+          "text": "Dust control needed?",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "Advanced extraction",
+            "Occupied/child safe"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload close-ups of defects",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "areas",
+        "condition",
+        "dust",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Sanding & filling."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Surface Preparation",
+      "service": "Primer & base coating",
+      "questions": [
+        {
+          "id": "surfaces",
+          "text": "Surfaces",
+          "type": "multi_choice",
+          "options": [
+            "Bare plaster",
+            "Stained areas",
+            "Timber",
+            "Metal",
+            "Previously painted"
+          ],
+          "required": true
+        },
+        {
+          "id": "primer",
+          "text": "Primer type",
+          "type": "single_choice",
+          "options": [
+            "Water-based",
+            "Oil-based",
+            "Shellac stain-blocker"
+          ],
+          "required": true
+        },
+        {
+          "id": "area",
+          "text": "Area to prime",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 800
+        },
+        {
+          "id": "photos",
+          "text": "Upload area photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "surfaces",
+        "primer",
+        "area",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Primer & base coating."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Surface Preparation",
+      "service": "Crack repairs & caulking",
+      "questions": [
+        {
+          "id": "cracks",
+          "text": "Crack severity",
+          "type": "single_choice",
+          "options": [
+            "Hairline",
+            "Minor",
+            "Major/movement"
+          ],
+          "required": true
+        },
+        {
+          "id": "count",
+          "text": "Approx. number of cracks/gaps",
+          "type": "number",
+          "required": true,
+          "unit": "count",
+          "min": 1,
+          "max": 200
+        },
+        {
+          "id": "areas",
+          "text": "Areas",
+          "type": "single_choice",
+          "options": [
+            "Walls",
+            "Ceilings",
+            "Skirtings/Architraves",
+            "Window/Door frames"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload detail photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "cracks",
+        "count",
+        "areas",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Crack repairs & caulking."
+    },
+    {
+      "category": "PAINTING, DECORATING & FINISHING SERVICES",
+      "subcategory": "Surface Preparation",
+      "service": "Plaster touch-ups",
+      "questions": [
+        {
+          "id": "patches",
+          "text": "Number of patches",
+          "type": "number",
+          "required": true,
+          "unit": "patches",
+          "min": 1,
+          "max": 100
+        },
+        {
+          "id": "size",
+          "text": "Typical patch size",
+          "type": "single_choice",
+          "options": [
+            "<0.25 m²",
+            "0.25–0.5 m²",
+            ">0.5 m²"
+          ],
+          "required": true
+        },
+        {
+          "id": "finish",
+          "text": "Required finish",
+          "type": "single_choice",
+          "options": [
+            "Ready for paint",
+            "Skim & seal"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload photos of areas",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "patches",
+        "size",
+        "finish",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Plaster touch-ups."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Window Installation & Replacement",
+      "service": "Bay & panoramic window systems",
+      "questions": [
+        {
+          "id": "openings",
+          "text": "Number of openings",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 10
+        },
+        {
+          "id": "frame",
+          "text": "Frame material",
+          "type": "single_choice",
+          "options": [
+            "uPVC",
+            "Aluminium",
+            "Timber"
+          ],
+          "required": true
+        },
+        {
+          "id": "style",
+          "text": "Style",
+          "type": "single_choice",
+          "options": [
+            "Bay",
+            "Bow",
+            "Panoramic/fixed"
+          ],
+          "required": true
+        },
+        {
+          "id": "glazing",
+          "text": "Glazing",
+          "type": "single_choice",
+          "options": [
+            "Double",
+            "Triple",
+            "Solar",
+            "Acoustic"
+          ],
+          "required": true
+        },
+        {
+          "id": "access",
+          "text": "Access",
+          "type": "single_choice",
+          "options": [
+            "Ground floor",
+            "Upper (scaffold)",
+            "Restricted"
+          ],
+          "required": true
+        },
+        {
+          "id": "sizes",
+          "text": "Upload sizes or drawings",
+          "type": "file_upload",
+          "file_types": [
+            "image/*",
+            "application/pdf"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "openings",
+        "frame",
+        "style",
+        "glazing",
+        "access",
+        "sizes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Bay & panoramic window systems."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Glass & Glazing Works",
+      "service": "Shower screens & enclosures",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Fixed panel",
+            "Hinged",
+            "Sliding",
+            "Quadrant",
+            "Walk-in"
+          ],
+          "required": true
+        },
+        {
+          "id": "glass",
+          "text": "Glass",
+          "type": "single_choice",
+          "options": [
+            "8mm toughened",
+            "10mm toughened",
+            "Laminated"
+          ],
+          "required": true
+        },
+        {
+          "id": "coating",
+          "text": "Coating",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "Easy-clean",
+            "Frosted/Patterned"
+          ],
+          "required": true
+        },
+        {
+          "id": "qty",
+          "text": "Quantity",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 10
+        },
+        {
+          "id": "sizes",
+          "text": "Upload opening sizes/sketches",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "glass",
+        "coating",
+        "qty",
+        "sizes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Shower screens & enclosures."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Glass & Glazing Works",
+      "service": "Safety & tempered glass",
+      "questions": [
+        {
+          "id": "use",
+          "text": "Use case",
+          "type": "single_choice",
+          "options": [
+            "Balcony",
+            "Partition",
+            "Door",
+            "Tabletop",
+            "Shelves"
+          ],
+          "required": true
+        },
+        {
+          "id": "spec",
+          "text": "Spec",
+          "type": "single_choice",
+          "options": [
+            "Toughened",
+            "Laminated",
+            "Heat-soaked"
+          ],
+          "required": true
+        },
+        {
+          "id": "panels",
+          "text": "Number of panels",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 40
+        },
+        {
+          "id": "drawings",
+          "text": "Upload drawings with sizes",
+          "type": "file_upload",
+          "file_types": [
+            "application/pdf",
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "use",
+        "spec",
+        "panels",
+        "drawings"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Safety & tempered glass."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Glass & Glazing Works",
+      "service": "Acoustic & solar control glazing",
+      "questions": [
+        {
+          "id": "priority",
+          "text": "Primary goal",
+          "type": "single_choice",
+          "options": [
+            "Noise reduction",
+            "Solar gain control",
+            "Both"
+          ],
+          "required": true
+        },
+        {
+          "id": "frame",
+          "text": "Existing frame type",
+          "type": "single_choice",
+          "options": [
+            "uPVC",
+            "Aluminium",
+            "Timber",
+            "Mixed"
+          ],
+          "required": true
+        },
+        {
+          "id": "units",
+          "text": "Number of units",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 80
+        },
+        {
+          "id": "details",
+          "text": "Upload elevations/specs",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "priority",
+        "frame",
+        "units",
+        "details"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Acoustic & solar control glazing."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Glass & Glazing Works",
+      "service": "Custom mirrors & wall panels",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Mirror",
+            "Back-painted glass panel",
+            "Antiqued mirror"
+          ],
+          "required": true
+        },
+        {
+          "id": "qty",
+          "text": "Quantity",
+          "type": "number",
+          "required": true,
+          "unit": "panels",
+          "min": 1,
+          "max": 40
+        },
+        {
+          "id": "edge",
+          "text": "Edge detail",
+          "type": "single_choice",
+          "options": [
+            "Polished",
+            "Bevelled",
+            "Framed"
+          ],
+          "required": true
+        },
+        {
+          "id": "sizes",
+          "text": "Upload sizes and elevations",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "qty",
+        "edge",
+        "sizes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Custom mirrors & wall panels."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Door Installation & Replacement",
+      "service": "Front, internal & patio doors",
+      "questions": [
+        {
+          "id": "qty",
+          "text": "Quantity of doors",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 20
+        },
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Front",
+            "Internal",
+            "Patio"
+          ],
+          "required": true
+        },
+        {
+          "id": "material",
+          "text": "Material",
+          "type": "single_choice",
+          "options": [
+            "uPVC",
+            "Aluminium",
+            "Timber",
+            "Composite"
+          ],
+          "required": true
+        },
+        {
+          "id": "security",
+          "text": "Security rating",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "Enhanced / PAS 24"
+          ],
+          "required": true
+        },
+        {
+          "id": "sizes",
+          "text": "Upload sizes/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "qty",
+        "type",
+        "material",
+        "security",
+        "sizes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Front, internal & patio doors."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Door Installation & Replacement",
+      "service": "Pivot & French doors",
+      "questions": [
+        {
+          "id": "system",
+          "text": "System",
+          "type": "single_choice",
+          "options": [
+            "Pivot",
+            "French"
+          ],
+          "required": true
+        },
+        {
+          "id": "width",
+          "text": "Opening width",
+          "type": "number",
+          "required": true,
+          "unit": "mm",
+          "min": 800,
+          "max": 3500
+        },
+        {
+          "id": "height",
+          "text": "Opening height",
+          "type": "number",
+          "required": true,
+          "unit": "mm",
+          "min": 2000,
+          "max": 3500
+        },
+        {
+          "id": "threshold",
+          "text": "Threshold",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "Low/flush",
+            "Accessible"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload photos & sketches",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "system",
+        "width",
+        "height",
+        "threshold",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Pivot & French doors."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Door Installation & Replacement",
+      "service": "Fire & security doors",
+      "questions": [
+        {
+          "id": "rating",
+          "text": "Fire/security rating",
+          "type": "single_choice",
+          "options": [
+            "FD30",
+            "FD60",
+            "Security-grade"
+          ],
+          "required": true
+        },
+        {
+          "id": "qty",
+          "text": "Quantity",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 30
+        },
+        {
+          "id": "material",
+          "text": "Material",
+          "type": "single_choice",
+          "options": [
+            "Timber",
+            "Steel",
+            "Composite"
+          ],
+          "required": true
+        },
+        {
+          "id": "cert",
+          "text": "Certification required",
+          "type": "single_choice",
+          "options": [
+            "Install + certify",
+            "Supply only"
+          ],
+          "required": true
+        },
+        {
+          "id": "details",
+          "text": "Upload schedules and drawings",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "rating",
+        "qty",
+        "material",
+        "cert",
+        "details"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Fire & security doors."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Door Installation & Replacement",
+      "service": "Frame replacement & threshold fitting",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Frame only",
+            "Frame + leaf",
+            "Threshold only"
+          ],
+          "required": true
+        },
+        {
+          "id": "qty",
+          "text": "Openings",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 20
+        },
+        {
+          "id": "material",
+          "text": "Frame material",
+          "type": "single_choice",
+          "options": [
+            "uPVC",
+            "Aluminium",
+            "Timber"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload photos of damage/opening",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "qty",
+        "material",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Frame replacement & threshold fitting."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Shutters, Blinds & Screens",
+      "service": "Roller, Venetian & Roman blinds",
+      "questions": [
+        {
+          "id": "types",
+          "text": "Blind types",
+          "type": "multi_choice",
+          "options": [
+            "Roller",
+            "Venetian",
+            "Roman",
+            "Vertical"
+          ],
+          "required": true
+        },
+        {
+          "id": "qty",
+          "text": "Number of windows",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 40
+        },
+        {
+          "id": "control",
+          "text": "Control",
+          "type": "single_choice",
+          "options": [
+            "Manual",
+            "Motorised/Remote",
+            "Smart"
+          ],
+          "required": true
+        },
+        {
+          "id": "sizes",
+          "text": "Upload window sizes",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "types",
+        "qty",
+        "control",
+        "sizes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Roller, Venetian & Roman blinds."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Shutters, Blinds & Screens",
+      "service": "Plantation shutters",
+      "questions": [
+        {
+          "id": "qty",
+          "text": "Number of windows",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 30
+        },
+        {
+          "id": "material",
+          "text": "Material",
+          "type": "single_choice",
+          "options": [
+            "Timber",
+            "Composite",
+            "uPVC"
+          ],
+          "required": true
+        },
+        {
+          "id": "louvre",
+          "text": "Louvre width",
+          "type": "single_choice",
+          "options": [
+            "63mm",
+            "76mm",
+            "89mm"
+          ],
+          "required": true
+        },
+        {
+          "id": "sizes",
+          "text": "Upload sizes and photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "qty",
+        "material",
+        "louvre",
+        "sizes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Plantation shutters."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Shutters, Blinds & Screens",
+      "service": "Fly screens & sun shades",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Fixed",
+            "Retractable",
+            "Magnetic",
+            "External shade"
+          ],
+          "required": true
+        },
+        {
+          "id": "qty",
+          "text": "Quantity",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 50
+        },
+        {
+          "id": "sizes",
+          "text": "Upload sizes/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "qty",
+        "sizes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Fly screens & sun shades."
+    },
+    {
+      "category": "WINDOWS, DOORS & GLAZING SERVICES",
+      "subcategory": "Shutters, Blinds & Screens",
+      "service": "Motorised or remote systems",
+      "questions": [
+        {
+          "id": "system",
+          "text": "System",
+          "type": "single_choice",
+          "options": [
+            "Blinds",
+            "Shutters",
+            "Awnings"
+          ],
+          "required": true
+        },
+        {
+          "id": "control",
+          "text": "Control",
+          "type": "single_choice",
+          "options": [
+            "Remote",
+            "Wall switch",
+            "Smart/Voice"
+          ],
+          "required": true
+        },
+        {
+          "id": "units",
+          "text": "Number of units",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 20
+        },
+        {
+          "id": "details",
+          "text": "Upload photos/wiring plans",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "system",
+        "control",
+        "units",
+        "details"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Motorised or remote systems."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Air Conditioning Installation",
+      "service": "Multi-split & ducted systems",
+      "questions": [
+        {
+          "id": "type",
+          "text": "System type",
+          "type": "single_choice",
+          "options": [
+            "Multi-split",
+            "Ducted"
+          ],
+          "required": true
+        },
+        {
+          "id": "indoors",
+          "text": "Number of indoor units/outlets",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 2,
+          "max": 12
+        },
+        {
+          "id": "power",
+          "text": "Power supply",
+          "type": "single_choice",
+          "options": [
+            "Single-phase",
+            "Three-phase",
+            "Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "location",
+          "text": "Outdoor unit location",
+          "type": "single_choice",
+          "options": [
+            "Ground",
+            "Roof",
+            "Balcony",
+            "Plant room"
+          ],
+          "required": true
+        },
+        {
+          "id": "ducts",
+          "text": "Duct route complexity",
+          "type": "single_choice",
+          "options": [
+            "Simple",
+            "Moderate",
+            "Complex"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload plans/elevations",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "indoors",
+        "power",
+        "location",
+        "ducts",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Multi-split & ducted systems."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Air Conditioning Installation",
+      "service": "Ceiling cassette units",
+      "questions": [
+        {
+          "id": "qty",
+          "text": "Number of cassettes",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 10
+        },
+        {
+          "id": "grid",
+          "text": "Ceiling grid/void",
+          "type": "single_choice",
+          "options": [
+            "Suspended grid",
+            "Plasterboard",
+            "Exposed"
+          ],
+          "required": true
+        },
+        {
+          "id": "condensate",
+          "text": "Condensate route",
+          "type": "single_choice",
+          "options": [
+            "Gravity",
+            "Pump required",
+            "Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload ceiling photos/plans",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "qty",
+        "grid",
+        "condensate",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Ceiling cassette units."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Air Conditioning Installation",
+      "service": "Portable & concealed units",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Portable",
+            "Concealed fan coil"
+          ],
+          "required": true
+        },
+        {
+          "id": "qty",
+          "text": "Units",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 10
+        },
+        {
+          "id": "venting",
+          "text": "Vent/duct requirement",
+          "type": "single_choice",
+          "options": [
+            "Window vent",
+            "Wall vent",
+            "Duct to outside"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload room photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "qty",
+        "venting",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Portable & concealed units."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Air Conditioning Installation",
+      "service": "Zoned cooling systems",
+      "questions": [
+        {
+          "id": "zones",
+          "text": "Number of zones",
+          "type": "number",
+          "required": true,
+          "unit": "zones",
+          "min": 2,
+          "max": 12
+        },
+        {
+          "id": "control",
+          "text": "Control",
+          "type": "single_choice",
+          "options": [
+            "Thermostats",
+            "Smart app",
+            "BMS integration"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload zone plan",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "zones",
+        "control",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Zoned cooling systems."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Ventilation & Extraction",
+      "service": "Kitchen & bathroom extract fans",
+      "questions": [
+        {
+          "id": "rooms",
+          "text": "Rooms",
+          "type": "multi_choice",
+          "options": [
+            "Kitchen",
+            "Bathroom",
+            "WC",
+            "Utility"
+          ],
+          "required": true
+        },
+        {
+          "id": "duct",
+          "text": "Duct run",
+          "type": "single_choice",
+          "options": [
+            "Straight/short",
+            "Moderate",
+            "Long/complex"
+          ],
+          "required": true
+        },
+        {
+          "id": "control",
+          "text": "Control",
+          "type": "single_choice",
+          "options": [
+            "Manual",
+            "Timer",
+            "Humidity",
+            "PIR"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload fan locations/duct routes",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "rooms",
+        "duct",
+        "control",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Kitchen & bathroom extract fans."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Ventilation & Extraction",
+      "service": "Ductwork installation & balancing",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Duct type",
+          "type": "single_choice",
+          "options": [
+            "Flexible",
+            "Spiral",
+            "Rectangular"
+          ],
+          "required": true
+        },
+        {
+          "id": "runs",
+          "text": "Number of runs",
+          "type": "number",
+          "required": true,
+          "unit": "runs",
+          "min": 1,
+          "max": 20
+        },
+        {
+          "id": "balance",
+          "text": "Balancing required",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Existing system"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload drawings/specs",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "runs",
+        "balance",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Ductwork installation & balancing."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Ventilation & Extraction",
+      "service": "Commercial extraction systems",
+      "questions": [
+        {
+          "id": "sector",
+          "text": "Sector",
+          "type": "single_choice",
+          "options": [
+            "Restaurant",
+            "Workshop",
+            "Retail",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "hood",
+          "text": "Hood/type",
+          "type": "single_choice",
+          "options": [
+            "Canopy",
+            "Slot",
+            "Island",
+            "Wall-mounted"
+          ],
+          "required": true
+        },
+        {
+          "id": "treatment",
+          "text": "Air treatment",
+          "type": "single_choice",
+          "options": [
+            "Grease filters",
+            "ESP",
+            "Carbon filters"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload kitchen layout/mech plans",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "sector",
+        "hood",
+        "treatment",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Commercial extraction systems."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Ventilation & Extraction",
+      "service": "Filtered air & fresh-air integration",
+      "questions": [
+        {
+          "id": "filtration",
+          "text": "Filtration level",
+          "type": "single_choice",
+          "options": [
+            "G4",
+            "F7",
+            "HEPA",
+            "Activated carbon"
+          ],
+          "required": true
+        },
+        {
+          "id": "integration",
+          "text": "Integration with AC?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Future-ready"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload floor plans/services",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "filtration",
+        "integration",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Filtered air & fresh-air integration."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Maintenance & Servicing",
+      "service": "Filter cleaning & gas pressure checks",
+      "questions": [
+        {
+          "id": "units",
+          "text": "Number of AC units",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 50
+        },
+        {
+          "id": "freq",
+          "text": "Service frequency",
+          "type": "single_choice",
+          "options": [
+            "Annual",
+            "Bi-annual",
+            "Quarterly"
+          ],
+          "required": true
+        },
+        {
+          "id": "hours",
+          "text": "Preferred hours",
+          "type": "single_choice",
+          "options": [
+            "Working hours",
+            "Evenings/Weekends"
+          ],
+          "required": true
+        }
+      ],
+      "question_order": [
+        "units",
+        "freq",
+        "hours"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Filter cleaning & gas pressure checks."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Maintenance & Servicing",
+      "service": "Coil & fan maintenance",
+      "questions": [
+        {
+          "id": "units",
+          "text": "Units",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 50
+        },
+        {
+          "id": "access",
+          "text": "Access",
+          "type": "single_choice",
+          "options": [
+            "Easy",
+            "Moderate",
+            "Difficult/roof"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload unit photos/locations",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "units",
+        "access",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Coil & fan maintenance."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Maintenance & Servicing",
+      "service": "Leak detection & recharge",
+      "questions": [
+        {
+          "id": "units",
+          "text": "Units suspected",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 20
+        },
+        {
+          "id": "refrigerant",
+          "text": "Refrigerant",
+          "type": "single_choice",
+          "options": [
+            "R32",
+            "R410a",
+            "Other/Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload unit labels/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "units",
+        "refrigerant",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Leak detection & recharge."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Maintenance & Servicing",
+      "service": "Energy efficiency optimization",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Controls tuning",
+            "Cleaning & servicing",
+            "Duct sealing",
+            "All of the above"
+          ],
+          "required": true
+        },
+        {
+          "id": "history",
+          "text": "Upload recent reports/energy bills",
+          "type": "file_upload",
+          "file_types": [
+            "application/pdf",
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "history"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Energy efficiency optimization."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Climate Control Integration",
+      "service": "Smart thermostat installation",
+      "questions": [
+        {
+          "id": "brand",
+          "text": "Preferred brand",
+          "type": "single_choice",
+          "options": [
+            "Nest",
+            "Tado",
+            "Hive",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "hvac",
+          "text": "HVAC type",
+          "type": "single_choice",
+          "options": [
+            "Boiler/rads",
+            "Heat pump",
+            "AC only",
+            "Mixed"
+          ],
+          "required": true
+        },
+        {
+          "id": "zones",
+          "text": "Zones to control",
+          "type": "number",
+          "required": true,
+          "unit": "zones",
+          "min": 1,
+          "max": 12
+        },
+        {
+          "id": "photos",
+          "text": "Upload boiler/controls photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "brand",
+        "hvac",
+        "zones",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Smart thermostat installation."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Climate Control Integration",
+      "service": "Humidity & air quality monitoring",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Single room",
+            "Multi-room",
+            "Whole property"
+          ],
+          "required": true
+        },
+        {
+          "id": "integration",
+          "text": "Integration",
+          "type": "single_choice",
+          "options": [
+            "Standalone",
+            "Smart system",
+            "BMS"
+          ],
+          "required": true
+        },
+        {
+          "id": "notes",
+          "text": "Upload floor plan/notes",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "integration",
+        "notes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Humidity & air quality monitoring."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Climate Control Integration",
+      "service": "Climate automation & zoning",
+      "questions": [
+        {
+          "id": "zones",
+          "text": "Zones",
+          "type": "number",
+          "required": true,
+          "unit": "zones",
+          "min": 2,
+          "max": 12
+        },
+        {
+          "id": "platform",
+          "text": "Platform",
+          "type": "single_choice",
+          "options": [
+            "HomeKit",
+            "Google",
+            "Alexa",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload zoning plan",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "zones",
+        "platform",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Climate automation & zoning."
+    },
+    {
+      "category": "AIR CONDITIONING & CLIMATE CONTROL SERVICES",
+      "subcategory": "Climate Control Integration",
+      "service": "Seasonal switching systems",
+      "questions": [
+        {
+          "id": "system",
+          "text": "System",
+          "type": "single_choice",
+          "options": [
+            "Boiler/CH",
+            "Heat pump",
+            "AC",
+            "Mixed"
+          ],
+          "required": true
+        },
+        {
+          "id": "control",
+          "text": "Control",
+          "type": "single_choice",
+          "options": [
+            "Manual",
+            "Smart/auto",
+            "BMS"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload plant room/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "system",
+        "control",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Seasonal switching systems."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Plumbing Installation",
+      "service": "Pipework layout & routing",
+      "questions": [
+        {
+          "id": "phase",
+          "text": "Phase",
+          "type": "single_choice",
+          "options": [
+            "First fix",
+            "Second fix",
+            "Both"
+          ],
+          "required": true
+        },
+        {
+          "id": "materials",
+          "text": "Pipe materials",
+          "type": "multi_choice",
+          "options": [
+            "Copper",
+            "MLCP/PEX",
+            "PVC/ABS waste"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload plans/markups",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "phase",
+        "materials",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Pipework layout & routing."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Plumbing Installation",
+      "service": "Hot water cylinder & tank setup",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Cylinder type",
+          "type": "single_choice",
+          "options": [
+            "Vented",
+            "Unvented",
+            "Thermal store"
+          ],
+          "required": true
+        },
+        {
+          "id": "cap",
+          "text": "Capacity",
+          "type": "number",
+          "required": true,
+          "unit": "litres",
+          "min": 100,
+          "max": 400
+        },
+        {
+          "id": "heat_src",
+          "text": "Heat source",
+          "type": "single_choice",
+          "options": [
+            "Gas/Oil boiler",
+            "Heat pump",
+            "EV immersion",
+            "Solar coil"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload plant cupboard/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "cap",
+        "heat_src",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Hot water cylinder & tank setup."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Plumbing Installation",
+      "service": "Water pressure balancing",
+      "questions": [
+        {
+          "id": "issue",
+          "text": "Issue",
+          "type": "single_choice",
+          "options": [
+            "Low pressure",
+            "Fluctuating",
+            "Noise/hammer"
+          ],
+          "required": true
+        },
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Single bathroom",
+            "Whole property"
+          ],
+          "required": true
+        },
+        {
+          "id": "notes",
+          "text": "Upload meter/PRV photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "issue",
+        "scope",
+        "notes"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Water pressure balancing."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Plumbing Installation",
+      "service": "Booster & filtration systems",
+      "questions": [
+        {
+          "id": "booster",
+          "text": "Booster type",
+          "type": "single_choice",
+          "options": [
+            "Mains booster",
+            "Whole house pump"
+          ],
+          "required": true
+        },
+        {
+          "id": "filtration",
+          "text": "Filtration",
+          "type": "single_choice",
+          "options": [
+            "Sediment",
+            "Carbon",
+            "UV",
+            "Softener"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload plant/mains location photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "booster",
+        "filtration",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Booster & filtration systems."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Heating Systems",
+      "service": "Gas & oil boilers",
+      "questions": [
+        {
+          "id": "fuel",
+          "text": "Fuel",
+          "type": "single_choice",
+          "options": [
+            "Gas",
+            "Oil"
+          ],
+          "required": true
+        },
+        {
+          "id": "type",
+          "text": "Boiler type",
+          "type": "single_choice",
+          "options": [
+            "Combi",
+            "System",
+            "Regular"
+          ],
+          "required": true
+        },
+        {
+          "id": "status",
+          "text": "Status",
+          "type": "single_choice",
+          "options": [
+            "Replacement",
+            "New install"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload boiler & flue photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "fuel",
+        "type",
+        "status",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Gas & oil boilers."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Heating Systems",
+      "service": "Electric water heaters",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Unvented",
+            "Vented",
+            "Instantaneous"
+          ],
+          "required": true
+        },
+        {
+          "id": "cap",
+          "text": "Capacity",
+          "type": "number",
+          "required": true,
+          "unit": "litres",
+          "min": 10,
+          "max": 300
+        },
+        {
+          "id": "photos",
+          "text": "Upload location & electrical supply",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "cap",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Electric water heaters."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Heating Systems",
+      "service": "Radiator installation & balancing",
+      "questions": [
+        {
+          "id": "qty",
+          "text": "Number of radiators",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 40
+        },
+        {
+          "id": "pipes",
+          "text": "Pipe material",
+          "type": "single_choice",
+          "options": [
+            "Copper",
+            "Plastic/MLCP",
+            "Mixed"
+          ],
+          "required": true
+        },
+        {
+          "id": "valves",
+          "text": "Valves",
+          "type": "single_choice",
+          "options": [
+            "TRVs",
+            "Manual",
+            "Smart"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload room photos/rad positions",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "qty",
+        "pipes",
+        "valves",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Radiator installation & balancing."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Heating Systems",
+      "service": "Heat pump integration",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Air-source",
+            "Ground-source"
+          ],
+          "required": true
+        },
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "New system",
+            "Hybrid with boiler",
+            "Cylinder only"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload plans & heat loss calcs",
+          "type": "file_upload",
+          "file_types": [
+            "application/pdf",
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "scope",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Heat pump integration."
+    },
+    {
+      "category": "PLUMBING & HEATING SERVICES",
+      "subcategory": "Heating Systems",
+      "service": "System flushing & descaling",
+      "questions": [
+        {
+          "id": "method",
+          "text": "Method",
+          "type": "single_choice",
+          "options": [
+            "Powerflush",
+            "Chemical clean",
+            "Descale only"
+          ],
+          "required": true
+        },
+        {
+          "id": "rads",
+          "text": "Approx. number of radiators",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 3,
+          "max": 30
+        },
+        {
+          "id": "photos",
+          "text": "Upload boiler/photos of sludge/filters",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "method",
+        "rads",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for System flushing & descaling."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Electrical Installation",
+      "service": "Full rewiring & new builds",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Full rewire",
+            "Partial rewire",
+            "New build"
+          ],
+          "required": true
+        },
+        {
+          "id": "size",
+          "text": "Property size",
+          "type": "single_choice",
+          "options": [
+            "1 bed",
+            "2–3 bed",
+            "4–5 bed",
+            "6+ / HMO"
+          ],
+          "required": true
+        },
+        {
+          "id": "finish",
+          "text": "Finish level",
+          "type": "single_choice",
+          "options": [
+            "Standard white",
+            "Premium plates",
+            "Hidden/architectural"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload plans/elevations",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "size",
+        "finish",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Full rewiring & new builds."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Electrical Installation",
+      "service": "Lighting circuits & socket installation",
+      "questions": [
+        {
+          "id": "lights",
+          "text": "Number of light points",
+          "type": "number",
+          "required": true,
+          "unit": "points",
+          "min": 1,
+          "max": 200
+        },
+        {
+          "id": "sockets",
+          "text": "Number of sockets",
+          "type": "number",
+          "required": true,
+          "unit": "points",
+          "min": 1,
+          "max": 200
+        },
+        {
+          "id": "control",
+          "text": "Controls",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "Dimmers",
+            "Smart"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload reflected ceiling plan",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "lights",
+        "sockets",
+        "control",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Lighting circuits & socket installation."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Electrical Installation",
+      "service": "Kitchen & bathroom electrics",
+      "questions": [
+        {
+          "id": "space",
+          "text": "Space",
+          "type": "single_choice",
+          "options": [
+            "Kitchen",
+            "Bathroom",
+            "Both"
+          ],
+          "required": true
+        },
+        {
+          "id": "items",
+          "text": "Items",
+          "type": "multi_choice",
+          "options": [
+            "Cooker circuit",
+            "Hob",
+            "Extractor",
+            "Under-cabinet lights",
+            "Mirror light",
+            "Shaver socket"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload layout/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "space",
+        "items",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Kitchen & bathroom electrics."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Electrical Installation",
+      "service": "External & garden power",
+      "questions": [
+        {
+          "id": "items",
+          "text": "Items",
+          "type": "multi_choice",
+          "options": [
+            "Garden sockets",
+            "Lighting",
+            "Pond pump",
+            "EV pre-wire",
+            "Outbuilding feed"
+          ],
+          "required": true
+        },
+        {
+          "id": "ip",
+          "text": "Ingress protection",
+          "type": "single_choice",
+          "options": [
+            "IP44",
+            "IP65",
+            "IP67"
+          ],
+          "required": true
+        },
+        {
+          "id": "plan",
+          "text": "Upload garden plan",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "items",
+        "ip",
+        "plan"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for External & garden power."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Smart Home & Automation",
+      "service": "Home automation systems",
+      "questions": [
+        {
+          "id": "platform",
+          "text": "Platform",
+          "type": "single_choice",
+          "options": [
+            "KNX",
+            "Loxone",
+            "Control4",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "scopes",
+          "text": "Scopes",
+          "type": "multi_choice",
+          "options": [
+            "Lighting",
+            "HVAC",
+            "Security/Access",
+            "AV/Media",
+            "Shades"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload Single Line Diagram/IO schedules",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "platform",
+        "scopes",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Home automation systems."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Smart Home & Automation",
+      "service": "Security & access systems",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "CCTV",
+            "Intruder alarm",
+            "Video doorbell",
+            "Access control"
+          ],
+          "required": true
+        },
+        {
+          "id": "record",
+          "text": "Recording",
+          "type": "single_choice",
+          "options": [
+            "Local NVR",
+            "Cloud",
+            "Hybrid"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload floor plan/camera positions",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "record",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Security & access systems."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Smart Home & Automation",
+      "service": "Audio-visual & multi-room setups",
+      "questions": [
+        {
+          "id": "rooms",
+          "text": "Number of rooms/zones",
+          "type": "number",
+          "required": true,
+          "unit": "zones",
+          "min": 1,
+          "max": 16
+        },
+        {
+          "id": "source",
+          "text": "Sources",
+          "type": "single_choice",
+          "options": [
+            "Streaming",
+            "Local server",
+            "TV/Sat",
+            "Turntable"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload rack/equipment list",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "rooms",
+        "source",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Audio-visual & multi-room setups."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Testing, Safety & Certification",
+      "service": "Portable Appliance Testing (PAT)",
+      "questions": [
+        {
+          "id": "items",
+          "text": "Approx. number of items",
+          "type": "number",
+          "required": true,
+          "unit": "items",
+          "min": 5,
+          "max": 1000
+        },
+        {
+          "id": "env",
+          "text": "Environment",
+          "type": "single_choice",
+          "options": [
+            "Domestic",
+            "Office",
+            "Commercial",
+            "Construction site"
+          ],
+          "required": true
+        },
+        {
+          "id": "list",
+          "text": "Upload asset/device list (if available)",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "items",
+        "env",
+        "list"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Portable Appliance Testing (PAT)."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Testing, Safety & Certification",
+      "service": "Load balancing & safety audits",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Domestic",
+            "Retail",
+            "Commercial",
+            "Industrial"
+          ],
+          "required": true
+        },
+        {
+          "id": "history",
+          "text": "Upload previous reports/DB schedules",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "history"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Load balancing & safety audits."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Testing, Safety & Certification",
+      "service": "Fault finding & diagnostics",
+      "questions": [
+        {
+          "id": "symptom",
+          "text": "Primary symptom",
+          "type": "single_choice",
+          "options": [
+            "Tripping MCB/RCD",
+            "Dead circuit",
+            "Intermittent fault",
+            "Overheating"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload CU/circuit photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "symptom",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Fault finding & diagnostics."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Testing, Safety & Certification",
+      "service": "Landlord certification packages",
+      "questions": [
+        {
+          "id": "prop",
+          "text": "Property type",
+          "type": "single_choice",
+          "options": [
+            "Single let",
+            "HMO",
+            "Multi-unit block"
+          ],
+          "required": true
+        },
+        {
+          "id": "units",
+          "text": "Number of units",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 100
+        },
+        {
+          "id": "access",
+          "text": "Upload access notes/tenant list",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "prop",
+        "units",
+        "access"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Landlord certification packages."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Renewable Energy & Power Systems",
+      "service": "Solar panel & inverter installation",
+      "questions": [
+        {
+          "id": "kWp",
+          "text": "Target system size",
+          "type": "number",
+          "required": true,
+          "unit": "kWp",
+          "min": 1,
+          "max": 30
+        },
+        {
+          "id": "roof",
+          "text": "Roof type",
+          "type": "single_choice",
+          "options": [
+            "Pitched",
+            "Flat",
+            "Ground mount"
+          ],
+          "required": true
+        },
+        {
+          "id": "inverter",
+          "text": "Inverter type",
+          "type": "single_choice",
+          "options": [
+            "String",
+            "Hybrid",
+            "Microinverters"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload roof plans & photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "kWp",
+        "roof",
+        "inverter",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Solar panel & inverter installation."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Renewable Energy & Power Systems",
+      "service": "Battery storage & hybrid systems",
+      "questions": [
+        {
+          "id": "cap",
+          "text": "Desired storage capacity",
+          "type": "number",
+          "required": true,
+          "unit": "kWh",
+          "min": 2,
+          "max": 40
+        },
+        {
+          "id": "phase",
+          "text": "Supply phase",
+          "type": "single_choice",
+          "options": [
+            "Single",
+            "Three"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload CU/meter photos & layout",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "cap",
+        "phase",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Battery storage & hybrid systems."
+    },
+    {
+      "category": "ELECTRICAL & TECHNOLOGY SERVICES",
+      "subcategory": "Renewable Energy & Power Systems",
+      "service": "Smart metering & monitoring",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Whole-property",
+            "Per-circuit",
+            "Solar-only"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload CU/meter cupboard photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Smart metering & monitoring."
+    },
+    {
+      "category": "CARPENTRY & JOINERY SERVICES",
+      "subcategory": "Outdoor Woodwork",
+      "service": "Pergolas, gazebos & canopies",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Pergola",
+            "Gazebo",
+            "Canopy"
+          ],
+          "required": true
+        },
+        {
+          "id": "size",
+          "text": "Footprint size (L x W)",
+          "type": "number",
+          "required": true,
+          "unit": "m",
+          "min": 2,
+          "max": 50
+        },
+        {
+          "id": "roof",
+          "text": "Roof",
+          "type": "single_choice",
+          "options": [
+            "Open slats",
+            "Polycarbonate",
+            "Timber",
+            "Fabric"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload site photos/sketch",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "size",
+        "roof",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Pergolas, gazebos & canopies."
+    },
+    {
+      "category": "CARPENTRY & JOINERY SERVICES",
+      "subcategory": "Outdoor Woodwork",
+      "service": "Garden rooms & sheds",
+      "questions": [
+        {
+          "id": "use",
+          "text": "Use",
+          "type": "single_choice",
+          "options": [
+            "Storage",
+            "Office",
+            "Gym",
+            "Studio"
+          ],
+          "required": true
+        },
+        {
+          "id": "size",
+          "text": "Size (L x W)",
+          "type": "number",
+          "required": true,
+          "unit": "m",
+          "min": 4,
+          "max": 60
+        },
+        {
+          "id": "insulation",
+          "text": "Insulation",
+          "type": "single_choice",
+          "options": [
+            "None",
+            "Walls only",
+            "Full"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload sketch/foundation info",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "use",
+        "size",
+        "insulation",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Garden rooms & sheds."
+    },
+    {
+      "category": "CARPENTRY & JOINERY SERVICES",
+      "subcategory": "Outdoor Woodwork",
+      "service": "Timber fencing & gates",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Panel",
+            "Featheredge",
+            "Slatted",
+            "Post & rail"
+          ],
+          "required": true
+        },
+        {
+          "id": "length",
+          "text": "Length",
+          "type": "number",
+          "required": true,
+          "unit": "m",
+          "min": 5,
+          "max": 400
+        },
+        {
+          "id": "height",
+          "text": "Height",
+          "type": "single_choice",
+          "options": [
+            "<1.2m",
+            "1.2–1.8m",
+            "2.0m+"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload boundary photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "length",
+        "height",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Timber fencing & gates."
+    },
+    {
+      "category": "CARPENTRY & JOINERY SERVICES",
+      "subcategory": "Outdoor Woodwork",
+      "service": "Outdoor kitchens & seating areas",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "BBQ",
+            "Sink",
+            "Worktop",
+            "Storage",
+            "Seating/Benches"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload layout/sketch",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Outdoor kitchens & seating areas."
+    },
+    {
+      "category": "CARPENTRY & JOINERY SERVICES",
+      "subcategory": "Interior Carpentry",
+      "service": "Skirting boards & architraves",
+      "questions": [
+        {
+          "id": "lin",
+          "text": "Total linear metres",
+          "type": "number",
+          "required": true,
+          "unit": "m",
+          "min": 10,
+          "max": 500
+        },
+        {
+          "id": "profile",
+          "text": "Profile",
+          "type": "single_choice",
+          "options": [
+            "Square edge",
+            "Ogee",
+            "Torus",
+            "Chamfer"
+          ],
+          "required": true
+        },
+        {
+          "id": "material",
+          "text": "Material",
+          "type": "single_choice",
+          "options": [
+            "MDF",
+            "Softwood",
+            "Hardwood"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload room photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "lin",
+        "profile",
+        "material",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Skirting boards & architraves."
+    },
+    {
+      "category": "CARPENTRY & JOINERY SERVICES",
+      "subcategory": "Interior Carpentry",
+      "service": "Wall panelling & feature cladding",
+      "questions": [
+        {
+          "id": "style",
+          "text": "Style",
+          "type": "single_choice",
+          "options": [
+            "Shaker",
+            "Slat",
+            "Beadboard",
+            "V-groove",
+            "Bespoke"
+          ],
+          "required": true
+        },
+        {
+          "id": "area",
+          "text": "Area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 5,
+          "max": 200
+        },
+        {
+          "id": "photos",
+          "text": "Upload inspiration/site photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "style",
+        "area",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Wall panelling & feature cladding."
+    },
+    {
+      "category": "CARPENTRY & JOINERY SERVICES",
+      "subcategory": "Bespoke Joinery",
+      "service": "Built-in wardrobes & storage",
+      "questions": [
+        {
+          "id": "style",
+          "text": "Style",
+          "type": "single_choice",
+          "options": [
+            "Hinged",
+            "Sliding",
+            "Walk-in"
+          ],
+          "required": true
+        },
+        {
+          "id": "units",
+          "text": "Number of runs/units",
+          "type": "number",
+          "required": true,
+          "unit": "units",
+          "min": 1,
+          "max": 10
+        },
+        {
+          "id": "finish",
+          "text": "Finish",
+          "type": "single_choice",
+          "options": [
+            "Painted",
+            "Veneer",
+            "Laminate",
+            "Sprayed lacquer"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload wall sizes & sketches",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "style",
+        "units",
+        "finish",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Built-in wardrobes & storage."
+    },
+    {
+      "category": "CARPENTRY & JOINERY SERVICES",
+      "subcategory": "Bespoke Joinery",
+      "service": "Media walls & entertainment units",
+      "questions": [
+        {
+          "id": "width",
+          "text": "Wall width",
+          "type": "number",
+          "required": true,
+          "unit": "mm",
+          "min": 1500,
+          "max": 6000
+        },
+        {
+          "id": "features",
+          "text": "Features",
+          "type": "single_choice",
+          "options": [
+            "TV recess",
+            "Fireplace",
+            "Shelving",
+            "LEDs",
+            "Soundbar recess"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload wall photos & sketch",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "width",
+        "features",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Media walls & entertainment units."
+    },
+    {
+      "category": "FLOORING, TILING & SURFACE WORKS",
+      "subcategory": "Floor Installation",
+      "service": "Timber & hardwood flooring",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Floor area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 300
+        },
+        {
+          "id": "wood",
+          "text": "Wood",
+          "type": "single_choice",
+          "options": [
+            "Oak",
+            "Walnut",
+            "Ash",
+            "Other"
+          ],
+          "required": true
+        },
+        {
+          "id": "install",
+          "text": "Installation",
+          "type": "single_choice",
+          "options": [
+            "Glue-down",
+            "Secret nail",
+            "Float"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload floor plan/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "wood",
+        "install",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Timber & hardwood flooring."
+    },
+    {
+      "category": "FLOORING, TILING & SURFACE WORKS",
+      "subcategory": "Floor Installation",
+      "service": "Engineered & laminate systems",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Floor area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 400
+        },
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Engineered",
+            "Laminate"
+          ],
+          "required": true
+        },
+        {
+          "id": "underlay",
+          "text": "Underlay",
+          "type": "single_choice",
+          "options": [
+            "Acoustic",
+            "Standard",
+            "DPM combined"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload floor plan/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "type",
+        "underlay",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Engineered & laminate systems."
+    },
+    {
+      "category": "FLOORING, TILING & SURFACE WORKS",
+      "subcategory": "Floor Installation",
+      "service": "Parquet & herringbone layouts",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 250
+        },
+        {
+          "id": "pattern",
+          "text": "Pattern",
+          "type": "single_choice",
+          "options": [
+            "Herringbone",
+            "Chevron",
+            "Basketweave"
+          ],
+          "required": true
+        },
+        {
+          "id": "border",
+          "text": "Border/feature",
+          "type": "single_choice",
+          "options": [
+            "None",
+            "Border",
+            "Inlay"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload layout sketch/photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "pattern",
+        "border",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Parquet & herringbone layouts."
+    },
+    {
+      "category": "FLOORING, TILING & SURFACE WORKS",
+      "subcategory": "Floor Installation",
+      "service": "Concrete & microcement flooring",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 300
+        },
+        {
+          "id": "system",
+          "text": "System",
+          "type": "single_choice",
+          "options": [
+            "Polished concrete",
+            "Microcement",
+            "Self-levelling overlay"
+          ],
+          "required": true
+        },
+        {
+          "id": "finish",
+          "text": "Finish",
+          "type": "single_choice",
+          "options": [
+            "Matt",
+            "Satin",
+            "Gloss"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload substrate photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "system",
+        "finish",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Concrete & microcement flooring."
+    },
+    {
+      "category": "FLOORING, TILING & SURFACE WORKS",
+      "subcategory": "Floor Preparation",
+      "service": "Subfloor levelling & screeding",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 500
+        },
+        {
+          "id": "depth",
+          "text": "Average build-up depth",
+          "type": "single_choice",
+          "options": [
+            "<5mm",
+            "5–10mm",
+            "10–30mm",
+            "30mm+"
+          ],
+          "required": true
+        },
+        {
+          "id": "type",
+          "text": "Product",
+          "type": "single_choice",
+          "options": [
+            "Latex",
+            "Cementitious",
+            "Fibre-reinforced",
+            "Rapid set"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload subfloor photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "depth",
+        "type",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Subfloor levelling & screeding."
+    },
+    {
+      "category": "FLOORING, TILING & SURFACE WORKS",
+      "subcategory": "Floor Preparation",
+      "service": "Damp-proof membranes",
+      "questions": [
+        {
+          "id": "substrate",
+          "text": "Substrate",
+          "type": "single_choice",
+          "options": [
+            "Concrete",
+            "Anhydrite",
+            "Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "moisture",
+          "text": "Moisture status",
+          "type": "single_choice",
+          "options": [
+            "Dry",
+            "Borderline",
+            "Wet (test needed)"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload subfloor photos/test results",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "substrate",
+        "moisture",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Damp-proof membranes."
+    },
+    {
+      "category": "ROOFING & GUTTERING SERVICES",
+      "subcategory": "Flat Roof Systems",
+      "service": "Torch-on felt roofing",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Roof area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 10,
+          "max": 600
+        },
+        {
+          "id": "layers",
+          "text": "System",
+          "type": "single_choice",
+          "options": [
+            "Two-layer",
+            "Three-layer"
+          ],
+          "required": true
+        },
+        {
+          "id": "ins",
+          "text": "Insulation",
+          "type": "single_choice",
+          "options": [
+            "None",
+            "Warm roof",
+            "Inverted"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload roof photos/plans",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "layers",
+        "ins",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Torch-on felt roofing."
+    },
+    {
+      "category": "ROOFING & GUTTERING SERVICES",
+      "subcategory": "Flat Roof Systems",
+      "service": "Concrete flat roofs (azoteas)",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Roof area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 20,
+          "max": 800
+        },
+        {
+          "id": "waterproof",
+          "text": "Waterproofing",
+          "type": "single_choice",
+          "options": [
+            "Liquid membrane",
+            "Torch-on felt",
+            "EPDM"
+          ],
+          "required": true
+        },
+        {
+          "id": "drain",
+          "text": "Drainage",
+          "type": "single_choice",
+          "options": [
+            "Existing ok",
+            "Needs upgrade",
+            "Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload roof photos/drain layout",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "waterproof",
+        "drain",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Concrete flat roofs (azoteas)."
+    },
+    {
+      "category": "ROOFING & GUTTERING SERVICES",
+      "subcategory": "Flat Roof Systems",
+      "service": "Green or solar roof integration",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Green (sedum)",
+            "Green (planter system)",
+            "Solar PV mounts"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload structural info/roof plan",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Green or solar roof integration."
+    },
+    {
+      "category": "ROOFING & GUTTERING SERVICES",
+      "subcategory": "Flat Roof Systems",
+      "service": "Roof insulation & drainage layers",
+      "questions": [
+        {
+          "id": "ins",
+          "text": "Insulation",
+          "type": "single_choice",
+          "options": [
+            "Warm roof",
+            "Cold roof (ventilated)",
+            "Inverted"
+          ],
+          "required": true
+        },
+        {
+          "id": "falls",
+          "text": "Falls/drainage",
+          "type": "single_choice",
+          "options": [
+            "Existing adequate",
+            "To be formed",
+            "Unknown"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload roof plans/sections",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "ins",
+        "falls",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Roof insulation & drainage layers."
+    },
+    {
+      "category": "DEMOLITION & SITE CLEARANCE",
+      "subcategory": "Demolition & Site Clearance",
+      "service": "Full or partial structure demolition",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Full structure",
+            "Partial",
+            "Outbuilding"
+          ],
+          "required": true
+        },
+        {
+          "id": "asbestos",
+          "text": "Asbestos status",
+          "type": "single_choice",
+          "options": [
+            "No",
+            "Suspected",
+            "Survey required"
+          ],
+          "required": true
+        },
+        {
+          "id": "waste",
+          "text": "Waste handling",
+          "type": "single_choice",
+          "options": [
+            "Contractor to include",
+            "Client to provide skips"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload photos/surveys",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "asbestos",
+        "waste",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Full or partial structure demolition."
+    },
+    {
+      "category": "DEMOLITION & SITE CLEARANCE",
+      "subcategory": "Demolition & Site Clearance",
+      "service": "Concrete cutting & removal",
+      "questions": [
+        {
+          "id": "type",
+          "text": "Type",
+          "type": "single_choice",
+          "options": [
+            "Slab",
+            "Wall",
+            "Stairs",
+            "Openings"
+          ],
+          "required": true
+        },
+        {
+          "id": "thk",
+          "text": "Thickness",
+          "type": "number",
+          "required": true,
+          "unit": "mm",
+          "min": 80,
+          "max": 500
+        },
+        {
+          "id": "plans",
+          "text": "Upload markups/structural notes",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "type",
+        "thk",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Concrete cutting & removal."
+    },
+    {
+      "category": "DEMOLITION & SITE CLEARANCE",
+      "subcategory": "Demolition & Site Clearance",
+      "service": "Waste segregation & recycling",
+      "questions": [
+        {
+          "id": "waste",
+          "text": "Waste streams",
+          "type": "multi_choice",
+          "options": [
+            "Mixed C&D",
+            "Timber",
+            "Metal",
+            "Plasterboard",
+            "Inert"
+          ],
+          "required": true
+        },
+        {
+          "id": "container",
+          "text": "Containers",
+          "type": "single_choice",
+          "options": [
+            "Skips",
+            "Bagged",
+            "Grab lorry"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload site access/space photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "waste",
+        "container",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Waste segregation & recycling."
+    },
+    {
+      "category": "DEMOLITION & SITE CLEARANCE",
+      "subcategory": "Demolition & Site Clearance",
+      "service": "Site leveling & soil replacement",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 50,
+          "max": 5000
+        },
+        {
+          "id": "depth",
+          "text": "Depth of cut/fill",
+          "type": "single_choice",
+          "options": [
+            "<150mm",
+            "150–300mm",
+            "300mm+"
+          ],
+          "required": true
+        },
+        {
+          "id": "material",
+          "text": "Imported material",
+          "type": "single_choice",
+          "options": [
+            "Topsoil",
+            "Type 1",
+            "Sharp sand",
+            "None"
+          ],
+          "required": true
+        },
+        {
+          "id": "plans",
+          "text": "Upload site plan",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "depth",
+        "material",
+        "plans"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Site leveling & soil replacement."
+    },
+    {
+      "category": "WALLPAPERING & WALL COVERINGS",
+      "subcategory": "Wallpapering & Wall Coverings",
+      "service": "Standard & luxury paper hanging",
+      "questions": [
+        {
+          "id": "walls",
+          "text": "Number of walls",
+          "type": "number",
+          "required": true,
+          "unit": "walls",
+          "min": 1,
+          "max": 40
+        },
+        {
+          "id": "paper",
+          "text": "Paper type",
+          "type": "single_choice",
+          "options": [
+            "Standard",
+            "Non-woven",
+            "Luxury/Designer"
+          ],
+          "required": true
+        },
+        {
+          "id": "match",
+          "text": "Pattern match",
+          "type": "single_choice",
+          "options": [
+            "Free",
+            "Straight",
+            "Drop"
+          ],
+          "required": true
+        },
+        {
+          "id": "lining",
+          "text": "Line walls first?",
+          "type": "single_choice",
+          "options": [
+            "Yes",
+            "No",
+            "Unsure"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload material labels & area photos",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "walls",
+        "paper",
+        "match",
+        "lining",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Standard & luxury paper hanging."
+    },
+    {
+      "category": "WALLPAPERING & WALL COVERINGS",
+      "subcategory": "Wallpapering & Wall Coverings",
+      "service": "Acoustic wall panels",
+      "questions": [
+        {
+          "id": "area",
+          "text": "Area",
+          "type": "number",
+          "required": true,
+          "unit": "m²",
+          "min": 5,
+          "max": 200
+        },
+        {
+          "id": "panel",
+          "text": "Panel type",
+          "type": "single_choice",
+          "options": [
+            "PET felt",
+            "Timber slat",
+            "Fabric wrapped",
+            "Perforated gypsum"
+          ],
+          "required": true
+        },
+        {
+          "id": "fix",
+          "text": "Fixing",
+          "type": "single_choice",
+          "options": [
+            "Adhesive",
+            "Mechanical battens",
+            "Z-clips"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload elevations/specs",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "area",
+        "panel",
+        "fix",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Acoustic wall panels."
+    },
+    {
+      "category": "WALLPAPERING & WALL COVERINGS",
+      "subcategory": "Wallpapering & Wall Coverings",
+      "service": "Alignment & trimming perfection",
+      "questions": [
+        {
+          "id": "scope",
+          "text": "Scope",
+          "type": "single_choice",
+          "options": [
+            "Seam alignment",
+            "Corner wrapping",
+            "Edge trimming"
+          ],
+          "required": true
+        },
+        {
+          "id": "photos",
+          "text": "Upload close-ups of issues",
+          "type": "file_upload",
+          "file_types": [
+            "image/*"
+          ],
+          "required": false
+        }
+      ],
+      "question_order": [
+        "scope",
+        "photos"
+      ],
+      "ai_prompt_template": "Summarise scope, specs, quantities, access and constraints for Alignment & trimming perfection."
+    }
+  ]
+}
