@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,27 +34,6 @@ interface MicroserviceForm {
   questions: Question[];
 }
 
-// Category data structure
-const categoryData = {
-  'Construction': {
-    'Plumbing': ['Pipe Installation', 'Leak Repair', 'Drain Cleaning', 'Water Heater'],
-    'Electrical': ['Wiring', 'Panel Upgrade', 'Lighting Installation', 'Outlet Repair'],
-    'HVAC': ['AC Installation', 'Heating Repair', 'Ventilation', 'Duct Cleaning'],
-    'Carpentry': ['Cabinet Making', 'Door Installation', 'Custom Furniture', 'Trim Work'],
-    'Painting': ['Interior Painting', 'Exterior Painting', 'Cabinet Painting', 'Wall Prep']
-  },
-  'Home Services': {
-    'Cleaning': ['Deep Cleaning', 'Regular Cleaning', 'Move Out Cleaning', 'Window Cleaning'],
-    'Landscaping': ['Lawn Mowing', 'Tree Trimming', 'Garden Design', 'Irrigation'],
-    'Pest Control': ['Termite Treatment', 'Rodent Control', 'Insect Removal', 'Prevention']
-  },
-  'Renovation': {
-    'Kitchen': ['Full Remodel', 'Cabinet Refacing', 'Countertop Install', 'Backsplash'],
-    'Bathroom': ['Full Remodel', 'Shower Install', 'Vanity Replace', 'Tile Work'],
-    'Flooring': ['Hardwood Install', 'Tile Install', 'Carpet Install', 'Refinishing']
-  }
-};
-
 function toSlug(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
@@ -81,33 +60,118 @@ export default function QuestionBuilder() {
   const [newOption, setNewOption] = useState('');
   const [importing, setImporting] = useState(false);
   const [pasteText, setPasteText] = useState('');
+  
+  // Dynamic category data from database
+  const [mainCategories, setMainCategories] = useState<Array<{id: string, name: string}>>([]);
+  const [subcategories, setSubcategories] = useState<Array<{id: string, name: string}>>([]);
+  const [microCategories, setMicroCategories] = useState<Array<{id: string, name: string}>>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Get available sub categories based on main category
-  const availableSubCategories = form.mainCategory 
-    ? Object.keys(categoryData[form.mainCategory as keyof typeof categoryData] || {})
-    : [];
+  // Load main categories on mount
+  useEffect(() => {
+    loadMainCategories();
+  }, []);
 
-  // Get available micro categories based on sub category
-  const availableMicroCategories = form.mainCategory && form.subCategory
-    ? categoryData[form.mainCategory as keyof typeof categoryData]?.[form.subCategory] || []
-    : [];
+  // Load subcategories when main category changes
+  useEffect(() => {
+    if (form.mainCategory) {
+      loadSubcategories(form.mainCategory);
+    } else {
+      setSubcategories([]);
+      setForm(prev => ({ ...prev, subCategory: '', microCategory: '' }));
+    }
+  }, [form.mainCategory]);
 
-  // Reset child selections when parent changes
-  const handleMainCategoryChange = (value: string) => {
-    setForm(prev => ({
-      ...prev,
-      mainCategory: value,
-      subCategory: '',
-      microCategory: ''
-    }));
+  // Load micro-categories when subcategory changes
+  useEffect(() => {
+    if (form.subCategory) {
+      loadMicroCategories(form.subCategory);
+    } else {
+      setMicroCategories([]);
+      setForm(prev => ({ ...prev, microCategory: '' }));
+    }
+  }, [form.subCategory]);
+
+  const loadMainCategories = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('service_categories')
+        .select('id, name, slug')
+        .eq('is_active', true)
+        .order('category_group', { ascending: true })
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
+      if (data) setMainCategories(data);
+    } catch (error) {
+      console.error('Error loading main categories:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load categories',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubCategoryChange = (value: string) => {
-    setForm(prev => ({
-      ...prev,
-      subCategory: value,
-      microCategory: ''
-    }));
+  const loadSubcategories = async (categoryName: string) => {
+    try {
+      // First get category ID by name
+      const { data: catData, error: catError } = await supabase
+        .from('service_categories')
+        .select('id')
+        .eq('name', categoryName)
+        .single();
+      
+      if (catError || !catData) {
+        console.error('Category not found:', categoryName);
+        return;
+      }
+      
+      // Then get subcategories
+      const { data, error } = await supabase
+        .from('service_subcategories')
+        .select('id, name')
+        .eq('category_id', catData.id)
+        .eq('is_active', true)
+        .order('display_order');
+      
+      if (error) throw error;
+      if (data) setSubcategories(data);
+    } catch (error) {
+      console.error('Error loading subcategories:', error);
+    }
+  };
+
+  const loadMicroCategories = async (subcategoryName: string) => {
+    try {
+      // Get subcategory ID
+      const { data: subData, error: subError } = await supabase
+        .from('service_subcategories')
+        .select('id')
+        .eq('name', subcategoryName)
+        .single();
+      
+      if (subError || !subData) {
+        console.error('Subcategory not found:', subcategoryName);
+        return;
+      }
+      
+      // Get micro-categories
+      const { data, error } = await supabase
+        .from('service_micro_categories')
+        .select('id, name')
+        .eq('subcategory_id', subData.id)
+        .eq('is_active', true)
+        .order('display_order');
+      
+      if (error) throw error;
+      if (data) setMicroCategories(data);
+    } catch (error) {
+      console.error('Error loading micro-categories:', error);
+    }
   };
 
   const addOption = () => {
@@ -370,19 +434,22 @@ export default function QuestionBuilder() {
           <Card className="p-6 space-y-4">
             <h3 className="font-semibold text-lg">Service Information</h3>
             
+            {loading && <p className="text-sm text-muted-foreground">Loading categories...</p>}
+            
             <div className="space-y-2">
               <Label>Main Category *</Label>
               <Select
                 value={form.mainCategory}
-                onValueChange={handleMainCategoryChange}
+                onValueChange={(value) => setForm(prev => ({ ...prev, mainCategory: value, subCategory: '', microCategory: '' }))}
+                disabled={loading}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select main category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.keys(categoryData).map(category => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                  {mainCategories.map(category => (
+                    <SelectItem key={category.id} value={category.name}>
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -393,16 +460,16 @@ export default function QuestionBuilder() {
               <Label>Sub Category *</Label>
               <Select
                 value={form.subCategory}
-                onValueChange={handleSubCategoryChange}
-                disabled={!form.mainCategory}
+                onValueChange={(value) => setForm(prev => ({ ...prev, subCategory: value, microCategory: '' }))}
+                disabled={!form.mainCategory || subcategories.length === 0}
               >
                 <SelectTrigger>
                   <SelectValue placeholder={form.mainCategory ? "Select sub category" : "Select main category first"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableSubCategories.map(subCat => (
-                    <SelectItem key={subCat} value={subCat}>
-                      {subCat}
+                  {subcategories.map(subCat => (
+                    <SelectItem key={subCat.id} value={subCat.name}>
+                      {subCat.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -414,15 +481,15 @@ export default function QuestionBuilder() {
               <Select
                 value={form.microCategory}
                 onValueChange={(value) => setForm(prev => ({ ...prev, microCategory: value }))}
-                disabled={!form.subCategory}
+                disabled={!form.subCategory || microCategories.length === 0}
               >
                 <SelectTrigger>
                   <SelectValue placeholder={form.subCategory ? "Select service" : "Select sub category first"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableMicroCategories.map(microCat => (
-                    <SelectItem key={microCat} value={microCat}>
-                      {microCat}
+                  {microCategories.map(microCat => (
+                    <SelectItem key={microCat.id} value={microCat.name}>
+                      {microCat.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
