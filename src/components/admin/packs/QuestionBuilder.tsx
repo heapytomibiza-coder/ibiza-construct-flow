@@ -80,6 +80,7 @@ export default function QuestionBuilder() {
   });
   const [newOption, setNewOption] = useState('');
   const [importing, setImporting] = useState(false);
+  const [pasteText, setPasteText] = useState('');
 
   // Get available sub categories based on main category
   const availableSubCategories = form.mainCategory 
@@ -289,11 +290,10 @@ export default function QuestionBuilder() {
 
   const pasteQuestions = async () => {
     try {
-      const text = await navigator.clipboard.readText();
-      if (!text.trim()) {
+      if (!pasteText.trim()) {
         toast({
-          title: 'Clipboard Empty',
-          description: 'No text found in clipboard',
+          title: 'No Text Found',
+          description: 'Please paste some questions in the text box',
           variant: 'destructive',
         });
         return;
@@ -309,7 +309,7 @@ export default function QuestionBuilder() {
       try {
         // Try AI parsing first
         const { parseQuestionsWithAI } = await import('@/lib/ai/questionParser');
-        const aiParsed = await parseQuestionsWithAI(text);
+        const aiParsed = await parseQuestionsWithAI(pasteText);
         
         parsedQuestions = aiParsed.map((q) => ({
           id: crypto.randomUUID(),
@@ -325,7 +325,7 @@ export default function QuestionBuilder() {
         
         // Fallback to simple parsing
         const { parseQuestionsSimple } = await import('@/lib/ai/questionParser');
-        const simpleParsed = parseQuestionsSimple(text);
+        const simpleParsed = parseQuestionsSimple(pasteText);
         
         parsedQuestions = simpleParsed.map((q) => ({
           id: crypto.randomUUID(),
@@ -342,10 +342,13 @@ export default function QuestionBuilder() {
         ...prev,
         questions: [...prev.questions, ...parsedQuestions],
       }));
+
+      // Clear the textarea after successful parse
+      setPasteText('');
     } catch (err) {
       toast({
-        title: 'Paste Failed',
-        description: err instanceof Error ? err.message : 'Could not read from clipboard',
+        title: 'Parse Failed',
+        description: err instanceof Error ? err.message : 'Could not parse questions',
         variant: 'destructive',
       });
     }
@@ -437,19 +440,31 @@ export default function QuestionBuilder() {
           <Card className="p-6 space-y-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Add Question</h3>
+                <h3 className="font-semibold text-lg">Paste Questions (AI-Powered)</h3>
               </div>
+              <Textarea
+                value={pasteText}
+                onChange={(e) => setPasteText(e.target.value)}
+                placeholder="Paste your questions here in any format...
+
+Examples:
+1. What is the project location?
+2. How many rooms? [number: 1-20]
+3. Paint type: {Interior, Exterior, Both}"
+                className="min-h-[180px] font-mono text-sm"
+              />
               <Button
                 type="button"
                 variant="outline"
                 onClick={pasteQuestions}
+                disabled={!pasteText.trim()}
                 className="w-full"
               >
                 <Copy className="w-4 h-4 mr-2" />
-                Paste Questions from Clipboard (AI-Powered)
+                Parse & Add Questions
               </Button>
               <p className="text-xs text-muted-foreground">
-                Paste questions in any format - AI will detect types, options, and structure automatically
+                AI will intelligently detect question types, options, required fields, and more from any format you paste.
               </p>
             </div>
 
