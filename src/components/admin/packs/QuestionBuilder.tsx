@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, Trash2, Download, Upload, Copy, CheckCircle2 } from 'lucide-react';
@@ -60,6 +61,7 @@ export default function QuestionBuilder() {
   const [newOption, setNewOption] = useState('');
   const [importing, setImporting] = useState(false);
   const [pasteText, setPasteText] = useState('');
+  const [jsonImport, setJsonImport] = useState('');
   
   // Dynamic category data from database
   const [mainCategories, setMainCategories] = useState<Array<{id: string, name: string}>>([]);
@@ -418,6 +420,70 @@ export default function QuestionBuilder() {
     }
   };
 
+  const importFromJson = () => {
+    if (!jsonImport.trim()) {
+      toast({
+        title: 'No Data',
+        description: 'Please paste JSON data',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    try {
+      const data = JSON.parse(jsonImport);
+      
+      // Map question types from parser format to our format
+      const typeMap: Record<string, any> = {
+        'short_text': 'text',
+        'long_text': 'text',
+        'multiple_choice': 'single',
+        'checkbox': 'multi'
+      };
+
+      // Convert questions
+      const importedQuestions = data.questions.map((q: any) => ({
+        id: crypto.randomUUID(),
+        text: q.question,
+        type: typeMap[q.type] || 'text',
+        required: false,
+        options: (q.options || []).map((opt: string) => ({
+          value: toSlug(opt),
+          label: opt
+        }))
+      }));
+
+      setForm(prev => ({
+        ...prev,
+        questions: importedQuestions
+      }));
+
+      // Set categories if they match
+      if (data.category) {
+        setForm(prev => ({ ...prev, mainCategory: data.category }));
+      }
+      if (data.subcategory) {
+        setForm(prev => ({ ...prev, subCategory: data.subcategory }));
+      }
+      if (data.service) {
+        setForm(prev => ({ ...prev, microCategory: data.service }));
+      }
+
+      setJsonImport('');
+      toast({
+        title: 'Import Successful',
+        description: `Imported ${importedQuestions.length} questions`
+      });
+    } catch (err) {
+      console.error('Import error:', err);
+      toast({
+        title: 'Import Failed',
+        description: err instanceof Error ? err.message : 'Invalid JSON format',
+        variant: 'destructive'
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Alert>
@@ -505,35 +571,71 @@ export default function QuestionBuilder() {
           </Card>
 
           <Card className="p-6 space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Paste Questions (AI-Powered)</h3>
-              </div>
-              <Textarea
-                value={pasteText}
-                onChange={(e) => setPasteText(e.target.value)}
-                placeholder="Paste your questions here in any format...
+            <h3 className="font-semibold text-lg">Import Questions</h3>
+            
+            <Tabs defaultValue="paste" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="paste">Paste Text</TabsTrigger>
+                <TabsTrigger value="json">Import JSON</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="paste" className="space-y-3 mt-4">
+                <Textarea
+                  value={pasteText}
+                  onChange={(e) => setPasteText(e.target.value)}
+                  placeholder="Paste your questions here in any format...
 
 Examples:
 1. What is the project location?
 2. How many rooms? [number: 1-20]
 3. Paint type: {Interior, Exterior, Both}"
-                className="min-h-[180px] font-mono text-sm"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={pasteQuestions}
-                disabled={!pasteText.trim()}
-                className="w-full"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Parse & Add Questions
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                AI will intelligently detect question types, options, required fields, and more from any format you paste.
-              </p>
-            </div>
+                  className="min-h-[180px] font-mono text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={pasteQuestions}
+                  disabled={!pasteText.trim()}
+                  className="w-full"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Parse & Add Questions
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  AI will intelligently detect question types, options, required fields, and more from any format you paste.
+                </p>
+              </TabsContent>
+              
+              <TabsContent value="json" className="space-y-3 mt-4">
+                <Textarea
+                  value={jsonImport}
+                  onChange={(e) => setJsonImport(e.target.value)}
+                  placeholder='Paste JSON output here...
+
+Example:
+{
+  "category": "Building & Construction Services",
+  "subcategory": "Excavation & Groundworks",
+  "service": "Site Preparation & Clearance",
+  "questions": [...]
+}'
+                  className="min-h-[180px] font-mono text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={importFromJson}
+                  disabled={!jsonImport.trim()}
+                  className="w-full"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import from JSON
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Import structured JSON data with questions and categories already parsed.
+                </p>
+              </TabsContent>
+            </Tabs>
 
             <div className="space-y-2">
               <Label>Question Text *</Label>
