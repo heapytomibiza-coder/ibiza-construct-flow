@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect } from 'react';
-import { metricsCollector } from '@/lib/analytics';
+import { metricsCollector } from '@/lib/analytics/index';
 import { MetricSummary } from '@/lib/analytics/MetricsCollector';
 
 export function useMetrics() {

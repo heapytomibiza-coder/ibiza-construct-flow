@@ -13,7 +13,7 @@ import {
   AnalyticsFilter,
   ConversionFunnel,
 } from '@/lib/analytics/types';
-import { reportGenerator, eventTracker } from '@/lib/analytics';
+import { reportGenerator, eventTracker } from '@/lib/analytics/index';
 
 export function useReports() {
   const [reports, setReports] = useState<AnalyticsReport[]>([]);

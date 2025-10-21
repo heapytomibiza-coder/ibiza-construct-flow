@@ -8,7 +8,7 @@
 import { useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { eventTracker } from '@/lib/analytics';
+import { eventTracker } from '@/lib/analytics/index';
 import { EventCategory } from '@/lib/analytics/types';
 
 export function useAnalytics() {

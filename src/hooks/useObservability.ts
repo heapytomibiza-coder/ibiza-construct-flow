@@ -25,8 +25,6 @@ export interface PerformanceMetricRecord {
   id: string
   metric_name: string
   metric_value: number
-  route?: string | null
-  created_at: string
 }
 
 export const useAnalyticsEvents = () =>
@@ -68,8 +66,7 @@ export const usePerformanceMetrics = () =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from('performance_metrics')
-        .select('id,metric_name,metric_value,created_at')
-        .order('created_at', { ascending: false })
+        .select('id,metric_name,metric_value')
         .limit(500)
 
       if (error) throw error
