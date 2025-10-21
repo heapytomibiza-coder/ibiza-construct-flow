@@ -7601,6 +7601,36 @@ export type Database = {
         }
         Relationships: []
       }
+      redirect_analytics: {
+        Row: {
+          created_at: string
+          from_path: string
+          hit_count: number
+          id: string
+          last_hit_at: string | null
+          redirect_reason: string | null
+          to_path: string
+        }
+        Insert: {
+          created_at?: string
+          from_path: string
+          hit_count?: number
+          id?: string
+          last_hit_at?: string | null
+          redirect_reason?: string | null
+          to_path: string
+        }
+        Update: {
+          created_at?: string
+          from_path?: string
+          hit_count?: number
+          id?: string
+          last_hit_at?: string | null
+          redirect_reason?: string | null
+          to_path?: string
+        }
+        Relationships: []
+      }
       referral_codes: {
         Row: {
           code: string

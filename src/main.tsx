@@ -12,6 +12,7 @@ import { logBundleMetrics } from "./components/performance/BundleOptimizer";
 import { setupGlobalErrorHandling } from "./lib/monitoring/errorTracking";
 import { setupNavigationTracking } from "./lib/analytics/tracking";
 import { validateEnvironment } from "./lib/deployment/environment";
+import { analytics } from "./lib/analytics";
 
 // Validate environment (Phase 9: Production Hardening)
 try {
@@ -28,6 +29,9 @@ setupGlobalErrorHandling();
 
 // Setup analytics (Phase 9: Analytics)
 setupNavigationTracking();
+
+// Initialize analytics-to-database bridge (Phase 31: Observability)
+analytics.configure({ enabled: true, sampleRate: 1 });
 
 // Log bundle metrics in development (Phase 7: Bundle Optimization)
 if (import.meta.env.DEV) {
