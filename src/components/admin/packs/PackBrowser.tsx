@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, Play, Archive, Search } from 'lucide-react';
+import { Check, Play, Archive, Search, Edit } from 'lucide-react';
 import { useAdminUi } from '@/stores/adminUi';
 import {
   useGetAdminPacks,
@@ -125,6 +125,17 @@ export function PackBrowser() {
                 </div>
 
                 <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    asChild
+                  >
+                    <Link to={`/admin/questions/edit/${pack.pack_id}`}>
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Link>
+                  </Button>
+
                   {pack.status === 'draft' && (
                     <Button
                       size="sm"

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Trash2, Download, Upload, Copy, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Download, Upload, Copy, CheckCircle2, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { usePostAdminPacksImport } from '../../../../packages/@contracts/clients/packs';
 
 interface QuestionOption {
   value: string;
@@ -46,6 +48,8 @@ function toKey(text: string, index: number): string {
 
 export default function QuestionBuilder() {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const importMutation = usePostAdminPacksImport();
   const [form, setForm] = useState<MicroserviceForm>({
     mainCategory: '',
     subCategory: '',
@@ -324,15 +328,25 @@ export default function QuestionBuilder() {
 
     setImporting(true);
     try {
-      const { error } = await supabase
-        .from('question_packs')
-        .insert([json]);
-
-      if (error) throw error;
+      const result = await importMutation.mutateAsync({
+        slug: json.micro_slug,
+        content: json.content,
+        source: 'manual'
+      });
 
       toast({
         title: 'Import Successful',
-        description: `${form.microCategory} imported to database`
+        description: `${form.microCategory} imported to database`,
+        action: (
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => navigate(`/admin/questions/edit/${result.pack_id}`)}
+          >
+            <Edit className="h-4 w-4 mr-1" />
+            Edit Pack
+          </Button>
+        )
       });
 
       // Reset form
