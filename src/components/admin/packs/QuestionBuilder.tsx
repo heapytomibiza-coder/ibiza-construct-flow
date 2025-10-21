@@ -433,25 +433,43 @@ export default function QuestionBuilder() {
     try {
       const data = JSON.parse(jsonImport);
       
-      // Map question types from parser format to our format
+      // Map question types from various formats
       const typeMap: Record<string, any> = {
         'short_text': 'text',
         'long_text': 'text',
         'multiple_choice': 'single',
-        'checkbox': 'multi'
+        'single_select': 'single',
+        'checkbox': 'multi',
+        'multi_select': 'multi'
       };
 
-      // Convert questions
-      const importedQuestions = data.questions.map((q: any) => ({
-        id: crypto.randomUUID(),
-        text: q.question,
-        type: typeMap[q.type] || 'text',
-        required: false,
-        options: (q.options || []).map((opt: string) => ({
-          value: toSlug(opt),
-          label: opt
-        }))
-      }));
+      // Convert questions - filter out conditional sub-questions (e.g., "6a", "9a")
+      const mainQuestions = data.questions.filter((q: any) => 
+        typeof q.id === 'number' || !String(q.id).match(/[a-z]$/)
+      );
+
+      const importedQuestions = mainQuestions.map((q: any) => {
+        // Handle options - could be strings or objects
+        let options: QuestionOption[] = [];
+        if (q.options && Array.isArray(q.options)) {
+          options = q.options.map((opt: any) => {
+            if (typeof opt === 'string') {
+              return { value: toSlug(opt), label: opt };
+            } else if (opt.value && opt.label) {
+              return { value: opt.value, label: opt.label };
+            }
+            return { value: toSlug(String(opt)), label: String(opt) };
+          });
+        }
+
+        return {
+          id: crypto.randomUUID(),
+          text: q.question,
+          type: typeMap[q.type] || 'text',
+          required: q.required === true,
+          options
+        };
+      });
 
       setForm(prev => ({
         ...prev,
