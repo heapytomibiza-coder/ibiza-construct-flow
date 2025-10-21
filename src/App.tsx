@@ -420,7 +420,7 @@ function AppContent() {
                       <Route path="audit-log" element={<AuditLog />} />
                       
                       {/* Content Management */}
-                      <Route path="questions" element={<QuestionsManager />} />
+                      <Route path="questions" element={<AdminQuestions />} />
                       <Route path="questions/compare/:slug" element={<PackCompareView />} />
                       <Route path="bulk-import" element={<BulkImport />} />
                       <Route path="website-settings" element={<WebsiteSettings />} />
@@ -440,13 +440,6 @@ function AppContent() {
                       <Route path="calculator/pricing" element={<PricingManager />} />
                       <Route path="calculator/analytics" element={<CalculatorAnalytics />} />
                     </Route>
-                    
-                    {/* Legacy admin route for backward compatibility */}
-                    <Route path="/admin-questions" element={
-                      <RouteGuard requiredRole="admin">
-                        <AdminQuestions />
-                      </RouteGuard>
-                    } />
                     
                     {/* Settings Routes - Role-Aware */}
                     <Route path="/settings" element={
