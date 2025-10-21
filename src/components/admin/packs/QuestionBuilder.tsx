@@ -28,8 +28,9 @@ interface Question {
 }
 
 interface MicroserviceForm {
-  serviceName: string;
-  category: string;
+  mainCategory: string;
+  subCategory: string;
+  microCategory: string;
   questions: Question[];
 }
 
@@ -45,8 +46,9 @@ function toKey(text: string, index: number): string {
 export default function QuestionBuilder() {
   const { toast } = useToast();
   const [form, setForm] = useState<MicroserviceForm>({
-    serviceName: '',
-    category: 'General',
+    mainCategory: '',
+    subCategory: '',
+    microCategory: '',
     questions: []
   });
   const [currentQuestion, setCurrentQuestion] = useState<Partial<Question>>({
@@ -125,16 +127,16 @@ export default function QuestionBuilder() {
   };
 
   const generateJSON = () => {
-    if (!form.serviceName.trim()) {
+    if (!form.microCategory.trim()) {
       toast({
-        title: 'Service Name Required',
-        description: 'Please enter a service name',
+        title: 'Micro Category Required',
+        description: 'Please enter a micro category (service name)',
         variant: 'destructive'
       });
       return null;
     }
 
-    const microSlug = toSlug(form.serviceName);
+    const microSlug = toSlug(form.microCategory);
     
     const questions = form.questions.map((q, index) => ({
       key: toKey(q.text, index),
@@ -161,8 +163,9 @@ export default function QuestionBuilder() {
       is_active: true,
       content: {
         id: crypto.randomUUID(),
-        category: form.category,
-        name: form.serviceName,
+        category: form.mainCategory,
+        subcategory: form.subCategory,
+        name: form.microCategory,
         slug: microSlug,
         i18nPrefix: microSlug.replace(/-/g, '.'),
         questions
@@ -213,13 +216,14 @@ export default function QuestionBuilder() {
 
       toast({
         title: 'Import Successful',
-        description: `${form.serviceName} imported to database`
+        description: `${form.microCategory} imported to database`
       });
 
       // Reset form
       setForm({
-        serviceName: '',
-        category: 'General',
+        mainCategory: '',
+        subCategory: '',
+        microCategory: '',
         questions: []
       });
 
@@ -282,27 +286,36 @@ export default function QuestionBuilder() {
             <h3 className="font-semibold text-lg">Service Information</h3>
             
             <div className="space-y-2">
-              <Label>Service Name *</Label>
+              <Label>Main Category *</Label>
               <Input
-                placeholder="e.g., Plumbing Installation"
-                value={form.serviceName}
-                onChange={(e) => setForm(prev => ({ ...prev, serviceName: e.target.value }))}
+                placeholder="e.g., Construction, Electrical"
+                value={form.mainCategory}
+                onChange={(e) => setForm(prev => ({ ...prev, mainCategory: e.target.value }))}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label>Sub Category *</Label>
               <Input
-                placeholder="e.g., Construction, Electrical"
-                value={form.category}
-                onChange={(e) => setForm(prev => ({ ...prev, category: e.target.value }))}
+                placeholder="e.g., Plumbing, HVAC"
+                value={form.subCategory}
+                onChange={(e) => setForm(prev => ({ ...prev, subCategory: e.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Micro Category (Service Name) *</Label>
+              <Input
+                placeholder="e.g., Pipe Installation, Leak Repair"
+                value={form.microCategory}
+                onChange={(e) => setForm(prev => ({ ...prev, microCategory: e.target.value }))}
               />
             </div>
 
             <div className="flex gap-2 pt-2">
               <Badge variant="outline">{form.questions.length} questions</Badge>
-              {form.serviceName && (
-                <Badge variant="secondary">Slug: {toSlug(form.serviceName)}</Badge>
+              {form.microCategory && (
+                <Badge variant="secondary">Slug: {toSlug(form.microCategory)}</Badge>
               )}
             </div>
           </Card>
@@ -473,7 +486,7 @@ export default function QuestionBuilder() {
               <Button
                 variant="outline"
                 onClick={copyJSON}
-                disabled={!form.serviceName || form.questions.length === 0}
+                disabled={!form.microCategory || form.questions.length === 0}
                 className="w-full"
               >
                 <Copy className="w-4 h-4 mr-2" />
@@ -483,7 +496,7 @@ export default function QuestionBuilder() {
               <Button
                 variant="outline"
                 onClick={exportJSON}
-                disabled={!form.serviceName || form.questions.length === 0}
+                disabled={!form.microCategory || form.questions.length === 0}
                 className="w-full"
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -492,7 +505,7 @@ export default function QuestionBuilder() {
 
               <Button
                 onClick={importToDatabase}
-                disabled={!form.serviceName || form.questions.length === 0 || importing}
+                disabled={!form.microCategory || form.questions.length === 0 || importing}
                 className="w-full"
               >
                 {importing ? (
