@@ -161,3 +161,6 @@ verify_jwt = true
 
 [functions.import-question-packs]
 verify_jwt = true
+
+[functions.parse-questions]
+verify_jwt = true

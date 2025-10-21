@@ -290,30 +290,63 @@ export default function QuestionBuilder() {
   const pasteQuestions = async () => {
     try {
       const text = await navigator.clipboard.readText();
-      const lines = text.split('\n').filter(line => line.trim());
-      
-      const newQuestions: Question[] = lines.map(line => ({
-        id: crypto.randomUUID(),
-        text: line.trim(),
-        type: 'text',
-        required: false,
-        options: []
-      }));
+      if (!text.trim()) {
+        toast({
+          title: 'Clipboard Empty',
+          description: 'No text found in clipboard',
+          variant: 'destructive',
+        });
+        return;
+      }
 
-      setForm(prev => ({
-        ...prev,
-        questions: [...prev.questions, ...newQuestions]
-      }));
-
+      // Show loading state
       toast({
-        title: 'Questions Pasted',
-        description: `${newQuestions.length} questions added`
+        title: 'Parsing Questions...',
+        description: 'AI is analyzing your input',
       });
-    } catch (error) {
+
+      let parsedQuestions;
+      try {
+        // Try AI parsing first
+        const { parseQuestionsWithAI } = await import('@/lib/ai/questionParser');
+        const aiParsed = await parseQuestionsWithAI(text);
+        
+        parsedQuestions = aiParsed.map((q) => ({
+          id: crypto.randomUUID(),
+          ...q,
+        }));
+
+        toast({
+          title: 'Questions Parsed Successfully',
+          description: `${parsedQuestions.length} questions added with smart formatting`,
+        });
+      } catch (aiError) {
+        console.warn('AI parsing failed, using simple parser:', aiError);
+        
+        // Fallback to simple parsing
+        const { parseQuestionsSimple } = await import('@/lib/ai/questionParser');
+        const simpleParsed = parseQuestionsSimple(text);
+        
+        parsedQuestions = simpleParsed.map((q) => ({
+          id: crypto.randomUUID(),
+          ...q,
+        }));
+
+        toast({
+          title: 'Questions Added',
+          description: `${parsedQuestions.length} questions added (basic parsing)`,
+        });
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        questions: [...prev.questions, ...parsedQuestions],
+      }));
+    } catch (err) {
       toast({
         title: 'Paste Failed',
-        description: 'Could not read from clipboard',
-        variant: 'destructive'
+        description: err instanceof Error ? err.message : 'Could not read from clipboard',
+        variant: 'destructive',
       });
     }
   };
@@ -402,12 +435,22 @@ export default function QuestionBuilder() {
           </Card>
 
           <Card className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-lg">Add Question</h3>
-              <Button variant="outline" size="sm" onClick={pasteQuestions}>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg">Add Question</h3>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={pasteQuestions}
+                className="w-full"
+              >
                 <Copy className="w-4 h-4 mr-2" />
-                Paste Questions
+                Paste Questions from Clipboard (AI-Powered)
               </Button>
+              <p className="text-xs text-muted-foreground">
+                Paste questions in any format - AI will detect types, options, and structure automatically
+              </p>
             </div>
 
             <div className="space-y-2">
