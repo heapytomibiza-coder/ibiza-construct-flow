@@ -6294,6 +6294,13 @@ export type Database = {
             referencedRelation: "professional_profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "professional_badges_professional_user_id_fkey"
+            columns: ["professional_user_id"]
+            isOneToOne: false
+            referencedRelation: "professional_profiles_public"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       professional_deals: {
@@ -6892,6 +6899,13 @@ export type Database = {
             referencedRelation: "professional_profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "professional_services_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professional_profiles_public"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       professional_stats: {
@@ -7050,6 +7064,13 @@ export type Database = {
             columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "professional_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "professional_verifications_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professional_profiles_public"
             referencedColumns: ["user_id"]
           },
         ]
@@ -10391,6 +10412,71 @@ export type Database = {
           total_projects: number | null
         }
         Relationships: []
+      }
+      professional_profiles_public: {
+        Row: {
+          bio: string | null
+          business_name: string | null
+          created_at: string | null
+          experience_years: string | null
+          hourly_rate: number | null
+          instant_booking_enabled: boolean | null
+          is_active: boolean | null
+          primary_trade: string | null
+          response_time_hours: number | null
+          service_regions: Json | null
+          skills: Json | null
+          tagline: string | null
+          user_id: string | null
+          verification_status: string | null
+          work_philosophy: string | null
+          zones: Json | null
+        }
+        Insert: {
+          bio?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          experience_years?: string | null
+          hourly_rate?: number | null
+          instant_booking_enabled?: boolean | null
+          is_active?: boolean | null
+          primary_trade?: string | null
+          response_time_hours?: number | null
+          service_regions?: Json | null
+          skills?: Json | null
+          tagline?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+          work_philosophy?: string | null
+          zones?: Json | null
+        }
+        Update: {
+          bio?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          experience_years?: string | null
+          hourly_rate?: number | null
+          instant_booking_enabled?: boolean | null
+          is_active?: boolean | null
+          primary_trade?: string | null
+          response_time_hours?: number | null
+          service_regions?: Json | null
+          skills?: Json | null
+          tagline?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+          work_philosophy?: string | null
+          zones?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services_catalog: {
         Row: {
