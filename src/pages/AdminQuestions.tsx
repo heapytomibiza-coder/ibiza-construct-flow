@@ -13,13 +13,14 @@ import { PackImporter } from '@/components/admin/packs/PackImporter';
 import { PackAnalytics } from '@/components/admin/packs/PackAnalytics';
 import ImportQuestions from '@/pages/admin/ImportQuestions';
 import BulkImportMaster from '@/pages/admin/BulkImportMaster';
+import QuestionBuilder from '@/components/admin/packs/QuestionBuilder';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { useRole } from '@/lib/roleHelpers';
 
 export default function AdminQuestions() {
   const { profile } = useAuth();
-  const [activeTab, setActiveTab] = useState('bulk-import');
+  const [activeTab, setActiveTab] = useState('form-builder');
 
   // Check admin access using useRole hook from contracts
   const { isAdmin } = useRole();
@@ -39,12 +40,17 @@ export default function AdminQuestions() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="bulk-import">🚀 Bulk Import Master</TabsTrigger>
+          <TabsTrigger value="form-builder">📝 Form Builder</TabsTrigger>
+          <TabsTrigger value="bulk-import">🚀 Bulk Import</TabsTrigger>
           <TabsTrigger value="browser">Browse Packs</TabsTrigger>
           <TabsTrigger value="pdf-import">PDF Import</TabsTrigger>
           <TabsTrigger value="import">Manual Import</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="form-builder">
+          <QuestionBuilder />
+        </TabsContent>
 
         <TabsContent value="bulk-import">
           <BulkImportMaster />
