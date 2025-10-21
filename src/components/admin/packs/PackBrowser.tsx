@@ -3,7 +3,6 @@
  * Phase 4: Uses generated contract clients from @contracts/clients/packs
  */
 
-import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +17,11 @@ import {
   usePostAdminPacksRetire,
 } from '../../../../packages/@contracts/clients/packs';
 
-export function PackBrowser() {
+interface PackBrowserProps {
+  onEditPack?: (packId: string) => void;
+}
+
+export function PackBrowser({ onEditPack }: PackBrowserProps) {
   // UI state from Zustand (filters, selections, modals)
   const { filters, setFilters } = useAdminUi();
 
@@ -125,16 +128,16 @@ export function PackBrowser() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    asChild
-                  >
-                    <Link to={`/admin/questions/edit/${pack.pack_id}`}>
+                  {onEditPack && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onEditPack(pack.pack_id)}
+                    >
                       <Edit className="h-4 w-4 mr-1" />
                       Edit
-                    </Link>
-                  </Button>
+                    </Button>
+                  )}
 
                   {pack.status === 'draft' && (
                     <Button
@@ -170,16 +173,6 @@ export function PackBrowser() {
                       Retire
                     </Button>
                   )}
-
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    asChild
-                  >
-                    <Link to={`/admin/questions/compare/${pack.micro_slug}`}>
-                      Compare
-                    </Link>
-                  </Button>
                 </div>
               </div>
             </Card>
