@@ -12,13 +12,14 @@ import { PackBrowser } from '@/components/admin/packs/PackBrowser';
 import { PackImporter } from '@/components/admin/packs/PackImporter';
 import { PackAnalytics } from '@/components/admin/packs/PackAnalytics';
 import ImportQuestions from '@/pages/admin/ImportQuestions';
+import BulkImportMaster from '@/pages/admin/BulkImportMaster';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { useRole } from '@/lib/roleHelpers';
 
 export default function AdminQuestions() {
   const { profile } = useAuth();
-  const [activeTab, setActiveTab] = useState('browser');
+  const [activeTab, setActiveTab] = useState('bulk-import');
 
   // Check admin access using useRole hook from contracts
   const { isAdmin } = useRole();
@@ -38,11 +39,16 @@ export default function AdminQuestions() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
+          <TabsTrigger value="bulk-import">🚀 Bulk Import Master</TabsTrigger>
           <TabsTrigger value="browser">Browse Packs</TabsTrigger>
           <TabsTrigger value="pdf-import">PDF Import</TabsTrigger>
           <TabsTrigger value="import">Manual Import</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="bulk-import">
+          <BulkImportMaster />
+        </TabsContent>
 
         <TabsContent value="browser">
           <PackBrowser />
