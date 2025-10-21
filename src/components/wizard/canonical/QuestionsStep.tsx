@@ -90,8 +90,31 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         return;
       }
 
-      // Use AI to generate contextual questions based on selected services
-      console.log('Generating contextual questions for:', microNames);
+      // TIER 1: Try loading from question_packs table first
+      const primaryMicroSlug = microIds[0]; // Use first micro ID as slug
+      console.log('Checking database for questions:', primaryMicroSlug);
+
+      const { data: pack, error: packError } = await supabase
+        .from('question_packs')
+        .select('content')
+        .eq('micro_slug', primaryMicroSlug)
+        .eq('status', 'approved')
+        .eq('is_active', true)
+        .single();
+
+      if (!packError && pack?.content) {
+        console.log('✅ Loaded questions from database pack');
+        const transformedQuestions = transformPackToAIQuestions(pack.content);
+        if (transformedQuestions.length > 0) {
+          setQuestions(transformedQuestions);
+          setPackSource('pack');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // TIER 2: Use AI to generate contextual questions
+      console.log('No database pack found, generating contextual questions for:', microNames);
       
       const { data, error: functionError } = await supabase.functions.invoke(
         'generate-contextual-questions',

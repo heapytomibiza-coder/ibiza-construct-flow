@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PackBrowser } from '@/components/admin/packs/PackBrowser';
 import { PackImporter } from '@/components/admin/packs/PackImporter';
 import { PackAnalytics } from '@/components/admin/packs/PackAnalytics';
+import ImportQuestions from '@/pages/admin/ImportQuestions';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { useRole } from '@/lib/roleHelpers';
@@ -38,12 +39,17 @@ export default function AdminQuestions() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="browser">Browse Packs</TabsTrigger>
-          <TabsTrigger value="import">Import</TabsTrigger>
+          <TabsTrigger value="pdf-import">PDF Import</TabsTrigger>
+          <TabsTrigger value="import">Manual Import</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="browser">
           <PackBrowser />
+        </TabsContent>
+
+        <TabsContent value="pdf-import">
+          <ImportQuestions />
         </TabsContent>
 
         <TabsContent value="import">
