@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,10 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Trash2, Download, Upload, Copy, CheckCircle2, FileEdit, X } from 'lucide-react';
+import { Plus, Trash2, Download, Upload, Copy, CheckCircle2, FileEdit, X, FolderOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { usePostAdminPacksImport, useGetAdminPacks } from '../../../../packages/@contracts/clients/packs';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface QuestionOption {
   value: string;
@@ -53,9 +54,10 @@ interface QuestionBuilderProps {
 export default function QuestionBuilder({ packToEdit, onClearEdit }: QuestionBuilderProps) {
   const { toast } = useToast();
   const importMutation = usePostAdminPacksImport();
-  const { data: allPacks = [] } = useGetAdminPacks({});
+  const { data: allPacks = [], isLoading: packsLoading } = useGetAdminPacks({});
   
   const [editingPackId, setEditingPackId] = useState<string | null>(null);
+  const [loadPackOpen, setLoadPackOpen] = useState(false);
   const [form, setForm] = useState<MicroserviceForm>({
     mainCategory: '',
     subCategory: '',
@@ -570,20 +572,98 @@ export default function QuestionBuilder({ packToEdit, onClearEdit }: QuestionBui
 
   return (
     <div className="space-y-6">
-      {editingPackId && (
-        <Alert>
-          <FileEdit className="h-4 w-4" />
-          <AlertDescription className="flex items-center justify-between">
-            <span>
-              <strong>Editing Mode:</strong> {allPacks.find(p => p.pack_id === editingPackId)?.content?.name || 'Pack'} v{allPacks.find(p => p.pack_id === editingPackId)?.version}. Changes will create a new version.
-            </span>
-            <Button variant="ghost" size="sm" onClick={clearEditMode}>
-              <X className="h-4 w-4 mr-1" />
-              Clear & Start Fresh
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
+      {/* Load Existing Pack Section */}
+      <Collapsible open={loadPackOpen} onOpenChange={setLoadPackOpen}>
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="h-5 w-5" />
+                <div>
+                  <CardTitle className="text-lg">Load Existing Pack</CardTitle>
+                  <CardDescription className="text-sm">
+                    Select a pack to edit or start creating a new one
+                  </CardDescription>
+                </div>
+              </div>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  {loadPackOpen ? 'Hide' : 'Show'}
+                </Button>
+              </CollapsibleTrigger>
+            </div>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent className="space-y-4">
+              {editingPackId && (
+                <Alert>
+                  <FileEdit className="h-4 w-4" />
+                  <AlertDescription className="flex items-center justify-between">
+                    <span>
+                      <strong>Editing:</strong> {allPacks.find(p => p.pack_id === editingPackId)?.content?.name || 'Pack'} v{allPacks.find(p => p.pack_id === editingPackId)?.version} - Changes create a new version
+                    </span>
+                    <Button variant="ghost" size="sm" onClick={clearEditMode}>
+                      <X className="h-4 w-4 mr-1" />
+                      Clear
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              <div className="space-y-2">
+                <Label>Select Pack to Edit</Label>
+                {packsLoading ? (
+                  <div className="text-sm text-muted-foreground py-2">Loading packs...</div>
+                ) : (
+                  <Select
+                    value={editingPackId || ''}
+                    onValueChange={(packId) => {
+                      const pack = allPacks.find(p => p.pack_id === packId);
+                      if (pack) {
+                        loadPackIntoForm(pack);
+                        setLoadPackOpen(false);
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a pack to edit..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['approved', 'draft', 'retired'].map(status => {
+                        const packsInStatus = allPacks.filter(p => p.status === status);
+                        if (packsInStatus.length === 0) return null;
+                        
+                        return (
+                          <div key={status}>
+                            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase">
+                              {status}
+                            </div>
+                            {packsInStatus.map(pack => (
+                              <SelectItem key={pack.pack_id} value={pack.pack_id}>
+                                <div className="flex items-center gap-2">
+                                  {pack.content?.name || pack.micro_slug} 
+                                  <Badge variant="outline" className="text-xs">v{pack.version}</Badge>
+                                  <Badge variant="secondary" className="text-xs">{pack.source}</Badge>
+                                  {pack.is_active && <Badge className="text-xs bg-green-500">ACTIVE</Badge>}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </div>
+                        );
+                      })}
+                      {allPacks.length === 0 && (
+                        <div className="px-2 py-4 text-sm text-muted-foreground text-center">
+                          No packs available. Create your first one below!
+                        </div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
       
       {!editingPackId && (
         <Alert>
