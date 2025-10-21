@@ -12,7 +12,7 @@ import { logBundleMetrics } from "./components/performance/BundleOptimizer";
 import { setupGlobalErrorHandling } from "./lib/monitoring/errorTracking";
 import { setupNavigationTracking } from "./lib/analytics/tracking";
 import { validateEnvironment } from "./lib/deployment/environment";
-import { analytics } from "./lib/analytics";
+import { analytics } from "./lib/analytics.ts";
 
 // Validate environment (Phase 9: Production Hardening)
 try {
