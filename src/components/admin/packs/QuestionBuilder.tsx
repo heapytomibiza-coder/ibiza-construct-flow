@@ -34,6 +34,27 @@ interface MicroserviceForm {
   questions: Question[];
 }
 
+// Category data structure
+const categoryData = {
+  'Construction': {
+    'Plumbing': ['Pipe Installation', 'Leak Repair', 'Drain Cleaning', 'Water Heater'],
+    'Electrical': ['Wiring', 'Panel Upgrade', 'Lighting Installation', 'Outlet Repair'],
+    'HVAC': ['AC Installation', 'Heating Repair', 'Ventilation', 'Duct Cleaning'],
+    'Carpentry': ['Cabinet Making', 'Door Installation', 'Custom Furniture', 'Trim Work'],
+    'Painting': ['Interior Painting', 'Exterior Painting', 'Cabinet Painting', 'Wall Prep']
+  },
+  'Home Services': {
+    'Cleaning': ['Deep Cleaning', 'Regular Cleaning', 'Move Out Cleaning', 'Window Cleaning'],
+    'Landscaping': ['Lawn Mowing', 'Tree Trimming', 'Garden Design', 'Irrigation'],
+    'Pest Control': ['Termite Treatment', 'Rodent Control', 'Insect Removal', 'Prevention']
+  },
+  'Renovation': {
+    'Kitchen': ['Full Remodel', 'Cabinet Refacing', 'Countertop Install', 'Backsplash'],
+    'Bathroom': ['Full Remodel', 'Shower Install', 'Vanity Replace', 'Tile Work'],
+    'Flooring': ['Hardwood Install', 'Tile Install', 'Carpet Install', 'Refinishing']
+  }
+};
+
 function toSlug(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
@@ -59,6 +80,34 @@ export default function QuestionBuilder() {
   });
   const [newOption, setNewOption] = useState('');
   const [importing, setImporting] = useState(false);
+
+  // Get available sub categories based on main category
+  const availableSubCategories = form.mainCategory 
+    ? Object.keys(categoryData[form.mainCategory as keyof typeof categoryData] || {})
+    : [];
+
+  // Get available micro categories based on sub category
+  const availableMicroCategories = form.mainCategory && form.subCategory
+    ? categoryData[form.mainCategory as keyof typeof categoryData]?.[form.subCategory] || []
+    : [];
+
+  // Reset child selections when parent changes
+  const handleMainCategoryChange = (value: string) => {
+    setForm(prev => ({
+      ...prev,
+      mainCategory: value,
+      subCategory: '',
+      microCategory: ''
+    }));
+  };
+
+  const handleSubCategoryChange = (value: string) => {
+    setForm(prev => ({
+      ...prev,
+      subCategory: value,
+      microCategory: ''
+    }));
+  };
 
   const addOption = () => {
     if (!newOption.trim()) return;
@@ -287,29 +336,61 @@ export default function QuestionBuilder() {
             
             <div className="space-y-2">
               <Label>Main Category *</Label>
-              <Input
-                placeholder="e.g., Construction, Electrical"
+              <Select
                 value={form.mainCategory}
-                onChange={(e) => setForm(prev => ({ ...prev, mainCategory: e.target.value }))}
-              />
+                onValueChange={handleMainCategoryChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select main category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(categoryData).map(category => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
               <Label>Sub Category *</Label>
-              <Input
-                placeholder="e.g., Plumbing, HVAC"
+              <Select
                 value={form.subCategory}
-                onChange={(e) => setForm(prev => ({ ...prev, subCategory: e.target.value }))}
-              />
+                onValueChange={handleSubCategoryChange}
+                disabled={!form.mainCategory}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={form.mainCategory ? "Select sub category" : "Select main category first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableSubCategories.map(subCat => (
+                    <SelectItem key={subCat} value={subCat}>
+                      {subCat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
               <Label>Micro Category (Service Name) *</Label>
-              <Input
-                placeholder="e.g., Pipe Installation, Leak Repair"
+              <Select
                 value={form.microCategory}
-                onChange={(e) => setForm(prev => ({ ...prev, microCategory: e.target.value }))}
-              />
+                onValueChange={(value) => setForm(prev => ({ ...prev, microCategory: value }))}
+                disabled={!form.subCategory}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={form.subCategory ? "Select service" : "Select sub category first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableMicroCategories.map(microCat => (
+                    <SelectItem key={microCat} value={microCat}>
+                      {microCat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex gap-2 pt-2">
