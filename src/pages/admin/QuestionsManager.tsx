@@ -8,11 +8,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Edit } from 'lucide-react';
+import { Search, Edit, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { QuestionsEditor, Question } from '@/components/admin/questions/QuestionsEditor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AdminLayout } from '@/components/admin/layout/AdminLayout';
+import QuestionBuilder from '@/components/admin/packs/QuestionBuilder';
 import type { Json } from '@/integrations/supabase/types';
 
 interface MicroService {
@@ -30,6 +31,7 @@ export default function QuestionsManager() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMicroservice, setSelectedMicroservice] = useState<MicroService | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const { data: microservices, isLoading } = useQuery({
@@ -92,11 +94,17 @@ export default function QuestionsManager() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Questions Manager</h1>
-        <p className="text-muted-foreground">
-          Manage questions for microservices in the job posting wizard
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Questions Manager</h1>
+          <p className="text-muted-foreground">
+            Manage questions for microservices in the job posting wizard
+          </p>
+        </div>
+        <Button onClick={() => setIsBuilderOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Microservice
+        </Button>
       </div>
 
       <Card className="p-4">
@@ -166,6 +174,15 @@ export default function QuestionsManager() {
               isSaving={isSaving}
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isBuilderOpen} onOpenChange={setIsBuilderOpen}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Microservice with Questions</DialogTitle>
+          </DialogHeader>
+          <QuestionBuilder />
         </DialogContent>
       </Dialog>
       </div>
