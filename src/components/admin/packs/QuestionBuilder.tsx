@@ -8,10 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Trash2, Download, Upload, Copy, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Download, Upload, Copy, CheckCircle2, FileEdit, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { usePostAdminPacksImport } from '../../../../packages/@contracts/clients/packs';
+import { usePostAdminPacksImport, useGetAdminPacks } from '../../../../packages/@contracts/clients/packs';
 
 interface QuestionOption {
   value: string;
@@ -45,9 +45,17 @@ function toKey(text: string, index: number): string {
   return `q${index + 1}_${slug}`;
 }
 
-export default function QuestionBuilder() {
+interface QuestionBuilderProps {
+  packToEdit?: string | null;
+  onClearEdit?: () => void;
+}
+
+export default function QuestionBuilder({ packToEdit, onClearEdit }: QuestionBuilderProps) {
   const { toast } = useToast();
   const importMutation = usePostAdminPacksImport();
+  const { data: allPacks = [] } = useGetAdminPacks({});
+  
+  const [editingPackId, setEditingPackId] = useState<string | null>(null);
   const [form, setForm] = useState<MicroserviceForm>({
     mainCategory: '',
     subCategory: '',
@@ -95,6 +103,62 @@ export default function QuestionBuilder() {
       setForm(prev => ({ ...prev, microCategory: '' }));
     }
   }, [form.subCategory]);
+  
+  // Load pack when packToEdit changes
+  useEffect(() => {
+    if (packToEdit && allPacks.length > 0) {
+      const pack = allPacks.find(p => p.pack_id === packToEdit);
+      if (pack) {
+        loadPackIntoForm(pack);
+      }
+    }
+  }, [packToEdit, allPacks]);
+  
+  const loadPackIntoForm = (pack: any) => {
+    const content = pack.content;
+    
+    setForm({
+      mainCategory: content.category || '',
+      subCategory: content.subcategory || '',
+      microCategory: content.name || '',
+      questions: content.questions.map((q: any, idx: number) => ({
+        id: crypto.randomUUID(),
+        text: q.i18nKey || q.key,
+        type: q.type,
+        required: q.required || false,
+        options: q.options?.map((opt: any) => ({
+          value: opt.value,
+          label: opt.i18nKey || opt.value,
+        })) || [],
+        ...(q.min !== undefined && { min: q.min }),
+        ...(q.max !== undefined && { max: q.max }),
+        ...(q.unit && { unit: q.unit }),
+      }))
+    });
+    
+    setEditingPackId(pack.pack_id);
+    
+    toast({
+      title: 'Pack Loaded',
+      description: `Editing ${content.name} v${pack.version}`,
+    });
+  };
+  
+  const clearEditMode = () => {
+    setEditingPackId(null);
+    setForm({
+      mainCategory: '',
+      subCategory: '',
+      microCategory: '',
+      questions: []
+    });
+    onClearEdit?.();
+    
+    toast({
+      title: 'Cleared',
+      description: 'Ready to create a new pack',
+    });
+  };
 
   const loadMainCategories = async () => {
     setLoading(true);
@@ -506,13 +570,30 @@ export default function QuestionBuilder() {
 
   return (
     <div className="space-y-6">
-      <Alert>
-        <CheckCircle2 className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Form Builder:</strong> Create microservices manually by adding questions one-by-one.
-          Paste multiple questions at once or build them individually.
-        </AlertDescription>
-      </Alert>
+      {editingPackId && (
+        <Alert>
+          <FileEdit className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>
+              <strong>Editing Mode:</strong> {allPacks.find(p => p.pack_id === editingPackId)?.content?.name || 'Pack'} v{allPacks.find(p => p.pack_id === editingPackId)?.version}. Changes will create a new version.
+            </span>
+            <Button variant="ghost" size="sm" onClick={clearEditMode}>
+              <X className="h-4 w-4 mr-1" />
+              Clear & Start Fresh
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {!editingPackId && (
+        <Alert>
+          <CheckCircle2 className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Form Builder:</strong> Create microservices manually by adding questions one-by-one.
+            Paste multiple questions at once or build them individually.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Left: Form Builder */}
@@ -839,12 +920,12 @@ Example:
                 {importing ? (
                   <>
                     <Upload className="w-4 h-4 mr-2 animate-pulse" />
-                    Importing...
+                    {editingPackId ? 'Saving New Version...' : 'Importing...'}
                   </>
                 ) : (
                   <>
                     <Upload className="w-4 h-4 mr-2" />
-                    Import to Database
+                    {editingPackId ? 'Save as New Version' : 'Import to Database'}
                   </>
                 )}
               </Button>

@@ -21,10 +21,11 @@ import { useRole } from '@/lib/roleHelpers';
 export default function AdminQuestions() {
   const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('form-builder');
+  const [packToEdit, setPackToEdit] = useState<string | null>(null);
   
   const handleEditPack = (packId: string) => {
+    setPackToEdit(packId);
     setActiveTab('form-builder');
-    // Future: load pack into form builder
   };
 
   // Check admin access using useRole hook from contracts
@@ -54,7 +55,7 @@ export default function AdminQuestions() {
         </TabsList>
 
         <TabsContent value="form-builder">
-          <QuestionBuilder />
+          <QuestionBuilder packToEdit={packToEdit} onClearEdit={() => setPackToEdit(null)} />
         </TabsContent>
 
         <TabsContent value="bulk-import">
