@@ -14,12 +14,9 @@ import { PackAnalytics } from '@/components/admin/packs/PackAnalytics';
 import ImportQuestions from '@/pages/admin/ImportQuestions';
 import BulkImportMaster from '@/pages/admin/BulkImportMaster';
 import QuestionBuilder from '@/components/admin/packs/QuestionBuilder';
-import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
-import { useRole } from '@/lib/roleHelpers';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 export default function AdminQuestions() {
-  const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('form-builder');
   const [packToEdit, setPackToEdit] = useState<string | null>(null);
   
@@ -28,14 +25,8 @@ export default function AdminQuestions() {
     setActiveTab('form-builder');
   };
 
-  // Check admin access using useRole hook from contracts
-  const { isAdmin } = useRole();
-  
-  if (!isAdmin) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   return (
+    <AdminGuard redirectPath="/dashboard">
     <div className="container mx-auto py-8 space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Question Pack Management</h1>
@@ -79,5 +70,6 @@ export default function AdminQuestions() {
         </TabsContent>
       </Tabs>
     </div>
+    </AdminGuard>
   );
 }
