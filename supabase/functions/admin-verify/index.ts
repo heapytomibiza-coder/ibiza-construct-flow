@@ -2,6 +2,15 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { serverClient } from "../_shared/client.ts";
 import { json } from "../_shared/json.ts";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { mapError } from '../_shared/errorMapping.ts';
+
+const verifySchema = z.object({
+  verificationId: z.string().uuid(),
+  approved: z.boolean(),
+  notes: z.string().max(1000).optional(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -29,11 +38,7 @@ serve(async (req) => {
       return json({ error: "Admin access required" }, 403);
     }
 
-    const { verificationId, approved, notes } = await req.json();
-
-    if (!verificationId || approved === undefined) {
-      return json({ error: "Missing required fields: verificationId, approved" }, 400);
-    }
+    const { verificationId, approved, notes } = await validateRequestBody(req, verifySchema);
 
     // Get verification details
     const { data: verification, error: verificationError } = await supabase
@@ -139,6 +144,6 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Admin verify error:", error);
-    return json({ error: error.message }, 500);
+    return json({ error: mapError(error) }, 500);
   }
 });

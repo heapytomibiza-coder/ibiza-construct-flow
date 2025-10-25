@@ -1,42 +1,31 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { mapError } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const chatRequestSchema = z.object({
+  message: z.string().trim().min(1).max(5000).optional(),
+  messages: z.array(z.object({
+    role: z.string(),
+    content: z.string().max(10000),
+  })).optional(),
+  conversation_id: z.string().uuid().optional(),
+  context: z.object({
+    page: z.string().optional(),
+    user_role: z.string().optional(),
+    current_job: z.string().optional(),
+  }).optional().default({}),
+});
+
 // Simple in-memory rate limiter
 const rateLimiter = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const limit = rateLimiter.get(ip);
-  
-  if (!limit || now > limit.resetAt) {
-    rateLimiter.set(ip, { count: 1, resetAt: now + 60000 }); // 1 minute window
-    return true;
-  }
-  
-  if (limit.count >= 20) { // 20 requests per minute
-    return false;
-  }
-  
-  limit.count++;
-  return true;
-}
-
-interface ChatRequest {
-  message?: string; // For simple chat
-  messages?: Array<{ role: string; content: string }>; // For custom conversation
-  conversation_id?: string;
-  context?: {
-    page?: string;
-    user_role?: string;
-    current_job?: string;
-  };
-}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -96,7 +85,7 @@ serve(async (req) => {
     }
 
     const authenticatedUserId = user.id;
-    const { message, messages, conversation_id, context = {} }: ChatRequest = await req.json();
+    const { message, messages, conversation_id, context } = await validateRequestBody(req, chatRequestSchema);
 
     // Handle two modes: Simple chat (message) or Custom conversation (messages array)
     const isCustomConversation = messages && Array.isArray(messages);
@@ -232,7 +221,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in ai-chatbot function:', error);
     return new Response(JSON.stringify({
-      error: 'Failed to process chat message',
+      error: mapError(error),
       response: 'I apologize, but I\'m experiencing technical difficulties. Please try again in a moment or contact our support team.',
       conversation_id: null
     }), {

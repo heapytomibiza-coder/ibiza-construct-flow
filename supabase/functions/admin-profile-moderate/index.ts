@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { z } from "https://esm.sh/zod@3.23.8";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { mapError } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -80,8 +82,7 @@ serve(async (req) => {
     );
 
     // 3) Parse and validate payload
-    const body = await req.json();
-    const parsed = Payload.parse(body);
+    const parsed = await validateRequestBody(req, Payload);
 
     console.log("Moderating profile:", parsed.profile_id, "Action:", parsed.action);
 
@@ -127,9 +128,8 @@ serve(async (req) => {
 
   } catch (e) {
     console.error("Error in admin-profile-moderate:", e);
-    const errorMessage = e instanceof Error ? e.message : String(e);
     return new Response(
-      JSON.stringify({ error: errorMessage }), 
+      JSON.stringify({ error: mapError(e) }), 
       { 
         status: 500, 
         headers: { ...corsHeaders, "Content-Type": "application/json" } 

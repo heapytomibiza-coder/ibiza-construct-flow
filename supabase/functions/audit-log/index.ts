@@ -1,18 +1,21 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { mapError } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface AuditLogEntry {
-  action: string;
-  resource_type: string;
-  resource_id?: string;
-  metadata?: Record<string, any>;
-  ip_address?: string;
-}
+const auditLogSchema = z.object({
+  action: z.string().trim().min(1).max(100),
+  resource_type: z.string().trim().min(1).max(50),
+  resource_id: z.string().uuid().optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
+  ip_address: z.string().max(45).optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -49,7 +52,7 @@ serve(async (req) => {
       );
     }
 
-    const logEntry: AuditLogEntry = await req.json();
+    const logEntry = await validateRequestBody(req, auditLogSchema);
 
     // Get IP address from request
     const ip = req.headers.get('x-forwarded-for') || 
@@ -85,7 +88,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Audit log error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: mapError(error) }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 

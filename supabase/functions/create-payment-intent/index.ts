@@ -1,11 +1,21 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { mapError } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const paymentIntentSchema = z.object({
+  amount: z.number().positive().max(999999),
+  currency: z.string().trim().length(3).optional().default("USD"),
+  jobId: z.string().uuid().optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
+});
 
 const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-PAYMENT-INTENT] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
@@ -35,8 +45,7 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { amount, currency = "USD", jobId, metadata } = await req.json();
-    if (!amount || amount <= 0) throw new Error("Invalid amount");
+    const { amount, currency, jobId, metadata } = await validateRequestBody(req, paymentIntentSchema);
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -104,9 +113,8 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    logStep("ERROR", { message: error instanceof Error ? error.message : String(error) });
+    return new Response(JSON.stringify({ error: mapError(error) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

@@ -1,11 +1,20 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { mapError } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const checkoutSchema = z.object({
+  bookingRequestId: z.string().uuid(),
+  amount: z.number().positive().max(999999),
+  description: z.string().max(500).optional(),
+});
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -38,11 +47,7 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { bookingRequestId, amount, description } = await req.json();
-    
-    if (!bookingRequestId || !amount) {
-      throw new Error("Missing required fields: bookingRequestId, amount");
-    }
+    const { bookingRequestId, amount, description } = await validateRequestBody(req, checkoutSchema);
 
     logStep("Processing payment", { bookingRequestId, amount });
 
@@ -89,9 +94,8 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR in create-checkout-session", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    logStep("ERROR in create-checkout-session", { message: error instanceof Error ? error.message : String(error) });
+    return new Response(JSON.stringify({ error: mapError(error) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

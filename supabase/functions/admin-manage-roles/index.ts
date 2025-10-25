@@ -1,10 +1,19 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { mapError } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const manageRolesSchema = z.object({
+  action: z.enum(['assign', 'revoke']),
+  targetUserId: z.string().uuid(),
+  role: z.string().trim().min(1).max(50),
+});
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -64,15 +73,8 @@ serve(async (req) => {
       );
     }
 
-    // 4) Parse request body
-    const { action, targetUserId, role } = await req.json();
-
-    if (!action || !targetUserId || !role) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields: action, targetUserId, role" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // 4) Parse and validate request body
+    const { action, targetUserId, role } = await validateRequestBody(req, manageRolesSchema);
 
     // 5) Call appropriate RPC function
     if (action === "assign") {
@@ -84,7 +86,7 @@ serve(async (req) => {
       if (rpcError) {
         console.error("Error assigning role:", rpcError);
         return new Response(
-          JSON.stringify({ error: `Failed to assign role: ${rpcError.message}` }),
+          JSON.stringify({ error: mapError(rpcError) }),
           { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -106,7 +108,7 @@ serve(async (req) => {
       if (rpcError) {
         console.error("Error revoking role:", rpcError);
         return new Response(
-          JSON.stringify({ error: `Failed to revoke role: ${rpcError.message}` }),
+          JSON.stringify({ error: mapError(rpcError) }),
           { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -128,7 +130,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Unexpected error in admin-manage-roles:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ error: mapError(error) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
