@@ -11,26 +11,18 @@ interface StartImpersonationParams {
 export function useImpersonation() {
   const queryClient = useQueryClient();
 
-  // Get active impersonation session
+  // Get active impersonation session (server-side managed)
   const { data: activeSession } = useQuery({
     queryKey: ["impersonation-active"],
     queryFn: async () => {
-      const sessionId = localStorage.getItem("impersonation_session_id");
-      if (!sessionId) return null;
-
-      const { data, error } = await supabase
-        .from("impersonation_sessions" as any)
-        .select("*")
-        .eq("id", sessionId)
-        .is("ended_at", null)
-        .single();
+      const { data, error } = await supabase.rpc("get_active_impersonation_session");
 
       if (error) {
-        localStorage.removeItem("impersonation_session_id");
+        console.error("Failed to fetch impersonation session:", error);
         return null;
       }
 
-      return data;
+      return data?.[0] || null;
     },
     refetchInterval: 60000, // Refresh every minute
   });
@@ -63,10 +55,7 @@ export function useImpersonation() {
 
       const sessionData = data as any;
 
-      // Store session ID in localStorage
-      localStorage.setItem("impersonation_session_id", sessionData.id);
-
-      // Log the impersonation start
+      // Log the impersonation start (no localStorage needed - session managed server-side)
       await supabase.rpc("log_admin_action", {
         p_action: "impersonation_started",
         p_entity_type: "user",
@@ -99,13 +88,12 @@ export function useImpersonation() {
   // End impersonation
   const endImpersonation = useMutation({
     mutationFn: async () => {
-      const sessionId = localStorage.getItem("impersonation_session_id");
-      if (!sessionId) throw new Error("No active impersonation session");
+      if (!activeSession) throw new Error("No active impersonation session");
 
       const { error } = await supabase
         .from("impersonation_sessions" as any)
         .update({ ended_at: new Date().toISOString() })
-        .eq("id", sessionId);
+        .eq("id", activeSession.id);
 
       if (error) throw error;
 
@@ -113,13 +101,11 @@ export function useImpersonation() {
       await supabase.rpc("log_admin_action", {
         p_action: "impersonation_ended",
         p_entity_type: "impersonation_session",
-        p_entity_id: sessionId,
+        p_entity_id: activeSession.id,
         p_changes: {
           ended_at: new Date().toISOString(),
         },
       });
-
-      localStorage.removeItem("impersonation_session_id");
     },
     onSuccess: () => {
       toast.success("Impersonation ended", {

@@ -41,32 +41,14 @@ export function ImpersonationBanner() {
 
   const checkImpersonationSession = async () => {
     try {
-      const sessionId = localStorage.getItem("impersonation_session_id");
-      if (!sessionId) {
+      const { data, error } = await supabase.rpc("get_active_impersonation_session");
+
+      if (error || !data || data.length === 0) {
         setSession(null);
         return;
       }
 
-      const { data, error } = await supabase
-        .from("impersonation_sessions" as any)
-        .select(`
-          id,
-          target_user_id,
-          reason,
-          expires_at,
-          actions_taken
-        `)
-        .eq("id", sessionId)
-        .is("ended_at", null)
-        .single();
-
-      if (error || !data) {
-        localStorage.removeItem("impersonation_session_id");
-        setSession(null);
-        return;
-      }
-
-      const sessionData = data as any;
+      const sessionData = data[0] as any;
 
       // Get target user email
       const { data: userData } = await supabase
@@ -101,7 +83,6 @@ export function ImpersonationBanner() {
 
       if (error) throw error;
 
-      localStorage.removeItem("impersonation_session_id");
       setSession(null);
       
       toast.success("Impersonation session ended", {

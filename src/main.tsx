@@ -14,6 +14,7 @@ import { setupNavigationTracking } from "./lib/analytics/tracking";
 import { validateEnvironment } from "./lib/deployment/environment";
 import { analytics } from "./lib/analytics";
 import { eventTracker, initializeAnalyticsBridge } from "./lib/analytics/index";
+import { cleanupSensitiveData } from "./lib/security/secureStorage";
 
 // Validate environment (Phase 9: Production Hardening)
 try {
@@ -24,6 +25,9 @@ try {
 
 // Initialize Web Vitals tracking (Phase 6: Performance Optimization)
 initWebVitals();
+
+// Security: Clean up sensitive data from localStorage (Phase 31: Security Hardening)
+cleanupSensitiveData();
 
 // Setup error handling (Phase 9: Error Tracking)
 setupGlobalErrorHandling();
