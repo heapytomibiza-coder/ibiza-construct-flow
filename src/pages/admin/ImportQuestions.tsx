@@ -32,6 +32,7 @@ interface ParsedPack {
     i18nPrefix: string;
     questions: any[];
   };
+  ui_config?: Record<string, any>;
 }
 
 export default function ImportQuestions() {
@@ -74,32 +75,46 @@ export default function ImportQuestions() {
     try {
       const isJSON = file.name.toLowerCase().endsWith('.json');
       
-      let bodyData: any;
       if (isJSON) {
+        // Handle JSON files using old parser
         const jsonText = await file.text();
-        bodyData = { jsonText };
+        const { data, error } = await supabase.functions.invoke('import-question-packs', {
+          body: { jsonText }
+        });
+
+        if (error) throw error;
+
+        setParsedPacks(data.packs);
+        toast({
+          title: 'JSON Parsed Successfully',
+          description: `Found ${data.stats.totalPacks} micro-services with ${data.stats.totalQuestions} questions`
+        });
       } else {
+        // Use AI-powered converter for PDFs
         const pdfText = await extractTextFromPDF(file);
-        bodyData = { pdfText };
+        
+        toast({
+          title: 'Converting with AI...',
+          description: 'Using Lovable AI to parse questions from PDF'
+        });
+
+        const { data, error } = await supabase.functions.invoke('convert-pdf-questions', {
+          body: { pdfText }
+        });
+
+        if (error) throw error;
+
+        setParsedPacks(data.packs);
+        toast({
+          title: 'PDF Converted Successfully',
+          description: `AI extracted ${data.stats.totalPacks} micro-services with ${data.stats.totalQuestions} questions (avg ${data.stats.avgQuestionsPerPack} per pack)`
+        });
       }
-      
-      // Call edge function to parse
-      const { data, error } = await supabase.functions.invoke('import-question-packs', {
-        body: bodyData
-      });
-
-      if (error) throw error;
-
-      setParsedPacks(data.packs);
-      toast({
-        title: `${isJSON ? 'JSON' : 'PDF'} Parsed Successfully`,
-        description: `Found ${data.stats.totalPacks} micro-services with ${data.stats.totalQuestions} questions (avg ${data.stats.avgQuestionsPerPack} per pack)`
-      });
     } catch (error) {
       console.error('Parse error:', error);
       toast({
-        title: 'Parse Failed',
-        description: error.message,
+        title: 'Conversion Failed',
+        description: error.message || 'Failed to parse file',
         variant: 'destructive'
       });
     } finally {
@@ -120,16 +135,24 @@ export default function ImportQuestions() {
       for (let i = 0; i < parsedPacks.length; i++) {
         const pack = parsedPacks[i];
         
+        // Check if pack has ui_config (new format) or use legacy format
+        const insertData: any = {
+          micro_slug: pack.micro_slug,
+          version: pack.version,
+          status: pack.status as 'draft' | 'approved' | 'retired',
+          source: (pack.source || 'ai') as 'manual' | 'ai' | 'hybrid',
+          content: pack.content as any,
+          is_active: pack.is_active ?? false
+        };
+
+        // Add ui_config if present (new format from AI converter)
+        if (pack.ui_config) {
+          insertData.ui_config = pack.ui_config;
+        }
+
         const { error } = await supabase
           .from('question_packs')
-          .insert([{
-            micro_slug: pack.micro_slug,
-            version: pack.version,
-            status: pack.status as 'draft' | 'approved' | 'retired',
-            source: pack.source as 'manual' | 'ai' | 'hybrid',
-            content: pack.content as any,
-            is_active: pack.is_active
-          }]);
+          .insert([insertData]);
 
         if (error) {
           console.error(`Failed to import ${pack.micro_slug}:`, error);
@@ -174,10 +197,16 @@ export default function ImportQuestions() {
   return (
     <div className="container mx-auto py-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Import Question Packs</h1>
+        <h1 className="text-3xl font-bold">AI-Powered PDF Converter</h1>
         <p className="text-muted-foreground">
-          Upload JSON or PDF to automatically extract and import question packs
+          Upload PDF and let AI extract structured question packs automatically
         </p>
+        <div className="mt-2 p-3 bg-primary/10 border border-primary/20 rounded-lg text-sm">
+          <p className="font-medium text-primary">🤖 Powered by Lovable AI</p>
+          <p className="text-muted-foreground mt-1">
+            Upload your PDF containing construction questions and AI will intelligently parse them into the new JSON format with placeholders, help text, and proper question types.
+          </p>
+        </div>
       </div>
 
       {/* Upload Section */}

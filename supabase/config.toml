@@ -1,5 +1,8 @@
 project_id = "kcncrtayycwdwrxcgler"
 
+[functions.convert-pdf-questions]
+verify_jwt = true
+
 [functions.calculate-project-cost]
 verify_jwt = false
 

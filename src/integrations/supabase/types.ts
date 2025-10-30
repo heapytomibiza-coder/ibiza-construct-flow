@@ -7388,6 +7388,7 @@ export type Database = {
           prompt_hash: string | null
           source: Database["public"]["Enums"]["pack_source"]
           status: Database["public"]["Enums"]["pack_status"]
+          ui_config: Json | null
           version: number
         }
         Insert: {
@@ -7403,6 +7404,7 @@ export type Database = {
           prompt_hash?: string | null
           source: Database["public"]["Enums"]["pack_source"]
           status?: Database["public"]["Enums"]["pack_status"]
+          ui_config?: Json | null
           version: number
         }
         Update: {
@@ -7418,6 +7420,7 @@ export type Database = {
           prompt_hash?: string | null
           source?: Database["public"]["Enums"]["pack_source"]
           status?: Database["public"]["Enums"]["pack_status"]
+          ui_config?: Json | null
           version?: number
         }
         Relationships: [
