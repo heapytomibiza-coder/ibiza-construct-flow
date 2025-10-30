@@ -2,6 +2,7 @@ project_id = "kcncrtayycwdwrxcgler"
 
 [functions.convert-pdf-questions]
 verify_jwt = true
+timeout = 120
 
 [functions.calculate-project-cost]
 verify_jwt = false

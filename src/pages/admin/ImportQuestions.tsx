@@ -120,11 +120,25 @@ export default function ImportQuestions() {
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         const totalPages = pdf.numPages;
         
+        // Check if user is on mobile device
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
         // Warn about large PDFs
         if (totalPages > 100) {
+          const numBatches = Math.ceil(totalPages / 50);
+          
+          // Warn mobile users
+          if (isMobile) {
+            toast({
+              title: 'Mobile Device Detected',
+              description: 'Large PDF processing may be slow on mobile. Consider using a desktop browser for better performance.',
+              duration: 5000
+            });
+          }
+          
           const proceed = window.confirm(
-            `This PDF has ${totalPages} pages. Processing will take ${Math.ceil(totalPages / 50)} batches.\n\n` +
-            `Large PDFs may take several minutes and use more AI credits.\n\n` +
+            `This PDF has ${totalPages} pages and will be processed in ${numBatches} batches.\n\n` +
+            `Processing will take approximately ${numBatches * 2}-${numBatches * 3} minutes.\n\n` +
             `Continue with full document?`
           );
           if (!proceed) {
@@ -152,25 +166,49 @@ export default function ImportQuestions() {
             setProgressStage(`Chunk ${chunkIndex + 1}/${numChunks}: Extracting page ${page}/${total}...`);
           }, endPage);
           
-          // Phase 2: AI Conversion for this chunk (30-70% per chunk)
+          // Warn if chunk is very large
+          if (chunkText.length > 100000) {
+            console.warn(`⚠️ Chunk ${chunkIndex + 1} is very large (${chunkText.length} chars). May hit token limits.`);
+          }
+          
+          // Phase 2: AI Conversion for this chunk with retry logic (30-70% per chunk)
           const chunkBaseProgress = (chunkIndex / numChunks) * 100;
           setProgressStage(`Chunk ${chunkIndex + 1}/${numChunks}: Converting with AI (may take 30-60s)...`);
           setProgressPercent(Math.round(chunkBaseProgress + 30));
 
-          const { data, error } = await supabase.functions.invoke('convert-pdf-questions', {
-            body: { 
-              pdfText: chunkText,
-              chunkInfo: {
-                index: chunkIndex,
-                total: numChunks,
-                pages: `${startPage}-${endPage}`
+          const MAX_RETRIES = 2;
+          let retryCount = 0;
+          let data, error;
+
+          while (retryCount <= MAX_RETRIES) {
+            const result = await supabase.functions.invoke('convert-pdf-questions', {
+              body: { 
+                pdfText: chunkText,
+                chunkInfo: {
+                  index: chunkIndex,
+                  total: numChunks,
+                  pages: `${startPage}-${endPage}`
+                }
               }
+            });
+
+            data = result.data;
+            error = result.error;
+
+            if (!error) break; // Success
+
+            if (retryCount < MAX_RETRIES) {
+              console.log(`🔄 Retry ${retryCount + 1}/${MAX_RETRIES} for chunk ${chunkIndex + 1}`);
+              await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1))); // Exponential backoff
+              retryCount++;
+            } else {
+              break; // Max retries reached
             }
-          });
+          }
 
           if (error) {
-            console.error(`Chunk ${chunkIndex + 1} error:`, error);
-            throw new Error(`Failed on pages ${startPage}-${endPage}: ${error.message}`);
+            console.error(`❌ Chunk ${chunkIndex + 1} failed after ${MAX_RETRIES} retries:`, error);
+            throw new Error(`Failed on pages ${startPage}-${endPage} after ${MAX_RETRIES} retries: ${error.message}`);
           }
 
           // Phase 3: Transform to database format (70-100% per chunk)
@@ -200,15 +238,72 @@ export default function ImportQuestions() {
           });
         }
 
+        // Deduplicate slugs across all chunks
+        const slugMap = new Map<string, any>();
+        const originalCount = allPacks.length;
+
+        allPacks.forEach((pack: any, index: number) => {
+          const baseSlug = pack.micro_slug;
+          
+          if (slugMap.has(baseSlug)) {
+            // Collision detected - append unique suffix
+            const uniqueSlug = `${baseSlug}-part${Math.floor(index / CHUNK_SIZE) + 1}`;
+            console.warn(`⚠️ Duplicate slug detected: ${baseSlug} → ${uniqueSlug}`);
+            pack.micro_slug = uniqueSlug;
+          }
+          
+          slugMap.set(pack.micro_slug, pack);
+        });
+
+        allPacks = Array.from(slugMap.values());
+
+        const duplicatesFound = originalCount - allPacks.length;
+        if (duplicatesFound > 0) {
+          toast({
+            title: 'Duplicate Slugs Merged',
+            description: `Merged ${duplicatesFound} duplicate microservices`,
+            variant: 'default'
+          });
+        }
+
         setProgressPercent(100);
         setParsedPacks(allPacks);
         
+        // Generate detailed validation summary
         const totalQuestions = allPacks.reduce((sum: number, p: any) => sum + p.content.questions.length, 0);
         const avgQuestions = totalQuestions > 0 ? Math.round(totalQuestions / allPacks.length) : 0;
         
+        const validationSummary = {
+          totalPacks: allPacks.length,
+          totalQuestions,
+          avgQuestionsPerPack: avgQuestions,
+          requiredQuestions: allPacks.reduce((sum: number, p: any) => 
+            sum + p.content.questions.filter((q: any) => q.required).length, 0
+          ),
+          questionTypes: {
+            shortText: allPacks.reduce((sum: number, p: any) => 
+              sum + p.content.questions.filter((q: any) => q.type === 'short_text').length, 0
+            ),
+            longText: allPacks.reduce((sum: number, p: any) => 
+              sum + p.content.questions.filter((q: any) => q.type === 'long_text').length, 0
+            ),
+            singleSelect: allPacks.reduce((sum: number, p: any) => 
+              sum + p.content.questions.filter((q: any) => q.type === 'single_select').length, 0
+            ),
+            multiSelect: allPacks.reduce((sum: number, p: any) => 
+              sum + p.content.questions.filter((q: any) => q.type === 'multi_select').length, 0
+            ),
+            fileUpload: allPacks.reduce((sum: number, p: any) => 
+              sum + p.content.questions.filter((q: any) => q.type === 'file_upload').length, 0
+            )
+          }
+        };
+
+        console.log('✅ Conversion Complete - Validation Summary:', validationSummary);
+        
         toast({
           title: '✅ All Chunks Converted Successfully',
-          description: `${totalPages} pages → ${allPacks.length} microservices • ${totalQuestions} questions • ${avgQuestions} avg per pack`,
+          description: `${totalPages} pages → ${allPacks.length} microservices • ${totalQuestions} questions (${validationSummary.requiredQuestions} required) • ${avgQuestions} avg per pack`,
           duration: 5000
         });
       }

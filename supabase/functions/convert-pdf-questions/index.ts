@@ -73,7 +73,10 @@ function generateUUID(): string {
   return crypto.randomUUID();
 }
 
-async function convertWithAI(pdfText: string): Promise<any[]> {
+async function convertWithAI(pdfText: string, chunkInfo?: { index: number; total: number }): Promise<any[]> {
+  const chunkLabel = chunkInfo ? `chunk ${chunkInfo.index + 1}/${chunkInfo.total}` : 'full text';
+  console.log(`Converting ${chunkLabel} (${pdfText.length} chars) with AI...`);
+  
   const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -84,10 +87,14 @@ async function convertWithAI(pdfText: string): Promise<any[]> {
       model: 'google/gemini-2.5-flash',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: `Convert this PDF text to structured question packs:\n\n${pdfText}` }
+        { 
+          role: 'user', 
+          content: chunkInfo 
+            ? `Convert this PDF text (${chunkLabel}) to structured question packs:\n\n${pdfText}`
+            : `Convert this PDF text to structured question packs:\n\n${pdfText}`
+        }
       ],
-      temperature: 0.3,
-      max_tokens: 8000
+      max_completion_tokens: 16000  // Increased for large chunks, no temperature (unsupported by Gemini)
     }),
   });
 
@@ -201,7 +208,7 @@ Deno.serve(async (req) => {
       return json({ error: 'Unauthorized' }, 401);
     }
 
-    const { pdfText } = await req.json();
+    const { pdfText, chunkInfo } = await req.json();
     
     if (!pdfText || typeof pdfText !== 'string') {
       return json({ error: 'No PDF text provided' }, 400);
@@ -210,8 +217,8 @@ Deno.serve(async (req) => {
     console.log(`Converting PDF text (${pdfText.length} chars) with AI...`);
 
     // Convert with AI
-    const rawPacks = await convertWithAI(pdfText);
-    console.log(`AI returned ${rawPacks.length} packs`);
+    const rawPacks = await convertWithAI(pdfText, chunkInfo);
+    console.log(`AI returned ${rawPacks.length} packs${chunkInfo ? ` for chunk ${chunkInfo.index + 1}/${chunkInfo.total}` : ''}`);
 
     // Validate and enhance each pack
     const packs = rawPacks.map(pack => validateAndEnhancePack(pack));
