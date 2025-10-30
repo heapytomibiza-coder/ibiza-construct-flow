@@ -203,10 +203,16 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       type: q.type as AIQuestion['type'],
       label: q.label,
       required: q.required ?? false,
-      options: q.options?.map((opt: any) => ({
-        label: opt.label,
-        value: opt.value
-      })),
+      options: q.options?.map((opt: any) => {
+        // Handle both string arrays and object arrays
+        if (typeof opt === 'string') {
+          return { label: opt, value: opt };
+        }
+        return {
+          label: opt.label ?? opt.value ?? String(opt),
+          value: opt.value ?? opt.label ?? String(opt)
+        };
+      }),
       min: q.min,
       max: q.max,
       step: q.step,
