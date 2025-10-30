@@ -70,6 +70,7 @@ export const CanonicalJobWizard: React.FC = () => {
   const isMobile = useIsMobile();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [skipQuestions, setSkipQuestions] = useState(false);
   
   const [wizardState, setWizardState] = useState<WizardState>({
     mainCategory: '',
@@ -174,13 +175,27 @@ export const CanonicalJobWizard: React.FC = () => {
   // Stable navigation callbacks
   const handleNext = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCurrentStep(s => Math.min(s + 1, TOTAL_STEPS));
-  }, []);
+    setCurrentStep(s => {
+      const nextStep = s + 1;
+      // Skip step 4 if only fallback questions available
+      if (nextStep === 4 && skipQuestions) {
+        return 5;
+      }
+      return Math.min(nextStep, TOTAL_STEPS);
+    });
+  }, [skipQuestions]);
   
   const handleBack = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCurrentStep(s => Math.max(s - 1, 1));
-  }, []);
+    setCurrentStep(s => {
+      const prevStep = s - 1;
+      // Skip step 4 when going back from step 5 if questions were skipped
+      if (prevStep === 4 && skipQuestions) {
+        return 3;
+      }
+      return Math.max(prevStep, 1);
+    });
+  }, [skipQuestions]);
 
   const handleCategorySelect = useCallback((categoryName: string, categoryId: string) => {
     console.log('🎯 CategorySelector onSelect called:', { categoryName, categoryId });
@@ -218,7 +233,32 @@ export const CanonicalJobWizard: React.FC = () => {
       microNames: micros, 
       microIds 
     }));
+    // Check if we should skip questions step (only fallback available)
+    checkShouldSkipQuestions(microIds, micros);
   }, []);
+
+  const checkShouldSkipQuestions = async (microIds: string[], microNames: string[]) => {
+    if (microIds.length === 0 || microNames.length === 0) {
+      setSkipQuestions(true);
+      return;
+    }
+
+    try {
+      // Check if question pack exists
+      const { data: pack } = await supabase
+        .from('question_packs')
+        .select('id')
+        .eq('micro_slug', microIds[0])
+        .eq('status', 'approved')
+        .eq('is_active', true)
+        .maybeSingle();
+
+      // Skip questions if no pack found (will use fallback)
+      setSkipQuestions(!pack);
+    } catch {
+      setSkipQuestions(true);
+    }
+  };
 
   const handleAnswersChange = useCallback((answers: Record<string, any>) => {
     setWizardState(prev => ({ ...prev, answers }));
