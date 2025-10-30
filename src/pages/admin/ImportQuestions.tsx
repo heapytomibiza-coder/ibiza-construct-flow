@@ -62,12 +62,16 @@ export default function ImportQuestions() {
     }
   };
 
-  const extractTextFromPDF = async (file: File, onProgress?: (percent: number) => void): Promise<string> => {
+  const extractTextFromPDF = async (
+    file: File, 
+    onProgress?: (percent: number, page: number, total: number) => void,
+    maxPages?: number
+  ): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     
     let fullText = '';
-    const totalPages = pdf.numPages;
+    const totalPages = maxPages ? Math.min(pdf.numPages, maxPages) : pdf.numPages;
     
     for (let i = 1; i <= totalPages; i++) {
       const page = await pdf.getPage(i);
@@ -78,7 +82,7 @@ export default function ImportQuestions() {
       fullText += pageText + '\n';
       
       if (onProgress) {
-        onProgress(Math.round((i / totalPages) * 100));
+        onProgress(Math.round((i / totalPages) * 100), i, totalPages);
       }
     }
     
@@ -111,51 +115,101 @@ export default function ImportQuestions() {
           description: `Found ${data.stats.totalPacks} micro-services with ${data.stats.totalQuestions} questions`
         });
       } else {
-        // Phase 1: Extract text from PDF (0-30%)
-        setProgressStage('Extracting text from PDF...');
-        setProgressPercent(0);
+        // Check PDF size first
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const totalPages = pdf.numPages;
         
-        const pdfText = await extractTextFromPDF(file, (percent) => {
-          setProgressPercent(Math.round(percent * 0.3)); // 0-30%
-        });
+        // Warn about large PDFs
+        if (totalPages > 100) {
+          const proceed = window.confirm(
+            `This PDF has ${totalPages} pages. Processing will take ${Math.ceil(totalPages / 50)} batches.\n\n` +
+            `Large PDFs may take several minutes and use more AI credits.\n\n` +
+            `Continue with full document?`
+          );
+          if (!proceed) {
+            setParsing(false);
+            return;
+          }
+        }
         
-        // Phase 2: AI Conversion (30-70%)
-        setProgressStage('Converting with AI (this may take 30-60 seconds)...');
-        setProgressPercent(30);
-
-        const { data, error } = await supabase.functions.invoke('convert-pdf-questions', {
-          body: { pdfText }
-        });
-
-        if (error) throw error;
-
-        // Phase 3: Transform to database format (70-100%)
-        setProgressStage('Transforming to database format...');
-        setProgressPercent(70);
-
-        const transformedPacks = data.packs.map((aiPack: any) => {
-          const { microserviceDef, ui_config, metadata } = transformNewFormatPack(aiPack);
+        // Process in chunks of 50 pages for large PDFs
+        const CHUNK_SIZE = 50;
+        const numChunks = Math.ceil(totalPages / CHUNK_SIZE);
+        let allPacks: any[] = [];
+        
+        for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+          const startPage = chunkIndex * CHUNK_SIZE + 1;
+          const endPage = Math.min((chunkIndex + 1) * CHUNK_SIZE, totalPages);
           
-          return {
-            micro_slug: aiPack.slug,
-            version: 1,
-            status: 'draft' as const,
-            source: 'ai' as const,
-            is_active: false,
-            content: microserviceDef,
-            ui_config: Object.keys(ui_config).length > 0 ? ui_config : undefined
-          };
-        });
+          // Phase 1: Extract text from current chunk (0-30% per chunk)
+          setProgressStage(`Chunk ${chunkIndex + 1}/${numChunks}: Extracting pages ${startPage}-${endPage}...`);
+          
+          const chunkText = await extractTextFromPDF(file, (percent, page, total) => {
+            const chunkProgress = (chunkIndex / numChunks) * 100;
+            const extractProgress = (percent / numChunks) * 0.3;
+            setProgressPercent(Math.round(chunkProgress + extractProgress));
+            setProgressStage(`Chunk ${chunkIndex + 1}/${numChunks}: Extracting page ${page}/${total}...`);
+          }, endPage);
+          
+          // Phase 2: AI Conversion for this chunk (30-70% per chunk)
+          const chunkBaseProgress = (chunkIndex / numChunks) * 100;
+          setProgressStage(`Chunk ${chunkIndex + 1}/${numChunks}: Converting with AI (may take 30-60s)...`);
+          setProgressPercent(Math.round(chunkBaseProgress + 30));
+
+          const { data, error } = await supabase.functions.invoke('convert-pdf-questions', {
+            body: { 
+              pdfText: chunkText,
+              chunkInfo: {
+                index: chunkIndex,
+                total: numChunks,
+                pages: `${startPage}-${endPage}`
+              }
+            }
+          });
+
+          if (error) {
+            console.error(`Chunk ${chunkIndex + 1} error:`, error);
+            throw new Error(`Failed on pages ${startPage}-${endPage}: ${error.message}`);
+          }
+
+          // Phase 3: Transform to database format (70-100% per chunk)
+          setProgressStage(`Chunk ${chunkIndex + 1}/${numChunks}: Transforming...`);
+          setProgressPercent(Math.round(chunkBaseProgress + 70));
+
+          const transformedPacks = data.packs.map((aiPack: any) => {
+            const { microserviceDef, ui_config, metadata } = transformNewFormatPack(aiPack);
+            
+            return {
+              micro_slug: aiPack.slug,
+              version: 1,
+              status: 'draft' as const,
+              source: 'ai' as const,
+              is_active: false,
+              content: microserviceDef,
+              ui_config: Object.keys(ui_config).length > 0 ? ui_config : undefined
+            };
+          });
+
+          allPacks = [...allPacks, ...transformedPacks];
+          
+          // Show progress after each chunk
+          toast({
+            title: `Chunk ${chunkIndex + 1}/${numChunks} Complete`,
+            description: `Extracted ${transformedPacks.length} microservices from pages ${startPage}-${endPage}`
+          });
+        }
 
         setProgressPercent(100);
-        setParsedPacks(transformedPacks);
+        setParsedPacks(allPacks);
         
-        const totalQuestions = transformedPacks.reduce((sum: number, p: any) => sum + p.content.questions.length, 0);
-        const avgQuestions = Math.round(totalQuestions / transformedPacks.length);
+        const totalQuestions = allPacks.reduce((sum: number, p: any) => sum + p.content.questions.length, 0);
+        const avgQuestions = totalQuestions > 0 ? Math.round(totalQuestions / allPacks.length) : 0;
         
         toast({
-          title: '✅ Conversion Complete',
-          description: `${transformedPacks.length} microservices • ${totalQuestions} questions • ${avgQuestions} avg per pack`
+          title: '✅ All Chunks Converted Successfully',
+          description: `${totalPages} pages → ${allPacks.length} microservices • ${totalQuestions} questions • ${avgQuestions} avg per pack`,
+          duration: 5000
         });
       }
     } catch (error: any) {
