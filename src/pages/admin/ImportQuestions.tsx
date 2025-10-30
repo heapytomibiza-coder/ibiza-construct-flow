@@ -14,12 +14,18 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import * as pdfjsLib from 'pdfjs-dist';
+import { transformNewFormatPack } from '@/lib/newPackFormatTransformer';
 
-// Use bundled worker instead of CDN
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url
-).toString();
+// Use bundled worker with fallback to CDN
+try {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url
+  ).toString();
+} catch (error) {
+  console.warn('Failed to load bundled worker, falling back to CDN');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+}
 
 interface ParsedPack {
   micro_slug: string;
@@ -44,6 +50,8 @@ export default function ImportQuestions() {
   const [importing, setImporting] = useState(false);
   const [parsedPacks, setParsedPacks] = useState<ParsedPack[]>([]);
   const [importProgress, setImportProgress] = useState(0);
+  const [progressStage, setProgressStage] = useState<string>('');
+  const [progressPercent, setProgressPercent] = useState<number>(0);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -54,18 +62,24 @@ export default function ImportQuestions() {
     }
   };
 
-  const extractTextFromPDF = async (file: File): Promise<string> => {
+  const extractTextFromPDF = async (file: File, onProgress?: (percent: number) => void): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     
     let fullText = '';
-    for (let i = 1; i <= pdf.numPages; i++) {
+    const totalPages = pdf.numPages;
+    
+    for (let i = 1; i <= totalPages; i++) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
       const pageText = textContent.items
         .map((item: any) => item.str)
         .join(' ');
       fullText += pageText + '\n';
+      
+      if (onProgress) {
+        onProgress(Math.round((i / totalPages) * 100));
+      }
     }
     
     return fullText;
@@ -75,11 +89,15 @@ export default function ImportQuestions() {
     if (!file) return;
 
     setParsing(true);
+    setProgressPercent(0);
+    setProgressStage('');
+    
     try {
       const isJSON = file.name.toLowerCase().endsWith('.json');
       
       if (isJSON) {
         // Handle JSON files using old parser
+        setProgressStage('Parsing JSON file...');
         const jsonText = await file.text();
         const { data, error } = await supabase.functions.invoke('import-question-packs', {
           body: { jsonText }
@@ -93,13 +111,17 @@ export default function ImportQuestions() {
           description: `Found ${data.stats.totalPacks} micro-services with ${data.stats.totalQuestions} questions`
         });
       } else {
-        // Use AI-powered converter for PDFs
-        const pdfText = await extractTextFromPDF(file);
+        // Phase 1: Extract text from PDF (0-30%)
+        setProgressStage('Extracting text from PDF...');
+        setProgressPercent(0);
         
-        toast({
-          title: 'Converting with AI...',
-          description: 'Using Lovable AI to parse questions from PDF'
+        const pdfText = await extractTextFromPDF(file, (percent) => {
+          setProgressPercent(Math.round(percent * 0.3)); // 0-30%
         });
+        
+        // Phase 2: AI Conversion (30-70%)
+        setProgressStage('Converting with AI (this may take 30-60 seconds)...');
+        setProgressPercent(30);
 
         const { data, error } = await supabase.functions.invoke('convert-pdf-questions', {
           body: { pdfText }
@@ -107,21 +129,64 @@ export default function ImportQuestions() {
 
         if (error) throw error;
 
-        setParsedPacks(data.packs);
+        // Phase 3: Transform to database format (70-100%)
+        setProgressStage('Transforming to database format...');
+        setProgressPercent(70);
+
+        const transformedPacks = data.packs.map((aiPack: any) => {
+          const { microserviceDef, ui_config, metadata } = transformNewFormatPack(aiPack);
+          
+          return {
+            micro_slug: aiPack.slug,
+            version: 1,
+            status: 'draft' as const,
+            source: 'ai' as const,
+            is_active: false,
+            content: microserviceDef,
+            ui_config: Object.keys(ui_config).length > 0 ? ui_config : undefined
+          };
+        });
+
+        setProgressPercent(100);
+        setParsedPacks(transformedPacks);
+        
+        const totalQuestions = transformedPacks.reduce((sum: number, p: any) => sum + p.content.questions.length, 0);
+        const avgQuestions = Math.round(totalQuestions / transformedPacks.length);
+        
         toast({
-          title: 'PDF Converted Successfully',
-          description: `AI extracted ${data.stats.totalPacks} micro-services with ${data.stats.totalQuestions} questions (avg ${data.stats.avgQuestionsPerPack} per pack)`
+          title: '✅ Conversion Complete',
+          description: `${transformedPacks.length} microservices • ${totalQuestions} questions • ${avgQuestions} avg per pack`
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Parse error:', error);
+      
+      let errorMessage = 'Conversion Failed';
+      let errorDescription = error.message || 'Failed to parse file';
+      
+      if (error.message?.includes('Rate limit') || error.message?.includes('429')) {
+        errorMessage = 'AI Rate Limit Exceeded';
+        errorDescription = 'Too many requests. Please wait a moment and try again.';
+      } else if (error.message?.includes('credits') || error.message?.includes('402')) {
+        errorMessage = 'AI Credits Required';
+        errorDescription = 'Please add credits to your workspace to continue using AI conversion.';
+      } else if (error.message?.includes('PDF')) {
+        errorMessage = 'PDF Extraction Failed';
+        errorDescription = 'Could not read PDF file. Please ensure it\'s a valid PDF document.';
+      } else if (error.message?.includes('validation') || error.message?.includes('transform')) {
+        errorMessage = 'Invalid Format';
+        errorDescription = 'AI output did not match expected format. Please try again or contact support.';
+      }
+      
       toast({
-        title: 'Conversion Failed',
-        description: error.message || 'Failed to parse file',
+        title: errorMessage,
+        description: errorDescription,
         variant: 'destructive'
       });
     } finally {
       setParsing(false);
+      setProgressStage('');
+      setProgressPercent(0);
     }
   };
 
@@ -241,33 +306,73 @@ export default function ImportQuestions() {
           </div>
 
           {file && (
-            <Button onClick={handleParse} disabled={parsing}>
-              {parsing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Parsing {file.name.toLowerCase().endsWith('.json') ? 'JSON' : 'PDF'}...
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Parse {file.name.toLowerCase().endsWith('.json') ? 'JSON' : 'PDF'}
-                </>
+            <>
+              <Button onClick={handleParse} disabled={parsing}>
+                {parsing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Parsing {file.name.toLowerCase().endsWith('.json') ? 'JSON' : 'PDF'}...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Parse {file.name.toLowerCase().endsWith('.json') ? 'JSON' : 'PDF'}
+                  </>
+                )}
+              </Button>
+              
+              {parsing && (
+                <div className="space-y-2 w-full">
+                  <Progress value={progressPercent} />
+                  <p className="text-sm text-center text-muted-foreground">
+                    {progressStage} {progressPercent > 0 && `${progressPercent}%`}
+                  </p>
+                </div>
               )}
-            </Button>
+            </>
           )}
         </div>
       </Card>
 
-      {/* Preview Section */}
+      {/* Conversion Summary */}
       {parsedPacks.length > 0 && (
         <>
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+            <h3 className="font-semibold text-primary mb-3">✅ Conversion Complete</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <p className="text-muted-foreground">Microservices</p>
+                <p className="text-2xl font-bold">{parsedPacks.length}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Total Questions</p>
+                <p className="text-2xl font-bold">
+                  {parsedPacks.reduce((sum, p) => sum + p.content.questions.length, 0)}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Avg per Pack</p>
+                <p className="text-2xl font-bold">
+                  {Math.round(parsedPacks.reduce((sum, p) => sum + p.content.questions.length, 0) / parsedPacks.length)}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">With UI Config</p>
+                <p className="text-2xl font-bold">
+                  {parsedPacks.filter(p => p.ui_config && Object.keys(p.ui_config).length > 0).length}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Preview Section */}
           <Card className="p-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-semibold">Preview Parsed Data</h2>
                   <p className="text-sm text-muted-foreground">
-                    {parsedPacks.length} micro-services • {parsedPacks.reduce((sum, p) => sum + p.content.questions.length, 0)} questions
+                    Review before importing to database
                   </p>
                 </div>
                 <div className="flex gap-2">
