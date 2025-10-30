@@ -27,23 +27,25 @@ export default function AdminQuestions() {
 
   return (
     <AdminGuard redirectPath="/dashboard">
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto py-4 sm:py-8 space-y-4 sm:space-y-6 px-2 sm:px-4">
       <div>
-        <h1 className="text-3xl font-bold">Question Pack Management</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold">Question Pack Management</h1>
+        <p className="text-muted-foreground text-sm sm:text-base">
           Manage versioned question sets for all microservices
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="form-builder">📝 Form Builder</TabsTrigger>
-          <TabsTrigger value="bulk-import">🚀 Bulk Import</TabsTrigger>
-          <TabsTrigger value="browser">Browse Packs</TabsTrigger>
-          <TabsTrigger value="pdf-import">PDF Import</TabsTrigger>
-          <TabsTrigger value="import">Manual Import</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-2 sm:mx-0">
+          <TabsList className="inline-flex w-max min-w-full sm:w-auto">
+            <TabsTrigger value="form-builder" className="text-xs sm:text-sm whitespace-nowrap">📝 Form Builder</TabsTrigger>
+            <TabsTrigger value="bulk-import" className="text-xs sm:text-sm whitespace-nowrap">🚀 Bulk Import</TabsTrigger>
+            <TabsTrigger value="browser" className="text-xs sm:text-sm whitespace-nowrap">Browse Packs</TabsTrigger>
+            <TabsTrigger value="pdf-import" className="text-xs sm:text-sm whitespace-nowrap">PDF Import</TabsTrigger>
+            <TabsTrigger value="import" className="text-xs sm:text-sm whitespace-nowrap">Manual Import</TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs sm:text-sm whitespace-nowrap">Analytics</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="form-builder">
           <QuestionBuilder packToEdit={packToEdit} onClearEdit={() => setPackToEdit(null)} />
