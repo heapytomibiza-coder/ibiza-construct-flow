@@ -21,7 +21,7 @@ export interface OptionLike {
 
 export interface AIQuestion {
   id: string;
-  type: 'radio' | 'select' | 'checkbox' | 'multiple-choice' | 'file' | 'text' | 'number' | 'yesno' | 'scale';
+  type: 'radio' | 'select' | 'checkbox' | 'multiple-choice' | 'file' | 'text' | 'textarea' | 'number' | 'yesno' | 'scale';
   label?: string;
   required?: boolean;
   options?: Array<string | OptionLike>;

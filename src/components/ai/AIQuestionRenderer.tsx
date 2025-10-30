@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { AIQuestion } from '@/hooks/useAIQuestions';
 
@@ -272,6 +273,18 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
             value={typeof value === 'string' ? value : ''}
             onChange={(e) => onAnswerChange(qid, e.target.value)}
             aria-label={label}
+          />
+        );
+      }
+
+      case 'textarea': {
+        return (
+          <Textarea
+            value={typeof value === 'string' ? value : ''}
+            onChange={(e) => onAnswerChange(qid, e.target.value)}
+            aria-label={label}
+            rows={4}
+            className="resize-y"
           />
         );
       }
