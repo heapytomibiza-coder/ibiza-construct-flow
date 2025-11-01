@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,11 +30,19 @@ serve(async (req) => {
       throw new Error("User not authenticated");
     }
 
-    const { jobId, amount, currency = "EUR" } = await req.json();
+    // Validate request body
+    const schema = z.object({
+      jobId: z.string().uuid('Invalid job ID'),
+      amount: z.number()
+        .positive('Amount must be positive')
+        .max(1000000, 'Amount exceeds maximum allowed')
+        .multipleOf(0.01, 'Amount must have at most 2 decimal places'),
+      currency: z.enum(['EUR', 'USD', 'GBP'], {
+        errorMap: () => ({ message: 'Currency must be EUR, USD, or GBP' })
+      }).default('EUR')
+    });
 
-    if (!jobId || !amount) {
-      throw new Error("Missing required fields: jobId, amount");
-    }
+    const { jobId, amount, currency } = await validateRequestBody(req, schema);
 
     // Get job details
     const { data: job, error: jobError } = await supabaseClient
@@ -106,13 +117,10 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("Error in create-job-payment:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    console.error('[create-job-payment] Error:', {
+      error: error.message,
+      stack: error.stack
+    });
+    return createErrorResponse(error);
   }
 });

@@ -12,6 +12,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { serverClient } from "../_shared/client.ts";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,12 +35,20 @@ serve(async (req) => {
       throw new Error("Unauthorized");
     }
 
-    // Parse request
-    const { jobId, amount, currency = 'EUR', paymentMethodId } = await req.json();
+    // Validate request body
+    const schema = z.object({
+      jobId: z.string().uuid('Invalid job ID'),
+      amount: z.number()
+        .positive('Amount must be positive')
+        .max(1000000, 'Amount exceeds maximum allowed')
+        .multipleOf(0.01, 'Amount must have at most 2 decimal places'),
+      currency: z.enum(['EUR', 'USD', 'GBP'], {
+        errorMap: () => ({ message: 'Currency must be EUR, USD, or GBP' })
+      }).default('EUR'),
+      paymentMethodId: z.string().optional()
+    });
 
-    if (!jobId || !amount || amount <= 0) {
-      throw new Error("Invalid request: jobId and positive amount required");
-    }
+    const { jobId, amount, currency, paymentMethodId } = await validateRequestBody(req, schema);
 
     // Verify user is job client
     const { data: job, error: jobError } = await supabase
@@ -135,16 +146,10 @@ serve(async (req) => {
     );
 
   } catch (error: any) {
-    console.error('Fund escrow error:', error);
-    return new Response(
-      JSON.stringify({ 
-        success: false,
-        error: error.message || 'Failed to fund escrow'
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    console.error('[fund-escrow] Error:', {
+      error: error.message,
+      stack: error.stack
+    });
+    return createErrorResponse(error);
   }
 });

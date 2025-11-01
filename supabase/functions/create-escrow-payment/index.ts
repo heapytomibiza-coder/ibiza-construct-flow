@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +27,16 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error('User not authenticated');
 
-    const { contractId, amount } = await req.json();
+    // Validate request body
+    const schema = z.object({
+      contractId: z.string().uuid('Invalid contract ID'),
+      amount: z.number()
+        .positive('Amount must be positive')
+        .max(1000000, 'Amount exceeds maximum allowed')
+        .multipleOf(0.01, 'Amount must have at most 2 decimal places')
+    });
+
+    const { contractId, amount } = await validateRequestBody(req, schema);
 
     // Verify user is the client for this contract
     const { data: contract, error: contractError } = await supabaseClient
@@ -79,10 +91,10 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 500,
+    console.error('[create-escrow-payment] Error:', {
+      error: error.message,
+      stack: error.stack
     });
+    return createErrorResponse(error);
   }
 });

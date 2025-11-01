@@ -10608,6 +10608,7 @@ export type Database = {
         Args: { p_cohort_date: string }
         Returns: undefined
       }
+      can_access_document: { Args: { doc_id: string }; Returns: boolean }
       can_professional_view_job: {
         Args: { _job_id: string; _user_id: string }
         Returns: boolean
