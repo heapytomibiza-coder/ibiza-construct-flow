@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateRequestBody } from '../_shared/inputValidation.ts';
 import { createErrorResponse } from '../_shared/errorMapping.ts';
+import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,6 +27,21 @@ serve(async (req) => {
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error('User not authenticated');
+
+    // Check rate limit (10 requests per hour for payment operations)
+    const rateLimitCheck = await checkRateLimit(
+      supabaseClient,
+      user.id,
+      'create-escrow-payment',
+      STRICT_RATE_LIMIT
+    );
+
+    if (!rateLimitCheck.allowed) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: corsHeaders }
+      );
+    }
 
     // Validate request body
     const schema = z.object({

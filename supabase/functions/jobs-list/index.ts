@@ -3,6 +3,7 @@ import { z } from "https://esm.sh/zod@3";
 import { preflight } from "../_shared/cors.ts";
 import { serverClient } from "../_shared/client.ts";
 import { json } from "../_shared/json.ts";
+import { checkRateLimit, DEFAULT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const Input = z.object({
   status: z.enum(['open','closed','in_progress']).optional(),
@@ -20,6 +21,18 @@ serve(async (req) => {
   
   if (!user) {
     return json({ error: 'Unauthorized' }, 401);
+  }
+
+  // Check rate limit (100 requests per hour to prevent data scraping)
+  const rateLimitCheck = await checkRateLimit(
+    supabase,
+    user.id,
+    'jobs-list',
+    DEFAULT_RATE_LIMIT
+  );
+
+  if (!rateLimitCheck.allowed) {
+    return json({ error: 'Rate limit exceeded. Please try again later.' }, 429);
   }
 
   const url = new URL(req.url);

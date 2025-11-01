@@ -3,6 +3,7 @@ import { z } from "https://esm.sh/zod@3";
 import { preflight } from "../_shared/cors.ts";
 import { serverClient } from "../_shared/client.ts";
 import { json } from "../_shared/json.ts";
+import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const Input = z.object({
   professionalId: z.string().uuid(),
@@ -21,6 +22,18 @@ serve(async (req) => {
   
   if (!user) {
     return json({ error: 'Unauthorized' }, 401);
+  }
+
+  // Check rate limit (20 invitations per hour to prevent spam)
+  const rateLimitCheck = await checkRateLimit(
+    supabase,
+    user.id,
+    'send-professional-invitation',
+    STRICT_RATE_LIMIT
+  );
+
+  if (!rateLimitCheck.allowed) {
+    return json({ error: 'Rate limit exceeded. Please try again later.' }, 429);
   }
 
   const body = await req.json();

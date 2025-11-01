@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { checkRateLimit, DEFAULT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -102,6 +103,30 @@ serve(async (req) => {
   }
 
   try {
+    // Get authorization header to check user
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user } } = await supabase.auth.getUser(token);
+      
+      if (user) {
+        // Check rate limit (100 requests per hour for AI generation)
+        const rateLimitCheck = await checkRateLimit(
+          supabase,
+          user.id,
+          'generate-questions',
+          DEFAULT_RATE_LIMIT
+        );
+
+        if (!rateLimitCheck.allowed) {
+          return new Response(
+            JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+    }
+
     const { serviceType, category, subcategory, existingAnswers } = await req.json();
 
     if (!serviceType) {

@@ -15,6 +15,7 @@ import { serverClient } from "../_shared/client.ts";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateRequestBody } from '../_shared/inputValidation.ts';
 import { createErrorResponse } from '../_shared/errorMapping.ts';
+import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,6 +34,21 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       throw new Error("Unauthorized");
+    }
+
+    // Check rate limit (20 requests per hour for escrow operations)
+    const rateLimitCheck = await checkRateLimit(
+      supabase,
+      user.id,
+      'fund-escrow',
+      STRICT_RATE_LIMIT
+    );
+
+    if (!rateLimitCheck.allowed) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: corsHeaders }
+      );
     }
 
     // Validate request body
