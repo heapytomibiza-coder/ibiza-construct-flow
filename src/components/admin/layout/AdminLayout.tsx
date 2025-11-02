@@ -15,15 +15,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-neutral-50">
-        <AdminSidebar />
+        {/* Hide sidebar on mobile (lg:block = show on desktop) */}
+        <div className="hidden lg:block">
+          <AdminSidebar />
+        </div>
         
-        <main className="flex-1 flex flex-col">
-          <header className="h-14 border-b bg-background flex items-center justify-between px-6">
+        <main className="flex-1 flex flex-col w-full">
+          <header className="h-14 border-b bg-background flex items-center justify-between px-4 lg:px-6">
             <AdminBreadcrumbs />
             {user && <EnhancedNotificationCenter userId={user.id} />}
           </header>
           
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-4 lg:p-6">
             {children}
           </div>
         </main>

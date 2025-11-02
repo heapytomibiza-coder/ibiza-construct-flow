@@ -578,13 +578,16 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <AppSidebar />
+        {/* Hide sidebar on mobile */}
+        <div className="hidden lg:block">
+          <AppSidebar />
+        </div>
         
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
           {/* Header */}
           <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center justify-between px-4 lg:px-6 py-4">
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <div className="flex items-center gap-2">
@@ -618,12 +621,12 @@ const AdminDashboard = ({ user, profile }: AdminDashboardProps) => {
 
           {/* Main Content with AI Panel */}
           <div className="flex-1 flex gap-6">
-            <main className="flex-1 p-6 overflow-auto">
+            <main className="flex-1 p-4 lg:p-6 overflow-auto">
               {renderWorkspaceContent()}
             </main>
             
-            {/* Right Sidebar: AI Panel + Warnings */}
-            <div className="w-80 border-l p-4 space-y-4 overflow-auto">
+            {/* Right Sidebar: AI Panel + Warnings - Hide on mobile */}
+            <div className="hidden lg:block w-80 border-l p-4 space-y-4 overflow-auto">
               {analyticsEnabled && (
                 <>
                   <div className="mb-6">

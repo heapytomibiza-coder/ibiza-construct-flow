@@ -274,12 +274,15 @@ const EnhancedClientDashboard = ({ user, profile }: EnhancedClientDashboardProps
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <ClientSidebar activeView={activeView} onViewChange={setActiveView} />
+        {/* Hide sidebar on mobile */}
+        <div className="hidden lg:block">
+          <ClientSidebar activeView={activeView} onViewChange={setActiveView} />
+        </div>
         
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col w-full">
           {/* Header */}
           <header className="border-b border-border bg-card">
-            <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center justify-between px-4 lg:px-6 py-4">
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <div>
@@ -306,14 +309,17 @@ const EnhancedClientDashboard = ({ user, profile }: EnhancedClientDashboardProps
 
           {/* Main Content with AI Rail */}
           <div className="flex-1 flex">
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto p-4 lg:p-6">
               {renderMainContent()}
             </main>
             
-            <AIAssistantRail 
-              suggestions={aiSuggestions}
-              userContext={{ activeView, stats, bookings }}
-            />
+            {/* Hide AI Rail on mobile */}
+            <div className="hidden lg:block">
+              <AIAssistantRail 
+                suggestions={aiSuggestions}
+                userContext={{ activeView, stats, bookings }}
+              />
+            </div>
           </div>
         </div>
       </div>
