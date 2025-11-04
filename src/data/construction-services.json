@@ -1,0 +1,347 @@
+{
+  "services": [
+    {
+      "id": "excavation-groundworks",
+      "label": "Excavation & Groundworks",
+      "icon": "Shovel",
+      "description": "Site preparation and clearance for new builds, extensions, and landscaping projects.",
+      "budgetRange": { "min": 800, "max": 15000 },
+      "blocks": [
+        {
+          "id": "job_location",
+          "type": "text_field",
+          "title": "Where is the job located?",
+          "description": "Town, village, or general area",
+          "required": true,
+          "config": {
+            "placeholder": "e.g. Santa Eulària des Riu"
+          }
+        },
+        {
+          "id": "machinery_access",
+          "type": "type_selector",
+          "title": "How easy is access for machinery?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy", "label": "Easy (wide entrance)" },
+              { "value": "moderate", "label": "Moderate (small truck/digger only)" },
+              { "value": "difficult", "label": "Difficult (narrow or restricted)" }
+            ]
+          }
+        },
+        {
+          "id": "area_size",
+          "type": "type_selector",
+          "title": "Approximate area to prepare or clear",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (under 50m²)" },
+              { "value": "medium", "label": "Medium (50–200m²)" },
+              { "value": "large", "label": "Large (200m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "materials_to_clear",
+          "type": "type_selector",
+          "title": "What needs clearing?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "vegetation", "label": "Vegetation / trees" },
+              { "value": "rubble", "label": "Rubble / debris" },
+              { "value": "old_structures", "label": "Old structures" },
+              { "value": "soil", "label": "Soil / top layer" },
+              { "value": "mixed", "label": "Mixed waste" }
+            ]
+          }
+        },
+        {
+          "id": "ground_condition",
+          "type": "type_selector",
+          "title": "Ground condition",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "soft_soil", "label": "Soft soil" },
+              { "value": "clay", "label": "Clay" },
+              { "value": "rocky", "label": "Rocky" },
+              { "value": "uneven", "label": "Uneven / sloped" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "work_purpose",
+          "type": "type_selector",
+          "title": "Purpose of the work",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_build", "label": "New build" },
+              { "value": "extension", "label": "Extension" },
+              { "value": "landscaping", "label": "Landscaping" },
+              { "value": "driveway", "label": "Driveway / patio" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "levelling_needed",
+          "type": "type_selector",
+          "title": "Do you require levelling or compacting after clearance?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Not sure yet" }
+            ]
+          }
+        },
+        {
+          "id": "waste_disposal",
+          "type": "type_selector",
+          "title": "Who will handle waste disposal?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "contractor", "label": "We will provide skips / removal" },
+              { "value": "client", "label": "Client will arrange" },
+              { "value": "tbc", "label": "To be confirmed" }
+            ]
+          }
+        },
+        {
+          "id": "underground_services",
+          "type": "type_selector",
+          "title": "Any known underground services (gas, water, electric, etc.)?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "machinery_needs",
+          "type": "type_selector",
+          "title": "Machinery & labour needed",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "mini_digger", "label": "Mini digger" },
+              { "value": "five_ton_digger", "label": "5T digger" },
+              { "value": "dumper", "label": "Dumper" },
+              { "value": "grab_lorry", "label": "Grab lorry" },
+              { "value": "labour_only", "label": "Labourers only" }
+            ]
+          }
+        },
+        {
+          "id": "start_time",
+          "type": "type_selector",
+          "title": "Preferred start time",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "Within 2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "project_assets",
+          "type": "type_selector",
+          "title": "Do you have any drawings, photos, or plans?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "available", "label": "Yes (can share)" },
+              { "value": "not_yet", "label": "Not yet" },
+              { "value": "not_needed", "label": "Not needed" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a detailed excavation and groundworks job posting for a project located in {{job_location}}. Highlight the access conditions ({{machinery_access}}), area size ({{area_size}}), materials to clear ({{materials_to_clear}}), ground condition ({{ground_condition}}), and project purpose ({{work_purpose}}). Mention levelling needs ({{levelling_needed}}), waste disposal responsibility ({{waste_disposal}}), known underground services ({{underground_services}}), required machinery ({{machinery_needs}}), preferred start time ({{start_time}}), and whether drawings are available ({{project_assets}})."
+    },
+    {
+      "id": "earthworks-excavation",
+      "label": "Earthworks & Excavation",
+      "icon": "Excavator",
+      "description": "Bulk earthmoving, excavation, and material removal services.",
+      "budgetRange": { "min": 1200, "max": 18000 },
+      "blocks": [
+        {
+          "id": "site_access",
+          "type": "type_selector",
+          "title": "Site access for machinery",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy", "label": "Easy (wide entrance)" },
+              { "value": "moderate", "label": "Moderate" },
+              { "value": "difficult", "label": "Difficult" }
+            ]
+          }
+        },
+        {
+          "id": "excavation_area",
+          "type": "type_selector",
+          "title": "Area size to excavate",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (under 50m²)" },
+              { "value": "medium", "label": "Medium (50–200m²)" },
+              { "value": "large", "label": "Large (200m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "depth_required",
+          "type": "type_selector",
+          "title": "Depth required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "up_to_half_meter", "label": "Up to 0.5m" },
+              { "value": "half_to_one_meter", "label": "0.5–1m" },
+              { "value": "one_to_two_meters", "label": "1–2m" },
+              { "value": "two_meters_plus", "label": "2m+ / deep dig" }
+            ]
+          }
+        },
+        {
+          "id": "material_to_remove",
+          "type": "type_selector",
+          "title": "Material to remove",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "soil", "label": "Soil" },
+              { "value": "clay", "label": "Clay" },
+              { "value": "rubble", "label": "Rubble" },
+              { "value": "rock", "label": "Rock" },
+              { "value": "mixed", "label": "Mixed" }
+            ]
+          }
+        },
+        {
+          "id": "excavation_purpose",
+          "type": "type_selector",
+          "title": "Purpose of excavation",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "foundations", "label": "Foundations" },
+              { "value": "utilities", "label": "Utilities" },
+              { "value": "landscaping", "label": "Landscaping" },
+              { "value": "pool", "label": "Pool / tank" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "disposal_method",
+          "type": "type_selector",
+          "title": "Disposal method",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "contractor_removal", "label": "We remove waste" },
+              { "value": "client_skip", "label": "Client skip" },
+              { "value": "on_site_reuse", "label": "On-site reuse" }
+            ]
+          }
+        },
+        {
+          "id": "ground_state",
+          "type": "type_selector",
+          "title": "Ground condition",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "dry", "label": "Dry" },
+              { "value": "wet", "label": "Wet" },
+              { "value": "clay_heavy", "label": "Clay-heavy" },
+              { "value": "rocky", "label": "Rocky" },
+              { "value": "unknown", "label": "Unknown" }
+            ]
+          }
+        },
+        {
+          "id": "required_machinery",
+          "type": "type_selector",
+          "title": "Machinery required",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "mini_digger", "label": "Mini digger" },
+              { "value": "five_ton_digger", "label": "5T digger" },
+              { "value": "dumper", "label": "Dumper" },
+              { "value": "grab_lorry", "label": "Grab lorry" },
+              { "value": "manual_labour", "label": "Manual labour" }
+            ]
+          }
+        },
+        {
+          "id": "services_nearby",
+          "type": "type_selector",
+          "title": "Any underground services nearby?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "start_date",
+          "type": "type_selector",
+          "title": "Preferred start date",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "Within 2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Draft an earthworks and excavation job brief that notes site access ({{site_access}}), excavation area ({{excavation_area}}), depth ({{depth_required}}), materials to remove ({{material_to_remove}}), purpose ({{excavation_purpose}}), disposal plan ({{disposal_method}}), ground condition ({{ground_state}}), machinery ({{required_machinery}}), nearby services ({{services_nearby}}), and start date ({{start_date}})."
+    }
+  ]
+}

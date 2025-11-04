@@ -355,12 +355,12 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
   };
 
   return (
-    <Card className="w-full animate-fade-in">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-3">
+    <Card className="w-full animate-fade-in shadow-sm md:shadow-md">
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="flex items-center gap-2 md:gap-3 text-base md:text-lg">
           <span>Your specialised questions</span>
         </CardTitle>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs md:text-sm text-muted-foreground">
           Answer core questions first, then we'll show relevant follow-ups
         </p>
         {invalidRequired.length > 0 && (
@@ -369,7 +369,7 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
           </p>
         )}
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 md:space-y-6 p-4 md:p-6">
         {visibleQuestions.map((q) => {
           const isCore = q.meta?.priority === 'core';
           const isRequired = !!q.required;
@@ -377,13 +377,13 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
           const hint = q.meta?.hint;
           const missing = invalidRequired.includes(q.id);
           return (
-            <div key={q.id} className="space-y-2">
-              <Label className="text-sm font-medium" htmlFor={`${q.id}-field`}>
+            <div key={q.id} className="space-y-2 md:space-y-3">
+              <Label className="text-sm md:text-base font-medium" htmlFor={`${q.id}-field`}>
                 {label}
                 {isRequired && <span className="text-destructive ml-1">*</span>}
                 {isCore && <span className="ml-2 text-xs text-muted-foreground">(core)</span>}
               </Label>
-              {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+              {hint && <p className="text-xs md:text-sm text-muted-foreground">{hint}</p>}
               <div id={`${q.id}-field`}>
                 {renderQuestion(q)}
               </div>
