@@ -2,7 +2,7 @@
  * Step 7: Review (Inline Edit with Accordion)
  * Professional job card preview
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,6 +10,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ArrowLeft, Edit2, MapPin, Calendar, Euro, FileText, Image } from 'lucide-react';
 import { format } from 'date-fns';
 import { EditableReviewChips } from '@/components/wizard/EditableReviewChips';
+import constructionServicesData from '@/data/construction-services.json';
+import { renderPromptTemplate } from '@/lib/generators/promptRenderer';
+import { mapMicroIdToServiceId } from '@/lib/mappers/serviceIdMapper';
 
 interface ReviewStepProps {
   jobData: {
@@ -32,6 +35,18 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   loading
 }) => {
   const { microName, category, subcategory, answers, logistics, extras } = jobData;
+
+  // Generate job description from prompt template
+  const jobDescription = useMemo(() => {
+    const serviceId = mapMicroIdToServiceId(microName);
+    const service = constructionServicesData.services.find(s => s.id === serviceId);
+    
+    if (!service || !service.promptTemplate) {
+      return null;
+    }
+
+    return renderPromptTemplate(service.promptTemplate, answers);
+  }, [microName, answers]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -86,6 +101,16 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
             isSubmitting={loading}
           />
         </div>
+
+        {/* Generated Job Description */}
+        {jobDescription && (
+          <div className="p-4 bg-muted/50 rounded-lg border">
+            <h3 className="text-sm font-semibold text-charcoal mb-2">Generated Job Description</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+              {jobDescription}
+            </p>
+          </div>
+        )}
 
         {/* Editable Sections */}
         <Accordion type="multiple" className="space-y-3">
