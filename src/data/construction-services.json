@@ -342,6 +342,615 @@
         }
       ],
       "promptTemplate": "Draft an earthworks and excavation job brief that notes site access ({{site_access}}), excavation area ({{excavation_area}}), depth ({{depth_required}}), materials to remove ({{material_to_remove}}), purpose ({{excavation_purpose}}), disposal plan ({{disposal_method}}), ground condition ({{ground_state}}), machinery ({{required_machinery}}), nearby services ({{services_nearby}}), and start date ({{start_date}})."
+    },
+    {
+      "id": "septic-water-tank-installation",
+      "label": "Septic & Water Tank Installation",
+      "icon": "Tank",
+      "description": "Supply and installation of septic, water storage, and soakaway tanks.",
+      "budgetRange": { "min": 1200, "max": 18000 },
+      "blocks": [
+        {
+          "id": "tank_type",
+          "type": "type_selector",
+          "title": "Type of tank",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "septic", "label": "Septic" },
+              { "value": "water", "label": "Water storage" },
+              { "value": "greywater", "label": "Greywater" },
+              { "value": "soakaway", "label": "Soakaway crate" }
+            ]
+          }
+        },
+        {
+          "id": "tank_capacity",
+          "type": "type_selector",
+          "title": "Tank size / capacity",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_1000l", "label": "<1000L" },
+              { "value": "1000_5000l", "label": "1000–5000L" },
+              { "value": "over_5000l", "label": "5000L+" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "tank_ground_type",
+          "type": "type_selector",
+          "title": "Ground type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "soil", "label": "Soil" },
+              { "value": "clay", "label": "Clay" },
+              { "value": "rocky", "label": "Rocky" },
+              { "value": "mixed", "label": "Mixed" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "excavation_depth",
+          "type": "type_selector",
+          "title": "Excavation depth",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_1m", "label": "<1m" },
+              { "value": "1_2m", "label": "1–2m" },
+              { "value": "over_2m", "label": "2m+" }
+            ]
+          }
+        },
+        {
+          "id": "tank_access",
+          "type": "type_selector",
+          "title": "Access for machinery",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy", "label": "Easy" },
+              { "value": "limited", "label": "Limited" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "disposal_connection",
+          "type": "type_selector",
+          "title": "Disposal / overflow connection",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "mains", "label": "Mains" },
+              { "value": "soakaway", "label": "Soakaway" },
+              { "value": "none", "label": "None" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "backfill_material",
+          "type": "type_selector",
+          "title": "Backfill material",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "sand", "label": "Sand" },
+              { "value": "gravel", "label": "Gravel" },
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "native_soil", "label": "Native soil" }
+            ]
+          }
+        },
+        {
+          "id": "tank_supply",
+          "type": "type_selector",
+          "title": "Tank supply",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client", "label": "Client provides" },
+              { "value": "contractor", "label": "We supply" },
+              { "value": "tbc", "label": "To confirm" }
+            ]
+          }
+        },
+        {
+          "id": "tank_testing",
+          "type": "type_selector",
+          "title": "Testing / certification required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "tank_start",
+          "type": "type_selector",
+          "title": "Start date",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Write a septic or water tank installation brief detailing the tank type ({{tank_type}}), capacity ({{tank_capacity}}), ground conditions ({{tank_ground_type}}), excavation depth ({{excavation_depth}}), site access ({{tank_access}}), connection needs ({{disposal_connection}}), backfill ({{backfill_material}}), supply responsibility ({{tank_supply}}), testing requirements ({{tank_testing}}), and start date ({{tank_start}})."
+    },
+    {
+      "id": "ground-beams-reinforced-slabs",
+      "label": "Ground Beams & Reinforced Slabs",
+      "icon": "Rebar",
+      "description": "Structural concrete ground beams and slab pours with reinforcement and formwork.",
+      "budgetRange": { "min": 2500, "max": 40000 },
+      "blocks": [
+        {
+          "id": "structure_type",
+          "type": "type_selector",
+          "title": "Structure type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "retaining", "label": "Retaining" },
+              { "value": "outbuilding", "label": "Outbuilding" }
+            ]
+          }
+        },
+        {
+          "id": "slab_size",
+          "type": "type_selector",
+          "title": "Slab or beam size",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (<50m²)" },
+              { "value": "medium", "label": "Medium (50–150m²)" },
+              { "value": "large", "label": "Large (150m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "design_drawings",
+          "type": "type_selector",
+          "title": "Design drawings / specs",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "supplied", "label": "Supplied by engineer" },
+              { "value": "not_yet", "label": "Not yet" },
+              { "value": "need_support", "label": "Need design support" }
+            ]
+          }
+        },
+        {
+          "id": "reinforcement_required",
+          "type": "type_selector",
+          "title": "Reinforcement required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_type",
+          "type": "type_selector",
+          "title": "Concrete type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard mix" },
+              { "value": "fibre", "label": "Fibre-reinforced" },
+              { "value": "pumped", "label": "Pumped" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "formwork_required",
+          "type": "type_selector",
+          "title": "Formwork required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "partial", "label": "Partial" }
+            ]
+          }
+        },
+        {
+          "id": "delivery_access",
+          "type": "type_selector",
+          "title": "Access for delivery",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy", "label": "Easy truck access" },
+              { "value": "pump", "label": "Pump required" },
+              { "value": "barrow", "label": "Barrow only" }
+            ]
+          }
+        },
+        {
+          "id": "ground_condition",
+          "type": "type_selector",
+          "title": "Ground condition",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "firm", "label": "Firm" },
+              { "value": "soft", "label": "Soft" },
+              { "value": "clay", "label": "Clay" },
+              { "value": "mixed", "label": "Mixed" },
+              { "value": "unknown", "label": "Unknown" }
+            ]
+          }
+        },
+        {
+          "id": "slab_waste",
+          "type": "type_selector",
+          "title": "Waste / spoil removal",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "contractor", "label": "We handle" },
+              { "value": "client", "label": "Client handles" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "slab_timeline",
+          "type": "type_selector",
+          "title": "Timeline",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "Within 2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Craft a ground beam or reinforced slab project summary covering structure type ({{structure_type}}), size ({{slab_size}}), drawing status ({{design_drawings}}), reinforcement ({{reinforcement_required}}), concrete type ({{concrete_type}}), formwork needs ({{formwork_required}}), delivery access ({{delivery_access}}), ground condition ({{ground_condition}}), waste handling ({{slab_waste}}), and timeline ({{slab_timeline}})."
+    },
+    {
+      "id": "concrete-block-walls",
+      "label": "Concrete Block Walls",
+      "icon": "Wall",
+      "description": "Construction of structural and decorative concrete block walls.",
+      "budgetRange": { "min": 1500, "max": 20000 },
+      "blocks": [
+        {
+          "id": "wall_purpose",
+          "type": "type_selector",
+          "title": "Purpose of wall",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "retaining", "label": "Retaining" },
+              { "value": "boundary", "label": "Boundary" },
+              { "value": "structural", "label": "Structural" },
+              { "value": "decorative", "label": "Garden / decorative" }
+            ]
+          }
+        },
+        {
+          "id": "wall_length",
+          "type": "type_selector",
+          "title": "Wall length",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_5m", "label": "Under 5 m" },
+              { "value": "5_15m", "label": "5–15 m" },
+              { "value": "over_15m", "label": "15 m+" }
+            ]
+          }
+        },
+        {
+          "id": "wall_height",
+          "type": "type_selector",
+          "title": "Wall height",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "up_to_1m", "label": "Up to 1 m" },
+              { "value": "1_2m", "label": "1–2 m" },
+              { "value": "2_3m", "label": "2–3 m" },
+              { "value": "over_3m", "label": "Over 3 m" }
+            ]
+          }
+        },
+        {
+          "id": "block_type",
+          "type": "type_selector",
+          "title": "Block type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "hollow", "label": "Hollow" },
+              { "value": "solid", "label": "Solid" },
+              { "value": "insulated", "label": "Insulated" },
+              { "value": "decorative", "label": "Decorative face" }
+            ]
+          }
+        },
+        {
+          "id": "wall_finish",
+          "type": "type_selector",
+          "title": "Finish required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "bare", "label": "Left bare" },
+              { "value": "rendered", "label": "Rendered" },
+              { "value": "painted", "label": "Painted" },
+              { "value": "cladded", "label": "Cladded" }
+            ]
+          }
+        },
+        {
+          "id": "footings_required",
+          "type": "type_selector",
+          "title": "Footings required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "existing", "label": "Existing in place" }
+            ]
+          }
+        },
+        {
+          "id": "wall_reinforcement",
+          "type": "type_selector",
+          "title": "Reinforcement needed",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "none", "label": "None" },
+              { "value": "rebar", "label": "Rebar" },
+              { "value": "concrete_fill", "label": "Concrete fill" },
+              { "value": "mesh", "label": "Mesh" }
+            ]
+          }
+        },
+        {
+          "id": "material_access",
+          "type": "type_selector",
+          "title": "Access for materials",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy", "label": "Easy" },
+              { "value": "moderate", "label": "Moderate" },
+              { "value": "difficult", "label": "Difficult" }
+            ]
+          }
+        },
+        {
+          "id": "wall_waste",
+          "type": "type_selector",
+          "title": "Waste removal",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "contractor", "label": "We remove" },
+              { "value": "client", "label": "Client handles" },
+              { "value": "skip", "label": "Skip on site" }
+            ]
+          }
+        },
+        {
+          "id": "wall_timeline",
+          "type": "type_selector",
+          "title": "Start timeframe",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Describe a concrete block wall project including the purpose ({{wall_purpose}}), length ({{wall_length}}), height ({{wall_height}}), block type ({{block_type}}), finish ({{wall_finish}}), footing needs ({{footings_required}}), reinforcement ({{wall_reinforcement}}), site access ({{material_access}}), waste plan ({{wall_waste}}), and timeframe ({{wall_timeline}})."
+    },
+    {
+      "id": "brickwork-cavity-walls",
+      "label": "Brickwork & Cavity Walls",
+      "icon": "Brick",
+      "description": "Bricklaying for new builds, extensions, boundary walls, and repairs.",
+      "budgetRange": { "min": 1800, "max": 28000 },
+      "blocks": [
+        {
+          "id": "work_type",
+          "type": "type_selector",
+          "title": "Type of work",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_build", "label": "New build" },
+              { "value": "extension", "label": "Extension" },
+              { "value": "boundary_wall", "label": "Boundary wall" },
+              { "value": "repair", "label": "Repair / repointing" }
+            ]
+          }
+        },
+        {
+          "id": "brick_type",
+          "type": "type_selector",
+          "title": "Brick type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard clay" },
+              { "value": "engineering", "label": "Engineering" },
+              { "value": "handmade", "label": "Handmade" },
+              { "value": "facing", "label": "Facing brick" }
+            ]
+          }
+        },
+        {
+          "id": "cavity_wall",
+          "type": "type_selector",
+          "title": "Cavity wall required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "insulated", "label": "Yes (insulated)" },
+              { "value": "uninsulated", "label": "Yes (uninsulated)" },
+              { "value": "solid", "label": "No (solid wall)" }
+            ]
+          }
+        },
+        {
+          "id": "wall_size",
+          "type": "type_selector",
+          "title": "Wall size",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (<10 m²)" },
+              { "value": "medium", "label": "Medium (10–30 m²)" },
+              { "value": "large", "label": "Large (30 m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "bond_pattern",
+          "type": "type_selector",
+          "title": "Bond pattern",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "stretcher", "label": "Stretcher" },
+              { "value": "flemish", "label": "Flemish" },
+              { "value": "english", "label": "English" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "mortar_colour",
+          "type": "type_selector",
+          "title": "Mortar colour",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "natural", "label": "Natural" },
+              { "value": "white", "label": "White" },
+              { "value": "coloured", "label": "Coloured" },
+              { "value": "match_existing", "label": "Match existing" }
+            ]
+          }
+        },
+        {
+          "id": "pointing_style",
+          "type": "type_selector",
+          "title": "Finish / pointing style",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "flush", "label": "Flush" },
+              { "value": "recessed", "label": "Recessed" },
+              { "value": "weather_struck", "label": "Weather struck" },
+              { "value": "match_existing", "label": "Match existing" }
+            ]
+          }
+        },
+        {
+          "id": "access_requirements",
+          "type": "type_selector",
+          "title": "Access",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground_level", "label": "Ground level" },
+              { "value": "scaffolding", "label": "Requires scaffolding" },
+              { "value": "limited", "label": "Limited space" }
+            ]
+          }
+        },
+        {
+          "id": "material_supply",
+          "type": "type_selector",
+          "title": "Materials supplied by",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client", "label": "Client" },
+              { "value": "contractor", "label": "Contractor" },
+              { "value": "split", "label": "Split responsibility" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Generate a brickwork and cavity wall brief covering work type ({{work_type}}), brick type ({{brick_type}}), cavity configuration ({{cavity_wall}}), wall size ({{wall_size}}), bond pattern ({{bond_pattern}}), mortar colour ({{mortar_colour}}), pointing style ({{pointing_style}}), access ({{access_requirements}}), and material supply ({{material_supply}})."
     }
   ]
 }
