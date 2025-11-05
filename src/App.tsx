@@ -85,6 +85,8 @@ const PerformanceMonitorPage = lazyWithRetry(() => import("./pages/admin/Perform
 const CalculatorSettings = lazyWithRetry(() => import("./pages/admin/CalculatorSettings"));
 const PricingManager = lazyWithRetry(() => import("./pages/admin/PricingManager"));
 const CalculatorAnalytics = lazyWithRetry(() => import("./pages/admin/CalculatorAnalytics"));
+const ImportServices = lazyWithRetry(() => import("./pages/admin/ImportServices"));
+const QuestionBuilderPage = lazyWithRetry(() => import("./pages/admin/QuestionBuilderPage"));
 
 // Job & Professional Pages
 const PostJob = lazyWithRetry(() => import("./pages/PostJob"));
@@ -422,6 +424,8 @@ function AppContent() {
                       {/* Content Management */}
                       <Route path="questions" element={<AdminQuestions />} />
                       <Route path="questions/compare/:slug" element={<PackCompareView />} />
+                      <Route path="import-services" element={<ImportServices />} />
+                      <Route path="question-builder" element={<QuestionBuilderPage />} />
                       <Route path="bulk-import" element={<BulkImport />} />
                       <Route path="website-settings" element={<WebsiteSettings />} />
                       <Route path="service-manager" element={<AdminServiceManager />} />
