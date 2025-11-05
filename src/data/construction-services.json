@@ -6611,6 +6611,640 @@
         }
       ],
       "promptTemplate": "Finishing surface: {{finish_surface}}. Surface condition: {{finish_surface_condition}}. Finish type: {{finish_type}}. Sheen: {{finish_sheen}}. Colour: {{finish_colour}}. Colour matching: {{finish_colour_matching}}. Special: {{finish_special}}. Environment: {{finish_environment}}. Eco: {{finish_eco}}. Timeline: {{finish_timeline}}."
+    },
+    {
+      "id": "electrical_inspection_eicr",
+      "label": "Electrical Installation Condition Report (EICR)",
+      "icon": "FileCheck",
+      "description": "Professional electrical safety inspection with certification for residential, commercial, or multi-property portfolios.",
+      "budgetRange": { "min": 150, "max": 600 },
+      "blocks": [
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "What type of property requires the inspection?",
+          "description": "Determines inspection scope and certification requirements",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential_home", "label": "Residential single home" },
+              { "value": "apartment", "label": "Apartment / flat" },
+              { "value": "commercial", "label": "Commercial unit" },
+              { "value": "multi_property", "label": "Multi-property portfolio" }
+            ]
+          }
+        },
+        {
+          "id": "circuit_count",
+          "type": "type_selector",
+          "title": "Approximate number of circuits in the property?",
+          "description": "Helps estimate inspection time and complexity",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_6", "label": "1-6 circuits (small property)" },
+              { "value": "7_12", "label": "7-12 circuits (medium property)" },
+              { "value": "13_20", "label": "13-20 circuits (large property)" },
+              { "value": "20_plus", "label": "20+ circuits (very large/commercial)" },
+              { "value": "unsure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "fuse_board_type",
+          "type": "type_selector",
+          "title": "What type of fuse board is installed?",
+          "description": "Identifies testing requirements and potential upgrade needs",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "modern_breakers", "label": "Modern circuit breakers with RCD protection" },
+              { "value": "old_fuse_wire", "label": "Old fuse wire type" },
+              { "value": "mixed", "label": "Mix of old and new" },
+              { "value": "unsure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "last_inspection",
+          "type": "type_selector",
+          "title": "When was the last electrical inspection?",
+          "description": "Indicates likely condition and compliance status",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_1_year", "label": "Within 1 year" },
+              { "value": "1_5_years", "label": "1-5 years ago" },
+              { "value": "over_5_years", "label": "Over 5 years ago" },
+              { "value": "never", "label": "Never inspected / unknown" }
+            ]
+          }
+        },
+        {
+          "id": "fuse_board_access",
+          "type": "type_selector",
+          "title": "Is the fuse board easily accessible?",
+          "description": "Affects inspection time and equipment needs",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy_access", "label": "Yes, clear access" },
+              { "value": "restricted", "label": "No, restricted or obstructed" },
+              { "value": "height_access", "label": "Requires ladder or height access" }
+            ]
+          }
+        },
+        {
+          "id": "known_issues",
+          "type": "type_selector",
+          "title": "Any known electrical issues or recent alterations?",
+          "description": "Helps tasker prepare for potential problems",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "tripping_issues", "label": "Frequent tripping" },
+              { "value": "burning_smell", "label": "Burning smell or heat" },
+              { "value": "recent_work", "label": "Recent electrical work done" },
+              { "value": "diy_additions", "label": "DIY additions or modifications" },
+              { "value": "none", "label": "No known issues" }
+            ]
+          }
+        },
+        {
+          "id": "property_occupancy",
+          "type": "type_selector",
+          "title": "Will the property be occupied during inspection?",
+          "description": "Affects scheduling and safety protocols",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "occupied", "label": "Yes, occupied" },
+              { "value": "vacant", "label": "No, vacant" },
+              { "value": "partial", "label": "Partially occupied" }
+            ]
+          }
+        },
+        {
+          "id": "follow_up_repairs",
+          "type": "type_selector",
+          "title": "Do you need follow-up repairs if faults are found?",
+          "description": "Helps tasker provide complete service estimate",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_immediate", "label": "Yes, repair immediately" },
+              { "value": "quote_first", "label": "Quote first, then decide" },
+              { "value": "report_only", "label": "Report only, no repairs" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Electrical inspection needed for {{property_type}} with approximately {{circuit_count}} circuits. Fuse board is {{fuse_board_type}}, last inspected {{last_inspection}}. {{known_issues}}. Follow-up repairs {{follow_up_repairs}}."
+    },
+    {
+      "id": "pat_testing",
+      "label": "Portable Appliance Testing (PAT)",
+      "icon": "Plug",
+      "description": "Safety testing and certification for portable electrical appliances in commercial, industrial, and residential settings.",
+      "budgetRange": { "min": 100, "max": 1000 },
+      "blocks": [
+        {
+          "id": "environment_type",
+          "type": "type_selector",
+          "title": "What type of environment?",
+          "description": "Determines appliance types and testing standards",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "office", "label": "Office / commercial" },
+              { "value": "industrial", "label": "Industrial / workshop" },
+              { "value": "residential", "label": "Residential / holiday let" },
+              { "value": "event", "label": "Event / temporary setup" }
+            ]
+          }
+        },
+        {
+          "id": "appliance_count",
+          "type": "type_selector",
+          "title": "Approximate number of appliances to test?",
+          "description": "Helps estimate testing time and pricing",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_20", "label": "1-20 appliances" },
+              { "value": "21_50", "label": "21-50 appliances" },
+              { "value": "51_100", "label": "51-100 appliances" },
+              { "value": "100_plus", "label": "100+ appliances" }
+            ]
+          }
+        },
+        {
+          "id": "location_spread",
+          "type": "type_selector",
+          "title": "Are appliances in one location or spread across multiple areas?",
+          "description": "Affects travel time and logistics",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single_room", "label": "Single room" },
+              { "value": "single_building", "label": "Multiple rooms, one building" },
+              { "value": "multiple_buildings", "label": "Multiple buildings" }
+            ]
+          }
+        },
+        {
+          "id": "specialist_equipment",
+          "type": "type_selector",
+          "title": "Any specialist or high-load devices?",
+          "description": "Identifies equipment requiring special testing procedures",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "catering", "label": "Catering equipment (ovens, fridges)" },
+              { "value": "it_servers", "label": "IT / server equipment" },
+              { "value": "heaters", "label": "Industrial heaters" },
+              { "value": "machinery", "label": "Workshop machinery" },
+              { "value": "medical", "label": "Medical / care equipment" },
+              { "value": "none", "label": "Standard office/household only" }
+            ]
+          }
+        },
+        {
+          "id": "labelling_requirement",
+          "type": "type_selector",
+          "title": "Do you need labelling and inventory reports?",
+          "description": "Required for compliance and asset tracking",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_inventory", "label": "Yes, with full inventory" },
+              { "value": "labels_only", "label": "Labels only" },
+              { "value": "not_required", "label": "Not required" }
+            ]
+          }
+        },
+        {
+          "id": "testing_hours",
+          "type": "type_selector",
+          "title": "When can testing be performed?",
+          "description": "Affects scheduling and potential disruption",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "business_hours", "label": "During business hours (site occupied)" },
+              { "value": "after_hours", "label": "After hours / weekends (preferred)" },
+              { "value": "flexible", "label": "Flexible timing" }
+            ]
+          }
+        },
+        {
+          "id": "previous_records",
+          "type": "type_selector",
+          "title": "Do you have previous PAT test records?",
+          "description": "Helps identify items and streamline repeat testing",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_available", "label": "Yes, records available" },
+              { "value": "partial", "label": "Some records available" },
+              { "value": "none", "label": "No previous records" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "PAT testing needed for {{appliance_count}} appliances in {{environment_type}}. {{location_spread}}. {{specialist_equipment}}. Testing {{testing_hours}} with {{labelling_requirement}}."
+    },
+    {
+      "id": "load_balancing_safety_audit",
+      "label": "Load Balancing & Safety Audit",
+      "icon": "Scale",
+      "description": "Comprehensive electrical system audit to identify overloads, safety issues, and optimization opportunities.",
+      "budgetRange": { "min": 300, "max": 1500 },
+      "blocks": [
+        {
+          "id": "system_type",
+          "type": "type_selector",
+          "title": "What type of electrical system?",
+          "description": "Determines audit scope and complexity",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "industrial", "label": "Industrial" },
+              { "value": "event_temporary", "label": "Event / temporary power" }
+            ]
+          }
+        },
+        {
+          "id": "phase_type",
+          "type": "type_selector",
+          "title": "Single-phase or three-phase system?",
+          "description": "Critical for load assessment and equipment needs",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single_phase", "label": "Single-phase" },
+              { "value": "three_phase", "label": "Three-phase" },
+              { "value": "mixed", "label": "Mixed system" },
+              { "value": "unsure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "overload_symptoms",
+          "type": "type_selector",
+          "title": "Are you experiencing any of these issues?",
+          "description": "Indicates severity and focus areas",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "frequent_tripping", "label": "Frequent circuit breaker tripping" },
+              { "value": "overheating", "label": "Overheating panels or cables" },
+              { "value": "voltage_drops", "label": "Voltage drops or flickering" },
+              { "value": "burning_odor", "label": "Burning smell from electrical panels" },
+              { "value": "none", "label": "No current issues (preventive audit)" }
+            ]
+          }
+        },
+        {
+          "id": "high_load_equipment",
+          "type": "type_selector",
+          "title": "Do you have high-load appliances or machinery?",
+          "description": "Identifies potential overload sources",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "continuous", "label": "Yes, running continuously" },
+              { "value": "intermittent", "label": "Yes, used occasionally" },
+              { "value": "none", "label": "No high-load equipment" }
+            ]
+          }
+        },
+        {
+          "id": "thermal_imaging",
+          "type": "type_selector",
+          "title": "Include thermal imaging in the audit?",
+          "description": "Identifies hot spots and potential fire risks",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_required", "label": "Yes, definitely needed" },
+              { "value": "optional", "label": "If recommended by electrician" },
+              { "value": "not_needed", "label": "Not needed" }
+            ]
+          }
+        },
+        {
+          "id": "audit_goal",
+          "type": "type_selector",
+          "title": "Main goal of the audit?",
+          "description": "Focuses the inspection and recommendations",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "safety_compliance", "label": "Safety compliance check" },
+              { "value": "identify_overloads", "label": "Identify overload risks" },
+              { "value": "plan_upgrades", "label": "Plan system upgrades" },
+              { "value": "energy_efficiency", "label": "Improve energy efficiency" }
+            ]
+          }
+        },
+        {
+          "id": "last_inspection",
+          "type": "type_selector",
+          "title": "When was the last system inspection?",
+          "description": "Indicates system age and maintenance history",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_year", "label": "Within 12 months" },
+              { "value": "1_3_years", "label": "1-3 years ago" },
+              { "value": "over_3_years", "label": "3+ years ago" },
+              { "value": "never", "label": "Never inspected" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Safety audit for {{system_type}} electrical system. Main concern: {{audit_goal}}. System is {{phase_type}}. {{overload_symptoms}}. {{thermal_imaging}}."
+    },
+    {
+      "id": "fault_finding_diagnostics",
+      "label": "Fault Finding & Diagnostics",
+      "icon": "Search",
+      "description": "Emergency and scheduled electrical fault diagnosis with expert troubleshooting and repair solutions.",
+      "budgetRange": { "min": 80, "max": 500 },
+      "blocks": [
+        {
+          "id": "fault_type",
+          "type": "type_selector",
+          "title": "What type of electrical issue?",
+          "description": "Helps tasker prepare right diagnostic equipment",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "power_outage", "label": "Power outage or circuit tripping" },
+              { "value": "lights_not_working", "label": "Lighting circuit not working" },
+              { "value": "burning_smell", "label": "Burning smell or heat from outlets" },
+              { "value": "intermittent", "label": "Intermittent power loss" },
+              { "value": "socket_failure", "label": "Dead sockets or outlets" },
+              { "value": "other", "label": "Other electrical fault" }
+            ]
+          }
+        },
+        {
+          "id": "fault_scope",
+          "type": "type_selector",
+          "title": "What's affected?",
+          "description": "Indicates fault severity and likely location",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single_circuit", "label": "Single room or circuit" },
+              { "value": "multiple_rooms", "label": "Multiple rooms" },
+              { "value": "whole_property", "label": "Entire property" }
+            ]
+          }
+        },
+        {
+          "id": "fault_duration",
+          "type": "type_selector",
+          "title": "How long has the issue been occurring?",
+          "description": "Helps assess urgency and potential causes",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "emergency", "label": "Just happened (emergency)" },
+              { "value": "24_hours", "label": "Last 24 hours" },
+              { "value": "few_days", "label": "1-3 days" },
+              { "value": "ongoing", "label": "Over a week (ongoing)" }
+            ]
+          }
+        },
+        {
+          "id": "fuse_board_type",
+          "type": "type_selector",
+          "title": "What type of fuse board?",
+          "description": "Determines diagnostic approach and tools needed",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "modern_breakers", "label": "Modern circuit breakers" },
+              { "value": "old_fuse_wire", "label": "Old fuse wire system" },
+              { "value": "unsure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "visible_damage",
+          "type": "type_selector",
+          "title": "Any visible damage or warning signs?",
+          "description": "Indicates safety risk level",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "burn_marks", "label": "Burn marks or discoloration" },
+              { "value": "melted_plastic", "label": "Melted socket covers" },
+              { "value": "sparking", "label": "Sparking or arcing" },
+              { "value": "none_visible", "label": "No visible damage" }
+            ]
+          }
+        },
+        {
+          "id": "recent_work",
+          "type": "type_selector",
+          "title": "Any recent electrical work or renovations?",
+          "description": "May indicate cause of fault",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_professional", "label": "Yes, by qualified electrician" },
+              { "value": "yes_diy", "label": "Yes, DIY work" },
+              { "value": "none", "label": "No recent work" }
+            ]
+          }
+        },
+        {
+          "id": "urgency_level",
+          "type": "type_selector",
+          "title": "When do you need an electrician?",
+          "description": "Determines callout type and pricing",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "emergency_today", "label": "Emergency (today)" },
+              { "value": "urgent_48h", "label": "Urgent (within 48 hours)" },
+              { "value": "standard_week", "label": "Standard (within a week)" }
+            ]
+          }
+        },
+        {
+          "id": "repair_preference",
+          "type": "type_selector",
+          "title": "Repair during same visit?",
+          "description": "Helps tasker bring parts and plan time",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_immediate", "label": "Yes, fix immediately if possible" },
+              { "value": "quote_first", "label": "Diagnose first, quote for repairs" },
+              { "value": "diagnosis_only", "label": "Diagnosis only" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Electrical fault: {{fault_type}} affecting {{fault_scope}}. Issue duration: {{fault_duration}}. {{visible_damage}}. Urgency: {{urgency_level}}."
+    },
+    {
+      "id": "landlord_certification_package",
+      "label": "Landlord Certification Package",
+      "icon": "Home",
+      "description": "Complete electrical compliance package for landlords including EICR, PAT testing, and safety certifications.",
+      "budgetRange": { "min": 200, "max": 2000 },
+      "blocks": [
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "What type of rental property?",
+          "description": "Determines certification requirements",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "apartment", "label": "Apartment / flat" },
+              { "value": "house", "label": "House" },
+              { "value": "hmo", "label": "HMO / shared house" },
+              { "value": "commercial", "label": "Commercial unit" }
+            ]
+          }
+        },
+        {
+          "id": "property_count",
+          "type": "type_selector",
+          "title": "How many properties need certification?",
+          "description": "Affects scheduling and potential volume discount",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single", "label": "1 property" },
+              { "value": "2_5", "label": "2-5 properties" },
+              { "value": "6_10", "label": "6-10 properties" },
+              { "value": "10_plus", "label": "10+ properties" }
+            ]
+          }
+        },
+        {
+          "id": "certificate_types",
+          "type": "type_selector",
+          "title": "Which certificates do you need?",
+          "description": "Defines scope of inspection and testing",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "eicr", "label": "EICR (Electrical Installation)" },
+              { "value": "pat", "label": "PAT testing" },
+              { "value": "smoke_co", "label": "Smoke & CO alarm check" },
+              { "value": "emergency_lighting", "label": "Emergency lighting test" },
+              { "value": "full_package", "label": "Complete compliance package" }
+            ]
+          }
+        },
+        {
+          "id": "current_certificates",
+          "type": "type_selector",
+          "title": "Do you have current certificates?",
+          "description": "Indicates renewal vs first-time certification",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "all_current", "label": "Yes, all up to date" },
+              { "value": "some_expired", "label": "Some expired" },
+              { "value": "none", "label": "No current certificates" }
+            ]
+          }
+        },
+        {
+          "id": "occupancy_status",
+          "type": "type_selector",
+          "title": "Property occupancy during inspection?",
+          "description": "Affects access and scheduling complexity",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "occupied", "label": "Occupied (tenant coordination needed)" },
+              { "value": "vacant", "label": "Vacant (easy access)" },
+              { "value": "mixed", "label": "Mix of occupied and vacant" }
+            ]
+          }
+        },
+        {
+          "id": "access_arrangement",
+          "type": "type_selector",
+          "title": "How will access be arranged?",
+          "description": "Helps plan logistics and scheduling",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "landlord_present", "label": "Landlord present" },
+              { "value": "tenant_arranged", "label": "Tenant will provide access" },
+              { "value": "key_collection", "label": "Key collection from office" },
+              { "value": "managed_access", "label": "Property manager coordinates" }
+            ]
+          }
+        },
+        {
+          "id": "certification_reason",
+          "type": "type_selector",
+          "title": "Reason for certification?",
+          "description": "Determines urgency and requirements",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_tenancy", "label": "New tenancy starting" },
+              { "value": "renewal", "label": "Certificate renewal" },
+              { "value": "annual_routine", "label": "Annual routine check" },
+              { "value": "insurance", "label": "Insurance requirement" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Landlord certification for {{property_count}} {{property_type}} properties. Certificates needed: {{certificate_types}}. Properties are {{occupancy_status}}. {{access_arrangement}}."
     }
   ]
 }
