@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import constructionServicesData from '@/data/construction-services.json';
+import { mapMicroIdToServiceId } from '@/lib/mappers/serviceIdMapper';
 
 import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -244,19 +246,44 @@ export const CanonicalJobWizard: React.FC = () => {
     }
 
     try {
-      // Check if question pack exists
+      const primaryMicroSlug = microIds[0];
+      
+      // Check 1: Question pack in database
       const { data: pack } = await supabase
         .from('question_packs')
         .select('id')
-        .eq('micro_slug', microIds[0])
+        .eq('micro_slug', primaryMicroSlug)
         .eq('status', 'approved')
         .eq('is_active', true)
         .maybeSingle();
 
-      // Skip questions if no pack found (will use fallback)
-      setSkipQuestions(!pack);
-    } catch {
-      setSkipQuestions(true);
+      if (pack) {
+        console.log('✅ Found question pack in database');
+        setSkipQuestions(false);
+        return;
+      }
+
+      // Check 2: Static JSON service definition
+      const serviceId = mapMicroIdToServiceId(primaryMicroSlug);
+      if (serviceId) {
+        const staticService = constructionServicesData.services.find(
+          s => s.id === serviceId
+        );
+        
+        if (staticService && staticService.blocks && staticService.blocks.length > 0) {
+          console.log('✅ Found questions in static JSON');
+          setSkipQuestions(false);
+          return;
+        }
+      }
+
+      // No questions found - use generic fallback
+      console.log('ℹ️ No specific questions found, will use generic fallback');
+      setSkipQuestions(false); // Don't skip - fallback questions will be shown
+      
+    } catch (error) {
+      console.error('Error checking questions:', error);
+      setSkipQuestions(false); // On error, show step with fallback
     }
   };
 
