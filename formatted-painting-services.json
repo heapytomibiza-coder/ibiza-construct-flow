@@ -1,0 +1,1766 @@
+{
+  "services": [
+    {
+      "id": "exterior_painter",
+      "label": "Exterior Painter",
+      "icon": "🎨",
+      "description": "Professional exterior painting and surface finishing services for walls, timber, metalwork, and weatherproofing",
+      "budgetRange": {
+        "min": 60,
+        "max": 180
+      },
+      "blocks": [
+        {
+          "id": "exterior_scope",
+          "type": "type_selector",
+          "title": "Which exterior elements need coating?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "masonry_walls", "label": "Masonry or rendered walls" },
+              { "value": "timber_cladding", "label": "Timber cladding or fencing" },
+              { "value": "metal_gates", "label": "Metal gates, railings, or balustrades" },
+              { "value": "weatherproofing", "label": "Weatherproofing and UV protection" },
+              { "value": "power_washing", "label": "Power washing or surface prep only" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_surface_type",
+          "type": "type_selector",
+          "title": "Primary masonry/render surface type?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth_render", "label": "Smooth render" },
+              { "value": "textured_render", "label": "Textured render" },
+              { "value": "natural_stone", "label": "Natural stone" },
+              { "value": "concrete_blockwork", "label": "Concrete or blockwork" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_surface_condition",
+          "type": "type_selector",
+          "title": "Current condition of masonry/rendered surfaces?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "new", "label": "Recently rendered / new" },
+              { "value": "weathered", "label": "Lightly weathered" },
+              { "value": "cracked", "label": "Cracked or peeling paint" },
+              { "value": "damp", "label": "Damp or mould present" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_coating_history",
+          "type": "type_selector",
+          "title": "Has the masonry surface been painted before?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "repaint", "label": "Yes, needs repaint" },
+              { "value": "first_time", "label": "No, first-time coating" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_paint_preference",
+          "type": "type_selector",
+          "title": "Preferred paint or coating type for masonry?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard masonry paint" },
+              { "value": "silicone", "label": "Silicone-based breathable coating" },
+              { "value": "limewash", "label": "Limewash / mineral paint" },
+              { "value": "recommendation", "label": "Not sure – need recommendation" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_surface_area",
+          "type": "type_selector",
+          "title": "Approximate masonry/render surface area?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small wall (under 30 m²)" },
+              { "value": "medium", "label": "Medium façade (30–100 m²)" },
+              { "value": "large", "label": "Large façade (100–250 m²)" },
+              { "value": "full_property", "label": "Full property exterior" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_surface_issues",
+          "type": "type_selector",
+          "title": "Any masonry surface issues to resolve before painting?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "cracks", "label": "Cracks or holes" },
+              { "value": "algae", "label": "Algae or mould" },
+              { "value": "flaking", "label": "Flaking paint removal" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_access_requirements",
+          "type": "type_selector",
+          "title": "Are scaffolding or high-access tools needed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground", "label": "Ground level only" },
+              { "value": "ladder", "label": "Ladder access" },
+              { "value": "scaffolding", "label": "Scaffolding / lift required" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_finish_type",
+          "type": "type_selector",
+          "title": "Desired finish type on masonry surfaces?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "matt", "label": "Matt / flat" },
+              { "value": "satin", "label": "Satin / eggshell" },
+              { "value": "textured", "label": "Textured anti-crack finish" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_colour_scheme",
+          "type": "type_selector",
+          "title": "Preferred colour scheme for masonry areas?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "match", "label": "Match existing" },
+              { "value": "single", "label": "Single new colour" },
+              { "value": "multiple", "label": "Multiple tones or feature wall" }
+            ]
+          }
+        },
+        {
+          "id": "masonry_paint_supply",
+          "type": "type_selector",
+          "title": "Paint supply preference for masonry work?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "labour_only", "label": "Labour only" },
+              { "value": "labour_materials", "label": "Labour + materials" },
+              { "value": "both", "label": "Both options" }
+            ]
+          }
+        },
+        {
+          "id": "timber_surface_type",
+          "type": "type_selector",
+          "title": "Which timber surfaces need coating?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "cladding", "label": "Cladding" },
+              { "value": "fence", "label": "Fence panels" },
+              { "value": "decking", "label": "Decking edges or gates" },
+              { "value": "posts", "label": "Wooden posts or trims" }
+            ]
+          }
+        },
+        {
+          "id": "timber_coating_history",
+          "type": "type_selector",
+          "title": "Timber condition or previous coating?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new", "label": "New bare wood" },
+              { "value": "coated", "label": "Painted / varnished before" },
+              { "value": "weathered", "label": "Weathered / greying timber" }
+            ]
+          }
+        },
+        {
+          "id": "timber_finish_preference",
+          "type": "type_selector",
+          "title": "Preferred finish for timber surfaces?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "oil", "label": "Clear protective oil" },
+              { "value": "stain", "label": "Wood stain (visible grain)" },
+              { "value": "paint", "label": "Solid colour paint finish" },
+              { "value": "specialist", "label": "Specialist weatherproof coating" }
+            ]
+          }
+        },
+        {
+          "id": "timber_condition_state",
+          "type": "type_selector",
+          "title": "Current condition of timber surfaces?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "clean", "label": "Clean and smooth" },
+              { "value": "rough", "label": "Slightly rough or faded" },
+              { "value": "peeling", "label": "Cracked / peeling" },
+              { "value": "rotting", "label": "Rotting sections present" }
+            ]
+          }
+        },
+        {
+          "id": "timber_prep_requirements",
+          "type": "type_selector",
+          "title": "Preparation required for timber?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sanding", "label": "Light sanding only" },
+              { "value": "wash", "label": "Power wash & clean" },
+              { "value": "strip", "label": "Full strip and reseal" }
+            ]
+          }
+        },
+        {
+          "id": "timber_access_height",
+          "type": "type_selector",
+          "title": "Access requirements for timber areas?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground", "label": "Ground level" },
+              { "value": "ladder", "label": "Requires ladder" },
+              { "value": "scaffolding", "label": "Scaffolding or tall fence" }
+            ]
+          }
+        },
+        {
+          "id": "timber_environment_exposure",
+          "type": "type_selector",
+          "title": "Environmental exposure for timber surfaces?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "coastal", "label": "Coastal / high sun exposure" },
+              { "value": "shaded", "label": "Shaded / damp area" },
+              { "value": "transition", "label": "Regular indoor/outdoor transition" }
+            ]
+          }
+        },
+        {
+          "id": "timber_material_supply",
+          "type": "type_selector",
+          "title": "Material supply for timber coatings?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "labour_only", "label": "Labour only" },
+              { "value": "labour_materials", "label": "Labour + materials" },
+              { "value": "both", "label": "Both options" }
+            ]
+          }
+        },
+        {
+          "id": "metalwork_type",
+          "type": "type_selector",
+          "title": "Metalwork requiring finishing?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "gates", "label": "Gates" },
+              { "value": "railings", "label": "Railings / balustrades" },
+              { "value": "balcony", "label": "Balcony or terrace frames" },
+              { "value": "structural", "label": "Structural steel elements" }
+            ]
+          }
+        },
+        {
+          "id": "metal_condition",
+          "type": "type_selector",
+          "title": "Current condition of the metal surfaces?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "bare", "label": "Bare metal / new installation" },
+              { "value": "fading", "label": "Painted but fading" },
+              { "value": "rusted", "label": "Rusted or flaking" }
+            ]
+          }
+        },
+        {
+          "id": "rust_treatment_scope",
+          "type": "type_selector",
+          "title": "Is rust removal or treatment required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full", "label": "Yes, full preparation" },
+              { "value": "minor", "label": "Minor areas only" },
+              { "value": "none", "label": "No visible rust" }
+            ]
+          }
+        },
+        {
+          "id": "metal_coating_preference",
+          "type": "type_selector",
+          "title": "Preferred coating system for metalwork?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard metal paint" },
+              { "value": "zinc", "label": "Zinc-rich primer + topcoat" },
+              { "value": "powder", "label": "Powder coat effect paint" },
+              { "value": "industrial", "label": "Heat-resistant / industrial coating" }
+            ]
+          }
+        },
+        {
+          "id": "metal_finish_desired",
+          "type": "type_selector",
+          "title": "Desired finish on metal surfaces?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "matt", "label": "Matt" },
+              { "value": "satin", "label": "Satin" },
+              { "value": "gloss", "label": "Gloss" },
+              { "value": "metallic", "label": "Metallic or textured" }
+            ]
+          }
+        },
+        {
+          "id": "metal_access_conditions",
+          "type": "type_selector",
+          "title": "Access requirements for metalwork?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground", "label": "Ground-level work" },
+              { "value": "elevated", "label": "Requires ladders or scaffolding" }
+            ]
+          }
+        },
+        {
+          "id": "metal_colour_matching",
+          "type": "type_selector",
+          "title": "Do you require colour matching for metalwork?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "match", "label": "Yes – match existing" },
+              { "value": "new", "label": "No – new colour" }
+            ]
+          }
+        },
+        {
+          "id": "metal_environment",
+          "type": "type_selector",
+          "title": "Environmental exposure for metal surfaces?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "coastal", "label": "Coastal area (salt corrosion risk)" },
+              { "value": "urban", "label": "Urban pollution exposure" },
+              { "value": "normal", "label": "Normal residential environment" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproofing_areas",
+          "type": "type_selector",
+          "title": "Areas requiring weatherproofing or UV protection?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "walls", "label": "Walls / façades" },
+              { "value": "roof", "label": "Roof edges / soffits" },
+              { "value": "timber", "label": "Timber structures" },
+              { "value": "metal", "label": "Metalwork" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproofing_goal",
+          "type": "type_selector",
+          "title": "Main goals for weatherproofing?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "water", "label": "Prevent water ingress" },
+              { "value": "uv", "label": "UV / sun protection" },
+              { "value": "mould", "label": "Anti-mould or algae barrier" },
+              { "value": "maintenance", "label": "General maintenance coating" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproofing_surface_material",
+          "type": "type_selector",
+          "title": "Surface materials for weatherproofing?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "masonry", "label": "Render / masonry" },
+              { "value": "wood", "label": "Wood" },
+              { "value": "metal", "label": "Metal" },
+              { "value": "mixed", "label": "Mixed surfaces" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproofing_surface_state",
+          "type": "type_selector",
+          "title": "Current state of surfaces to be weatherproofed?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "clean", "label": "Sound and clean" },
+              { "value": "cracks", "label": "Minor cracks / joints to seal" },
+              { "value": "damaged", "label": "Heavily weathered or damaged" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproofing_product_preference",
+          "type": "type_selector",
+          "title": "Preferred weatherproofing product type?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "clear", "label": "Clear sealant / hydrophobic coat" },
+              { "value": "coloured", "label": "Coloured waterproof finish" },
+              { "value": "breathable", "label": "Flexible breathable coating" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproofing_existing_layer",
+          "type": "type_selector",
+          "title": "Previous protective layer present?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "reapplication", "label": "Yes – reapplication needed" },
+              { "value": "first_time", "label": "No – first-time treatment" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproofing_exposure",
+          "type": "type_selector",
+          "title": "Exposure level for treated areas?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sun", "label": "Full sun" },
+              { "value": "shaded", "label": "Shaded / damp area" },
+              { "value": "coastal", "label": "Coastal environment" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproofing_lifespan",
+          "type": "type_selector",
+          "title": "Desired lifespan of treatment?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "2–3 years (standard)" },
+              { "value": "premium", "label": "5–7 years (premium)" },
+              { "value": "long_term", "label": "Long-term protection (10+ years)" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_surfaces",
+          "type": "type_selector",
+          "title": "Surfaces needing power washing or prep?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "walls", "label": "Exterior walls" },
+              { "value": "driveway", "label": "Driveway / paving" },
+              { "value": "fences", "label": "Fences / decks" },
+              { "value": "roof", "label": "Roof / tiles" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_materials",
+          "type": "type_selector",
+          "title": "Surface material type for power washing?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "render", "label": "Render / brick" },
+              { "value": "stone", "label": "Stone / concrete" },
+              { "value": "wood", "label": "Wood" },
+              { "value": "metal", "label": "Metal" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_contamination",
+          "type": "type_selector",
+          "title": "Type of contamination to remove?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "dirt", "label": "Dirt / dust" },
+              { "value": "mould", "label": "Mould / algae" },
+              { "value": "paint", "label": "Paint flakes" },
+              { "value": "oil", "label": "Oil or rust marks" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_result",
+          "type": "type_selector",
+          "title": "Desired result from power washing?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "paint_ready", "label": "Clean ready-to-paint surface" },
+              { "value": "restoration", "label": "Full restoration clean" },
+              { "value": "stain_removal", "label": "Stain removal & reseal" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_water_source",
+          "type": "type_selector",
+          "title": "Is there a water source available on-site?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No – contractor must supply" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_power_source",
+          "type": "type_selector",
+          "title": "Electricity available for high-pressure equipment?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No / generator required" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_access",
+          "type": "type_selector",
+          "title": "Access and height level for cleaning?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground", "label": "Ground level only" },
+              { "value": "upper", "label": "Includes upper façades" },
+              { "value": "roof", "label": "Roof areas" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_wastewater",
+          "type": "type_selector",
+          "title": "Wastewater disposal requirements?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "garden", "label": "Can drain to garden / soakaway" },
+              { "value": "collection", "label": "Needs collection / safe disposal" }
+            ]
+          }
+        },
+        {
+          "id": "power_wash_follow_up",
+          "type": "type_selector",
+          "title": "Follow-up services required after prep?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "painting", "label": "Painting after prep" },
+              { "value": "sealant", "label": "Sealant / protective coating" },
+              { "value": "cleaning_only", "label": "Cleaning only" }
+            ]
+          }
+        },
+        {
+          "id": "exterior_project_timeline",
+          "type": "type_selector",
+          "title": "Preferred project timeline?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent (within 1 week)" },
+              { "value": "2_3_weeks", "label": "Within 2–3 weeks" },
+              { "value": "1_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible scheduling" }
+            ]
+          }
+        },
+        {
+          "id": "exterior_additional_notes",
+          "type": "text_field",
+          "title": "Additional notes or specific requirements",
+          "required": false,
+          "config": {
+            "placeholder": "Access restrictions, special coatings, neighbour considerations, etc."
+          }
+        }
+      ],
+      "promptTemplate": "Create a comprehensive exterior painting and finishing service brief that covers:\nScope: {{exterior_scope}}\nMasonry surfaces: {{masonry_surface_type}}, {{masonry_surface_condition}}, {{masonry_coating_history}}, {{masonry_paint_preference}}, {{masonry_surface_area}}, {{masonry_surface_issues}}\nAccess and finish preferences: {{masonry_access_requirements}}, {{masonry_finish_type}}, {{masonry_colour_scheme}}, {{masonry_paint_supply}}\nTimber details: {{timber_surface_type}}, {{timber_coating_history}}, {{timber_finish_preference}}, {{timber_condition_state}}, {{timber_prep_requirements}}, {{timber_access_height}}, {{timber_environment_exposure}}, {{timber_material_supply}}\nMetalwork preparation: {{metalwork_type}}, {{metal_condition}}, {{rust_treatment_scope}}, {{metal_coating_preference}}, {{metal_finish_desired}}, {{metal_access_conditions}}, {{metal_colour_matching}}, {{metal_environment}}\nWeatherproofing goals: {{weatherproofing_areas}}, {{weatherproofing_goal}}, {{weatherproofing_surface_material}}, {{weatherproofing_surface_state}}, {{weatherproofing_product_preference}}, {{weatherproofing_existing_layer}}, {{weatherproofing_exposure}}, {{weatherproofing_lifespan}}\nPreparation and cleaning: {{power_wash_surfaces}}, {{power_wash_materials}}, {{power_wash_contamination}}, {{power_wash_result}}, {{power_wash_water_source}}, {{power_wash_power_source}}, {{power_wash_access}}, {{power_wash_wastewater}}, {{power_wash_follow_up}}\nTimeline: {{exterior_project_timeline}}\nNotes: {{exterior_additional_notes}}"
+    },
+    {
+      "id": "venetian_plaster_finisher",
+      "label": "Decorative Plaster & Feature Finish Specialist",
+      "icon": "✨",
+      "description": "Specialist decorative finishes including Venetian plaster, stucco, murals, feature walls, and metallic/pearlescent coatings",
+      "budgetRange": {
+        "min": 80,
+        "max": 250
+      },
+      "blocks": [
+        {
+          "id": "decorative_scope",
+          "type": "type_selector",
+          "title": "Which decorative finish services are needed?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "venetian", "label": "Venetian plaster finishes" },
+              { "value": "stucco", "label": "Stucco or textured finishes" },
+              { "value": "murals", "label": "Murals or artistic effects" },
+              { "value": "feature_walls", "label": "Feature walls & design patterns" },
+              { "value": "metallic", "label": "Metallic, pearlescent or limewash coatings" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_style_preference",
+          "type": "type_selector",
+          "title": "Preferred Venetian plaster style?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "marmorino", "label": "Marmorino (smooth marble-like)" },
+              { "value": "tadelakt", "label": "Tadelakt (Moroccan polished finish)" },
+              { "value": "stucco_veneziano", "label": "Stucco Veneziano (classic high gloss)" },
+              { "value": "recommendation", "label": "Not sure – need recommendation" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_application_area",
+          "type": "type_selector",
+          "title": "Where will Venetian plaster be applied?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "feature_wall", "label": "Feature wall" },
+              { "value": "full_room", "label": "Full room" },
+              { "value": "bathroom", "label": "Bathroom / wet area" },
+              { "value": "fireplace", "label": "Fireplace or niche" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_surface_size",
+          "type": "type_selector",
+          "title": "Approximate Venetian plaster surface size?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_10", "label": "Under 10 m²" },
+              { "value": "10_30", "label": "10–30 m²" },
+              { "value": "30_60", "label": "30–60 m²" },
+              { "value": "over_60", "label": "Large surface (over 60 m²)" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_existing_surface",
+          "type": "type_selector",
+          "title": "Existing wall condition for Venetian plaster?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth_painted", "label": "Smooth and painted" },
+              { "value": "fresh_plaster", "label": "Fresh plaster / new substrate" },
+              { "value": "rough", "label": "Rough or uneven" },
+              { "value": "removal_needed", "label": "Needs old finish removal" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_sheen_level",
+          "type": "type_selector",
+          "title": "Desired sheen level for Venetian plaster?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "matt", "label": "Matt" },
+              { "value": "satin", "label": "Satin / subtle sheen" },
+              { "value": "high_gloss", "label": "High gloss / mirror polish" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_colour_tone",
+          "type": "type_selector",
+          "title": "Preferred colour tones for Venetian plaster?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "light_neutrals", "label": "Light neutrals (white, beige, sand)" },
+              { "value": "warm_tones", "label": "Warm tones (terracotta, gold, clay)" },
+              { "value": "cool_tones", "label": "Cool tones (grey, blue, stone)" },
+              { "value": "bespoke", "label": "Bespoke mix / sample match" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_sealer_required",
+          "type": "type_selector",
+          "title": "Sealer or wax finish required for Venetian plaster?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "waterproof", "label": "Yes – waterproof sealant" },
+              { "value": "decorative_only", "label": "No – decorative only" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_moisture_resistance",
+          "type": "type_selector",
+          "title": "Moisture resistance needed (bathroom / kitchen)?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_timeline",
+          "type": "type_selector",
+          "title": "Timeline for Venetian plaster completion?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent (within 1 week)" },
+              { "value": "2_3_weeks", "label": "2–3 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "venetian_material_supply",
+          "type": "type_selector",
+          "title": "Material supply preference for Venetian plaster?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "labour_only", "label": "Labour only" },
+              { "value": "labour_materials", "label": "Labour + materials" },
+              { "value": "both", "label": "Both options" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_texture_type",
+          "type": "type_selector",
+          "title": "Preferred stucco or textured finish type?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fine", "label": "Fine grain / subtle texture" },
+              { "value": "medium", "label": "Medium texture (hand-applied)" },
+              { "value": "heavy", "label": "Heavy / rustic texture" },
+              { "value": "patterned", "label": "Patterned relief" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_application_area",
+          "type": "type_selector",
+          "title": "Where will textured finishes be applied?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "interior_walls", "label": "Interior walls" },
+              { "value": "exterior", "label": "Exterior façade" },
+              { "value": "ceiling", "label": "Ceiling feature" },
+              { "value": "columns", "label": "Columns / details" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_surface_condition",
+          "type": "type_selector",
+          "title": "Base surface condition for textured work?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth", "label": "Smooth plaster" },
+              { "value": "painted", "label": "Painted surface" },
+              { "value": "uneven", "label": "Uneven or damaged wall" },
+              { "value": "new_render", "label": "Newly rendered surface" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_colour_preference",
+          "type": "type_selector",
+          "title": "Colour preference for textured finishes?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "match", "label": "Match existing colour" },
+              { "value": "lime", "label": "Natural lime tones" },
+              { "value": "bold", "label": "Bold decorative colour" },
+              { "value": "undecided", "label": "Undecided" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_finish_style",
+          "type": "type_selector",
+          "title": "Preferred finish style for textured work?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "matt", "label": "Matt natural" },
+              { "value": "waxed", "label": "Waxed sheen" },
+              { "value": "metallic", "label": "Metallic touch" },
+              { "value": "distressed", "label": "Distressed / aged" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_prep_required",
+          "type": "type_selector",
+          "title": "Surface prep required before textured finish?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sanding", "label": "Light sanding" },
+              { "value": "skim", "label": "Full skim coat" },
+              { "value": "crack_repair", "label": "Crack repair & filling" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_protective_coating",
+          "type": "type_selector",
+          "title": "Protective coating or sealant needed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes – to prevent dust or moisture" },
+              { "value": "no", "label": "No – decorative only" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_material_base",
+          "type": "type_selector",
+          "title": "Preferred material base for textured finishes?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "lime", "label": "Lime-based" },
+              { "value": "acrylic", "label": "Acrylic / synthetic" },
+              { "value": "clay", "label": "Clay or mineral mix" }
+            ]
+          }
+        },
+        {
+          "id": "stucco_area_size",
+          "type": "type_selector",
+          "title": "Size of area for textured finishes?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_10", "label": "1–10 m²" },
+              { "value": "10_30", "label": "10–30 m²" },
+              { "value": "30_100", "label": "30–100 m²" },
+              { "value": "whole_exterior", "label": "Whole property exterior" }
+            ]
+          }
+        },
+        {
+          "id": "mural_design_type",
+          "type": "type_selector",
+          "title": "Type of mural or artistic design desired?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "abstract", "label": "Abstract / modern art" },
+              { "value": "nature", "label": "Nature / landscape" },
+              { "value": "logo", "label": "Logo or brand artwork" },
+              { "value": "themed", "label": "Themed (kids' room, bar, restaurant)" }
+            ]
+          }
+        },
+        {
+          "id": "mural_location",
+          "type": "type_selector",
+          "title": "Placement location for mural?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "interior_wall", "label": "Interior wall" },
+              { "value": "exterior", "label": "Exterior façade" },
+              { "value": "ceiling", "label": "Ceiling" },
+              { "value": "furniture", "label": "Furniture / feature panel" }
+            ]
+          }
+        },
+        {
+          "id": "mural_size",
+          "type": "type_selector",
+          "title": "Approximate size of mural?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_2x2", "label": "Under 2m x 2m" },
+              { "value": "medium", "label": "Medium (2–5m width)" },
+              { "value": "large", "label": "Large (5–10m width)" },
+              { "value": "full_wall", "label": "Full wall or wraparound" }
+            ]
+          }
+        },
+        {
+          "id": "mural_surface_material",
+          "type": "type_selector",
+          "title": "Surface material for mural?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth", "label": "Smooth plaster" },
+              { "value": "rendered", "label": "Rendered wall" },
+              { "value": "brick", "label": "Brick / stone" },
+              { "value": "wood", "label": "Wood panel" }
+            ]
+          }
+        },
+        {
+          "id": "mural_design_concept",
+          "type": "type_selector",
+          "title": "Do you have a design concept ready?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes – provide artwork or reference" },
+              { "value": "rough", "label": "Rough idea only" },
+              { "value": "assistance", "label": "Need design assistance" }
+            ]
+          }
+        },
+        {
+          "id": "mural_colour_palette",
+          "type": "type_selector",
+          "title": "Colour palette preference for mural?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "monochrome", "label": "Monochrome" },
+              { "value": "vibrant", "label": "Vibrant multi-colour" },
+              { "value": "pastel", "label": "Pastel / soft tones" },
+              { "value": "metallic", "label": "Metallic / reflective" }
+            ]
+          }
+        },
+        {
+          "id": "mural_finish_preference",
+          "type": "type_selector",
+          "title": "Preferred finish for mural?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "matt", "label": "Matt paint" },
+              { "value": "semi_gloss", "label": "Semi-gloss" },
+              { "value": "varnished", "label": "Varnished / protective seal" }
+            ]
+          }
+        },
+        {
+          "id": "mural_location_exposure",
+          "type": "type_selector",
+          "title": "Mural location exposure?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "indoor", "label": "Indoor" },
+              { "value": "outdoor", "label": "Outdoor – UV protection needed" }
+            ]
+          }
+        },
+        {
+          "id": "mural_lighting_integration",
+          "type": "type_selector",
+          "title": "Lighting or framing integration required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes – spotlights / backlight" },
+              { "value": "no", "label": "No – painting only" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_type",
+          "type": "type_selector",
+          "title": "Type of feature wall desired?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "painted", "label": "Painted geometric or gradient design" },
+              { "value": "textured", "label": "Textured plaster or stucco" },
+              { "value": "wallpaper", "label": "Wallpaper / wallcovering" },
+              { "value": "mixed", "label": "Mixed media (paint + texture)" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_area",
+          "type": "type_selector",
+          "title": "Feature wall area or dimensions?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard wall (3–5m wide)" },
+              { "value": "large", "label": "Large / open-plan feature" },
+              { "value": "full_room", "label": "Full room wrap" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_colour_scheme",
+          "type": "type_selector",
+          "title": "Colour scheme for feature wall?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "match", "label": "Match existing decor" },
+              { "value": "accent", "label": "Accent contrast" },
+              { "value": "custom", "label": "Custom palette consultation" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_surface_condition",
+          "type": "type_selector",
+          "title": "Surface condition of feature wall?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ready", "label": "Ready to paint" },
+              { "value": "repair", "label": "Needs repair or skim" },
+              { "value": "wallpapered", "label": "Previously wallpapered" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_effects",
+          "type": "type_selector",
+          "title": "Special effects or patterns desired?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "ombre", "label": "Ombre / gradient blend" },
+              { "value": "stencils", "label": "Stencils / line work" },
+              { "value": "metallic", "label": "Metallic or pearl sheen" },
+              { "value": "custom", "label": "Custom artistic pattern" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_sample_boards",
+          "type": "type_selector",
+          "title": "Do you require sample boards before work begins?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_finish_type",
+          "type": "type_selector",
+          "title": "Preferred finish type for feature wall?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "matt", "label": "Matt" },
+              { "value": "satin", "label": "Satin / sheen" },
+              { "value": "gloss", "label": "Gloss or metallic" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_room_environment",
+          "type": "type_selector",
+          "title": "Room environment for feature wall?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "living", "label": "Living area" },
+              { "value": "bedroom", "label": "Bedroom" },
+              { "value": "bathroom", "label": "Bathroom / kitchen" },
+              { "value": "commercial", "label": "Commercial space" }
+            ]
+          }
+        },
+        {
+          "id": "feature_wall_material_supply",
+          "type": "type_selector",
+          "title": "Material supply preference for feature wall?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "labour_only", "label": "Labour only" },
+              { "value": "labour_materials", "label": "Labour + materials" },
+              { "value": "both", "label": "Both options" }
+            ]
+          }
+        },
+        {
+          "id": "special_finish_focus",
+          "type": "type_selector",
+          "title": "Which specialist finish is required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "metallic", "label": "Metallic (bronze, gold, silver)" },
+              { "value": "pearlescent", "label": "Pearlescent shimmer" },
+              { "value": "limewash", "label": "Natural limewash" },
+              { "value": "combination", "label": "Combination / gradient" }
+            ]
+          }
+        },
+        {
+          "id": "special_finish_locations",
+          "type": "type_selector",
+          "title": "Where will metallic, pearlescent, or limewash finishes be applied?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "interior_walls", "label": "Interior walls" },
+              { "value": "ceiling", "label": "Ceiling or feature panel" },
+              { "value": "exterior", "label": "Exterior façade" },
+              { "value": "furniture", "label": "Furniture / decorative element" }
+            ]
+          }
+        },
+        {
+          "id": "special_surface_condition",
+          "type": "type_selector",
+          "title": "Surface condition before specialist finish?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth", "label": "Smooth and painted" },
+              { "value": "fresh", "label": "Fresh plaster" },
+              { "value": "prep_needed", "label": "Needs prep or sanding" }
+            ]
+          }
+        },
+        {
+          "id": "special_tone_preference",
+          "type": "type_selector",
+          "title": "Preferred tone or effect for specialist finish?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "warm", "label": "Warm metallics (gold, copper)" },
+              { "value": "cool", "label": "Cool tones (silver, steel, pearl)" },
+              { "value": "earthy", "label": "Earthy limewash shades" },
+              { "value": "custom", "label": "Custom finish" }
+            ]
+          }
+        },
+        {
+          "id": "special_sheen_level",
+          "type": "type_selector",
+          "title": "Desired sheen level for specialist finish?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "subtle", "label": "Subtle shimmer" },
+              { "value": "moderate", "label": "Moderate reflection" },
+              { "value": "high_gloss", "label": "High-gloss statement" }
+            ]
+          }
+        },
+        {
+          "id": "special_application_method",
+          "type": "type_selector",
+          "title": "Preferred application method?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "trowelled", "label": "Hand trowelled" },
+              { "value": "rolled", "label": "Rolled and brushed" },
+              { "value": "spray", "label": "Spray-applied finish" }
+            ]
+          }
+        },
+        {
+          "id": "special_durability_requirement",
+          "type": "type_selector",
+          "title": "Durability requirements for specialist finish?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "decorative", "label": "Decorative only" },
+              { "value": "washable", "label": "Washable surface" },
+              { "value": "weather_resistant", "label": "Weather-resistant" }
+            ]
+          }
+        },
+        {
+          "id": "special_topcoat_required",
+          "type": "type_selector",
+          "title": "Protective topcoat required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes – sealant or wax finish" },
+              { "value": "no", "label": "No – natural effect" }
+            ]
+          }
+        },
+        {
+          "id": "special_material_supply",
+          "type": "type_selector",
+          "title": "Material supply preference for specialist finishes?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "labour_only", "label": "Labour only" },
+              { "value": "labour_materials", "label": "Labour + materials" },
+              { "value": "both", "label": "Both options" }
+            ]
+          }
+        },
+        {
+          "id": "decorative_schedule",
+          "type": "type_selector",
+          "title": "Overall project timeline for decorative finishes?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent (within 1 week)" },
+              { "value": "2_3_weeks", "label": "2–3 weeks" },
+              { "value": "1_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "decorative_additional_notes",
+          "type": "text_field",
+          "title": "Additional design notes or references",
+          "required": false,
+          "config": {
+            "placeholder": "Preferred inspiration images, texture references, or coordination requirements."
+          }
+        }
+      ],
+      "promptTemplate": "Create a detailed decorative finishes project brief covering:\nScope: {{decorative_scope}}\nVenetian plaster details: {{venetian_style_preference}}, {{venetian_application_area}}, {{venetian_surface_size}}, {{venetian_existing_surface}}, {{venetian_sheen_level}}, {{venetian_colour_tone}}, {{venetian_sealer_required}}, {{venetian_moisture_resistance}}, {{venetian_timeline}}, {{venetian_material_supply}}\nTextured finishes: {{stucco_texture_type}}, {{stucco_application_area}}, {{stucco_surface_condition}}, {{stucco_colour_preference}}, {{stucco_finish_style}}, {{stucco_prep_required}}, {{stucco_protective_coating}}, {{stucco_material_base}}, {{stucco_area_size}}\nMurals and artistic effects: {{mural_design_type}}, {{mural_location}}, {{mural_size}}, {{mural_surface_material}}, {{mural_design_concept}}, {{mural_colour_palette}}, {{mural_finish_preference}}, {{mural_location_exposure}}, {{mural_lighting_integration}}\nFeature walls and design patterns: {{feature_wall_type}}, {{feature_wall_area}}, {{feature_wall_colour_scheme}}, {{feature_wall_surface_condition}}, {{feature_wall_effects}}, {{feature_wall_sample_boards}}, {{feature_wall_finish_type}}, {{feature_wall_room_environment}}, {{feature_wall_material_supply}}\nSpecialist coatings: {{special_finish_focus}}, {{special_finish_locations}}, {{special_surface_condition}}, {{special_tone_preference}}, {{special_sheen_level}}, {{special_application_method}}, {{special_durability_requirement}}, {{special_topcoat_required}}, {{special_material_supply}}\nTimeline: {{decorative_schedule}}\nNotes: {{decorative_additional_notes}}"
+    },
+    {
+      "id": "interior_painter",
+      "label": "Interior Painting & Surface Preparation",
+      "icon": "🖌️",
+      "description": "Professional interior painting and surface preparation including sanding, filling, wallpaper removal, priming, and repair work",
+      "budgetRange": {
+        "min": 50,
+        "max": 150
+      },
+      "blocks": [
+        {
+          "id": "preparation_focus",
+          "type": "type_selector",
+          "title": "Which preparation services are required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sanding_filling", "label": "Sanding & Filling" },
+              { "value": "wallpaper_removal", "label": "Wallpaper Removal" },
+              { "value": "primer_base", "label": "Primer & Base Coating" },
+              { "value": "crack_repairs", "label": "Crack Repairs & Caulking" },
+              { "value": "plaster_touchups", "label": "Plaster Touch-Ups" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_surfaces",
+          "type": "type_selector",
+          "title": "Surfaces needing sanding and filling?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "walls", "label": "Walls" },
+              { "value": "ceilings", "label": "Ceilings" },
+              { "value": "doors_trims", "label": "Doors / trims" },
+              { "value": "furniture", "label": "Furniture or joinery" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_surface_condition",
+          "type": "type_selector",
+          "title": "Condition of surfaces for sanding?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "light", "label": "Light imperfections only" },
+              { "value": "peeling", "label": "Peeling paint or small cracks" },
+              { "value": "rough", "label": "Rough, uneven, or flaking surfaces" },
+              { "value": "wallpapered", "label": "Previously wallpapered" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_finish_level",
+          "type": "type_selector",
+          "title": "Finish level required before painting?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard (paint-ready)" },
+              { "value": "high_grade", "label": "High-grade smooth (for gloss or spray finish)" },
+              { "value": "level_5", "label": "Perfect level-5 finish (show surface quality)" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_material_type",
+          "type": "type_selector",
+          "title": "Material types involved?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "plaster", "label": "Plaster / drywall" },
+              { "value": "wood", "label": "Wood" },
+              { "value": "metal", "label": "Metal" },
+              { "value": "mixed", "label": "Mixed surfaces" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_dust_control",
+          "type": "type_selector",
+          "title": "Dust control preference during sanding?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard sanding" },
+              { "value": "low_dust", "label": "Low-dust / vacuum system required" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_area_size",
+          "type": "type_selector",
+          "title": "Approximate area to prepare?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "3_5_rooms", "label": "3–5 rooms" },
+              { "value": "whole_property", "label": "Whole property" },
+              { "value": "feature_only", "label": "Feature walls or detailing only" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_repairs_included",
+          "type": "type_selector",
+          "title": "Repairs or filling included?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "light_filler", "label": "Light filler only" },
+              { "value": "deep_cracks", "label": "Deep crack repairs" },
+              { "value": "full_skim", "label": "Full surface skim required" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_access",
+          "type": "type_selector",
+          "title": "Any high or hard-to-reach areas?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "no", "label": "No" },
+              { "value": "ladders", "label": "Yes – ladders needed" },
+              { "value": "scaffolding", "label": "Yes – scaffolding required" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_removal_scope",
+          "type": "type_selector",
+          "title": "Wallpaper removal scope?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_wall", "label": "1 wall" },
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "3_plus", "label": "3+ rooms" },
+              { "value": "whole_property", "label": "Whole property" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_type",
+          "type": "type_selector",
+          "title": "Type of wallpaper currently installed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard paper" },
+              { "value": "vinyl", "label": "Vinyl-coated" },
+              { "value": "fabric", "label": "Fabric-backed / textured" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_condition",
+          "type": "type_selector",
+          "title": "Condition of the wallpaper?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "loose", "label": "Loose / peeling" },
+              { "value": "firm", "label": "Firmly adhered" },
+              { "value": "multiple_layers", "label": "Multiple layers" }
+            ]
+          }
+        },
+        {
+          "id": "surface_beneath_wallpaper",
+          "type": "type_selector",
+          "title": "Surface beneath wallpaper?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "painted", "label": "Painted plaster" },
+              { "value": "bare", "label": "Bare plasterboard" },
+              { "value": "unsure", "label": "Unsure / mixed" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_residue_cleaning",
+          "type": "type_selector",
+          "title": "Wall washing or residue removal afterward?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes – ready to paint" },
+              { "value": "no", "label": "No – just strip the paper" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_obstacles",
+          "type": "type_selector",
+          "title": "Obstacles or details to protect during removal?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "switches", "label": "Light switches / sockets" },
+              { "value": "furniture", "label": "Built-in furniture" },
+              { "value": "coving", "label": "Ceiling coving / trims" },
+              { "value": "none", "label": "No major obstacles" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_utility_access",
+          "type": "type_selector",
+          "title": "Access to water and electricity for steam removal?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_follow_up",
+          "type": "type_selector",
+          "title": "Follow-up work needed after wallpaper removal?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "repainting", "label": "Repainting" },
+              { "value": "repapering", "label": "Re-papering" },
+              { "value": "skimming", "label": "Skimming or plaster repair" }
+            ]
+          }
+        },
+        {
+          "id": "primer_surfaces",
+          "type": "type_selector",
+          "title": "Surfaces needing primer or base coat?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "bare_plaster", "label": "Bare plaster" },
+              { "value": "wood", "label": "Wood" },
+              { "value": "metal", "label": "Metal" },
+              { "value": "mixed", "label": "Mixed materials" }
+            ]
+          }
+        },
+        {
+          "id": "primer_purpose",
+          "type": "type_selector",
+          "title": "Purpose of primer application?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "first_coat", "label": "First coat before painting" },
+              { "value": "stain_blocking", "label": "Stain blocking / sealing" },
+              { "value": "adhesion", "label": "Adhesion on tricky surfaces" },
+              { "value": "moisture", "label": "Moisture protection" }
+            ]
+          }
+        },
+        {
+          "id": "primer_surface_condition",
+          "type": "type_selector",
+          "title": "Surface condition before priming?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "clean", "label": "Clean and smooth" },
+              { "value": "porous", "label": "Slightly porous or dusty" },
+              { "value": "uneven", "label": "Uneven or patched" }
+            ]
+          }
+        },
+        {
+          "id": "primer_type_preference",
+          "type": "type_selector",
+          "title": "Preferred primer type?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "water_based", "label": "Water-based" },
+              { "value": "oil_based", "label": "Oil-based" },
+              { "value": "eco", "label": "Eco / low-VOC" },
+              { "value": "recommendation", "label": "Contractor to recommend" }
+            ]
+          }
+        },
+        {
+          "id": "primer_coats_required",
+          "type": "type_selector",
+          "title": "How many coats are required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1", "label": "1 base coat" },
+              { "value": "2_plus", "label": "2 or more for sealing coverage" },
+              { "value": "unsure", "label": "Unsure – need advice" }
+            ]
+          }
+        },
+        {
+          "id": "primer_area_size",
+          "type": "type_selector",
+          "title": "Size or area to be primed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "3_5_rooms", "label": "3–5 rooms" },
+              { "value": "whole_property", "label": "Whole property" }
+            ]
+          }
+        },
+        {
+          "id": "primer_space_status",
+          "type": "type_selector",
+          "title": "Is the area empty or occupied?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "empty", "label": "Empty" },
+              { "value": "furnished", "label": "Furnished – needs protection" }
+            ]
+          }
+        },
+        {
+          "id": "primer_follow_up_finish",
+          "type": "type_selector",
+          "title": "Follow-up finishing required after priming?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes – full painting" },
+              { "value": "no", "label": "No – primer only" }
+            ]
+          }
+        },
+        {
+          "id": "crack_types",
+          "type": "type_selector",
+          "title": "Types of cracks or gaps to repair?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "hairline", "label": "Hairline cracks only" },
+              { "value": "medium", "label": "Medium wall cracks" },
+              { "value": "deep", "label": "Deep structural or joint cracks" },
+              { "value": "gaps", "label": "Gaps between trims or panels" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a detailed interior painting and surface preparation brief covering:\nPreparation scope: {{preparation_focus}}\nSanding and filling: {{sanding_surfaces}}, {{sanding_surface_condition}}, {{sanding_finish_level}}, {{sanding_material_type}}, {{sanding_dust_control}}, {{sanding_area_size}}, {{sanding_repairs_included}}, {{sanding_access}}\nWallpaper removal: {{wallpaper_removal_scope}}, {{wallpaper_type}}, {{wallpaper_condition}}, {{surface_beneath_wallpaper}}, {{wallpaper_residue_cleaning}}, {{wallpaper_obstacles}}, {{wallpaper_utility_access}}, {{wallpaper_follow_up}}\nPrimer and base coating: {{primer_surfaces}}, {{primer_purpose}}, {{primer_surface_condition}}, {{primer_type_preference}}, {{primer_coats_required}}, {{primer_area_size}}, {{primer_space_status}}, {{primer_follow_up_finish}}\nCrack repairs: {{crack_types}}"
+    }
+  ]
+}
