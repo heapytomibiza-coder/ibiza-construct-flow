@@ -105,9 +105,17 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           s => s.id === serviceId
         );
         
-        if (staticService) {
+      if (staticService) {
           console.log('✅ Loaded questions from static JSON:', serviceId);
-          const questions = transformServiceToQuestions(staticService);
+          let questions = transformServiceToQuestions(staticService);
+          
+          // Defensive filter: ensure no logistics questions slip through
+          const logisticsIds = ['job_location', 'location', 'start_time', 'start_date', 
+                                'preferred_date', 'project_assets', 'budget', 'budget_range',
+                                'timeline', 'completion_date', 'access', 'access_details', 
+                                'consultation', 'consultation_type'];
+          questions = questions.filter(q => !logisticsIds.includes(q.id));
+          
           setQuestions(questions);
           setPackSource('static_json');
           setLoading(false);

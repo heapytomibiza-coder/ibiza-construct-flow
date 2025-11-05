@@ -56,10 +56,37 @@ export function transformBlockToAIQuestion(block: ServiceBlock): AIQuestion {
 }
 
 /**
+ * Logistics question IDs that should be filtered out from Step 4
+ * These are handled in Step 5 (LogisticsStep)
+ */
+const LOGISTICS_QUESTION_IDS = [
+  'job_location',
+  'location',
+  'start_time',
+  'start_date',
+  'preferred_date',
+  'project_assets',
+  'budget',
+  'budget_range',
+  'timeline',
+  'completion_date',
+  'access',
+  'access_details',
+  'consultation',
+  'consultation_type'
+];
+
+/**
  * Transform all blocks in a service to AIQuestion array
+ * Filters out logistics questions that are handled in Step 5
  */
 export function transformServiceToQuestions(
   service: ConstructionService
 ): AIQuestion[] {
-  return service.blocks.map(transformBlockToAIQuestion);
+  // Filter out logistics questions
+  const filteredBlocks = service.blocks.filter(
+    block => !LOGISTICS_QUESTION_IDS.includes(block.id)
+  );
+  
+  return filteredBlocks.map(transformBlockToAIQuestion);
 }
