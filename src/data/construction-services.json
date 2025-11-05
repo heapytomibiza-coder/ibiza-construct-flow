@@ -951,6 +951,744 @@
         }
       ],
       "promptTemplate": "Generate a brickwork and cavity wall brief covering work type ({{work_type}}), brick type ({{brick_type}}), cavity configuration ({{cavity_wall}}), wall size ({{wall_size}}), bond pattern ({{bond_pattern}}), mortar colour ({{mortar_colour}}), pointing style ({{pointing_style}}), access ({{access_requirements}}), and material supply ({{material_supply}})."
+    },
+    {
+      "id": "natural-stone-masonry",
+      "label": "Natural Stone Masonry",
+      "icon": "Stone",
+      "description": "Stone walling, cladding, and retaining structures using natural stone.",
+      "budgetRange": { "min": 2200, "max": 35000 },
+      "blocks": [
+        {
+          "id": "stone_type",
+          "type": "type_selector",
+          "title": "Stone type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "sandstone", "label": "Sandstone" },
+              { "value": "limestone", "label": "Limestone" },
+              { "value": "granite", "label": "Granite" },
+              { "value": "ibiza", "label": "Ibiza local stone" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "stone_format",
+          "type": "type_selector",
+          "title": "Stone format",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "rough", "label": "Rough / irregular" },
+              { "value": "cut_blocks", "label": "Cut blocks" },
+              { "value": "veneer", "label": "Veneer cladding" },
+              { "value": "dry_stone", "label": "Dry-stone" }
+            ]
+          }
+        },
+        {
+          "id": "stone_purpose",
+          "type": "type_selector",
+          "title": "Purpose",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "retaining_wall", "label": "Retaining wall" },
+              { "value": "decorative_wall", "label": "Decorative wall" },
+              { "value": "boundary", "label": "Boundary" },
+              { "value": "facade", "label": "Building façade" }
+            ]
+          }
+        },
+        {
+          "id": "stone_wall_height",
+          "type": "type_selector",
+          "title": "Wall height",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_1m", "label": "Under 1 m" },
+              { "value": "1_2m", "label": "1–2 m" },
+              { "value": "over_2m", "label": "Over 2 m" }
+            ]
+          }
+        },
+        {
+          "id": "mortar_finish",
+          "type": "type_selector",
+          "title": "Mortar finish",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "dry_stone", "label": "Dry-stone (no mortar)" },
+              { "value": "lime", "label": "Lime mortar" },
+              { "value": "cement", "label": "Cement mortar" }
+            ]
+          }
+        },
+        {
+          "id": "stone_foundation",
+          "type": "type_selector",
+          "title": "Foundation required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "existing", "label": "Existing" }
+            ]
+          }
+        },
+        {
+          "id": "stone_drainage",
+          "type": "type_selector",
+          "title": "Drainage behind wall?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "stone_supply",
+          "type": "type_selector",
+          "title": "Stone supply",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client", "label": "Client provides" },
+              { "value": "contractor", "label": "Contractor sources locally" },
+              { "value": "tbc", "label": "To be confirmed" }
+            ]
+          }
+        },
+        {
+          "id": "stone_access",
+          "type": "type_selector",
+          "title": "Access for delivery",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy", "label": "Easy" },
+              { "value": "moderate", "label": "Moderate" },
+              { "value": "difficult", "label": "Difficult" }
+            ]
+          }
+        },
+        {
+          "id": "stone_timeline",
+          "type": "type_selector",
+          "title": "Start timeframe",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "Within 2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Outline a natural stone masonry project covering stone type ({{stone_type}}), format ({{stone_format}}), purpose ({{stone_purpose}}), wall height ({{stone_wall_height}}), mortar finish ({{mortar_finish}}), foundation needs ({{stone_foundation}}), drainage ({{stone_drainage}}), supply responsibility ({{stone_supply}}), access ({{stone_access}}), and start timeframe ({{stone_timeline}})."
+    },
+    {
+      "id": "retaining-walls",
+      "label": "Retaining Walls (Concrete, Stone, Gabion)",
+      "icon": "Barrier",
+      "description": "Design and construction of retaining walls for landscaping and structural support.",
+      "budgetRange": { "min": 2500, "max": 45000 },
+      "blocks": [
+        {
+          "id": "retaining_type",
+          "type": "type_selector",
+          "title": "Type of retaining wall",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concrete_block", "label": "Concrete block" },
+              { "value": "reinforced_concrete", "label": "Reinforced concrete" },
+              { "value": "natural_stone", "label": "Natural stone" },
+              { "value": "gabion", "label": "Gabion baskets" }
+            ]
+          }
+        },
+        {
+          "id": "retaining_purpose",
+          "type": "type_selector",
+          "title": "Purpose / location",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "garden", "label": "Garden / landscaping" },
+              { "value": "driveway", "label": "Driveway" },
+              { "value": "structural", "label": "Structural foundation" },
+              { "value": "boundary", "label": "Boundary" }
+            ]
+          }
+        },
+        {
+          "id": "wall_length",
+          "type": "type_selector",
+          "title": "Wall length",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_5m", "label": "Under 5 m" },
+              { "value": "5_15m", "label": "5–15 m" },
+              { "value": "over_15m", "label": "15 m+" }
+            ]
+          }
+        },
+        {
+          "id": "wall_height",
+          "type": "type_selector",
+          "title": "Wall height",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "up_to_1m", "label": "Up to 1 m" },
+              { "value": "1_2m", "label": "1–2 m" },
+              { "value": "2_3m", "label": "2–3 m" },
+              { "value": "over_3m", "label": "Over 3 m" }
+            ]
+          }
+        },
+        {
+          "id": "retaining_footings",
+          "type": "type_selector",
+          "title": "Footings required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "existing", "label": "Existing" }
+            ]
+          }
+        },
+        {
+          "id": "retaining_drainage",
+          "type": "type_selector",
+          "title": "Drainage behind wall",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "required", "label": "Required" },
+              { "value": "not_needed", "label": "Not needed" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "retaining_reinforcement",
+          "type": "type_selector",
+          "title": "Reinforcement required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "retaining_finish",
+          "type": "type_selector",
+          "title": "Finish",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "rendered", "label": "Rendered" },
+              { "value": "exposed_concrete", "label": "Exposed concrete" },
+              { "value": "stone_face", "label": "Natural stone face" },
+              { "value": "painted", "label": "Painted" }
+            ]
+          }
+        },
+        {
+          "id": "site_access",
+          "type": "type_selector",
+          "title": "Access to site",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy", "label": "Easy" },
+              { "value": "moderate", "label": "Moderate" },
+              { "value": "difficult", "label": "Difficult" }
+            ]
+          }
+        },
+        {
+          "id": "retaining_timeline",
+          "type": "type_selector",
+          "title": "Start timeframe",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "Within 2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Summarize a retaining wall project detailing wall type ({{retaining_type}}), purpose ({{retaining_purpose}}), length ({{wall_length}}), height ({{wall_height}}), footing needs ({{retaining_footings}}), drainage ({{retaining_drainage}}), reinforcement ({{retaining_reinforcement}}), finish ({{retaining_finish}}), site access ({{site_access}}), and start timeframe ({{retaining_timeline}})."
+    },
+    {
+      "id": "load-bearing-partitions",
+      "label": "Load-Bearing Partitions",
+      "icon": "Support",
+      "description": "Construction of structural partition walls in renovations, extensions, and commercial spaces.",
+      "budgetRange": { "min": 1200, "max": 18000 },
+      "blocks": [
+        {
+          "id": "structure_type",
+          "type": "type_selector",
+          "title": "Type of structure",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_build", "label": "New build" },
+              { "value": "renovation", "label": "Renovation" },
+              { "value": "extension", "label": "Extension" },
+              { "value": "commercial", "label": "Commercial" }
+            ]
+          }
+        },
+        {
+          "id": "partition_material",
+          "type": "type_selector",
+          "title": "Material",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "blockwork", "label": "Blockwork" },
+              { "value": "brickwork", "label": "Brickwork" },
+              { "value": "timber", "label": "Timber frame" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "wall_thickness",
+          "type": "type_selector",
+          "title": "Wall thickness",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "100mm", "label": "100 mm" },
+              { "value": "150mm", "label": "150 mm" },
+              { "value": "200mm", "label": "200 mm+" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "wall_height",
+          "type": "type_selector",
+          "title": "Height of wall",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard (2.4 m)" },
+              { "value": "double_height", "label": "Double height" },
+              { "value": "custom", "label": "Custom" }
+            ]
+          }
+        },
+        {
+          "id": "partition_reinforcement",
+          "type": "type_selector",
+          "title": "Reinforcement required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "none", "label": "None" },
+              { "value": "steel", "label": "Rebar / steel" },
+              { "value": "lintel", "label": "Lintel / beam support" }
+            ]
+          }
+        },
+        {
+          "id": "partition_finish",
+          "type": "type_selector",
+          "title": "Finishing required",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "plaster", "label": "Plaster" },
+              { "value": "render", "label": "Render" },
+              { "value": "tile", "label": "Tile" },
+              { "value": "paint", "label": "Paint" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "openings",
+          "type": "type_selector",
+          "title": "Openings (doors/windows)?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "tbc", "label": "To be confirmed" }
+            ]
+          }
+        },
+        {
+          "id": "access_conditions",
+          "type": "type_selector",
+          "title": "Access / working conditions",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground_floor", "label": "Ground floor" },
+              { "value": "upper_floor", "label": "Upper floor" },
+              { "value": "tight_space", "label": "Tight space" },
+              { "value": "easy", "label": "Easy access" }
+            ]
+          }
+        },
+        {
+          "id": "partition_drawings",
+          "type": "type_selector",
+          "title": "Plans / drawings available?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "awaiting", "label": "Awaiting" }
+            ]
+          }
+        },
+        {
+          "id": "partition_timeline",
+          "type": "type_selector",
+          "title": "Start timeframe",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "Within 2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Compose a load-bearing partition project brief describing structure type ({{structure_type}}), material ({{partition_material}}), thickness ({{wall_thickness}}), height ({{wall_height}}), reinforcement ({{partition_reinforcement}}), finish ({{partition_finish}}), openings ({{openings}}), access ({{access_conditions}}), drawings ({{partition_drawings}}), and start timeframe ({{partition_timeline}})."
+    },
+    {
+      "id": "rendered-decorative-walls",
+      "label": "Rendered & Decorative Walls",
+      "icon": "PaletteKnife",
+      "description": "Rendering and decorative finishes for interior and exterior walls.",
+      "budgetRange": { "min": 900, "max": 16000 },
+      "blocks": [
+        {
+          "id": "surface_type",
+          "type": "type_selector",
+          "title": "Type of surface",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "block", "label": "Block wall" },
+              { "value": "brick", "label": "Brick wall" },
+              { "value": "stone", "label": "Stone wall" },
+              { "value": "plastered", "label": "Plastered wall" }
+            ]
+          }
+        },
+        {
+          "id": "render_purpose",
+          "type": "type_selector",
+          "title": "Purpose",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "exterior", "label": "Exterior façade" },
+              { "value": "garden", "label": "Garden wall" },
+              { "value": "boundary", "label": "Boundary" },
+              { "value": "interior", "label": "Interior feature" }
+            ]
+          }
+        },
+        {
+          "id": "finish_type",
+          "type": "type_selector",
+          "title": "Finish type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth", "label": "Smooth render" },
+              { "value": "textured", "label": "Textured render" },
+              { "value": "polished", "label": "Polished plaster" },
+              { "value": "decorative", "label": "Decorative coating" }
+            ]
+          }
+        },
+        {
+          "id": "render_system",
+          "type": "type_selector",
+          "title": "Render system",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "traditional", "label": "Traditional sand & cement" },
+              { "value": "monocouche", "label": "Monocouche" },
+              { "value": "acrylic", "label": "Acrylic / silicone" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "colour_preference",
+          "type": "type_selector",
+          "title": "Colour / paint finish",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "white", "label": "White" },
+              { "value": "off_white", "label": "Off-white / beige" },
+              { "value": "coloured", "label": "Coloured" },
+              { "value": "tbc", "label": "To be confirmed" }
+            ]
+          }
+        },
+        {
+          "id": "area_size",
+          "type": "type_selector",
+          "title": "Area size",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (<20 m²)" },
+              { "value": "medium", "label": "Medium (20–50 m²)" },
+              { "value": "large", "label": "Large (50 m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "surface_condition",
+          "type": "type_selector",
+          "title": "Existing surface condition",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_wall", "label": "New wall" },
+              { "value": "old_render_removal", "label": "Old render removal" },
+              { "value": "cracked", "label": "Cracked / damaged" },
+              { "value": "painted", "label": "Painted surface" }
+            ]
+          }
+        },
+        {
+          "id": "render_access",
+          "type": "type_selector",
+          "title": "Access",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground", "label": "Ground level" },
+              { "value": "scaffolding", "label": "Requires scaffolding" },
+              { "value": "difficult", "label": "Difficult access" }
+            ]
+          }
+        },
+        {
+          "id": "render_materials",
+          "type": "type_selector",
+          "title": "Materials supplied by",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "contractor", "label": "Contractor" },
+              { "value": "client", "label": "Client" },
+              { "value": "tbc", "label": "To be confirmed" }
+            ]
+          }
+        },
+        {
+          "id": "render_timeline",
+          "type": "type_selector",
+          "title": "Timeline",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "two_weeks", "label": "Within 2 weeks" },
+              { "value": "one_two_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a rendered or decorative wall brief covering surface type ({{surface_type}}), purpose ({{render_purpose}}), finish ({{finish_type}}), system ({{render_system}}), colour ({{colour_preference}}), area ({{area_size}}), surface condition ({{surface_condition}}), access ({{render_access}}), material supply ({{render_materials}}), and timeline ({{render_timeline}})."
+    },
+    {
+      "id": "pointing-joint-finishing",
+      "label": "Pointing & Joint Finishing",
+      "icon": "Trowel",
+      "description": "Repointing, joint finishing, and restoration for brick, block, and stone walls.",
+      "budgetRange": { "min": 600, "max": 8000 },
+      "blocks": [
+        {
+          "id": "wall_type",
+          "type": "type_selector",
+          "title": "Type of wall",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "brick", "label": "Brick" },
+              { "value": "stone", "label": "Stone" },
+              { "value": "blockwork", "label": "Blockwork" },
+              { "value": "mixed", "label": "Mixed" }
+            ]
+          }
+        },
+        {
+          "id": "work_purpose",
+          "type": "type_selector",
+          "title": "Purpose of work",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "repoint", "label": "Repointing old wall" },
+              { "value": "new_build", "label": "New build finish" },
+              { "value": "patch", "label": "Patch repair" },
+              { "value": "decorative", "label": "Decorative" }
+            ]
+          }
+        },
+        {
+          "id": "joint_style",
+          "type": "type_selector",
+          "title": "Joint style required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "flush", "label": "Flush" },
+              { "value": "recessed", "label": "Recessed" },
+              { "value": "weather_struck", "label": "Weather struck" },
+              { "value": "tuck", "label": "Tuck / decorative" },
+              { "value": "match_existing", "label": "Match existing" }
+            ]
+          }
+        },
+        {
+          "id": "mortar_type",
+          "type": "type_selector",
+          "title": "Mortar type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "cement", "label": "Cement" },
+              { "value": "lime", "label": "Lime" },
+              { "value": "colour_matched", "label": "Colour-matched" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "wall_condition",
+          "type": "type_selector",
+          "title": "Wall condition",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "good", "label": "Good" },
+              { "value": "some_cracks", "label": "Some cracks / wear" },
+              { "value": "loose_joints", "label": "Loose joints" },
+              { "value": "painted", "label": "Painted surface" }
+            ]
+          }
+        },
+        {
+          "id": "area_size",
+          "type": "type_selector",
+          "title": "Area size",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (<10 m²)" },
+              { "value": "medium", "label": "Medium (10–30 m²)" },
+              { "value": "large", "label": "Large (30 m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "access_requirements",
+          "type": "type_selector",
+          "title": "Access requirements",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground", "label": "Ground level" },
+              { "value": "scaffolding", "label": "Scaffolding" },
+              { "value": "difficult", "label": "Difficult access" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "INCOMPLETE - Needs blocks 8-10 and final promptTemplate"
     }
   ]
 }

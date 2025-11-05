@@ -13,7 +13,7 @@ export function mapMicroIdToServiceId(microId: string): string | null {
   // Direct match attempt - convert underscores to hyphens
   const directMatch = microId.toLowerCase().replace(/_/g, '-');
   
-  // Custom mappings for all 11 JSON services to database micro_id
+  // Custom mappings for all 16 JSON services to database micro_id
   const customMappings: Record<string, string> = {
     // Exact matches (database → JSON)
     'excavation_groundworks': 'excavation-groundworks',
@@ -29,6 +29,12 @@ export function mapMicroIdToServiceId(microId: string): string | null {
     'soil_stabilisation': 'soil-stabilisation-compaction',
     'septic_tank_installation': 'septic-water-tank-installation',
     'ground_beams_slabs': 'ground-beams-reinforced-slabs',
+    
+    // NEW: 5 Masonry & Concrete services (database → JSON)
+    'natural_stone_masonry': 'natural-stone-masonry',
+    'load_bearing_partitions': 'load-bearing-partitions',
+    'rendered_walls': 'rendered-decorative-walls',
+    'pointing_repointing': 'pointing-joint-finishing',
   };
   
   return customMappings[microId] || directMatch;
