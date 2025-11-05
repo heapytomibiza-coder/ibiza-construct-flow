@@ -1,0 +1,1194 @@
+{
+  "services": [
+    {
+      "id": "emergency_plumber",
+      "label": "Emergency Plumbing & Repair Specialist",
+      "icon": "🔧",
+      "description": "24/7 emergency plumbing repairs, leak fixes, and urgent callouts",
+      "budgetRange": {
+        "min": 80,
+        "max": 500
+      },
+      "blocks": [
+        {
+          "id": "emergency_type",
+          "type": "type_selector",
+          "title": "What type of emergency plumbing issue do you have?",
+          "description": "Select the urgent plumbing problem",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "burst_pipe", "label": "Burst pipe or major leak" },
+              { "value": "no_water", "label": "No water supply" },
+              { "value": "blocked_toilet", "label": "Blocked toilet" },
+              { "value": "blocked_drain", "label": "Blocked drain or sink" },
+              { "value": "boiler_breakdown", "label": "Boiler breakdown (no heating/hot water)" },
+              { "value": "water_heater_leak", "label": "Water heater leaking" },
+              { "value": "overflow", "label": "Overflow or flooding" },
+              { "value": "gas_leak", "label": "Gas leak (suspected)" }
+            ]
+          }
+        },
+        {
+          "id": "urgency_level",
+          "type": "type_selector",
+          "title": "Urgency level?",
+          "description": "How quickly do you need assistance",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "immediate", "label": "Immediate (active flooding/no water)" },
+              { "value": "same_day", "label": "Same day (urgent but contained)" },
+              { "value": "within_24hrs", "label": "Within 24 hours" },
+              { "value": "next_available", "label": "Next available appointment" }
+            ]
+          }
+        },
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "Type of property?",
+          "description": "Property classification",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "house", "label": "House" },
+              { "value": "apartment", "label": "Apartment / Flat" },
+              { "value": "commercial", "label": "Commercial premises" }
+            ]
+          }
+        },
+        {
+          "id": "water_shutoff",
+          "type": "type_selector",
+          "title": "Have you shut off the water supply?",
+          "description": "Stop water flow to prevent further damage",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_isolated", "label": "Yes – isolated the problem" },
+              { "value": "yes_main", "label": "Yes – shut off main supply" },
+              { "value": "no_cant_find", "label": "No – cannot find stopcock" },
+              { "value": "no_stuck", "label": "No – stopcock is stuck" }
+            ]
+          }
+        },
+        {
+          "id": "leak_location",
+          "type": "type_selector",
+          "title": "Where is the leak or problem located?",
+          "description": "Location of the plumbing issue",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "bathroom", "label": "Bathroom" },
+              { "value": "kitchen", "label": "Kitchen" },
+              { "value": "utility_room", "label": "Utility room" },
+              { "value": "under_floor", "label": "Under floor" },
+              { "value": "ceiling", "label": "Ceiling / from above" },
+              { "value": "external", "label": "External / garden" },
+              { "value": "not_sure", "label": "Not sure / multiple areas" }
+            ]
+          }
+        },
+        {
+          "id": "water_damage",
+          "type": "type_selector",
+          "title": "Is there significant water damage?",
+          "description": "Extent of water damage to property",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "no_damage", "label": "No – contained quickly" },
+              { "value": "minor_damage", "label": "Minor damage (towels/mop sufficient)" },
+              { "value": "moderate_damage", "label": "Moderate damage (carpet/floor affected)" },
+              { "value": "major_damage", "label": "Major damage (flooding multiple rooms)" }
+            ]
+          }
+        },
+        {
+          "id": "access_available",
+          "type": "type_selector",
+          "title": "Is the property accessible now?",
+          "description": "Can plumber access the property immediately",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_present", "label": "Yes – someone present" },
+              { "value": "yes_key", "label": "Yes – key available" },
+              { "value": "delayed_access", "label": "Delayed – need to arrange access" }
+            ]
+          }
+        },
+        {
+          "id": "parts_required",
+          "type": "type_selector",
+          "title": "Do you know if replacement parts are needed?",
+          "description": "Parts availability considerations",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "not_sure", "label": "Not sure – plumber to assess" },
+              { "value": "standard_parts", "label": "Likely standard parts (taps, washers, etc.)" },
+              { "value": "specialist_parts", "label": "May need specialist parts" }
+            ]
+          }
+        },
+        {
+          "id": "insurance_claim",
+          "type": "type_selector",
+          "title": "Will this be an insurance claim?",
+          "description": "Insurance documentation requirements",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_need_report", "label": "Yes – need detailed report" },
+              { "value": "yes_approved", "label": "Yes – insurance approved" },
+              { "value": "no_private", "label": "No – private payment" },
+              { "value": "not_sure", "label": "Not sure yet" }
+            ]
+          }
+        },
+        {
+          "id": "preferred_contact",
+          "type": "type_selector",
+          "title": "Preferred contact method?",
+          "description": "How should the plumber contact you",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "phone", "label": "Phone call" },
+              { "value": "text", "label": "Text message" },
+              { "value": "whatsapp", "label": "WhatsApp" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create an emergency plumbing callout brief including:\nEmergency type: {{emergency_type}}\nUrgency level: {{urgency_level}}\nProperty type: {{property_type}}\nWater shutoff status: {{water_shutoff}}\nLeak location: {{leak_location}}\nWater damage: {{water_damage}}\nAccess available: {{access_available}}\nParts required: {{parts_required}}\nInsurance claim: {{insurance_claim}}\nPreferred contact: {{preferred_contact}}"
+    },
+    {
+      "id": "boiler_installation",
+      "label": "Boiler Installation & Replacement Specialist",
+      "icon": "🔥",
+      "description": "New boiler installation, replacement, and system upgrades for heating and hot water",
+      "budgetRange": {
+        "min": 2000,
+        "max": 8000
+      },
+      "blocks": [
+        {
+          "id": "boiler_type",
+          "type": "type_selector",
+          "title": "What type of boiler do you need?",
+          "description": "Select the boiler system type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "combi", "label": "Combi boiler (heating & instant hot water)" },
+              { "value": "system", "label": "System boiler (with cylinder)" },
+              { "value": "regular", "label": "Regular/conventional boiler (with tanks)" },
+              { "value": "not_sure", "label": "Not sure – need recommendation" }
+            ]
+          }
+        },
+        {
+          "id": "fuel_type",
+          "type": "type_selector",
+          "title": "Fuel type preference?",
+          "description": "What fuel will the boiler use",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "natural_gas", "label": "Natural gas (mains)" },
+              { "value": "lpg", "label": "LPG (liquefied petroleum gas)" },
+              { "value": "oil", "label": "Oil" },
+              { "value": "electric", "label": "Electric" }
+            ]
+          }
+        },
+        {
+          "id": "property_size",
+          "type": "type_selector",
+          "title": "Property size?",
+          "description": "Size determines boiler capacity requirements",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (1-2 bedrooms)" },
+              { "value": "medium", "label": "Medium (3-4 bedrooms)" },
+              { "value": "large", "label": "Large (5+ bedrooms)" }
+            ]
+          }
+        },
+        {
+          "id": "bathrooms_count",
+          "type": "type_selector",
+          "title": "Number of bathrooms?",
+          "description": "Hot water demand considerations",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1", "label": "1 bathroom" },
+              { "value": "2", "label": "2 bathrooms" },
+              { "value": "3_plus", "label": "3+ bathrooms" }
+            ]
+          }
+        },
+        {
+          "id": "existing_boiler",
+          "type": "type_selector",
+          "title": "Is this a replacement or new installation?",
+          "description": "Existing system status",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "replacement_same", "label": "Replacement – same location" },
+              { "value": "replacement_relocate", "label": "Replacement – relocate boiler" },
+              { "value": "new_install", "label": "New installation (no existing boiler)" }
+            ]
+          }
+        },
+        {
+          "id": "old_boiler_age",
+          "type": "type_selector",
+          "title": "Age of existing boiler (if replacing)?",
+          "description": "Older systems may need additional upgrades",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_10", "label": "Under 10 years" },
+              { "value": "10_15", "label": "10-15 years" },
+              { "value": "15_20", "label": "15-20 years" },
+              { "value": "over_20", "label": "Over 20 years" },
+              { "value": "not_applicable", "label": "Not applicable (new install)" }
+            ]
+          }
+        },
+        {
+          "id": "heating_system_type",
+          "type": "type_selector",
+          "title": "Existing heating system type?",
+          "description": "Current radiator or underfloor setup",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "radiators", "label": "Radiators throughout" },
+              { "value": "underfloor", "label": "Underfloor heating" },
+              { "value": "mixed", "label": "Mixed system (radiators & underfloor)" },
+              { "value": "none", "label": "No existing heating" }
+            ]
+          }
+        },
+        {
+          "id": "hot_water_cylinder",
+          "type": "type_selector",
+          "title": "Do you need a hot water cylinder?",
+          "description": "Required for system and regular boilers",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_cylinder", "label": "Yes – new cylinder required" },
+              { "value": "existing_keep", "label": "Yes – keep existing cylinder" },
+              { "value": "existing_replace", "label": "Yes – replace existing cylinder" },
+              { "value": "not_needed", "label": "Not needed (combi boiler)" }
+            ]
+          }
+        },
+        {
+          "id": "system_upgrades",
+          "type": "type_selector",
+          "title": "Additional system upgrades needed?",
+          "description": "Select any additional work required",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "power_flush", "label": "System power flush" },
+              { "value": "magnetic_filter", "label": "Magnetic filter installation" },
+              { "value": "inhibitor", "label": "System inhibitor treatment" },
+              { "value": "radiator_valves", "label": "New radiator valves (TRVs)" },
+              { "value": "pipework", "label": "Pipework upgrade or reroute" },
+              { "value": "none", "label": "No additional upgrades" }
+            ]
+          }
+        },
+        {
+          "id": "smart_controls",
+          "type": "type_selector",
+          "title": "Smart controls and thermostat?",
+          "description": "Modern controls improve efficiency",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "basic_programmer", "label": "Basic programmer/timer" },
+              { "value": "wireless_thermostat", "label": "Wireless thermostat" },
+              { "value": "smart_thermostat", "label": "Smart thermostat (Nest, Hive, etc.)" },
+              { "value": "weather_compensation", "label": "Weather compensation controls" }
+            ]
+          }
+        },
+        {
+          "id": "flue_location",
+          "type": "type_selector",
+          "title": "Flue location and type?",
+          "description": "Exhaust gas routing considerations",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "external_wall", "label": "Through external wall (standard)" },
+              { "value": "vertical_roof", "label": "Vertical through roof" },
+              { "value": "extended_flue", "label": "Extended horizontal flue" },
+              { "value": "existing_ok", "label": "Existing flue suitable" },
+              { "value": "not_sure", "label": "Not sure – surveyor to advise" }
+            ]
+          }
+        },
+        {
+          "id": "gas_connection",
+          "type": "type_selector",
+          "title": "Gas supply considerations?",
+          "description": "Gas pipe capacity and routing",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "existing_adequate", "label": "Existing supply adequate" },
+              { "value": "upgrade_needed", "label": "Meter or pipe upgrade needed" },
+              { "value": "new_connection", "label": "New gas connection required" },
+              { "value": "not_applicable", "label": "Not applicable (oil/electric/LPG)" }
+            ]
+          }
+        },
+        {
+          "id": "boiler_location",
+          "type": "type_selector",
+          "title": "Preferred boiler location?",
+          "description": "Where the boiler will be installed",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "kitchen", "label": "Kitchen" },
+              { "value": "utility_room", "label": "Utility room" },
+              { "value": "airing_cupboard", "label": "Airing cupboard" },
+              { "value": "garage", "label": "Garage" },
+              { "value": "loft", "label": "Loft" },
+              { "value": "external", "label": "External (weatherproof cabinet)" }
+            ]
+          }
+        },
+        {
+          "id": "warranty_servicing",
+          "type": "type_selector",
+          "title": "Warranty and servicing?",
+          "description": "Post-installation support",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "manufacturer_warranty", "label": "Manufacturer warranty only" },
+              { "value": "extended_warranty", "label": "Extended warranty" },
+              { "value": "annual_service", "label": "Annual service contract" },
+              { "value": "full_care_plan", "label": "Full care plan (service + repairs)" }
+            ]
+          }
+        },
+        {
+          "id": "installation_timeframe",
+          "type": "type_selector",
+          "title": "When do you need installation completed?",
+          "description": "Installation scheduling",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent (boiler breakdown)" },
+              { "value": "within_2weeks", "label": "Within 2 weeks" },
+              { "value": "within_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible scheduling" }
+            ]
+          }
+        },
+        {
+          "id": "building_regulations",
+          "type": "type_selector",
+          "title": "Building regulations certification?",
+          "description": "All installations require certification",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_included", "label": "Yes – included in price" },
+              { "value": "separate_charge", "label": "Separate charge" },
+              { "value": "assume_included", "label": "Assume included by installer" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a boiler installation specification including:\nBoiler type: {{boiler_type}}\nFuel type: {{fuel_type}}\nProperty size: {{property_size}}\nBathrooms: {{bathrooms_count}}\nExisting boiler: {{existing_boiler}}\nOld boiler age: {{old_boiler_age}}\nHeating system: {{heating_system_type}}\nHot water cylinder: {{hot_water_cylinder}}\nSystem upgrades: {{system_upgrades}}\nSmart controls: {{smart_controls}}\nFlue location: {{flue_location}}\nGas connection: {{gas_connection}}\nBoiler location: {{boiler_location}}\nWarranty/servicing: {{warranty_servicing}}\nTimeframe: {{installation_timeframe}}\nBuilding regulations: {{building_regulations}}"
+    },
+    {
+      "id": "bathroom_fitting",
+      "label": "Bathroom Fitting & Installation Specialist",
+      "icon": "🚿",
+      "description": "Complete bathroom installation, renovation, and wet room fitting",
+      "budgetRange": {
+        "min": 3000,
+        "max": 15000
+      },
+      "blocks": [
+        {
+          "id": "project_scope",
+          "type": "type_selector",
+          "title": "What is the project scope?",
+          "description": "Level of bathroom work required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_renovation", "label": "Full bathroom renovation (strip out & refit)" },
+              { "value": "new_installation", "label": "New bathroom installation (new build)" },
+              { "value": "partial_refit", "label": "Partial refit (some fixtures replaced)" },
+              { "value": "wet_room", "label": "Wet room conversion" },
+              { "value": "ensuite_addition", "label": "New en-suite addition" }
+            ]
+          }
+        },
+        {
+          "id": "bathroom_size",
+          "type": "type_selector",
+          "title": "Bathroom size?",
+          "description": "Approximate room dimensions",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (under 4m²)" },
+              { "value": "medium", "label": "Medium (4-6m²)" },
+              { "value": "large", "label": "Large (over 6m²)" }
+            ]
+          }
+        },
+        {
+          "id": "fixtures_included",
+          "type": "type_selector",
+          "title": "Which fixtures will be installed?",
+          "description": "Select all items to be fitted",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "toilet", "label": "Toilet" },
+              { "value": "basin", "label": "Basin/sink" },
+              { "value": "bath", "label": "Bath" },
+              { "value": "shower_enclosure", "label": "Shower enclosure" },
+              { "value": "shower_screen", "label": "Shower screen" },
+              { "value": "bidet", "label": "Bidet" },
+              { "value": "heated_towel_rail", "label": "Heated towel rail" }
+            ]
+          }
+        },
+        {
+          "id": "shower_type",
+          "type": "type_selector",
+          "title": "Type of shower system?",
+          "description": "Shower configuration preference",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "electric_shower", "label": "Electric shower" },
+              { "value": "mixer_shower", "label": "Mixer shower (thermostatic)" },
+              { "value": "power_shower", "label": "Power shower (with pump)" },
+              { "value": "digital_shower", "label": "Digital shower system" },
+              { "value": "rain_shower", "label": "Rain shower overhead" },
+              { "value": "none", "label": "No shower / bath only" }
+            ]
+          }
+        },
+        {
+          "id": "tiling_scope",
+          "type": "type_selector",
+          "title": "Tiling requirements?",
+          "description": "Wall and floor tiling extent",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_room", "label": "Full room (floor & all walls)" },
+              { "value": "wet_areas_only", "label": "Wet areas only (shower, bath, splashbacks)" },
+              { "value": "floor_only", "label": "Floor only" },
+              { "value": "walls_only", "label": "Walls only" },
+              { "value": "feature_wall", "label": "Feature wall or accent area" },
+              { "value": "no_tiling", "label": "No tiling required" }
+            ]
+          }
+        },
+        {
+          "id": "materials_supply",
+          "type": "type_selector",
+          "title": "Who will supply fixtures and materials?",
+          "description": "Supply responsibility",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client_supplies_all", "label": "Client supplies all fixtures & tiles" },
+              { "value": "installer_supplies_all", "label": "Installer supplies all materials" },
+              { "value": "mixed", "label": "Mixed (client supplies some, installer others)" }
+            ]
+          }
+        },
+        {
+          "id": "plumbing_changes",
+          "type": "type_selector",
+          "title": "Are plumbing layout changes required?",
+          "description": "Moving pipes or changing configuration",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "no_same_layout", "label": "No – keeping same layout" },
+              { "value": "minor_changes", "label": "Minor changes (moving basin, etc.)" },
+              { "value": "major_changes", "label": "Major changes (complete reconfiguration)" },
+              { "value": "new_layout", "label": "Brand new layout (new build/conversion)" }
+            ]
+          }
+        },
+        {
+          "id": "electrical_work",
+          "type": "type_selector",
+          "title": "Electrical work required?",
+          "description": "Lighting, extractor fan, and power circuits",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "new_lighting", "label": "New lighting (downlights, etc.)" },
+              { "value": "extractor_fan", "label": "Extractor fan installation" },
+              { "value": "shaver_socket", "label": "Shaver socket" },
+              { "value": "underfloor_heating", "label": "Electric underfloor heating" },
+              { "value": "heated_mirror", "label": "Heated mirror demister" },
+              { "value": "none", "label": "No electrical work needed" }
+            ]
+          }
+        },
+        {
+          "id": "ventilation_requirements",
+          "type": "type_selector",
+          "title": "Ventilation and moisture control?",
+          "description": "Extract fan and airflow requirements",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "basic_extractor", "label": "Basic extractor fan" },
+              { "value": "humidity_controlled", "label": "Humidity-controlled extractor" },
+              { "value": "inline_fan", "label": "Inline fan (ducted)" },
+              { "value": "existing_adequate", "label": "Existing ventilation adequate" },
+              { "value": "window_only", "label": "Window ventilation only" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing",
+          "type": "type_selector",
+          "title": "Waterproofing and tanking?",
+          "description": "Moisture protection for wet areas",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_tanking", "label": "Full tanking system (wet room)" },
+              { "value": "shower_area", "label": "Shower area waterproofing" },
+              { "value": "standard_prep", "label": "Standard moisture-resistant prep" },
+              { "value": "not_needed", "label": "Not needed (existing waterproofing)" }
+            ]
+          }
+        },
+        {
+          "id": "flooring_type",
+          "type": "type_selector",
+          "title": "Bathroom floor finish?",
+          "description": "Floor surface material",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ceramic_tiles", "label": "Ceramic or porcelain tiles" },
+              { "value": "natural_stone", "label": "Natural stone (marble, slate, etc.)" },
+              { "value": "vinyl", "label": "Vinyl flooring" },
+              { "value": "underfloor_heating", "label": "Tiled floor with underfloor heating" },
+              { "value": "existing_floor", "label": "Keep existing floor" }
+            ]
+          }
+        },
+        {
+          "id": "storage_furniture",
+          "type": "type_selector",
+          "title": "Storage and furniture units?",
+          "description": "Vanity units and storage cabinets",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "vanity_unit", "label": "Vanity unit with basin" },
+              { "value": "wall_cabinets", "label": "Wall-mounted cabinets" },
+              { "value": "mirror_cabinet", "label": "Mirror cabinet with storage" },
+              { "value": "tall_storage", "label": "Tall storage unit" },
+              { "value": "none", "label": "No furniture units" }
+            ]
+          }
+        },
+        {
+          "id": "accessibility_features",
+          "type": "type_selector",
+          "title": "Accessibility or mobility features?",
+          "description": "Adaptations for elderly or disabled users",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "walk_in_shower", "label": "Walk-in shower (level access)" },
+              { "value": "grab_rails", "label": "Grab rails and supports" },
+              { "value": "raised_toilet", "label": "Raised toilet seat" },
+              { "value": "slip_resistant", "label": "Slip-resistant flooring" },
+              { "value": "none", "label": "No accessibility features" }
+            ]
+          }
+        },
+        {
+          "id": "waste_removal",
+          "type": "type_selector",
+          "title": "Old bathroom removal and waste disposal?",
+          "description": "Strip-out and disposal requirements",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_removal", "label": "Yes – full strip out and disposal" },
+              { "value": "partial_removal", "label": "Partial removal (keeping some items)" },
+              { "value": "not_needed", "label": "Not needed (new installation)" }
+            ]
+          }
+        },
+        {
+          "id": "installation_timeframe",
+          "type": "type_selector",
+          "title": "Project completion timeframe?",
+          "description": "How long is available for the work",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_week", "label": "1 week" },
+              { "value": "2_weeks", "label": "2 weeks" },
+              { "value": "3_4_weeks", "label": "3-4 weeks" },
+              { "value": "flexible", "label": "Flexible timing" }
+            ]
+          }
+        },
+        {
+          "id": "property_occupation",
+          "type": "type_selector",
+          "title": "Will the property be occupied during work?",
+          "description": "Access and working hour considerations",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "occupied", "label": "Yes – property occupied" },
+              { "value": "unoccupied", "label": "No – property vacant" },
+              { "value": "partial", "label": "Partially (weekdays only, etc.)" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Develop a bathroom fitting specification including:\nProject scope: {{project_scope}}\nBathroom size: {{bathroom_size}}\nFixtures: {{fixtures_included}}\nShower type: {{shower_type}}\nTiling scope: {{tiling_scope}}\nMaterials supply: {{materials_supply}}\nPlumbing changes: {{plumbing_changes}}\nElectrical work: {{electrical_work}}\nVentilation: {{ventilation_requirements}}\nWaterproofing: {{waterproofing}}\nFlooring: {{flooring_type}}\nStorage/furniture: {{storage_furniture}}\nAccessibility: {{accessibility_features}}\nWaste removal: {{waste_removal}}\nTimeframe: {{installation_timeframe}}\nOccupation: {{property_occupation}}"
+    },
+    {
+      "id": "drain_cleaning",
+      "label": "Drain Cleaning & Unblocking Specialist",
+      "icon": "🚰",
+      "description": "Professional drain unblocking, CCTV surveys, and drainage maintenance",
+      "budgetRange": {
+        "min": 100,
+        "max": 800
+      },
+      "blocks": [
+        {
+          "id": "drainage_issue",
+          "type": "type_selector",
+          "title": "What drainage problem are you experiencing?",
+          "description": "Select the drainage issue",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "blocked_toilet", "label": "Blocked toilet" },
+              { "value": "blocked_sink", "label": "Blocked sink or basin" },
+              { "value": "blocked_shower", "label": "Blocked shower or bath" },
+              { "value": "blocked_outside", "label": "Blocked outside drain" },
+              { "value": "slow_drainage", "label": "Slow drainage (gurgling)" },
+              { "value": "bad_odor", "label": "Bad odor from drains" },
+              { "value": "overflowing", "label": "Overflowing drain or manhole" }
+            ]
+          }
+        },
+        {
+          "id": "urgency_level",
+          "type": "type_selector",
+          "title": "How urgent is the issue?",
+          "description": "Response time required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "emergency", "label": "Emergency (overflowing/sewage backup)" },
+              { "value": "urgent_same_day", "label": "Urgent – same day required" },
+              { "value": "within_24hrs", "label": "Within 24 hours" },
+              { "value": "routine", "label": "Routine – next available" }
+            ]
+          }
+        },
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "Type of property?",
+          "description": "Property classification",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "house", "label": "House" },
+              { "value": "apartment", "label": "Apartment / Flat" },
+              { "value": "commercial", "label": "Commercial premises" }
+            ]
+          }
+        },
+        {
+          "id": "affected_location",
+          "type": "type_selector",
+          "title": "Where is the blockage located?",
+          "description": "Location of drainage problem",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "inside_property", "label": "Inside property (sink, toilet, etc.)" },
+              { "value": "outside_drain", "label": "Outside drain or gully" },
+              { "value": "main_sewer", "label": "Main sewer line" },
+              { "value": "multiple_points", "label": "Multiple points affected" },
+              { "value": "not_sure", "label": "Not sure / unknown" }
+            ]
+          }
+        },
+        {
+          "id": "previous_attempts",
+          "type": "type_selector",
+          "title": "Have you tried to clear the blockage yourself?",
+          "description": "DIY attempts made",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "plunger", "label": "Plunger" },
+              { "value": "drain_rods", "label": "Drain rods" },
+              { "value": "chemical_cleaner", "label": "Chemical drain cleaner" },
+              { "value": "hot_water", "label": "Hot water / boiling water" },
+              { "value": "none", "label": "No – calling professional first" }
+            ]
+          }
+        },
+        {
+          "id": "recurring_problem",
+          "type": "type_selector",
+          "title": "Is this a recurring problem?",
+          "description": "Frequency of blockages",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "first_time", "label": "First time issue" },
+              { "value": "occasional", "label": "Occasional (few times a year)" },
+              { "value": "frequent", "label": "Frequent (monthly or more)" },
+              { "value": "chronic", "label": "Chronic issue (very regular)" }
+            ]
+          }
+        },
+        {
+          "id": "drain_access",
+          "type": "type_selector",
+          "title": "Is there access to manholes or inspection chambers?",
+          "description": "Drainage system access points",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_accessible", "label": "Yes – easily accessible" },
+              { "value": "yes_difficult", "label": "Yes – but difficult to access" },
+              { "value": "no_access", "label": "No – no visible manholes" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "cctv_survey",
+          "type": "type_selector",
+          "title": "Do you want a CCTV drain survey?",
+          "description": "Camera inspection to identify issues",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_included", "label": "Yes – include survey" },
+              { "value": "if_needed", "label": "Only if blockage cannot be cleared" },
+              { "value": "no_just_clear", "label": "No – just clear the blockage" },
+              { "value": "not_sure", "label": "Not sure – drain engineer to advise" }
+            ]
+          }
+        },
+        {
+          "id": "suspected_cause",
+          "type": "type_selector",
+          "title": "Do you know what might be causing the blockage?",
+          "description": "Suspected blockage cause",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "tree_roots", "label": "Tree roots" },
+              { "value": "grease_buildup", "label": "Grease or fat buildup" },
+              { "value": "foreign_object", "label": "Foreign object (toys, wipes, etc.)" },
+              { "value": "collapsed_pipe", "label": "Collapsed or damaged pipe" },
+              { "value": "scale_buildup", "label": "Limescale or mineral buildup" },
+              { "value": "unknown", "label": "Unknown cause" }
+            ]
+          }
+        },
+        {
+          "id": "high_pressure_jetting",
+          "type": "type_selector",
+          "title": "Is high-pressure water jetting required?",
+          "description": "Powerful cleaning for stubborn blockages",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_needed", "label": "Yes – blockage is severe" },
+              { "value": "engineer_decide", "label": "Let engineer decide on site" },
+              { "value": "no_standard", "label": "No – standard rodding sufficient" }
+            ]
+          }
+        },
+        {
+          "id": "preventive_maintenance",
+          "type": "type_selector",
+          "title": "Interested in preventive maintenance plan?",
+          "description": "Regular drain cleaning to prevent blockages",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_annual", "label": "Yes – annual maintenance" },
+              { "value": "yes_biannual", "label": "Yes – bi-annual cleaning" },
+              { "value": "no_one_off", "label": "No – one-off clearance only" }
+            ]
+          }
+        },
+        {
+          "id": "insurance_claim",
+          "type": "type_selector",
+          "title": "Is this for an insurance claim?",
+          "description": "Documentation requirements",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_need_report", "label": "Yes – need detailed report" },
+              { "value": "yes_approved", "label": "Yes – insurance approved" },
+              { "value": "no_private", "label": "No – private payment" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a drain cleaning service brief including:\nDrainage issue: {{drainage_issue}}\nUrgency: {{urgency_level}}\nProperty type: {{property_type}}\nBlockage location: {{affected_location}}\nPrevious attempts: {{previous_attempts}}\nRecurring problem: {{recurring_problem}}\nDrain access: {{drain_access}}\nCCTV survey: {{cctv_survey}}\nSuspected cause: {{suspected_cause}}\nHigh-pressure jetting: {{high_pressure_jetting}}\nPreventive maintenance: {{preventive_maintenance}}\nInsurance claim: {{insurance_claim}}"
+    },
+    {
+      "id": "water_heater_installation",
+      "label": "Water Heater Installation & Repair Specialist",
+      "icon": "💧",
+      "description": "Electric and gas water heater installation, replacement, and repair services",
+      "budgetRange": {
+        "min": 500,
+        "max": 3000
+      },
+      "blocks": [
+        {
+          "id": "service_type",
+          "type": "type_selector",
+          "title": "What service do you need?",
+          "description": "Water heater service required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_installation", "label": "New installation" },
+              { "value": "replacement", "label": "Replacement (like-for-like)" },
+              { "value": "upgrade", "label": "Upgrade to larger/different type" },
+              { "value": "repair", "label": "Repair existing heater" },
+              { "value": "not_sure", "label": "Not sure – need assessment" }
+            ]
+          }
+        },
+        {
+          "id": "heater_type",
+          "type": "type_selector",
+          "title": "What type of water heater do you need?",
+          "description": "Select water heater system type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "electric_tank", "label": "Electric storage tank (cylinder)" },
+              { "value": "gas_tank", "label": "Gas storage tank" },
+              { "value": "instantaneous_electric", "label": "Instantaneous electric (tankless)" },
+              { "value": "instantaneous_gas", "label": "Instantaneous gas (tankless)" },
+              { "value": "heat_pump", "label": "Heat pump water heater" },
+              { "value": "solar_thermal", "label": "Solar thermal system" }
+            ]
+          }
+        },
+        {
+          "id": "capacity_required",
+          "type": "type_selector",
+          "title": "Water heater capacity needed?",
+          "description": "Size based on household demand",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (50-80 liters) – 1-2 people" },
+              { "value": "medium", "label": "Medium (80-150 liters) – 3-4 people" },
+              { "value": "large", "label": "Large (150-250 liters) – 5+ people" },
+              { "value": "extra_large", "label": "Extra large (250+ liters)" }
+            ]
+          }
+        },
+        {
+          "id": "installation_location",
+          "type": "type_selector",
+          "title": "Where will the water heater be installed?",
+          "description": "Installation location",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "utility_room", "label": "Utility room" },
+              { "value": "bathroom", "label": "Bathroom" },
+              { "value": "kitchen", "label": "Kitchen" },
+              { "value": "airing_cupboard", "label": "Airing cupboard" },
+              { "value": "garage", "label": "Garage" },
+              { "value": "basement", "label": "Basement" },
+              { "value": "external", "label": "External (weatherproof)" }
+            ]
+          }
+        },
+        {
+          "id": "existing_system",
+          "type": "type_selector",
+          "title": "Current water heating system?",
+          "description": "What you currently have (if replacing)",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "electric_cylinder", "label": "Electric cylinder" },
+              { "value": "gas_cylinder", "label": "Gas cylinder" },
+              { "value": "combi_boiler", "label": "Combi boiler (instant hot water)" },
+              { "value": "immersion_heater", "label": "Immersion heater only" },
+              { "value": "none", "label": "No existing system" }
+            ]
+          }
+        },
+        {
+          "id": "power_supply",
+          "type": "type_selector",
+          "title": "Electrical supply considerations?",
+          "description": "Power requirements for electric heaters",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "existing_circuit", "label": "Existing circuit available" },
+              { "value": "new_circuit", "label": "New dedicated circuit needed" },
+              { "value": "upgrade_board", "label": "Consumer unit upgrade may be needed" },
+              { "value": "not_applicable", "label": "Not applicable (gas heater)" }
+            ]
+          }
+        },
+        {
+          "id": "gas_connection",
+          "type": "type_selector",
+          "title": "Gas supply considerations?",
+          "description": "For gas-powered heaters",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "existing_gas_point", "label": "Existing gas connection point" },
+              { "value": "gas_pipe_extend", "label": "Gas pipe extension needed" },
+              { "value": "no_gas_supply", "label": "No gas supply (new connection)" },
+              { "value": "not_applicable", "label": "Not applicable (electric heater)" }
+            ]
+          }
+        },
+        {
+          "id": "water_pressure",
+          "type": "type_selector",
+          "title": "Water pressure system?",
+          "description": "Mains pressure or gravity-fed",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "mains_pressure", "label": "Mains pressure (unvented)" },
+              { "value": "gravity_fed", "label": "Gravity-fed (vented with header tank)" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "immersion_heater",
+          "type": "type_selector",
+          "title": "Immersion heater backup required?",
+          "description": "Electric backup heating element",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_dual", "label": "Yes – dual immersion (top & bottom)" },
+              { "value": "yes_single", "label": "Yes – single immersion" },
+              { "value": "no_backup", "label": "No backup needed" }
+            ]
+          }
+        },
+        {
+          "id": "energy_efficiency",
+          "type": "type_selector",
+          "title": "Energy efficiency preference?",
+          "description": "Insulation and energy rating",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard efficiency" },
+              { "value": "high_efficiency", "label": "High efficiency (A-rated)" },
+              { "value": "economy_7", "label": "Economy 7 compatible (off-peak)" }
+            ]
+          }
+        },
+        {
+          "id": "timer_controls",
+          "type": "type_selector",
+          "title": "Timer and control system?",
+          "description": "Hot water scheduling",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "basic_timer", "label": "Basic timer/programmer" },
+              { "value": "smart_controls", "label": "Smart controls (app-based)" },
+              { "value": "boost_function", "label": "Boost function only" },
+              { "value": "none", "label": "No timer needed" }
+            ]
+          }
+        },
+        {
+          "id": "safety_features",
+          "type": "type_selector",
+          "title": "Safety features required?",
+          "description": "Temperature and pressure relief",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "tprv", "label": "Temperature/pressure relief valve" },
+              { "value": "expansion_vessel", "label": "Expansion vessel" },
+              { "value": "thermostat", "label": "Adjustable thermostat" },
+              { "value": "anti_scald", "label": "Anti-scald mixing valve" },
+              { "value": "standard_only", "label": "Standard safety features only" }
+            ]
+          }
+        },
+        {
+          "id": "old_heater_removal",
+          "type": "type_selector",
+          "title": "Old water heater removal and disposal?",
+          "description": "Removal of existing unit",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_remove", "label": "Yes – remove and dispose" },
+              { "value": "no_new_install", "label": "No – new installation only" },
+              { "value": "repair_only", "label": "Not applicable (repair only)" }
+            ]
+          }
+        },
+        {
+          "id": "warranty_servicing",
+          "type": "type_selector",
+          "title": "Warranty and servicing?",
+          "description": "Post-installation support",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "manufacturer_warranty", "label": "Manufacturer warranty only" },
+              { "value": "extended_warranty", "label": "Extended warranty" },
+              { "value": "annual_service", "label": "Annual service contract" }
+            ]
+          }
+        },
+        {
+          "id": "installation_timeframe",
+          "type": "type_selector",
+          "title": "When do you need installation completed?",
+          "description": "Installation scheduling",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent (no hot water)" },
+              { "value": "within_week", "label": "Within a week" },
+              { "value": "within_2weeks", "label": "Within 2 weeks" },
+              { "value": "flexible", "label": "Flexible scheduling" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a water heater installation specification including:\nService type: {{service_type}}\nHeater type: {{heater_type}}\nCapacity: {{capacity_required}}\nInstallation location: {{installation_location}}\nExisting system: {{existing_system}}\nPower supply: {{power_supply}}\nGas connection: {{gas_connection}}\nWater pressure: {{water_pressure}}\nImmersion heater: {{immersion_heater}}\nEnergy efficiency: {{energy_efficiency}}\nTimer controls: {{timer_controls}}\nSafety features: {{safety_features}}\nOld heater removal: {{old_heater_removal}}\nWarranty/servicing: {{warranty_servicing}}\nTimeframe: {{installation_timeframe}}"
+    }
+  ]
+}
