@@ -4024,6 +4024,1163 @@
         }
       ],
       "promptTemplate": "Skirting boards and architraves for {{skirting_property_type}}. Material: {{skirting_material}}. Length: {{skirting_length}}. Removal: {{skirting_removal}}. Finish: {{skirting_finish}}. Profile: {{skirting_profile}}. Door trimming: {{skirting_door_trimming}}. Resistance: {{skirting_resistance}}. Start: {{skirting_start}}."
+    },
+    {
+      "id": "doors-frames-thresholds",
+      "label": "Doors, Frames & Thresholds",
+      "icon": "DoorOpen",
+      "description": "Professional door installation and adjustment services including internal, external, fire doors, frames, thresholds, and finishing.",
+      "budgetRange": { "min": 800, "max": 8000 },
+      "blocks": [
+        {
+          "id": "doors_type",
+          "type": "type_selector",
+          "title": "What type of doors need installing or adjustment?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "internal", "label": "Internal" },
+              { "value": "external", "label": "External" },
+              { "value": "fire_doors", "label": "Fire doors" },
+              { "value": "sliding_pocket", "label": "Sliding / pocket" },
+              { "value": "bifold", "label": "Bifold" }
+            ]
+          }
+        },
+        {
+          "id": "doors_quantity",
+          "type": "type_selector",
+          "title": "What is the quantity of doors?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_3", "label": "1–3" },
+              { "value": "4_8", "label": "4–8" },
+              { "value": "9_15", "label": "9–15" },
+              { "value": "15_plus", "label": "15+" }
+            ]
+          }
+        },
+        {
+          "id": "doors_frames",
+          "type": "type_selector",
+          "title": "Are the frames existing or new?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "existing_reuse", "label": "Existing (reuse)" },
+              { "value": "replace_with_new", "label": "Replace with new" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "doors_material",
+          "type": "type_selector",
+          "title": "What door material is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "solid_wood", "label": "Solid wood" },
+              { "value": "veneered", "label": "Veneered" },
+              { "value": "painted_mdf", "label": "Painted MDF" },
+              { "value": "composite_or_metal", "label": "Composite or metal" }
+            ]
+          }
+        },
+        {
+          "id": "doors_hardware",
+          "type": "type_selector",
+          "title": "Will handles, locks or ironmongery be supplied?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "supplied_by_client", "label": "Supplied by client" },
+              { "value": "supplied_by_carpenter", "label": "To be supplied by carpenter" }
+            ]
+          }
+        },
+        {
+          "id": "doors_trimming",
+          "type": "type_selector",
+          "title": "Is trimming or planing required for fitting?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "doors_thresholds",
+          "type": "type_selector",
+          "title": "Do thresholds or seals need fitting?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "doors_finishing",
+          "type": "type_selector",
+          "title": "Is painting or finishing required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_paint_or_varnish", "label": "Yes, paint or varnish" },
+              { "value": "no_just_installation", "label": "No, just installation" }
+            ]
+          }
+        },
+        {
+          "id": "doors_install_location",
+          "type": "type_selector",
+          "title": "Where will installation take place?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "ground_floor", "label": "Ground floor" },
+              { "value": "upper_floor", "label": "Upper floor" },
+              { "value": "multiple_levels", "label": "Multiple levels" }
+            ]
+          }
+        },
+        {
+          "id": "doors_deadline",
+          "type": "type_selector",
+          "title": "What is the target completion date?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent_within_a_week", "label": "Urgent (within a week)" },
+              { "value": "within_a_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Door installation project for {{doors_type}} doors. Quantity: {{doors_quantity}}. Frames: {{doors_frames}}. Material: {{doors_material}}. Hardware: {{doors_hardware}}. Trimming: {{doors_trimming}}. Thresholds: {{doors_thresholds}}. Finishing: {{doors_finishing}}. Location: {{doors_install_location}}. Deadline: {{doors_deadline}}."
+    },
+    {
+      "id": "window-boards-trims",
+      "label": "Window Boards & Trims",
+      "icon": "SquareDashedKanban",
+      "description": "Professional window board and trim installation for PVC, timber, and aluminium windows with various material finishes.",
+      "budgetRange": { "min": 500, "max": 3500 },
+      "blocks": [
+        {
+          "id": "window_type",
+          "type": "type_selector",
+          "title": "What type of windows or openings are involved?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "pvc", "label": "PVC" },
+              { "value": "timber", "label": "Timber" },
+              { "value": "aluminium", "label": "Aluminium" },
+              { "value": "mixed", "label": "Mixed" }
+            ]
+          }
+        },
+        {
+          "id": "window_quantity",
+          "type": "type_selector",
+          "title": "What is the quantity of window boards?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_3", "label": "1–3" },
+              { "value": "4_10", "label": "4–10" },
+              { "value": "10_plus", "label": "10+" }
+            ]
+          }
+        },
+        {
+          "id": "window_material",
+          "type": "type_selector",
+          "title": "What material is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "mdf_painted", "label": "MDF (painted)" },
+              { "value": "hardwood", "label": "Hardwood" },
+              { "value": "softwood", "label": "Softwood" },
+              { "value": "composite", "label": "Composite" }
+            ]
+          }
+        },
+        {
+          "id": "window_removal",
+          "type": "type_selector",
+          "title": "Do existing boards need removal?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "window_reveals",
+          "type": "type_selector",
+          "title": "Are window reveals or plaster repairs required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "window_finish",
+          "type": "type_selector",
+          "title": "What finish is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "painted", "label": "Painted" },
+              { "value": "stained_varnished", "label": "Stained / varnished" },
+              { "value": "unfinished", "label": "Unfinished" }
+            ]
+          }
+        },
+        {
+          "id": "window_design_details",
+          "type": "type_selector",
+          "title": "Are there any special design details needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "window_access",
+          "type": "type_selector",
+          "title": "What are the expected access or working conditions?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "empty_property", "label": "Empty property" },
+              { "value": "occupied", "label": "Occupied" },
+              { "value": "commercial_site", "label": "Commercial site" }
+            ]
+          }
+        },
+        {
+          "id": "window_timeframe",
+          "type": "type_selector",
+          "title": "What is the completion timeframe?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Window boards and trims for {{window_type}} windows. Quantity: {{window_quantity}}. Material: {{window_material}}. Removal: {{window_removal}}. Reveals: {{window_reveals}}. Finish: {{window_finish}}. Design details: {{window_design_details}}. Access: {{window_access}}. Timeframe: {{window_timeframe}}."
+    },
+    {
+      "id": "wall-panelling-feature-cladding",
+      "label": "Wall Panelling & Feature Cladding",
+      "icon": "PanelTop",
+      "description": "Decorative wall panelling and feature cladding installations including MDF panels, timber slats, tongue & groove, and custom designs.",
+      "budgetRange": { "min": 1200, "max": 15000 },
+      "blocks": [
+        {
+          "id": "panelling_type",
+          "type": "type_selector",
+          "title": "What type of wall panelling is desired?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "decorative_mdf_panels", "label": "Decorative MDF panels" },
+              { "value": "timber_slats_or_battens", "label": "Timber slats or battens" },
+              { "value": "tongue_and_groove", "label": "Tongue & groove" },
+              { "value": "custom_geometric_design", "label": "Custom / geometric design" }
+            ]
+          }
+        },
+        {
+          "id": "panelling_coverage",
+          "type": "type_selector",
+          "title": "What is the coverage area?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single_feature_wall", "label": "Single feature wall" },
+              { "value": "multiple_walls_in_one_room", "label": "Multiple walls in one room" },
+              { "value": "full_room_coverage", "label": "Full room coverage" }
+            ]
+          }
+        },
+        {
+          "id": "panelling_height",
+          "type": "type_selector",
+          "title": "What height of panelling is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "half_height_1m_1_2m", "label": "Half-height (1m–1.2m)" },
+              { "value": "full_height_to_ceiling", "label": "Full-height (to ceiling)" },
+              { "value": "mixed", "label": "Mixed" }
+            ]
+          }
+        },
+        {
+          "id": "panelling_finish",
+          "type": "type_selector",
+          "title": "What finish is required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "painted", "label": "Painted" },
+              { "value": "stained_natural_wood", "label": "Stained / natural wood" },
+              { "value": "pre_finished_panels", "label": "Pre-finished panels" }
+            ]
+          }
+        },
+        {
+          "id": "panelling_insulation",
+          "type": "type_selector",
+          "title": "Is insulation or soundproof backing required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "panelling_electrics",
+          "type": "type_selector",
+          "title": "Are electrical points or fittings to integrate?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "panelling_reference",
+          "type": "type_selector",
+          "title": "Do you have reference photos or a design style in mind?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "panelling_room",
+          "type": "type_selector",
+          "title": "What room type or location is this for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "living_room", "label": "Living room" },
+              { "value": "bedroom", "label": "Bedroom" },
+              { "value": "hallway", "label": "Hallway" },
+              { "value": "commercial_space", "label": "Commercial space" }
+            ]
+          }
+        },
+        {
+          "id": "panelling_start",
+          "type": "type_selector",
+          "title": "What is the project start date?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Wall panelling project with {{panelling_type}}. Coverage: {{panelling_coverage}}. Height: {{panelling_height}}. Finish: {{panelling_finish}}. Insulation: {{panelling_insulation}}. Electrics: {{panelling_electrics}}. Reference: {{panelling_reference}}. Room: {{panelling_room}}. Start: {{panelling_start}}."
+    },
+    {
+      "id": "ceiling-beams-details",
+      "label": "Ceiling Beams & Details",
+      "icon": "Minus",
+      "description": "Decorative and structural ceiling beam installations including boxed-out beams, slatted ceiling designs, and custom features.",
+      "budgetRange": { "min": 1500, "max": 12000 },
+      "blocks": [
+        {
+          "id": "ceiling_feature_type",
+          "type": "type_selector",
+          "title": "What type of ceiling feature is required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "decorative_beams", "label": "Decorative beams" },
+              { "value": "boxed_out_beams", "label": "Boxed-out beams" },
+              { "value": "slatted_ceiling_design", "label": "Slatted ceiling design" },
+              { "value": "custom_structure", "label": "Custom structure" }
+            ]
+          }
+        },
+        {
+          "id": "ceiling_material",
+          "type": "type_selector",
+          "title": "What material is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "solid_wood", "label": "Solid wood" },
+              { "value": "veneered_mdf", "label": "Veneered MDF" },
+              { "value": "faux_beam_lightweight", "label": "Faux beam (lightweight)" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "ceiling_area",
+          "type": "type_selector",
+          "title": "What is the approximate ceiling area or beam length?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small_single_room", "label": "Small (single room)" },
+              { "value": "medium_open_plan_area", "label": "Medium (open plan area)" },
+              { "value": "large_multi_room_or_hall", "label": "Large (multi-room or hall)" }
+            ]
+          }
+        },
+        {
+          "id": "ceiling_height",
+          "type": "type_selector",
+          "title": "What is the ceiling height?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_2_4_2_7m", "label": "Standard (2.4–2.7m)" },
+              { "value": "high_3m_plus", "label": "High (3m+)" },
+              { "value": "vaulted_angled", "label": "Vaulted / angled" }
+            ]
+          }
+        },
+        {
+          "id": "ceiling_existing",
+          "type": "type_selector",
+          "title": "What is the existing ceiling type?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "plasterboard", "label": "Plasterboard" },
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "timber_joists", "label": "Timber joists" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "ceiling_structural",
+          "type": "type_selector",
+          "title": "Is structural fixing available or will false beams be used?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "structural", "label": "Structural" },
+              { "value": "decorative_non_structural", "label": "Decorative / non-structural" }
+            ]
+          }
+        },
+        {
+          "id": "ceiling_finish",
+          "type": "type_selector",
+          "title": "What finish is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "stained", "label": "Stained" },
+              { "value": "painted", "label": "Painted" },
+              { "value": "raw_rustic_look", "label": "Raw / rustic look" }
+            ]
+          }
+        },
+        {
+          "id": "ceiling_lighting",
+          "type": "type_selector",
+          "title": "Is integrated lighting required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "ceiling_timeline",
+          "type": "type_selector",
+          "title": "What is the expected installation timeline?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent_1_2_weeks", "label": "Urgent (1–2 weeks)" },
+              { "value": "within_a_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Ceiling feature with {{ceiling_feature_type}}. Material: {{ceiling_material}}. Area: {{ceiling_area}}. Height: {{ceiling_height}}. Existing: {{ceiling_existing}}. Structural: {{ceiling_structural}}. Finish: {{ceiling_finish}}. Lighting: {{ceiling_lighting}}. Timeline: {{ceiling_timeline}}."
+    },
+    {
+      "id": "built-in-wardrobes-storage",
+      "label": "Built-In Wardrobes & Storage",
+      "icon": "Cuboid",
+      "description": "Custom built-in wardrobes and storage solutions for bedrooms, hallways, and dressing rooms with various styles and internal fittings.",
+      "budgetRange": { "min": 2500, "max": 20000 },
+      "blocks": [
+        {
+          "id": "wardrobe_space",
+          "type": "type_selector",
+          "title": "What type of space is the wardrobe for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "bedroom", "label": "Bedroom" },
+              { "value": "hallway", "label": "Hallway" },
+              { "value": "dressing_room", "label": "Dressing room" },
+              { "value": "utility_other", "label": "Utility / other" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_style",
+          "type": "type_selector",
+          "title": "What style is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "modern_minimal_flat_doors", "label": "Modern minimal (flat doors)" },
+              { "value": "classic_shaker_style", "label": "Classic shaker style" },
+              { "value": "open_shelving_walk_in", "label": "Open shelving / walk-in" },
+              { "value": "sliding_doors", "label": "Sliding doors" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_finish",
+          "type": "type_selector",
+          "title": "What material finish is desired?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "painted_mdf", "label": "Painted MDF" },
+              { "value": "veneered_wood", "label": "Veneered wood" },
+              { "value": "solid_wood", "label": "Solid wood" },
+              { "value": "laminate", "label": "Laminate" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_design_support",
+          "type": "type_selector",
+          "title": "Do you have design drawings or reference images?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no_need_help_designing", "label": "No, need help designing" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_internal",
+          "type": "type_selector",
+          "title": "What internal fittings are required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "hanging_rails", "label": "Hanging rails" },
+              { "value": "drawers", "label": "Drawers" },
+              { "value": "shelves", "label": "Shelves" },
+              { "value": "shoe_or_accessory_units", "label": "Shoe or accessory units" },
+              { "value": "all_of_the_above", "label": "All of the above" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_lighting",
+          "type": "type_selector",
+          "title": "Is lighting or electrical integration needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_leds_or_power_sockets", "label": "Yes (LEDs or power sockets)" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_size",
+          "type": "type_selector",
+          "title": "What is the approximate width or area?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "less_than_2m", "label": "<2m" },
+              { "value": "2_4m", "label": "2–4m" },
+              { "value": "4_6m", "label": "4–6m" },
+              { "value": "custom_size", "label": "Custom size" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_access",
+          "type": "type_selector",
+          "title": "What site access is available?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground_floor", "label": "Ground floor" },
+              { "value": "upper_floor_stairs_only", "label": "Upper floor (stairs only)" },
+              { "value": "lift_access", "label": "Lift access" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_finish_scope",
+          "type": "type_selector",
+          "title": "Will the carpenter handle finishing or painting?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no_client_will_handle", "label": "No, client will handle" }
+            ]
+          }
+        },
+        {
+          "id": "wardrobe_timeframe",
+          "type": "type_selector",
+          "title": "What is the expected completion timeframe?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Built-in wardrobe for {{wardrobe_space}} in {{wardrobe_style}} style. Finish: {{wardrobe_finish}}. Design support: {{wardrobe_design_support}}. Internal fittings: {{wardrobe_internal}}. Lighting: {{wardrobe_lighting}}. Size: {{wardrobe_size}}. Access: {{wardrobe_access}}. Finishing scope: {{wardrobe_finish_scope}}. Timeframe: {{wardrobe_timeframe}}."
+    },
+    {
+      "id": "bar-counter-reception-builds",
+      "label": "Bar, Counter & Reception Builds",
+      "icon": "Store",
+      "description": "Custom bar, counter, and reception desk builds for home and commercial spaces with integrated features and professional finishes.",
+      "budgetRange": { "min": 3000, "max": 25000 },
+      "blocks": [
+        {
+          "id": "bar_project_type",
+          "type": "type_selector",
+          "title": "What type of project is this?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "home_bar", "label": "Home bar" },
+              { "value": "commercial_bar_restaurant", "label": "Commercial bar / restaurant" },
+              { "value": "reception_desk", "label": "Reception desk" },
+              { "value": "counter_or_service_area", "label": "Counter or service area" }
+            ]
+          }
+        },
+        {
+          "id": "bar_material",
+          "type": "type_selector",
+          "title": "What is the main material preference?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "timber_veneer", "label": "Timber / veneer" },
+              { "value": "painted_mdf", "label": "Painted MDF" },
+              { "value": "composite_corian", "label": "Composite / Corian" },
+              { "value": "mixed_materials", "label": "Mixed materials" }
+            ]
+          }
+        },
+        {
+          "id": "bar_length",
+          "type": "type_selector",
+          "title": "What is the approximate length of the counter or bar?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_2m", "label": "Under 2m" },
+              { "value": "2_4m", "label": "2–4m" },
+              { "value": "4_6m", "label": "4–6m" },
+              { "value": "over_6m", "label": "Over 6m" }
+            ]
+          }
+        },
+        {
+          "id": "bar_design_support",
+          "type": "type_selector",
+          "title": "Do you have design drawings or visual references?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "concept_only", "label": "Concept only" },
+              { "value": "need_full_design_help", "label": "Need full design help" }
+            ]
+          }
+        },
+        {
+          "id": "bar_functional_elements",
+          "type": "type_selector",
+          "title": "What functional elements should be included?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "storage_shelving", "label": "Storage / shelving" },
+              { "value": "integrated_sink_or_fridge_space", "label": "Integrated sink or fridge space" },
+              { "value": "led_lighting", "label": "LED lighting" },
+              { "value": "branding_signage", "label": "Branding / signage" }
+            ]
+          }
+        },
+        {
+          "id": "bar_worktop",
+          "type": "type_selector",
+          "title": "What worktop finish is required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "timber", "label": "Timber" },
+              { "value": "stone_marble", "label": "Stone / marble" },
+              { "value": "laminate", "label": "Laminate" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "bar_installation",
+          "type": "type_selector",
+          "title": "Is it a freestanding or built-in installation?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "freestanding", "label": "Freestanding" },
+              { "value": "built_in_fixed", "label": "Built-in / fixed" }
+            ]
+          }
+        },
+        {
+          "id": "bar_coordination",
+          "type": "type_selector",
+          "title": "Is plumbing or electrical coordination needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "bar_access",
+          "type": "type_selector",
+          "title": "What are the site access and working hours?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_site_hours", "label": "Standard site hours" },
+              { "value": "restricted_evening_work", "label": "Restricted / evening work" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "bar_deadline",
+          "type": "type_selector",
+          "title": "What is the expected delivery or installation deadline?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent_1_2_weeks", "label": "Urgent (1–2 weeks)" },
+              { "value": "standard_2_4_weeks", "label": "Standard (2–4 weeks)" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "{{bar_project_type}} build with {{bar_material}} materials. Length: {{bar_length}}. Design support: {{bar_design_support}}. Functional elements: {{bar_functional_elements}}. Worktop: {{bar_worktop}}. Installation: {{bar_installation}}. Coordination: {{bar_coordination}}. Access: {{bar_access}}. Deadline: {{bar_deadline}}."
+    },
+    {
+      "id": "media-walls-entertainment-units",
+      "label": "Media Walls & Entertainment Units",
+      "icon": "Tv",
+      "description": "Custom media walls and entertainment units with TV mounting, storage, lighting, and integrated features for modern living spaces.",
+      "budgetRange": { "min": 1800, "max": 18000 },
+      "blocks": [
+        {
+          "id": "media_setup",
+          "type": "type_selector",
+          "title": "What type of setup are you looking for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "tv_wall_with_shelving", "label": "TV wall with shelving" },
+              { "value": "floating_media_unit", "label": "Floating media unit" },
+              { "value": "full_wall_storage_system", "label": "Full wall storage system" },
+              { "value": "custom_design", "label": "Custom design" }
+            ]
+          }
+        },
+        {
+          "id": "media_style",
+          "type": "type_selector",
+          "title": "What material or style is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "painted_mdf", "label": "Painted MDF" },
+              { "value": "veneered_wood", "label": "Veneered wood" },
+              { "value": "laminate_gloss_finish", "label": "Laminate / gloss finish" },
+              { "value": "mixed_materials", "label": "Mixed materials" }
+            ]
+          }
+        },
+        {
+          "id": "media_tv_size",
+          "type": "type_selector",
+          "title": "What is the TV size or wall width?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "up_to_55", "label": "Up to 55\"" },
+              { "value": "55_75", "label": "55–75\"" },
+              { "value": "75_plus", "label": "75\"+" },
+              { "value": "not_sure_yet", "label": "Not sure yet" }
+            ]
+          }
+        },
+        {
+          "id": "media_lighting",
+          "type": "type_selector",
+          "title": "Do you need integrated lighting or wiring channels?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "maybe", "label": "Maybe" }
+            ]
+          }
+        },
+        {
+          "id": "media_components",
+          "type": "type_selector",
+          "title": "What components will the unit include?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "shelving", "label": "Shelving" },
+              { "value": "cupboards", "label": "Cupboards" },
+              { "value": "display_cabinets", "label": "Display cabinets" },
+              { "value": "fireplace_insert", "label": "Fireplace insert" }
+            ]
+          }
+        },
+        {
+          "id": "media_design_support",
+          "type": "type_selector",
+          "title": "Are you providing the design or need one created?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "have_design_drawings", "label": "Have design drawings" },
+              { "value": "rough_sketch_only", "label": "Rough sketch only" },
+              { "value": "need_design_support", "label": "Need design support" }
+            ]
+          }
+        },
+        {
+          "id": "media_finish",
+          "type": "type_selector",
+          "title": "What finish is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "matt_paint", "label": "Matt paint" },
+              { "value": "gloss", "label": "Gloss" },
+              { "value": "woodgrain", "label": "Woodgrain" },
+              { "value": "combination", "label": "Combination" }
+            ]
+          }
+        },
+        {
+          "id": "media_site_conditions",
+          "type": "type_selector",
+          "title": "What are the site conditions?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "clear_working_area", "label": "Clear working area" },
+              { "value": "occupied_space", "label": "Occupied space" },
+              { "value": "commercial_showroom", "label": "Commercial / showroom" }
+            ]
+          }
+        },
+        {
+          "id": "media_timeframe",
+          "type": "type_selector",
+          "title": "What is the expected project completion?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Media wall with {{media_setup}}. Style: {{media_style}}. TV size: {{media_tv_size}}. Lighting: {{media_lighting}}. Components: {{media_components}}. Design support: {{media_design_support}}. Finish: {{media_finish}}. Site conditions: {{media_site_conditions}}. Timeframe: {{media_timeframe}}."
+    },
+    {
+      "id": "floating-shelves-bookcases",
+      "label": "Floating Shelves & Bookcases",
+      "icon": "BookMarked",
+      "description": "Custom floating shelves and built-in bookcases for decorative and functional storage with various materials and finishes.",
+      "budgetRange": { "min": 600, "max": 8000 },
+      "blocks": [
+        {
+          "id": "shelves_type",
+          "type": "type_selector",
+          "title": "What type of shelving or unit do you need?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "floating_shelves", "label": "Floating shelves" },
+              { "value": "built_in_bookcase", "label": "Built-in bookcase" },
+              { "value": "alcove_unit", "label": "Alcove unit" },
+              { "value": "modular_system", "label": "Modular system" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_material",
+          "type": "type_selector",
+          "title": "What material is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "painted_mdf", "label": "Painted MDF" },
+              { "value": "hardwood", "label": "Hardwood" },
+              { "value": "veneered_plywood", "label": "Veneered plywood" },
+              { "value": "combination", "label": "Combination" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_quantity",
+          "type": "type_selector",
+          "title": "What is the approximate quantity or wall width?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_3_shelves", "label": "1–3 shelves" },
+              { "value": "4_10_shelves", "label": "4–10 shelves" },
+              { "value": "full_wall_installation", "label": "Full wall installation" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_usage",
+          "type": "type_selector",
+          "title": "What weight capacity or usage is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "decorative", "label": "Decorative" },
+              { "value": "books_heavy_load", "label": "Books / heavy load" },
+              { "value": "mixed_use", "label": "Mixed use" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_design",
+          "type": "type_selector",
+          "title": "Do you have a design or reference image?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_finish",
+          "type": "type_selector",
+          "title": "What finish is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "painted", "label": "Painted" },
+              { "value": "stained", "label": "Stained" },
+              { "value": "raw_unfinished", "label": "Raw / unfinished" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_features",
+          "type": "type_selector",
+          "title": "Will lighting or hidden brackets be required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_wall_type",
+          "type": "type_selector",
+          "title": "What is the wall surface type?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "stud_wall", "label": "Stud wall" },
+              { "value": "solid_masonry", "label": "Solid masonry" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_access",
+          "type": "type_selector",
+          "title": "What are the installation access conditions?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy_access", "label": "Easy access" },
+              { "value": "restricted_eg_stairwell", "label": "Restricted (e.g. stairwell)" },
+              { "value": "multi_room_project", "label": "Multi-room project" }
+            ]
+          }
+        },
+        {
+          "id": "shelves_timeframe",
+          "type": "type_selector",
+          "title": "What is the estimated start date?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "{{shelves_type}} in {{shelves_material}}. Quantity: {{shelves_quantity}}. Usage: {{shelves_usage}}. Design: {{shelves_design}}. Finish: {{shelves_finish}}. Features: {{shelves_features}}. Wall type: {{shelves_wall_type}}. Access: {{shelves_access}}. Timeframe: {{shelves_timeframe}}."
     }
   ]
 }

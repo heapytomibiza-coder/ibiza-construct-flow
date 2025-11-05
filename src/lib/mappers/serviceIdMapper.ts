@@ -55,6 +55,16 @@ export function mapMicroIdToServiceId(microId: string): string | null {
     'waste_segregation_recycling': 'waste-segregation-recycling',
     'site_leveling_soil_replacement': 'site-leveling-soil-replacement',
     'skirting_architraves': 'skirting-architraves',
+    
+    // NEW: 8 Carpentry & Bespoke Joinery services (database → JSON)
+    'doors_frames_thresholds': 'doors-frames-thresholds',
+    'window_boards_trims': 'window-boards-trims',
+    'wall_panelling_feature_cladding': 'wall-panelling-feature-cladding',
+    'ceiling_beams_details': 'ceiling-beams-details',
+    'built_in_wardrobes_storage': 'built-in-wardrobes-storage',
+    'bar_counter_reception_builds': 'bar-counter-reception-builds',
+    'media_walls_entertainment_units': 'media-walls-entertainment-units',
+    'floating_shelves_bookcases': 'floating-shelves-bookcases',
   };
   
   return customMappings[microId] || directMatch;
