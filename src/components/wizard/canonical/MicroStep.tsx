@@ -65,11 +65,17 @@ export const MicroStep: React.FC<MicroStepProps> = ({
         }
 
         // Then get the subcategory ID
+        const sanitizedSlug = subcategory
+          .toLowerCase()
+          .replace(/[,&]/g, '') // Remove commas and ampersands
+          .replace(/\s+/g, '-') // Replace spaces with hyphens
+          .replace(/-+/g, '-'); // Replace multiple hyphens with single hyphen
+        
         const { data: subcategoryData, error: subcategoryError } = await supabase
           .from('service_subcategories')
           .select('id')
           .eq('category_id', categoryData.id)
-          .or(`slug.eq.${subcategory.toLowerCase().replace(/\s+/g, '-')},name.eq.${subcategory}`)
+          .or(`slug.eq.${sanitizedSlug},name.eq.${subcategory}`)
           .limit(1)
           .single();
 
