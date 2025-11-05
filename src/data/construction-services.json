@@ -2910,6 +2910,1120 @@
         }
       ],
       "promptTemplate": "Create a composite floor decking job posting for {{decking_system}}. Floor area: {{decking_area}}. Steel frame status: {{decking_frame}}. Profile type: {{decking_profile}}. Shear studs/mesh: {{decking_shear_mesh}}. Performance requirements: {{decking_performance}}. Site access: {{decking_access}}. Concrete pouring: {{decking_concrete}}. Start date: {{decking_start}}."
+    },
+    {
+      "id": "metal-staircases-balustrades",
+      "label": "Metal Staircases & Balustrades",
+      "icon": "Stairs",
+      "description": "Custom metal staircases and balustrades for residential, commercial, and industrial buildings.",
+      "budgetRange": { "min": 4000, "max": 35000 },
+      "blocks": [
+        {
+          "id": "metal_stair_type",
+          "type": "type_selector",
+          "title": "What type of staircase do you need?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "straight_flight", "label": "Straight flight" },
+              { "value": "spiral_helical", "label": "Spiral / helical" },
+              { "value": "multi_flight", "label": "Multi-flight" },
+              { "value": "fire_escape", "label": "Fire escape" }
+            ]
+          }
+        },
+        {
+          "id": "metal_stair_finish",
+          "type": "type_selector",
+          "title": "What material and finish do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "mild_steel_painted", "label": "Mild steel (painted)" },
+              { "value": "galvanised_steel", "label": "Galvanised steel" },
+              { "value": "stainless_steel", "label": "Stainless steel" },
+              { "value": "powder_coated", "label": "Powder-coated colour" }
+            ]
+          }
+        },
+        {
+          "id": "metal_balustrade",
+          "type": "type_selector",
+          "title": "Will balustrades or handrails be included?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_both", "label": "Yes, both" },
+              { "value": "handrails_only", "label": "Handrails only" },
+              { "value": "balustrades_only", "label": "Balustrades only" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "metal_install_location",
+          "type": "type_selector",
+          "title": "What is the installation location?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "indoor", "label": "Indoor" },
+              { "value": "outdoor", "label": "Outdoor" },
+              { "value": "roof_mezzanine", "label": "Roof / mezzanine" }
+            ]
+          }
+        },
+        {
+          "id": "metal_drawings",
+          "type": "type_selector",
+          "title": "Do you have architectural drawings or sketches?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_full_plans", "label": "Yes, full plans" },
+              { "value": "concept_only", "label": "Concept only" },
+              { "value": "need_design", "label": "Need design assistance" }
+            ]
+          }
+        },
+        {
+          "id": "metal_structure",
+          "type": "type_selector",
+          "title": "Is the structure freestanding or fixed to existing walls?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "freestanding", "label": "Freestanding" },
+              { "value": "wall_fixed", "label": "Wall-fixed" },
+              { "value": "mixed", "label": "Mixed" }
+            ]
+          }
+        },
+        {
+          "id": "metal_compliance",
+          "type": "type_selector",
+          "title": "Are there any compliance requirements (fire, access, DDA)?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "metal_finish_level",
+          "type": "type_selector",
+          "title": "What is the expected finish level?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "functional_industrial", "label": "Functional / industrial" },
+              { "value": "decorative_architectural", "label": "Decorative / architectural" },
+              { "value": "high_end_bespoke", "label": "High-end bespoke" }
+            ]
+          }
+        },
+        {
+          "id": "metal_deadline",
+          "type": "type_selector",
+          "title": "What is the estimated delivery or installation deadline?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent_1_2_weeks", "label": "Urgent (1–2 weeks)" },
+              { "value": "standard_2_4_weeks", "label": "Standard (2–4 weeks)" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Metal staircase project requiring {{metal_stair_type}} with {{metal_stair_finish}} finish. Balustrades: {{metal_balustrade}}. Location: {{metal_install_location}}. Drawings: {{metal_drawings}}. Structure: {{metal_structure}}. Compliance: {{metal_compliance}}. Finish level: {{metal_finish_level}}. Timeline: {{metal_deadline}}."
+    },
+    {
+      "id": "corrosion-protection-painting",
+      "label": "Corrosion Protection & Painting",
+      "icon": "ShieldCheck",
+      "description": "Professional corrosion protection and industrial painting for steel structures and metalwork.",
+      "budgetRange": { "min": 800, "max": 12000 },
+      "blocks": [
+        {
+          "id": "corrosion_steelwork",
+          "type": "type_selector",
+          "title": "What type of steelwork requires protection?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "structural_beams_columns", "label": "Structural beams / columns" },
+              { "value": "staircases_balustrades", "label": "Staircases / balustrades" },
+              { "value": "outdoor_frames", "label": "Outdoor frames / supports" },
+              { "value": "tanks_containers", "label": "Tanks / containers" }
+            ]
+          }
+        },
+        {
+          "id": "corrosion_surface_condition",
+          "type": "type_selector",
+          "title": "What is the current condition of the surface?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_steel", "label": "New steel" },
+              { "value": "previously_coated", "label": "Previously coated" },
+              { "value": "corroded", "label": "Corroded / needs prep" }
+            ]
+          }
+        },
+        {
+          "id": "corrosion_surface_prep",
+          "type": "type_selector",
+          "title": "What surface preparation is required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "blast_cleaning", "label": "Blast cleaning" },
+              { "value": "wire_brushing", "label": "Wire brushing" },
+              { "value": "degreasing_only", "label": "Degreasing only" },
+              { "value": "already_prepared", "label": "Already prepared" }
+            ]
+          }
+        },
+        {
+          "id": "corrosion_system",
+          "type": "type_selector",
+          "title": "What protection system is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "primer_topcoat", "label": "Primer + topcoat" },
+              { "value": "zinc_rich", "label": "Zinc-rich coating" },
+              { "value": "epoxy_polyurethane", "label": "Epoxy / polyurethane" },
+              { "value": "galvanising", "label": "Galvanising" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "corrosion_environment",
+          "type": "type_selector",
+          "title": "What is the environment exposure level?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "indoor", "label": "Indoor" },
+              { "value": "coastal", "label": "Coastal / high humidity" },
+              { "value": "industrial_chemical", "label": "Industrial / chemical" },
+              { "value": "outdoor_standard", "label": "Outdoor standard" }
+            ]
+          }
+        },
+        {
+          "id": "corrosion_lifespan",
+          "type": "type_selector",
+          "title": "What lifespan or warranty period is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_3_years", "label": "1–3 years" },
+              { "value": "5_10_years", "label": "5–10 years" },
+              { "value": "10_plus_years", "label": "10+ years" }
+            ]
+          }
+        },
+        {
+          "id": "corrosion_certification",
+          "type": "type_selector",
+          "title": "Do you need certification or coating reports?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "corrosion_area",
+          "type": "type_selector",
+          "title": "What is the approximate surface area?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_50", "label": "<50 m²" },
+              { "value": "50_200", "label": "50–200 m²" },
+              { "value": "200_500", "label": "200–500 m²" },
+              { "value": "500_plus", "label": "500+ m²" }
+            ]
+          }
+        },
+        {
+          "id": "corrosion_access",
+          "type": "type_selector",
+          "title": "What are the access conditions for coating works?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "ground_level", "label": "Ground level" },
+              { "value": "scaffolding", "label": "Scaffolding required" },
+              { "value": "mewp", "label": "MEWP / cherry picker" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Corrosion protection for {{corrosion_steelwork}}. Surface condition: {{corrosion_surface_condition}}. Preparation: {{corrosion_surface_prep}}. Protection system: {{corrosion_system}}. Environment: {{corrosion_environment}}. Lifespan: {{corrosion_lifespan}}. Certification: {{corrosion_certification}}. Surface area: {{corrosion_area}}. Access: {{corrosion_access}}."
+    },
+    {
+      "id": "structure-demolition",
+      "label": "Full or Partial Structure Demolition",
+      "icon": "Building2",
+      "description": "Complete or partial demolition of residential and commercial structures with waste removal.",
+      "budgetRange": { "min": 5000, "max": 80000 },
+      "blocks": [
+        {
+          "id": "demolition_structure_type",
+          "type": "type_selector",
+          "title": "What type of structure is being demolished?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "residential_house", "label": "Residential house or villa" },
+              { "value": "apartment_block", "label": "Apartment block" },
+              { "value": "commercial_warehouse", "label": "Commercial unit or warehouse" },
+              { "value": "outbuilding_garage", "label": "Outbuilding / garage" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_scope",
+          "type": "type_selector",
+          "title": "Is it a full or partial demolition?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_structure", "label": "Full structure" },
+              { "value": "partial_section", "label": "Partial / section only" },
+              { "value": "internal_only", "label": "Internal only" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_materials",
+          "type": "type_selector",
+          "title": "What is the structure made of?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "brick_block", "label": "Brick / block" },
+              { "value": "timber_frame", "label": "Timber frame" },
+              { "value": "mixed_materials", "label": "Mixed materials" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_permits",
+          "type": "type_selector",
+          "title": "Are demolition plans or permits in place?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_approved", "label": "Yes, approved" },
+              { "value": "in_progress", "label": "In progress" },
+              { "value": "not_yet_applied", "label": "Not yet applied" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_hazard",
+          "type": "type_selector",
+          "title": "Is there any asbestos or hazardous material on-site?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_known", "label": "Yes (known presence)" },
+              { "value": "suspected", "label": "Suspected" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_access",
+          "type": "type_selector",
+          "title": "What access does the site have for machinery?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_access", "label": "Full access (excavator/truck)" },
+              { "value": "limited_access", "label": "Limited access" },
+              { "value": "manual_only", "label": "Manual-only zone" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_waste",
+          "type": "type_selector",
+          "title": "Do you require removal of all waste materials?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_full", "label": "Yes, full clearance" },
+              { "value": "partial", "label": "Partial (by agreement)" },
+              { "value": "no_client", "label": "No, client handling waste" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_safety",
+          "type": "type_selector",
+          "title": "What safety controls are in place or required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "fencing_signage", "label": "Fencing & signage only" },
+              { "value": "engineering_oversight", "label": "Structural engineering oversight" },
+              { "value": "dust_suppression", "label": "Dust suppression & water control" },
+              { "value": "not_sure", "label": "Not sure yet" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_method",
+          "type": "type_selector",
+          "title": "What demolition method is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "mechanical", "label": "Mechanical (excavator)" },
+              { "value": "manual_hand", "label": "Manual / hand" },
+              { "value": "combination", "label": "Combination" }
+            ]
+          }
+        },
+        {
+          "id": "demolition_start",
+          "type": "type_selector",
+          "title": "What is the expected start timeframe?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "immediate_1_2_weeks", "label": "Immediate (1–2 weeks)" },
+              { "value": "within_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Demolition project for {{demolition_structure_type}}. Scope: {{demolition_scope}}. Materials: {{demolition_materials}}. Permits: {{demolition_permits}}. Hazards: {{demolition_hazard}}. Access: {{demolition_access}}. Waste removal: {{demolition_waste}}. Safety: {{demolition_safety}}. Method: {{demolition_method}}. Start: {{demolition_start}}."
+    },
+    {
+      "id": "interior-strip-outs",
+      "label": "Interior Strip-Outs",
+      "icon": "Eraser",
+      "description": "Complete interior strip-out services for residential and commercial refurbishment projects.",
+      "budgetRange": { "min": 1200, "max": 20000 },
+      "blocks": [
+        {
+          "id": "stripout_property_type",
+          "type": "type_selector",
+          "title": "What type of property or space will be stripped out?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial_retail", "label": "Commercial / retail" },
+              { "value": "office", "label": "Office" },
+              { "value": "hospitality_hotel", "label": "Hospitality / hotel" }
+            ]
+          }
+        },
+        {
+          "id": "stripout_scope",
+          "type": "type_selector",
+          "title": "What is the scope of works?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "fixtures_fittings", "label": "Fixtures & fittings only" },
+              { "value": "back_to_shell", "label": "Full back-to-shell" },
+              { "value": "structural_walls", "label": "Structural walls included" }
+            ]
+          }
+        },
+        {
+          "id": "stripout_materials",
+          "type": "type_selector",
+          "title": "What materials need to be removed?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "flooring", "label": "Flooring" },
+              { "value": "ceilings", "label": "Ceilings" },
+              { "value": "partitions", "label": "Partitions" },
+              { "value": "mep", "label": "MEP (mechanical, electrical, plumbing)" },
+              { "value": "all_above", "label": "All of the above" }
+            ]
+          }
+        },
+        {
+          "id": "stripout_isolation",
+          "type": "type_selector",
+          "title": "Is electrical or plumbing isolation required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "already_completed", "label": "Already completed" }
+            ]
+          }
+        },
+        {
+          "id": "stripout_waste",
+          "type": "type_selector",
+          "title": "What is the waste handling preference?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "contractor_disposal", "label": "Contractor disposal" },
+              { "value": "skip_by_client", "label": "Skip provided by client" },
+              { "value": "reuse_recycling", "label": "Reuse / recycling required" }
+            ]
+          }
+        },
+        {
+          "id": "stripout_access",
+          "type": "type_selector",
+          "title": "What is the site access?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "ground_floor", "label": "Ground floor" },
+              { "value": "upper_floors_stairs", "label": "Upper floors (stairs only)" },
+              { "value": "lift_access", "label": "Lift access available" }
+            ]
+          }
+        },
+        {
+          "id": "stripout_occupancy",
+          "type": "type_selector",
+          "title": "Is the site occupied or vacant?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fully_vacant", "label": "Fully vacant" },
+              { "value": "partially_occupied", "label": "Partially occupied" },
+              { "value": "active_business", "label": "Active business" }
+            ]
+          }
+        },
+        {
+          "id": "stripout_start",
+          "type": "type_selector",
+          "title": "What is the expected start date?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_1_week", "label": "Within 1 week" },
+              { "value": "within_2_4_weeks", "label": "Within 2–4 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "stripout_safety",
+          "type": "type_selector",
+          "title": "Are special safety or dust control measures needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_strict", "label": "Yes, strict control" },
+              { "value": "standard_containment", "label": "Standard containment" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Interior strip-out for {{stripout_property_type}}. Scope: {{stripout_scope}}. Materials: {{stripout_materials}}. Isolation: {{stripout_isolation}}. Waste: {{stripout_waste}}. Access: {{stripout_access}}. Occupancy: {{stripout_occupancy}}. Start: {{stripout_start}}. Safety: {{stripout_safety}}."
+    },
+    {
+      "id": "concrete-cutting-removal",
+      "label": "Concrete Cutting & Removal",
+      "icon": "Scissors",
+      "description": "Precision concrete cutting, core drilling, and removal services for renovation and construction projects.",
+      "budgetRange": { "min": 1500, "max": 18000 },
+      "blocks": [
+        {
+          "id": "concrete_work_type",
+          "type": "type_selector",
+          "title": "What type of concrete work is required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "slab_cutting", "label": "Slab cutting" },
+              { "value": "wall_opening", "label": "Wall / opening cutting" },
+              { "value": "core_drilling", "label": "Core drilling" },
+              { "value": "full_removal", "label": "Full removal" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_thickness",
+          "type": "type_selector",
+          "title": "What is the approximate concrete thickness?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_150", "label": "<150 mm" },
+              { "value": "150_300", "label": "150–300 mm" },
+              { "value": "300_600", "label": "300–600 mm" },
+              { "value": "600_plus", "label": "600 mm+" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_method",
+          "type": "type_selector",
+          "title": "What cutting method is preferred or required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "saw_cutting", "label": "Saw cutting" },
+              { "value": "core_drilling", "label": "Core drilling" },
+              { "value": "hydraulic_bursting", "label": "Hydraulic bursting" },
+              { "value": "to_be_advised", "label": "To be advised" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_dust_control",
+          "type": "type_selector",
+          "title": "Is water or dust suppression required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_site_services",
+          "type": "type_selector",
+          "title": "Is power or water supply available on site?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_both", "label": "Yes, both" },
+              { "value": "power_only", "label": "Power only" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_access",
+          "type": "type_selector",
+          "title": "What type of access applies?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "ground_level", "label": "Ground level" },
+              { "value": "basement_confined", "label": "Basement / confined" },
+              { "value": "elevated_roof", "label": "Elevated or roof area" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_debris",
+          "type": "type_selector",
+          "title": "Do you require debris removal and disposal?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "partial", "label": "Partial" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_start",
+          "type": "type_selector",
+          "title": "What is the expected start time?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "immediate", "label": "Immediate" },
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_reinforcement",
+          "type": "type_selector",
+          "title": "Is reinforcement or embedded steel expected?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Concrete cutting project: {{concrete_work_type}}. Thickness: {{concrete_thickness}}. Method: {{concrete_method}}. Dust control: {{concrete_dust_control}}. Site services: {{concrete_site_services}}. Access: {{concrete_access}}. Debris removal: {{concrete_debris}}. Start: {{concrete_start}}. Reinforcement: {{concrete_reinforcement}}."
+    },
+    {
+      "id": "waste-segregation-recycling",
+      "label": "Waste Segregation & Recycling",
+      "icon": "Recycle",
+      "description": "Professional waste management, segregation, and recycling services for construction sites.",
+      "budgetRange": { "min": 500, "max": 8000 },
+      "blocks": [
+        {
+          "id": "waste_material_types",
+          "type": "type_selector",
+          "title": "What types of materials are being removed?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "mixed_construction", "label": "Mixed construction waste" },
+              { "value": "concrete_rubble", "label": "Concrete & rubble" },
+              { "value": "metals", "label": "Metals" },
+              { "value": "timber", "label": "Timber" },
+              { "value": "green_soil", "label": "Green / soil waste" }
+            ]
+          }
+        },
+        {
+          "id": "waste_segregation",
+          "type": "type_selector",
+          "title": "Is segregation required on-site?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_separate", "label": "Yes (separate skips)" },
+              { "value": "no_mixed", "label": "No (mixed removal)" }
+            ]
+          }
+        },
+        {
+          "id": "waste_documentation",
+          "type": "type_selector",
+          "title": "Do you need certified recycling documentation?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "waste_volume",
+          "type": "type_selector",
+          "title": "What is the estimated total waste volume?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_2", "label": "<2 tonnes" },
+              { "value": "2_10", "label": "2–10 tonnes" },
+              { "value": "10_30", "label": "10–30 tonnes" },
+              { "value": "30_plus", "label": "30+ tonnes" }
+            ]
+          }
+        },
+        {
+          "id": "waste_site_access",
+          "type": "type_selector",
+          "title": "What is the site access for waste removal?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy_truck", "label": "Easy truck access" },
+              { "value": "restricted_small", "label": "Restricted / small vehicle only" },
+              { "value": "manual_load", "label": "Manual load required" }
+            ]
+          }
+        },
+        {
+          "id": "waste_frequency",
+          "type": "type_selector",
+          "title": "What waste collection frequency is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "one_off", "label": "One-off clearance" },
+              { "value": "daily_weekly", "label": "Daily / weekly removal" },
+              { "value": "ongoing", "label": "Ongoing site service" }
+            ]
+          }
+        },
+        {
+          "id": "waste_container",
+          "type": "type_selector",
+          "title": "What is the preferred container type?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "skip", "label": "Skip" },
+              { "value": "grab_lorry", "label": "Grab lorry" },
+              { "value": "roll_on_off", "label": "Roll-on roll-off bin" },
+              { "value": "bags_manual", "label": "Bags / manual removal" }
+            ]
+          }
+        },
+        {
+          "id": "waste_hazard",
+          "type": "type_selector",
+          "title": "Is hazardous waste segregation needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Waste management for {{waste_material_types}}. Segregation: {{waste_segregation}}. Documentation: {{waste_documentation}}. Volume: {{waste_volume}}. Access: {{waste_site_access}}. Frequency: {{waste_frequency}}. Container: {{waste_container}}. Hazardous: {{waste_hazard}}."
+    },
+    {
+      "id": "site-leveling-soil-replacement",
+      "label": "Site Leveling & Soil Replacement",
+      "icon": "Layers",
+      "description": "Professional site leveling, grading, and soil replacement services for construction preparation.",
+      "budgetRange": { "min": 2000, "max": 35000 },
+      "blocks": [
+        {
+          "id": "site_area_size",
+          "type": "type_selector",
+          "title": "What is the approximate site area size?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_500", "label": "<500 m²" },
+              { "value": "500_2000", "label": "500–2,000 m²" },
+              { "value": "2000_10000", "label": "2,000–10,000 m²" },
+              { "value": "10000_plus", "label": "10,000+ m²" }
+            ]
+          }
+        },
+        {
+          "id": "site_level_type",
+          "type": "type_selector",
+          "title": "What type of levelling is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "rough_grade", "label": "Rough grade" },
+              { "value": "laser_precision", "label": "Laser / precision grade" },
+              { "value": "structural_fill", "label": "Structural fill compaction" }
+            ]
+          }
+        },
+        {
+          "id": "site_debris",
+          "type": "type_selector",
+          "title": "Is there existing debris or rubble to remove first?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "site_soil_movement",
+          "type": "type_selector",
+          "title": "Do you require import or export of soil?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "import_only", "label": "Import only" },
+              { "value": "export_only", "label": "Export only" },
+              { "value": "both", "label": "Both" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "site_soil_type",
+          "type": "type_selector",
+          "title": "What soil type or specification is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_topsoil", "label": "Standard topsoil" },
+              { "value": "structural_fill", "label": "Structural fill" },
+              { "value": "engineered_backfill", "label": "Engineered backfill" },
+              { "value": "client_supplied", "label": "Client-supplied spec" }
+            ]
+          }
+        },
+        {
+          "id": "site_compaction_testing",
+          "type": "type_selector",
+          "title": "Is compaction testing required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "site_access",
+          "type": "type_selector",
+          "title": "What is the site access for plant and trucks?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_access", "label": "Full access" },
+              { "value": "limited_narrow", "label": "Limited (narrow / steep)" },
+              { "value": "restricted", "label": "Restricted" }
+            ]
+          }
+        },
+        {
+          "id": "site_drainage",
+          "type": "type_selector",
+          "title": "Are drainage or retaining works needed after levelling?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "maybe", "label": "Maybe" }
+            ]
+          }
+        },
+        {
+          "id": "site_timescale",
+          "type": "type_selector",
+          "title": "What is the project timescale?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "immediate_1_2_weeks", "label": "Immediate (1–2 weeks)" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Site leveling for {{site_area_size}} area. Level type: {{site_level_type}}. Debris removal: {{site_debris}}. Soil movement: {{site_soil_movement}}. Soil type: {{site_soil_type}}. Compaction testing: {{site_compaction_testing}}. Access: {{site_access}}. Drainage: {{site_drainage}}. Timescale: {{site_timescale}}."
+    },
+    {
+      "id": "skirting-architraves",
+      "label": "Skirting Boards & Architraves",
+      "icon": "Frame",
+      "description": "Installation of skirting boards and architraves for residential and commercial properties.",
+      "budgetRange": { "min": 600, "max": 5000 },
+      "blocks": [
+        {
+          "id": "skirting_property_type",
+          "type": "type_selector",
+          "title": "What type of property is the work for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "residential_home", "label": "Residential home" },
+              { "value": "commercial_unit", "label": "Commercial unit" },
+              { "value": "hospitality_retail", "label": "Hospitality / retail" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "skirting_material",
+          "type": "type_selector",
+          "title": "What material do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "mdf", "label": "MDF" },
+              { "value": "softwood", "label": "Softwood" },
+              { "value": "hardwood_oak", "label": "Hardwood (e.g. oak)" },
+              { "value": "pvc_composite", "label": "PVC or composite" }
+            ]
+          }
+        },
+        {
+          "id": "skirting_length",
+          "type": "type_selector",
+          "title": "What is the approximate total length required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_20", "label": "<20m" },
+              { "value": "20_50", "label": "20–50m" },
+              { "value": "50_100", "label": "50–100m" },
+              { "value": "100_plus", "label": "100m+" }
+            ]
+          }
+        },
+        {
+          "id": "skirting_removal",
+          "type": "type_selector",
+          "title": "Will existing skirting or architraves need removal?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "skirting_finish",
+          "type": "type_selector",
+          "title": "What finish is desired?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "paint_ready", "label": "Paint-ready" },
+              { "value": "pre_painted", "label": "Pre-painted" },
+              { "value": "stained_varnished", "label": "Stained / varnished" },
+              { "value": "natural_wood", "label": "Natural wood finish" }
+            ]
+          }
+        },
+        {
+          "id": "skirting_profile",
+          "type": "type_selector",
+          "title": "What profile type is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "square_modern", "label": "Square edge / modern" },
+              { "value": "ogee_decorative", "label": "Ogee / decorative" },
+              { "value": "chamfered", "label": "Chamfered" },
+              { "value": "match_existing", "label": "To match existing" }
+            ]
+          }
+        },
+        {
+          "id": "skirting_door_trimming",
+          "type": "type_selector",
+          "title": "Do you require door frame trimming or threshold adjustments?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "skirting_resistance",
+          "type": "type_selector",
+          "title": "Is special moisture or impact resistance needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "skirting_start",
+          "type": "type_selector",
+          "title": "What is the expected start date?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_1_week", "label": "Within 1 week" },
+              { "value": "within_2_4_weeks", "label": "Within 2–4 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Skirting boards and architraves for {{skirting_property_type}}. Material: {{skirting_material}}. Length: {{skirting_length}}. Removal: {{skirting_removal}}. Finish: {{skirting_finish}}. Profile: {{skirting_profile}}. Door trimming: {{skirting_door_trimming}}. Resistance: {{skirting_resistance}}. Start: {{skirting_start}}."
     }
   ]
 }

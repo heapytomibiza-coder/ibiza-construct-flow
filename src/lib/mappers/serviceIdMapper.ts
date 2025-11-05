@@ -45,6 +45,16 @@ export function mapMicroIdToServiceId(microId: string): string | null {
     'welding_on_site_assembly': 'welding-on-site-assembly',
     'beams_columns_trusses': 'beams-columns-trusses',
     'composite_floor_decking': 'composite-floor-decking',
+    
+    // NEW: 8 Steelwork, Demolition & Carpentry services (database → JSON)
+    'metal_staircases_balustrades': 'metal-staircases-balustrades',
+    'corrosion_protection_painting': 'corrosion-protection-painting',
+    'structure_demolition': 'structure-demolition',
+    'interior_strip_outs': 'interior-strip-outs',
+    'concrete_cutting_removal': 'concrete-cutting-removal',
+    'waste_segregation_recycling': 'waste-segregation-recycling',
+    'site_leveling_soil_replacement': 'site-leveling-soil-replacement',
+    'skirting_architraves': 'skirting-architraves',
   };
   
   return customMappings[microId] || directMatch;
