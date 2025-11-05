@@ -35,6 +35,16 @@ export function mapMicroIdToServiceId(microId: string): string | null {
     'load_bearing_partitions': 'load-bearing-partitions',
     'rendered_walls': 'rendered-decorative-walls',
     'pointing_repointing': 'pointing-joint-finishing',
+    
+    // NEW: 8 Advanced Construction & Steel services (database → JSON)
+    'core_drilling_cutting': 'core-drilling-cutting',
+    'structural_crack_repairs': 'structural-crack-repairs',
+    'concrete_waterproofing': 'concrete-waterproofing',
+    'structural_steel_fabrication': 'structural-steel-fabrication',
+    'rebar_cutting_bending_fixing': 'rebar-cutting-bending-fixing',
+    'welding_on_site_assembly': 'welding-on-site-assembly',
+    'beams_columns_trusses': 'beams-columns-trusses',
+    'composite_floor_decking': 'composite-floor-decking',
   };
   
   return customMappings[microId] || directMatch;

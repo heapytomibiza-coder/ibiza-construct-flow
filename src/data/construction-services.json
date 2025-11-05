@@ -1689,6 +1689,1227 @@
         }
       ],
       "promptTemplate": "INCOMPLETE - Needs blocks 8-10 and final promptTemplate"
+    },
+    {
+      "id": "core-drilling-cutting",
+      "label": "Core Drilling & Cutting",
+      "icon": "Drill",
+      "description": "Precise core drilling, wall sawing, floor sawing, and wire cutting services for openings in concrete and masonry.",
+      "budgetRange": { "min": 1500, "max": 12000 },
+      "blocks": [
+        {
+          "id": "core_work_type",
+          "type": "type_selector",
+          "title": "What type of work is required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "core_drilling", "label": "Core drilling" },
+              { "value": "wall_sawing", "label": "Wall sawing" },
+              { "value": "floor_sawing", "label": "Floor sawing" },
+              { "value": "wire_cutting", "label": "Wire cutting" }
+            ]
+          }
+        },
+        {
+          "id": "core_material",
+          "type": "type_selector",
+          "title": "What material needs to be cut?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "reinforced_concrete", "label": "Reinforced concrete" },
+              { "value": "blockwork", "label": "Blockwork" },
+              { "value": "asphalt", "label": "Asphalt" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "core_diameter_thickness",
+          "type": "type_selector",
+          "title": "What is the required diameter or thickness?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "up_to_50mm", "label": "Up to 50 mm" },
+              { "value": "50_150mm", "label": "50–150 mm" },
+              { "value": "150_300mm", "label": "150–300 mm" },
+              { "value": "over_300mm", "label": "Over 300 mm" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "core_depth",
+          "type": "type_selector",
+          "title": "What depth of cut or core is needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "up_to_100mm", "label": "Up to 100 mm" },
+              { "value": "100_300mm", "label": "100–300 mm" },
+              { "value": "300_600mm", "label": "300–600 mm" },
+              { "value": "600mm_plus", "label": "600 mm+" }
+            ]
+          }
+        },
+        {
+          "id": "core_purpose",
+          "type": "type_selector",
+          "title": "What is the purpose of the opening?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "pipe_ducting", "label": "Pipe / ducting" },
+              { "value": "electrical", "label": "Electrical" },
+              { "value": "structural_access", "label": "Structural access" },
+              { "value": "ventilation", "label": "Ventilation" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "core_quantity",
+          "type": "type_selector",
+          "title": "How many cuts or cores are needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_3", "label": "1–3" },
+              { "value": "4_10", "label": "4–10" },
+              { "value": "10_plus", "label": "10+" },
+              { "value": "continuous_cutting", "label": "Continuous cutting" }
+            ]
+          }
+        },
+        {
+          "id": "core_location",
+          "type": "type_selector",
+          "title": "Where is the work located?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "wall", "label": "Wall" },
+              { "value": "floor", "label": "Floor" },
+              { "value": "ceiling", "label": "Ceiling" },
+              { "value": "external", "label": "External" },
+              { "value": "internal", "label": "Internal" }
+            ]
+          }
+        },
+        {
+          "id": "core_access",
+          "type": "type_selector",
+          "title": "What best describes the access or work area?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "easy", "label": "Easy" },
+              { "value": "tight_space", "label": "Tight space" },
+              { "value": "overhead", "label": "Overhead" },
+              { "value": "confined_restricted", "label": "Confined / restricted" }
+            ]
+          }
+        },
+        {
+          "id": "core_water_dust_control",
+          "type": "type_selector",
+          "title": "Is water suppression or dust control needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "core_power_supply",
+          "type": "type_selector",
+          "title": "What power supply is available on site?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "110v", "label": "110V" },
+              { "value": "240v", "label": "240V" },
+              { "value": "generator", "label": "Generator" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "core_start_timeframe",
+          "type": "type_selector",
+          "title": "What is the desired start timeframe?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "1_2_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a detailed core drilling and cutting job posting for {{core_work_type}} work in {{core_material}}. Required diameter/thickness is {{core_diameter_thickness}} with depth {{core_depth}}. Purpose: {{core_purpose}}. Quantity needed: {{core_quantity}}. Location: {{core_location}}. Access conditions: {{core_access}}. Water/dust control: {{core_water_dust_control}}. Power supply: {{core_power_supply}}. Start timeframe: {{core_start_timeframe}}."
+    },
+    {
+      "id": "structural-crack-repairs",
+      "label": "Structural Crack Repairs",
+      "icon": "Wrench",
+      "description": "Professional repair of structural cracks in concrete, blockwork, brickwork, and rendered surfaces.",
+      "budgetRange": { "min": 800, "max": 15000 },
+      "blocks": [
+        {
+          "id": "crack_material",
+          "type": "type_selector",
+          "title": "What material is affected?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "blockwork", "label": "Blockwork" },
+              { "value": "brickwork", "label": "Brickwork" },
+              { "value": "render", "label": "Render" },
+              { "value": "mixed", "label": "Mixed" }
+            ]
+          }
+        },
+        {
+          "id": "crack_size",
+          "type": "type_selector",
+          "title": "What is the crack size?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "hairline", "label": "Hairline (<1 mm)" },
+              { "value": "small", "label": "Small (1–5 mm)" },
+              { "value": "medium", "label": "Medium (5–10 mm)" },
+              { "value": "large", "label": "Large (10 mm+)" }
+            ]
+          }
+        },
+        {
+          "id": "crack_extent",
+          "type": "type_selector",
+          "title": "What is the crack length or affected area?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "localised", "label": "Localised (1–2 m)" },
+              { "value": "one_wall", "label": "One wall" },
+              { "value": "multiple_walls", "label": "Multiple walls" },
+              { "value": "whole_structure", "label": "Whole structure" }
+            ]
+          }
+        },
+        {
+          "id": "crack_location",
+          "type": "type_selector",
+          "title": "Where are the cracks located?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "internal", "label": "Internal" },
+              { "value": "external", "label": "External" },
+              { "value": "foundation_slab", "label": "Foundation / slab" },
+              { "value": "column_beam", "label": "Column / beam" }
+            ]
+          }
+        },
+        {
+          "id": "crack_cause",
+          "type": "type_selector",
+          "title": "Is the cause known?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "settlement", "label": "Settlement" },
+              { "value": "movement", "label": "Movement" },
+              { "value": "water_damage", "label": "Water damage" },
+              { "value": "unknown", "label": "Unknown" }
+            ]
+          }
+        },
+        {
+          "id": "crack_repair_method",
+          "type": "type_selector",
+          "title": "What repair method is requested?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "epoxy_injection", "label": "Epoxy injection" },
+              { "value": "stitching_bars", "label": "Stitching bars" },
+              { "value": "repointing", "label": "Repointing" },
+              { "value": "surface_sealing", "label": "Surface sealing" },
+              { "value": "to_be_advised", "label": "To be advised" }
+            ]
+          }
+        },
+        {
+          "id": "crack_access",
+          "type": "type_selector",
+          "title": "What access is available to the area?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "easy", "label": "Easy" },
+              { "value": "scaffold_required", "label": "Scaffold required" },
+              { "value": "confined_difficult", "label": "Confined / difficult" }
+            ]
+          }
+        },
+        {
+          "id": "crack_water_ingress",
+          "type": "type_selector",
+          "title": "Is there visible water ingress?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "crack_drawings",
+          "type": "type_selector",
+          "title": "Are structural drawings or an engineer report available?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "awaiting", "label": "Awaiting" }
+            ]
+          }
+        },
+        {
+          "id": "crack_urgency",
+          "type": "type_selector",
+          "title": "What is the urgency?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "emergency", "label": "Emergency" },
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "routine_maintenance", "label": "Routine maintenance" }
+            ]
+          }
+        },
+        {
+          "id": "crack_start_timeframe",
+          "type": "type_selector",
+          "title": "What is the preferred start timeframe?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "1_2_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a structural crack repair job posting for {{crack_material}} with {{crack_size}} cracks. Extent: {{crack_extent}}. Location: {{crack_location}}. Cause: {{crack_cause}}. Repair method: {{crack_repair_method}}. Access: {{crack_access}}. Water ingress: {{crack_water_ingress}}. Drawings available: {{crack_drawings}}. Urgency: {{crack_urgency}}. Start timeframe: {{crack_start_timeframe}}."
+    },
+    {
+      "id": "concrete-waterproofing",
+      "label": "Concrete Waterproofing Systems",
+      "icon": "Droplet",
+      "description": "Professional waterproofing solutions for basements, roofs, retaining walls, and water tanks.",
+      "budgetRange": { "min": 1200, "max": 18000 },
+      "blocks": [
+        {
+          "id": "waterproofing_area",
+          "type": "type_selector",
+          "title": "What area needs waterproofing?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "basement", "label": "Basement" },
+              { "value": "roof_slab", "label": "Roof slab" },
+              { "value": "retaining_wall", "label": "Retaining wall" },
+              { "value": "water_tank", "label": "Water tank" },
+              { "value": "floor_deck", "label": "Floor / deck" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_issue",
+          "type": "type_selector",
+          "title": "What best describes the existing issue?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "active_leak", "label": "Active leak" },
+              { "value": "damp_patches", "label": "Damp patches" },
+              { "value": "preventive_treatment", "label": "Preventive treatment" },
+              { "value": "new_construction", "label": "New construction" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_surface",
+          "type": "type_selector",
+          "title": "What type of surface is involved?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "new_concrete", "label": "New concrete" },
+              { "value": "old_damaged", "label": "Old / damaged" },
+              { "value": "rendered_surface", "label": "Rendered surface" },
+              { "value": "exposed_blockwork", "label": "Exposed blockwork" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_system",
+          "type": "type_selector",
+          "title": "What system is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "liquid_membrane", "label": "Liquid membrane" },
+              { "value": "crystalline_coating", "label": "Crystalline coating" },
+              { "value": "sheet_membrane", "label": "Sheet membrane" },
+              { "value": "injection_system", "label": "Injection system" },
+              { "value": "to_be_advised", "label": "To be advised" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_exposure",
+          "type": "type_selector",
+          "title": "What level of water exposure is expected?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "occasional_rain", "label": "Occasional rain" },
+              { "value": "constant_moisture", "label": "Constant moisture" },
+              { "value": "hydrostatic_pressure", "label": "Hydrostatic pressure" },
+              { "value": "unknown", "label": "Unknown" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_finish",
+          "type": "type_selector",
+          "title": "What finish is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "bare_hidden", "label": "Bare / hidden" },
+              { "value": "paint_ready", "label": "Paint-ready" },
+              { "value": "tiled_screeded", "label": "Tiled / screeded over" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_access",
+          "type": "type_selector",
+          "title": "What access is available?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "ground_level", "label": "Ground level" },
+              { "value": "roof_elevated", "label": "Roof / elevated" },
+              { "value": "below_ground", "label": "Below ground" },
+              { "value": "confined_area", "label": "Confined area" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_area_size",
+          "type": "type_selector",
+          "title": "What is the approximate area size?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (<20 m²)" },
+              { "value": "medium", "label": "Medium (20–60 m²)" },
+              { "value": "large", "label": "Large (60 m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_drainage",
+          "type": "type_selector",
+          "title": "Is drainage integration needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_previous",
+          "type": "type_selector",
+          "title": "Has previous waterproofing been applied?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "waterproofing_start_timeframe",
+          "type": "type_selector",
+          "title": "What is the start timeframe?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "1_2_months", "label": "1–2 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a concrete waterproofing job posting for {{waterproofing_area}}. Issue: {{waterproofing_issue}}. Surface type: {{waterproofing_surface}}. System: {{waterproofing_system}}. Water exposure: {{waterproofing_exposure}}. Finish: {{waterproofing_finish}}. Access: {{waterproofing_access}}. Area size: {{waterproofing_area_size}}. Drainage needed: {{waterproofing_drainage}}. Previous waterproofing: {{waterproofing_previous}}. Start timeframe: {{waterproofing_start_timeframe}}."
+    },
+    {
+      "id": "structural-steel-fabrication",
+      "label": "Structural Steel Fabrication",
+      "icon": "Box",
+      "description": "Custom fabrication of structural steel beams, columns, frames, trusses, and platforms.",
+      "budgetRange": { "min": 3000, "max": 50000 },
+      "blocks": [
+        {
+          "id": "steel_structure_type",
+          "type": "type_selector",
+          "title": "What type of structure requires fabrication?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "beams_columns", "label": "Beams & columns" },
+              { "value": "frames_trusses", "label": "Frames or trusses" },
+              { "value": "mezzanine_platform", "label": "Mezzanine or platform" },
+              { "value": "staircase_handrail", "label": "Staircase or handrail" },
+              { "value": "custom_architectural", "label": "Custom or architectural piece" }
+            ]
+          }
+        },
+        {
+          "id": "steel_project_size",
+          "type": "type_selector",
+          "title": "What is the approximate size or weight of the project?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (under 1 tonne)" },
+              { "value": "medium", "label": "Medium (1–5 tonnes)" },
+              { "value": "large", "label": "Large (5–20 tonnes)" },
+              { "value": "major", "label": "Major (20+ tonnes)" }
+            ]
+          }
+        },
+        {
+          "id": "steel_drawings",
+          "type": "type_selector",
+          "title": "Do you have detailed fabrication drawings or plans?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fully_detailed", "label": "Yes, fully detailed" },
+              { "value": "partial_drawings", "label": "Partial drawings" },
+              { "value": "design_support_needed", "label": "No, design support needed" }
+            ]
+          }
+        },
+        {
+          "id": "steel_finish_level",
+          "type": "type_selector",
+          "title": "What level of finish is required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "raw_steel", "label": "Raw steel" },
+              { "value": "primed", "label": "Primed" },
+              { "value": "galvanised", "label": "Galvanised" },
+              { "value": "powder_coated", "label": "Powder-coated" },
+              { "value": "painted", "label": "Painted (colour-specified)" }
+            ]
+          }
+        },
+        {
+          "id": "steel_install_location",
+          "type": "type_selector",
+          "title": "Where will the steel be installed?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "industrial", "label": "Industrial" },
+              { "value": "outdoor_structure", "label": "Outdoor structure" }
+            ]
+          }
+        },
+        {
+          "id": "steel_access",
+          "type": "type_selector",
+          "title": "Is installation access straightforward?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "ground_level", "label": "Ground level" },
+              { "value": "upper_floor", "label": "Upper floor" },
+              { "value": "roof_level", "label": "Roof level" },
+              { "value": "restricted_access", "label": "Restricted access" }
+            ]
+          }
+        },
+        {
+          "id": "steel_service_scope",
+          "type": "type_selector",
+          "title": "What delivery or installation service is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fabrication_only", "label": "Fabrication only" },
+              { "value": "supply_delivery", "label": "Supply & delivery" },
+              { "value": "full_install", "label": "Full install (fabrication + erection)" }
+            ]
+          }
+        },
+        {
+          "id": "steel_certification",
+          "type": "type_selector",
+          "title": "Is certification or engineering sign-off needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "steel_start_date",
+          "type": "type_selector",
+          "title": "What is the expected start date?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "steel_assembly_preference",
+          "type": "type_selector",
+          "title": "Is on-site welding or bolted assembly preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "on_site_welding", "label": "On-site welding" },
+              { "value": "bolted_assembly", "label": "Bolted assembly" },
+              { "value": "combination", "label": "Combination" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a structural steel fabrication job posting for {{steel_structure_type}}. Project size: {{steel_project_size}}. Drawings: {{steel_drawings}}. Finish level: {{steel_finish_level}}. Installation location: {{steel_install_location}}. Access: {{steel_access}}. Service scope: {{steel_service_scope}}. Certification needed: {{steel_certification}}. Start date: {{steel_start_date}}. Assembly preference: {{steel_assembly_preference}}."
+    },
+    {
+      "id": "rebar-cutting-bending-fixing",
+      "label": "Rebar Cutting, Bending & Fixing",
+      "icon": "Grid3x3",
+      "description": "Professional rebar supply, fabrication, and installation for foundations, slabs, columns, and structures.",
+      "budgetRange": { "min": 1000, "max": 20000 },
+      "blocks": [
+        {
+          "id": "rebar_project_type",
+          "type": "type_selector",
+          "title": "What type of project is this for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "foundations_footings", "label": "Foundations / footings" },
+              { "value": "slabs_beams", "label": "Slabs / beams" },
+              { "value": "columns_retaining_walls", "label": "Columns / retaining walls" },
+              { "value": "basement_tank", "label": "Basement or tank" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "rebar_schedule",
+          "type": "type_selector",
+          "title": "Do you have a rebar schedule or reinforcement drawings?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No (need help preparing)" }
+            ]
+          }
+        },
+        {
+          "id": "rebar_tonnage",
+          "type": "type_selector",
+          "title": "What is the approximate tonnage of rebar required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_1_tonne", "label": "<1 tonne" },
+              { "value": "1_5_tonnes", "label": "1–5 tonnes" },
+              { "value": "5_10_tonnes", "label": "5–10 tonnes" },
+              { "value": "10_plus_tonnes", "label": "10+ tonnes" }
+            ]
+          }
+        },
+        {
+          "id": "rebar_supply",
+          "type": "type_selector",
+          "title": "Will rebar be supplied or fabricated by the contractor?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "supplied_by_client", "label": "Supplied by client" },
+              { "value": "supplied_fabricated_by_contractor", "label": "Supplied & fabricated by contractor" }
+            ]
+          }
+        },
+        {
+          "id": "rebar_installation",
+          "type": "type_selector",
+          "title": "Is site delivery and installation required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "supply_only", "label": "Supply only" },
+              { "value": "supply_install", "label": "Supply & install" },
+              { "value": "on_site_labour_only", "label": "On-site labour only" }
+            ]
+          }
+        },
+        {
+          "id": "rebar_storage",
+          "type": "type_selector",
+          "title": "Does the site have storage or secure access for steel?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "rebar_grade",
+          "type": "type_selector",
+          "title": "What grade of steel reinforcement is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "b500b_b500c", "label": "B500B / B500C" },
+              { "value": "stainless", "label": "Stainless" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "rebar_timeline",
+          "type": "type_selector",
+          "title": "What is the project timeline?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "immediate", "label": "Immediate (within 1 week)" },
+              { "value": "short_term", "label": "Short-term (1–3 weeks)" },
+              { "value": "planned", "label": "Planned (1+ month ahead)" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a rebar cutting, bending, and fixing job posting for {{rebar_project_type}}. Rebar schedule: {{rebar_schedule}}. Tonnage: {{rebar_tonnage}}. Supply: {{rebar_supply}}. Installation: {{rebar_installation}}. Storage: {{rebar_storage}}. Grade: {{rebar_grade}}. Timeline: {{rebar_timeline}}."
+    },
+    {
+      "id": "welding-on-site-assembly",
+      "label": "Welding & On-Site Assembly",
+      "icon": "Flame",
+      "description": "Professional welding services including MIG, TIG, and Arc welding for fabrication, repairs, and assembly.",
+      "budgetRange": { "min": 600, "max": 10000 },
+      "blocks": [
+        {
+          "id": "welding_type",
+          "type": "type_selector",
+          "title": "What type of welding is required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "mig", "label": "MIG" },
+              { "value": "tig", "label": "TIG" },
+              { "value": "stick_arc", "label": "Stick / Arc" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "welding_materials",
+          "type": "type_selector",
+          "title": "What materials are involved?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "mild_steel", "label": "Mild steel" },
+              { "value": "stainless_steel", "label": "Stainless steel" },
+              { "value": "aluminium", "label": "Aluminium" },
+              { "value": "mixed_metals", "label": "Mixed metals" }
+            ]
+          }
+        },
+        {
+          "id": "welding_purpose",
+          "type": "type_selector",
+          "title": "What is the purpose of the welding work?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "new_fabrication_assembly", "label": "New fabrication assembly" },
+              { "value": "repairs_reinforcements", "label": "Repairs / reinforcements" },
+              { "value": "structural_connections", "label": "Structural connections" },
+              { "value": "decorative_custom", "label": "Decorative or custom" }
+            ]
+          }
+        },
+        {
+          "id": "welding_location",
+          "type": "type_selector",
+          "title": "Will welding be done on-site or off-site?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "on_site_only", "label": "On-site only" },
+              { "value": "workshop_fabrication", "label": "Workshop fabrication" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "welding_access",
+          "type": "type_selector",
+          "title": "What access conditions exist at the site?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "easy_open_area", "label": "Easy / open area" },
+              { "value": "confined_limited_space", "label": "Confined or limited space" },
+              { "value": "working_at_height", "label": "Working at height" }
+            ]
+          }
+        },
+        {
+          "id": "welding_power",
+          "type": "type_selector",
+          "title": "Is power supply available on site?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_240v", "label": "Yes, 240V" },
+              { "value": "yes_415v", "label": "Yes, 415V" },
+              { "value": "no_generator_required", "label": "No, generator required" }
+            ]
+          }
+        },
+        {
+          "id": "welding_certification",
+          "type": "type_selector",
+          "title": "Are certifications or coded welders required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes (EN1090 / BS9606)" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "welding_finish",
+          "type": "type_selector",
+          "title": "What finish or treatment is needed after welding?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "grind_clean_only", "label": "Grind & clean only" },
+              { "value": "prime_coat", "label": "Prime coat" },
+              { "value": "paint_galvanise", "label": "Paint / galvanise" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "welding_safety",
+          "type": "type_selector",
+          "title": "Are there specific safety or permit-to-work requirements?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes (hot works, confined space, etc.)" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a welding and on-site assembly job posting for {{welding_type}} welding of {{welding_materials}}. Purpose: {{welding_purpose}}. Location: {{welding_location}}. Access: {{welding_access}}. Power: {{welding_power}}. Certification: {{welding_certification}}. Finish: {{welding_finish}}. Safety requirements: {{welding_safety}}."
+    },
+    {
+      "id": "beams-columns-trusses",
+      "label": "Steelwork Beams, Columns & Trusses",
+      "icon": "Columns",
+      "description": "Supply and installation of structural steel beams, columns, and trusses for building projects.",
+      "budgetRange": { "min": 4000, "max": 60000 },
+      "blocks": [
+        {
+          "id": "beam_structure_type",
+          "type": "type_selector",
+          "title": "What type of structure are the beams, columns or trusses for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "residential_building", "label": "Residential building" },
+              { "value": "commercial_unit", "label": "Commercial unit" },
+              { "value": "industrial_structure", "label": "Industrial structure" },
+              { "value": "outdoor_canopy", "label": "Outdoor or canopy" }
+            ]
+          }
+        },
+        {
+          "id": "beam_drawings",
+          "type": "type_selector",
+          "title": "Are you supplying engineered drawings?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_drawings", "label": "Yes, full drawings" },
+              { "value": "partial_drawings", "label": "Partial drawings" },
+              { "value": "need_engineering_support", "label": "Need engineering support" }
+            ]
+          }
+        },
+        {
+          "id": "beam_section_size",
+          "type": "type_selector",
+          "title": "What steel section sizes are required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "light", "label": "Light (under 150mm)" },
+              { "value": "medium", "label": "Medium (150–300mm)" },
+              { "value": "heavy", "label": "Heavy (300mm+)" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "beam_connection",
+          "type": "type_selector",
+          "title": "What connection type is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "bolted", "label": "Bolted" },
+              { "value": "welded", "label": "Welded" },
+              { "value": "combination", "label": "Combination" },
+              { "value": "to_be_decided", "label": "To be decided" }
+            ]
+          }
+        },
+        {
+          "id": "beam_scope",
+          "type": "type_selector",
+          "title": "Do you require supply only or full installation?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "supply_only", "label": "Supply only" },
+              { "value": "supply_delivery", "label": "Supply + delivery" },
+              { "value": "full_installation", "label": "Full installation on site" }
+            ]
+          }
+        },
+        {
+          "id": "beam_crane_access",
+          "type": "type_selector",
+          "title": "Is crane or lifting access available?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "beam_finish",
+          "type": "type_selector",
+          "title": "What type of finish is needed?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "primed_steel", "label": "Primed steel" },
+              { "value": "galvanised", "label": "Galvanised" },
+              { "value": "painted", "label": "Painted" },
+              { "value": "bare_steel", "label": "Bare steel" }
+            ]
+          }
+        },
+        {
+          "id": "beam_certification",
+          "type": "type_selector",
+          "title": "Do you require load testing or certification?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "beam_start",
+          "type": "type_selector",
+          "title": "What is the estimated start date?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "immediate", "label": "Immediate (1–2 weeks)" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a steelwork beams, columns, and trusses job posting for {{beam_structure_type}}. Drawings: {{beam_drawings}}. Section sizes: {{beam_section_size}}. Connection type: {{beam_connection}}. Scope: {{beam_scope}}. Crane access: {{beam_crane_access}}. Finish: {{beam_finish}}. Certification: {{beam_certification}}. Start date: {{beam_start}}."
+    },
+    {
+      "id": "composite-floor-decking",
+      "label": "Composite Floor Decking",
+      "icon": "Layers",
+      "description": "Metal deck and composite floor systems with concrete pour for multi-level structures.",
+      "budgetRange": { "min": 5000, "max": 80000 },
+      "blocks": [
+        {
+          "id": "decking_system",
+          "type": "type_selector",
+          "title": "What type of decking system do you require?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "metal_deck_only", "label": "Metal deck only" },
+              { "value": "composite_metal_concrete", "label": "Composite metal + concrete" },
+              { "value": "unknown", "label": "Unknown / need advice" }
+            ]
+          }
+        },
+        {
+          "id": "decking_area",
+          "type": "type_selector",
+          "title": "What is the approximate floor area?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_50", "label": "<50 m²" },
+              { "value": "50_150", "label": "50–150 m²" },
+              { "value": "150_500", "label": "150–500 m²" },
+              { "value": "500_plus", "label": "500+ m²" }
+            ]
+          }
+        },
+        {
+          "id": "decking_frame",
+          "type": "type_selector",
+          "title": "Is the supporting steel frame already installed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "in_progress", "label": "In progress" }
+            ]
+          }
+        },
+        {
+          "id": "decking_profile",
+          "type": "type_selector",
+          "title": "What type of metal deck profile is required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "trapezoidal", "label": "Trapezoidal" },
+              { "value": "deep_deck", "label": "Deep deck" },
+              { "value": "custom_unsure", "label": "Custom / unsure" }
+            ]
+          }
+        },
+        {
+          "id": "decking_shear_mesh",
+          "type": "type_selector",
+          "title": "Will shear studs and mesh reinforcement be needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "to_confirm", "label": "To confirm" }
+            ]
+          }
+        },
+        {
+          "id": "decking_performance",
+          "type": "type_selector",
+          "title": "Do you require fire-rated or acoustic decking?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fire_rated", "label": "Fire-rated" },
+              { "value": "acoustic", "label": "Acoustic" },
+              { "value": "standard", "label": "Standard" }
+            ]
+          }
+        },
+        {
+          "id": "decking_access",
+          "type": "type_selector",
+          "title": "Is site access suitable for delivery trucks or cranes?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "limited", "label": "Limited" }
+            ]
+          }
+        },
+        {
+          "id": "decking_concrete",
+          "type": "type_selector",
+          "title": "Will concrete pouring be included in the quote?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "optional_extra", "label": "Optional extra" }
+            ]
+          }
+        },
+        {
+          "id": "decking_start",
+          "type": "type_selector",
+          "title": "What is the expected start date?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_2_weeks", "label": "Within 2 weeks" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a composite floor decking job posting for {{decking_system}}. Floor area: {{decking_area}}. Steel frame status: {{decking_frame}}. Profile type: {{decking_profile}}. Shear studs/mesh: {{decking_shear_mesh}}. Performance requirements: {{decking_performance}}. Site access: {{decking_access}}. Concrete pouring: {{decking_concrete}}. Start date: {{decking_start}}."
     }
   ]
 }
