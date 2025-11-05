@@ -65,6 +65,17 @@ export function mapMicroIdToServiceId(microId: string): string | null {
     'bar_counter_reception_builds': 'bar-counter-reception-builds',
     'media_walls_entertainment_units': 'media-walls-entertainment-units',
     'floating_shelves_bookcases': 'floating-shelves-bookcases',
+    
+    // NEW: 9 Outdoor Woodwork, Staircases & Finishing services (database → JSON)
+    'garden_rooms_sheds': 'garden-rooms-sheds',
+    'timber_fencing_gates': 'timber-fencing-gates',
+    'outdoor_kitchens_seating': 'outdoor-kitchens-seating',
+    'timber_stair_design': 'timber-stair-design',
+    'handrails_balustrades': 'handrails-balustrades',
+    'floating_feature_stairs': 'floating-feature-stairs',
+    'stair_restoration_refinishing': 'stair-restoration-refinishing',
+    'floor_sanding_polishing': 'floor-sanding-polishing',
+    'varnish_oil_lacquer': 'varnish-oil-lacquer',
   };
   
   return customMappings[microId] || directMatch;

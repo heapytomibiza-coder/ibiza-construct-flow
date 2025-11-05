@@ -5181,6 +5181,1436 @@
         }
       ],
       "promptTemplate": "{{shelves_type}} in {{shelves_material}}. Quantity: {{shelves_quantity}}. Usage: {{shelves_usage}}. Design: {{shelves_design}}. Finish: {{shelves_finish}}. Features: {{shelves_features}}. Wall type: {{shelves_wall_type}}. Access: {{shelves_access}}. Timeframe: {{shelves_timeframe}}."
+    },
+    {
+      "id": "garden-rooms-sheds",
+      "label": "Garden Rooms & Sheds",
+      "icon": "Home",
+      "description": "Custom garden room and shed construction including offices, studios, storage, workshops, and summerhouses with various materials and finishes.",
+      "budgetRange": { "min": 8000, "max": 50000 },
+      "blocks": [
+        {
+          "id": "garden_structure_type",
+          "type": "type_selector",
+          "title": "What type of structure are you looking for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "garden_room_office_studio", "label": "Garden room (office / studio)" },
+              { "value": "storage_shed", "label": "Storage shed" },
+              { "value": "workshop_or_hobby_room", "label": "Workshop or hobby room" },
+              { "value": "summerhouse_or_relaxation_space", "label": "Summerhouse or relaxation space" }
+            ]
+          }
+        },
+        {
+          "id": "garden_size",
+          "type": "type_selector",
+          "title": "What size or footprint do you need?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small_up_to_3x3_m", "label": "Small (up to 3x3 m)" },
+              { "value": "medium_3_5_m_span", "label": "Medium (3–5 m span)" },
+              { "value": "large_5_8_m_span", "label": "Large (5–8 m span)" },
+              { "value": "custom_oversized", "label": "Custom / oversized" }
+            ]
+          }
+        },
+        {
+          "id": "garden_material",
+          "type": "type_selector",
+          "title": "What is the preferred construction material?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "timber", "label": "Timber" },
+              { "value": "composite_cladding", "label": "Composite cladding" },
+              { "value": "metal_or_mixed_materials", "label": "Metal or mixed materials" },
+              { "value": "not_sure_yet", "label": "Not sure yet" }
+            ]
+          }
+        },
+        {
+          "id": "garden_insulation",
+          "type": "type_selector",
+          "title": "Do you want it insulated for year-round use?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fully_insulated", "label": "Fully insulated" },
+              { "value": "partially_insulated", "label": "Partially insulated" },
+              { "value": "no_insulation_required", "label": "No insulation required" }
+            ]
+          }
+        },
+        {
+          "id": "garden_electrics",
+          "type": "type_selector",
+          "title": "Will it include electrical installation?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_electrical_setup", "label": "Full electrical setup" },
+              { "value": "lighting_only", "label": "Lighting only" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "garden_plumbing",
+          "type": "type_selector",
+          "title": "Do you want plumbing or water connection?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "considering", "label": "Considering" }
+            ]
+          }
+        },
+        {
+          "id": "garden_roof",
+          "type": "type_selector",
+          "title": "What type of roof do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "flat_contemporary", "label": "Flat / contemporary" },
+              { "value": "apex_pitched", "label": "Apex (pitched)" },
+              { "value": "curved_custom_design", "label": "Curved / custom design" }
+            ]
+          }
+        },
+        {
+          "id": "garden_glazing",
+          "type": "type_selector",
+          "title": "Do you need windows or glazing installed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_standard_windows", "label": "Yes — standard windows" },
+              { "value": "yes_full_glass_front", "label": "Yes — full glass front" },
+              { "value": "no_windows", "label": "No windows" }
+            ]
+          }
+        },
+        {
+          "id": "garden_external_finish",
+          "type": "type_selector",
+          "title": "What external finish or colour is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "natural_timber", "label": "Natural timber" },
+              { "value": "painted_stained", "label": "Painted / stained" },
+              { "value": "composite_cladding_look", "label": "Composite cladding look" }
+            ]
+          }
+        },
+        {
+          "id": "garden_base",
+          "type": "type_selector",
+          "title": "Do you already have a concrete or timber base?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_ready_to_build", "label": "Yes — ready to build" },
+              { "value": "no_base_needs_installing", "label": "No — base needs installing" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "garden_schedule",
+          "type": "type_selector",
+          "title": "When would you like it completed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "1_2_months", "label": "1–2 months" },
+              { "value": "planning_stage", "label": "Planning stage" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Garden structure: {{garden_structure_type}}. Size: {{garden_size}}. Material: {{garden_material}}. Insulation: {{garden_insulation}}. Electrics: {{garden_electrics}}. Plumbing: {{garden_plumbing}}. Roof: {{garden_roof}}. Glazing: {{garden_glazing}}. External finish: {{garden_external_finish}}. Base: {{garden_base}}. Schedule: {{garden_schedule}}."
+    },
+    {
+      "id": "timber-fencing-gates",
+      "label": "Timber Fencing & Gates",
+      "icon": "Grid3x3",
+      "description": "Professional timber fencing and gate installation including boundary fences, decorative garden fencing, and custom gate solutions.",
+      "budgetRange": { "min": 2000, "max": 15000 },
+      "blocks": [
+        {
+          "id": "fence_type",
+          "type": "type_selector",
+          "title": "What type of fencing do you require?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "boundary_privacy_fence", "label": "Boundary / privacy fence" },
+              { "value": "decorative_garden_fencing", "label": "Decorative garden fencing" },
+              { "value": "post_rail_agricultural", "label": "Post & rail / agricultural" },
+              { "value": "acoustic_noise_reducing", "label": "Acoustic / noise-reducing" }
+            ]
+          }
+        },
+        {
+          "id": "fence_length",
+          "type": "type_selector",
+          "title": "What is the approximate total length of fencing needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_10_m", "label": "Under 10 m" },
+              { "value": "10_25_m", "label": "10–25 m" },
+              { "value": "25_50_m", "label": "25–50 m" },
+              { "value": "50_m_plus", "label": "50 m+" }
+            ]
+          }
+        },
+        {
+          "id": "fence_height",
+          "type": "type_selector",
+          "title": "What is the preferred fence height?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_1_2_m", "label": "Under 1.2 m" },
+              { "value": "1_5_m", "label": "1.5 m" },
+              { "value": "1_8_m_standard_privacy", "label": "1.8 m (standard privacy)" },
+              { "value": "2_m_or_higher", "label": "2 m or higher" }
+            ]
+          }
+        },
+        {
+          "id": "fence_material",
+          "type": "type_selector",
+          "title": "What material do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "treated_timber_panels", "label": "Treated timber panels" },
+              { "value": "cedar_or_hardwood", "label": "Cedar or hardwood" },
+              { "value": "composite_or_pvc", "label": "Composite or PVC" },
+              { "value": "mixed_material_design", "label": "Mixed material design" }
+            ]
+          }
+        },
+        {
+          "id": "fence_posts",
+          "type": "type_selector",
+          "title": "Do you need posts installed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_timber_posts", "label": "Yes — timber posts" },
+              { "value": "yes_concrete_posts", "label": "Yes — concrete posts" },
+              { "value": "using_existing_posts", "label": "Using existing posts" }
+            ]
+          }
+        },
+        {
+          "id": "fence_ground_prep",
+          "type": "type_selector",
+          "title": "Will the ground need preparation or clearing?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_vegetation_removal", "label": "Yes — vegetation removal" },
+              { "value": "minimal_prep_needed", "label": "Minimal prep needed" },
+              { "value": "no_clear_ground", "label": "No — clear ground" }
+            ]
+          }
+        },
+        {
+          "id": "fence_gates",
+          "type": "type_selector",
+          "title": "Would you like gates included?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_pedestrian_gate", "label": "Yes — pedestrian gate" },
+              { "value": "yes_double_driveway_gate", "label": "Yes — double driveway gate" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "fence_gate_style",
+          "type": "type_selector",
+          "title": "What gate material and style is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "timber_match_to_fence", "label": "Timber match to fence" },
+              { "value": "decorative_custom", "label": "Decorative / custom" },
+              { "value": "metal_framed_timber", "label": "Metal framed timber" }
+            ]
+          }
+        },
+        {
+          "id": "fence_finish",
+          "type": "type_selector",
+          "title": "Do you want staining or protective coating?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_treated_finish", "label": "Yes — treated finish" },
+              { "value": "no_ill_do_it_later", "label": "No — I'll do it later" }
+            ]
+          }
+        },
+        {
+          "id": "fence_schedule",
+          "type": "type_selector",
+          "title": "When do you want installation?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "immediately", "label": "Immediately" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "planning_stage", "label": "Planning stage" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Fencing: {{fence_type}}. Length: {{fence_length}}. Height: {{fence_height}}. Material: {{fence_material}}. Posts: {{fence_posts}}. Ground prep: {{fence_ground_prep}}. Gates: {{fence_gates}}. Gate style: {{fence_gate_style}}. Finish: {{fence_finish}}. Schedule: {{fence_schedule}}."
+    },
+    {
+      "id": "outdoor-kitchens-seating",
+      "label": "Outdoor Kitchens & Seating Areas",
+      "icon": "UtensilsCrossed",
+      "description": "Custom outdoor kitchen and seating area construction with BBQ stations, countertops, built-in appliances, and dining spaces.",
+      "budgetRange": { "min": 5000, "max": 35000 },
+      "blocks": [
+        {
+          "id": "outdoor_project_type",
+          "type": "type_selector",
+          "title": "What type of project are you planning?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "full_outdoor_kitchen_build", "label": "Full outdoor kitchen build" },
+              { "value": "bbq_or_grill_station", "label": "BBQ or grill station" },
+              { "value": "bar_countertop_area", "label": "Bar / countertop area" },
+              { "value": "fixed_seating_or_dining_area", "label": "Fixed seating or dining area" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_material_style",
+          "type": "type_selector",
+          "title": "What material style is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "timber_natural_stone", "label": "Timber & natural stone" },
+              { "value": "concrete_steel", "label": "Concrete & steel" },
+              { "value": "modern_composite_finishes", "label": "Modern composite finishes" },
+              { "value": "mixed_materials_custom", "label": "Mixed materials / custom" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_appliances",
+          "type": "type_selector",
+          "title": "Do you need built-in appliances?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "grill_bbq", "label": "Grill / BBQ" },
+              { "value": "fridge_or_sink", "label": "Fridge or sink" },
+              { "value": "no_appliances", "label": "No appliances" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_roof",
+          "type": "type_selector",
+          "title": "Will there be a roof or shade structure?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_under_pergola_canopy", "label": "Yes — under pergola / canopy" },
+              { "value": "no_open_air", "label": "No — open air" },
+              { "value": "considering_options", "label": "Considering options" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_plumbing",
+          "type": "type_selector",
+          "title": "Do you want plumbing or drainage installed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_sink_tap", "label": "Yes — sink / tap" },
+              { "value": "basic_water_supply_only", "label": "Basic water supply only" },
+              { "value": "no_plumbing", "label": "No plumbing" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_electrical",
+          "type": "type_selector",
+          "title": "Do you need electrical connections?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_full_setup", "label": "Yes — full setup" },
+              { "value": "lighting_only", "label": "Lighting only" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_surface",
+          "type": "type_selector",
+          "title": "What is the preferred surface finish for countertops or seating?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "timber", "label": "Timber" },
+              { "value": "stone_tile", "label": "Stone / tile" },
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "composite", "label": "Composite" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_seating",
+          "type": "type_selector",
+          "title": "Would you like integrated seating or dining benches?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "built_in_benches", "label": "Built-in benches" },
+              { "value": "bar_stools_counter", "label": "Bar stools / counter" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_area",
+          "type": "type_selector",
+          "title": "What is the approximate area size?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small_up_to_10_m2", "label": "Small (up to 10 m²)" },
+              { "value": "medium_10_25_m2", "label": "Medium (10–25 m²)" },
+              { "value": "large_25_m2_plus", "label": "Large (25 m²+)" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_design",
+          "type": "type_selector",
+          "title": "Do you already have design plans or layout drawings?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_ready_to_quote", "label": "Yes — ready to quote" },
+              { "value": "concept_reference_photos", "label": "Concept / reference photos" },
+              { "value": "need_design_help", "label": "Need design help" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_schedule",
+          "type": "type_selector",
+          "title": "When do you plan to start the build?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "planning_phase", "label": "Planning phase" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Outdoor project: {{outdoor_project_type}}. Material style: {{outdoor_material_style}}. Appliances: {{outdoor_appliances}}. Roof: {{outdoor_roof}}. Plumbing: {{outdoor_plumbing}}. Electrical: {{outdoor_electrical}}. Surface: {{outdoor_surface}}. Seating: {{outdoor_seating}}. Area: {{outdoor_area}}. Design: {{outdoor_design}}. Schedule: {{outdoor_schedule}}."
+    },
+    {
+      "id": "timber-stair-design",
+      "label": "Timber Stair Design & Fabrication",
+      "icon": "ArrowUpFromLine",
+      "description": "Custom timber staircase design and fabrication including straight, L-shaped, spiral, and floating designs for interior and exterior use.",
+      "budgetRange": { "min": 4000, "max": 25000 },
+      "blocks": [
+        {
+          "id": "timber_stair_type",
+          "type": "type_selector",
+          "title": "What type of staircase are you looking for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "straight_flight", "label": "Straight flight" },
+              { "value": "l_shaped_quarter_turn", "label": "L-shaped / quarter turn" },
+              { "value": "u_shaped_half_turn", "label": "U-shaped / half turn" },
+              { "value": "spiral_or_helical", "label": "Spiral or helical" },
+              { "value": "floating_or_open_tread_design", "label": "Floating or open-tread design" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_location",
+          "type": "type_selector",
+          "title": "Is this for interior or exterior use?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "interior_use", "label": "Interior use" },
+              { "value": "exterior_use", "label": "Exterior use" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_material",
+          "type": "type_selector",
+          "title": "What material or finish do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "solid_timber", "label": "Solid timber" },
+              { "value": "painted_softwood", "label": "Painted softwood" },
+              { "value": "timber_with_metal_or_glass_details", "label": "Timber with metal or glass details" },
+              { "value": "unsure_need_guidance", "label": "Unsure — need guidance" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_height",
+          "type": "type_selector",
+          "title": "What is the floor-to-floor height?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_2_4_2_8_m", "label": "Standard (2.4–2.8 m)" },
+              { "value": "medium_2_8_3_2_m", "label": "Medium (2.8–3.2 m)" },
+              { "value": "high_custom_level", "label": "High / custom level" },
+              { "value": "unsure_needs_measurement", "label": "Unsure — needs measurement" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_drawings",
+          "type": "type_selector",
+          "title": "Do you already have architectural drawings?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_ready_to_fabricate", "label": "Yes — ready to fabricate" },
+              { "value": "concept_or_sketch_only", "label": "Concept or sketch only" },
+              { "value": "need_full_design_assistance", "label": "Need full design assistance" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_storage",
+          "type": "type_selector",
+          "title": "Do you need under-stair storage or features built-in?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "drawers_or_cupboards", "label": "Drawers or cupboards" },
+              { "value": "open_shelving", "label": "Open shelving" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_tread",
+          "type": "type_selector",
+          "title": "What tread and riser style do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "closed_riser_traditional", "label": "Closed riser (traditional)" },
+              { "value": "open_riser_modern", "label": "Open riser (modern)" },
+              { "value": "mixed_or_custom", "label": "Mixed or custom" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_balustrade",
+          "type": "type_selector",
+          "title": "Do you require a handrail or balustrade included?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "timber_handrail", "label": "Timber handrail" },
+              { "value": "glass_metal_balustrade", "label": "Glass / metal balustrade" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_finish",
+          "type": "type_selector",
+          "title": "What finish preference do you have?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "natural_varnish", "label": "Natural varnish" },
+              { "value": "painted_stained", "label": "Painted / stained" },
+              { "value": "raw_finish_for_on_site_finishing", "label": "Raw finish for on-site finishing" }
+            ]
+          }
+        },
+        {
+          "id": "timber_stair_timeline",
+          "type": "type_selector",
+          "title": "When do you need installation or delivery?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_2_4_weeks", "label": "Within 2–4 weeks" },
+              { "value": "1_2_months", "label": "1–2 months" },
+              { "value": "flexible_planning_stage", "label": "Flexible / planning stage" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Timber staircase: {{timber_stair_type}}. Location: {{timber_stair_location}}. Material: {{timber_stair_material}}. Height: {{timber_stair_height}}. Drawings: {{timber_stair_drawings}}. Storage: {{timber_stair_storage}}. Tread: {{timber_stair_tread}}. Balustrade: {{timber_stair_balustrade}}. Finish: {{timber_stair_finish}}. Timeline: {{timber_stair_timeline}}."
+    },
+    {
+      "id": "handrails-balustrades",
+      "label": "Handrails & Balustrades",
+      "icon": "Grip",
+      "description": "Professional handrail and balustrade installation for staircases, balconies, terraces, and decks with various materials and styles.",
+      "budgetRange": { "min": 1500, "max": 12000 },
+      "blocks": [
+        {
+          "id": "handrail_installation_type",
+          "type": "type_selector",
+          "title": "What type of installation do you need?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "new_handrail_balustrade_system", "label": "New handrail & balustrade system" },
+              { "value": "replacement_or_upgrade", "label": "Replacement or upgrade" },
+              { "value": "repair_or_refinishing", "label": "Repair or refinishing" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_location",
+          "type": "type_selector",
+          "title": "Where will it be installed?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "staircase", "label": "Staircase" },
+              { "value": "balcony_or_mezzanine", "label": "Balcony or mezzanine" },
+              { "value": "terrace_or_deck", "label": "Terrace or deck" },
+              { "value": "other_custom", "label": "Other / custom" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_material",
+          "type": "type_selector",
+          "title": "What material is preferred for the handrail?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "timber", "label": "Timber" },
+              { "value": "metal", "label": "Metal" },
+              { "value": "glass_with_brackets", "label": "Glass with brackets" },
+              { "value": "mixed_materials", "label": "Mixed materials" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_balustrade_style",
+          "type": "type_selector",
+          "title": "What balustrade style do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "vertical_spindles", "label": "Vertical spindles" },
+              { "value": "horizontal_bars", "label": "Horizontal bars" },
+              { "value": "glass_panels", "label": "Glass panels" },
+              { "value": "cable_or_minimalist_tension_wires", "label": "Cable or minimalist tension wires" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_mounting",
+          "type": "type_selector",
+          "title": "Do you want the handrail wall-mounted or post-mounted?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "wall_mounted", "label": "Wall-mounted" },
+              { "value": "post_mounted", "label": "Post-mounted" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_finish",
+          "type": "type_selector",
+          "title": "What finish or colour is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "natural_wood", "label": "Natural wood" },
+              { "value": "painted", "label": "Painted" },
+              { "value": "brushed_metal_chrome", "label": "Brushed metal / chrome" },
+              { "value": "black_industrial", "label": "Black / industrial" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_length",
+          "type": "type_selector",
+          "title": "What is the approximate length required?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_3_m", "label": "Under 3 m" },
+              { "value": "3_6_m", "label": "3–6 m" },
+              { "value": "6_10_m", "label": "6–10 m" },
+              { "value": "10_m_plus", "label": "10 m+" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_service_scope",
+          "type": "type_selector",
+          "title": "Do you need installation only or supply & fit?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "supply_fit", "label": "Supply & fit" },
+              { "value": "installation_only", "label": "Installation only" },
+              { "value": "supply_only", "label": "Supply only" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_environment",
+          "type": "type_selector",
+          "title": "Will the work be indoors or outdoors?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "indoors", "label": "Indoors" },
+              { "value": "outdoors", "label": "Outdoors" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_design",
+          "type": "type_selector",
+          "title": "Do you already have design drawings or photos?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_ready_to_quote", "label": "Yes — ready to quote" },
+              { "value": "example_photos_for_inspiration", "label": "Example photos for inspiration" },
+              { "value": "need_design_ideas", "label": "Need design ideas" }
+            ]
+          }
+        },
+        {
+          "id": "handrail_timeline",
+          "type": "type_selector",
+          "title": "When do you want the work completed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "planning_stage", "label": "Planning stage" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Handrail installation: {{handrail_installation_type}}. Location: {{handrail_location}}. Material: {{handrail_material}}. Balustrade style: {{handrail_balustrade_style}}. Mounting: {{handrail_mounting}}. Finish: {{handrail_finish}}. Length: {{handrail_length}}. Service scope: {{handrail_service_scope}}. Environment: {{handrail_environment}}. Design: {{handrail_design}}. Timeline: {{handrail_timeline}}."
+    },
+    {
+      "id": "floating-feature-stairs",
+      "label": "Floating & Feature Stairs",
+      "icon": "TrendingUp",
+      "description": "Contemporary floating and feature staircase designs including cantilevered, single stringer, and zig-zag styles with engineered structures.",
+      "budgetRange": { "min": 8000, "max": 40000 },
+      "blocks": [
+        {
+          "id": "feature_stair_design",
+          "type": "type_selector",
+          "title": "What type of floating stair design are you interested in?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "single_stringer", "label": "Single stringer" },
+              { "value": "twin_stringer", "label": "Twin stringer" },
+              { "value": "cantilevered_from_wall", "label": "Cantilevered from wall" },
+              { "value": "zig_zag_or_folded_plate_style", "label": "Zig-zag or folded plate style" },
+              { "value": "unsure_need_design_advice", "label": "Unsure — need design advice" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_location",
+          "type": "type_selector",
+          "title": "Where will the staircase be installed?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "main_house_interior", "label": "Main house interior" },
+              { "value": "commercial_or_office_space", "label": "Commercial or office space" },
+              { "value": "outdoor_external", "label": "Outdoor / external" },
+              { "value": "duplex_mezzanine", "label": "Duplex / mezzanine" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_tread",
+          "type": "type_selector",
+          "title": "What tread material is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "solid_timber", "label": "Solid timber" },
+              { "value": "glass", "label": "Glass" },
+              { "value": "metal", "label": "Metal" },
+              { "value": "combination", "label": "Combination" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_balustrade",
+          "type": "type_selector",
+          "title": "What type of balustrade or side protection would you like?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "frameless_glass", "label": "Frameless glass" },
+              { "value": "steel_cables", "label": "Steel cables" },
+              { "value": "timber_or_metal_balusters", "label": "Timber or metal balusters" },
+              { "value": "no_balustrade", "label": "No balustrade" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_engineering",
+          "type": "type_selector",
+          "title": "Do you require an engineered structure or decorative-only feature?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fully_engineered_load_bearing", "label": "Fully engineered, load-bearing" },
+              { "value": "decorative_access_light_use", "label": "Decorative / access-light use" },
+              { "value": "not_sure_need_advice", "label": "Not sure — need advice" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_height",
+          "type": "type_selector",
+          "title": "What is the floor-to-floor height or number of steps?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_10_14_steps", "label": "Standard (10–14 steps)" },
+              { "value": "extended_15_18_steps", "label": "Extended (15–18 steps)" },
+              { "value": "custom_multi_level", "label": "Custom / multi-level" },
+              { "value": "need_site_measurement", "label": "Need site measurement" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_finish",
+          "type": "type_selector",
+          "title": "What finish or tone is preferred?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "natural_clear_varnish", "label": "Natural clear varnish" },
+              { "value": "painted", "label": "Painted" },
+              { "value": "matte_black_industrial", "label": "Matte black / industrial" },
+              { "value": "custom_finish", "label": "Custom finish" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_drawings",
+          "type": "type_selector",
+          "title": "Do you already have drawings or design plans?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_ready_for_fabrication", "label": "Yes — ready for fabrication" },
+              { "value": "concept_visuals_only", "label": "Concept visuals only" },
+              { "value": "need_full_design_service", "label": "Need full design service" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_lighting",
+          "type": "type_selector",
+          "title": "Would you like LED lighting integrated into the stairs?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "step_or_wall_lighting", "label": "Step or wall lighting" },
+              { "value": "under_tread_lighting", "label": "Under-tread lighting" },
+              { "value": "no_lighting", "label": "No lighting" }
+            ]
+          }
+        },
+        {
+          "id": "feature_stair_schedule",
+          "type": "type_selector",
+          "title": "When would you like the staircase built or installed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_1_2_months", "label": "Within 1–2 months" },
+              { "value": "planning_stage", "label": "Planning stage" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Floating stair design: {{feature_stair_design}}. Location: {{feature_stair_location}}. Tread: {{feature_stair_tread}}. Balustrade: {{feature_stair_balustrade}}. Engineering: {{feature_stair_engineering}}. Height: {{feature_stair_height}}. Finish: {{feature_stair_finish}}. Drawings: {{feature_stair_drawings}}. Lighting: {{feature_stair_lighting}}. Schedule: {{feature_stair_schedule}}."
+    },
+    {
+      "id": "stair-restoration-refinishing",
+      "label": "Stair Restoration & Refinishing",
+      "icon": "PaintBucket",
+      "description": "Professional staircase restoration and refinishing services including sanding, structural repairs, and complete refinishing.",
+      "budgetRange": { "min": 1200, "max": 8000 },
+      "blocks": [
+        {
+          "id": "stair_restoration_type",
+          "type": "type_selector",
+          "title": "What type of staircase requires restoration?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "timber", "label": "Timber" },
+              { "value": "metal", "label": "Metal" },
+              { "value": "mixed_material", "label": "Mixed material" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "stair_work_scope",
+          "type": "type_selector",
+          "title": "What kind of work is needed?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sanding_refinishing", "label": "Sanding & refinishing" },
+              { "value": "structural_repair", "label": "Structural repair" },
+              { "value": "replacing_treads_or_risers", "label": "Replacing treads or risers" },
+              { "value": "repainting_or_restaining", "label": "Repainting or restaining" }
+            ]
+          }
+        },
+        {
+          "id": "stair_current_finish",
+          "type": "type_selector",
+          "title": "Is the staircase painted, varnished, or untreated currently?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "painted", "label": "Painted" },
+              { "value": "varnished_sealed", "label": "Varnished / sealed" },
+              { "value": "raw_timber", "label": "Raw timber" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "stair_finish_change",
+          "type": "type_selector",
+          "title": "Do you want to change the colour or finish?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_lighter_tone", "label": "Yes — lighter tone" },
+              { "value": "yes_darker_tone", "label": "Yes — darker tone" },
+              { "value": "keep_existing_look", "label": "Keep existing look" },
+              { "value": "open_to_advice", "label": "Open to advice" }
+            ]
+          }
+        },
+        {
+          "id": "stair_repairs",
+          "type": "type_selector",
+          "title": "Are there damaged or squeaky steps?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_some_repairs_needed", "label": "Yes — some repairs needed" },
+              { "value": "no_cosmetic_only", "label": "No — cosmetic only" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "stair_balustrade",
+          "type": "type_selector",
+          "title": "Do you want the balustrade or handrail restored too?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_include_balustrade", "label": "Yes — include balustrade" },
+              { "value": "no_stairs_only", "label": "No — stairs only" },
+              { "value": "maybe_depends_on_cost", "label": "Maybe — depends on cost" }
+            ]
+          }
+        },
+        {
+          "id": "stair_flights",
+          "type": "type_selector",
+          "title": "Approximate number of steps or flights?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_short_flight", "label": "1 short flight" },
+              { "value": "2_flights", "label": "2 flights" },
+              { "value": "3_plus_flights", "label": "3+ flights" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "stair_anti_slip",
+          "type": "type_selector",
+          "title": "Do you want anti-slip coating or stair protection applied?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "stair_property_type",
+          "type": "type_selector",
+          "title": "What is the property type?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential_home", "label": "Residential home" },
+              { "value": "apartment_building", "label": "Apartment building" },
+              { "value": "commercial_business_premises", "label": "Commercial / business premises" }
+            ]
+          }
+        },
+        {
+          "id": "stair_timeline",
+          "type": "type_selector",
+          "title": "When do you want the work carried out?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "immediately", "label": "Immediately" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "planning_budgeting_stage", "label": "Planning / budgeting stage" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Staircase restoration: {{stair_restoration_type}}. Work scope: {{stair_work_scope}}. Current finish: {{stair_current_finish}}. Finish change: {{stair_finish_change}}. Repairs: {{stair_repairs}}. Balustrade: {{stair_balustrade}}. Flights: {{stair_flights}}. Anti-slip: {{stair_anti_slip}}. Property type: {{stair_property_type}}. Timeline: {{stair_timeline}}."
+    },
+    {
+      "id": "floor-sanding-polishing",
+      "label": "Floor Sanding & Polishing",
+      "icon": "Disc",
+      "description": "Professional floor sanding and polishing services for solid wood, engineered, and parquet flooring with various finish options.",
+      "budgetRange": { "min": 800, "max": 6000 },
+      "blocks": [
+        {
+          "id": "floor_type",
+          "type": "type_selector",
+          "title": "What type of flooring needs sanding?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "solid_wood", "label": "Solid wood" },
+              { "value": "engineered_wood", "label": "Engineered wood" },
+              { "value": "parquet", "label": "Parquet" },
+              { "value": "stained_or_painted_timber", "label": "Stained or painted timber" }
+            ]
+          }
+        },
+        {
+          "id": "floor_area",
+          "type": "type_selector",
+          "title": "What is the approximate area size?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small_up_to_15_m2", "label": "Small (up to 15 m²)" },
+              { "value": "medium_15_40_m2", "label": "Medium (15–40 m²)" },
+              { "value": "large_40_80_m2", "label": "Large (40–80 m²)" },
+              { "value": "extra_large_80_m2_plus", "label": "Extra-large (80 m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "floor_condition",
+          "type": "type_selector",
+          "title": "What is the current condition of the floor?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "light_wear_surface_dullness", "label": "Light wear / surface dullness" },
+              { "value": "scratches_or_minor_damage", "label": "Scratches or minor damage" },
+              { "value": "heavy_wear_uneven_surface", "label": "Heavy wear / uneven surface" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "floor_strip",
+          "type": "type_selector",
+          "title": "Do you want the existing finish fully removed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_strip_back_to_bare_wood", "label": "Yes — strip back to bare wood" },
+              { "value": "no_light_re_sand_only", "label": "No — light re-sand only" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "floor_finish",
+          "type": "type_selector",
+          "title": "What kind of final finish do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "natural_matte", "label": "Natural matte" },
+              { "value": "satin_sheen", "label": "Satin sheen" },
+              { "value": "gloss_high_shine", "label": "Gloss / high shine" },
+              { "value": "undecided_need_advice", "label": "Undecided — need advice" }
+            ]
+          }
+        },
+        {
+          "id": "floor_stain",
+          "type": "type_selector",
+          "title": "Would you like staining or colour change before finishing?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_darker_stain", "label": "Yes — darker stain" },
+              { "value": "yes_lighter_tone_whitewash", "label": "Yes — lighter tone / whitewash" },
+              { "value": "no_keep_natural_look", "label": "No — keep natural look" }
+            ]
+          }
+        },
+        {
+          "id": "floor_edge_sanding",
+          "type": "type_selector",
+          "title": "Do you require edge sanding or stair sanding included?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "include_edges", "label": "Include edges" },
+              { "value": "include_stairs", "label": "Include stairs" },
+              { "value": "no_flat_floor_only", "label": "No — flat floor only" }
+            ]
+          }
+        },
+        {
+          "id": "floor_repairs",
+          "type": "type_selector",
+          "title": "Do you need gaps filled or boards repaired?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_minor_filling", "label": "Yes — minor filling" },
+              { "value": "yes_extensive_repair", "label": "Yes — extensive repair" },
+              { "value": "no_repairs_needed", "label": "No repairs needed" }
+            ]
+          }
+        },
+        {
+          "id": "floor_property_status",
+          "type": "type_selector",
+          "title": "What is the property status?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "empty_unoccupied", "label": "Empty / unoccupied" },
+              { "value": "furnished_furniture_to_move", "label": "Furnished — furniture to move" },
+              { "value": "occupied_room_by_room_work", "label": "Occupied — room-by-room work" }
+            ]
+          }
+        },
+        {
+          "id": "floor_timeline",
+          "type": "type_selector",
+          "title": "When do you need the work done?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_2_4_weeks", "label": "Within 2–4 weeks" },
+              { "value": "planning_budgeting_stage", "label": "Planning / budgeting stage" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Floor sanding: {{floor_type}}. Area: {{floor_area}}. Condition: {{floor_condition}}. Strip: {{floor_strip}}. Finish: {{floor_finish}}. Stain: {{floor_stain}}. Edge sanding: {{floor_edge_sanding}}. Repairs: {{floor_repairs}}. Property status: {{floor_property_status}}. Timeline: {{floor_timeline}}."
+    },
+    {
+      "id": "varnish-oil-lacquer",
+      "label": "Varnish, Oil & Lacquer Finishes",
+      "icon": "Droplet",
+      "description": "Professional varnish, oil, and lacquer finishing services for floors, furniture, stairs, and woodwork with various sheen levels.",
+      "budgetRange": { "min": 500, "max": 4000 },
+      "blocks": [
+        {
+          "id": "finish_surface",
+          "type": "type_selector",
+          "title": "What surface or material requires finishing?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "wooden_floors", "label": "Wooden floors" },
+              { "value": "furniture_or_cabinetry", "label": "Furniture or cabinetry" },
+              { "value": "stairs_or_handrails", "label": "Stairs or handrails" },
+              { "value": "doors_trims", "label": "Doors / trims" }
+            ]
+          }
+        },
+        {
+          "id": "finish_surface_condition",
+          "type": "type_selector",
+          "title": "Is the surface newly sanded or existing?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "newly_sanded", "label": "Newly sanded" },
+              { "value": "existing_finish_to_refresh", "label": "Existing finish to refresh" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "finish_type",
+          "type": "type_selector",
+          "title": "What type of finish do you prefer?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "natural_oil", "label": "Natural oil" },
+              { "value": "hardwax_oil", "label": "Hardwax oil" },
+              { "value": "varnish", "label": "Varnish" },
+              { "value": "lacquer", "label": "Lacquer" }
+            ]
+          }
+        },
+        {
+          "id": "finish_sheen",
+          "type": "type_selector",
+          "title": "What sheen level are you after?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "matte", "label": "Matte" },
+              { "value": "satin", "label": "Satin" },
+              { "value": "gloss", "label": "Gloss" },
+              { "value": "open_to_advice", "label": "Open to advice" }
+            ]
+          }
+        },
+        {
+          "id": "finish_colour",
+          "type": "type_selector",
+          "title": "What is the preferred colour tone?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "natural_clear", "label": "Natural clear" },
+              { "value": "light_whitewash", "label": "Light / whitewash" },
+              { "value": "medium_oak_honey", "label": "Medium oak / honey" },
+              { "value": "dark_walnut_or_espresso", "label": "Dark / walnut or espresso" }
+            ]
+          }
+        },
+        {
+          "id": "finish_colour_matching",
+          "type": "type_selector",
+          "title": "Do you need colour matching to existing finishes?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "finish_special",
+          "type": "type_selector",
+          "title": "Do you want a non-slip or high-traffic coating applied?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_non_slip", "label": "Yes — non-slip" },
+              { "value": "yes_heavy_traffic_durability", "label": "Yes — heavy traffic durability" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "finish_environment",
+          "type": "type_selector",
+          "title": "Will the work be indoors or outdoors?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "indoors", "label": "Indoors" },
+              { "value": "outdoors", "label": "Outdoors" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "finish_eco",
+          "type": "type_selector",
+          "title": "Do you require eco-friendly or low-VOC products?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_natural_oils_only", "label": "Yes — natural oils only" },
+              { "value": "no_standard_materials_fine", "label": "No — standard materials fine" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "finish_timeline",
+          "type": "type_selector",
+          "title": "When do you want the finishing completed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_1_month", "label": "Within 1 month" },
+              { "value": "planning_stage", "label": "Planning stage" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Finishing surface: {{finish_surface}}. Surface condition: {{finish_surface_condition}}. Finish type: {{finish_type}}. Sheen: {{finish_sheen}}. Colour: {{finish_colour}}. Colour matching: {{finish_colour_matching}}. Special: {{finish_special}}. Environment: {{finish_environment}}. Eco: {{finish_eco}}. Timeline: {{finish_timeline}}."
     }
   ]
 }
