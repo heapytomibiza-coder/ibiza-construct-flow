@@ -1,0 +1,758 @@
+{
+  "services": [
+    {
+      "id": "full-rewiring",
+      "label": "Full Rewiring & New Builds",
+      "icon": "Zap",
+      "description": "Complete or partial property rewiring for residential and commercial properties",
+      "budgetRange": {
+        "min": 2000,
+        "max": 15000
+      },
+      "blocks": [
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "What type of property requires rewiring?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "apartment", "label": "Apartment / Flat" },
+              { "value": "detached", "label": "Detached house" },
+              { "value": "semi_detached", "label": "Semi-detached / Terrace" },
+              { "value": "commercial", "label": "Commercial unit" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "property_size",
+          "type": "type_selector",
+          "title": "Approximate property size or number of rooms?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "3_5_rooms", "label": "3–5 rooms" },
+              { "value": "6_8_rooms", "label": "6–8 rooms" },
+              { "value": "9_plus_rooms", "label": "9+ rooms" }
+            ]
+          }
+        },
+        {
+          "id": "rewire_type",
+          "type": "type_selector",
+          "title": "Is this a complete rewire or a partial rewire?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "complete", "label": "Complete" },
+              { "value": "partial", "label": "Partial" }
+            ]
+          }
+        },
+        {
+          "id": "occupancy_status",
+          "type": "type_selector",
+          "title": "Is the property currently occupied or vacant?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "occupied", "label": "Occupied" },
+              { "value": "vacant", "label": "Vacant" }
+            ]
+          }
+        },
+        {
+          "id": "cable_type",
+          "type": "type_selector",
+          "title": "Are the existing cables surface-mounted or buried within walls?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "surface", "label": "Surface-mounted" },
+              { "value": "buried", "label": "Buried / chased into walls" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "wall_type",
+          "type": "type_selector",
+          "title": "What type of walls/floors will electricians be working through?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concrete", "label": "Solid concrete" },
+              { "value": "brick", "label": "Brick or block" },
+              { "value": "timber", "label": "Timber stud / plasterboard" },
+              { "value": "mix", "label": "Mix of materials" }
+            ]
+          }
+        },
+        {
+          "id": "new_fittings",
+          "type": "type_selector",
+          "title": "Do you need new sockets, switches, and lighting points installed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "all_new", "label": "Yes, all new" },
+              { "value": "replacements", "label": "Only replacements" },
+              { "value": "mix", "label": "Mix of both" }
+            ]
+          }
+        },
+        {
+          "id": "consumer_unit",
+          "type": "type_selector",
+          "title": "Do you require new consumer unit (fuse board) installation?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "certification",
+          "type": "type_selector",
+          "title": "Do you need the electrical installation tested and certified?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "completion_date",
+          "type": "type_selector",
+          "title": "When do you need the work completed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_week", "label": "Within 1 week" },
+              { "value": "1_month", "label": "Within 1 month" },
+              { "value": "3_months", "label": "Within 3 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a detailed job post for full rewiring of a {property_type} with {property_size}. This is a {rewire_type} rewire for a property that is {occupancy_status}. Existing cables are {cable_type} and walls/floors are {wall_type}. Client needs {new_fittings} fittings and {consumer_unit} regarding consumer unit. Certification required: {certification}. Completion needed: {completion_date}."
+    },
+    {
+      "id": "consumer-unit-upgrade",
+      "label": "Consumer Unit & Fuse Board Upgrades",
+      "icon": "Cpu",
+      "description": "Upgrade old fuse boxes to modern consumer units with RCD and surge protection",
+      "budgetRange": {
+        "min": 500,
+        "max": 2500
+      },
+      "blocks": [
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "What type of property is the board for?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "upgrade_reason",
+          "type": "type_selector",
+          "title": "What's the reason for upgrade?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "safety", "label": "Safety / old fuse box" },
+              { "value": "additional_circuits", "label": "Additional circuits required" },
+              { "value": "inspection_failure", "label": "Electrical inspection failure" },
+              { "value": "new_build", "label": "New build / renovation" }
+            ]
+          }
+        },
+        {
+          "id": "circuit_count",
+          "type": "type_selector",
+          "title": "How many circuits are currently in use?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "4_or_fewer", "label": "4 or fewer" },
+              { "value": "5_8", "label": "5–8" },
+              { "value": "9_12", "label": "9–12" },
+              { "value": "13_plus", "label": "13+" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "existing_board_type",
+          "type": "type_selector",
+          "title": "What's the existing board type?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fuse_wire", "label": "Fuse wire" },
+              { "value": "mcb", "label": "MCB (modern breakers)" },
+              { "value": "rcd_protected", "label": "RCD protected" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "protection_type",
+          "type": "type_selector",
+          "title": "Do you require surge protection or RCBOs on all circuits?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "surge", "label": "Yes, surge protection" },
+              { "value": "rcbos", "label": "Yes, RCBOs" },
+              { "value": "both", "label": "Both" },
+              { "value": "no_preference", "label": "No preference" }
+            ]
+          }
+        },
+        {
+          "id": "board_access",
+          "type": "type_selector",
+          "title": "Is there easy access to the current fuse board area?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No (tight cupboard / ceiling / etc.)" }
+            ]
+          }
+        },
+        {
+          "id": "certification",
+          "type": "type_selector",
+          "title": "Do you require full testing and certification after installation?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "meter_tails",
+          "type": "type_selector",
+          "title": "Would you like to include upgraded meter tails and earthing system?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "additional_circuits",
+          "type": "text_field",
+          "title": "Any additional circuits or new equipment being added?",
+          "required": false,
+          "config": {
+            "placeholder": "Describe any additional circuits needed"
+          }
+        },
+        {
+          "id": "preferred_time",
+          "type": "type_selector",
+          "title": "Preferred time for installation?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_week", "label": "Within a week" },
+              { "value": "within_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a job post for consumer unit upgrade for {property_type} property. Upgrade reason: {upgrade_reason}. Current circuits: {circuit_count}, existing board: {existing_board_type}. Client wants {protection_type} protection. Board access is {board_access}. Certification: {certification}, meter tails upgrade: {meter_tails}. Additional circuits: {additional_circuits}. Preferred timing: {preferred_time}."
+    },
+    {
+      "id": "lighting-socket-installation",
+      "label": "Lighting Circuits & Socket Installation",
+      "icon": "Lightbulb",
+      "description": "Install new lighting circuits, sockets, and outlets for indoor and outdoor spaces",
+      "budgetRange": {
+        "min": 150,
+        "max": 3000
+      },
+      "blocks": [
+        {
+          "id": "installation_type",
+          "type": "type_selector",
+          "title": "What type of installation do you need?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "lighting", "label": "New lighting circuit" },
+              { "value": "sockets", "label": "New sockets / outlets" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "location",
+          "type": "type_selector",
+          "title": "Indoor or outdoor installation?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "indoor", "label": "Indoor only" },
+              { "value": "outdoor", "label": "Outdoor only" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "fitting_count",
+          "type": "type_selector",
+          "title": "How many fittings or sockets approximately?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_4", "label": "1–4" },
+              { "value": "5_10", "label": "5–10" },
+              { "value": "11_20", "label": "11–20" },
+              { "value": "20_plus", "label": "20+" }
+            ]
+          }
+        },
+        {
+          "id": "lighting_style",
+          "type": "type_selector",
+          "title": "What style of lighting are you installing?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "downlights", "label": "Downlights / spotlights" },
+              { "value": "pendant", "label": "Pendant or ceiling lights" },
+              { "value": "wall_lights", "label": "Wall lights" },
+              { "value": "led_strips", "label": "LED strips / feature lighting" }
+            ]
+          }
+        },
+        {
+          "id": "smart_control",
+          "type": "type_selector",
+          "title": "Do you require dimmer switches or smart control?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "dimmers", "label": "Yes – dimmers" },
+              { "value": "smart", "label": "Yes – smart system" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "existing_wiring",
+          "type": "type_selector",
+          "title": "Is there existing wiring in place?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_existing", "label": "Yes, using existing circuit" },
+              { "value": "needs_new", "label": "No, needs new circuit" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "surface_type",
+          "type": "type_selector",
+          "title": "What wall/ceiling type are fittings going into?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "plasterboard", "label": "Plasterboard" },
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "wood", "label": "Wood" },
+              { "value": "mix", "label": "Mix" }
+            ]
+          }
+        },
+        {
+          "id": "supply_fittings",
+          "type": "type_selector",
+          "title": "Do you need the electrician to supply fittings?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No, I'll supply" },
+              { "value": "some", "label": "Some items only" }
+            ]
+          }
+        },
+        {
+          "id": "certification",
+          "type": "type_selector",
+          "title": "Do you want a certificate of installation after completion?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a job post for {installation_type} installation in {location} location. Approximately {fitting_count} fittings/sockets needed. Lighting style: {lighting_style}, smart control: {smart_control}. Existing wiring: {existing_wiring}, surface type: {surface_type}. Electrician to supply fittings: {supply_fittings}. Certificate needed: {certification}."
+    },
+    {
+      "id": "kitchen-bathroom-electrics",
+      "label": "Kitchen & Bathroom Electrics",
+      "icon": "Home",
+      "description": "Electrical installations for kitchens and bathrooms including appliances and safety features",
+      "budgetRange": {
+        "min": 300,
+        "max": 5000
+      },
+      "blocks": [
+        {
+          "id": "work_area",
+          "type": "type_selector",
+          "title": "Which area is the work for?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "kitchen", "label": "Kitchen" },
+              { "value": "bathroom", "label": "Bathroom" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "work_type",
+          "type": "type_selector",
+          "title": "What type of work is needed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_installation", "label": "New installation" },
+              { "value": "renovation", "label": "Renovation / upgrade" },
+              { "value": "appliance_wiring", "label": "Appliance wiring" }
+            ]
+          }
+        },
+        {
+          "id": "new_circuits",
+          "type": "type_selector",
+          "title": "Are you adding new circuits (e.g., oven, hob, extractor, shower)?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "underfloor_heating",
+          "type": "type_selector",
+          "title": "Any underfloor heating or towel rails included?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "downlights_mirrors",
+          "type": "type_selector",
+          "title": "Are there downlights or mirrors requiring power?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "ip_rated",
+          "type": "type_selector",
+          "title": "Do you require IP-rated fittings (for wet zones)?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "not_sure", "label": "Not sure" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "extractor_fan",
+          "type": "type_selector",
+          "title": "Is there an existing extractor fan to connect or replace?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "supply_fittings",
+          "type": "type_selector",
+          "title": "Do you need the electrician to supply fittings?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "some", "label": "Some items only" }
+            ]
+          }
+        },
+        {
+          "id": "installation_timing",
+          "type": "type_selector",
+          "title": "When will the kitchen/bathroom installation take place?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "already_fitted", "label": "Already fitted" },
+              { "value": "in_progress", "label": "In progress" },
+              { "value": "not_started", "label": "Not started yet" }
+            ]
+          }
+        },
+        {
+          "id": "certification",
+          "type": "type_selector",
+          "title": "Would you like a safety certificate after work is completed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a job post for {work_area} electrical work. Type of work: {work_type}. New circuits needed: {new_circuits}. Underfloor heating/towel rails: {underfloor_heating}. Downlights/mirrors: {downlights_mirrors}, IP-rated fittings: {ip_rated}. Extractor fan: {extractor_fan}. Supply fittings: {supply_fittings}. Installation timing: {installation_timing}. Certification: {certification}."
+    },
+    {
+      "id": "external-garden-power",
+      "label": "External & Garden Power",
+      "icon": "TreePine",
+      "description": "Outdoor electrical installations for gardens, outbuildings, and external features",
+      "budgetRange": {
+        "min": 400,
+        "max": 8000
+      },
+      "blocks": [
+        {
+          "id": "power_purpose",
+          "type": "type_selector",
+          "title": "What do you need power for?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "garden_lighting", "label": "Garden lighting" },
+              { "value": "outdoor_sockets", "label": "Outdoor sockets" },
+              { "value": "water_feature", "label": "Water feature or pond" },
+              { "value": "outbuilding", "label": "Outbuilding / shed" },
+              { "value": "hot_tub", "label": "Hot tub / pool equipment" }
+            ]
+          }
+        },
+        {
+          "id": "distance",
+          "type": "type_selector",
+          "title": "How far is the power source from the main house?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_10m", "label": "Under 10m" },
+              { "value": "10_30m", "label": "10–30m" },
+              { "value": "30_50m", "label": "30–50m" },
+              { "value": "50m_plus", "label": "50m+" }
+            ]
+          }
+        },
+        {
+          "id": "existing_power",
+          "type": "type_selector",
+          "title": "Do you have existing outdoor power?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "cable_route",
+          "type": "type_selector",
+          "title": "Is the cabling route underground or surface-mounted?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "underground", "label": "Underground (trench required)" },
+              { "value": "surface", "label": "Surface-mounted" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "control_type",
+          "type": "type_selector",
+          "title": "Do you require switching control (timer, PIR, smart app)?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "timer", "label": "Timer" },
+              { "value": "pir", "label": "Motion sensor (PIR)" },
+              { "value": "smart", "label": "Smart app" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "lighting_type",
+          "type": "type_selector",
+          "title": "What lighting type are you using (if applicable)?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "bollards", "label": "LED bollards / path lights" },
+              { "value": "wall_mounted", "label": "Wall-mounted" },
+              { "value": "spike", "label": "Spike / ground lights" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "supply_fittings",
+          "type": "type_selector",
+          "title": "Will you supply the fittings?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "some", "label": "Some items" }
+            ]
+          }
+        },
+        {
+          "id": "ground_condition",
+          "type": "type_selector",
+          "title": "What's the ground condition for cable routing?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "soil", "label": "Soil / grass" },
+              { "value": "gravel", "label": "Gravel / paving" },
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "decking", "label": "Decking / raised area" }
+            ]
+          }
+        },
+        {
+          "id": "weatherproof",
+          "type": "type_selector",
+          "title": "Do you require weatherproof sockets or IP-rated boxes?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "certification",
+          "type": "type_selector",
+          "title": "Do you need certification for outdoor installation?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a job post for external power installation for: {power_purpose}. Distance from house: {distance}. Existing outdoor power: {existing_power}. Cable route: {cable_route}. Control type: {control_type}. Lighting type: {lighting_type}. Client supplying fittings: {supply_fittings}. Ground condition: {ground_condition}. Weatherproof requirements: {weatherproof}. Certification: {certification}."
+    }
+  ]
+}
