@@ -8333,6 +8333,1097 @@
         }
       ],
       "promptTemplate": "Provide a smart lighting/climate request. Scope: {{smart_scope}} for {{smart_property_type}} covering {{smart_zone_count}} zones. Control preferences: {{smart_control_type}}. Existing hub: {{smart_hub}}. Climate systems: {{smart_climate_system}}. Room sensors: {{smart_temperature_sensors}}. Scenes: {{smart_scenes}}. Installation type: {{smart_install_type}}. Equipment supply: {{smart_supplier}}."
+    },
+    {
+      "id": "security-access-systems",
+      "label": "Security & Access Systems",
+      "icon": "Shield",
+      "description": "CCTV surveillance, smart locks, alarm systems, and video entry solutions",
+      "budgetRange": { "min": 1500, "max": 12000 },
+      "blocks": [
+        {
+          "id": "security_system_type",
+          "type": "type_selector",
+          "title": "What type of system are you interested in?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "cctv-surveillance", "label": "CCTV / video surveillance" },
+              { "value": "smart-door-locks", "label": "Smart door locks / access control" },
+              { "value": "alarm-system", "label": "Alarm system" },
+              { "value": "intercom-video-entry", "label": "Intercom / video entry" }
+            ]
+          }
+        },
+        {
+          "id": "security_property_type",
+          "type": "type_selector",
+          "title": "Type of property?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "multi-unit-complex", "label": "Multi-unit complex" }
+            ]
+          }
+        },
+        {
+          "id": "security_point_count",
+          "type": "type_selector",
+          "title": "How many cameras or access points required?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1-2", "label": "1–2" },
+              { "value": "3-5", "label": "3–5" },
+              { "value": "6-10", "label": "6–10" },
+              { "value": "10-plus", "label": "10+" }
+            ]
+          }
+        },
+        {
+          "id": "security_remote_monitoring",
+          "type": "type_selector",
+          "title": "Do you require remote monitoring via smartphone?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "security_camera_setup",
+          "type": "type_selector",
+          "title": "Preferred camera setup?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "wired", "label": "Wired" },
+              { "value": "wireless", "label": "Wireless" },
+              { "value": "mix", "label": "Mix of both" }
+            ]
+          }
+        },
+        {
+          "id": "security_alerts",
+          "type": "type_selector",
+          "title": "Would you like motion alerts or AI detection (faces, vehicles, etc.)?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full-ai", "label": "Yes – full AI features" },
+              { "value": "basic-alerts", "label": "Basic alerts only" },
+              { "value": "not-needed", "label": "Not needed" }
+            ]
+          }
+        },
+        {
+          "id": "security_network",
+          "type": "type_selector",
+          "title": "Is there an existing internet or network infrastructure?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-reliable", "label": "Yes – reliable" },
+              { "value": "yes-limited", "label": "Yes – limited coverage" },
+              { "value": "no-needs-setup", "label": "No – needs setup" }
+            ]
+          }
+        },
+        {
+          "id": "security_storage",
+          "type": "type_selector",
+          "title": "Where will footage be stored?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "local-nvr", "label": "Local hard drive / NVR" },
+              { "value": "cloud-storage", "label": "Cloud storage" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "security_access_integration",
+          "type": "type_selector",
+          "title": "Do you need access integration (e.g., smart gates or locks)?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "later-phase", "label": "Later phase" }
+            ]
+          }
+        },
+        {
+          "id": "security_maintenance",
+          "type": "type_selector",
+          "title": "Would you like the installer to provide ongoing maintenance?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Detail a security/access installation. Systems: {{security_system_type}} for {{security_property_type}} with {{security_point_count}} points. Remote monitoring: {{security_remote_monitoring}}. Camera setup: {{security_camera_setup}}. Alert level: {{security_alerts}}. Network readiness: {{security_network}}. Storage preference: {{security_storage}}. Access integration: {{security_access_integration}}. Maintenance plan: {{security_maintenance}}."
+    },
+    {
+      "id": "audio-visual-multi-room-setups",
+      "label": "Audio-Visual & Multi-Room Setups",
+      "icon": "Tv",
+      "description": "Multi-room audio, home cinema, TV mounting, and conference room AV systems",
+      "budgetRange": { "min": 2000, "max": 20000 },
+      "blocks": [
+        {
+          "id": "av_install_type",
+          "type": "type_selector",
+          "title": "What type of installation are you planning?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "multi-room-audio", "label": "Multi-room audio" },
+              { "value": "home-cinema", "label": "Home cinema" },
+              { "value": "tv-wall-mounting", "label": "TV wall mounting" },
+              { "value": "conference-presentation", "label": "Conference or presentation room" }
+            ]
+          }
+        },
+        {
+          "id": "av_zone_count",
+          "type": "type_selector",
+          "title": "How many rooms or zones?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1", "label": "1" },
+              { "value": "2-3", "label": "2–3" },
+              { "value": "4-6", "label": "4–6" },
+              { "value": "7-plus", "label": "7+" }
+            ]
+          }
+        },
+        {
+          "id": "av_control_method",
+          "type": "type_selector",
+          "title": "Preferred control method?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "smartphone-tablet", "label": "Smartphone / tablet app" },
+              { "value": "wall-panel", "label": "Wall panel" },
+              { "value": "voice-control", "label": "Voice control" },
+              { "value": "remote-control", "label": "Remote control" }
+            ]
+          }
+        },
+        {
+          "id": "av_brands",
+          "type": "type_selector",
+          "title": "Are you using any of these systems?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sonos", "label": "Sonos" },
+              { "value": "bose", "label": "Bose" },
+              { "value": "bang-olufsen", "label": "Bang & Olufsen" },
+              { "value": "other-advice", "label": "Other / open to advice" }
+            ]
+          }
+        },
+        {
+          "id": "av_equipment_supply",
+          "type": "type_selector",
+          "title": "Do you need the installer to supply all AV equipment?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no-client-supplied", "label": "No – client supplied" },
+              { "value": "some-items", "label": "Some items" }
+            ]
+          }
+        },
+        {
+          "id": "av_cable_routing",
+          "type": "type_selector",
+          "title": "Will cables be hidden within walls/ceilings?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concealed", "label": "Yes – concealed" },
+              { "value": "surface-mounted", "label": "No – surface mounted" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "av_display_setup",
+          "type": "type_selector",
+          "title": "What kind of display setup is required?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single-tv", "label": "Single TV" },
+              { "value": "projector-screen", "label": "Projector + screen" },
+              { "value": "multiple-screens", "label": "Multiple screens" }
+            ]
+          }
+        },
+        {
+          "id": "av_acoustics",
+          "type": "type_selector",
+          "title": "Would you like soundproofing or acoustic treatment included?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "maybe-later", "label": "Maybe later" }
+            ]
+          }
+        },
+        {
+          "id": "av_integration",
+          "type": "type_selector",
+          "title": "Do you require integration with lighting or blinds?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "av_testing",
+          "type": "type_selector",
+          "title": "Do you need calibration and testing after installation?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Summarize an AV installation project. Installation type: {{av_install_type}} over {{av_zone_count}} zones. Control methods: {{av_control_method}}. Preferred brands: {{av_brands}}. Equipment supply: {{av_equipment_supply}}. Cable routing: {{av_cable_routing}}. Display setup: {{av_display_setup}}. Acoustic treatment: {{av_acoustics}}. Integration needs: {{av_integration}}. Calibration/testing: {{av_testing}}."
+    },
+    {
+      "id": "voice-assistant-integration",
+      "label": "Voice Assistant Integration",
+      "icon": "Mic",
+      "description": "Integrate Alexa, Google Assistant, or Siri with smart home devices",
+      "budgetRange": { "min": 500, "max": 3500 },
+      "blocks": [
+        {
+          "id": "voice_assistants",
+          "type": "type_selector",
+          "title": "Which voice assistant(s) do you use or plan to use?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "amazon-alexa", "label": "Amazon Alexa" },
+              { "value": "google-assistant", "label": "Google Assistant" },
+              { "value": "apple-siri", "label": "Apple Siri" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "voice_devices",
+          "type": "type_selector",
+          "title": "What devices do you want voice control over?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "lighting", "label": "Lighting" },
+              { "value": "heating-cooling", "label": "Heating / Cooling" },
+              { "value": "music-tv", "label": "Music / TV" },
+              { "value": "security-systems", "label": "Security systems" },
+              { "value": "all-above", "label": "All of the above" }
+            ]
+          }
+        },
+        {
+          "id": "voice_existing_setup",
+          "type": "type_selector",
+          "title": "Do you already have smart home devices installed?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-need-linking", "label": "Yes – need linking" },
+              { "value": "no-starting-new", "label": "No – starting new" },
+              { "value": "some-mixed", "label": "Some – mixed brands" }
+            ]
+          }
+        },
+        {
+          "id": "voice_zone_count",
+          "type": "type_selector",
+          "title": "How many rooms or zones to configure?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1-2", "label": "1–2" },
+              { "value": "3-5", "label": "3–5" },
+              { "value": "6-10", "label": "6–10" },
+              { "value": "whole-property", "label": "Whole property" }
+            ]
+          }
+        },
+        {
+          "id": "voice_custom_commands",
+          "type": "type_selector",
+          "title": "Do you need support setting up custom voice commands?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "voice_online_mode",
+          "type": "type_selector",
+          "title": "Should integration work offline or cloud-based?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "cloud", "label": "Cloud (internet-dependent)" },
+              { "value": "local-network", "label": "Local network (offline control)" },
+              { "value": "no-preference", "label": "No preference" }
+            ]
+          }
+        },
+        {
+          "id": "voice_routines",
+          "type": "type_selector",
+          "title": "Would you like your system linked to routines (e.g., \"Good Morning\")?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "basic-only", "label": "Basic only" },
+              { "value": "not-needed", "label": "Not needed" }
+            ]
+          }
+        },
+        {
+          "id": "voice_multi_user",
+          "type": "type_selector",
+          "title": "Do you need configuration for multiple users or languages?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "voice_service_scope",
+          "type": "type_selector",
+          "title": "Do you need device supply or setup only?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "supply-install", "label": "Supply & install" },
+              { "value": "setup-only", "label": "Setup only" },
+              { "value": "advice-only", "label": "Advice only" }
+            ]
+          }
+        },
+        {
+          "id": "voice_full_integration",
+          "type": "type_selector",
+          "title": "Would you like the system integrated with a full home automation platform?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-full-integration", "label": "Yes – full integration" },
+              { "value": "no-standalone", "label": "No – standalone voice control" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a voice assistant integration brief. Assistants: {{voice_assistants}} controlling {{voice_devices}}. Existing devices: {{voice_existing_setup}}. Zones: {{voice_zone_count}}. Custom commands: {{voice_custom_commands}}. Offline/cloud preference: {{voice_online_mode}}. Routine requirements: {{voice_routines}}. Multi-user support: {{voice_multi_user}}. Service scope: {{voice_service_scope}}. Full automation integration: {{voice_full_integration}}."
+    },
+    {
+      "id": "eicr-electrical-inspection",
+      "label": "Electrical Installation Condition Report (EICR)",
+      "icon": "ClipboardCheck",
+      "description": "Comprehensive electrical safety inspection and certification",
+      "budgetRange": { "min": 150, "max": 800 },
+      "blocks": [
+        {
+          "id": "eicr_property_type",
+          "type": "type_selector",
+          "title": "What type of property requires the inspection?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential-single", "label": "Residential – single home" },
+              { "value": "apartment-flat", "label": "Apartment / flat" },
+              { "value": "commercial-unit", "label": "Commercial unit" },
+              { "value": "multi-property-portfolio", "label": "Multi-property portfolio" }
+            ]
+          }
+        },
+        {
+          "id": "eicr_purpose",
+          "type": "type_selector",
+          "title": "What's the purpose of the report?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "routine-safety", "label": "Routine safety check" },
+              { "value": "sale-purchase", "label": "Sale or purchase" },
+              { "value": "insurance-compliance", "label": "Insurance or compliance" },
+              { "value": "change-tenant", "label": "Change of tenant" }
+            ]
+          }
+        },
+        {
+          "id": "eicr_circuit_count",
+          "type": "type_selector",
+          "title": "Approximate size of property or number of circuits?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1-6-circuits", "label": "1–6 circuits" },
+              { "value": "7-12-circuits", "label": "7–12 circuits" },
+              { "value": "13-20-circuits", "label": "13–20 circuits" },
+              { "value": "20-plus-circuits", "label": "20+ circuits" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "eicr_last_inspection",
+          "type": "type_selector",
+          "title": "When was the last electrical inspection carried out?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within-1-year", "label": "Within 1 year" },
+              { "value": "1-5-years", "label": "1–5 years ago" },
+              { "value": "over-5-years", "label": "Over 5 years ago" },
+              { "value": "unknown", "label": "Unknown" }
+            ]
+          }
+        },
+        {
+          "id": "eicr_occupancy",
+          "type": "type_selector",
+          "title": "Is the property occupied or vacant during inspection?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "occupied", "label": "Occupied" },
+              { "value": "vacant", "label": "Vacant" }
+            ]
+          }
+        },
+        {
+          "id": "eicr_board_access",
+          "type": "type_selector",
+          "title": "Is the fuse board easily accessible?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "eicr_certificate_format",
+          "type": "type_selector",
+          "title": "Do you require a hard copy certificate as well as digital?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "eicr_known_issues",
+          "type": "type_selector",
+          "title": "Any known electrical issues or recent alterations?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-describe", "label": "Yes (please describe briefly)" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "eicr_follow_up",
+          "type": "type_selector",
+          "title": "Do you need follow-up repairs if faults are found?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "depends-cost", "label": "Depends on cost" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Generate an EICR inspection request. Property type: {{eicr_property_type}}. Purpose: {{eicr_purpose}}. Circuit count: {{eicr_circuit_count}}. Last inspection: {{eicr_last_inspection}}. Occupancy: {{eicr_occupancy}}. Fuse board access: {{eicr_board_access}}. Certificate format: {{eicr_certificate_format}}. Known issues: {{eicr_known_issues}}. Follow-up repairs: {{eicr_follow_up}}."
+    },
+    {
+      "id": "pat-portable-appliance-testing",
+      "label": "Portable Appliance Testing (PAT)",
+      "icon": "Cable",
+      "description": "Safety testing and certification for electrical appliances",
+      "budgetRange": { "min": 100, "max": 1000 },
+      "blocks": [
+        {
+          "id": "pat_environment",
+          "type": "type_selector",
+          "title": "Type of environment?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "office-commercial", "label": "Office / commercial" },
+              { "value": "industrial-workshop", "label": "Industrial / workshop" },
+              { "value": "residential-holiday-let", "label": "Residential / holiday let" },
+              { "value": "event-temporary", "label": "Event / temporary setup" }
+            ]
+          }
+        },
+        {
+          "id": "pat_appliance_volume",
+          "type": "type_selector",
+          "title": "How many appliances require testing (approx.)?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1-20", "label": "1–20" },
+              { "value": "21-50", "label": "21–50" },
+              { "value": "51-100", "label": "51–100" },
+              { "value": "100-plus", "label": "100+" }
+            ]
+          }
+        },
+        {
+          "id": "pat_locations",
+          "type": "type_selector",
+          "title": "Are appliances located across multiple buildings or floors?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single-location", "label": "Single location" },
+              { "value": "multiple-areas", "label": "Multiple areas" }
+            ]
+          }
+        },
+        {
+          "id": "pat_reporting",
+          "type": "type_selector",
+          "title": "Do you require labelling and inventory reports?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "pat_occupancy",
+          "type": "type_selector",
+          "title": "Will the site be occupied during testing?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "pat_specialist_devices",
+          "type": "type_selector",
+          "title": "Are there any specialist or high-load devices (e.g. heaters, catering, IT)?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "pat_out_of_hours",
+          "type": "type_selector",
+          "title": "Do you require testing outside normal working hours?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-evenings-weekends", "label": "Yes – evenings / weekends" },
+              { "value": "no-standard-hours", "label": "No – standard hours" }
+            ]
+          }
+        },
+        {
+          "id": "pat_certificate_format",
+          "type": "type_selector",
+          "title": "Preferred certificate format?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "digital-pdf", "label": "Digital (PDF)" },
+              { "value": "printed-copy", "label": "Printed copy" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "pat_frequency",
+          "type": "type_selector",
+          "title": "How often will testing be required?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "one-off", "label": "One-off test" },
+              { "value": "annual", "label": "Annual" },
+              { "value": "every-6-months", "label": "Every 6 months" }
+            ]
+          }
+        },
+        {
+          "id": "pat_previous_records",
+          "type": "type_selector",
+          "title": "Do you have a previous PAT test record?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-available", "label": "Yes – available" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Craft a PAT testing brief. Environment: {{pat_environment}} with approximately {{pat_appliance_volume}} appliances. Locations: {{pat_locations}}. Reporting needs: {{pat_reporting}}. Site occupancy: {{pat_occupancy}}. Specialist devices: {{pat_specialist_devices}}. Out-of-hours requirement: {{pat_out_of_hours}}. Certificate format: {{pat_certificate_format}}. Testing frequency: {{pat_frequency}}. Previous records: {{pat_previous_records}}."
+    },
+    {
+      "id": "load-balancing-safety-audit",
+      "label": "Load Balancing & Safety Audit",
+      "icon": "Activity",
+      "description": "Electrical system audit to identify overloads and ensure safety compliance",
+      "budgetRange": { "min": 300, "max": 2000 },
+      "blocks": [
+        {
+          "id": "load_audit_system_type",
+          "type": "type_selector",
+          "title": "Type of electrical system to be audited?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "industrial", "label": "Industrial" },
+              { "value": "event-temporary", "label": "Event / temporary power" }
+            ]
+          }
+        },
+        {
+          "id": "load_audit_goal",
+          "type": "type_selector",
+          "title": "What's the main goal of the audit?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "safety-compliance", "label": "Safety compliance" },
+              { "value": "identify-overloads", "label": "Identify overloads" },
+              { "value": "plan-upgrades", "label": "Plan system upgrades" },
+              { "value": "energy-efficiency", "label": "Energy efficiency" }
+            ]
+          }
+        },
+        {
+          "id": "load_audit_tripping",
+          "type": "type_selector",
+          "title": "Do you experience frequent tripping or overheating?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "load_audit_phase",
+          "type": "type_selector",
+          "title": "Do you require a single-phase or three-phase assessment?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single-phase", "label": "Single-phase" },
+              { "value": "three-phase", "label": "Three-phase" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "load_audit_high_load",
+          "type": "type_selector",
+          "title": "Are there high-load appliances or machinery on site?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-continuous", "label": "Yes – continuously running" },
+              { "value": "yes-occasional", "label": "Yes – occasional" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "load_audit_thermal",
+          "type": "type_selector",
+          "title": "Would you like thermal imaging included in the audit?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "optional", "label": "Optional" }
+            ]
+          }
+        },
+        {
+          "id": "load_audit_reporting",
+          "type": "type_selector",
+          "title": "Do you need a written safety report and recommendations?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-full-report", "label": "Yes – full report" },
+              { "value": "no-inspection-only", "label": "No – inspection only" }
+            ]
+          }
+        },
+        {
+          "id": "load_audit_last_inspection",
+          "type": "type_selector",
+          "title": "When was your last electrical system inspection?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within-12-months", "label": "Within 12 months" },
+              { "value": "1-3-years", "label": "1–3 years ago" },
+              { "value": "3-plus-years", "label": "3+ years ago" },
+              { "value": "never", "label": "Never" }
+            ]
+          }
+        },
+        {
+          "id": "load_audit_certification",
+          "type": "type_selector",
+          "title": "Do you need certification for insurance or compliance purposes?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Summarize a load balancing audit request. System type: {{load_audit_system_type}}. Goals: {{load_audit_goal}}. Tripping issues: {{load_audit_tripping}}. Phase requirement: {{load_audit_phase}}. High-load equipment: {{load_audit_high_load}}. Thermal imaging: {{load_audit_thermal}}. Reporting: {{load_audit_reporting}}. Last inspection: {{load_audit_last_inspection}}. Certification needs: {{load_audit_certification}}."
+    },
+    {
+      "id": "electrical-fault-finding-diagnostics",
+      "label": "Electrical Fault Finding & Diagnostics",
+      "icon": "AlertCircle",
+      "description": "Emergency and routine electrical fault diagnosis and repair",
+      "budgetRange": { "min": 100, "max": 1500 },
+      "blocks": [
+        {
+          "id": "fault_property_type",
+          "type": "type_selector",
+          "title": "What type of property is affected?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "industrial", "label": "Industrial" },
+              { "value": "outdoor-event", "label": "Outdoor / event" }
+            ]
+          }
+        },
+        {
+          "id": "fault_issue_type",
+          "type": "type_selector",
+          "title": "What type of electrical issue are you experiencing?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "power-outage-tripping", "label": "Power outage or tripping" },
+              { "value": "lighting-not-working", "label": "Lighting not working" },
+              { "value": "burning-smell-heat", "label": "Burning smell or heat from sockets" },
+              { "value": "intermittent-faults", "label": "Intermittent faults" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "fault_duration",
+          "type": "type_selector",
+          "title": "How long has the issue been occurring?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "less-than-24h", "label": "Less than 24 hours" },
+              { "value": "1-3-days", "label": "1–3 days" },
+              { "value": "over-week", "label": "Over a week" }
+            ]
+          }
+        },
+        {
+          "id": "fault_scope",
+          "type": "type_selector",
+          "title": "Does the issue affect one area or the entire property?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single-room-circuit", "label": "Single room / circuit" },
+              { "value": "multiple-rooms", "label": "Multiple rooms" },
+              { "value": "whole-property", "label": "Whole property" }
+            ]
+          }
+        },
+        {
+          "id": "fault_recent_work",
+          "type": "type_selector",
+          "title": "Any recent electrical work or renovations?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "fault_board_type",
+          "type": "type_selector",
+          "title": "What type of fuse board is installed?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "modern-breakers", "label": "Modern breakers" },
+              { "value": "old-fuse-wire", "label": "Old fuse wire type" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "fault_visible_damage",
+          "type": "type_selector",
+          "title": "Do you have any visible damage or burning marks?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "fault_urgency",
+          "type": "type_selector",
+          "title": "When do you need an electrician to attend?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "emergency-today", "label": "Emergency (today)" },
+              { "value": "within-48h", "label": "Within 48 hours" },
+              { "value": "within-week", "label": "Within a week" }
+            ]
+          }
+        },
+        {
+          "id": "fault_access",
+          "type": "type_selector",
+          "title": "Will the property be accessible and powered on during testing?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "fault_repair_preference",
+          "type": "type_selector",
+          "title": "Do you want repairs completed during the same visit if possible?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no-diagnostics-only", "label": "No – diagnostics only" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Prepare an electrical fault-finding request. Property type: {{fault_property_type}}. Issues: {{fault_issue_type}}. Duration: {{fault_duration}}. Affected areas: {{fault_scope}}. Recent work: {{fault_recent_work}}. Board type: {{fault_board_type}}. Visible damage: {{fault_visible_damage}}. Attendance urgency: {{fault_urgency}}. Site access/power: {{fault_access}}. Repair preference: {{fault_repair_preference}}."
     }
   ]
 }
