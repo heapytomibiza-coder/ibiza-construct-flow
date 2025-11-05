@@ -2,7 +2,8 @@ import { NavLink } from 'react-router-dom';
 import { 
   Home, Users, Briefcase, Folder, MessageSquare, 
   AlertTriangle, Activity, FileText, Settings, BarChart3, Calendar,
-  Database, Search as SearchIcon, Wrench, ShieldCheck, TestTube, Flag, FileQuestion
+  Database, Search as SearchIcon, Wrench, ShieldCheck, TestTube, Flag, FileQuestion,
+  Upload, PlusCircle
 } from 'lucide-react';
 import {
   Sidebar,
@@ -39,6 +40,8 @@ const navigationItems = [
       { id: 'reviews', label: 'Reviews', icon: MessageSquare, path: '/admin/reviews', description: 'Moderation queue' },
       { id: 'disputes', label: 'Disputes', icon: AlertTriangle, path: '/admin/disputes', description: 'Resolution timeline' },
       { id: 'questions', label: 'Questions', icon: FileQuestion, path: '/admin/questions', description: 'Manage wizard questions' },
+      { id: 'import-services', label: 'Import Services', icon: Upload, path: '/admin/import-services', description: 'Import from JSON' },
+      { id: 'question-builder', label: 'Question Builder', icon: PlusCircle, path: '/admin/question-builder', description: 'Create custom packs' },
     ],
   },
   {
