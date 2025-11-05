@@ -380,7 +380,6 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
             <div key={q.id} className="space-y-2 md:space-y-3">
               <Label className="text-sm md:text-base font-medium" htmlFor={`${q.id}-field`}>
                 {label}
-                {isRequired && <span className="text-destructive ml-1">*</span>}
                 {isCore && <span className="ml-2 text-xs text-muted-foreground">(core)</span>}
               </Label>
               {hint && <p className="text-xs md:text-sm text-muted-foreground">{hint}</p>}
