@@ -9424,6 +9424,1094 @@
         }
       ],
       "promptTemplate": "Prepare an electrical fault-finding request. Property type: {{fault_property_type}}. Issues: {{fault_issue_type}}. Duration: {{fault_duration}}. Affected areas: {{fault_scope}}. Recent work: {{fault_recent_work}}. Board type: {{fault_board_type}}. Visible damage: {{fault_visible_damage}}. Attendance urgency: {{fault_urgency}}. Site access/power: {{fault_access}}. Repair preference: {{fault_repair_preference}}."
+    },
+    {
+      "id": "landlord-certification-packages",
+      "label": "Landlord Certification Packages",
+      "icon": "FileCheck",
+      "description": "Complete compliance certification packages for rental properties",
+      "budgetRange": { "min": 200, "max": 2000 },
+      "blocks": [
+        {
+          "id": "landlord_property_type",
+          "type": "type_selector",
+          "title": "What type of property is being rented?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "apartment-flat", "label": "Apartment / flat" },
+              { "value": "house", "label": "House" },
+              { "value": "hmo-shared", "label": "HMO / shared house" },
+              { "value": "commercial-unit", "label": "Commercial unit" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_property_count",
+          "type": "type_selector",
+          "title": "How many properties or units require certification?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1", "label": "1" },
+              { "value": "2-5", "label": "2–5" },
+              { "value": "6-10", "label": "6–10" },
+              { "value": "10-plus", "label": "10+" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_certificates",
+          "type": "type_selector",
+          "title": "What certificates do you need included?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "eicr", "label": "EICR" },
+              { "value": "pat-testing", "label": "PAT testing" },
+              { "value": "smoke-co-alarm", "label": "Smoke & CO alarm check" },
+              { "value": "emergency-lighting", "label": "Emergency lighting test" },
+              { "value": "all-above", "label": "All of the above" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_certificate_reason",
+          "type": "type_selector",
+          "title": "Are certificates required for a new tenancy or renewal?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new-tenancy", "label": "New tenancy" },
+              { "value": "renewal", "label": "Renewal" },
+              { "value": "annual-routine", "label": "Annual routine" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_existing_docs",
+          "type": "type_selector",
+          "title": "Do you have current certificates or reports available?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "some", "label": "Some" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_occupancy",
+          "type": "type_selector",
+          "title": "Are the properties occupied or vacant during inspection?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "occupied", "label": "Occupied" },
+              { "value": "vacant", "label": "Vacant" },
+              { "value": "mix", "label": "Mix" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_access",
+          "type": "type_selector",
+          "title": "Do you need key collection or tenant coordination?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-managed", "label": "Yes – managed access" },
+              { "value": "no-arranged", "label": "No – access arranged" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_delivery",
+          "type": "type_selector",
+          "title": "Do you want certificates delivered digitally or printed?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "digital-only", "label": "Digital only" },
+              { "value": "printed-only", "label": "Printed only" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_auto_renewal",
+          "type": "type_selector",
+          "title": "Would you like the provider to handle annual renewals automatically?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "landlord_timeline",
+          "type": "type_selector",
+          "title": "Preferred timeframe for certification?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within-1-week", "label": "Within 1 week" },
+              { "value": "within-1-month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Outline landlord certification needs. Property type: {{landlord_property_type}}. Number of units: {{landlord_property_count}}. Certificates required: {{landlord_certificates}}. Reason: {{landlord_certificate_reason}}. Existing documentation: {{landlord_existing_docs}}. Occupancy: {{landlord_occupancy}}. Access coordination: {{landlord_access}}. Delivery format: {{landlord_delivery}}. Auto-renewal: {{landlord_auto_renewal}}. Timeline: {{landlord_timeline}}."
+    },
+    {
+      "id": "solar-panel-inverter-installation",
+      "label": "Solar Panel & Inverter Installation",
+      "icon": "Sun",
+      "description": "Solar PV system design, installation, and integration with battery storage",
+      "budgetRange": { "min": 5000, "max": 30000 },
+      "blocks": [
+        {
+          "id": "solar_property_type",
+          "type": "type_selector",
+          "title": "What type of property is this for?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential-house", "label": "Residential – house or villa" },
+              { "value": "apartment-building", "label": "Apartment building" },
+              { "value": "commercial-industrial", "label": "Commercial / industrial" },
+              { "value": "agricultural-rural", "label": "Agricultural / rural property" }
+            ]
+          }
+        },
+        {
+          "id": "solar_goal",
+          "type": "type_selector",
+          "title": "What's your main goal for installing solar?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "lower-bills", "label": "Lower electricity bills" },
+              { "value": "energy-independence", "label": "Energy independence" },
+              { "value": "environmental", "label": "Environmental sustainability" },
+              { "value": "backup-power", "label": "Backup power" }
+            ]
+          }
+        },
+        {
+          "id": "solar_existing_system",
+          "type": "type_selector",
+          "title": "Do you have an existing solar system?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "no-new", "label": "No – new installation" },
+              { "value": "yes-upgrade", "label": "Yes – upgrade / expansion" },
+              { "value": "yes-inverter-only", "label": "Yes – inverter replacement only" }
+            ]
+          }
+        },
+        {
+          "id": "solar_roof_type",
+          "type": "type_selector",
+          "title": "What is your roof type?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "flat-concrete", "label": "Flat concrete (azotea)" },
+              { "value": "pitched-tiled", "label": "Pitched tiled roof" },
+              { "value": "metal-sheet", "label": "Metal sheet roof" },
+              { "value": "ground-mounted", "label": "Ground-mounted area available" }
+            ]
+          }
+        },
+        {
+          "id": "solar_roof_area",
+          "type": "type_selector",
+          "title": "Approximate available roof area for panels?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under-20", "label": "Under 20 m²" },
+              { "value": "20-50", "label": "20–50 m²" },
+              { "value": "50-100", "label": "50–100 m²" },
+              { "value": "100-plus", "label": "100 m²+" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "solar_shading",
+          "type": "type_selector",
+          "title": "Is your roof shaded by trees or other buildings?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-partial", "label": "Yes – partial shade" },
+              { "value": "no-full-sun", "label": "No – full sun exposure" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "solar_system_size",
+          "type": "type_selector",
+          "title": "Desired system size or capacity (if known)?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "up-to-3kw", "label": "Up to 3 kW" },
+              { "value": "3-6kw", "label": "3–6 kW" },
+              { "value": "6-10kw", "label": "6–10 kW" },
+              { "value": "10kw-plus", "label": "10 kW+" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "solar_system_type",
+          "type": "type_selector",
+          "title": "Do you want grid-tied, off-grid, or hybrid system?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "grid-tied", "label": "Grid-tied" },
+              { "value": "off-grid", "label": "Off-grid" },
+              { "value": "hybrid", "label": "Hybrid" }
+            ]
+          }
+        },
+        {
+          "id": "solar_battery",
+          "type": "type_selector",
+          "title": "Do you require battery storage integration?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-now", "label": "Yes – now" },
+              { "value": "maybe-later", "label": "Maybe later" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "solar_permits",
+          "type": "type_selector",
+          "title": "Do you need the installer to handle permits and licensing?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "solar_timing",
+          "type": "type_selector",
+          "title": "When would you like the system installed?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within-1-month", "label": "Within 1 month" },
+              { "value": "within-3-months", "label": "Within 3 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "solar_maintenance",
+          "type": "type_selector",
+          "title": "Would you like ongoing maintenance or monitoring services?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Summarize a solar PV project. Property type: {{solar_property_type}}. Goals: {{solar_goal}}. Existing system status: {{solar_existing_system}}. Roof type: {{solar_roof_type}} with area {{solar_roof_area}} and shading {{solar_shading}}. Desired size: {{solar_system_size}}. System type: {{solar_system_type}}. Battery integration: {{solar_battery}}. Permit handling: {{solar_permits}}. Install timing: {{solar_timing}}. Maintenance plan: {{solar_maintenance}}."
+    },
+    {
+      "id": "battery-storage-hybrid-systems",
+      "label": "Battery Storage & Hybrid Systems",
+      "icon": "Battery",
+      "description": "Energy storage solutions for solar systems and backup power",
+      "budgetRange": { "min": 3000, "max": 15000 },
+      "blocks": [
+        {
+          "id": "battery_setup",
+          "type": "type_selector",
+          "title": "What type of setup do you currently have?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "existing-solar", "label": "Existing solar system" },
+              { "value": "planning-solar-battery", "label": "Planning a new solar + battery install" },
+              { "value": "no-solar-battery-only", "label": "No solar – battery only" }
+            ]
+          }
+        },
+        {
+          "id": "battery_purpose",
+          "type": "type_selector",
+          "title": "What's your main purpose for battery storage?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "store-solar", "label": "Store solar energy" },
+              { "value": "backup-outages", "label": "Backup during outages" },
+              { "value": "energy-management", "label": "Energy management / time-of-use saving" }
+            ]
+          }
+        },
+        {
+          "id": "battery_usage",
+          "type": "type_selector",
+          "title": "Estimated daily energy usage?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small-under-10", "label": "Small (under 10 kWh/day)" },
+              { "value": "medium-10-25", "label": "Medium (10–25 kWh/day)" },
+              { "value": "high-25-50", "label": "High (25–50 kWh/day)" },
+              { "value": "very-high-50-plus", "label": "Very high (50 kWh+)" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "battery_type",
+          "type": "type_selector",
+          "title": "Do you prefer lithium-ion or lead-acid batteries?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "lithium-ion", "label": "Lithium-ion (modern)" },
+              { "value": "lead-acid", "label": "Lead-acid (budget)" },
+              { "value": "open-to-advice", "label": "Open to advice" }
+            ]
+          }
+        },
+        {
+          "id": "battery_mounting",
+          "type": "type_selector",
+          "title": "Do you want a wall-mounted or floor-standing battery system?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "wall-mounted", "label": "Wall-mounted" },
+              { "value": "floor-standing", "label": "Floor-standing" },
+              { "value": "no-preference", "label": "No preference" }
+            ]
+          }
+        },
+        {
+          "id": "battery_location",
+          "type": "type_selector",
+          "title": "Will the system be installed indoors or outdoors?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "indoors", "label": "Indoors (garage, utility room)" },
+              { "value": "outdoors", "label": "Outdoors (weatherproof)" }
+            ]
+          }
+        },
+        {
+          "id": "battery_capacity",
+          "type": "type_selector",
+          "title": "Desired storage capacity (if known)?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "up-to-5", "label": "Up to 5 kWh" },
+              { "value": "6-10", "label": "6–10 kWh" },
+              { "value": "11-20", "label": "11–20 kWh" },
+              { "value": "20-plus", "label": "20 kWh+" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "battery_backup",
+          "type": "type_selector",
+          "title": "Should the system provide backup during grid outages?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "maybe", "label": "Maybe" }
+            ]
+          }
+        },
+        {
+          "id": "battery_monitoring",
+          "type": "type_selector",
+          "title": "Do you want remote app monitoring for battery status?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "battery_inverter",
+          "type": "type_selector",
+          "title": "Do you already have a compatible inverter?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "battery_supply",
+          "type": "type_selector",
+          "title": "Would you like the installer to supply all equipment?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-full", "label": "Yes – full supply & install" },
+              { "value": "no-install-only", "label": "No – install only" },
+              { "value": "mix", "label": "Mix" }
+            ]
+          }
+        },
+        {
+          "id": "battery_timing",
+          "type": "type_selector",
+          "title": "Timeframe for installation?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within-1-month", "label": "Within 1 month" },
+              { "value": "within-3-months", "label": "Within 3 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Draft a battery storage project brief. Current setup: {{battery_setup}}. Purpose: {{battery_purpose}}. Energy usage: {{battery_usage}}. Preferred battery type: {{battery_type}}. Mounting style: {{battery_mounting}}. Installation location: {{battery_location}}. Desired capacity: {{battery_capacity}}. Backup capability: {{battery_backup}}. Monitoring: {{battery_monitoring}}. Existing inverter: {{battery_inverter}}. Supply scope: {{battery_supply}}. Timeline: {{battery_timing}}."
+    },
+    {
+      "id": "ev-charging-stations",
+      "label": "EV Charging Stations",
+      "icon": "Zap",
+      "description": "Electric vehicle charger installation for homes and businesses",
+      "budgetRange": { "min": 800, "max": 8000 },
+      "blocks": [
+        {
+          "id": "ev_charger_type",
+          "type": "type_selector",
+          "title": "What type of EV charger do you need?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "home-wall", "label": "Home wall charger" },
+              { "value": "commercial-workplace", "label": "Commercial / workplace" },
+              { "value": "public-shared", "label": "Public / shared use" }
+            ]
+          }
+        },
+        {
+          "id": "ev_charger_quantity",
+          "type": "type_selector",
+          "title": "How many chargers are required?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1", "label": "1" },
+              { "value": "2-4", "label": "2–4" },
+              { "value": "5-10", "label": "5–10" },
+              { "value": "10-plus", "label": "10+" }
+            ]
+          }
+        },
+        {
+          "id": "ev_power_supply",
+          "type": "type_selector",
+          "title": "Do you have single-phase or three-phase power?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single-phase", "label": "Single-phase" },
+              { "value": "three-phase", "label": "Three-phase" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "ev_speed",
+          "type": "type_selector",
+          "title": "Preferred charger speed?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "3-6-slow", "label": "3.6 kW (slow)" },
+              { "value": "7-4-standard", "label": "7.4 kW (standard)" },
+              { "value": "11-fast", "label": "11 kW (fast)" },
+              { "value": "22-rapid", "label": "22 kW (rapid)" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "ev_tethered",
+          "type": "type_selector",
+          "title": "Do you want a tethered cable or socket-only charger?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "tethered", "label": "Tethered (built-in cable)" },
+              { "value": "socket-only", "label": "Socket-only" },
+              { "value": "no-preference", "label": "No preference" }
+            ]
+          }
+        },
+        {
+          "id": "ev_location",
+          "type": "type_selector",
+          "title": "Will the charger be installed indoors or outdoors?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "indoors", "label": "Indoors – garage or carport" },
+              { "value": "outdoors", "label": "Outdoors – driveway or parking bay" }
+            ]
+          }
+        },
+        {
+          "id": "ev_dedicated_circuit",
+          "type": "type_selector",
+          "title": "Is there an existing dedicated circuit or breaker?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "ev_smart_features",
+          "type": "type_selector",
+          "title": "Do you want smart charging features (app control, scheduling)?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "ev_solar_integration",
+          "type": "type_selector",
+          "title": "Do you want to integrate with solar or battery storage?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "maybe-later", "label": "Maybe later" }
+            ]
+          }
+        },
+        {
+          "id": "ev_property_ownership",
+          "type": "type_selector",
+          "title": "Is the property owned or rented?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "owned", "label": "Owned" },
+              { "value": "rented", "label": "Rented" },
+              { "value": "commercial-lease", "label": "Commercial lease" }
+            ]
+          }
+        },
+        {
+          "id": "ev_rebates",
+          "type": "type_selector",
+          "title": "Do you need help applying for rebates or grants (if available)?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "ev_timeline",
+          "type": "type_selector",
+          "title": "When would you like installation completed?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within-2-weeks", "label": "Within 2 weeks" },
+              { "value": "within-1-month", "label": "Within 1 month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create an EV charger installation brief. Charger type: {{ev_charger_type}} with quantity {{ev_charger_quantity}}. Power supply: {{ev_power_supply}}. Desired speed: {{ev_speed}}. Cable preference: {{ev_tethered}}. Location: {{ev_location}}. Existing circuit: {{ev_dedicated_circuit}}. Smart features: {{ev_smart_features}}. Solar/battery integration: {{ev_solar_integration}}. Property ownership: {{ev_property_ownership}}. Rebate assistance: {{ev_rebates}}. Timeline: {{ev_timeline}}."
+    },
+    {
+      "id": "smart-metering-monitoring",
+      "label": "Smart Metering & Monitoring",
+      "icon": "BarChart3",
+      "description": "Energy monitoring systems for solar, consumption, and automation",
+      "budgetRange": { "min": 200, "max": 2000 },
+      "blocks": [
+        {
+          "id": "monitoring_system",
+          "type": "type_selector",
+          "title": "What type of system do you want to monitor?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "solar-power", "label": "Solar power" },
+              { "value": "battery-storage", "label": "Battery storage" },
+              { "value": "ev-charging", "label": "EV charging" },
+              { "value": "whole-property", "label": "Whole property consumption" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_goal",
+          "type": "type_selector",
+          "title": "What's your goal for installing smart monitoring?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "track-usage-cost", "label": "Track usage and cost" },
+              { "value": "improve-efficiency", "label": "Improve energy efficiency" },
+              { "value": "detect-faults", "label": "Detect faults or overloads" },
+              { "value": "integrate-automation", "label": "Integrate with automation" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_existing",
+          "type": "type_selector",
+          "title": "Is there already a smart meter or monitoring device installed?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-upgrade", "label": "Yes – upgrade needed" },
+              { "value": "no-new", "label": "No – new installation" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_real_time",
+          "type": "type_selector",
+          "title": "Do you prefer real-time mobile app access?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_data",
+          "type": "type_selector",
+          "title": "What kind of data would you like to see?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "live-energy-use", "label": "Live energy use" },
+              { "value": "historical-charts", "label": "Historical charts" },
+              { "value": "device-breakdown", "label": "Device-by-device breakdown" },
+              { "value": "export-reports", "label": "Export to reports" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_alerts",
+          "type": "type_selector",
+          "title": "Do you want alerts for high usage or system faults?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_network",
+          "type": "type_selector",
+          "title": "Is your Wi-Fi or network signal strong where the system will be installed?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_automation",
+          "type": "type_selector",
+          "title": "Do you want integration with smart home automation?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "maybe-later", "label": "Maybe later" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_display",
+          "type": "type_selector",
+          "title": "Preferred display type?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "wall-screen", "label": "Wall-mounted screen" },
+              { "value": "mobile-app-only", "label": "Mobile app only" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_supplier",
+          "type": "type_selector",
+          "title": "Who will supply the monitoring hardware?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "installer", "label": "Installer" },
+              { "value": "client", "label": "Client" },
+              { "value": "not-decided", "label": "Not decided" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_maintenance",
+          "type": "type_selector",
+          "title": "Do you require ongoing data reporting or maintenance?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "monitoring_timing",
+          "type": "type_selector",
+          "title": "Timeframe for installation?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within-1-month", "label": "Within 1 month" },
+              { "value": "within-3-months", "label": "Within 3 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Summarize smart monitoring requirements. Systems monitored: {{monitoring_system}}. Goals: {{monitoring_goal}}. Existing setup: {{monitoring_existing}}. Real-time access: {{monitoring_real_time}}. Data preferences: {{monitoring_data}}. Alerts: {{monitoring_alerts}}. Network strength: {{monitoring_network}}. Automation integration: {{monitoring_automation}}. Display type: {{monitoring_display}}. Hardware supplier: {{monitoring_supplier}}. Maintenance: {{monitoring_maintenance}}. Timeline: {{monitoring_timing}}."
+    },
+    {
+      "id": "data-networking-communications",
+      "label": "Data, Networking & Communications",
+      "icon": "Network",
+      "description": "Professional network infrastructure including Cat6, fiber, Wi-Fi, and CCTV",
+      "budgetRange": { "min": 1000, "max": 10000 },
+      "blocks": [
+        {
+          "id": "data_project_scope",
+          "type": "type_selector",
+          "title": "Which services do you need?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "cat6-fiber", "label": "Cat6 & fiber optic cabling" },
+              { "value": "wifi-network", "label": "Wi-Fi & network distribution" },
+              { "value": "cctv-intercom", "label": "CCTV & intercom systems" },
+              { "value": "office-data", "label": "Office data network setup" },
+              { "value": "tv-satellite", "label": "TV aerials & satellite installations" }
+            ]
+          }
+        },
+        {
+          "id": "data_property_type",
+          "type": "type_selector",
+          "title": "Type of property or site?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "hospitality-venue", "label": "Hospitality / venue" },
+              { "value": "outdoor-estate", "label": "Outdoor estate" }
+            ]
+          }
+        },
+        {
+          "id": "data_scope_size",
+          "type": "type_selector",
+          "title": "How many rooms or areas require coverage?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1-2", "label": "1–2" },
+              { "value": "3-5", "label": "3–5" },
+              { "value": "6-10", "label": "6–10" },
+              { "value": "10-plus", "label": "10+" }
+            ]
+          }
+        },
+        {
+          "id": "data_existing_infrastructure",
+          "type": "type_selector",
+          "title": "Is there existing cabling or network infrastructure?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes-needs-upgrade", "label": "Yes – needs upgrade" },
+              { "value": "yes-minor-additions", "label": "Yes – minor additions" },
+              { "value": "no-new-install", "label": "No – new install" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "data_performance_goal",
+          "type": "type_selector",
+          "title": "Key performance goals?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "high-speed", "label": "High-speed data throughput" },
+              { "value": "reliable-wifi", "label": "Reliable Wi-Fi coverage" },
+              { "value": "security-surveillance", "label": "Security and surveillance" },
+              { "value": "av-distribution", "label": "AV distribution" },
+              { "value": "remote-management", "label": "Remote management" }
+            ]
+          }
+        },
+        {
+          "id": "data_equipment_supply",
+          "type": "type_selector",
+          "title": "Do you need the installer to supply networking hardware?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "some-items", "label": "Some items" }
+            ]
+          }
+        },
+        {
+          "id": "data_install_environment",
+          "type": "type_selector",
+          "title": "Any challenging installation environments?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "thick-masonry", "label": "Thick masonry walls" },
+              { "value": "heritage-building", "label": "Heritage building (limited drilling)" },
+              { "value": "outdoor-cable-runs", "label": "Outdoor cable runs" },
+              { "value": "none", "label": "None" }
+            ]
+          }
+        },
+        {
+          "id": "data_timeline",
+          "type": "type_selector",
+          "title": "Project timeline?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within-1-month", "label": "Within 1 month" },
+              { "value": "within-3-months", "label": "Within 3 months" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "data_support",
+          "type": "type_selector",
+          "title": "Do you need ongoing network management or support?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a networking and communications project brief. Services required: {{data_project_scope}}. Property type: {{data_property_type}} with {{data_scope_size}} areas. Existing infrastructure: {{data_existing_infrastructure}}. Performance goals: {{data_performance_goal}}. Equipment supply: {{data_equipment_supply}}. Installation challenges: {{data_install_environment}}. Timeline: {{data_timeline}}. Ongoing support: {{data_support}}."
     }
   ]
 }

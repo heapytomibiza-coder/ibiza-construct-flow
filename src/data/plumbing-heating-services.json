@@ -1,0 +1,445 @@
+{
+  "services": [
+    {
+      "id": "plumbing-system-installation",
+      "label": "Plumbing System Installation",
+      "icon": "Wrench",
+      "description": "Complete plumbing system installation for new builds and renovations",
+      "budgetRange": { "min": 3000, "max": 20000 },
+      "blocks": [
+        {
+          "id": "plumbing_property_type",
+          "type": "type_selector",
+          "title": "What type of property is the installation for?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "apartment-flat", "label": "Apartment / Flat" },
+              { "value": "villa-detached", "label": "Villa / Detached House" },
+              { "value": "commercial-building", "label": "Commercial Building" },
+              { "value": "new-build", "label": "New Build Project" },
+              { "value": "renovation-refit", "label": "Renovation / Refit" }
+            ]
+          }
+        },
+        {
+          "id": "plumbing_project_areas",
+          "type": "type_selector",
+          "title": "Which areas require plumbing work?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "entire-property", "label": "Entire property (full system)" },
+              { "value": "kitchen-only", "label": "Kitchen only" },
+              { "value": "bathrooms-only", "label": "Bathroom(s) only" },
+              { "value": "utility-laundry", "label": "Utility / laundry area" },
+              { "value": "outdoor-area", "label": "Outdoor area (garden, pool, etc.)" }
+            ]
+          }
+        },
+        {
+          "id": "plumbing_scope",
+          "type": "type_selector",
+          "title": "Is this a new system or modification of an existing one?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "brand-new", "label": "Brand new system (no existing plumbing)" },
+              { "value": "upgrading-existing", "label": "Upgrading existing plumbing" },
+              { "value": "partial-extension", "label": "Partial extension or rerouting" }
+            ]
+          }
+        },
+        {
+          "id": "plumbing_water_system",
+          "type": "type_selector",
+          "title": "What type of water system is in use or preferred?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "gravity-fed", "label": "Gravity-fed (tank in loft or roof)" },
+              { "value": "pressurised-unvented", "label": "Pressurised / unvented system" },
+              { "value": "combi-boiler", "label": "Combination (combi) boiler system" },
+              { "value": "unsure-advice", "label": "Unsure – need advice" }
+            ]
+          }
+        },
+        {
+          "id": "plumbing_material_supply",
+          "type": "type_selector",
+          "title": "Do you require supply of fixtures/fittings?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full-supply-install", "label": "Yes – full supply and install" },
+              { "value": "part-supply", "label": "Part supply (I'll provide some items)" },
+              { "value": "labour-only", "label": "Labour only (all materials provided)" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Compose a plumbing installation brief. Property type: {{plumbing_property_type}} with work areas {{plumbing_project_areas}}. Scope: {{plumbing_scope}} using {{plumbing_water_system}}. Material supply: {{plumbing_material_supply}}."
+    },
+    {
+      "id": "bathroom-kitchen-plumbing-fitout",
+      "label": "Bathroom & Kitchen Plumbing Fitout",
+      "icon": "Bath",
+      "description": "Professional plumbing installation for bathrooms and kitchens",
+      "budgetRange": { "min": 1500, "max": 8000 },
+      "blocks": [
+        {
+          "id": "bathkit_project_type",
+          "type": "type_selector",
+          "title": "What type of project is this?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full-renovation", "label": "Full renovation or new build" },
+              { "value": "partial-upgrade", "label": "Partial upgrade (fixtures & fittings only)" },
+              { "value": "plumbing-reroute", "label": "Plumbing reroute or replacement" }
+            ]
+          }
+        },
+        {
+          "id": "bathkit_areas",
+          "type": "type_selector",
+          "title": "Which areas require installation?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "bathroom-only", "label": "Bathroom only" },
+              { "value": "kitchen-only", "label": "Kitchen only" },
+              { "value": "both", "label": "Both bathroom and kitchen" },
+              { "value": "multiple-bathrooms", "label": "Multiple bathrooms or wet rooms" }
+            ]
+          }
+        },
+        {
+          "id": "bathkit_elements",
+          "type": "type_selector",
+          "title": "What plumbing elements are required?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "hot-cold-supply", "label": "Full hot & cold water supply" },
+              { "value": "waste-drainage", "label": "Waste & drainage connections" },
+              { "value": "heating-towel-rail", "label": "Heating / towel rail connections" },
+              { "value": "appliance-connections", "label": "Appliance connections (dishwasher, washing machine)" }
+            ]
+          }
+        },
+        {
+          "id": "bathkit_supply",
+          "type": "type_selector",
+          "title": "Are new fixtures being supplied by you or the installer?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client-supplied", "label": "Supplied by client" },
+              { "value": "installer-supplied", "label": "Supplied by installer" },
+              { "value": "combination", "label": "Combination of both" },
+              { "value": "not-decided", "label": "Not yet decided" }
+            ]
+          }
+        },
+        {
+          "id": "bathkit_stage",
+          "type": "type_selector",
+          "title": "Current project stage:",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "design-planning", "label": "Design & planning" },
+              { "value": "rough-in", "label": "Rough-in (first fix)" },
+              { "value": "fitting-finish", "label": "Fitting & finish (second fix)" },
+              { "value": "replacement-maintenance", "label": "Replacement / maintenance" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Draft a bathroom/kitchen plumbing brief. Project type: {{bathkit_project_type}} covering {{bathkit_areas}} with elements {{bathkit_elements}}. Fixture supply: {{bathkit_supply}}. Stage: {{bathkit_stage}}."
+    },
+    {
+      "id": "hot-water-cylinder-setup",
+      "label": "Hot Water Cylinder Setup",
+      "icon": "Flame",
+      "description": "Installation and replacement of hot water cylinders and thermal stores",
+      "budgetRange": { "min": 800, "max": 4000 },
+      "blocks": [
+        {
+          "id": "cylinder_type",
+          "type": "type_selector",
+          "title": "What type of cylinder/tank system do you need?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "vented-cylinder", "label": "Vented cylinder (with loft tank)" },
+              { "value": "unvented-pressurised", "label": "Unvented / pressurised cylinder" },
+              { "value": "thermal-store", "label": "Thermal store or hybrid tank" },
+              { "value": "not-sure", "label": "Not sure – need advice" }
+            ]
+          }
+        },
+        {
+          "id": "cylinder_outlets",
+          "type": "type_selector",
+          "title": "How many bathrooms or water outlets will it serve?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1-bathroom", "label": "1 bathroom" },
+              { "value": "2-3-bathrooms", "label": "2–3 bathrooms" },
+              { "value": "4-plus-bathrooms", "label": "4+ bathrooms" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "cylinder_location",
+          "type": "type_selector",
+          "title": "Where will the tank be installed?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "utility-room", "label": "Utility room" },
+              { "value": "loft-roof", "label": "Loft / roof space" },
+              { "value": "basement-plant", "label": "Basement / plant room" },
+              { "value": "outdoor-housing", "label": "Outdoor housing" }
+            ]
+          }
+        },
+        {
+          "id": "cylinder_integration",
+          "type": "type_selector",
+          "title": "Will the cylinder connect to renewable or alternative heating?",
+          "description": "",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "solar-thermal", "label": "Yes – solar thermal" },
+              { "value": "heat-pump", "label": "Yes – heat pump system" },
+              { "value": "boiler-combination", "label": "Yes – boiler combination" },
+              { "value": "standard-connection", "label": "No, standard connection" }
+            ]
+          }
+        },
+        {
+          "id": "cylinder_removal",
+          "type": "type_selector",
+          "title": "Do you require removal of an existing tank or cylinder?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "remove-old", "label": "Yes – remove old system" },
+              { "value": "disconnect-leave", "label": "Yes – disconnect and leave in place" },
+              { "value": "new-only", "label": "No – new installation only" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Outline a cylinder installation. Cylinder type: {{cylinder_type}} serving {{cylinder_outlets}} outlets in {{cylinder_location}}. Renewable links: {{cylinder_integration}}. Removal needs: {{cylinder_removal}}."
+    },
+    {
+      "id": "leak-detection-pipe-repair",
+      "label": "Leak Detection & Pipe Repair",
+      "icon": "AlertTriangle",
+      "description": "Emergency and routine leak detection and pipe repair services",
+      "budgetRange": { "min": 100, "max": 2000 },
+      "blocks": [
+        {
+          "id": "leak_location",
+          "type": "type_selector",
+          "title": "Where is the suspected leak located?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "kitchen", "label": "Kitchen" },
+              { "value": "bathroom", "label": "Bathroom" },
+              { "value": "utility-room", "label": "Utility room" },
+              { "value": "garden-external", "label": "Garden or external area" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "leak_visibility",
+          "type": "type_selector",
+          "title": "Is the leak visible or hidden?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "visible", "label": "Visible (water dripping or pooling)" },
+              { "value": "hidden", "label": "Hidden (pressure loss or damp signs only)" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "leak_severity",
+          "type": "type_selector",
+          "title": "How severe is the leak?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "minor-drip", "label": "Minor – slow drip" },
+              { "value": "moderate-pooling", "label": "Moderate – visible pooling" },
+              { "value": "major-flooding", "label": "Major – flooding" }
+            ]
+          }
+        },
+        {
+          "id": "leak_supply_status",
+          "type": "type_selector",
+          "title": "Has the water supply been turned off?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "unable-locate", "label": "No – unable to locate stopcock" },
+              { "value": "still-running", "label": "No – still running" }
+            ]
+          }
+        },
+        {
+          "id": "leak_urgency",
+          "type": "type_selector",
+          "title": "Urgency of the job:",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "emergency-immediate", "label": "Emergency – immediate attendance" },
+              { "value": "within-24h", "label": "Within 24 hours" },
+              { "value": "flexible-scheduled", "label": "Flexible / scheduled repair" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Summarize leak repair request. Location: {{leak_location}} with visibility {{leak_visibility}}. Severity: {{leak_severity}}. Water supply status: {{leak_supply_status}}. Urgency: {{leak_urgency}}."
+    },
+    {
+      "id": "drainage-waste-routing",
+      "label": "Drainage & Waste Routing",
+      "icon": "Move",
+      "description": "Installation and modification of drainage and waste water systems",
+      "budgetRange": { "min": 500, "max": 5000 },
+      "blocks": [
+        {
+          "id": "drain_project_type",
+          "type": "type_selector",
+          "title": "Type of project:",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new-build", "label": "New build installation" },
+              { "value": "renovation-refit", "label": "Renovation / refit" },
+              { "value": "repair-reroute", "label": "Repair or reroute existing system" }
+            ]
+          }
+        },
+        {
+          "id": "drain_fixtures",
+          "type": "type_selector",
+          "title": "Which fixtures require waste connections?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "kitchen-sink", "label": "Kitchen sink / dishwasher" },
+              { "value": "bathroom-fixtures", "label": "Bathroom basin / shower / bath" },
+              { "value": "toilet-bidet", "label": "Toilet or bidet" },
+              { "value": "utility-washing", "label": "Utility or washing machine" }
+            ]
+          }
+        },
+        {
+          "id": "drain_levels",
+          "type": "type_selector",
+          "title": "Floor levels involved:",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground-only", "label": "Ground floor only" },
+              { "value": "multiple-floors", "label": "Multiple floors" },
+              { "value": "basement-raised", "label": "Basement or raised floor" }
+            ]
+          }
+        },
+        {
+          "id": "drain_route",
+          "type": "type_selector",
+          "title": "Pipe route type:",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concealed", "label": "Concealed within walls or floors" },
+              { "value": "exposed", "label": "Exposed (surface-mounted)" },
+              { "value": "combination", "label": "Combination of both" }
+            ]
+          }
+        },
+        {
+          "id": "drain_timeframe",
+          "type": "type_selector",
+          "title": "Preferred completion timeframe?",
+          "description": "",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent-1-2-weeks", "label": "Urgent (1–2 weeks)" },
+              { "value": "within-1-month", "label": "Within 1 month" },
+              { "value": "flexible-larger-project", "label": "Flexible / part of larger project" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Outline drainage routing needs. Project type: {{drain_project_type}} with fixtures {{drain_fixtures}} across {{drain_levels}} levels. Route preference: {{drain_route}}. Timeframe: {{drain_timeframe}}."
+    }
+  ]
+}
