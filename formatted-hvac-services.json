@@ -1,0 +1,855 @@
+{
+  "services": [
+    {
+      "id": "air_conditioning_installer",
+      "label": "Air Conditioning Installation & Maintenance Specialist",
+      "icon": "❄️",
+      "description": "Professional air conditioning system design, installation, and maintenance services",
+      "budgetRange": {
+        "min": 1500,
+        "max": 12000
+      },
+      "blocks": [
+        {
+          "id": "ac_system_type",
+          "type": "type_selector",
+          "title": "What type of air conditioning system do you need?",
+          "description": "Select the AC system type best suited to your property",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "split_system", "label": "Split system (single indoor/outdoor unit)" },
+              { "value": "multi_split", "label": "Multi-split (multiple indoor units, one outdoor)" },
+              { "value": "ducted_central", "label": "Ducted central air conditioning" },
+              { "value": "portable_window", "label": "Portable or window unit" },
+              { "value": "vrf_vrv", "label": "VRF/VRV commercial system" }
+            ]
+          }
+        },
+        {
+          "id": "number_of_units",
+          "type": "type_selector",
+          "title": "How many rooms or zones need cooling?",
+          "description": "Number of areas requiring air conditioning",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_room", "label": "1 room" },
+              { "value": "2_3_rooms", "label": "2-3 rooms" },
+              { "value": "4_6_rooms", "label": "4-6 rooms" },
+              { "value": "whole_property", "label": "Whole property (7+ rooms)" }
+            ]
+          }
+        },
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "Type of property?",
+          "description": "Property classification for AC installation",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "apartment", "label": "Apartment / Flat" },
+              { "value": "house", "label": "House / Villa" },
+              { "value": "commercial", "label": "Commercial premises" },
+              { "value": "office", "label": "Office space" }
+            ]
+          }
+        },
+        {
+          "id": "existing_system_removal",
+          "type": "type_selector",
+          "title": "Do you have an existing AC system that needs removal?",
+          "description": "Old system removal and disposal",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_remove", "label": "Yes – remove and dispose" },
+              { "value": "yes_relocate", "label": "Yes – relocate to another property" },
+              { "value": "no_new_install", "label": "No – new installation" }
+            ]
+          }
+        },
+        {
+          "id": "cooling_capacity",
+          "type": "type_selector",
+          "title": "Do you know the cooling capacity (BTU/kW) required?",
+          "description": "Cooling capacity based on room size and usage",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "know_specs", "label": "Yes – I have specifications" },
+              { "value": "need_assessment", "label": "No – need heat load assessment" },
+              { "value": "small_rooms", "label": "Small rooms (9k-12k BTU)" },
+              { "value": "medium_rooms", "label": "Medium rooms (12k-18k BTU)" },
+              { "value": "large_spaces", "label": "Large spaces (18k+ BTU)" }
+            ]
+          }
+        },
+        {
+          "id": "energy_efficiency",
+          "type": "type_selector",
+          "title": "Energy efficiency preference?",
+          "description": "Higher efficiency reduces running costs",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard efficiency" },
+              { "value": "high_efficiency", "label": "High efficiency (A++ / inverter)" },
+              { "value": "premium_eco", "label": "Premium eco-friendly (R32 refrigerant)" }
+            ]
+          }
+        },
+        {
+          "id": "heating_function",
+          "type": "type_selector",
+          "title": "Do you need heating function (reverse cycle)?",
+          "description": "Heat pump functionality for year-round comfort",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "cooling_only", "label": "Cooling only" },
+              { "value": "cooling_heating", "label": "Cooling and heating (heat pump)" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_unit_location",
+          "type": "type_selector",
+          "title": "Where will the outdoor unit be installed?",
+          "description": "Outdoor unit placement considerations",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground_level", "label": "Ground level / patio" },
+              { "value": "wall_mounted", "label": "Wall-mounted bracket" },
+              { "value": "roof_top", "label": "Roof or terrace" },
+              { "value": "balcony", "label": "Balcony" },
+              { "value": "not_sure", "label": "Not sure – need advice" }
+            ]
+          }
+        },
+        {
+          "id": "refrigerant_piping",
+          "type": "type_selector",
+          "title": "Approximate distance between indoor and outdoor units?",
+          "description": "Piping run affects installation complexity",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_5m", "label": "Under 5 meters" },
+              { "value": "5_10m", "label": "5-10 meters" },
+              { "value": "10_20m", "label": "10-20 meters" },
+              { "value": "over_20m", "label": "Over 20 meters" }
+            ]
+          }
+        },
+        {
+          "id": "drainage_solution",
+          "type": "type_selector",
+          "title": "Condensate drainage method?",
+          "description": "How will condensate water be disposed",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "gravity_drain", "label": "Gravity drain to outside" },
+              { "value": "pump_required", "label": "Condensate pump required" },
+              { "value": "existing_drainage", "label": "Connect to existing drainage" },
+              { "value": "not_sure", "label": "Not sure – need assessment" }
+            ]
+          }
+        },
+        {
+          "id": "electrical_work",
+          "type": "type_selector",
+          "title": "Is dedicated electrical circuit required?",
+          "description": "Electrical supply for AC system",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "existing_circuit", "label": "Existing circuit available" },
+              { "value": "new_circuit", "label": "New circuit needed from board" },
+              { "value": "upgrade_board", "label": "Consumer unit upgrade may be needed" },
+              { "value": "not_sure", "label": "Not sure – electrician to assess" }
+            ]
+          }
+        },
+        {
+          "id": "wall_penetration",
+          "type": "type_selector",
+          "title": "Will wall penetration or trunking be required?",
+          "description": "Method for running pipes and cables",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concealed_chase", "label": "Concealed in wall chase" },
+              { "value": "surface_trunking", "label": "Surface-mounted trunking" },
+              { "value": "direct_penetration", "label": "Direct wall penetration" },
+              { "value": "open_to_advice", "label": "Open to installer advice" }
+            ]
+          }
+        },
+        {
+          "id": "smart_controls",
+          "type": "type_selector",
+          "title": "Do you want Wi-Fi or smart home integration?",
+          "description": "Remote control and automation features",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "wifi_app", "label": "Yes – Wi-Fi app control" },
+              { "value": "smart_home", "label": "Yes – integrate with smart home system" },
+              { "value": "standard_remote", "label": "No – standard remote only" }
+            ]
+          }
+        },
+        {
+          "id": "noise_considerations",
+          "type": "type_selector",
+          "title": "Are there noise level considerations?",
+          "description": "Quiet operation requirements",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_noise", "label": "Standard noise levels acceptable" },
+              { "value": "quiet_bedroom", "label": "Quiet operation (bedroom installation)" },
+              { "value": "ultra_quiet", "label": "Ultra-quiet models required" }
+            ]
+          }
+        },
+        {
+          "id": "maintenance_plan",
+          "type": "type_selector",
+          "title": "Would you like an annual maintenance plan?",
+          "description": "Regular servicing extends system life",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_annual", "label": "Yes – annual service plan" },
+              { "value": "yes_biannual", "label": "Yes – bi-annual service" },
+              { "value": "no_plan", "label": "No – ad-hoc maintenance" }
+            ]
+          }
+        },
+        {
+          "id": "installation_timeframe",
+          "type": "type_selector",
+          "title": "When do you need installation completed?",
+          "description": "Installation scheduling preference",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent_1week", "label": "Urgent (within 1 week)" },
+              { "value": "within_2weeks", "label": "Within 2 weeks" },
+              { "value": "within_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible scheduling" }
+            ]
+          }
+        },
+        {
+          "id": "warranty_preference",
+          "type": "type_selector",
+          "title": "Warranty coverage preference?",
+          "description": "Equipment and installation warranty",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_warranty", "label": "Standard manufacturer warranty" },
+              { "value": "extended_warranty", "label": "Extended warranty coverage" },
+              { "value": "premium_warranty", "label": "Premium warranty with priority service" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Prepare an air conditioning installation specification including:\nSystem type: {{ac_system_type}}\nNumber of units: {{number_of_units}}\nProperty type: {{property_type}}\nExisting system: {{existing_system_removal}}\nCooling capacity: {{cooling_capacity}}\nEnergy efficiency: {{energy_efficiency}}\nHeating function: {{heating_function}}\nOutdoor unit location: {{outdoor_unit_location}}\nPiping distance: {{refrigerant_piping}}\nDrainage: {{drainage_solution}}\nElectrical work: {{electrical_work}}\nWall penetration: {{wall_penetration}}\nSmart controls: {{smart_controls}}\nNoise considerations: {{noise_considerations}}\nMaintenance plan: {{maintenance_plan}}\nTimeframe: {{installation_timeframe}}\nWarranty: {{warranty_preference}}"
+    },
+    {
+      "id": "ventilation_systems",
+      "label": "Ventilation Systems Specialist",
+      "icon": "💨",
+      "description": "Mechanical ventilation, MVHR, extract systems, and air quality solutions",
+      "budgetRange": {
+        "min": 800,
+        "max": 8000
+      },
+      "blocks": [
+        {
+          "id": "ventilation_type",
+          "type": "type_selector",
+          "title": "What type of ventilation system do you need?",
+          "description": "Select the ventilation system appropriate for your needs",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "extract_fans", "label": "Extract fans (bathroom/kitchen)" },
+              { "value": "mev", "label": "MEV (Mechanical Extract Ventilation)" },
+              { "value": "mvhr", "label": "MVHR (Mechanical Ventilation with Heat Recovery)" },
+              { "value": "piv", "label": "PIV (Positive Input Ventilation)" },
+              { "value": "natural_vents", "label": "Natural ventilation improvement" },
+              { "value": "commercial_hvac", "label": "Commercial HVAC ventilation" }
+            ]
+          }
+        },
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "Type of property?",
+          "description": "Property classification for ventilation design",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "apartment", "label": "Apartment / Flat" },
+              { "value": "house_new", "label": "New build house (airtight)" },
+              { "value": "house_existing", "label": "Existing house / renovation" },
+              { "value": "commercial", "label": "Commercial premises" }
+            ]
+          }
+        },
+        {
+          "id": "property_size",
+          "type": "type_selector",
+          "title": "Approximate property size?",
+          "description": "Size affects ventilation capacity requirements",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_100sqm", "label": "Under 100m²" },
+              { "value": "100_200sqm", "label": "100-200m²" },
+              { "value": "200_300sqm", "label": "200-300m²" },
+              { "value": "over_300sqm", "label": "Over 300m²" }
+            ]
+          }
+        },
+        {
+          "id": "rooms_requiring_ventilation",
+          "type": "type_selector",
+          "title": "Which rooms require ventilation?",
+          "description": "Select all areas needing ventilation",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "bathrooms", "label": "Bathrooms" },
+              { "value": "kitchen", "label": "Kitchen" },
+              { "value": "utility_room", "label": "Utility room" },
+              { "value": "bedrooms", "label": "Bedrooms" },
+              { "value": "living_areas", "label": "Living areas" },
+              { "value": "whole_property", "label": "Whole property system" }
+            ]
+          }
+        },
+        {
+          "id": "existing_ventilation",
+          "type": "type_selector",
+          "title": "Current ventilation situation?",
+          "description": "Existing ventilation infrastructure",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "no_ventilation", "label": "No mechanical ventilation" },
+              { "value": "basic_fans", "label": "Basic extract fans only" },
+              { "value": "partial_system", "label": "Partial system – needs upgrade" },
+              { "value": "full_replacement", "label": "Complete system replacement" }
+            ]
+          }
+        },
+        {
+          "id": "ventilation_issues",
+          "type": "type_selector",
+          "title": "What ventilation issues are you experiencing?",
+          "description": "Select all problems to be addressed",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "condensation", "label": "Condensation on windows" },
+              { "value": "mold_mildew", "label": "Mold or mildew growth" },
+              { "value": "cooking_odors", "label": "Cooking odors lingering" },
+              { "value": "stuffiness", "label": "Stuffy or stale air" },
+              { "value": "humidity", "label": "High humidity levels" },
+              { "value": "poor_air_quality", "label": "Poor indoor air quality" }
+            ]
+          }
+        },
+        {
+          "id": "energy_recovery",
+          "type": "type_selector",
+          "title": "Do you want heat recovery functionality?",
+          "description": "MVHR systems recover heat from extracted air",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_mvhr", "label": "Yes – MVHR with heat recovery" },
+              { "value": "no_extract_only", "label": "No – extract only (MEV)" },
+              { "value": "not_sure", "label": "Not sure – need advice" }
+            ]
+          }
+        },
+        {
+          "id": "noise_level",
+          "type": "type_selector",
+          "title": "Noise level preference?",
+          "description": "Quiet operation considerations",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard noise levels acceptable" },
+              { "value": "low_noise", "label": "Low noise (bedrooms/living areas)" },
+              { "value": "ultra_quiet", "label": "Ultra-quiet operation essential" }
+            ]
+          }
+        },
+        {
+          "id": "ductwork_installation",
+          "type": "type_selector",
+          "title": "Can ductwork be installed in ceilings/walls?",
+          "description": "Installation method for ducted systems",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concealed_ducts", "label": "Yes – concealed in ceiling voids" },
+              { "value": "exposed_ducts", "label": "Exposed ductwork acceptable" },
+              { "value": "wall_cavity", "label": "Wall cavity routing possible" },
+              { "value": "no_space", "label": "Limited space – decentralized units" }
+            ]
+          }
+        },
+        {
+          "id": "air_filtration",
+          "type": "type_selector",
+          "title": "Air filtration level required?",
+          "description": "Filter grade for air quality",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_filters", "label": "Standard dust filters" },
+              { "value": "pollen_filters", "label": "Pollen/allergen filters" },
+              { "value": "hepa_filters", "label": "HEPA filters (medical-grade)" }
+            ]
+          }
+        },
+        {
+          "id": "humidity_control",
+          "type": "type_selector",
+          "title": "Do you need humidity sensors or control?",
+          "description": "Automatic humidity-based operation",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_sensors", "label": "Yes – humidity sensors" },
+              { "value": "yes_dehumidifier", "label": "Yes – integrated dehumidifier" },
+              { "value": "no_manual", "label": "No – manual control only" }
+            ]
+          }
+        },
+        {
+          "id": "smart_controls",
+          "type": "type_selector",
+          "title": "Smart controls or automation?",
+          "description": "Remote control and scheduling features",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "basic_controls", "label": "Basic wall-mounted controls" },
+              { "value": "wifi_app", "label": "Wi-Fi app control" },
+              { "value": "smart_home", "label": "Smart home integration" }
+            ]
+          }
+        },
+        {
+          "id": "building_regulations",
+          "type": "type_selector",
+          "title": "Is this for building regulations compliance?",
+          "description": "New builds require certified ventilation",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_new_build", "label": "Yes – new build compliance" },
+              { "value": "yes_major_renovation", "label": "Yes – major renovation" },
+              { "value": "no_retrofit", "label": "No – retrofit improvement" }
+            ]
+          }
+        },
+        {
+          "id": "integration_hvac",
+          "type": "type_selector",
+          "title": "Integration with existing heating/cooling?",
+          "description": "Coordinate with HVAC systems",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standalone", "label": "Standalone ventilation" },
+              { "value": "integrate_heating", "label": "Integrate with heating system" },
+              { "value": "integrate_ac", "label": "Integrate with air conditioning" },
+              { "value": "full_integration", "label": "Full HVAC integration" }
+            ]
+          }
+        },
+        {
+          "id": "installation_timeframe",
+          "type": "type_selector",
+          "title": "When do you need installation completed?",
+          "description": "Installation scheduling",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent (within 1 week)" },
+              { "value": "2_3_weeks", "label": "Within 2-3 weeks" },
+              { "value": "within_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible scheduling" }
+            ]
+          }
+        },
+        {
+          "id": "maintenance_servicing",
+          "type": "type_selector",
+          "title": "Ongoing maintenance and filter replacement?",
+          "description": "Service plan for ventilation system",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "annual_service", "label": "Yes – annual service plan" },
+              { "value": "filter_supply", "label": "Filter supply only" },
+              { "value": "no_plan", "label": "No – DIY maintenance" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a ventilation system specification including:\nVentilation type: {{ventilation_type}}\nProperty type: {{property_type}}\nProperty size: {{property_size}}\nRooms requiring ventilation: {{rooms_requiring_ventilation}}\nExisting ventilation: {{existing_ventilation}}\nVentilation issues: {{ventilation_issues}}\nEnergy recovery: {{energy_recovery}}\nNoise level: {{noise_level}}\nDuctwork installation: {{ductwork_installation}}\nAir filtration: {{air_filtration}}\nHumidity control: {{humidity_control}}\nSmart controls: {{smart_controls}}\nBuilding regulations: {{building_regulations}}\nHVAC integration: {{integration_hvac}}\nTimeframe: {{installation_timeframe}}\nMaintenance: {{maintenance_servicing}}"
+    },
+    {
+      "id": "heat_pump_installer",
+      "label": "Heat Pump Installation Specialist",
+      "icon": "♨️",
+      "description": "Air source, ground source, and hybrid heat pump systems for heating and hot water",
+      "budgetRange": {
+        "min": 8000,
+        "max": 35000
+      },
+      "blocks": [
+        {
+          "id": "heat_pump_type",
+          "type": "type_selector",
+          "title": "What type of heat pump are you considering?",
+          "description": "Select heat pump system type",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "air_source", "label": "Air source heat pump (ASHP)" },
+              { "value": "ground_source", "label": "Ground source heat pump (GSHP)" },
+              { "value": "air_to_water", "label": "Air-to-water heat pump" },
+              { "value": "hybrid_system", "label": "Hybrid heat pump (with gas boiler)" },
+              { "value": "not_sure", "label": "Not sure – need recommendation" }
+            ]
+          }
+        },
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "Type of property?",
+          "description": "Property classification",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "detached_house", "label": "Detached house" },
+              { "value": "semi_detached", "label": "Semi-detached house" },
+              { "value": "terraced", "label": "Terraced house" },
+              { "value": "apartment", "label": "Apartment / Flat" },
+              { "value": "commercial", "label": "Commercial building" }
+            ]
+          }
+        },
+        {
+          "id": "property_size",
+          "type": "type_selector",
+          "title": "Approximate property size?",
+          "description": "Size determines heat pump capacity",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_100sqm", "label": "Under 100m²" },
+              { "value": "100_150sqm", "label": "100-150m²" },
+              { "value": "150_200sqm", "label": "150-200m²" },
+              { "value": "200_300sqm", "label": "200-300m²" },
+              { "value": "over_300sqm", "label": "Over 300m²" }
+            ]
+          }
+        },
+        {
+          "id": "heating_requirements",
+          "type": "type_selector",
+          "title": "What heating requirements do you have?",
+          "description": "Select all heating needs",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "space_heating", "label": "Space heating only" },
+              { "value": "hot_water", "label": "Domestic hot water" },
+              { "value": "cooling", "label": "Summer cooling (reversible)" },
+              { "value": "pool_heating", "label": "Swimming pool heating" }
+            ]
+          }
+        },
+        {
+          "id": "existing_heating_system",
+          "type": "type_selector",
+          "title": "Current heating system?",
+          "description": "What system will the heat pump replace",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "gas_boiler", "label": "Gas boiler" },
+              { "value": "oil_boiler", "label": "Oil boiler" },
+              { "value": "electric_heating", "label": "Electric heating" },
+              { "value": "lpg", "label": "LPG system" },
+              { "value": "no_system", "label": "No existing system (new build)" }
+            ]
+          }
+        },
+        {
+          "id": "hot_water_system",
+          "type": "type_selector",
+          "title": "Hot water system integration?",
+          "description": "How will hot water be provided",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "integrated_cylinder", "label": "Integrated hot water cylinder" },
+              { "value": "separate_cylinder", "label": "Separate hot water cylinder" },
+              { "value": "immersion_backup", "label": "With immersion backup" },
+              { "value": "no_hot_water", "label": "Space heating only" }
+            ]
+          }
+        },
+        {
+          "id": "outdoor_space",
+          "type": "type_selector",
+          "title": "Outdoor space available for heat pump unit?",
+          "description": "Installation location for outdoor unit",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "garden_ample", "label": "Garden with ample space" },
+              { "value": "garden_limited", "label": "Garden with limited space" },
+              { "value": "courtyard", "label": "Courtyard or side passage" },
+              { "value": "flat_roof", "label": "Flat roof mounting possible" },
+              { "value": "no_space", "label": "Very limited space" }
+            ]
+          }
+        },
+        {
+          "id": "ground_space_gshp",
+          "type": "type_selector",
+          "title": "Ground space for ground source loops (if GSHP)?",
+          "description": "Land area for ground collector",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "horizontal_loops", "label": "Yes – horizontal loops (large garden)" },
+              { "value": "vertical_boreholes", "label": "Limited space – vertical boreholes" },
+              { "value": "not_applicable", "label": "Not applicable (ASHP)" }
+            ]
+          }
+        },
+        {
+          "id": "insulation_level",
+          "type": "type_selector",
+          "title": "Property insulation level?",
+          "description": "Good insulation improves heat pump efficiency",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "well_insulated", "label": "Well insulated (modern standards)" },
+              { "value": "moderate_insulation", "label": "Moderate insulation" },
+              { "value": "poor_insulation", "label": "Poor insulation (older property)" },
+              { "value": "upgrading_insulation", "label": "Planning to upgrade insulation" }
+            ]
+          }
+        },
+        {
+          "id": "radiator_system",
+          "type": "type_selector",
+          "title": "Existing radiator or underfloor heating?",
+          "description": "Heat distribution system compatibility",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "underfloor_heating", "label": "Underfloor heating (ideal)" },
+              { "value": "large_radiators", "label": "Large radiators (good)" },
+              { "value": "standard_radiators", "label": "Standard radiators (may need upgrading)" },
+              { "value": "small_radiators", "label": "Small radiators (will need upgrading)" }
+            ]
+          }
+        },
+        {
+          "id": "buffer_tank",
+          "type": "type_selector",
+          "title": "Do you need a buffer tank or thermal store?",
+          "description": "Improves system efficiency and performance",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_buffer", "label": "Yes – buffer tank recommended" },
+              { "value": "yes_thermal_store", "label": "Yes – thermal store for hot water" },
+              { "value": "not_required", "label": "Not required" },
+              { "value": "not_sure", "label": "Not sure – need advice" }
+            ]
+          }
+        },
+        {
+          "id": "electrical_supply",
+          "type": "type_selector",
+          "title": "Electrical supply capacity?",
+          "description": "Heat pumps require adequate electrical supply",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single_phase", "label": "Single-phase supply (typical)" },
+              { "value": "three_phase", "label": "Three-phase supply" },
+              { "value": "upgrade_needed", "label": "Supply upgrade needed" },
+              { "value": "not_sure", "label": "Not sure – electrician to assess" }
+            ]
+          }
+        },
+        {
+          "id": "smart_controls",
+          "type": "type_selector",
+          "title": "Smart controls and weather compensation?",
+          "description": "Advanced controls optimize efficiency",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "basic_controls", "label": "Basic thermostat controls" },
+              { "value": "smart_thermostat", "label": "Smart thermostat with app" },
+              { "value": "weather_compensation", "label": "Weather compensation controls" },
+              { "value": "full_integration", "label": "Full home automation integration" }
+            ]
+          }
+        },
+        {
+          "id": "noise_considerations",
+          "type": "type_selector",
+          "title": "Noise level considerations?",
+          "description": "Outdoor unit noise planning",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_noise", "label": "Standard noise levels acceptable" },
+              { "value": "low_noise", "label": "Low noise unit preferred" },
+              { "value": "acoustic_enclosure", "label": "Acoustic enclosure required" },
+              { "value": "neighbor_concerns", "label": "Neighbor proximity concerns" }
+            ]
+          }
+        },
+        {
+          "id": "planning_permission",
+          "type": "type_selector",
+          "title": "Planning permission requirements?",
+          "description": "Some installations need planning approval",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "permitted_development", "label": "Permitted development (no planning)" },
+              { "value": "conservation_area", "label": "Conservation area (may need planning)" },
+              { "value": "listed_building", "label": "Listed building (planning required)" },
+              { "value": "not_sure", "label": "Not sure – need advice" }
+            ]
+          }
+        },
+        {
+          "id": "grants_subsidies",
+          "type": "type_selector",
+          "title": "Interest in government grants or subsidies?",
+          "description": "Financial support for heat pump installation",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_apply", "label": "Yes – help with application" },
+              { "value": "already_approved", "label": "Grant already approved" },
+              { "value": "no_grants", "label": "No – private funding" }
+            ]
+          }
+        },
+        {
+          "id": "installation_timeframe",
+          "type": "type_selector",
+          "title": "Installation timeframe?",
+          "description": "When do you need the system operational",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent (within 2 weeks)" },
+              { "value": "within_month", "label": "Within a month" },
+              { "value": "2_3_months", "label": "Within 2-3 months" },
+              { "value": "flexible", "label": "Flexible scheduling" }
+            ]
+          }
+        },
+        {
+          "id": "warranty_servicing",
+          "type": "type_selector",
+          "title": "Warranty and servicing preferences?",
+          "description": "Post-installation support",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_warranty", "label": "Standard manufacturer warranty" },
+              { "value": "extended_warranty", "label": "Extended warranty coverage" },
+              { "value": "service_plan", "label": "Annual service and maintenance plan" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Develop a heat pump installation specification including:\nHeat pump type: {{heat_pump_type}}\nProperty type: {{property_type}}\nProperty size: {{property_size}}\nHeating requirements: {{heating_requirements}}\nExisting heating: {{existing_heating_system}}\nHot water system: {{hot_water_system}}\nOutdoor space: {{outdoor_space}}\nGround space (GSHP): {{ground_space_gshp}}\nInsulation level: {{insulation_level}}\nRadiator system: {{radiator_system}}\nBuffer tank: {{buffer_tank}}\nElectrical supply: {{electrical_supply}}\nSmart controls: {{smart_controls}}\nNoise considerations: {{noise_considerations}}\nPlanning permission: {{planning_permission}}\nGrants/subsidies: {{grants_subsidies}}\nTimeframe: {{installation_timeframe}}\nWarranty/servicing: {{warranty_servicing}}"
+    }
+  ]
+}
