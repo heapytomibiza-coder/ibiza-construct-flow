@@ -1,0 +1,2089 @@
+{
+  "services": [
+    {
+      "id": "interior_painter",
+      "label": "Interior Painting & Surface Preparation",
+      "icon": "Paintbrush",
+      "description": "Professional interior painting with comprehensive surface preparation including sanding, filling, wallpaper removal, priming, crack repairs, and plaster touch-ups",
+      "budgetRange": {
+        "min": 50,
+        "max": 150
+      },
+      "blocks": [
+        {
+          "id": "preparation_focus",
+          "type": "type_selector",
+          "title": "Which preparation services are required?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sanding_filling", "label": "Sanding & Filling" },
+              { "value": "wallpaper_removal", "label": "Wallpaper Removal" },
+              { "value": "primer_base", "label": "Primer & Base Coating" },
+              { "value": "crack_repairs", "label": "Crack Repairs & Caulking" },
+              { "value": "plaster_touchups", "label": "Plaster Touch-Ups" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_surfaces",
+          "type": "type_selector",
+          "title": "Surfaces needing sanding and filling?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "walls", "label": "Walls" },
+              { "value": "ceilings", "label": "Ceilings" },
+              { "value": "doors_trims", "label": "Doors / trims" },
+              { "value": "furniture_joinery", "label": "Furniture or joinery" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_surface_condition",
+          "type": "type_selector",
+          "title": "Condition of surfaces for sanding?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "light_imperfections", "label": "Light imperfections only" },
+              { "value": "peeling_cracks", "label": "Peeling paint or small cracks" },
+              { "value": "rough_uneven", "label": "Rough, uneven, or flaking surfaces" },
+              { "value": "previously_wallpapered", "label": "Previously wallpapered" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_finish_level",
+          "type": "type_selector",
+          "title": "Finish level required before painting?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard (paint-ready)" },
+              { "value": "high_grade", "label": "High-grade smooth (for gloss or spray finish)" },
+              { "value": "level_5", "label": "Perfect level-5 finish (show surface quality)" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_material_type",
+          "type": "type_selector",
+          "title": "Material types involved?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "plaster_drywall", "label": "Plaster / drywall" },
+              { "value": "wood", "label": "Wood" },
+              { "value": "metal", "label": "Metal" },
+              { "value": "mixed", "label": "Mixed surfaces" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_dust_control",
+          "type": "type_selector",
+          "title": "Dust control preference during sanding?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard sanding" },
+              { "value": "low_dust", "label": "Low-dust / vacuum system required" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_area_size",
+          "type": "type_selector",
+          "title": "Approximate area to prepare?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "3_5_rooms", "label": "3–5 rooms" },
+              { "value": "whole_property", "label": "Whole property" },
+              { "value": "feature_only", "label": "Feature walls or detailing only" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_repairs_included",
+          "type": "type_selector",
+          "title": "Repairs or filling included?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "light_filler", "label": "Light filler only" },
+              { "value": "deep_cracks", "label": "Deep crack repairs" },
+              { "value": "full_skim", "label": "Full surface skim required" }
+            ]
+          }
+        },
+        {
+          "id": "sanding_access",
+          "type": "type_selector",
+          "title": "Any high or hard-to-reach areas?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "no", "label": "No" },
+              { "value": "ladders", "label": "Yes – ladders needed" },
+              { "value": "scaffolding", "label": "Yes – scaffolding required" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_removal_scope",
+          "type": "type_selector",
+          "title": "Wallpaper removal scope?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_wall", "label": "1 wall" },
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "3_plus_rooms", "label": "3+ rooms" },
+              { "value": "whole_property", "label": "Whole property" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_type",
+          "type": "type_selector",
+          "title": "Type of wallpaper currently installed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard paper" },
+              { "value": "vinyl", "label": "Vinyl-coated" },
+              { "value": "fabric_backed", "label": "Fabric-backed / textured" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_condition",
+          "type": "type_selector",
+          "title": "Condition of the wallpaper?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "loose_peeling", "label": "Loose / peeling" },
+              { "value": "firmly_adhered", "label": "Firmly adhered" },
+              { "value": "multiple_layers", "label": "Multiple layers" }
+            ]
+          }
+        },
+        {
+          "id": "surface_beneath_wallpaper",
+          "type": "type_selector",
+          "title": "Surface beneath wallpaper?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "painted_plaster", "label": "Painted plaster" },
+              { "value": "bare_plasterboard", "label": "Bare plasterboard" },
+              { "value": "unsure_mixed", "label": "Unsure / mixed" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_residue_cleaning",
+          "type": "type_selector",
+          "title": "Wall washing or residue removal afterward?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_ready_paint", "label": "Yes – ready to paint" },
+              { "value": "no_strip_only", "label": "No – just strip the paper" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_obstacles",
+          "type": "type_selector",
+          "title": "Obstacles or details to protect during removal?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "switches_sockets", "label": "Light switches / sockets" },
+              { "value": "built_in_furniture", "label": "Built-in furniture" },
+              { "value": "coving_trims", "label": "Ceiling coving / trims" },
+              { "value": "no_obstacles", "label": "No major obstacles" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_utility_access",
+          "type": "type_selector",
+          "title": "Access to water and electricity for steam removal?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_follow_up",
+          "type": "type_selector",
+          "title": "Follow-up work needed after wallpaper removal?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "repainting", "label": "Repainting" },
+              { "value": "re_papering", "label": "Re-papering" },
+              { "value": "skimming_repair", "label": "Skimming or plaster repair" }
+            ]
+          }
+        },
+        {
+          "id": "primer_surfaces",
+          "type": "type_selector",
+          "title": "Surfaces needing primer or base coat?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "bare_plaster", "label": "Bare plaster" },
+              { "value": "wood", "label": "Wood" },
+              { "value": "metal", "label": "Metal" },
+              { "value": "mixed", "label": "Mixed materials" }
+            ]
+          }
+        },
+        {
+          "id": "primer_purpose",
+          "type": "type_selector",
+          "title": "Purpose of primer application?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "first_coat", "label": "First coat before painting" },
+              { "value": "stain_blocking", "label": "Stain blocking / sealing" },
+              { "value": "adhesion", "label": "Adhesion on tricky surfaces" },
+              { "value": "moisture_protection", "label": "Moisture protection" }
+            ]
+          }
+        },
+        {
+          "id": "primer_surface_condition",
+          "type": "type_selector",
+          "title": "Surface condition before priming?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "clean_smooth", "label": "Clean and smooth" },
+              { "value": "porous_dusty", "label": "Slightly porous or dusty" },
+              { "value": "uneven_patched", "label": "Uneven or patched" }
+            ]
+          }
+        },
+        {
+          "id": "primer_type_preference",
+          "type": "type_selector",
+          "title": "Preferred primer type?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "water_based", "label": "Water-based" },
+              { "value": "oil_based", "label": "Oil-based" },
+              { "value": "eco_low_voc", "label": "Eco / low-VOC" },
+              { "value": "contractor_recommend", "label": "Contractor to recommend" }
+            ]
+          }
+        },
+        {
+          "id": "primer_coats_required",
+          "type": "type_selector",
+          "title": "How many coats are required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_coat", "label": "1 base coat" },
+              { "value": "2_plus", "label": "2 or more for sealing coverage" },
+              { "value": "unsure", "label": "Unsure – need advice" }
+            ]
+          }
+        },
+        {
+          "id": "primer_area_size",
+          "type": "type_selector",
+          "title": "Size or area to be primed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "3_5_rooms", "label": "3–5 rooms" },
+              { "value": "whole_property", "label": "Whole property" }
+            ]
+          }
+        },
+        {
+          "id": "primer_space_status",
+          "type": "type_selector",
+          "title": "Is the area empty or occupied?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "empty", "label": "Empty" },
+              { "value": "furnished", "label": "Furnished – needs protection" }
+            ]
+          }
+        },
+        {
+          "id": "primer_follow_up_finish",
+          "type": "type_selector",
+          "title": "Follow-up finishing required after priming?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_full_painting", "label": "Yes – full painting" },
+              { "value": "no_primer_only", "label": "No – primer only" }
+            ]
+          }
+        },
+        {
+          "id": "crack_types",
+          "type": "type_selector",
+          "title": "Types of cracks or gaps to repair?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "hairline", "label": "Hairline cracks only" },
+              { "value": "medium", "label": "Medium wall cracks" },
+              { "value": "deep_structural", "label": "Deep structural or joint cracks" },
+              { "value": "gaps_trims", "label": "Gaps between trims or panels" }
+            ]
+          }
+        },
+        {
+          "id": "crack_surface_material",
+          "type": "type_selector",
+          "title": "Surface material for crack repairs?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "plaster_drywall", "label": "Plaster / drywall" },
+              { "value": "masonry_concrete", "label": "Masonry / concrete" },
+              { "value": "woodwork", "label": "Woodwork" },
+              { "value": "mixed", "label": "Mixed surfaces" }
+            ]
+          }
+        },
+        {
+          "id": "crack_locations",
+          "type": "type_selector",
+          "title": "Location of cracks or gaps?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "walls", "label": "Walls" },
+              { "value": "ceilings", "label": "Ceilings" },
+              { "value": "doors_windows", "label": "Around doors & windows" },
+              { "value": "exterior", "label": "Exterior façades" }
+            ]
+          }
+        },
+        {
+          "id": "crack_extent",
+          "type": "type_selector",
+          "title": "Extent of repair required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "minor_patching", "label": "Minor patching" },
+              { "value": "full_resealing", "label": "Full joint resealing" },
+              { "value": "structural", "label": "Structural crack treatment" }
+            ]
+          }
+        },
+        {
+          "id": "crack_painting_included",
+          "type": "type_selector",
+          "title": "Is painting included after repairs?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "crack_access_height",
+          "type": "type_selector",
+          "title": "Access height for crack repairs?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "ground", "label": "Ground level" },
+              { "value": "ladder", "label": "Up to 3m (ladder)" },
+              { "value": "scaffold", "label": "Higher (scaffold or tower needed)" }
+            ]
+          }
+        },
+        {
+          "id": "caulking_colour",
+          "type": "type_selector",
+          "title": "Caulking colour preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "white", "label": "White" },
+              { "value": "colour_matched", "label": "Colour-matched to surface" },
+              { "value": "painted_over", "label": "To be painted over" }
+            ]
+          }
+        },
+        {
+          "id": "crack_environment",
+          "type": "type_selector",
+          "title": "Environment type for crack repairs?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "interior", "label": "Interior only" },
+              { "value": "exterior", "label": "Exterior" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "plaster_touchup_locations",
+          "type": "type_selector",
+          "title": "Where are plaster touch-ups required?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "walls", "label": "Walls" },
+              { "value": "ceilings", "label": "Ceilings" },
+              { "value": "corners_trims", "label": "Corners / trims" },
+              { "value": "multiple", "label": "Multiple areas" }
+            ]
+          }
+        },
+        {
+          "id": "plaster_scale",
+          "type": "type_selector",
+          "title": "Scale of plaster repair?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small_patches", "label": "Small patches (<1m² each)" },
+              { "value": "several_medium", "label": "Several medium repairs" },
+              { "value": "full_skim", "label": "Full skim coat of room" }
+            ]
+          }
+        },
+        {
+          "id": "plaster_damage_cause",
+          "type": "type_selector",
+          "title": "What caused the damage?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "settlement", "label": "Settlement cracks" },
+              { "value": "damp_water", "label": "Damp / water damage" },
+              { "value": "electrical_plumbing", "label": "Electrical or plumbing chases" },
+              { "value": "poor_workmanship", "label": "Previous poor workmanship" }
+            ]
+          }
+        },
+        {
+          "id": "plaster_existing_surface",
+          "type": "type_selector",
+          "title": "Existing surface type?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "old_plaster", "label": "Old plaster" },
+              { "value": "plasterboard", "label": "Plasterboard" },
+              { "value": "painted", "label": "Painted surface" }
+            ]
+          }
+        },
+        {
+          "id": "plaster_blending",
+          "type": "type_selector",
+          "title": "Do you require blending into surrounding areas?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_seamless", "label": "Yes – seamless finish" },
+              { "value": "no_defined", "label": "No – defined patch is fine" }
+            ]
+          }
+        },
+        {
+          "id": "plaster_finish_type",
+          "type": "type_selector",
+          "title": "Finish type required after touch-ups?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_smooth", "label": "Standard smooth" },
+              { "value": "ready_paint", "label": "Ready-to-paint polish" },
+              { "value": "high_end", "label": "High-end fine skim" }
+            ]
+          }
+        },
+        {
+          "id": "plaster_moisture_issue",
+          "type": "type_selector",
+          "title": "Are moisture or ventilation issues present?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_inspection", "label": "Yes – needs inspection" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "plaster_follow_up",
+          "type": "type_selector",
+          "title": "Follow-up work after touch-ups?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "painting", "label": "Painting" },
+              { "value": "wallpaper", "label": "Wallpaper" },
+              { "value": "no_further", "label": "No further work" }
+            ]
+          }
+        },
+        {
+          "id": "interior_project_timeline",
+          "type": "type_selector",
+          "title": "Preferred project timeline?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent_1week", "label": "Urgent (within 1 week)" },
+              { "value": "2_3_weeks", "label": "Within 2–3 weeks" },
+              { "value": "within_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible scheduling" }
+            ]
+          }
+        },
+        {
+          "id": "interior_material_supply",
+          "type": "type_selector",
+          "title": "Overall material supply preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "labour_only", "label": "Labour only" },
+              { "value": "labour_materials", "label": "Labour + materials" },
+              { "value": "both_options", "label": "Both options" }
+            ]
+          }
+        },
+        {
+          "id": "interior_additional_notes",
+          "type": "text_field",
+          "title": "Additional notes or priorities",
+          "required": false,
+          "config": {
+            "placeholder": "Access constraints, occupancy schedule, coordination with other trades, etc."
+          }
+        }
+      ],
+      "promptTemplate": "Prepare an interior painting and surface preparation brief including:\nServices required: {{preparation_focus}}\nSanding & filling: {{sanding_surfaces}}, {{sanding_surface_condition}}, {{sanding_finish_level}}, {{sanding_material_type}}, {{sanding_dust_control}}, {{sanding_area_size}}, {{sanding_repairs_included}}, {{sanding_access}}\nWallpaper removal: {{wallpaper_removal_scope}}, {{wallpaper_type}}, {{wallpaper_condition}}, {{surface_beneath_wallpaper}}, {{wallpaper_residue_cleaning}}, {{wallpaper_obstacles}}, {{wallpaper_utility_access}}, {{wallpaper_follow_up}}\nPriming details: {{primer_surfaces}}, {{primer_purpose}}, {{primer_surface_condition}}, {{primer_type_preference}}, {{primer_coats_required}}, {{primer_area_size}}, {{primer_space_status}}, {{primer_follow_up_finish}}\nCrack repairs: {{crack_types}}, {{crack_surface_material}}, {{crack_locations}}, {{crack_extent}}, {{crack_painting_included}}, {{crack_access_height}}, {{caulking_colour}}, {{crack_environment}}\nPlaster touch-ups: {{plaster_touchup_locations}}, {{plaster_scale}}, {{plaster_damage_cause}}, {{plaster_existing_surface}}, {{plaster_blending}}, {{plaster_finish_type}}, {{plaster_moisture_issue}}, {{plaster_follow_up}}\nTimeline: {{interior_project_timeline}}\nMaterials: {{interior_material_supply}}\nNotes: {{interior_additional_notes}}"
+    },
+    {
+      "id": "wallpaper_installer",
+      "label": "Wallpaper & Wallcovering Specialist",
+      "icon": "Ruler",
+      "description": "Expert wallpaper and wallcovering installation including luxury papers, vinyl, fabric coverings, acoustic panels, and precision pattern alignment",
+      "budgetRange": {
+        "min": 60,
+        "max": 180
+      },
+      "blocks": [
+        {
+          "id": "wallcovering_type",
+          "type": "type_selector",
+          "title": "Type of wall covering to install?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard wallpaper" },
+              { "value": "luxury_designer", "label": "Luxury/designer paper" },
+              { "value": "vinyl_washable", "label": "Vinyl or washable wallpaper" },
+              { "value": "fabric_textile", "label": "Fabric or textile wallcovering" },
+              { "value": "acoustic_panels", "label": "Acoustic or decorative panels" }
+            ]
+          }
+        },
+        {
+          "id": "wallcovering_area",
+          "type": "type_selector",
+          "title": "Approximate area to be covered?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "feature_wall", "label": "Single feature wall" },
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "full_property", "label": "Full property" },
+              { "value": "unsure_visit", "label": "Unsure — needs site visit" }
+            ]
+          }
+        },
+        {
+          "id": "existing_wall_state",
+          "type": "type_selector",
+          "title": "Current wall condition?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "painted", "label": "Painted" },
+              { "value": "wallpapered", "label": "Previously wallpapered" },
+              { "value": "newly_plastered", "label": "Newly plastered" },
+              { "value": "mixed", "label": "Mixed surfaces" }
+            ]
+          }
+        },
+        {
+          "id": "wall_preparation",
+          "type": "type_selector",
+          "title": "Wall preparation required before installation?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "ready", "label": "No, ready to hang" },
+              { "value": "light_sanding", "label": "Light sanding and cleaning" },
+              { "value": "filling_smoothing", "label": "Filling cracks or smoothing uneven areas" },
+              { "value": "lining_paper", "label": "Full lining paper required" }
+            ]
+          }
+        },
+        {
+          "id": "wallcovering_supply",
+          "type": "type_selector",
+          "title": "Who will supply the wallcovering materials?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client", "label": "I'll provide materials" },
+              { "value": "installer", "label": "Please supply and match to my style" },
+              { "value": "mixed", "label": "A mix (I have some, need extras sourced)" }
+            ]
+          }
+        },
+        {
+          "id": "pattern_alignment",
+          "type": "type_selector",
+          "title": "Pattern alignment complexity?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "no_pattern", "label": "No pattern / plain" },
+              { "value": "simple", "label": "Simple pattern match" },
+              { "value": "complex", "label": "Complex pattern / mural alignment" }
+            ]
+          }
+        },
+        {
+          "id": "installation_obstacles",
+          "type": "type_selector",
+          "title": "Obstacles or details requiring extra care?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sockets_switches", "label": "Multiple sockets, switches, or fixtures" },
+              { "value": "stairwells_high", "label": "Stairwells or high ceilings" },
+              { "value": "alcoves_corners", "label": "Alcoves, corners, or trims" },
+              { "value": "no_obstacles", "label": "No major obstacles" }
+            ]
+          }
+        },
+        {
+          "id": "finish_effect",
+          "type": "type_selector",
+          "title": "Desired finish or effect?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth_clean", "label": "Smooth and clean lines" },
+              { "value": "textured_fabric", "label": "Textured or fabric feel" },
+              { "value": "seamless_panel", "label": "Seamless panel alignment" },
+              { "value": "acoustic_padded", "label": "Acoustic or padded look" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_removal_needed",
+          "type": "type_selector",
+          "title": "Is wallpaper removal required before installation?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes, remove old wallpaper" },
+              { "value": "no", "label": "No, walls are clear" },
+              { "value": "unsure", "label": "Unsure — need assessment" }
+            ]
+          }
+        },
+        {
+          "id": "wallcovering_timeline",
+          "type": "type_selector",
+          "title": "When do you need the work completed?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent_week", "label": "Urgent (within a week)" },
+              { "value": "2_3_weeks", "label": "Within 2–3 weeks" },
+              { "value": "within_month", "label": "Within a month" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "Property or room type?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential — home or apartment" },
+              { "value": "commercial", "label": "Commercial — office, shop, or venue" },
+              { "value": "hospitality", "label": "Hospitality — hotel or restaurant" },
+              { "value": "other", "label": "Other (please specify)" }
+            ]
+          }
+        },
+        {
+          "id": "aftercare_services",
+          "type": "type_selector",
+          "title": "Protective coatings or aftercare required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes, please include" },
+              { "value": "no", "label": "No, not needed" },
+              { "value": "unsure", "label": "Unsure — need advice" }
+            ]
+          }
+        },
+        {
+          "id": "special_wallcovering_type",
+          "type": "type_selector",
+          "title": "Specific wallcovering material?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "vinyl", "label": "Vinyl (washable or commercial-grade)" },
+              { "value": "textile_silk", "label": "Textile or silk finish" },
+              { "value": "fabric_backed_vinyl", "label": "Fabric-backed vinyl" },
+              { "value": "grasscloth", "label": "Grasscloth or natural weave" }
+            ]
+          }
+        },
+        {
+          "id": "special_environment",
+          "type": "type_selector",
+          "title": "Intended environment for specialist wallcoverings?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential interior" },
+              { "value": "commercial_traffic", "label": "High-traffic commercial area" },
+              { "value": "hospitality", "label": "Hospitality (hotel, restaurant, etc.)" },
+              { "value": "wet_area", "label": "Bathroom or kitchen (moisture-resistant needed)" }
+            ]
+          }
+        },
+        {
+          "id": "special_material_supply",
+          "type": "type_selector",
+          "title": "Material supply for specialist wallcoverings?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client", "label": "Client" },
+              { "value": "installer", "label": "Installer" },
+              { "value": "split", "label": "Split supply (client provides, installer sources extras)" }
+            ]
+          }
+        },
+        {
+          "id": "special_coverage_scope",
+          "type": "type_selector",
+          "title": "Coverage scope for specialist wallcoverings?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "feature_wall", "label": "Single feature wall" },
+              { "value": "1_2_rooms", "label": "1–2 rooms" },
+              { "value": "full_space", "label": "Full property or commercial space" },
+              { "value": "unsure", "label": "Unsure — needs site visit" }
+            ]
+          }
+        },
+        {
+          "id": "special_wall_prep",
+          "type": "type_selector",
+          "title": "Preparation needs for specialist materials?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "smooth_ready", "label": "Smooth and ready" },
+              { "value": "lining_paper", "label": "Requires lining paper" },
+              { "value": "filling_sanding", "label": "Needs filling or sanding" },
+              { "value": "damp_damaged", "label": "Damp or damaged areas present" }
+            ]
+          }
+        },
+        {
+          "id": "special_pattern_alignment",
+          "type": "type_selector",
+          "title": "Pattern repeat complexity for specialist materials?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "no_pattern", "label": "No pattern" },
+              { "value": "simple", "label": "Simple repeat" },
+              { "value": "complex", "label": "Complex or mural alignment" }
+            ]
+          }
+        },
+        {
+          "id": "special_obstacles",
+          "type": "type_selector",
+          "title": "Obstacles requiring precision cutting?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_several", "label": "Yes, several" },
+              { "value": "few", "label": "A few" },
+              { "value": "no_flat", "label": "No, flat surfaces only" }
+            ]
+          }
+        },
+        {
+          "id": "adhesive_preference",
+          "type": "type_selector",
+          "title": "Adhesive or treatment requirements?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard adhesive" },
+              { "value": "heavy_duty", "label": "Heavy-duty / commercial glue" },
+              { "value": "eco_low_voc", "label": "Eco or low-VOC adhesive" }
+            ]
+          }
+        },
+        {
+          "id": "protective_coating_needed",
+          "type": "type_selector",
+          "title": "Protective coating or sealing after installation?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "advice", "label": "Not sure — need advice" }
+            ]
+          }
+        },
+        {
+          "id": "special_timeframe",
+          "type": "type_selector",
+          "title": "Preferred completion timeframe for specialist materials?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_week", "label": "Within a week" },
+              { "value": "2_3_weeks", "label": "2–3 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_purpose",
+          "type": "type_selector",
+          "title": "Primary purpose of acoustic panels?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "soundproofing", "label": "Soundproofing (noise reduction)" },
+              { "value": "acoustic_treatment", "label": "Acoustic treatment (echo control)" },
+              { "value": "aesthetic", "label": "Aesthetic / design feature" },
+              { "value": "combination", "label": "Combination" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_location",
+          "type": "type_selector",
+          "title": "Where will acoustic panels be installed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "office_meeting", "label": "Office or meeting room" },
+              { "value": "studio_cinema", "label": "Music studio or home cinema" },
+              { "value": "restaurant_bar", "label": "Restaurant or bar" },
+              { "value": "residential", "label": "Residential living area" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_material",
+          "type": "type_selector",
+          "title": "Preferred panel material or finish?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fabric_wrapped", "label": "Fabric-wrapped" },
+              { "value": "felt_polyester", "label": "Felt or polyester" },
+              { "value": "timber_slat", "label": "Timber-slat acoustic" },
+              { "value": "printed_panels", "label": "Decorative printed panels" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_performance",
+          "type": "type_selector",
+          "title": "Required acoustic performance level?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "light", "label": "Light noise control" },
+              { "value": "moderate", "label": "Moderate absorption" },
+              { "value": "professional", "label": "Professional-grade soundproofing" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_supply",
+          "type": "type_selector",
+          "title": "Will the installer supply the panels?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client", "label": "I'll provide" },
+              { "value": "installer", "label": "Installer to supply" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_mounting",
+          "type": "type_selector",
+          "title": "Panel mounting preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "wall_mounted", "label": "Wall-mounted" },
+              { "value": "ceiling_suspended", "label": "Ceiling-suspended" },
+              { "value": "freestanding", "label": "Freestanding partitions" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_area_size",
+          "type": "type_selector",
+          "title": "Approximate wall or ceiling area to be covered?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_10", "label": "Less than 10m²" },
+              { "value": "10_25", "label": "10–25m²" },
+              { "value": "25_plus", "label": "25m²+" },
+              { "value": "unsure", "label": "Unsure — needs assessment" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_lighting",
+          "type": "type_selector",
+          "title": "Integrated lighting or hidden fixings needed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_integration", "label": "Yes — include design integration" },
+              { "value": "no_standard", "label": "No — standard installation" },
+              { "value": "open_advice", "label": "Open to advice" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_style",
+          "type": "type_selector",
+          "title": "Colour or design style preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "neutral", "label": "Neutral tones" },
+              { "value": "custom_brand", "label": "Custom colours or branding" },
+              { "value": "natural_wood", "label": "Natural wood finish" },
+              { "value": "mixed", "label": "Mixed aesthetic" }
+            ]
+          }
+        },
+        {
+          "id": "acoustic_project_stage",
+          "type": "type_selector",
+          "title": "Is this part of a new fit-out or retrofit?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_build", "label": "New build / fit-out" },
+              { "value": "retrofit", "label": "Existing space upgrade" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_type",
+          "type": "type_selector",
+          "title": "Type of alignment or trimming required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_wallpaper", "label": "Standard wallpaper" },
+              { "value": "patterned_mural", "label": "Patterned or mural wallcovering" },
+              { "value": "multi_panel", "label": "Multi-panel textile or fabric alignment" },
+              { "value": "decorative_panelling", "label": "Decorative wall panelling" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_precision",
+          "type": "type_selector",
+          "title": "Level of precision expected?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard", "label": "Standard domestic finish" },
+              { "value": "premium", "label": "Premium / designer precision" },
+              { "value": "exhibition", "label": "Exhibition or commercial-grade alignment" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_complexity",
+          "type": "type_selector",
+          "title": "Complex corners, beams, or niches to trim around?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_multiple", "label": "Yes, multiple" },
+              { "value": "few", "label": "A few" },
+              { "value": "no_flat", "label": "No, flat surfaces" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_detailed_trimming",
+          "type": "type_selector",
+          "title": "Trimming required around sockets, switches, or mouldings?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_detailed", "label": "Yes — detailed trimming needed" },
+              { "value": "no_clear", "label": "No — clear wall surfaces" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_wall_condition",
+          "type": "type_selector",
+          "title": "Wall condition for precision alignment?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth_ready", "label": "Smooth and ready" },
+              { "value": "slight_imperfections", "label": "Slight imperfections" },
+              { "value": "uneven_prep", "label": "Uneven or cracked — needs prep" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_edge_protection",
+          "type": "type_selector",
+          "title": "Edge protection or finishing trims required?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_trims", "label": "Yes — metal or plastic trims" },
+              { "value": "no_clean", "label": "No — clean edge finish" },
+              { "value": "advice", "label": "Not sure — need advice" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_project_scope",
+          "type": "type_selector",
+          "title": "Size of area requiring precision trimming?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "small", "label": "Small (under 10m²)" },
+              { "value": "medium", "label": "Medium (10–30m²)" },
+              { "value": "large", "label": "Large (30m²+)" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_artwork",
+          "type": "type_selector",
+          "title": "Is photographic or patterned artwork involved?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_high_precision", "label": "Yes — high alignment precision needed" },
+              { "value": "no_standard", "label": "No — standard pattern" }
+            ]
+          }
+        },
+        {
+          "id": "alignment_timeline",
+          "type": "type_selector",
+          "title": "Timeline for alignment and trimming work?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent_week", "label": "Urgent (1 week)" },
+              { "value": "2_3_weeks", "label": "Within 2–3 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "wallpaper_additional_notes",
+          "type": "text_field",
+          "title": "Additional notes, references, or constraints",
+          "required": false,
+          "config": {
+            "placeholder": "Room access, designer coordination, mock-up approvals, etc."
+          }
+        }
+      ],
+      "promptTemplate": "Create a specialist wallcovering project brief that captures:\nPrimary materials: {{wallcovering_type}}, {{special_wallcovering_type}}\nProject scope: {{wallcovering_area}}, {{special_coverage_scope}}\nSurface condition and prep: {{existing_wall_state}}, {{wall_preparation}}, {{special_wall_prep}}\nPattern and detailing: {{pattern_alignment}}, {{special_pattern_alignment}}, {{installation_obstacles}}, {{special_obstacles}}, {{alignment_type}}, {{alignment_precision}}, {{alignment_complexity}}, {{alignment_detailed_trimming}}, {{alignment_wall_condition}}, {{alignment_edge_protection}}, {{alignment_project_scope}}, {{alignment_artwork}}\nSpecial applications: {{finish_effect}}, {{acoustic_purpose}}, {{acoustic_location}}, {{acoustic_material}}, {{acoustic_performance}}, {{acoustic_mounting}}, {{acoustic_area_size}}, {{acoustic_lighting}}, {{acoustic_style}}, {{acoustic_project_stage}}\nLogistics: {{wallcovering_supply}}, {{special_material_supply}}, {{adhesive_preference}}, {{wallcovering_timeline}}, {{special_timeframe}}, {{alignment_timeline}}, {{property_type}}, {{aftercare_services}}\nNotes: {{wallpaper_additional_notes}}"
+    },
+    {
+      "id": "flooring_contractor",
+      "label": "Flooring Installation & Finishing Specialist",
+      "icon": "Box",
+      "description": "Comprehensive flooring installation covering solid hardwood, engineered wood, laminate, vinyl/LVT, parquet patterns, floating floors, and polished concrete/microcement finishes",
+      "budgetRange": {
+        "min": 500,
+        "max": 8000
+      },
+      "blocks": [
+        {
+          "id": "flooring_systems",
+          "type": "type_selector",
+          "title": "Which flooring systems are included?",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "solid_hardwood", "label": "Solid hardwood" },
+              { "value": "engineered_wood", "label": "Engineered wood" },
+              { "value": "reclaimed_rustic", "label": "Reclaimed or rustic boards" },
+              { "value": "outdoor_decking", "label": "Outdoor decking-style timber" },
+              { "value": "engineered_click", "label": "Engineered click-lock" },
+              { "value": "laminate_floating", "label": "Laminate floating floor" },
+              { "value": "glue_down_engineered", "label": "Glue-down engineered boards" },
+              { "value": "sheet_vinyl", "label": "Sheet vinyl" },
+              { "value": "lvt", "label": "Luxury vinyl tile (LVT)" },
+              { "value": "linoleum", "label": "Linoleum" },
+              { "value": "herringbone_parquet", "label": "Herringbone parquet" },
+              { "value": "chevron_parquet", "label": "Chevron parquet" },
+              { "value": "basketweave_parquet", "label": "Basketweave parquet" },
+              { "value": "versailles_custom", "label": "Versailles or custom parquet" },
+              { "value": "floating_click", "label": "Floating floors & click systems" },
+              { "value": "cork_bamboo", "label": "Cork or bamboo" },
+              { "value": "polished_concrete", "label": "Polished concrete" },
+              { "value": "microcement", "label": "Microcement overlay" },
+              { "value": "decorative_concrete", "label": "Decorative / tinted concrete" },
+              { "value": "epoxy_hybrid", "label": "Epoxy hybrid surface" }
+            ]
+          }
+        },
+        {
+          "id": "old_flooring_removal",
+          "type": "type_selector",
+          "title": "Will old flooring need removal first?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure — need assessment" }
+            ]
+          }
+        },
+        {
+          "id": "subfloor_type",
+          "type": "type_selector",
+          "title": "Existing subfloor type?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "timber_joists", "label": "Timber joists" },
+              { "value": "existing_tiles_vinyl", "label": "Existing tiles or vinyl" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "timber_finish_preference",
+          "type": "type_selector",
+          "title": "Preferred finish for timber flooring?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "natural_matte", "label": "Natural matte" },
+              { "value": "satin_semi_gloss", "label": "Satin / semi-gloss" },
+              { "value": "high_gloss", "label": "High-gloss" },
+              { "value": "pre_finished", "label": "Pre-finished boards" }
+            ]
+          }
+        },
+        {
+          "id": "underlay_requirements",
+          "type": "type_selector",
+          "title": "Do you need underlay or insulation installed?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "acoustic", "label": "Yes, acoustic underlay" },
+              { "value": "thermal", "label": "Yes, thermal insulation" },
+              { "value": "none", "label": "No underlay required" }
+            ]
+          }
+        },
+        {
+          "id": "post_install_finish",
+          "type": "type_selector",
+          "title": "Will the floor need staining, oiling, or varnishing after fitting?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "advice", "label": "Unsure — want advice" }
+            ]
+          }
+        },
+        {
+          "id": "floor_area_size",
+          "type": "type_selector",
+          "title": "Approximate area to cover?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_20", "label": "Under 20m²" },
+              { "value": "20_50", "label": "20–50m²" },
+              { "value": "50_100", "label": "50–100m²" },
+              { "value": "100_plus", "label": "100m²+" }
+            ]
+          }
+        },
+        {
+          "id": "flooring_property_type",
+          "type": "type_selector",
+          "title": "Property type?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential home" },
+              { "value": "commercial", "label": "Commercial / retail" },
+              { "value": "hospitality", "label": "Hospitality venue" }
+            ]
+          }
+        },
+        {
+          "id": "flooring_timeframe",
+          "type": "type_selector",
+          "title": "Preferred installation timeframe?",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_week", "label": "Within a week" },
+              { "value": "2_3_weeks", "label": "Within 2–3 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "engineered_system_type",
+          "type": "type_selector",
+          "title": "Engineered or laminate system type?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "click_lock", "label": "Engineered click-lock" },
+              { "value": "laminate_floating", "label": "Laminate floating floor" },
+              { "value": "glue_down", "label": "Glue-down engineered boards" }
+            ]
+          }
+        },
+        {
+          "id": "engineered_material_supply",
+          "type": "type_selector",
+          "title": "Are materials supplied or should the installer provide them?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client", "label": "I'll supply" },
+              { "value": "installer", "label": "Installer to supply" },
+              { "value": "help_choosing", "label": "Need help choosing" }
+            ]
+          }
+        },
+        {
+          "id": "subfloor_condition",
+          "type": "type_selector",
+          "title": "Subfloor condition?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "level_dry", "label": "Level and dry" },
+              { "value": "minor_uneven", "label": "Minor uneven spots" },
+              { "value": "needs_repair", "label": "Needs repair or self-levelling" }
+            ]
+          }
+        },
+        {
+          "id": "engineered_underlay",
+          "type": "type_selector",
+          "title": "Underlay or moisture barrier required?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "acoustic", "label": "Yes — acoustic underlay" },
+              { "value": "vapour", "label": "Yes — vapour barrier" },
+              { "value": "none", "label": "No underlay needed" }
+            ]
+          }
+        },
+        {
+          "id": "engineered_old_floor_removal",
+          "type": "type_selector",
+          "title": "Will existing flooring need removal for engineered/laminate areas?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "engineered_room_type",
+          "type": "type_selector",
+          "title": "Room type or usage?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "living_bedroom", "label": "Living space / bedroom" },
+              { "value": "kitchen_hallway", "label": "Kitchen / hallway" },
+              { "value": "commercial", "label": "Commercial space" }
+            ]
+          }
+        },
+        {
+          "id": "edge_detail_preference",
+          "type": "type_selector",
+          "title": "Edge detail preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "standard_beading", "label": "Standard beading" },
+              { "value": "skirting_refit", "label": "Skirting board removal & refit" },
+              { "value": "flush", "label": "Flush finish" }
+            ]
+          }
+        },
+        {
+          "id": "matching_trims",
+          "type": "type_selector",
+          "title": "Do you require trims, thresholds, or stairs to match?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "engineered_timeline",
+          "type": "type_selector",
+          "title": "Engineered/laminate installation timing?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "within_week", "label": "Within 1 week" },
+              { "value": "2_3_weeks", "label": "Within 2–3 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_floor_type",
+          "type": "type_selector",
+          "title": "What type of vinyl, linoleum, or LVT flooring?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "sheet_vinyl", "label": "Sheet vinyl" },
+              { "value": "lvt", "label": "Luxury vinyl tile (LVT)" },
+              { "value": "linoleum", "label": "Linoleum (eco/natural)" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_area_type",
+          "type": "type_selector",
+          "title": "Area type for vinyl installation?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "hospitality", "label": "Hospitality / high-traffic" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_old_floor_removal",
+          "type": "type_selector",
+          "title": "Do you need old flooring removed first (vinyl)?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_subfloor_condition",
+          "type": "type_selector",
+          "title": "Subfloor condition for vinyl?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth_level", "label": "Smooth and level" },
+              { "value": "minor_prep", "label": "Needs minor prep" },
+              { "value": "full_screed", "label": "Requires full screed" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_layout_preference",
+          "type": "type_selector",
+          "title": "Pattern or layout preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "straight", "label": "Straight plank or tile" },
+              { "value": "diagonal_herringbone", "label": "Diagonal or herringbone" },
+              { "value": "custom_borders", "label": "Custom design / borders" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_adhesive_type",
+          "type": "type_selector",
+          "title": "Adhesive type preferred?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "glue_down", "label": "Glue-down" },
+              { "value": "loose_lay_click", "label": "Loose lay / click system" },
+              { "value": "floating", "label": "Floating" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_coved_skirting",
+          "type": "type_selector",
+          "title": "Would you like coved skirting or welded joints?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_coved", "label": "Yes — coved skirting" },
+              { "value": "no_standard", "label": "No — standard finish" },
+              { "value": "advice", "label": "Unsure — need advice" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_area_size",
+          "type": "type_selector",
+          "title": "Approximate area for vinyl installation?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_20", "label": "<20m²" },
+              { "value": "20_50", "label": "20–50m²" },
+              { "value": "50_plus", "label": "50m²+" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_material_supply",
+          "type": "type_selector",
+          "title": "Will you supply the vinyl material?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure yet" }
+            ]
+          }
+        },
+        {
+          "id": "vinyl_start_time",
+          "type": "type_selector",
+          "title": "When does the vinyl work need to start?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "within_2weeks", "label": "Within 2 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_pattern",
+          "type": "type_selector",
+          "title": "Parquet pattern to install?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "herringbone", "label": "Herringbone" },
+              { "value": "chevron", "label": "Chevron" },
+              { "value": "basketweave", "label": "Basketweave" },
+              { "value": "versailles_custom", "label": "Versailles or custom pattern" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_material_choice",
+          "type": "type_selector",
+          "title": "Parquet material choice?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "solid_wood", "label": "Solid wood blocks" },
+              { "value": "engineered", "label": "Engineered wood parquet" },
+              { "value": "lvt_vinyl", "label": "LVT / vinyl parquet style" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_subfloor_prep",
+          "type": "type_selector",
+          "title": "Will subfloor need levelling or prep for parquet?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "site_visit", "label": "Unsure — site visit needed" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_finish_after_install",
+          "type": "type_selector",
+          "title": "Do you require staining or finishing after installation?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_alignment_preference",
+          "type": "type_selector",
+          "title": "Pattern alignment preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "centre_layout", "label": "Simple centre layout" },
+              { "value": "room_border", "label": "Room border or framing" },
+              { "value": "continuous", "label": "Continuous through rooms" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_skirting_handling",
+          "type": "type_selector",
+          "title": "Are skirting boards being replaced or refitted?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "replace", "label": "Replace" },
+              { "value": "refit", "label": "Refit" },
+              { "value": "keep_existing", "label": "Keep existing" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_area_size",
+          "type": "type_selector",
+          "title": "Approximate area for parquet?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_20", "label": "<20m²" },
+              { "value": "20_50", "label": "20–50m²" },
+              { "value": "50_100", "label": "50–100m²" },
+              { "value": "100_plus", "label": "100m²+" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_matching_stairs",
+          "type": "type_selector",
+          "title": "Do you require matching stairs or transitions?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "parquet_install_timing",
+          "type": "type_selector",
+          "title": "When should parquet installation take place?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent" },
+              { "value": "3_weeks", "label": "Within 3 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "floating_floor_type",
+          "type": "type_selector",
+          "title": "Floating floor type?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "laminate", "label": "Laminate" },
+              { "value": "engineered_wood", "label": "Engineered wood" },
+              { "value": "lvt_vinyl_click", "label": "LVT / vinyl click" },
+              { "value": "cork_bamboo", "label": "Cork or bamboo" }
+            ]
+          }
+        },
+        {
+          "id": "floating_underlay_spec",
+          "type": "type_selector",
+          "title": "Do you have underlay specified for floating floors?",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "acoustic", "label": "Acoustic" },
+              { "value": "thermal", "label": "Thermal" },
+              { "value": "standard_foam", "label": "Standard foam" },
+              { "value": "none_yet", "label": "None yet" }
+            ]
+          }
+        },
+        {
+          "id": "floating_existing_floor_removal",
+          "type": "type_selector",
+          "title": "Existing flooring removal required for floating floors?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "floating_subfloor_type",
+          "type": "type_selector",
+          "title": "Subfloor type for floating installation?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concrete", "label": "Concrete" },
+              { "value": "timber", "label": "Timber" },
+              { "value": "mixed", "label": "Mixed surfaces" }
+            ]
+          }
+        },
+        {
+          "id": "floating_trim_finish",
+          "type": "type_selector",
+          "title": "Trim and edge finish preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "beading", "label": "Beading" },
+              { "value": "skirting_refit", "label": "Skirting refit" },
+              { "value": "flush_edge", "label": "Flush edge" }
+            ]
+          }
+        },
+        {
+          "id": "floating_project_stage",
+          "type": "type_selector",
+          "title": "Is this part of a renovation or new build?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "renovation", "label": "Renovation" },
+              { "value": "new_build", "label": "New build" }
+            ]
+          }
+        },
+        {
+          "id": "floating_area_size",
+          "type": "type_selector",
+          "title": "Area to cover with floating floor?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_20", "label": "<20m²" },
+              { "value": "20_50", "label": "20–50m²" },
+              { "value": "50_plus", "label": "50m²+" }
+            ]
+          }
+        },
+        {
+          "id": "floating_material_supply",
+          "type": "type_selector",
+          "title": "Will you supply materials for floating floors?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "floating_matching_thresholds",
+          "type": "type_selector",
+          "title": "Do you require matching thresholds or stairs?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "floating_completion_date",
+          "type": "type_selector",
+          "title": "Preferred completion date for floating floors?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "asap", "label": "ASAP" },
+              { "value": "2_3_weeks", "label": "Within 2–3 weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_surface_type",
+          "type": "type_selector",
+          "title": "Concrete or microcement surface type planned?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "polished_concrete", "label": "Polished concrete" },
+              { "value": "microcement_overlay", "label": "Microcement overlay" },
+              { "value": "decorative_tinted", "label": "Decorative / tinted concrete" },
+              { "value": "epoxy_hybrid", "label": "Epoxy hybrid surface" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_install_location",
+          "type": "type_selector",
+          "title": "Where will this floor be installed?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential_interior", "label": "Residential interior" },
+              { "value": "outdoor_terrace", "label": "Outdoor terrace" },
+              { "value": "commercial", "label": "Commercial area" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_substrate_condition",
+          "type": "type_selector",
+          "title": "Substrate condition?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "existing_slab", "label": "Existing concrete slab" },
+              { "value": "tiled_timber", "label": "Tiled or timber surface" },
+              { "value": "new_base", "label": "New base required" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_finish_preference",
+          "type": "type_selector",
+          "title": "Desired finish for concrete/microcement?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "smooth_polished", "label": "Smooth polished" },
+              { "value": "matt_industrial", "label": "Matt industrial" },
+              { "value": "textured_slip_resistant", "label": "Textured or slip-resistant" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_colour_tone",
+          "type": "type_selector",
+          "title": "Colour / tone preference?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "light_grey_neutral", "label": "Light grey / neutral" },
+              { "value": "warm_tone", "label": "Warm tone" },
+              { "value": "dark_dramatic", "label": "Dark / dramatic" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_crack_repairs",
+          "type": "type_selector",
+          "title": "Do you need expansion joints or crack repairs?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "unsure", "label": "Unsure" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_underfloor_heating",
+          "type": "type_selector",
+          "title": "Will underfloor heating be integrated?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_area_size",
+          "type": "type_selector",
+          "title": "Concrete/microcement area size?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "under_20", "label": "<20m²" },
+              { "value": "20_50", "label": "20–50m²" },
+              { "value": "50_plus", "label": "50m²+" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_sealing_requirement",
+          "type": "type_selector",
+          "title": "Sealing or coating required after finish?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_satin", "label": "Yes — satin sealer" },
+              { "value": "yes_gloss", "label": "Yes — high-gloss" },
+              { "value": "no_seal", "label": "No seal required" }
+            ]
+          }
+        },
+        {
+          "id": "concrete_start_timing",
+          "type": "type_selector",
+          "title": "When should concrete/microcement work start?",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "urgent", "label": "Urgent" },
+              { "value": "few_weeks", "label": "Within a few weeks" },
+              { "value": "flexible", "label": "Flexible" }
+            ]
+          }
+        },
+        {
+          "id": "flooring_additional_notes",
+          "type": "text_field",
+          "title": "Additional project notes or logistics",
+          "required": false,
+          "config": {
+            "placeholder": "Access requirements, phasing, furniture movement, coordination with other trades, etc."
+          }
+        }
+      ],
+      "promptTemplate": "Compile a flooring installation project brief including:\nFlooring systems: {{flooring_systems}}\nExisting conditions: {{old_flooring_removal}}, {{subfloor_type}}, {{subfloor_condition}}\nFinishes and underlay: {{timber_finish_preference}}, {{underlay_requirements}}, {{post_install_finish}}, {{engineered_underlay}}, {{vinyl_coved_skirting}}, {{concrete_sealing_requirement}}\nScope and area: {{floor_area_size}}, {{flooring_property_type}}, {{flooring_timeframe}}\nEngineered/laminate details: {{engineered_system_type}}, {{engineered_material_supply}}, {{engineered_old_floor_removal}}, {{engineered_room_type}}, {{edge_detail_preference}}, {{matching_trims}}, {{engineered_timeline}}\nVinyl & LVT specifics: {{vinyl_floor_type}}, {{vinyl_area_type}}, {{vinyl_old_floor_removal}}, {{vinyl_subfloor_condition}}, {{vinyl_layout_preference}}, {{vinyl_adhesive_type}}, {{vinyl_material_supply}}, {{vinyl_start_time}}\nParquet planning: {{parquet_pattern}}, {{parquet_material_choice}}, {{parquet_subfloor_prep}}, {{parquet_finish_after_install}}, {{parquet_alignment_preference}}, {{parquet_skirting_handling}}, {{parquet_matching_stairs}}, {{parquet_install_timing}}\nFloating floors: {{floating_floor_type}}, {{floating_underlay_spec}}, {{floating_existing_floor_removal}}, {{floating_subfloor_type}}, {{floating_trim_finish}}, {{floating_project_stage}}, {{floating_material_supply}}, {{floating_matching_thresholds}}, {{floating_completion_date}}\nConcrete & microcement: {{concrete_surface_type}}, {{concrete_install_location}}, {{concrete_substrate_condition}}, {{concrete_finish_preference}}, {{concrete_colour_tone}}, {{concrete_crack_repairs}}, {{concrete_underfloor_heating}}, {{concrete_start_timing}}\nNotes: {{flooring_additional_notes}}"
+    }
+  ]
+}
