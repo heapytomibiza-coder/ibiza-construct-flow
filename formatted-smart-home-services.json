@@ -1,0 +1,830 @@
+{
+  "services": [
+    {
+      "id": "home_automation_systems",
+      "label": "Home Automation Systems Specialist",
+      "icon": "⚡",
+      "description": "Comprehensive smart home automation system design, installation, and integration",
+      "budgetRange": {
+        "min": 2000,
+        "max": 15000
+      },
+      "blocks": [
+        {
+          "id": "automation_property_type",
+          "type": "type_selector",
+          "title": "What type of property is being automated?",
+          "description": "Property type determines system complexity and installation approach",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "apartment_flat", "label": "Apartment / Flat" },
+              { "value": "villa_detached", "label": "Villa / Detached house" },
+              { "value": "commercial", "label": "Commercial property" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "automation_areas",
+          "type": "type_selector",
+          "title": "Which areas do you want to automate?",
+          "description": "Select all areas to be included in the automation system",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "whole_property", "label": "Whole property" },
+              { "value": "living_areas", "label": "Living areas only" },
+              { "value": "bedrooms", "label": "Bedrooms" },
+              { "value": "outdoor", "label": "Outdoor areas" },
+              { "value": "specific_rooms", "label": "Specific rooms (specify)" }
+            ]
+          }
+        },
+        {
+          "id": "automation_functions",
+          "type": "type_selector",
+          "title": "What main functions do you want integrated?",
+          "description": "Select all automation functions to be included",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "lighting", "label": "Lighting" },
+              { "value": "heating_cooling", "label": "Heating / Cooling" },
+              { "value": "blinds_curtains", "label": "Blinds / Curtains" },
+              { "value": "security_cctv", "label": "Security / CCTV" },
+              { "value": "audiovisual", "label": "Audio-visual systems" }
+            ]
+          }
+        },
+        {
+          "id": "existing_smart_devices",
+          "type": "type_selector",
+          "title": "Do you already have smart devices installed?",
+          "description": "Determines integration approach and compatibility requirements",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_need_integration", "label": "Yes – need integration" },
+              { "value": "no_from_scratch", "label": "No – starting from scratch" },
+              { "value": "some_mixed", "label": "Some – mixed brands" }
+            ]
+          }
+        },
+        {
+          "id": "control_platform",
+          "type": "type_selector",
+          "title": "Preferred control platform or ecosystem?",
+          "description": "Choose your preferred smart home control system",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "google_home", "label": "Google Home" },
+              { "value": "amazon_alexa", "label": "Amazon Alexa" },
+              { "value": "apple_homekit", "label": "Apple HomeKit" },
+              { "value": "professional_systems", "label": "Control4 / Crestron / KNX" },
+              { "value": "open_to_recommendation", "label": "Open to recommendation" }
+            ]
+          }
+        },
+        {
+          "id": "remote_access",
+          "type": "type_selector",
+          "title": "Do you want remote access from your phone?",
+          "description": "Enable control of your system from anywhere",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "project_stage",
+          "type": "type_selector",
+          "title": "Is this for a new build / renovation or existing home?",
+          "description": "Project stage affects installation options and wiring approach",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "new_build", "label": "New build (first fix possible)" },
+              { "value": "renovation", "label": "Renovation (rewiring possible)" },
+              { "value": "existing_finished", "label": "Existing finished property" }
+            ]
+          }
+        },
+        {
+          "id": "service_scope",
+          "type": "type_selector",
+          "title": "Do you need a system designed, supplied, and installed?",
+          "description": "Select the level of service required",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_service", "label": "Full design + supply + install" },
+              { "value": "install_only", "label": "Install only" },
+              { "value": "programming_setup", "label": "Programming / setup only" }
+            ]
+          }
+        },
+        {
+          "id": "room_zones",
+          "type": "type_selector",
+          "title": "Approximate number of rooms or zones to control?",
+          "description": "Number of zones affects system complexity and cost",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_3", "label": "1–3" },
+              { "value": "4_6", "label": "4–6" },
+              { "value": "7_10", "label": "7–10" },
+              { "value": "10_plus", "label": "10+" }
+            ]
+          }
+        },
+        {
+          "id": "maintenance_plan",
+          "type": "type_selector",
+          "title": "Would you like a maintenance or software support plan?",
+          "description": "Ongoing support ensures system remains up to date",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Prepare a home automation system specification including:\nProperty type: {{automation_property_type}}\nAreas to automate: {{automation_areas}}\nFunctions: {{automation_functions}}\nExisting devices: {{existing_smart_devices}}\nControl platform: {{control_platform}}\nRemote access: {{remote_access}}\nProject stage: {{project_stage}}\nService scope: {{service_scope}}\nNumber of zones: {{room_zones}}\nMaintenance plan: {{maintenance_plan}}"
+    },
+    {
+      "id": "smart_lighting_climate",
+      "label": "Smart Lighting & Climate Control Specialist",
+      "icon": "💡",
+      "description": "Automated lighting and climate control systems for comfort and efficiency",
+      "budgetRange": {
+        "min": 800,
+        "max": 5000
+      },
+      "blocks": [
+        {
+          "id": "systems_to_automate",
+          "type": "type_selector",
+          "title": "What systems would you like to automate?",
+          "description": "Choose which systems to include",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "lighting_only", "label": "Lighting only" },
+              { "value": "climate_only", "label": "Heating / Cooling only" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "Type of property?",
+          "description": "Property type affects system selection",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "apartment_flat", "label": "Apartment / Flat" },
+              { "value": "villa_detached", "label": "Villa / Detached house" },
+              { "value": "commercial", "label": "Commercial space" }
+            ]
+          }
+        },
+        {
+          "id": "lighting_zones",
+          "type": "type_selector",
+          "title": "How many rooms or lighting zones are included?",
+          "description": "Number of zones determines system scale",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_3", "label": "1–3" },
+              { "value": "4_6", "label": "4–6" },
+              { "value": "7_10", "label": "7–10" },
+              { "value": "10_plus", "label": "10+" }
+            ]
+          }
+        },
+        {
+          "id": "lighting_control_type",
+          "type": "type_selector",
+          "title": "Preferred lighting control type?",
+          "description": "Select control method for lighting",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "smart_switches", "label": "Smart switches" },
+              { "value": "dimmers", "label": "Dimmers" },
+              { "value": "app_remote", "label": "App-based / remote" },
+              { "value": "voice_control", "label": "Voice control" }
+            ]
+          }
+        },
+        {
+          "id": "smart_hub_installed",
+          "type": "type_selector",
+          "title": "Do you already have a smart hub or controller installed?",
+          "description": "Determines if new hub is needed",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "climate_system_type",
+          "type": "type_selector",
+          "title": "What kind of climate system do you use?",
+          "description": "Select your existing climate control system",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "air_conditioning", "label": "Air conditioning" },
+              { "value": "underfloor_heating", "label": "Underfloor heating" },
+              { "value": "radiators", "label": "Radiators" },
+              { "value": "mixed", "label": "Mixed systems" }
+            ]
+          }
+        },
+        {
+          "id": "temperature_sensors",
+          "type": "type_selector",
+          "title": "Would you like temperature sensors in each room?",
+          "description": "Room sensors enable precise zone control",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "key_rooms_only", "label": "Only key rooms" }
+            ]
+          }
+        },
+        {
+          "id": "schedules_scenes",
+          "type": "type_selector",
+          "title": "Do you want to integrate schedules or scenes (e.g. \"Morning Mode\")?",
+          "description": "Automated scenes enhance convenience",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "fully_automated", "label": "Yes – fully automated" },
+              { "value": "basic_presets", "label": "Basic presets only" },
+              { "value": "not_needed", "label": "Not needed" }
+            ]
+          }
+        },
+        {
+          "id": "installation_type",
+          "type": "type_selector",
+          "title": "Is this a retrofit or new installation?",
+          "description": "Installation type affects wiring approach",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "retrofit", "label": "Retrofit (existing wiring)" },
+              { "value": "new_build", "label": "New build / renovation" }
+            ]
+          }
+        },
+        {
+          "id": "equipment_supply",
+          "type": "type_selector",
+          "title": "Who will supply the smart fittings and thermostats?",
+          "description": "Material supply responsibility",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "client", "label": "Client" },
+              { "value": "installer", "label": "Electrician / installer" },
+              { "value": "shared", "label": "Shared responsibility" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create a smart lighting and climate control brief including:\nSystems to automate: {{systems_to_automate}}\nProperty type: {{property_type}}\nLighting zones: {{lighting_zones}}\nControl type: {{lighting_control_type}}\nSmart hub: {{smart_hub_installed}}\nClimate system: {{climate_system_type}}\nTemperature sensors: {{temperature_sensors}}\nSchedules/scenes: {{schedules_scenes}}\nInstallation type: {{installation_type}}\nEquipment supply: {{equipment_supply}}"
+    },
+    {
+      "id": "security_access_systems",
+      "label": "Security & Access Systems Specialist",
+      "icon": "🔒",
+      "description": "CCTV, smart locks, alarm systems, and access control installation",
+      "budgetRange": {
+        "min": 1000,
+        "max": 8000
+      },
+      "blocks": [
+        {
+          "id": "system_type",
+          "type": "type_selector",
+          "title": "What type of system are you interested in?",
+          "description": "Select all security systems to be installed",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "cctv_surveillance", "label": "CCTV / video surveillance" },
+              { "value": "smart_locks", "label": "Smart door locks / access control" },
+              { "value": "alarm_system", "label": "Alarm system" },
+              { "value": "intercom", "label": "Intercom / video entry" }
+            ]
+          }
+        },
+        {
+          "id": "property_type",
+          "type": "type_selector",
+          "title": "Type of property?",
+          "description": "Property type affects system requirements",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "residential", "label": "Residential" },
+              { "value": "commercial", "label": "Commercial" },
+              { "value": "multi_unit", "label": "Multi-unit complex" }
+            ]
+          }
+        },
+        {
+          "id": "camera_access_points",
+          "type": "type_selector",
+          "title": "How many cameras or access points required?",
+          "description": "Number of devices determines system scale",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_2", "label": "1–2" },
+              { "value": "3_5", "label": "3–5" },
+              { "value": "6_10", "label": "6–10" },
+              { "value": "10_plus", "label": "10+" }
+            ]
+          }
+        },
+        {
+          "id": "remote_monitoring",
+          "type": "type_selector",
+          "title": "Do you require remote monitoring via smartphone?",
+          "description": "Enable viewing and control from anywhere",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "camera_setup",
+          "type": "type_selector",
+          "title": "Preferred camera setup?",
+          "description": "Choose wiring approach for cameras",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "wired", "label": "Wired" },
+              { "value": "wireless", "label": "Wireless" },
+              { "value": "mix", "label": "Mix of both" }
+            ]
+          }
+        },
+        {
+          "id": "ai_detection",
+          "type": "type_selector",
+          "title": "Would you like motion alerts or AI detection (faces, vehicles, etc.)?",
+          "description": "Advanced detection reduces false alarms",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "full_ai", "label": "Yes – full AI features" },
+              { "value": "basic_alerts", "label": "Basic alerts only" },
+              { "value": "not_needed", "label": "Not needed" }
+            ]
+          }
+        },
+        {
+          "id": "network_infrastructure",
+          "type": "type_selector",
+          "title": "Is there an existing internet or network infrastructure?",
+          "description": "Network quality affects system performance",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_reliable", "label": "Yes – reliable" },
+              { "value": "yes_limited", "label": "Yes – limited coverage" },
+              { "value": "no_needs_setup", "label": "No – needs setup" }
+            ]
+          }
+        },
+        {
+          "id": "footage_storage",
+          "type": "type_selector",
+          "title": "Where will footage be stored?",
+          "description": "Choose storage location for recordings",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "local_nvr", "label": "Local hard drive / NVR" },
+              { "value": "cloud", "label": "Cloud storage" },
+              { "value": "both", "label": "Both" }
+            ]
+          }
+        },
+        {
+          "id": "access_integration",
+          "type": "type_selector",
+          "title": "Do you need access integration (e.g., smart gates or locks)?",
+          "description": "Integrate security with access control",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "later_phase", "label": "Later phase" }
+            ]
+          }
+        },
+        {
+          "id": "ongoing_maintenance",
+          "type": "type_selector",
+          "title": "Would you like the installer to provide ongoing maintenance?",
+          "description": "Maintenance ensures system reliability",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Develop a security and access system specification including:\nSystem types: {{system_type}}\nProperty type: {{property_type}}\nNumber of devices: {{camera_access_points}}\nRemote monitoring: {{remote_monitoring}}\nCamera setup: {{camera_setup}}\nAI detection: {{ai_detection}}\nNetwork infrastructure: {{network_infrastructure}}\nFootage storage: {{footage_storage}}\nAccess integration: {{access_integration}}\nOngoing maintenance: {{ongoing_maintenance}}"
+    },
+    {
+      "id": "audiovisual_multiroom",
+      "label": "Audio-Visual & Multi-Room Setup Specialist",
+      "icon": "🎵",
+      "description": "Multi-room audio, home cinema, TV mounting, and AV system installation",
+      "budgetRange": {
+        "min": 1500,
+        "max": 12000
+      },
+      "blocks": [
+        {
+          "id": "installation_type",
+          "type": "type_selector",
+          "title": "What type of installation are you planning?",
+          "description": "Select all AV installations required",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "multiroom_audio", "label": "Multi-room audio" },
+              { "value": "home_cinema", "label": "Home cinema" },
+              { "value": "tv_mounting", "label": "TV wall mounting" },
+              { "value": "conference_presentation", "label": "Conference or presentation room" }
+            ]
+          }
+        },
+        {
+          "id": "room_zones",
+          "type": "type_selector",
+          "title": "How many rooms or zones?",
+          "description": "Number of zones affects system complexity",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1", "label": "1" },
+              { "value": "2_3", "label": "2–3" },
+              { "value": "4_6", "label": "4–6" },
+              { "value": "7_plus", "label": "7+" }
+            ]
+          }
+        },
+        {
+          "id": "control_method",
+          "type": "type_selector",
+          "title": "Preferred control method?",
+          "description": "Choose how you'll control the system",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "smartphone_app", "label": "Smartphone / tablet app" },
+              { "value": "wall_panel", "label": "Wall panel" },
+              { "value": "voice_control", "label": "Voice control" },
+              { "value": "remote_control", "label": "Remote control" }
+            ]
+          }
+        },
+        {
+          "id": "av_systems",
+          "type": "type_selector",
+          "title": "Are you using any of these systems?",
+          "description": "Select your preferred AV brands",
+          "required": false,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "sonos", "label": "Sonos" },
+              { "value": "bose", "label": "Bose" },
+              { "value": "bang_olufsen", "label": "Bang & Olufsen" },
+              { "value": "other", "label": "Other / open to advice" }
+            ]
+          }
+        },
+        {
+          "id": "equipment_supply",
+          "type": "type_selector",
+          "title": "Do you need the installer to supply all AV equipment?",
+          "description": "Equipment supply responsibility",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no_client_supplied", "label": "No – client supplied" },
+              { "value": "some_items", "label": "Some items" }
+            ]
+          }
+        },
+        {
+          "id": "cable_installation",
+          "type": "type_selector",
+          "title": "Will cables be hidden within walls/ceilings?",
+          "description": "Cable routing method",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "concealed", "label": "Yes – concealed" },
+              { "value": "surface_mounted", "label": "No – surface mounted" },
+              { "value": "not_sure", "label": "Not sure" }
+            ]
+          }
+        },
+        {
+          "id": "display_setup",
+          "type": "type_selector",
+          "title": "What kind of display setup is required?",
+          "description": "Choose display configuration",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "single_tv", "label": "Single TV" },
+              { "value": "projector_screen", "label": "Projector + screen" },
+              { "value": "multiple_screens", "label": "Multiple screens" }
+            ]
+          }
+        },
+        {
+          "id": "soundproofing",
+          "type": "type_selector",
+          "title": "Would you like soundproofing or acoustic treatment included?",
+          "description": "Acoustic treatment improves sound quality",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "maybe_later", "label": "Maybe later" }
+            ]
+          }
+        },
+        {
+          "id": "smart_home_integration",
+          "type": "type_selector",
+          "title": "Do you require integration with lighting or blinds?",
+          "description": "Connect AV system with smart home",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "calibration_testing",
+          "type": "type_selector",
+          "title": "Do you need calibration and testing after installation?",
+          "description": "Professional calibration optimizes performance",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Create an audio-visual installation specification including:\nInstallation type: {{installation_type}}\nNumber of zones: {{room_zones}}\nControl method: {{control_method}}\nAV systems: {{av_systems}}\nEquipment supply: {{equipment_supply}}\nCable installation: {{cable_installation}}\nDisplay setup: {{display_setup}}\nSoundproofing: {{soundproofing}}\nSmart home integration: {{smart_home_integration}}\nCalibration: {{calibration_testing}}"
+    },
+    {
+      "id": "voice_assistant_integration",
+      "label": "Voice Assistant Integration Specialist",
+      "icon": "🎤",
+      "description": "Voice control setup and integration for Alexa, Google, Siri, and smart home devices",
+      "budgetRange": {
+        "min": 300,
+        "max": 2000
+      },
+      "blocks": [
+        {
+          "id": "voice_assistant",
+          "type": "type_selector",
+          "title": "Which voice assistant(s) do you use or plan to use?",
+          "description": "Select all voice assistants to integrate",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "amazon_alexa", "label": "Amazon Alexa" },
+              { "value": "google_assistant", "label": "Google Assistant" },
+              { "value": "apple_siri", "label": "Apple Siri" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        },
+        {
+          "id": "devices_to_control",
+          "type": "type_selector",
+          "title": "What devices do you want voice control over?",
+          "description": "Select all devices for voice control",
+          "required": true,
+          "config": {
+            "multiSelect": true,
+            "options": [
+              { "value": "lighting", "label": "Lighting" },
+              { "value": "heating_cooling", "label": "Heating / Cooling" },
+              { "value": "music_tv", "label": "Music / TV" },
+              { "value": "security", "label": "Security systems" },
+              { "value": "all", "label": "All of the above" }
+            ]
+          }
+        },
+        {
+          "id": "existing_smart_devices",
+          "type": "type_selector",
+          "title": "Do you already have smart home devices installed?",
+          "description": "Current device status",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_need_linking", "label": "Yes – need linking" },
+              { "value": "no_starting_new", "label": "No – starting new" },
+              { "value": "some_mixed", "label": "Some – mixed brands" }
+            ]
+          }
+        },
+        {
+          "id": "zones_to_configure",
+          "type": "type_selector",
+          "title": "How many rooms or zones to configure?",
+          "description": "Number of zones to set up",
+          "required": true,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "1_2", "label": "1–2" },
+              { "value": "3_5", "label": "3–5" },
+              { "value": "6_10", "label": "6–10" },
+              { "value": "whole_property", "label": "Whole property" }
+            ]
+          }
+        },
+        {
+          "id": "custom_commands",
+          "type": "type_selector",
+          "title": "Do you need support setting up custom voice commands?",
+          "description": "Create personalized voice commands",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "offline_cloud",
+          "type": "type_selector",
+          "title": "Should integration work offline or cloud-based?",
+          "description": "Control connectivity requirements",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "cloud", "label": "Cloud (internet-dependent)" },
+              { "value": "local", "label": "Local network (offline control)" },
+              { "value": "no_preference", "label": "No preference" }
+            ]
+          }
+        },
+        {
+          "id": "routines",
+          "type": "type_selector",
+          "title": "Would you like your system linked to routines (e.g., \"Good Morning\")?",
+          "description": "Automated routines enhance convenience",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "basic_only", "label": "Basic only" },
+              { "value": "not_needed", "label": "Not needed" }
+            ]
+          }
+        },
+        {
+          "id": "multi_user_languages",
+          "type": "type_selector",
+          "title": "Do you need configuration for multiple users or languages?",
+          "description": "Support multiple household members or languages",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" }
+            ]
+          }
+        },
+        {
+          "id": "device_supply_setup",
+          "type": "type_selector",
+          "title": "Do you need device supply or setup only?",
+          "description": "Service scope for voice integration",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "supply_install", "label": "Supply & install" },
+              { "value": "setup_only", "label": "Setup only" },
+              { "value": "advice_only", "label": "Advice only" }
+            ]
+          }
+        },
+        {
+          "id": "full_automation_integration",
+          "type": "type_selector",
+          "title": "Would you like the system integrated with a full home automation platform?",
+          "description": "Connect to comprehensive smart home system",
+          "required": false,
+          "config": {
+            "multiSelect": false,
+            "options": [
+              { "value": "yes_full", "label": "Yes – full integration" },
+              { "value": "no_standalone", "label": "No – standalone voice control" }
+            ]
+          }
+        }
+      ],
+      "promptTemplate": "Prepare a voice assistant integration specification including:\nVoice assistants: {{voice_assistant}}\nDevices to control: {{devices_to_control}}\nExisting devices: {{existing_smart_devices}}\nZones to configure: {{zones_to_configure}}\nCustom commands: {{custom_commands}}\nOffline/cloud: {{offline_cloud}}\nRoutines: {{routines}}\nMulti-user/languages: {{multi_user_languages}}\nDevice supply: {{device_supply_setup}}\nFull automation integration: {{full_automation_integration}}"
+    }
+  ]
+}
