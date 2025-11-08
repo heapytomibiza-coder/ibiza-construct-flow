@@ -19,6 +19,30 @@ export default function ProfessionalOnboardingPage() {
 
     setIsLoading(true);
     try {
+      let coverImageUrl = data.coverImageUrl;
+
+      // Upload cover image if provided
+      if (data.coverImageUrl && data.coverImageUrl.startsWith('blob:')) {
+        const response = await fetch(data.coverImageUrl);
+        const blob = await response.blob();
+        const file = new File([blob], 'cover-image.jpg', { type: blob.type });
+        
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/cover-${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError, data: uploadData } = await supabase.storage
+          .from('cover-photos')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('cover-photos')
+          .getPublicUrl(fileName);
+
+        coverImageUrl = publicUrl;
+      }
+
       // Update profiles table with display name
       const { error: profileUpdateError } = await supabase
         .from('profiles')
@@ -38,13 +62,15 @@ export default function ProfessionalOnboardingPage() {
           tagline: data.tagline,
           bio: data.bio,
           experience_years: data.experienceYears,
-          intro_categories: data.categories, // High-level categories
+          intro_categories: data.categories,
           service_regions: data.regions,
           availability: data.availability,
-          cover_image_url: data.coverImageUrl,
+          cover_image_url: coverImageUrl,
+          contact_email: data.contactEmail,
+          contact_phone: data.contactPhone,
           onboarding_phase: 'intro_submitted',
           verification_status: 'pending',
-          is_active: false, // Not live until service_configured
+          is_active: false,
           updated_at: new Date().toISOString()
         } as any);
 
@@ -54,7 +80,6 @@ export default function ProfessionalOnboardingPage() {
         duration: 4000,
       });
       
-      // Route to dashboard, which will show the OnboardingGate
       navigate('/dashboard/pro');
     } catch (error: any) {
       console.error('Onboarding error:', error);

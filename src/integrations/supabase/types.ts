@@ -6518,6 +6518,8 @@ export type Database = {
           bank_details: Json | null
           bio: string | null
           business_name: string | null
+          contact_email: string | null
+          contact_phone: string | null
           cover_image_url: string | null
           created_at: string | null
           experience_years: string | null
@@ -6551,6 +6553,8 @@ export type Database = {
           bank_details?: Json | null
           bio?: string | null
           business_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           experience_years?: string | null
@@ -6584,6 +6588,8 @@ export type Database = {
           bank_details?: Json | null
           bio?: string | null
           business_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           experience_years?: string | null
@@ -7018,6 +7024,7 @@ export type Database = {
       professional_verifications: {
         Row: {
           created_at: string
+          document_urls: string[] | null
           expires_at: string | null
           id: string
           notes: string | null
@@ -7032,6 +7039,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          document_urls?: string[] | null
           expires_at?: string | null
           id?: string
           notes?: string | null
@@ -7046,6 +7054,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          document_urls?: string[] | null
           expires_at?: string | null
           id?: string
           notes?: string | null

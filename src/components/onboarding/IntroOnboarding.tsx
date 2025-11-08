@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Upload, ImageIcon } from 'lucide-react';
 import { CategoryIconCards } from './CategoryIconCards';
+import { toast } from 'sonner';
 
 const IBIZA_ZONES = [
   'Ibiza Town', 'San Antonio', 'Santa Eulalia', 'Playa d\'en Bossa',
@@ -45,6 +46,8 @@ export interface IntroData {
   regions: string[];
   availability: string[];
   coverImageUrl?: string;
+  contactEmail: string;
+  contactPhone: string;
 }
 
 export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
@@ -57,7 +60,11 @@ export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
     regions: [],
     availability: [],
     coverImageUrl: undefined,
+    contactEmail: '',
+    contactPhone: '',
   });
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = (): boolean => {
@@ -90,9 +97,33 @@ export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
     if (data.availability.length === 0) {
       newErrors.availability = 'Select your availability';
     }
+    if (!data.contactEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contactEmail)) {
+      newErrors.contactEmail = 'Valid email is required';
+    }
+    if (!data.contactPhone.trim() || !/^\+?[\d\s\-()]+$/.test(data.contactPhone)) {
+      newErrors.contactPhone = 'Valid phone number is required';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image must be less than 5MB');
+        return;
+      }
+      if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+        toast.error('Only JPG, PNG, and WebP images are allowed');
+        return;
+      }
+      setCoverImageFile(file);
+      // Create blob URL for preview and passing to parent
+      const blobUrl = URL.createObjectURL(file);
+      setData({ ...data, coverImageUrl: blobUrl });
+    }
   };
 
   const handleSubmit = () => {
@@ -224,6 +255,96 @@ export function IntroOnboarding({ onSubmit, isLoading }: IntroOnboardingProps) {
                 <p className="text-xs text-muted-foreground">
                   {data.bio.length}/140
                 </p>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="contactEmail">
+                Contact Email <span className="text-destructive">*</span>
+              </Label>
+              <p className="text-sm text-muted-foreground mb-2">
+                Email where clients can reach you
+              </p>
+              <Input
+                id="contactEmail"
+                type="email"
+                value={data.contactEmail}
+                onChange={(e) => setData({ ...data, contactEmail: e.target.value })}
+                placeholder="professional@example.com"
+                className={errors.contactEmail ? 'border-destructive' : ''}
+              />
+              {errors.contactEmail && (
+                <p className="text-sm text-destructive flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {errors.contactEmail}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="contactPhone">
+                Contact Phone <span className="text-destructive">*</span>
+              </Label>
+              <p className="text-sm text-muted-foreground mb-2">
+                Phone number for client inquiries
+              </p>
+              <Input
+                id="contactPhone"
+                type="tel"
+                value={data.contactPhone}
+                onChange={(e) => setData({ ...data, contactPhone: e.target.value })}
+                placeholder="+34 600 123 456"
+                className={errors.contactPhone ? 'border-destructive' : ''}
+              />
+              {errors.contactPhone && (
+                <p className="text-sm text-destructive flex items-center gap-1 mt-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {errors.contactPhone}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="coverImage">
+                Cover Photo (Optional)
+              </Label>
+              <p className="text-sm text-muted-foreground mb-2">
+                Add a professional cover photo for your profile (max 5MB)
+              </p>
+              <div className="flex items-center gap-4">
+                <input
+                  type="file"
+                  id="coverImage"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={handleCoverImageChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="coverImage"
+                  className="flex items-center gap-2 px-4 py-2 border rounded-md cursor-pointer hover:bg-muted transition-colors"
+                >
+                  {coverImageFile ? (
+                    <>
+                      <ImageIcon className="w-4 h-4" />
+                      <span className="text-sm">{coverImageFile.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" />
+                      <span className="text-sm">Choose Image</span>
+                    </>
+                  )}
+                </label>
+                {coverImageFile && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCoverImageFile(null)}
+                  >
+                    Remove
+                  </Button>
+                )}
               </div>
             </div>
           </div>

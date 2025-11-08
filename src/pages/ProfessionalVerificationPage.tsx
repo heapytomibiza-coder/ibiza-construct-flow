@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { VerificationStatus } from '@/components/professional/verification/VerificationStatus';
 import { VerificationForm } from '@/components/professional/verification/VerificationForm';
-import { DocumentUpload } from '@/components/documents/DocumentUpload';
+import { DocumentUpload } from '@/components/professional/verification/DocumentUpload';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Breadcrumbs } from '@/components/common/Breadcrumbs';
