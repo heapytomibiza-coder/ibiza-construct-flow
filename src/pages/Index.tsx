@@ -34,7 +34,7 @@ const Index = () => {
       </Helmet>
       <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
       
-      <main>
+      <main className="pt-0">
         <Hero />
         
         {/* Quick Access - Professional Onboarding Pages */}
