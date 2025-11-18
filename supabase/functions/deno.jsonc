@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "lib": ["deno.window"],
+    "checkJs": false,
     "strict": false,
     "noImplicitAny": false,
     "skipLibCheck": true,
@@ -16,43 +17,7 @@
     "alwaysStrict": false,
     "suppressImplicitAnyIndexErrors": true,
     "noStrictGenericChecks": true,
-    "suppressExcessPropertyErrors": true
-  },
-  "exclude": [
-    "admin-manage-roles/",
-    "admin-verify/",
-    "ai-chatbot/",
-    "ai-recommendation-engine/",
-    "ai-test-orchestrator/",
-    "analytics-seed-data/",
-    "analyze-image/",
-    "cache-manager/",
-    "compliance-checker/",
-    "confirm-payment/",
-    "convert-image/",
-    "convert-pdf-questions/",
-    "create-booking-payment/",
-    "create-checkout-session/",
-    "create-checkout/",
-    "create-connect-account/",
-    "create-escrow-payment/",
-    "create-job-payment/",
-    "create-payment-intent/",
-    "create-payment-refund/",
-    "create-stripe-connect-link/",
-    "create-video-room/",
-    "early-warning-monitor/",
-    "export-report/",
-    "extract-image-text/",
-    "fund-escrow/",
-    "generate-ai-content/",
-    "generate-business-insights/",
-    "generate-call-token/",
-    "generate-job-description/"
-  ],
-  "lint": {
-    "rules": {
-      "exclude": ["no-explicit-any", "no-unused-vars"]
-    }
+    "suppressExcessPropertyErrors": true,
+    "useUnknownInCatchVariables": false
   }
 }
