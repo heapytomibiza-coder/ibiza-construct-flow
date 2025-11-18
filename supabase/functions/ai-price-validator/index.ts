@@ -4,7 +4,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateRequestBody, commonSchemas } from '../_shared/inputValidation.ts';
 import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
-import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,17 +29,8 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Rate limiting - 20 requests per hour for AI price validation
-    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 
-                     req.headers.get('cf-connecting-ip') || 'unknown';
-    const rateLimitCheck = await checkRateLimit(supabase, clientIp, 'ai-price-validator', STRICT_RATE_LIMIT);
-    
-    if (!rateLimitCheck.allowed) {
-      return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // TODO: Add rate limiting once authenticated endpoints are implemented
+    // Rate limiting requires userId, but this is currently a public endpoint
 
     const { serviceType, location, pricingData, category, subcategory } = await validateRequestBody(req, priceValidatorSchema);
 

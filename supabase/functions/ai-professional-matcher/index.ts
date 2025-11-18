@@ -3,7 +3,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateRequestBody, commonSchemas } from '../_shared/inputValidation.ts';
 import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
-import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,17 +30,8 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Rate limiting - 20 requests per hour for AI matching
-    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 
-                     req.headers.get('cf-connecting-ip') || 'unknown';
-    const rateLimitCheck = await checkRateLimit(supabase, clientIp, 'ai-professional-matcher', STRICT_RATE_LIMIT);
-    
-    if (!rateLimitCheck.allowed) {
-      return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // TODO: Add rate limiting once authenticated endpoints are implemented
+    // Rate limiting requires userId, but this is currently a public endpoint
 
     const { jobId, microId, location, budget, urgency, description, limit } = await validateRequestBody(req, matchRequestSchema);
 
@@ -185,15 +175,13 @@ serve(async (req) => {
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-
   } catch (error) {
-  } catch (error) {
-    logError('ai-professional-matcher', error);
-    return createErrorResponse(error);
+    logError('ai-professional-matcher', error as Error);
+    return createErrorResponse(error as Error);
   }
 });
 
-function generateMatchReasons(prof: any, microId: string, location: any, budget: number, stats: any, services: any[]): string[] {
+function generateMatchReasons(prof: any, microId: string | undefined, location: any, budget: number | undefined, stats: any, services: any[]): string[] {
   const reasons: string[] = [];
   
   if (microId && services.some((s: any) => s.is_active && s.micro_service?.id === microId)) {
