@@ -64,7 +64,7 @@ serve(async (req) => {
         results.push({
           resolution_id: resolution.id,
           success: false,
-          error: error.message
+      error: (error as Error).message
         });
       }
     }

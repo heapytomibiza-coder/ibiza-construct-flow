@@ -199,7 +199,8 @@ function AppContent() {
                     {/* Public Routes */}
                     <Route path="/" element={<Index />} />
                     <Route path="/install" element={<Install />} />
-                    <Route path="/calculator" element={<Calculator />} />
+      <Route path="/calculator" element={<Calculator />} />
+      <Route path="/demo-setup" element={<DemoSetup />} />
                     <Route path="/discovery" element={<Discovery />} />
                     <Route path="/jobs-discovery" element={<DiscoveryPage />} />
                     <Route path="/professionals" element={<BrowseProfessionalsPage />} />

@@ -131,7 +131,7 @@ async function generateBusinessInsights(supabaseClient: any, userId: string) {
     .limit(10);
 
   // Analyze response time
-  const avgResponseTime = metrics?.find(m => m.metric_type === 'response_time')?.metric_value;
+  const avgResponseTime = metrics?.find((m: any) => m.metric_type === 'response_time')?.metric_value;
   if (avgResponseTime && avgResponseTime > 3600) {
     insights.push({
       user_id: userId,
