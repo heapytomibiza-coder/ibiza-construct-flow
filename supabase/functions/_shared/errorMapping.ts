@@ -83,8 +83,8 @@ const errorMappings: Record<string, ErrorMapping> = {
 /**
  * Map internal error to safe user-facing error
  */
-export function mapError(error: Error): ErrorMapping {
-  const errorMessage = error.message.toLowerCase();
+export function mapError(error: unknown): ErrorMapping {
+  const errorMessage = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
   
   // Check for known error patterns
   for (const [pattern, mapping] of Object.entries(errorMappings)) {
@@ -104,7 +104,7 @@ export function mapError(error: Error): ErrorMapping {
 /**
  * Create safe error response
  */
-export function createErrorResponse(error: Error, includeDetails: boolean = false): Response {
+export function createErrorResponse(error: unknown, includeDetails: boolean = false): Response {
   const mapping = mapError(error);
   
   const body: any = {
@@ -116,8 +116,8 @@ export function createErrorResponse(error: Error, includeDetails: boolean = fals
   
   // Only include details in development
   if (includeDetails && Deno.env.get('ENVIRONMENT') === 'development') {
-    body.error.details = error.message;
-    body.error.stack = error.stack;
+    body.error.details = error instanceof Error ? error.message : String(error);
+    body.error.stack = error instanceof Error ? error.stack : undefined;
   }
   
   return new Response(
@@ -135,11 +135,11 @@ export function createErrorResponse(error: Error, includeDetails: boolean = fals
 /**
  * Safe error logger (logs internally without exposing to user)
  */
-export function logError(context: string, error: Error, metadata?: Record<string, any>): void {
+export function logError(context: string, error: unknown, metadata?: Record<string, any>): void {
   console.error(`[${context}]`, {
-    message: error.message,
-    name: error.name,
-    stack: error.stack,
+    message: error instanceof Error ? error.message : String(error),
+    name: error instanceof Error ? error.name : 'Unknown',
+    stack: error instanceof Error ? error.stack : undefined,
     metadata,
     timestamp: new Date().toISOString(),
   });
