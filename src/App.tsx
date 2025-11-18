@@ -21,6 +21,7 @@ import { CookieConsent } from "./components/layout/CookieConsent";
 import { ErrorBoundary, PageLoader } from "@/components/common";
 import { lazyWithRetry } from "@/lib/utils/lazyLoad";
 import { ROUTE_PATHS, ROUTE_GROUPS } from "@/config/routes.config";
+import DemoSetup from "@/pages/DemoSetup";
 
 const queryClient = new QueryClient();
 
