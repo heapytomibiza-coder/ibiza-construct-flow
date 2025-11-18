@@ -1,20 +1,24 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody, commonSchemas } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface MatchRequest {
-  jobId?: string;
-  microId?: string;
-  location?: any;
-  budget?: number;
-  urgency?: string;
-  description?: string;
-  limit?: number;
-}
+const matchRequestSchema = z.object({
+  jobId: commonSchemas.uuid.optional(),
+  microId: commonSchemas.uuid.optional(),
+  location: z.any().optional(),
+  budget: commonSchemas.positiveNumber.optional(),
+  urgency: z.string().trim().max(50).optional(),
+  description: z.string().trim().max(5000).optional(),
+  limit: z.number().int().min(1).max(50).optional().default(10),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -27,7 +31,19 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { jobId, microId, location, budget, urgency, description, limit = 10 }: MatchRequest = await req.json();
+    // Rate limiting - 20 requests per hour for AI matching
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     req.headers.get('cf-connecting-ip') || 'unknown';
+    const rateLimitCheck = await checkRateLimit(supabase, clientIp, 'ai-professional-matcher', STRICT_RATE_LIMIT);
+    
+    if (!rateLimitCheck.allowed) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { jobId, microId, location, budget, urgency, description, limit } = await validateRequestBody(req, matchRequestSchema);
 
     console.log('Matching request:', { jobId, microId, location, budget, urgency, limit });
 
@@ -171,14 +187,9 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error in ai-professional-matcher:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
+  } catch (error) {
+    logError('ai-professional-matcher', error);
+    return createErrorResponse(error);
   }
 });
 
