@@ -1,10 +1,24 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody, commonSchemas } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const securityMonitorSchema = z.object({
+  action: z.enum(['log_event', 'get_events', 'check_suspicious_activity', 'get_active_sessions', 'revoke_session']),
+  data: z.object({
+    event_type: z.string().trim().min(1).max(100).optional(),
+    event_category: z.string().trim().min(1).max(100).optional(),
+    severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+    event_data: z.record(z.any()).optional(),
+    session_id: commonSchemas.uuid.optional(),
+  }).optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -27,7 +41,7 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { action, data } = await req.json();
+    const { action, data } = await validateRequestBody(req, securityMonitorSchema);
 
     switch (action) {
       case 'log_event':
@@ -89,10 +103,8 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-    );
+    logError('security-monitor', error);
+    return createErrorResponse(error);
   }
 });
 

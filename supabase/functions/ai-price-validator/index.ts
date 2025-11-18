@@ -1,11 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody, commonSchemas } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const priceValidatorSchema = z.object({
+  serviceType: z.string().trim().min(1).max(200),
+  location: z.string().trim().max(200).optional(),
+  pricingData: z.record(z.any()),
+  category: z.string().trim().max(100).optional(),
+  subcategory: z.string().trim().max(100).optional(),
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,19 +25,25 @@ serve(async (req) => {
   }
 
   try {
-    const { serviceType, location, pricingData, category, subcategory } = await req.json();
-
-    if (!serviceType || !pricingData) {
-      return new Response(JSON.stringify({ error: "Service type and pricing data are required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Rate limiting - 20 requests per hour for AI price validation
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     req.headers.get('cf-connecting-ip') || 'unknown';
+    const rateLimitCheck = await checkRateLimit(supabase, clientIp, 'ai-price-validator', STRICT_RATE_LIMIT);
+    
+    if (!rateLimitCheck.allowed) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { serviceType, location, pricingData, category, subcategory } = await validateRequestBody(req, priceValidatorSchema);
+
 
     // Get historical pricing data for context
     const { data: historicalData } = await supabase
@@ -175,10 +193,7 @@ serve(async (req) => {
     });
 
   } catch (error: any) {
-    console.error("Error in AI price validator:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    logError('ai-price-validator', error);
+    return createErrorResponse(error);
   }
 });
