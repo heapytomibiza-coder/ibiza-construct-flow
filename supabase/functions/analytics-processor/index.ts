@@ -44,13 +44,15 @@ serve(async (req) => {
 
     switch (action) {
       case 'track_event':
-        await supabaseClient.from('analytics_events').insert({
-          user_id: user.id,
-          event_type: data.event_type,
-          event_category: data.event_category,
-          event_data: data.event_data || {},
-          session_id: data.session_id,
-        });
+        if (data) {
+          await supabaseClient.from('analytics_events').insert({
+            user_id: user.id,
+            event_type: data.event_type,
+            event_category: data.event_category,
+            event_data: data.event_data || {},
+            session_id: data.session_id,
+          });
+        }
         break;
 
       case 'get_dashboard_stats':
@@ -112,8 +114,8 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    logError('analytics-processor', error);
-    return createErrorResponse(error);
+    logError('analytics-processor', error as Error);
+    return createErrorResponse(error as Error);
   }
 });
 
