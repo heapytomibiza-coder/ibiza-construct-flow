@@ -4,6 +4,14 @@ import { corsHeaders } from '../_shared/cors.ts';
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+type DemoResults = {
+  microServices: Array<{ micro: string; status: string; id?: string }>;
+  professionals: Array<{ email: string; status: string }>;
+  clients: Array<{ email: string; status: string }>;
+  jobs: Array<{ title: string; status: string }>;
+  errors: Array<{ email?: string; job?: string; service?: string; error: string }>;
+};
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -12,7 +20,68 @@ Deno.serve(async (req) => {
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Demo professional profiles
+    const results: DemoResults = {
+      microServices: [],
+      professionals: [],
+      clients: [],
+      jobs: [],
+      errors: [],
+    };
+
+    // Helper: Upsert user (create if not exists)
+    const ensureUser = async (email: string, password: string) => {
+      const { data, error } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+      });
+
+      if (error) {
+        // If user already exists, fetch it
+        if ((error as any).message?.includes('already registered')) {
+          const { data: usersList } = await supabase.auth.admin.listUsers();
+          const existing = usersList?.users?.find((u) => u.email === email);
+          if (!existing) throw error;
+          return existing;
+        }
+        throw error;
+      }
+
+      return data.user;
+    };
+
+    // ========== STEP 1: CREATE MICRO SERVICES ==========
+    const microServices = [
+      { name_en: 'Kitchen Renovation', name_es: 'Renovación de Cocina' },
+      { name_en: 'Solar Panel Installation', name_es: 'Instalación de Paneles Solares' },
+      { name_en: 'Pool Repair & Maintenance', name_es: 'Reparación y Mantenimiento de Piscinas' },
+      { name_en: 'Interior Painting', name_es: 'Pintura Interior' },
+      { name_en: 'Garden Maintenance', name_es: 'Mantenimiento de Jardín' },
+    ];
+
+    const microServiceIds: Record<string, string> = {};
+
+    for (const micro of microServices) {
+      try {
+        const { data, error } = await supabase
+          .from('services_micro')
+          .upsert({ name_en: micro.name_en, name_es: micro.name_es }, { onConflict: 'name_en' })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        microServiceIds[micro.name_en] = data.id;
+        results.microServices.push({ micro: micro.name_en, status: 'created_or_exists', id: data.id });
+      } catch (e) {
+        results.errors.push({
+          service: micro.name_en,
+          error: (e as Error).message,
+        });
+      }
+    }
+
+    // ========== STEP 2: CREATE PROFESSIONALS ==========
     const professionals = [
       {
         email: 'carlos.builder@demo.com',
@@ -25,7 +94,7 @@ Deno.serve(async (req) => {
           intro_categories: ['Building & Construction', 'Renovations'],
           service_regions: ['Eivissa (Ibiza Town)', 'Sant Antoni de Portmany', 'Santa Eulària des Riu'],
           availability: 'full_time',
-        }
+        },
       },
       {
         email: 'elena.electrician@demo.com',
@@ -38,7 +107,7 @@ Deno.serve(async (req) => {
           intro_categories: ['Electrical', 'Solar Installation'],
           service_regions: ['Eivissa (Ibiza Town)', 'Jesús', 'Talamanca'],
           availability: 'full_time',
-        }
+        },
       },
       {
         email: 'miguel.plumber@demo.com',
@@ -51,7 +120,7 @@ Deno.serve(async (req) => {
           intro_categories: ['Plumbing', 'Pool Maintenance'],
           service_regions: ['Sant Antoni de Portmany', 'Cala de Bou', 'Port des Torrent'],
           availability: 'full_time',
-        }
+        },
       },
       {
         email: 'sofia.painter@demo.com',
@@ -64,7 +133,7 @@ Deno.serve(async (req) => {
           intro_categories: ['Painting & Decorating'],
           service_regions: ['Santa Eulària des Riu', 'Es Canar', 'Cala Llonga'],
           availability: 'part_time',
-        }
+        },
       },
       {
         email: 'david.carpenter@demo.com',
@@ -77,7 +146,7 @@ Deno.serve(async (req) => {
           intro_categories: ['Carpentry', 'Furniture Making'],
           service_regions: ['Eivissa (Ibiza Town)', 'Sant Rafael', 'Santa Gertrudis'],
           availability: 'full_time',
-        }
+        },
       },
       {
         email: 'anna.cleaner@demo.com',
@@ -90,7 +159,7 @@ Deno.serve(async (req) => {
           intro_categories: ['Cleaning Services', 'Property Management'],
           service_regions: ['Playa d\'en Bossa', 'Talamanca', 'Figueretas'],
           availability: 'full_time',
-        }
+        },
       },
       {
         email: 'marco.landscaper@demo.com',
@@ -103,7 +172,7 @@ Deno.serve(async (req) => {
           intro_categories: ['Gardening', 'Landscaping'],
           service_regions: ['Sant Josep de sa Talaia', 'Cala Vadella', 'Es Cubells'],
           availability: 'full_time',
-        }
+        },
       },
       {
         email: 'lisa.designer@demo.com',
@@ -116,73 +185,26 @@ Deno.serve(async (req) => {
           intro_categories: ['Interior Design', 'Property Styling'],
           service_regions: ['Roca Llisa', 'Cala Jondal', 'Es Cubells'],
           availability: 'by_appointment',
-        }
+        },
       },
     ];
 
-    // Demo client accounts
-    const clients = [
-      {
-        email: 'client1@demo.com',
-        password: 'Demo2025!',
-        profile: {
-          display_name: 'John Smith',
-        }
-      },
-      {
-        email: 'client2@demo.com',
-        password: 'Demo2025!',
-        profile: {
-          display_name: 'Sarah Johnson',
-        }
-      },
-      {
-        email: 'client3@demo.com',
-        password: 'Demo2025!',
-        profile: {
-          display_name: 'Robert Williams',
-        }
-      },
-    ];
-
-    const results: {
-      professionals: Array<{ email: string; status: string }>;
-      clients: Array<{ email: string; status: string }>;
-      jobs: Array<{ title: string; status: string }>;
-      errors: Array<{ email?: string; job?: string; error: string }>;
-    } = {
-      professionals: [],
-      clients: [],
-      jobs: [],
-      errors: [],
-    };
-
-    // Create professional accounts
     for (const prof of professionals) {
       try {
-        // Sign up user
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-          email: prof.email,
-          password: prof.password,
-          email_confirm: true,
-        });
+        const user = await ensureUser(prof.email, prof.password);
 
-        if (authError) throw authError;
+        await supabase
+          .from('profiles')
+          .update({ display_name: prof.profile.display_name })
+          .eq('id', user.id);
 
-        // Update profile
-        await supabase.from('profiles').update({
-          display_name: prof.profile.display_name,
-        }).eq('id', authData.user.id);
-
-        // Add professional role
-        await supabase.from('user_roles').insert({
-          user_id: authData.user.id,
+        await supabase.from('user_roles').upsert({
+          user_id: user.id,
           role: 'professional',
         });
 
-        // Create professional profile
-        await supabase.from('professional_profiles').insert({
-          user_id: authData.user.id,
+        await supabase.from('professional_profiles').upsert({
+          user_id: user.id,
           tagline: prof.profile.tagline,
           bio: prof.profile.bio,
           experience_years: prof.profile.experience_years,
@@ -194,50 +216,72 @@ Deno.serve(async (req) => {
           is_active: true,
         });
 
-        results.professionals.push({ email: prof.email, status: 'created' });
-      } catch (error) {
-        results.errors.push({ email: prof.email, error: (error as Error).message });
+        results.professionals.push({ email: prof.email, status: 'created_or_exists' });
+      } catch (e) {
+        results.errors.push({
+          email: prof.email,
+          error: (e as Error).message,
+        });
       }
     }
 
-    // Create client accounts
+    // ========== STEP 3: CREATE CLIENTS ==========
+    const clients = [
+      {
+        email: 'client1@demo.com',
+        password: 'Demo2025!',
+        display_name: 'John Smith',
+      },
+      {
+        email: 'client2@demo.com',
+        password: 'Demo2025!',
+        display_name: 'Sarah Johnson',
+      },
+      {
+        email: 'client3@demo.com',
+        password: 'Demo2025!',
+        display_name: 'Robert Williams',
+      },
+    ];
+
+    let client1Id: string | null = null;
+
     for (const client of clients) {
       try {
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-          email: client.email,
-          password: client.password,
-          email_confirm: true,
-        });
+        const user = await ensureUser(client.email, client.password);
 
-        if (authError) throw authError;
+        await supabase
+          .from('profiles')
+          .update({ display_name: client.display_name })
+          .eq('id', user.id);
 
-        await supabase.from('profiles').update({
-          display_name: client.profile.display_name,
-        }).eq('id', authData.user.id);
-
-        await supabase.from('user_roles').insert({
-          user_id: authData.user.id,
+        await supabase.from('user_roles').upsert({
+          user_id: user.id,
           role: 'client',
         });
 
-        results.clients.push({ email: client.email, status: 'created' });
-      } catch (error) {
-        results.errors.push({ email: client.email, error: (error as Error).message });
+        if (client.email === 'client1@demo.com') {
+          client1Id = user.id;
+        }
+
+        results.clients.push({ email: client.email, status: 'created_or_exists' });
+      } catch (e) {
+        results.errors.push({
+          email: client.email,
+          error: (e as Error).message,
+        });
       }
     }
 
-    // Create demo jobs (using first client)
-    const firstClient = await supabase.auth.admin.listUsers();
-    const clientUser = firstClient.data.users.find(u => u.email === 'client1@demo.com');
-
-    if (clientUser) {
+    // ========== STEP 4: CREATE DEMO JOBS ==========
+    if (client1Id) {
       const demoJobs = [
         {
           title: 'Kitchen Renovation - Villa in Talamanca',
           description: 'Complete kitchen remodel including new cabinets, countertops, and appliances. Approximately 25m².',
-          micro_slug: 'kitchen-renovation',
-          budget_range: '€5000 - €15000',
-          general_answers: {
+          microServiceName: 'Kitchen Renovation',
+          budgetValue: 10000,
+          answers: {
             address_area: 'Talamanca',
             parking: 'Driveway available',
             access_notes: 'Ground floor',
@@ -246,14 +290,13 @@ Deno.serve(async (req) => {
             budget_band: '€2500+',
             contact_method: 'WhatsApp',
           },
-          status: 'open',
         },
         {
           title: 'Electrical Installation - Solar Panels',
           description: 'Install 10kW solar panel system on flat roof. Property is in Sant Antoni.',
-          micro_slug: 'solar-installation',
-          budget_range: '€10000 - €20000',
-          general_answers: {
+          microServiceName: 'Solar Panel Installation',
+          budgetValue: 15000,
+          answers: {
             address_area: 'Sant Antoni de Portmany',
             parking: 'Street parking nearby',
             access_notes: 'Elevator available',
@@ -261,14 +304,13 @@ Deno.serve(async (req) => {
             budget_band: '€2500+',
             contact_method: 'Phone call',
           },
-          status: 'open',
         },
         {
           title: 'Pool Repair - Leaking Pump',
           description: 'Pool pump is leaking and needs repair or replacement. Urgent.',
-          micro_slug: 'pool-repair',
-          budget_range: '€500 - €2000',
-          general_answers: {
+          microServiceName: 'Pool Repair & Maintenance',
+          budgetValue: 1500,
+          answers: {
             address_area: 'Cala Vadella',
             parking: 'Driveway available',
             access_notes: 'Gated community',
@@ -277,14 +319,13 @@ Deno.serve(async (req) => {
             budget_band: '€500 - €1000',
             contact_method: 'WhatsApp',
           },
-          status: 'open',
         },
         {
           title: 'Interior Painting - 3 Bedroom Apartment',
           description: 'Paint all interior walls and ceilings. White with feature wall in living room.',
-          micro_slug: 'interior-painting',
-          budget_range: '€2000 - €5000',
-          general_answers: {
+          microServiceName: 'Interior Painting',
+          budgetValue: 3500,
+          answers: {
             address_area: 'Eivissa (Ibiza Town)',
             parking: 'Paid parking nearby',
             access_notes: 'Stairs only',
@@ -293,14 +334,13 @@ Deno.serve(async (req) => {
             budget_band: '€1000 - €2500',
             contact_method: 'Email only',
           },
-          status: 'open',
         },
         {
           title: 'Garden Maintenance - Monthly Service',
           description: 'Looking for regular monthly garden maintenance for large villa garden (500m²).',
-          micro_slug: 'garden-maintenance',
-          budget_range: '€300 - €600/month',
-          general_answers: {
+          microServiceName: 'Garden Maintenance',
+          budgetValue: 400,
+          answers: {
             address_area: 'Es Cubells',
             parking: 'Driveway available',
             access_notes: 'Ground floor',
@@ -308,45 +348,63 @@ Deno.serve(async (req) => {
             budget_band: '€250 - €500',
             contact_method: 'WhatsApp',
           },
-          status: 'open',
         },
       ];
 
       for (const job of demoJobs) {
         try {
-          const { error: jobError } = await supabase.from('bookings').insert({
-            client_id: clientUser.id,
+          const microId = microServiceIds[job.microServiceName];
+          if (!microId) {
+            throw new Error(`Micro service not found: ${job.microServiceName}`);
+          }
+
+          const { error: jobError } = await supabase.from('jobs').insert({
+            client_id: client1Id,
+            micro_id: microId,
             title: job.title,
             description: job.description,
-            micro_slug: job.micro_slug,
-            budget_range: job.budget_range,
-            general_answers: job.general_answers,
-            status: job.status,
+            budget_type: 'fixed',
+            budget_value: job.budgetValue,
+            answers: job.answers,
+            status: 'open',
           });
 
           if (jobError) throw jobError;
           results.jobs.push({ title: job.title, status: 'created' });
-        } catch (error) {
-          results.errors.push({ job: job.title, error: (error as Error).message });
+        } catch (e) {
+          results.errors.push({
+            job: job.title,
+            error: (e as Error).message,
+          });
         }
       }
     }
 
-    return new Response(JSON.stringify({
-      success: true,
-      message: 'Demo data seeded successfully',
-      results,
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    const success = results.errors.length === 0;
 
+    return new Response(
+      JSON.stringify({
+        success,
+        message: success
+          ? 'Demo data seeded successfully'
+          : 'Demo data seeded with some errors',
+        results,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
     console.error('Error seeding demo data:', error);
-    return new Response(JSON.stringify({
-      error: (error as Error).message,
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: (error as Error).message,
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });
