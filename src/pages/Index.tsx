@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Helmet } from 'react-helmet-async';
+import { UserPlus, Shield, Settings } from 'lucide-react';
 
 const Index = () => {
   const { t } = useTranslation('components');
@@ -38,28 +39,31 @@ const Index = () => {
         <Hero />
         
         {/* Quick Access - Professional Onboarding Pages */}
-        <section className="container py-8 bg-muted/30">
+        <section className="container py-12 bg-muted/30">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Professional Registration</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center">Professional Registration</h2>
             <div className="grid gap-4 md:grid-cols-3">
-              <Link to="/onboarding/professional">
-                <Button variant="outline" className="w-full h-auto flex-col gap-2 py-4">
+              <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
+                <Link to="/onboarding/professional">
+                  <UserPlus className="w-8 h-8 text-primary" />
                   <span className="font-semibold">Step 1: Registration</span>
                   <span className="text-xs text-muted-foreground">Sign up as a professional</span>
-                </Button>
-              </Link>
-              <Link to="/professional/verification">
-                <Button variant="outline" className="w-full h-auto flex-col gap-2 py-4">
+                </Link>
+              </Button>
+              <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
+                <Link to="/professional/verification">
+                  <Shield className="w-8 h-8 text-primary" />
                   <span className="font-semibold">Step 2: Verification</span>
                   <span className="text-xs text-muted-foreground">Upload documents</span>
-                </Button>
-              </Link>
-              <Link to="/professional/service-setup">
-                <Button variant="outline" className="w-full h-auto flex-col gap-2 py-4">
+                </Link>
+              </Button>
+              <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
+                <Link to="/professional/service-setup">
+                  <Settings className="w-8 h-8 text-primary" />
                   <span className="font-semibold">Step 3: Services</span>
                   <span className="text-xs text-muted-foreground">Configure your offerings</span>
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
