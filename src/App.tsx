@@ -22,6 +22,7 @@ import { ErrorBoundary, PageLoader } from "@/components/common";
 import { lazyWithRetry } from "@/lib/utils/lazyLoad";
 import { ROUTE_PATHS, ROUTE_GROUPS } from "@/config/routes.config";
 import DemoSetup from "@/pages/DemoSetup";
+const DemoVideoGuide = lazyWithRetry(() => import("./pages/DemoVideoGuide"));
 
 const queryClient = new QueryClient();
 
@@ -202,6 +203,7 @@ function AppContent() {
                     <Route path="/install" element={<Install />} />
       <Route path="/calculator" element={<Calculator />} />
       <Route path="/demo-setup" element={<DemoSetup />} />
+      <Route path="/demo-video-guide" element={<DemoVideoGuide />} />
                     <Route path="/discovery" element={<Discovery />} />
                     <Route path="/jobs-discovery" element={<DiscoveryPage />} />
                     <Route path="/professionals" element={<BrowseProfessionalsPage />} />
