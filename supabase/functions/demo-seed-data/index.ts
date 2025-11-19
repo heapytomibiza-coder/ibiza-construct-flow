@@ -37,7 +37,6 @@ Deno.serve(async (req) => {
       });
 
       if (error) {
-        // If user already exists, fetch it
         if ((error as any).message?.includes('already registered')) {
           const { data: usersList } = await supabase.auth.admin.listUsers();
           const existing = usersList?.users?.find((u) => u.email === email);
@@ -51,31 +50,80 @@ Deno.serve(async (req) => {
     };
 
     // ========== STEP 1: CREATE MICRO SERVICES ==========
-    const microServices = [
-      { name_en: 'Kitchen Renovation', name_es: 'Renovación de Cocina' },
-      { name_en: 'Solar Panel Installation', name_es: 'Instalación de Paneles Solares' },
-      { name_en: 'Pool Repair & Maintenance', name_es: 'Reparación y Mantenimiento de Piscinas' },
-      { name_en: 'Interior Painting', name_es: 'Pintura Interior' },
-      { name_en: 'Garden Maintenance', name_es: 'Mantenimiento de Jardín' },
+    const microServicesSeed = [
+      {
+        micro: 'Kitchen Renovation',
+        category: 'Construction',
+        subcategory: 'Renovation',
+      },
+      {
+        micro: 'Solar Panel Installation',
+        category: 'Electrical',
+        subcategory: 'Solar',
+      },
+      {
+        micro: 'Pool Repair & Maintenance',
+        category: 'Plumbing',
+        subcategory: 'Pool',
+      },
+      {
+        micro: 'Interior Painting',
+        category: 'Painting',
+        subcategory: 'Interior',
+      },
+      {
+        micro: 'Garden Maintenance',
+        category: 'Gardening',
+        subcategory: 'Maintenance',
+      },
     ];
 
-    const microServiceIds: Record<string, string> = {};
+    const microIdByName: Record<string, string> = {};
 
-    for (const micro of microServices) {
+    // Check-then-insert pattern (no unique constraint on services_micro)
+    for (const ms of microServicesSeed) {
       try {
-        const { data, error } = await supabase
+        const { data: existing } = await supabase
           .from('services_micro')
-          .upsert({ name_en: micro.name_en, name_es: micro.name_es }, { onConflict: 'name_en' })
-          .select()
-          .single();
+          .select('id, micro')
+          .eq('category', ms.category)
+          .eq('subcategory', ms.subcategory)
+          .eq('micro', ms.micro)
+          .maybeSingle();
 
-        if (error) throw error;
+        if (existing) {
+          microIdByName[ms.micro] = existing.id;
+          results.microServices.push({
+            micro: ms.micro,
+            status: 'exists',
+            id: existing.id,
+          });
+        } else {
+          const { data: inserted, error } = await supabase
+            .from('services_micro')
+            .insert({
+              category: ms.category,
+              subcategory: ms.subcategory,
+              micro: ms.micro,
+              questions_micro: [],
+              questions_logistics: [],
+              is_active: true,
+            })
+            .select('id')
+            .single();
 
-        microServiceIds[micro.name_en] = data.id;
-        results.microServices.push({ micro: micro.name_en, status: 'created_or_exists', id: data.id });
+          if (error) throw error;
+
+          microIdByName[ms.micro] = inserted.id;
+          results.microServices.push({
+            micro: ms.micro,
+            status: 'created',
+            id: inserted.id,
+          });
+        }
       } catch (e) {
         results.errors.push({
-          service: micro.name_en,
+          service: ms.micro,
           error: (e as Error).message,
         });
       }
@@ -353,7 +401,7 @@ Deno.serve(async (req) => {
 
       for (const job of demoJobs) {
         try {
-          const microId = microServiceIds[job.microServiceName];
+          const microId = microIdByName[job.microServiceName];
           if (!microId) {
             throw new Error(`Micro service not found: ${job.microServiceName}`);
           }
