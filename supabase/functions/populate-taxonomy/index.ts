@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
 
     const { error: subError, data: insertedSubcategories } = await supabase
       .from('service_subcategories')
-      .upsert(subcategories.filter(s => s.category_id), { onConflict: 'slug' })
+      .upsert(subcategories.filter(s => s.category_id), { onConflict: 'category_id,slug' })
       .select('id, name, slug, category_id')
 
     if (subError) throw new Error(`Subcategory insert failed: ${subError.message}`)
@@ -163,7 +163,7 @@ Deno.serve(async (req) => {
 
     const { error: microError, data: insertedMicro } = await supabase
       .from('service_micro_categories')
-      .upsert(microservices.filter(m => m.subcategory_id), { onConflict: 'slug' })
+      .upsert(microservices.filter(m => m.subcategory_id), { onConflict: 'subcategory_id,slug' })
       .select('id, name, slug')
 
     if (microError) throw new Error(`Microservice insert failed: ${microError.message}`)
