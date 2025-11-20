@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { json } from "../_shared/json.ts";
+import { getErrorMessage } from '../_shared/errorUtils.ts';
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -108,6 +109,6 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Send email error:", error);
-    return json({ error: error.message }, 500);
+    return json({ error: getErrorMessage(error) }, 500);
   }
 });

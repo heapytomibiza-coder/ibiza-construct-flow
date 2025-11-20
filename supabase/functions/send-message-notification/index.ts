@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { corsHeaders } from "../_shared/cors.ts";
+import { getErrorMessage } from '../_shared/errorUtils.ts';
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const PUSH_WEBHOOK_URL = Deno.env.get("PUSH_WEBHOOK_URL");
@@ -77,7 +78,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("Error in send-message-notification:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: getErrorMessage(error) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });

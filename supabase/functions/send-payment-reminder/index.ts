@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { getErrorMessage } from '../_shared/errorUtils.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -164,7 +165,7 @@ serve(async (req) => {
 
         successCount++;
       } catch (error) {
-        logStep("Error processing payment reminder", { error: error.message, paymentId: payment.payment_id });
+        logStep("Error processing payment reminder", { error: getErrorMessage(error), paymentId: payment.payment_id });
         failCount++;
       }
     }
