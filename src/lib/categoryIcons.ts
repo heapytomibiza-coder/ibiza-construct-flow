@@ -50,9 +50,18 @@ const ICON_MAP: Record<string, LucideIcon> = {
 /**
  * Get Lucide icon component by name
  * Falls back to Wrench icon if not found
+ * Supports case-insensitive lookups for robustness
  */
 export const getCategoryIcon = (iconName: string): LucideIcon => {
-  return ICON_MAP[iconName] || Wrench;
+  // Try exact match first
+  if (ICON_MAP[iconName]) return ICON_MAP[iconName];
+  
+  // Try case-insensitive match as fallback
+  const key = Object.keys(ICON_MAP).find(
+    k => k.toLowerCase() === iconName.toLowerCase()
+  );
+  
+  return key ? ICON_MAP[key] : Wrench;
 };
 
 /**
