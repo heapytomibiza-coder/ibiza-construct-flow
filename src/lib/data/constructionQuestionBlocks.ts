@@ -4,6 +4,13 @@
  */
 
 import { uuidLookupLogger } from '@/lib/monitoring/uuidLookupLogger';
+import { microServiceCache } from '@/lib/cache/microServiceCache';
+import { retryUUIDLookup, uuidLookupCircuitBreaker } from '@/lib/utils/uuidLookupRetry';
+import { 
+  MicroServiceNotFoundError, 
+  DatabaseConnectionError,
+  UUIDErrorRecovery 
+} from '@/lib/errors/UUIDLookupError';
 
 // Define WizardQuestion type locally
 export interface WizardQuestion {
@@ -384,36 +391,89 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
     return { questions: [] as WizardQuestion[], microId: null as string | null, microUuid: null as string | null }
   }
 
-  // Look up UUID from database with performance tracking
+  // Look up UUID with caching, retry, and error handling
   let microUuid: string | null = null;
   const lookupStartTime = performance.now();
   let fallbackUsed = false;
   
   try {
-    const { supabase } = await import('@/integrations/supabase/client');
-    const { data, error } = await supabase
-      .from('micro_services')
-      .select('id')
-      .eq('slug', matchedMicro.id)
-      .maybeSingle();
-    
-    const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
-    microUuid = data?.id || null;
-
-    if (error) {
-      uuidLookupLogger.logFailure(matchedMicro.id, lookupTimeMs, error.message);
-    } else if (microUuid) {
-      uuidLookupLogger.logSuccess(matchedMicro.id, microUuid, lookupTimeMs, fallbackUsed);
+    // Check cache first
+    const cachedUuid = microServiceCache.get(matchedMicro.id);
+    if (cachedUuid) {
+      const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
+      microUuid = cachedUuid;
+      uuidLookupLogger.logSuccess(matchedMicro.id, microUuid, lookupTimeMs, false);
+      console.log('[UUID Lookup] Cache hit for:', matchedMicro.id);
     } else {
-      // No UUID found but no error - using fallback
-      fallbackUsed = true;
-      uuidLookupLogger.logSuccess(matchedMicro.id, 'fallback', lookupTimeMs, fallbackUsed);
+      // Lookup from database with retry and circuit breaker
+      const lookupOperation = async () => {
+        const { supabase } = await import('@/integrations/supabase/client');
+        const { data, error } = await supabase
+          .from('micro_services')
+          .select('id')
+          .eq('slug', matchedMicro.id)
+          .maybeSingle();
+        
+        if (error) {
+          throw new DatabaseConnectionError(matchedMicro.id, error);
+        }
+        
+        if (!data) {
+          throw new MicroServiceNotFoundError(matchedMicro.id);
+        }
+        
+        return data.id;
+      };
+
+      try {
+        // Execute with circuit breaker and retry
+        microUuid = await uuidLookupCircuitBreaker.execute(async () => {
+          return await retryUUIDLookup(
+            lookupOperation,
+            { maxRetries: 2, initialDelayMs: 100, maxDelayMs: 1000, backoffMultiplier: 2 },
+            (attempt, error) => {
+              console.log(`[UUID Lookup] Retry ${attempt} for ${matchedMicro.id}:`, error);
+            }
+          );
+        });
+
+        const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
+        
+        if (microUuid) {
+          // Cache successful lookup
+          microServiceCache.set(matchedMicro.id, microUuid);
+          uuidLookupLogger.logSuccess(matchedMicro.id, microUuid, lookupTimeMs, fallbackUsed);
+          console.log('[UUID Lookup] Database lookup successful:', matchedMicro.id, '→', microUuid);
+        }
+      } catch (lookupError) {
+        const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
+        
+        // Handle specific errors
+        if (lookupError instanceof MicroServiceNotFoundError) {
+          // Service not in database - use fallback (slug only)
+          fallbackUsed = true;
+          uuidLookupLogger.logSuccess(matchedMicro.id, 'fallback', lookupTimeMs, fallbackUsed);
+          console.warn('[UUID Lookup] Service not found, using fallback:', matchedMicro.id);
+        } else if (UUIDErrorRecovery.isRecoverable(lookupError)) {
+          // Recoverable error - use fallback
+          fallbackUsed = true;
+          const errorMessage = lookupError instanceof Error ? lookupError.message : 'Unknown error';
+          uuidLookupLogger.logFailure(matchedMicro.id, lookupTimeMs, errorMessage);
+          console.warn('[UUID Lookup] Recoverable error, using fallback:', errorMessage);
+        } else {
+          // Non-recoverable error
+          const errorMessage = lookupError instanceof Error ? lookupError.message : 'Unknown error';
+          uuidLookupLogger.logFailure(matchedMicro.id, lookupTimeMs, errorMessage);
+          throw lookupError;
+        }
+      }
     }
   } catch (error) {
     const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.warn('Failed to lookup micro_service UUID:', error);
+    console.error('[UUID Lookup] Critical error:', error);
     uuidLookupLogger.logFailure(matchedMicro.id, lookupTimeMs, errorMessage);
+    // Continue with fallback (microUuid remains null)
   }
 
   const blockIds = tradeBlocks[matchedMicro.trade]
