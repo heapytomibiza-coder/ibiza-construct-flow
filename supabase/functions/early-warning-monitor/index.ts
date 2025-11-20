@@ -37,7 +37,7 @@ serve(async (req) => {
       // Check slow response
       const lastActivity = dispute.last_activity_at 
         ? new Date(dispute.last_activity_at)
-        : new Date(dispute.created_at);
+        : new Date(dispute.created_by);
       
       const minutesSinceActivity = (Date.now() - lastActivity.getTime()) / 1000 / 60;
 
@@ -105,8 +105,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Early warning monitor error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

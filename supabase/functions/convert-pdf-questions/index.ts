@@ -239,9 +239,11 @@ Deno.serve(async (req) => {
     
   } catch (error) {
     console.error('Conversion error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
     return json({ 
-      error: error.message || 'Failed to convert PDF',
-      details: error.stack
+      error: errorMessage || 'Failed to convert PDF',
+      details: errorStack
     }, 500);
   }
 });

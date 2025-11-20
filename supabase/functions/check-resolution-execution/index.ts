@@ -61,10 +61,11 @@ serve(async (req) => {
         }
       } catch (error) {
         console.error(`Exception executing resolution ${resolution.id}:`, error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         results.push({
           resolution_id: resolution.id,
           success: false,
-      error: (error as Error).message
+          error: errorMessage
         });
       }
     }
@@ -83,8 +84,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error in check-resolution-execution:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

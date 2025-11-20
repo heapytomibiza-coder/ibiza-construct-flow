@@ -93,7 +93,7 @@ serve(async (req) => {
     // Create PaymentIntent with escrow metadata
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
-      currency: currency.toLowerCase(),
+      currency: (currency || 'EUR').toLowerCase(),
       payment_method: paymentMethodId,
       confirm: paymentMethodId ? true : false,
       automatic_payment_methods: paymentMethodId ? undefined : { enabled: true },

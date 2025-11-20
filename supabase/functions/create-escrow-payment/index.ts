@@ -82,7 +82,7 @@ serve(async (req) => {
           price_data: {
             currency: 'eur',
             product_data: {
-              name: `Escrow Payment - ${contract.jobs?.title || 'Job'}`,
+              name: `Escrow Payment - ${(contract.jobs as any)?.title || 'Job'}`,
               description: `Secure escrow payment for contract`,
             },
             unit_amount: Math.round(amount * 100), // Convert to cents
@@ -107,9 +107,11 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
     console.error('[create-escrow-payment] Error:', {
-      error: error.message,
-      stack: error.stack
+      error: errorMessage,
+      stack: errorStack
     });
     return createErrorResponse(error);
   }
