@@ -1,17 +1,14 @@
 /**
  * Step 1: Main Category Selection
- * Categories hardcoded for immediate functionality
+ * Fetches categories from database for unified taxonomy
  */
 import React, { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  Home, Wrench, Paintbrush, Zap, Droplet, Hammer,
-  Waves, Wind, Ruler, Square, Leaf,
-  HardHat, Building, Building2, DoorOpen, Bath, FileText,
-  Layers
-} from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { useCategories } from '@/hooks/useCategories';
+import { getCategoryIcon } from '@/lib/categoryIcons';
 
 interface MainCategoryStepProps {
   selectedCategory: string;
@@ -19,45 +16,14 @@ interface MainCategoryStepProps {
   onNext: () => void;
 }
 
-const ICON_MAP: Record<string, any> = {
-  Home, Wrench, Paintbrush, Zap, Droplet, Hammer,
-  Waves, Wind, Ruler, Square, Leaf,
-  HardHat, Building, Building2, DoorOpen, Bath, FileText,
-  Layers
-};
-
-interface CategoryInfo {
-  name: string;
-  icon: keyof typeof ICON_MAP;
-  examples: string[];
-}
-
-const ALL_CATEGORIES: CategoryInfo[] = [
-  { name: 'Builder', icon: 'HardHat', examples: ['New construction', 'Extensions', 'Renovations'] },
-  { name: 'Plumber', icon: 'Droplet', examples: ['Leak repairs', 'Pipe installation', 'Bathroom fitting'] },
-  { name: 'Electrician', icon: 'Zap', examples: ['Rewiring', 'Socket installation', 'Lighting'] },
-  { name: 'Carpenter', icon: 'Hammer', examples: ['Custom furniture', 'Door fitting', 'Decking'] },
-  { name: 'Handyman', icon: 'Wrench', examples: ['General repairs', 'Assembly', 'Odd jobs'] },
-  { name: 'Painter', icon: 'Paintbrush', examples: ['Interior painting', 'Exterior painting', 'Decorating'] },
-  { name: 'Tiler', icon: 'Square', examples: ['Floor tiling', 'Wall tiling', 'Bathroom tiles'] },
-  { name: 'Plasterer', icon: 'Layers', examples: ['Wall plastering', 'Ceiling repair', 'Rendering'] },
-  { name: 'Roofer', icon: 'Home', examples: ['Roof repairs', 'New roofing', 'Guttering'] },
-  { name: 'Landscaper', icon: 'Leaf', examples: ['Garden design', 'Paving', 'Planting'] },
-  { name: 'Pool Builder', icon: 'Waves', examples: ['Pool installation', 'Pool maintenance', 'Repairs'] },
-  { name: 'HVAC', icon: 'Wind', examples: ['Air conditioning', 'Heating', 'Ventilation'] },
-  { name: 'Architects & Design', icon: 'Ruler', examples: ['Building plans', 'Interior design', '3D renders'] },
-  { name: 'Structural Works', icon: 'Building2', examples: ['Foundations', 'Steel work', 'Concrete'] },
-  { name: 'Floors, Doors & Windows', icon: 'DoorOpen', examples: ['Flooring', 'Window installation', 'Door fitting'] },
-  { name: 'Kitchen & Bathroom', icon: 'Bath', examples: ['Kitchen fitting', 'Bathroom design', 'Plumbing'] },
-  { name: 'Commercial Projects', icon: 'Building', examples: ['Office fit-outs', 'Retail spaces', 'Warehouses'] },
-  { name: 'Legal & Regulatory', icon: 'FileText', examples: ['Building permits', 'Planning', 'Compliance'] },
-];
 
 export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
   selectedCategory,
   onSelect,
   onNext
 }) => {
+  const { data: categories, isLoading, error } = useCategories();
+
   // Auto-advance after selection
   useEffect(() => {
     if (selectedCategory) {
@@ -68,8 +34,24 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
     }
   }, [selectedCategory, onNext]);
 
-  const renderCategoryCard = (category: CategoryInfo) => {
-    const IconComponent = ICON_MAP[category.icon];
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto text-center py-12">
+        <p className="text-destructive">Failed to load categories. Please try again.</p>
+      </div>
+    );
+  }
+
+  const renderCategoryCard = (category: typeof categories[0]) => {
+    const IconComponent = getCategoryIcon(category.icon_name || 'Wrench');
     const isSelected = selectedCategory === category.name;
 
     return (
@@ -98,14 +80,16 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
             <h3 className="font-semibold text-lg mb-2 text-foreground">
               {category.name}
             </h3>
-            <ul className="space-y-0.5">
-              {category.examples.map((example, idx) => (
-                <li key={idx} className="text-xs text-muted-foreground/80 flex items-start">
-                  <span className="mr-1.5 mt-0.5">•</span>
-                  <span>{example}</span>
-                </li>
-              ))}
-            </ul>
+            {category.examples && category.examples.length > 0 && (
+              <ul className="space-y-0.5">
+                {category.examples.map((example, idx) => (
+                  <li key={idx} className="text-xs text-muted-foreground/80 flex items-start">
+                    <span className="mr-1.5 mt-0.5">•</span>
+                    <span>{example}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </Card>
@@ -124,7 +108,7 @@ export const MainCategoryStep: React.FC<MainCategoryStepProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-        {ALL_CATEGORIES.map(renderCategoryCard)}
+        {categories?.map(renderCategoryCard)}
       </div>
 
       {/* Next Button */}
