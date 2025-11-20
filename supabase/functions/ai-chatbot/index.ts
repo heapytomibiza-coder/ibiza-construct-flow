@@ -27,6 +27,23 @@ const chatRequestSchema = z.object({
 // Simple in-memory rate limiter
 const rateLimiter = new Map<string, { count: number; resetAt: number }>();
 
+function checkRateLimit(clientIp: string): boolean {
+  const now = Date.now();
+  const limit = rateLimiter.get(clientIp);
+  
+  if (!limit || limit.resetAt < now) {
+    rateLimiter.set(clientIp, { count: 1, resetAt: now + 60000 });
+    return true;
+  }
+  
+  if (limit.count >= 30) {
+    return false;
+  }
+  
+  limit.count++;
+  return true;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
