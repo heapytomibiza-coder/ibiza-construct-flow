@@ -10,11 +10,15 @@ import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { getCategoryIcon } from '@/lib/categoryIcons';
 
 interface Subcategory {
   id: string;
   name: string;
   display_order: number;
+  icon_name: string | null;
+  icon_emoji: string | null;
+  description: string | null;
 }
 
 interface SubcategorySelectorProps {
@@ -53,7 +57,7 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
       try {
         const { data, error } = await supabase
           .from('service_subcategories')
-          .select('id, name, display_order')
+          .select('id, name, display_order, icon_name, icon_emoji, description')
           .eq('category_id', categoryId)
           .eq('is_active', true)
           .order('display_order', { ascending: true });
@@ -135,6 +139,8 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {subcategories.map((sub) => {
             const isSelected = selectedSubcategoryId === sub.id;
+            const IconComponent = sub.icon_name ? getCategoryIcon(sub.icon_name) : null;
+            
             return (
               <Card
                 key={sub.id}
@@ -144,10 +150,28 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
                 )}
                 onClick={() => handleSelect(sub)}
               >
-                <div className="flex items-center justify-center h-full">
+                <div className="flex flex-col items-center justify-center gap-3 h-full">
+                  {/* Icon */}
+                  {IconComponent && (
+                    <div className="p-3 rounded-lg bg-primary/10">
+                      <IconComponent className="w-6 h-6 text-primary" />
+                    </div>
+                  )}
+                  {!IconComponent && sub.icon_emoji && (
+                    <span className="text-3xl">{sub.icon_emoji}</span>
+                  )}
+                  
+                  {/* Name */}
                   <span className="font-medium text-center text-charcoal">
                     {sub.name}
                   </span>
+                  
+                  {/* Description hint */}
+                  {sub.description && (
+                    <span className="text-xs text-muted-foreground text-center line-clamp-2">
+                      {sub.description}
+                    </span>
+                  )}
                 </div>
               </Card>
             );
