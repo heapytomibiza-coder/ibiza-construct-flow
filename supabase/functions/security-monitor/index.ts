@@ -45,13 +45,15 @@ serve(async (req) => {
 
     switch (action) {
       case 'log_event':
-        await supabaseClient.from('security_events').insert({
-          user_id: user.id,
-          event_type: data.event_type,
-          event_category: data.event_category,
-          severity: data.severity || 'low',
-          event_data: data.event_data || {},
-        });
+        if (data) {
+          await supabaseClient.from('security_events').insert({
+            user_id: user.id,
+            event_type: data.event_type || 'unknown',
+            event_category: data.event_category || 'unknown',
+            severity: data.severity || 'low',
+            event_data: data.event_data || {},
+          });
+        }
         break;
 
       case 'get_events':
@@ -87,11 +89,13 @@ serve(async (req) => {
         );
 
       case 'revoke_session':
-        await supabaseClient
-          .from('active_sessions')
-          .delete()
-          .eq('id', data.session_id)
-          .eq('user_id', user.id);
+        if (data?.session_id) {
+          await supabaseClient
+            .from('active_sessions')
+            .delete()
+            .eq('id', data.session_id)
+            .eq('user_id', user.id);
+        }
         break;
 
       default:
@@ -128,7 +132,7 @@ async function detectSuspiciousActivity(supabaseClient: any, userId: string) {
     .order('created_at', { ascending: false })
     .limit(10);
 
-  const uniqueIPs = new Set(recentSessions?.map(s => s.ip_address) || []);
+  const uniqueIPs = new Set(recentSessions?.map((s: any) => s.ip_address) || []);
 
   return {
     failed_login_attempts: failedLogins?.length || 0,

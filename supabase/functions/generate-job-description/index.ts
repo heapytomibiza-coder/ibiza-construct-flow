@@ -109,8 +109,9 @@ Output the job description directly without any JSON wrapper or additional text.
     });
   } catch (error) {
     console.error('Job description generation error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to generate description';
     return new Response(JSON.stringify({ 
-      error: error.message || 'Failed to generate description'
+      error: errorMessage
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

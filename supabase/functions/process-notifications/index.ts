@@ -78,16 +78,18 @@ serve(async (req) => {
             error
           );
           
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+          
           // Update as failed
           await supabaseClient
             .from("notifications_queue")
             .update({
               status: "failed",
-              error_message: error.message,
+              error_message: errorMessage,
             })
             .eq("id", notification.id);
 
-          return { id: notification.id, success: false, error: error.message };
+          return { id: notification.id, success: false, error: errorMessage };
         }
       })
     );
@@ -107,8 +109,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error in process-notifications:", error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -136,13 +139,14 @@ async function processChannel(
         throw new Error(`Unknown channel: ${channel}`);
     }
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     // Log delivery failure
     await supabaseClient.from("notification_deliveries").insert({
       queue_id: notification.id,
       user_id: notification.user_id,
       channel,
       status: "failed",
-      failed_reason: error.message,
+      failed_reason: errorMessage,
     });
     throw error;
   }
