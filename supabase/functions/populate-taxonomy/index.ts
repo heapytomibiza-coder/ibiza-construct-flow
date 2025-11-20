@@ -53,86 +53,146 @@ Deno.serve(async (req) => {
 
     const categoryMap = new Map(insertedCategories?.map(c => [c.name, c.id]) || [])
 
-    // Step 2: Populate Subcategories (expanded with trade roles + specialist subcategories)
+    // Step 2: Populate Subcategories (expanded comprehensively)
     const subcategories = [
-      // Construction (trade roles moved out to separate categories)
-      { category_id: categoryMap.get('Construction'), name: 'General Construction', slug: 'general-construction', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Masonry', slug: 'masonry', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Roofing', slug: 'roofing', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Tiling', slug: 'tiling', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Plastering', slug: 'plastering', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Bricklaying', slug: 'bricklaying', display_order: 6, is_active: true },
+      // Construction - 10 subcategories
+      { category_id: categoryMap.get('Construction'), name: 'General Construction', slug: 'general-construction', icon_name: 'Building2', icon_emoji: '🏗️', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Masonry', slug: 'masonry', icon_name: 'Square', icon_emoji: '🧱', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Roofing', slug: 'roofing', icon_name: 'Home', icon_emoji: '🏠', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Tiling', slug: 'tiling', icon_name: 'Layers', icon_emoji: '⬜', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Plastering', slug: 'plastering', icon_name: 'Paintbrush', icon_emoji: '🏗️', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Bricklaying', slug: 'bricklaying', icon_name: 'Square', icon_emoji: '🧱', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Concrete Work', slug: 'concrete-work', icon_name: 'HardHat', icon_emoji: '🏗️', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Extensions & Conversions', slug: 'extensions-conversions', icon_name: 'Building', icon_emoji: '🏡', display_order: 8, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Structural Work', slug: 'structural-work', icon_name: 'HardHat', icon_emoji: '⚙️', display_order: 9, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Demolition', slug: 'demolition', icon_name: 'Hammer', icon_emoji: '🔨', display_order: 10, is_active: true },
       
-      // Carpentry (NEW main category)
-      { category_id: categoryMap.get('Carpentry'), name: 'Custom Furniture', slug: 'custom-furniture', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'Doors & Windows', slug: 'doors-windows', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'Decking & Outdoor', slug: 'decking-outdoor', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'General Joinery', slug: 'general-joinery', display_order: 4, is_active: true },
+      // Carpentry - 8 subcategories
+      { category_id: categoryMap.get('Carpentry'), name: 'Custom Furniture', slug: 'custom-furniture', icon_name: 'Wrench', icon_emoji: '🪑', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Doors & Windows', slug: 'doors-windows', icon_name: 'DoorOpen', icon_emoji: '🚪', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Decking & Outdoor', slug: 'decking-outdoor', icon_name: 'Leaf', icon_emoji: '🌳', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'General Joinery', slug: 'general-joinery', icon_name: 'Hammer', icon_emoji: '🔨', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Built-in Wardrobes', slug: 'built-in-wardrobes', icon_name: 'Square', icon_emoji: '🚪', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Staircases', slug: 'staircases', icon_name: 'Layers', icon_emoji: '🪜', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Shelving & Storage', slug: 'shelving-storage', icon_name: 'Square', icon_emoji: '📚', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Skirting & Architrave', slug: 'skirting-architrave', icon_name: 'Ruler', icon_emoji: '📐', display_order: 8, is_active: true },
       
-      // Plumbing
-      { category_id: categoryMap.get('Plumbing'), name: 'General Plumbing', slug: 'general-plumbing', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Plumbing'), name: 'Emergency Repairs', slug: 'emergency-repairs', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Plumbing'), name: 'Installation', slug: 'installation', display_order: 3, is_active: true },
+      // Plumbing - 8 subcategories
+      { category_id: categoryMap.get('Plumbing'), name: 'General Plumbing', slug: 'general-plumbing', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Plumbing'), name: 'Emergency Repairs', slug: 'emergency-repairs', icon_name: 'Droplet', icon_emoji: '💧', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Plumbing'), name: 'Bathroom Installation', slug: 'bathroom-installation', icon_name: 'Bath', icon_emoji: '🚿', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Plumbing'), name: 'Kitchen Plumbing', slug: 'kitchen-plumbing', icon_name: 'Droplet', icon_emoji: '🍽️', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Plumbing'), name: 'Boiler Installation', slug: 'boiler-installation', icon_name: 'Zap', icon_emoji: '🔥', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Plumbing'), name: 'Drainage', slug: 'drainage', icon_name: 'Droplet', icon_emoji: '💧', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Plumbing'), name: 'Water Heaters', slug: 'water-heaters', icon_name: 'Zap', icon_emoji: '♨️', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Plumbing'), name: 'Gas Services', slug: 'gas-services', icon_name: 'Zap', icon_emoji: '🔥', display_order: 8, is_active: true },
       
-      // Electrical
-      { category_id: categoryMap.get('Electrical'), name: 'General Electrical', slug: 'general-electrical', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'Lighting', slug: 'lighting', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'Smart Home', slug: 'smart-home', display_order: 3, is_active: true },
+      // Electrical - 8 subcategories
+      { category_id: categoryMap.get('Electrical'), name: 'General Electrical', slug: 'general-electrical', icon_name: 'Zap', icon_emoji: '⚡', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Lighting', slug: 'lighting', icon_name: 'Zap', icon_emoji: '💡', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Smart Home', slug: 'smart-home', icon_name: 'Zap', icon_emoji: '🏡', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Rewiring', slug: 'rewiring', icon_name: 'Zap', icon_emoji: '🔌', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Fuse Box', slug: 'fuse-box', icon_name: 'Square', icon_emoji: '⚡', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'EV Charging', slug: 'ev-charging', icon_name: 'Zap', icon_emoji: '🔌', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Security Systems', slug: 'security-systems', icon_name: 'Zap', icon_emoji: '🔒', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Emergency Electrician', slug: 'emergency-electrician', icon_name: 'Zap', icon_emoji: '🚨', display_order: 8, is_active: true },
       
-      // HVAC
-      { category_id: categoryMap.get('HVAC'), name: 'AC Repair', slug: 'ac-repair', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('HVAC'), name: 'Heating', slug: 'heating', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('HVAC'), name: 'Ventilation', slug: 'ventilation', display_order: 3, is_active: true },
+      // HVAC - 7 subcategories
+      { category_id: categoryMap.get('HVAC'), name: 'Air Conditioning', slug: 'air-conditioning', icon_name: 'Wind', icon_emoji: '❄️', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Heating', slug: 'heating', icon_name: 'Wind', icon_emoji: '🔥', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Ventilation', slug: 'ventilation', icon_name: 'Wind', icon_emoji: '🌬️', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Boiler Repair', slug: 'boiler-repair', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Heat Pump Installation', slug: 'heat-pump-installation', icon_name: 'Zap', icon_emoji: '♨️', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Radiator Installation', slug: 'radiator-installation', icon_name: 'Square', icon_emoji: '🔥', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Duct Cleaning', slug: 'duct-cleaning', icon_name: 'Wind', icon_emoji: '🌬️', display_order: 7, is_active: true },
       
-      // Painting & Decorating
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Interior Painting', slug: 'interior-painting', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Exterior Painting', slug: 'exterior-painting', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Specialty Finishes', slug: 'specialty-finishes', display_order: 3, is_active: true },
+      // Painting & Decorating - 7 subcategories
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Interior Painting', slug: 'interior-painting', icon_name: 'Paintbrush', icon_emoji: '🎨', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Exterior Painting', slug: 'exterior-painting', icon_name: 'Paintbrush', icon_emoji: '🏠', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Wallpapering', slug: 'wallpapering', icon_name: 'Paintbrush', icon_emoji: '🖼️', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Spray Painting', slug: 'spray-painting', icon_name: 'Paintbrush', icon_emoji: '🎨', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Fence Painting', slug: 'fence-painting', icon_name: 'Leaf', icon_emoji: '🌳', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Commercial Painting', slug: 'commercial-painting', icon_name: 'Building', icon_emoji: '🏢', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Restoration', slug: 'restoration', icon_name: 'Paintbrush', icon_emoji: '🖌️', display_order: 7, is_active: true },
       
-      // Gardening & Landscaping
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Lawn Care', slug: 'lawn-care', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Landscaping', slug: 'landscaping', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Tree Services', slug: 'tree-services', display_order: 3, is_active: true },
+      // Gardening & Landscaping - 9 subcategories
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Lawn Care', slug: 'lawn-care', icon_name: 'Leaf', icon_emoji: '🌱', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Garden Design', slug: 'garden-design', icon_name: 'Leaf', icon_emoji: '🌿', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Tree Services', slug: 'tree-services', icon_name: 'Leaf', icon_emoji: '🌳', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Hedge Trimming', slug: 'hedge-trimming', icon_name: 'Leaf', icon_emoji: '🌿', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Paving & Driveways', slug: 'paving-driveways', icon_name: 'Square', icon_emoji: '🛣️', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Fencing', slug: 'fencing', icon_name: 'Square', icon_emoji: '🚧', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Artificial Grass', slug: 'artificial-grass', icon_name: 'Leaf', icon_emoji: '🌱', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Garden Clearance', slug: 'garden-clearance', icon_name: 'Leaf', icon_emoji: '🗑️', display_order: 8, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Irrigation Systems', slug: 'irrigation-systems', icon_name: 'Droplet', icon_emoji: '💧', display_order: 9, is_active: true },
       
-      // Cleaning
-      { category_id: categoryMap.get('Cleaning'), name: 'House Cleaning', slug: 'house-cleaning', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Cleaning'), name: 'Commercial Cleaning', slug: 'commercial-cleaning', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Cleaning'), name: 'Deep Cleaning', slug: 'deep-cleaning', display_order: 3, is_active: true },
+      // Cleaning - 8 subcategories
+      { category_id: categoryMap.get('Cleaning'), name: 'House Cleaning', slug: 'house-cleaning', icon_name: 'Sparkles', icon_emoji: '✨', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Cleaning'), name: 'Commercial Cleaning', slug: 'commercial-cleaning', icon_name: 'Building', icon_emoji: '🏢', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Cleaning'), name: 'Deep Cleaning', slug: 'deep-cleaning', icon_name: 'Sparkles', icon_emoji: '✨', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Cleaning'), name: 'End of Tenancy', slug: 'end-of-tenancy', icon_name: 'Home', icon_emoji: '🏠', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Cleaning'), name: 'Carpet Cleaning', slug: 'carpet-cleaning', icon_name: 'Sparkles', icon_emoji: '🧹', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Cleaning'), name: 'Window Cleaning', slug: 'window-cleaning', icon_name: 'Sparkles', icon_emoji: '🪟', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Cleaning'), name: 'Oven Cleaning', slug: 'oven-cleaning', icon_name: 'Sparkles', icon_emoji: '🔥', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Cleaning'), name: 'Pressure Washing', slug: 'pressure-washing', icon_name: 'Droplet', icon_emoji: '💦', display_order: 8, is_active: true },
       
-      // Pool & Spa
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Maintenance', slug: 'pool-maintenance', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Equipment', slug: 'pool-equipment', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Spa Services', slug: 'spa-services', display_order: 3, is_active: true },
+      // Pool & Spa - 6 subcategories
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Maintenance', slug: 'pool-maintenance', icon_name: 'Waves', icon_emoji: '🌊', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Installation', slug: 'pool-installation', icon_name: 'Waves', icon_emoji: '🏊', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Repair', slug: 'pool-repair', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Spa Services', slug: 'spa-services', icon_name: 'Waves', icon_emoji: '♨️', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Heating', slug: 'pool-heating', icon_name: 'Zap', icon_emoji: '🔥', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Equipment', slug: 'pool-equipment', icon_name: 'Wrench', icon_emoji: '⚙️', display_order: 6, is_active: true },
       
-      // Architects & Design (NEW)
-      { category_id: categoryMap.get('Architects & Design'), name: 'Residential Architects', slug: 'residential-architects', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Architects & Design'), name: 'Interior Design', slug: 'interior-design', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Architects & Design'), name: 'Structural Engineers', slug: 'structural-engineers', display_order: 3, is_active: true },
+      // Architects & Design - 6 subcategories
+      { category_id: categoryMap.get('Architects & Design'), name: 'Residential Architects', slug: 'residential-architects', icon_name: 'Ruler', icon_emoji: '🏠', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Architects & Design'), name: 'Interior Design', slug: 'interior-design', icon_name: 'Paintbrush', icon_emoji: '🎨', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Architects & Design'), name: 'Structural Engineers', slug: 'structural-engineers', icon_name: 'HardHat', icon_emoji: '⚙️', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Architects & Design'), name: 'Building Surveyors', slug: 'building-surveyors', icon_name: 'Ruler', icon_emoji: '📐', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Architects & Design'), name: '3D Visualization', slug: '3d-visualization', icon_name: 'Layers', icon_emoji: '🖼️', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Architects & Design'), name: 'Planning Consultants', slug: 'planning-consultants', icon_name: 'FileText', icon_emoji: '📋', display_order: 6, is_active: true },
       
-      // Kitchen & Bathroom (NEW)
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Kitchen Installation', slug: 'kitchen-installation', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Bathroom Fitting', slug: 'bathroom-fitting', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Cabinet Making', slug: 'cabinet-making', display_order: 3, is_active: true },
+      // Kitchen & Bathroom - 7 subcategories
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Kitchen Installation', slug: 'kitchen-installation', icon_name: 'Bath', icon_emoji: '🍽️', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Bathroom Fitting', slug: 'bathroom-fitting', icon_name: 'Bath', icon_emoji: '🚿', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Kitchen Design', slug: 'kitchen-design', icon_name: 'Ruler', icon_emoji: '📐', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Bathroom Design', slug: 'bathroom-design', icon_name: 'Ruler', icon_emoji: '📐', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Wetrooms', slug: 'wetrooms', icon_name: 'Droplet', icon_emoji: '💧', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Kitchen Worktops', slug: 'kitchen-worktops', icon_name: 'Square', icon_emoji: '⬜', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Tiling', slug: 'kitchen-bathroom-tiling', icon_name: 'Layers', icon_emoji: '⬜', display_order: 7, is_active: true },
       
-      // Floors, Doors & Windows (NEW)
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Flooring', slug: 'flooring', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Door Installation', slug: 'door-installation', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Window Fitting', slug: 'window-fitting', display_order: 3, is_active: true },
+      // Floors, Doors & Windows - 8 subcategories
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Flooring Installation', slug: 'flooring-installation', icon_name: 'Layers', icon_emoji: '📏', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Laminate Flooring', slug: 'laminate-flooring', icon_name: 'Layers', icon_emoji: '📏', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Hardwood Flooring', slug: 'hardwood-flooring', icon_name: 'Layers', icon_emoji: '🪵', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Door Installation', slug: 'door-installation', icon_name: 'DoorOpen', icon_emoji: '🚪', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Window Installation', slug: 'window-installation', icon_name: 'Square', icon_emoji: '🪟', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Double Glazing', slug: 'double-glazing', icon_name: 'Square', icon_emoji: '🪟', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Floor Sanding', slug: 'floor-sanding', icon_name: 'Layers', icon_emoji: '🪵', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Garage Doors', slug: 'garage-doors', icon_name: 'DoorOpen', icon_emoji: '🚪', display_order: 8, is_active: true },
       
-      // Handyman & General Services (NEW)
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'General Repairs', slug: 'general-repairs', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'Furniture Assembly', slug: 'furniture-assembly', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'Multi-Trade', slug: 'multi-trade', display_order: 3, is_active: true },
+      // Handyman & General Services - 6 subcategories
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'General Repairs', slug: 'general-repairs', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'Furniture Assembly', slug: 'furniture-assembly', icon_name: 'Wrench', icon_emoji: '🪑', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'TV Mounting', slug: 'tv-mounting', icon_name: 'Wrench', icon_emoji: '📺', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'Picture Hanging', slug: 'picture-hanging', icon_name: 'Wrench', icon_emoji: '🖼️', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'Property Maintenance', slug: 'property-maintenance', icon_name: 'Home', icon_emoji: '🏠', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'Multi-Trade', slug: 'multi-trade', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 6, is_active: true },
       
-      // Commercial & Industrial (NEW)
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Office Fit-outs', slug: 'office-fitouts', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Retail Spaces', slug: 'retail-spaces', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Industrial Projects', slug: 'industrial-projects', display_order: 3, is_active: true },
+      // Commercial & Industrial - 6 subcategories
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Office Fit-outs', slug: 'office-fitouts', icon_name: 'Building', icon_emoji: '🏢', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Retail Spaces', slug: 'retail-spaces', icon_name: 'Building', icon_emoji: '🏪', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Industrial Projects', slug: 'industrial-projects', icon_name: 'Building', icon_emoji: '🏭', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Warehouses', slug: 'warehouses', icon_name: 'Building', icon_emoji: '📦', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Restaurant Fit-outs', slug: 'restaurant-fitouts', icon_name: 'Building', icon_emoji: '🍽️', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Facilities Management', slug: 'facilities-management', icon_name: 'Building', icon_emoji: '⚙️', display_order: 6, is_active: true },
       
-      // Legal & Regulatory (NEW)
-      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Building Permits', slug: 'building-permits', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Planning Applications', slug: 'planning-applications', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Compliance & Inspections', slug: 'compliance-inspections', display_order: 3, is_active: true }
+      // Legal & Regulatory - 5 subcategories
+      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Building Permits', slug: 'building-permits', icon_name: 'FileText', icon_emoji: '📋', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Planning Applications', slug: 'planning-applications', icon_name: 'FileText', icon_emoji: '📋', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Building Regulations', slug: 'building-regulations', icon_name: 'FileText', icon_emoji: '📜', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Party Wall Agreements', slug: 'party-wall-agreements', icon_name: 'FileText', icon_emoji: '🏘️', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Building Inspections', slug: 'building-inspections', icon_name: 'FileText', icon_emoji: '🔍', display_order: 5, is_active: true }
     ]
 
     const { error: subError, data: insertedSubcategories } = await supabase
