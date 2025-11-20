@@ -96,6 +96,56 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         return;
       }
 
+      // TIER -1: Try construction question blocks (local-first with UUID)
+      try {
+        const { buildConstructionWizardQuestions } = await import('@/lib/data/constructionQuestionBlocks');
+        const { questions: constructionQuestions, microId, microUuid } = await buildConstructionWizardQuestions(microNames);
+        
+        if (constructionQuestions.length > 0) {
+          console.log('✅ Loaded construction question blocks:', { microId, microUuid, count: constructionQuestions.length });
+          
+          // Helper to map types safely
+          const mapToAIQuestionType = (qType: string): AIQuestion['type'] => {
+            switch (qType) {
+              case 'multiselect': return 'checkbox';
+              case 'select': return 'radio';
+              case 'range': return 'scale';
+              case 'checkbox': return 'checkbox';
+              case 'file': return 'file';
+              case 'number': return 'number';
+              case 'textarea': return 'textarea';
+              case 'radio': return 'radio';
+              // Map unsupported types to text
+              case 'date':
+              case 'time':
+              case 'datetime':
+              case 'moving_from_location':
+              case 'moving_to_location':
+              case 'text':
+              default: return 'text';
+            }
+          };
+          
+          // Transform to AIQuestion format
+          const transformedQuestions: AIQuestion[] = constructionQuestions.map(q => ({
+            id: q.id,
+            type: mapToAIQuestionType(q.type),
+            label: q.question,
+            required: q.required,
+            options: q.options?.map(opt => ({ label: opt, value: opt })),
+            placeholder: q.placeholder,
+            helpText: q.validation?.message
+          }));
+
+          setQuestions(transformedQuestions);
+          setPackSource('static_json');
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('Construction questions not available:', err);
+      }
+
       // TIER 0: Check static JSON for matching service
       const primaryMicroSlug = microIds[0];
       const serviceId = mapMicroIdToServiceId(primaryMicroSlug);

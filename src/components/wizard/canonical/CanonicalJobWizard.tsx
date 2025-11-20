@@ -34,6 +34,7 @@ interface WizardState {
   subcategoryId: string;
   microNames: string[];
   microIds: string[];
+  microUuids: string[];
   answers: Record<string, any>;
   logistics: {
     location: string;
@@ -81,6 +82,7 @@ export const CanonicalJobWizard: React.FC = () => {
     subcategoryId: '',
     microNames: [],
     microIds: [],
+    microUuids: [],
     answers: {},
     logistics: {
       location: '',
@@ -229,11 +231,24 @@ export const CanonicalJobWizard: React.FC = () => {
     setCurrentStep(3); // Auto-advance to micro
   }, []);
 
-  const handleMicroSelect = useCallback((micros: string[], microIds: string[]) => {
+  const handleMicroSelect = useCallback(async (micros: string[], microIds: string[]) => {
+    // Look up UUIDs for selected micros
+    const microUuids: string[] = []
+    try {
+      const { buildConstructionWizardQuestions } = await import('@/lib/data/constructionQuestionBlocks')
+      const { microUuid } = await buildConstructionWizardQuestions(micros)
+      if (microUuid) {
+        microUuids.push(microUuid)
+      }
+    } catch (err) {
+      console.warn('Could not resolve micro UUIDs:', err)
+    }
+
     setWizardState(prev => ({ 
       ...prev, 
       microNames: micros, 
-      microIds 
+      microIds,
+      microUuids
     }));
     // Check if we should skip questions step (only fallback available)
     checkShouldSkipQuestions(microIds, micros);
@@ -330,14 +345,15 @@ export const CanonicalJobWizard: React.FC = () => {
       
       // Combine micro names for title
       const combinedTitle = wizardState.microNames.join(' + ');
-      // Use first micro ID (we could enhance this later to support multiple)
+      // Use first micro ID and UUID
       const primaryMicroId = wizardState.microIds[0];
+      const primaryMicroUuid = wizardState.microUuids[0] || null;
 
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert([{
           client_id: user.id,
-          micro_id: primaryMicroId,
+          micro_id: primaryMicroUuid || primaryMicroId, // Prefer UUID, fallback to slug
           title: combinedTitle,
           description: wizardState.extras.notes || `${combinedTitle} - ${wizardState.mainCategory} / ${wizardState.subcategory}`,
           answers: {
