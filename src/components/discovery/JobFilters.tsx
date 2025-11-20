@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { useCategories } from '@/hooks/useCategories';
 
 interface JobFiltersProps {
   filters: {
@@ -15,6 +16,8 @@ interface JobFiltersProps {
 }
 
 export function JobFilters({ filters, onFiltersChange }: JobFiltersProps) {
+  const { data: categories = [], isLoading } = useCategories();
+
   return (
     <Card className="p-6 mb-6">
       <h3 className="font-semibold mb-4">Filters</h3>
@@ -28,16 +31,19 @@ export function JobFilters({ filters, onFiltersChange }: JobFiltersProps) {
             onValueChange={(value) =>
               onFiltersChange({ ...filters, category: value })
             }
+            disabled={isLoading}
           >
             <SelectTrigger>
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="home">Home Services</SelectItem>
-              <SelectItem value="business">Business Services</SelectItem>
-              <SelectItem value="creative">Creative Services</SelectItem>
-              <SelectItem value="tech">Technology</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.slug}>
+                  {category.icon_emoji && `${category.icon_emoji} `}
+                  {category.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
