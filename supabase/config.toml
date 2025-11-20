@@ -2,3 +2,6 @@ project_id = "gehhaudrxqitxbzkuapg"
 
 [functions.create-demo-accounts]
 verify_jwt = false
+
+[functions.populate-taxonomy]
+verify_jwt = false
