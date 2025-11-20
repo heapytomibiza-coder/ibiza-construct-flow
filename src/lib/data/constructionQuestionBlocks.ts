@@ -3,6 +3,8 @@
  * Local-first question system for construction services
  */
 
+import { uuidLookupLogger } from '@/lib/monitoring/uuidLookupLogger';
+
 // Define WizardQuestion type locally
 export interface WizardQuestion {
   id: string
@@ -382,19 +384,36 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
     return { questions: [] as WizardQuestion[], microId: null as string | null, microUuid: null as string | null }
   }
 
-  // Look up UUID from database
-  let microUuid: string | null = null
+  // Look up UUID from database with performance tracking
+  let microUuid: string | null = null;
+  const lookupStartTime = performance.now();
+  let fallbackUsed = false;
+  
   try {
-    const { supabase } = await import('@/integrations/supabase/client')
-    const { data } = await supabase
+    const { supabase } = await import('@/integrations/supabase/client');
+    const { data, error } = await supabase
       .from('micro_services')
       .select('id')
       .eq('slug', matchedMicro.id)
-      .maybeSingle()
+      .maybeSingle();
     
-    microUuid = data?.id || null
+    const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
+    microUuid = data?.id || null;
+
+    if (error) {
+      uuidLookupLogger.logFailure(matchedMicro.id, lookupTimeMs, error.message);
+    } else if (microUuid) {
+      uuidLookupLogger.logSuccess(matchedMicro.id, microUuid, lookupTimeMs, fallbackUsed);
+    } else {
+      // No UUID found but no error - using fallback
+      fallbackUsed = true;
+      uuidLookupLogger.logSuccess(matchedMicro.id, 'fallback', lookupTimeMs, fallbackUsed);
+    }
   } catch (error) {
-    console.warn('Failed to lookup micro_service UUID:', error)
+    const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.warn('Failed to lookup micro_service UUID:', error);
+    uuidLookupLogger.logFailure(matchedMicro.id, lookupTimeMs, errorMessage);
   }
 
   const blockIds = tradeBlocks[matchedMicro.trade]

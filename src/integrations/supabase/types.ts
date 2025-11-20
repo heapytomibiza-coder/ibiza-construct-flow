@@ -10184,6 +10184,47 @@ export type Database = {
         }
         Relationships: []
       }
+      uuid_migration_log: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          job_id: string
+          micro_slug: string
+          micro_uuid: string | null
+          migrated_at: string | null
+          migration_status: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          job_id: string
+          micro_slug: string
+          micro_uuid?: string | null
+          migrated_at?: string | null
+          migration_status: string
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          job_id?: string
+          micro_slug?: string
+          micro_uuid?: string | null
+          migrated_at?: string | null
+          migration_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uuid_migration_log_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ux_health_checks: {
         Row: {
           check_type: string
@@ -10946,6 +10987,18 @@ export type Database = {
         }[]
       }
       get_user_role: { Args: { user_id: string }; Returns: string }
+      get_uuid_migration_stats: {
+        Args: never
+        Returns: {
+          completion_percentage: number
+          failed_migrations: number
+          jobs_with_uuid: number
+          jobs_without_uuid: number
+          skipped_migrations: number
+          successful_migrations: number
+          total_jobs: number
+        }[]
+      }
       has_admin_scope: {
         Args: { p_scope: string; p_user_id: string }
         Returns: boolean
@@ -11021,6 +11074,15 @@ export type Database = {
           p_user_id: string
         }
         Returns: undefined
+      }
+      migrate_job_uuids: {
+        Args: never
+        Returns: {
+          found_uuid: string
+          job_id: string
+          micro_slug: string
+          status: string
+        }[]
       }
       should_expose_feature: {
         Args: { p_flag_key: string; p_user_id: string }
