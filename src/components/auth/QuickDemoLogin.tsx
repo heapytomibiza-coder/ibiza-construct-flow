@@ -47,6 +47,28 @@ export function QuickDemoLogin() {
     setLoading(account.email);
     
     try {
+      // First, ensure demo accounts exist
+      console.log('🔵 [QuickDemoLogin] Creating demo accounts if needed...');
+      
+      const createResponse = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-demo-accounts`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+          }
+        }
+      );
+      
+      if (!createResponse.ok) {
+        console.warn('⚠️ [QuickDemoLogin] Demo account creation warning:', await createResponse.text());
+        // Continue anyway - accounts might already exist
+      } else {
+        const createData = await createResponse.json();
+        console.log('✅ [QuickDemoLogin] Demo accounts ready:', createData);
+      }
+
       // Sign in with demo account
       console.log('🔵 [QuickDemoLogin] Attempting sign in...');
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
