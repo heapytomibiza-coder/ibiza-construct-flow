@@ -38,7 +38,7 @@ export interface WizardQuestion {
   }
 }
 
-type ConstructionTrade = 'groundworks' | 'bathroom_renovation' | 'tiling' | 'waterproofing'
+type ConstructionTrade = 'groundworks' | 'bathroom_renovation' | 'tiling' | 'roofing' | 'waterproofing'
 
 interface ConstructionMicro {
   id: string
@@ -187,65 +187,130 @@ const questionBlocks: Record<string, WizardQuestion[]> = {
       ]
     }
   ],
-  coastal_environmental: [
+  roof_type_condition: [
     {
-      id: 'coastal_exposure',
-      question: 'Is this property exposed to coastal conditions?',
+      id: 'roof_type',
+      question: 'What type of roof or surface is this?',
       type: 'select',
       required: true,
       options: [
-        'Yes – direct sea exposure (< 500m from coast)',
-        'Yes – moderate exposure (500m-2km from coast)',
-        'No – inland property'
+        'Flat roof or terrace',
+        'Pitched tile roof',
+        'Mixed (flat + pitched areas)'
       ]
     },
     {
-      id: 'tourist_rental',
-      question: 'Is this a tourist rental property?',
-      type: 'select',
-      required: false,
-      options: [
-        'Yes – active rental calendar',
-        'Yes – occasional rentals',
-        'No – private residence'
-      ]
-    }
-  ],
-  waterproofing_specific: [
-    {
-      id: 'leak_severity',
-      question: 'Current leak or damage severity',
+      id: 'roof_cover_material',
+      question: 'What is the main existing surface?',
       type: 'select',
       required: true,
       options: [
-        'No active leaks – preventive maintenance',
-        'Minor damp patches or staining',
-        'Active leaks during rain',
-        'Severe damage – structural concerns'
-      ]
-    },
-    {
-      id: 'previous_repairs',
-      question: 'Have previous waterproofing repairs been attempted?',
-      type: 'select',
-      required: false,
-      options: [
-        'No previous repairs',
-        'Yes – short-term fixes only',
-        'Yes – professional work but failed',
+        'Clay or concrete tiles',
+        'Concrete slab',
+        'Existing membrane or felt',
+        'Stone / terrazzo finish',
         'Not sure'
       ]
     },
     {
-      id: 'urgency_seasonal',
-      question: 'Seasonal urgency',
+      id: 'roof_height_access',
+      question: 'How high is the roof and how easy is access?',
       type: 'select',
       required: true,
       options: [
-        'ASAP – before next rain',
-        'Before summer season (tourist rental)',
-        'Before winter (rainy season)',
-        'Flexible timing'
+        'Single-storey with easy access',
+        'Two-storey, ladder access possible',
+        'Three-storey or higher / difficult access'
+      ]
+    }
+  ],
+
+  leak_status: [
+    {
+      id: 'leak_severity',
+      question: 'What best describes the leak or water problem?',
+      type: 'select',
+      required: true,
+      options: [
+        'Preventative – no leak yet, want protection',
+        'Minor damp or stains inside',
+        'Active leaks when it rains heavily',
+        'Leaks even in light rain / severe issue'
+      ]
+    },
+    {
+      id: 'leak_location_known',
+      question: 'Is the leak location known?',
+      type: 'select',
+      required: false,
+      options: [
+        'Yes – specific area is known',
+        'Rough area only',
+        'No – leak location is unclear'
+      ]
+    }
+  ],
+
+  exposure_weather: [
+    {
+      id: 'coastal_exposure',
+      question: 'Is the property in a coastal/exposed location?',
+      type: 'select',
+      required: true,
+      options: [
+        'Yes – exposed to sea air / strong wind',
+        'No – more sheltered / inland',
+        'Not sure'
+      ]
+    },
+    {
+      id: 'sun_exposure',
+      question: 'How exposed is the area to sun during the day?',
+      type: 'select',
+      required: false,
+      options: [
+        'Mostly shaded',
+        'Partly exposed to sun',
+        'Fully exposed to strong sun most of the day'
+      ]
+    }
+  ],
+
+  waterproofing_scope: [
+    {
+      id: 'waterproof_area_size',
+      question: 'Approximate area to waterproof or repair',
+      type: 'select',
+      required: true,
+      options: [
+        'Small area (under 20 m²)',
+        'Medium area (20–50 m²)',
+        'Large area (50–100 m²)',
+        'Very large (over 100 m²)'
+      ]
+    },
+    {
+      id: 'existing_waterproof_layer',
+      question: 'What best describes the existing waterproofing?',
+      type: 'select',
+      required: true,
+      options: [
+        'No waterproofing / bare concrete',
+        'Old or damaged membrane',
+        'Tiled surface over old waterproofing',
+        'Recently waterproofed but still leaking',
+        'Not sure'
+      ]
+    },
+    {
+      id: 'standing_water',
+      question: 'Does water tend to sit or pool on the surface after rain?',
+      type: 'select',
+      required: false,
+      options: [
+        'No – water drains well',
+        'Some small puddles in places',
+        'Frequent standing water / poor drainage'
       ]
     }
   ]
@@ -274,10 +339,22 @@ const tradeBlocks: Record<ConstructionTrade, (keyof typeof questionBlocks)[]> = 
     'timing_constraints',
     'budget_expectations'
   ],
+  roofing: [
+    'access_site_conditions',
+    'dimensions_quantities',
+    'roof_type_condition',
+    'leak_status',
+    'exposure_weather',
+    'timing_constraints',
+    'budget_expectations'
+  ],
   waterproofing: [
     'access_site_conditions',
-    'coastal_environmental',
-    'waterproofing_specific',
+    'dimensions_quantities',
+    'roof_type_condition',
+    'waterproofing_scope',
+    'leak_status',
+    'exposure_weather',
     'materials_finish_level',
     'timing_constraints',
     'budget_expectations'
@@ -439,159 +516,99 @@ const constructionMicros: ConstructionMicro[] = [
   // === WATERPROOFING SERVICES ===
   {
     id: 'flat_roof_waterproofing',
-    label: 'Flat Roof Waterproofing & Repairs',
+    label: 'Flat Roof Waterproofing & Leak Repair',
     trade: 'waterproofing',
-    matchers: ['flat-roof', 'roof-waterproof', 'roof-leak', 'azotea', 'cubierta-plana'],
+    matchers: [
+      'flat-roof',
+      'flat roof',
+      'azotea',
+      'roof-waterproofing',
+      'roof-leak',
+      'roof sealing',
+      'flat roof leak'
+    ],
     microQuestions: [
       {
-        id: 'roof_area',
-        question: 'Approximate flat roof area',
+        id: 'flat_roof_use_type',
+        question: 'How is the flat roof or terrace used?',
         type: 'select',
         required: true,
         options: [
-          'Small – under 30m² (e.g., garage, small extension)',
-          'Medium – 30-80m² (e.g., single-storey villa section)',
-          'Large – 80-150m²',
-          'Very large – over 150m²'
+          'Purely technical (non-accessible roof)',
+          'Occasional access (maintenance only)',
+          'Regularly used terrace or chill-out area'
         ]
       },
       {
-        id: 'roof_access_type',
-        question: 'Roof access & safety considerations',
+        id: 'flat_roof_finish_expectation',
+        question: 'What finish level do you expect after waterproofing?',
         type: 'select',
         required: true,
         options: [
-          'Easy – internal stairs or permanent ladder',
-          'Moderate – external ladder access',
-          'Difficult – scaffolding or crane needed',
-          'Very difficult – narrow streets, no vehicle access'
+          'Hidden under tiles or another finish',
+          'Visible but purely functional',
+          'Visible and aesthetic (high-end terrace finish)'
         ]
       },
       {
-        id: 'current_membrane_type',
-        question: 'Current waterproofing system (if known)',
+        id: 'previous_roof_issues',
+        question: 'Have there been previous repairs or patches in this area?',
         type: 'select',
         required: false,
         options: [
-          'Bitumen membrane (asphalt felt)',
-          'Single-ply membrane (PVC/TPO)',
-          'Liquid applied coating',
-          'Concrete slab only – no membrane',
-          'Not sure / very old system'
-        ]
-      },
-      {
-        id: 'roof_usage',
-        question: 'Is the roof used as a terrace or functional space?',
-        type: 'select',
-        required: true,
-        options: [
-          'Yes – walkable terrace with furniture/use',
-          'Yes – occasional access for maintenance',
-          'No – purely structural roof'
-        ]
-      },
-      {
-        id: 'drainage_issues',
-        question: 'Are there drainage or ponding water issues?',
-        type: 'select',
-        required: true,
-        options: [
-          'No – water drains properly',
-          'Minor ponding in some areas',
-          'Significant ponding – poor drainage',
-          'Blocked or damaged drains'
-        ]
-      },
-      {
-        id: 'insulation_needed',
-        question: 'Do you need thermal insulation upgraded?',
-        type: 'select',
-        required: false,
-        options: [
-          'No – waterproofing only',
-          'Yes – add/upgrade insulation',
-          'Not sure – need advice'
+          'No previous repairs',
+          'Yes – a few small patches',
+          'Yes – many patches and previous repairs',
+          'Not sure'
         ]
       }
     ]
   },
   {
     id: 'tile_roof_repairs',
-    label: 'Tile Roof Repairs & Replacement',
-    trade: 'waterproofing',
-    matchers: ['tile-roof', 'tejas', 'roof-tiles', 'cubierta-tejas', 'roof-repair'],
+    label: 'Tile Roof Repairs & Maintenance',
+    trade: 'roofing',
+    matchers: [
+      'tile-roof',
+      'roof tiles',
+      'tejado',
+      'tejados',
+      'roof repair',
+      'roof tiles repair'
+    ],
     microQuestions: [
       {
-        id: 'roof_tile_area',
-        question: 'Roof area affected',
+        id: 'tile_roof_scope',
+        question: 'What best describes the scope of tile roof work?',
         type: 'select',
         required: true,
         options: [
-          'Small section – under 20m² (localized repair)',
-          'Medium section – 20-60m²',
-          'Large section – 60-120m²',
-          'Full roof – over 120m²'
+          'A few broken or slipped tiles',
+          'One section/side of the roof',
+          'Multiple sections or full roof inspection'
         ]
       },
       {
-        id: 'tile_issue_type',
-        question: 'Primary issue with tiles',
+        id: 'tile_roof_structure_condition',
+        question: 'Any visible sagging or structural concerns?',
         type: 'select',
         required: true,
         options: [
-          'Broken/cracked tiles – need replacement',
-          'Slipped or displaced tiles',
-          'Missing tiles',
-          'Leaks but tiles look intact (underlayment issue)',
-          'General wear – full replacement needed'
+          'No – structure looks straight and sound',
+          'Some minor uneven areas',
+          'Visible sagging or suspected structural issue',
+          'Not sure – need professional opinion'
         ]
       },
       {
-        id: 'roof_pitch_safety',
-        question: 'Roof pitch and safety requirements',
-        type: 'select',
-        required: true,
-        options: [
-          'Low pitch – safe to walk with care',
-          'Medium pitch – harnesses required',
-          'Steep pitch – scaffolding essential',
-          'Not sure'
-        ]
-      },
-      {
-        id: 'tile_matching',
-        question: 'Matching existing tiles',
+        id: 'access_equipment',
+        question: 'What access equipment do you think might be needed?',
         type: 'select',
         required: false,
         options: [
-          'Standard terracotta tiles – easy to match',
-          'Specific color/style – may need sourcing',
-          'Traditional marès or artisan tiles (Ibiza-specific)',
-          'Don\'t care about matching – modern replacement OK'
-        ]
-      },
-      {
-        id: 'underlayment_check',
-        question: 'Do you know the condition of the underlayment/membrane?',
-        type: 'select',
-        required: false,
-        options: [
-          'Good – tiles only need attention',
-          'Poor – needs replacement',
-          'Not sure – inspection needed'
-        ]
-      },
-      {
-        id: 'structural_concerns',
-        question: 'Any structural concerns with roof timbers?',
-        type: 'select',
-        required: true,
-        options: [
-          'No – structure seems solid',
-          'Some sagging or movement',
-          'Rotten beams or timbers visible',
-          'Not sure – needs structural check'
+          'Standard ladder access should be enough',
+          'Likely need scaffold or full edge protection',
+          'Unsure – need roof specialist to advise'
         ]
       }
     ]
@@ -600,104 +617,61 @@ const constructionMicros: ConstructionMicro[] = [
     id: 'terrace_waterproofing',
     label: 'Terrace & Balcony Waterproofing',
     trade: 'waterproofing',
-    matchers: ['terrace', 'balcony', 'terraza', 'balcon', 'terrace-waterproof', 'balcony-leak'],
+    matchers: [
+      'terrace',
+      'terraza',
+      'balcony',
+      'balcon',
+      'leak terrace',
+      'terrace waterproofing',
+      'water leaking below terrace'
+    ],
     microQuestions: [
       {
-        id: 'terrace_size',
-        question: 'Approximate terrace/balcony area',
+        id: 'terrace_use_type',
+        question: 'How is the terrace or balcony mainly used?',
         type: 'select',
         required: true,
         options: [
-          'Small – under 15m² (compact balcony)',
-          'Medium – 15-40m² (standard terrace)',
-          'Large – 40-80m² (spacious terrace)',
-          'Very large – over 80m² (multiple terraces/rooftop)'
+          'Occasional use (access only)',
+          'Regular seating / chill-out area',
+          'High-traffic terrace (dining / events)'
         ]
       },
       {
-        id: 'terrace_location_type',
-        question: 'Terrace location and type',
+        id: 'terrace_under_space',
+        question: 'What is directly underneath the leaking area?',
         type: 'select',
         required: true,
         options: [
-          'Ground level terrace – on soil/ground',
-          'Upper floor terrace – over living space',
-          'Rooftop terrace',
-          'Cantilevered balcony'
+          'Exterior space / garden',
+          'Interior room or living space',
+          'Garage or storage',
+          'Not sure'
         ]
       },
       {
-        id: 'current_surface_type',
-        question: 'Current terrace surface',
+        id: 'terrace_rental_constraint',
+        question: 'Do we need to work around tourist rentals or bookings?',
+        type: 'select',
+        required: false,
+        options: [
+          'No – terrace is free to use anytime',
+          'Yes – limited windows between bookings',
+          'Yes – but dates are flexible if needed'
+        ]
+      },
+      {
+        id: 'terrace_existing_surface',
+        question: 'Current terrace surface finish',
         type: 'select',
         required: true,
         options: [
           'Ceramic or porcelain tiles',
-          'Natural stone (marble, travertine)',
-          'Concrete – bare or painted',
-          'Old waterproof membrane (visible)',
-          'Wooden decking',
-          'Mixed / not sure'
-        ]
-      },
-      {
-        id: 'remove_existing_surface',
-        question: 'Will existing surface need removal?',
-        type: 'select',
-        required: true,
-        options: [
-          'Yes – remove everything down to structural slab',
-          'Partial – remove tiles but keep screed',
-          'No – apply new system over existing',
-          'Not sure – need professional assessment'
-        ]
-      },
-      {
-        id: 'leak_impact',
-        question: 'What is affected by leaks?',
-        type: 'multiselect',
-        required: false,
-        options: [
-          'Living space below',
-          'Bedrooms below',
-          'Electrical fittings',
-          'Structural damage visible',
-          'No leaks yet – preventive work'
-        ]
-      },
-      {
-        id: 'terrace_usage_needs',
-        question: 'How is the terrace used?',
-        type: 'select',
-        required: false,
-        options: [
-          'Light foot traffic – occasional use',
-          'Regular use – outdoor dining/living',
-          'Heavy use – furniture, planters, BBQ',
-          'Vehicle access (e.g., rooftop parking)'
-        ]
-      },
-      {
-        id: 'salt_damage_concern',
-        question: 'Salt damage from coastal exposure?',
-        type: 'select',
-        required: false,
-        options: [
-          'Yes – visible salt deposits or corrosion',
-          'Possible – property is coastal',
-          'No – inland property'
-        ]
-      },
-      {
-        id: 'finish_preference',
-        question: 'Preferred finish after waterproofing',
-        type: 'select',
-        required: false,
-        options: [
-          'Re-tile – traditional look',
-          'Liquid membrane – modern seamless finish',
-          'Tile over membrane',
-          'Not decided – need advice'
+          'Natural stone or terrazzo',
+          'Painted or coated concrete',
+          'Timber or composite decking',
+          'Not sure'
         ]
       }
     ]
