@@ -53,8 +53,9 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
     );
   }
@@ -68,10 +69,10 @@ async function generateRevenueReport(supabaseClient: any, userId: string, dateRa
     .gte('processed_at', dateRange.start)
     .lte('processed_at', dateRange.end);
 
-  const totalRevenue = transactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
-  const completedTransactions = transactions?.filter(t => t.status === 'completed').length || 0;
+  const totalRevenue = transactions?.reduce((sum: number, t: any) => sum + Number(t.amount), 0) || 0;
+  const completedTransactions = transactions?.filter((t: any) => t.status === 'completed').length || 0;
 
-  const byCategory = transactions?.reduce((acc, t) => {
+  const byCategory = transactions?.reduce((acc: Record<string, number>, t: any) => {
     acc[t.category] = (acc[t.category] || 0) + Number(t.amount);
     return acc;
   }, {});
@@ -94,7 +95,7 @@ async function generatePerformanceReport(supabaseClient: any, userId: string, da
     .gte('period_start', dateRange.start)
     .lte('period_end', dateRange.end);
 
-  const avgByType = metrics?.reduce((acc, m) => {
+  const avgByType = metrics?.reduce((acc: Record<string, { sum: number; count: number }>, m: any) => {
     if (!acc[m.metric_type]) {
       acc[m.metric_type] = { sum: 0, count: 0 };
     }
@@ -103,7 +104,7 @@ async function generatePerformanceReport(supabaseClient: any, userId: string, da
     return acc;
   }, {});
 
-  const averages = Object.entries(avgByType || {}).reduce((acc, [type, data]: [string, any]) => {
+  const averages = Object.entries(avgByType || {}).reduce((acc: Record<string, number>, [type, data]: [string, any]) => {
     acc[type] = data.sum / data.count;
     return acc;
   }, {});
@@ -123,12 +124,12 @@ async function generateActivityReport(supabaseClient: any, userId: string, dateR
     .gte('created_at', dateRange.start)
     .lte('created_at', dateRange.end);
 
-  const eventsByType = events?.reduce((acc, e) => {
+  const eventsByType = events?.reduce((acc: Record<string, number>, e: any) => {
     acc[e.event_type] = (acc[e.event_type] || 0) + 1;
     return acc;
   }, {});
 
-  const eventsByCategory = events?.reduce((acc, e) => {
+  const eventsByCategory = events?.reduce((acc: Record<string, number>, e: any) => {
     acc[e.event_category] = (acc[e.event_category] || 0) + 1;
     return acc;
   }, {});

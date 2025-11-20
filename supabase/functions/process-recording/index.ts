@@ -44,17 +44,15 @@ serve(async (req) => {
 
     console.log(`Processed recording for session: ${sessionId}`);
 
-    // Trigger transcription in background
-    EdgeRuntime.waitUntil(
-      fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/transcribe-call`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
-        },
-        body: JSON.stringify({ sessionId, recordingUrl }),
-      })
-    );
+    // Trigger transcription in background (fire and forget)
+    fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/transcribe-call`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
+      },
+      body: JSON.stringify({ sessionId, recordingUrl }),
+    }).catch(err => console.error('Background transcription error:', err));
 
     return new Response(
       JSON.stringify({
@@ -67,8 +65,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error processing recording:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

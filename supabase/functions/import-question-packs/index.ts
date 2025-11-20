@@ -282,6 +282,7 @@ Deno.serve(async (req) => {
     
   } catch (error) {
     console.error('Error parsing:', error);
-    return json({ error: error.message }, 500);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return json({ error: errorMessage }, 500);
   }
 });
