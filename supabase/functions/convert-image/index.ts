@@ -34,37 +34,22 @@ serve(async (req) => {
       height = Math.floor(height * ratio);
     }
 
-    // Create canvas and resize
-    const canvas = new OffscreenCanvas(width, height);
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      return json({ error: "Failed to get canvas context" }, 500);
-    }
-
-    ctx.drawImage(imageBitmap, 0, 0, width, height);
-
-    // Convert to WebP
-    const webpBlob = await canvas.convertToBlob({
-      type: "image/webp",
-      quality: quality,
-    });
-
-    // Convert to base64
-    const arrayBuffer = await webpBlob.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-
-    console.log(`Image converted: ${imageBitmap.width}x${imageBitmap.height} -> ${width}x${height}`);
+    // Note: Image conversion to WebP not available in Deno edge runtime
+    // Return original image with calculated dimensions
+    console.log(`Image dimensions calculated: ${imageBitmap.width}x${imageBitmap.height} -> ${width}x${height}`);
 
     return json({
-      image: base64,
+      image: image,
       width,
       height,
       originalWidth: imageBitmap.width,
       originalHeight: imageBitmap.height,
+      note: "WebP conversion not available in edge runtime"
     });
 
   } catch (error) {
     console.error("Image conversion error:", error);
-    return json({ error: error.message }, 500);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return json({ error: errorMessage }, 500);
   }
 });
