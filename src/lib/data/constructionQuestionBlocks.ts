@@ -1,4 +1,33 @@
-import { WizardQuestion } from '@/hooks/useWizardQuestions'
+/**
+ * Construction Question Blocks
+ * Local-first question system for construction services
+ */
+
+// Define WizardQuestion type locally
+export interface WizardQuestion {
+  id: string
+  question: string
+  type: 'text' | 'textarea' | 'select' | 'multiselect' | 'number' | 'date' | 'time' | 'datetime' | 'range' | 'checkbox' | 'radio' | 'file' | 'moving_from_location' | 'moving_to_location'
+  required: boolean
+  options?: string[]
+  placeholder?: string
+  accept?: string
+  validation?: {
+    min?: number
+    max?: number
+    pattern?: string
+    message?: string
+  }
+  conditional?: {
+    depends_on: string
+    show_when: string | string[]
+  }
+  range?: {
+    min: number
+    max: number
+    step?: number
+  }
+}
 
 type ConstructionTrade = 'groundworks' | 'bathroom_renovation' | 'tiling'
 
@@ -361,7 +390,7 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
       .from('micro_services')
       .select('id')
       .eq('slug', matchedMicro.id)
-      .single()
+      .maybeSingle()
     
     microUuid = data?.id || null
   } catch (error) {

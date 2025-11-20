@@ -15,7 +15,7 @@ export const jobPayloadSchema = z.object({
   location_type: z.enum(['in_person', 'online', 'both']),
   budget_type: z.enum(['fixed', 'hourly', 'negotiable']),
   budget_amount: z
-    .number({ invalid_type_error: 'Budget must be a number' })
+    .number({ message: 'Budget must be a number' })
     .positive('Budget must be positive')
     .optional(),
   urgency: z.enum(['low', 'medium', 'high']),
