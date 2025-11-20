@@ -1,8 +1,9 @@
 /**
  * Construction Question Blocks
- * Local-first question system for construction services
+ * DB-first question system with local fallback
  */
 
+import { supabase } from '@/integrations/supabase/client';
 import { uuidLookupLogger } from '@/lib/monitoring/uuidLookupLogger';
 import { microServiceCache } from '@/lib/cache/microServiceCache';
 import { retryUUIDLookup, uuidLookupCircuitBreaker } from '@/lib/utils/uuidLookupRetry';
@@ -36,6 +37,64 @@ export interface WizardQuestion {
     max: number
     step?: number
   }
+}
+
+// Type for question pack from database
+interface QuestionPackDef {
+  id: string;
+  question: string;
+  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'number' | 'file';
+  required?: boolean;
+  placeholder?: string;
+  options?: Array<{ value: string; label: string }>;
+  helpText?: string;
+  dependsOn?: {
+    questionId: string;
+    value: string | string[];
+  };
+  accept?: string;
+}
+
+// Transform database question to WizardQuestion format
+function transformToWizardQuestion(q: QuestionPackDef): WizardQuestion {
+  // Map question type
+  let type: WizardQuestion['type'] = 'textarea';
+  
+  switch (q.type) {
+    case 'text':
+    case 'textarea':
+      type = q.type;
+      break;
+    case 'select':
+      type = 'select';
+      break;
+    case 'radio':
+      type = 'radio';
+      break;
+    case 'checkbox':
+      type = 'checkbox';
+      break;
+    case 'number':
+      type = 'number';
+      break;
+    case 'file':
+      type = 'file';
+      break;
+  }
+
+  return {
+    id: q.id,
+    question: q.question,
+    type,
+    required: q.required || false,
+    placeholder: q.placeholder,
+    options: q.options?.map(opt => opt.label),
+    accept: q.accept,
+    conditional: q.dependsOn ? {
+      depends_on: q.dependsOn.questionId,
+      show_when: q.dependsOn.value
+    } : undefined
+  };
 }
 
 type ConstructionTrade = 'groundworks' | 'bathroom_renovation' | 'tiling' | 'roofing' | 'waterproofing'
@@ -701,7 +760,8 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
     return { questions: [] as WizardQuestion[], microId: null as string | null, microUuid: null as string | null }
   }
 
-  // Look up UUID with caching, retry, and error handling
+  // ========== NEW: TRY DATABASE FIRST ==========
+  // Look up micro-service UUID and check for database question pack
   let microUuid: string | null = null;
   const lookupStartTime = performance.now();
   let fallbackUsed = false;
@@ -710,16 +770,13 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
     // Check cache first
     const cachedUuid = microServiceCache.get(matchedMicro.id);
     if (cachedUuid) {
-      const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
       microUuid = cachedUuid;
-      uuidLookupLogger.logSuccess(matchedMicro.id, microUuid, lookupTimeMs, false);
       console.log('[UUID Lookup] Cache hit for:', matchedMicro.id);
     } else {
       // Lookup from database with retry and circuit breaker
       const lookupOperation = async () => {
-        const { supabase } = await import('@/integrations/supabase/client');
         const { data, error } = await supabase
-          .from('micro_services')
+          .from('service_micro_categories')
           .select('id')
           .eq('slug', matchedMicro.id)
           .maybeSingle();
@@ -754,6 +811,35 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
           microServiceCache.set(matchedMicro.id, microUuid);
           uuidLookupLogger.logSuccess(matchedMicro.id, microUuid, lookupTimeMs, fallbackUsed);
           console.log('[UUID Lookup] Database lookup successful:', matchedMicro.id, '→', microUuid);
+
+          // ========== NEW: CHECK FOR QUESTION PACK IN DATABASE ==========
+          const { data: packData, error: packError } = await supabase
+            .from('question_packs')
+            .select('content')
+            .eq('micro_slug', matchedMicro.id)
+            .eq('is_active', true)
+            .eq('status', 'approved')
+            .order('version', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (!packError && packData?.content) {
+            const content = packData.content as { questions?: QuestionPackDef[] };
+            if (content.questions && Array.isArray(content.questions)) {
+              // Found database questions - use them!
+              const transformedQuestions = content.questions.map(transformToWizardQuestion);
+              
+              console.log(`[Question Pack] ✅ Loaded ${transformedQuestions.length} questions from DB for: ${matchedMicro.id}`);
+              
+              return {
+                questions: transformedQuestions,
+                microId: matchedMicro.id,
+                microUuid
+              };
+            }
+          }
+          
+          console.log(`[Question Pack] No DB pack found for ${matchedMicro.id}, using fallback questions`);
         }
       } catch (lookupError) {
         const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
@@ -786,6 +872,9 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
     // Continue with fallback (microUuid remains null)
   }
 
+  // ========== FALLBACK: USE EXISTING HARDCODED QUESTIONS ==========
+  console.log(`[Question Pack] Using hardcoded fallback questions for: ${matchedMicro.id}`);
+  
   const blockIds = tradeBlocks[matchedMicro.trade]
   const sharedQuestions = blockIds.flatMap(blockId => questionBlocks[blockId])
 
