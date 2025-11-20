@@ -65,15 +65,10 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Construction'), name: 'Outdoor Construction', slug: 'outdoor-construction', icon_name: 'Leaf', icon_emoji: '🌳', display_order: 7, is_active: true },
       { category_id: categoryMap.get('Construction'), name: 'Renovations & Home Upgrades', slug: 'renovations-home-upgrades', icon_name: 'Sparkles', icon_emoji: '✨', display_order: 8, is_active: true },
       
-      // Carpentry - 8 subcategories
-      { category_id: categoryMap.get('Carpentry'), name: 'Custom Furniture', slug: 'custom-furniture', icon_name: 'Wrench', icon_emoji: '🪑', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'Doors & Windows', slug: 'doors-windows', icon_name: 'DoorOpen', icon_emoji: '🚪', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'Decking & Outdoor', slug: 'decking-outdoor', icon_name: 'Leaf', icon_emoji: '🌳', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'General Joinery', slug: 'general-joinery', icon_name: 'Hammer', icon_emoji: '🔨', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'Built-in Wardrobes', slug: 'built-in-wardrobes', icon_name: 'Square', icon_emoji: '🚪', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'Staircases', slug: 'staircases', icon_name: 'Layers', icon_emoji: '🪜', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'Shelving & Storage', slug: 'shelving-storage', icon_name: 'Square', icon_emoji: '📚', display_order: 7, is_active: true },
-      { category_id: categoryMap.get('Carpentry'), name: 'Skirting & Architrave', slug: 'skirting-architrave', icon_name: 'Ruler', icon_emoji: '📐', display_order: 8, is_active: true },
+      // Carpentry - 3 NEW subcategories (detailed structure)
+      { category_id: categoryMap.get('Carpentry'), name: 'Custom Furniture', slug: 'custom-furniture', icon_name: 'Armchair', icon_emoji: '🪑', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Fitted Wardrobes', slug: 'fitted-wardrobes', icon_name: 'Boxes', icon_emoji: '📦', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Bespoke Joinery', slug: 'bespoke-joinery', icon_name: 'Ruler', icon_emoji: '📐', display_order: 3, is_active: true },
       
       // Plumbing - 8 subcategories
       { category_id: categoryMap.get('Plumbing'), name: 'General Plumbing', slug: 'general-plumbing', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 1, is_active: true },
@@ -296,6 +291,29 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('renovations-home-upgrades'), name: 'Open-plan conversions', slug: 'open-plan-conversions', display_order: 3, is_active: true },
       { subcategory_id: subcategoryMap.get('renovations-home-upgrades'), name: 'Layout changes', slug: 'layout-changes', display_order: 4, is_active: true },
       { subcategory_id: subcategoryMap.get('renovations-home-upgrades'), name: 'Modernisation & upgrades', slug: 'modernisation-upgrades', display_order: 5, is_active: true },
+      
+      // Carpentry microservices (15 NEW detailed micro-services)
+      // Custom Furniture (5)
+      { subcategory_id: subcategoryMap.get('custom-furniture'), name: 'Bespoke tables', slug: 'bespoke-tables', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('custom-furniture'), name: 'Shelving & storage units', slug: 'shelving-storage-units', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('custom-furniture'), name: 'TV & media units', slug: 'tv-media-units', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('custom-furniture'), name: 'Beds & headboards', slug: 'beds-headboards', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('custom-furniture'), name: 'Built-in benches & seating', slug: 'built-in-benches-seating', display_order: 5, is_active: true },
+      
+      // Fitted Wardrobes (5)
+      { subcategory_id: subcategoryMap.get('fitted-wardrobes'), name: 'Sliding door wardrobes', slug: 'sliding-door-wardrobes', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('fitted-wardrobes'), name: 'Hinged door wardrobes', slug: 'hinged-door-wardrobes', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('fitted-wardrobes'), name: 'Walk-in wardrobes', slug: 'walk-in-wardrobes', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('fitted-wardrobes'), name: 'Under-stair storage', slug: 'under-stair-storage', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('fitted-wardrobes'), name: 'Built-in cupboards', slug: 'built-in-cupboards', display_order: 5, is_active: true },
+      
+      // Bespoke Joinery (5)
+      { subcategory_id: subcategoryMap.get('bespoke-joinery'), name: 'Doors & frames', slug: 'doors-frames', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('bespoke-joinery'), name: 'Window frames & seats', slug: 'window-frames-seats', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('bespoke-joinery'), name: 'Staircases & handrails', slug: 'staircases-handrails', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('bespoke-joinery'), name: 'Skirting & architraves', slug: 'skirting-architraves', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('bespoke-joinery'), name: 'Custom cabinetry', slug: 'custom-cabinetry', display_order: 5, is_active: true },
+      
       { subcategory_id: subcategoryMap.get('plastering'), name: 'Wall Plastering', slug: 'wall-plastering', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('plastering'), name: 'Ceiling Plastering', slug: 'ceiling-plastering', display_order: 2, is_active: true },
       

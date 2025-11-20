@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.seed-construction-questions]
 verify_jwt = false
+
+[functions.seed-carpentry-questions]
+verify_jwt = false
