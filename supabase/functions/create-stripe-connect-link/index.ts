@@ -110,6 +110,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Create Stripe Connect link error:", error);
-    return json({ error: error.message }, 500);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return json({ error: errorMessage }, 500);
   }
 });

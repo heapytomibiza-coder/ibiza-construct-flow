@@ -90,7 +90,7 @@ serve(async (req) => {
     // Create Stripe PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
-      currency: currency.toLowerCase(),
+      currency: (currency || 'EUR').toLowerCase(),
       customer: customerId,
       metadata: {
         job_id: jobId,
@@ -133,9 +133,11 @@ serve(async (req) => {
       }
     );
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
     console.error('[create-job-payment] Error:', {
-      error: error.message,
-      stack: error.stack
+      error: errorMessage,
+      stack: errorStack
     });
     return createErrorResponse(error);
   }
