@@ -55,17 +55,15 @@ Deno.serve(async (req) => {
 
     // Step 2: Populate Subcategories (expanded comprehensively)
     const subcategories = [
-      // Construction - 10 subcategories
-      { category_id: categoryMap.get('Construction'), name: 'General Construction', slug: 'general-construction', icon_name: 'Building2', icon_emoji: '🏗️', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Masonry', slug: 'masonry', icon_name: 'Square', icon_emoji: '🧱', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Roofing', slug: 'roofing', icon_name: 'Home', icon_emoji: '🏠', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Tiling', slug: 'tiling', icon_name: 'Layers', icon_emoji: '⬜', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Plastering', slug: 'plastering', icon_name: 'Paintbrush', icon_emoji: '🏗️', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Bricklaying', slug: 'bricklaying', icon_name: 'Square', icon_emoji: '🧱', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Concrete Work', slug: 'concrete-work', icon_name: 'HardHat', icon_emoji: '🏗️', display_order: 7, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Extensions & Conversions', slug: 'extensions-conversions', icon_name: 'Building', icon_emoji: '🏡', display_order: 8, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Structural Work', slug: 'structural-work', icon_name: 'HardHat', icon_emoji: '⚙️', display_order: 9, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Demolition', slug: 'demolition', icon_name: 'Hammer', icon_emoji: '🔨', display_order: 10, is_active: true },
+      // Construction - 8 NEW subcategories (detailed structure)
+      { category_id: categoryMap.get('Construction'), name: 'Foundation Work', slug: 'foundation-work', icon_name: 'HardHat', icon_emoji: '🏗️', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Structural Repairs', slug: 'structural-repairs', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Extensions', slug: 'extensions', icon_name: 'Building', icon_emoji: '🏡', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Brickwork, Masonry & Concrete', slug: 'brickwork-masonry-concrete', icon_name: 'Square', icon_emoji: '🧱', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Roofing', slug: 'roofing', icon_name: 'Home', icon_emoji: '🏠', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Tiling & Waterproofing', slug: 'tiling-waterproofing', icon_name: 'Layers', icon_emoji: '💧', display_order: 6, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Outdoor Construction', slug: 'outdoor-construction', icon_name: 'Leaf', icon_emoji: '🌳', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Renovations & Home Upgrades', slug: 'renovations-home-upgrades', icon_name: 'Sparkles', icon_emoji: '✨', display_order: 8, is_active: true },
       
       // Carpentry - 8 subcategories
       { category_id: categoryMap.get('Carpentry'), name: 'Custom Furniture', slug: 'custom-furniture', icon_name: 'Wrench', icon_emoji: '🪑', display_order: 1, is_active: true },
@@ -241,15 +239,63 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('deep-cleaning'), name: 'Deep Kitchen Clean', slug: 'deep-kitchen-clean', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('deep-cleaning'), name: 'Deep Bathroom Clean', slug: 'deep-bathroom-clean', display_order: 2, is_active: true },
       
-      // Construction microservices (existing + expanded)
-      { subcategory_id: subcategoryMap.get('general-construction'), name: 'Wall Repair', slug: 'wall-repair', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('general-construction'), name: 'Ceiling Repair', slug: 'ceiling-repair', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('carpentry'), name: 'Cabinet Installation', slug: 'cabinet-installation', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('carpentry'), name: 'Door Installation', slug: 'door-installation-carpentry', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('roofing'), name: 'Roof Repair', slug: 'roof-repair', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('roofing'), name: 'Gutter Installation', slug: 'gutter-installation', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('tiling'), name: 'Floor Tiling', slug: 'floor-tiling', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('tiling'), name: 'Wall Tiling', slug: 'wall-tiling', display_order: 2, is_active: true },
+      // Construction microservices (41 NEW detailed micro-services)
+      // Foundation Work (5)
+      { subcategory_id: subcategoryMap.get('foundation-work'), name: 'New foundations', slug: 'new-foundations', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('foundation-work'), name: 'Concrete base preparation', slug: 'concrete-base-preparation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('foundation-work'), name: 'Leveling uneven ground', slug: 'levelling-uneven-ground', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('foundation-work'), name: 'Retaining walls', slug: 'retaining-walls', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('foundation-work'), name: 'Drainage around foundations', slug: 'foundation-drainage', display_order: 5, is_active: true },
+      
+      // Structural Repairs (5)
+      { subcategory_id: subcategoryMap.get('structural-repairs'), name: 'Repairing large cracks', slug: 'repairing-large-cracks', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('structural-repairs'), name: 'Wall strengthening', slug: 'wall-strengthening', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('structural-repairs'), name: 'Fixing movement or sinking', slug: 'fixing-movement-or-sinking', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('structural-repairs'), name: 'Replacing damaged structural elements', slug: 'replacing-structural-elements', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('structural-repairs'), name: 'Safe wall removal / openings', slug: 'safe-wall-removal-openings', display_order: 5, is_active: true },
+      
+      // Extensions (6)
+      { subcategory_id: subcategoryMap.get('extensions'), name: 'Home extensions (single floor)', slug: 'home-extension-single-floor', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('extensions'), name: 'Home extensions (two floors)', slug: 'home-extension-two-floors', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('extensions'), name: 'Adding new rooms', slug: 'adding-new-rooms', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('extensions'), name: 'Garage conversions', slug: 'garage-conversions', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('extensions'), name: 'Terrace or rooftop extensions', slug: 'terrace-rooftop-extensions', display_order: 5, is_active: true },
+      { subcategory_id: subcategoryMap.get('extensions'), name: 'Conservatories / glass rooms', slug: 'conservatories-glass-rooms', display_order: 6, is_active: true },
+      
+      // Brickwork, Masonry & Concrete (5)
+      { subcategory_id: subcategoryMap.get('brickwork-masonry-concrete'), name: 'Building or repairing walls', slug: 'building-repairing-walls', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('brickwork-masonry-concrete'), name: 'Garden / boundary walls', slug: 'garden-boundary-walls', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('brickwork-masonry-concrete'), name: 'Concrete bases, paths & floors', slug: 'concrete-bases-paths-floors', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('brickwork-masonry-concrete'), name: 'Stone or brick restoration', slug: 'stone-brick-restoration', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('brickwork-masonry-concrete'), name: 'Rendering & exterior finishing', slug: 'rendering-exterior-finishing', display_order: 5, is_active: true },
+      
+      // Roofing (5)
+      { subcategory_id: subcategoryMap.get('roofing'), name: 'Roof repairs', slug: 'roof-repairs', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('roofing'), name: 'New roof installation', slug: 'new-roof-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('roofing'), name: 'Flat roofs', slug: 'flat-roofs', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('roofing'), name: 'Waterproofing', slug: 'roof-waterproofing', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('roofing'), name: 'Guttering & drainage', slug: 'guttering-drainage', display_order: 5, is_active: true },
+      
+      // Tiling & Waterproofing (5)
+      { subcategory_id: subcategoryMap.get('tiling-waterproofing'), name: 'Floor tiling', slug: 'floor-tiling', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('tiling-waterproofing'), name: 'Wall tiling', slug: 'wall-tiling', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('tiling-waterproofing'), name: 'Terrace waterproofing', slug: 'terrace-waterproofing', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('tiling-waterproofing'), name: 'Re-grouting & re-sealing', slug: 'regrouting-resealing', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('tiling-waterproofing'), name: 'Shower & wetroom tiling', slug: 'shower-wetroom-tiling', display_order: 5, is_active: true },
+      
+      // Outdoor Construction (5)
+      { subcategory_id: subcategoryMap.get('outdoor-construction'), name: 'Terraces & patios', slug: 'terraces-patios', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('outdoor-construction'), name: 'Outdoor kitchens', slug: 'outdoor-kitchens', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('outdoor-construction'), name: 'Pergolas & gazebos', slug: 'pergolas-gazebos', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('outdoor-construction'), name: 'Fencing & boundary structures', slug: 'fencing-boundary-structures', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('outdoor-construction'), name: 'Driveways & pathways', slug: 'driveways-pathways', display_order: 5, is_active: true },
+      
+      // Renovations & Home Upgrades (5)
+      { subcategory_id: subcategoryMap.get('renovations-home-upgrades'), name: 'Full home renovation', slug: 'full-home-renovation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('renovations-home-upgrades'), name: 'Partial renovation', slug: 'partial-renovation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('renovations-home-upgrades'), name: 'Open-plan conversions', slug: 'open-plan-conversions', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('renovations-home-upgrades'), name: 'Layout changes', slug: 'layout-changes', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('renovations-home-upgrades'), name: 'Modernisation & upgrades', slug: 'modernisation-upgrades', display_order: 5, is_active: true },
       { subcategory_id: subcategoryMap.get('plastering'), name: 'Wall Plastering', slug: 'wall-plastering', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('plastering'), name: 'Ceiling Plastering', slug: 'ceiling-plastering', display_order: 2, is_active: true },
       
