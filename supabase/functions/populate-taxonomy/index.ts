@@ -21,25 +21,26 @@ Deno.serve(async (req) => {
 
     console.log('Starting taxonomy population...')
 
-    // Step 1: Populate Categories (14 total: 8 core + 6 specialist)
+    // Step 1: Populate Categories (15 total: 9 core + 6 specialist)
     const categories = [
       // Core Trade Categories
-      { name: 'Construction', slug: 'construction', icon_emoji: '🔨', icon_name: 'Hammer', display_order: 1, category_group: 'core', is_active: true, examples: ['New builds', 'Extensions', 'Renovations', 'Structural work'] },
-      { name: 'Plumbing', slug: 'plumbing', icon_emoji: '💧', icon_name: 'Droplet', display_order: 2, category_group: 'core', is_active: true, examples: ['Leak repairs', 'Pipe installation', 'Bathroom fitting', 'Water heaters'] },
-      { name: 'Electrical', slug: 'electrical', icon_emoji: '⚡', icon_name: 'Zap', display_order: 3, category_group: 'core', is_active: true, examples: ['Rewiring', 'Socket installation', 'Lighting', 'Smart home'] },
-      { name: 'HVAC', slug: 'hvac', icon_emoji: '🌬️', icon_name: 'Wind', display_order: 4, category_group: 'core', is_active: true, examples: ['Air conditioning', 'Heating', 'Ventilation', 'Installation'] },
-      { name: 'Painting & Decorating', slug: 'painting', icon_emoji: '🎨', icon_name: 'Paintbrush', display_order: 5, category_group: 'core', is_active: true, examples: ['Interior painting', 'Exterior painting', 'Decorating', 'Wallpapering'] },
-      { name: 'Gardening & Landscaping', slug: 'gardening', icon_emoji: '🌿', icon_name: 'Leaf', display_order: 6, category_group: 'core', is_active: true, examples: ['Garden design', 'Lawn care', 'Tree services', 'Landscaping'] },
-      { name: 'Cleaning', slug: 'cleaning', icon_emoji: '✨', icon_name: 'Sparkles', display_order: 7, category_group: 'core', is_active: true, examples: ['House cleaning', 'Deep cleaning', 'Commercial cleaning', 'End of tenancy'] },
-      { name: 'Pool & Spa', slug: 'pool-spa', icon_emoji: '🌊', icon_name: 'Waves', display_order: 8, category_group: 'core', is_active: true, examples: ['Pool installation', 'Pool maintenance', 'Spa services', 'Repairs'] },
+      { name: 'Construction', slug: 'construction', icon_emoji: '🏗️', icon_name: 'Building2', display_order: 1, category_group: 'STRUCTURAL', is_active: true, examples: ['New builds', 'Extensions', 'Renovations', 'Structural work'] },
+      { name: 'Carpentry', slug: 'carpentry', icon_emoji: '🔨', icon_name: 'Hammer', display_order: 2, category_group: 'STRUCTURAL', is_active: true, examples: ['Custom furniture', 'Doors', 'Decking', 'Joinery'] },
+      { name: 'Plumbing', slug: 'plumbing', icon_emoji: '💧', icon_name: 'Droplet', display_order: 3, category_group: 'MEP', is_active: true, examples: ['Leak repairs', 'Pipe installation', 'Bathroom fitting', 'Water heaters'] },
+      { name: 'Electrical', slug: 'electrical', icon_emoji: '⚡', icon_name: 'Zap', display_order: 4, category_group: 'MEP', is_active: true, examples: ['Rewiring', 'Socket installation', 'Lighting', 'Smart home'] },
+      { name: 'HVAC', slug: 'hvac', icon_emoji: '🌬️', icon_name: 'Wind', display_order: 5, category_group: 'MEP', is_active: true, examples: ['Air conditioning', 'Heating', 'Ventilation', 'Installation'] },
+      { name: 'Painting & Decorating', slug: 'painting-decorating', icon_emoji: '🎨', icon_name: 'Paintbrush', display_order: 6, category_group: 'FINISHES', is_active: true, examples: ['Interior painting', 'Exterior painting', 'Decorating', 'Wallpapering'] },
+      { name: 'Gardening & Landscaping', slug: 'gardening-landscaping', icon_emoji: '🌿', icon_name: 'Leaf', display_order: 7, category_group: 'EXTERIOR', is_active: true, examples: ['Garden design', 'Lawn care', 'Tree services', 'Landscaping'] },
+      { name: 'Cleaning', slug: 'cleaning', icon_emoji: '✨', icon_name: 'Sparkles', display_order: 8, category_group: 'SERVICES', is_active: true, examples: ['House cleaning', 'Deep cleaning', 'Commercial cleaning', 'End of tenancy'] },
+      { name: 'Pool & Spa', slug: 'pool-spa', icon_emoji: '🌊', icon_name: 'Waves', display_order: 9, category_group: 'EXTERIOR', is_active: true, examples: ['Pool installation', 'Pool maintenance', 'Spa services', 'Repairs'] },
       
-      // Specialist Categories (NEW)
-      { name: 'Architects & Design', slug: 'architects-design', icon_emoji: '📐', icon_name: 'Ruler', display_order: 9, category_group: 'specialist', is_active: true, examples: ['Building plans', 'Interior design', '3D renders', 'Structural calculations'] },
-      { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom', icon_emoji: '🚿', icon_name: 'Bath', display_order: 10, category_group: 'specialist', is_active: true, examples: ['Kitchen fitting', 'Bathroom design', 'Wetrooms', 'Cabinet installation'] },
-      { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows', icon_emoji: '🚪', icon_name: 'DoorOpen', display_order: 11, category_group: 'specialist', is_active: true, examples: ['Flooring', 'Window installation', 'Door fitting', 'Double glazing'] },
-      { name: 'Handyman & General Services', slug: 'handyman-general', icon_emoji: '🔧', icon_name: 'Wrench', display_order: 12, category_group: 'core', is_active: true, examples: ['General repairs', 'Furniture assembly', 'Odd jobs', 'Maintenance'] },
-      { name: 'Commercial & Industrial', slug: 'commercial-industrial', icon_emoji: '🏢', icon_name: 'Building', display_order: 13, category_group: 'specialist', is_active: true, examples: ['Office fit-outs', 'Retail spaces', 'Commercial projects', 'Industrial work'] },
-      { name: 'Legal & Regulatory', slug: 'legal-regulatory', icon_emoji: '📋', icon_name: 'FileText', display_order: 14, category_group: 'specialist', is_active: true, examples: ['Building permits', 'Planning applications', 'Compliance', 'Legal support'] }
+      // Specialist Categories
+      { name: 'Architects & Design', slug: 'architects-design', icon_emoji: '📐', icon_name: 'Ruler', display_order: 10, category_group: 'PROFESSIONAL', is_active: true, examples: ['Building plans', 'Interior design', '3D renders', 'Structural calculations'] },
+      { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom', icon_emoji: '🚿', icon_name: 'Bath', display_order: 11, category_group: 'PROFESSIONAL', is_active: true, examples: ['Kitchen fitting', 'Bathroom design', 'Wetrooms', 'Cabinet installation'] },
+      { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows', icon_emoji: '🚪', icon_name: 'DoorOpen', display_order: 12, category_group: 'PROFESSIONAL', is_active: true, examples: ['Flooring', 'Window installation', 'Door fitting', 'Double glazing'] },
+      { name: 'Handyman & General Services', slug: 'handyman-general', icon_emoji: '🔧', icon_name: 'Wrench', display_order: 13, category_group: 'SERVICES', is_active: true, examples: ['General repairs', 'Furniture assembly', 'Odd jobs', 'Maintenance'] },
+      { name: 'Commercial & Industrial', slug: 'commercial-industrial', icon_emoji: '🏢', icon_name: 'Building', display_order: 14, category_group: 'PROFESSIONAL', is_active: true, examples: ['Office fit-outs', 'Retail spaces', 'Commercial projects', 'Industrial work'] },
+      { name: 'Legal & Regulatory', slug: 'legal-regulatory', icon_emoji: '📋', icon_name: 'FileText', display_order: 15, category_group: 'PROFESSIONAL', is_active: true, examples: ['Building permits', 'Planning applications', 'Compliance', 'Legal support'] }
     ]
 
     const { error: catError, data: insertedCategories } = await supabase
@@ -54,14 +55,19 @@ Deno.serve(async (req) => {
 
     // Step 2: Populate Subcategories (expanded with trade roles + specialist subcategories)
     const subcategories = [
-      // Construction (expanded with trade roles)
+      // Construction (trade roles moved out to separate categories)
       { category_id: categoryMap.get('Construction'), name: 'General Construction', slug: 'general-construction', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Carpentry', slug: 'carpentry', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Masonry', slug: 'masonry', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Roofing', slug: 'roofing', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Tiling', slug: 'tiling', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Plastering', slug: 'plastering', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('Construction'), name: 'Bricklaying', slug: 'bricklaying', display_order: 7, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Masonry', slug: 'masonry', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Roofing', slug: 'roofing', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Tiling', slug: 'tiling', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Plastering', slug: 'plastering', display_order: 5, is_active: true },
+      { category_id: categoryMap.get('Construction'), name: 'Bricklaying', slug: 'bricklaying', display_order: 6, is_active: true },
+      
+      // Carpentry (NEW main category)
+      { category_id: categoryMap.get('Carpentry'), name: 'Custom Furniture', slug: 'custom-furniture', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Doors & Windows', slug: 'doors-windows', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'Decking & Outdoor', slug: 'decking-outdoor', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Carpentry'), name: 'General Joinery', slug: 'general-joinery', display_order: 4, is_active: true },
       
       // Plumbing
       { category_id: categoryMap.get('Plumbing'), name: 'General Plumbing', slug: 'general-plumbing', display_order: 1, is_active: true },
