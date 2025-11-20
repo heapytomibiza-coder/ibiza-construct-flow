@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { json } from "../_shared/json.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
+import { getErrorMessage } from '../_shared/errorUtils.ts';
 
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET");
@@ -34,7 +35,7 @@ serve(async (req) => {
     try {
       event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
     } catch (err) {
-      console.error("Webhook signature verification failed:", err.message);
+      console.error("Webhook signature verification failed:", getErrorMessage(err));
       return json({ error: "Invalid signature" }, 400);
     }
 
@@ -120,6 +121,6 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Stripe webhook error:", error);
-    return json({ error: error.message }, 500);
+    return json({ error: getErrorMessage(error) }, 500);
   }
 });
