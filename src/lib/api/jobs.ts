@@ -23,6 +23,7 @@ export const jobs = {
       const jobData = {
         client_id: user.id,
         micro_id: draft.microId,
+        micro_uuid: draft.microUuid || null, // UUID from micro_services lookup
         title: `${draft.microId} Service Request`, // Generate from micro service
         description: JSON.stringify(draft.answers), // Store answers as description for now
         answers: draft.answers,

@@ -33,6 +33,7 @@ export type ServiceMicro = {
 export type DraftJob = {
   id?: string;
   microId: string;
+  microUuid?: string; // UUID from micro_services table
   answers: Record<string, any>; // includes both layers
   attachments?: Array<{name: string; url: string}>;
   // derived client-side for review step:

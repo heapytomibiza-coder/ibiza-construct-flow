@@ -12,6 +12,7 @@ export interface DraftJob {
   title: string;
   description?: string;
   micro_id: string;
+  micro_uuid?: string; // UUID from micro_services table
   answers: Record<string, any>;
   location?: Record<string, any>;
   budget_type: 'fixed' | 'hourly';
@@ -24,6 +25,7 @@ export interface Job {
   title: string;
   description: string | null;
   micro_id: string;
+  micro_uuid: string | null; // UUID from micro_services table
   answers: Record<string, any>;
   location: Record<string, any> | null;
   budget_type: 'fixed' | 'hourly';
