@@ -4715,6 +4715,42 @@ export type Database = {
         }
         Relationships: []
       }
+      micro_services: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          matchers: string[] | null
+          name: string
+          slug: string
+          trade: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          matchers?: string[] | null
+          name: string
+          slug: string
+          trade?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          matchers?: string[] | null
+          name?: string
+          slug?: string
+          trade?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       milestone_approvals: {
         Row: {
           action: string
