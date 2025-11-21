@@ -70,7 +70,7 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
 
   const handleContactNow = () => {
     // Navigate to professional's profile with contact/quote action auto-open
-    navigate(`/professional/${item.professional_id}?service=${item.id}&action=contact`);
+    navigate(`/professionals/${item.professional_id}?service=${item.id}&action=contact`);
   };
 
   return (
