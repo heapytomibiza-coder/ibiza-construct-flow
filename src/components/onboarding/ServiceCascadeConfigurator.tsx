@@ -6,18 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { 
   Loader2, 
   ChevronLeft, 
-  ChevronRight, 
-  Plus, 
-  Edit2, 
-  Trash2,
   CheckCircle2,
-  AlertCircle
+  Plus,
+  Trash2,
+  ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { ServiceConfigurationReview } from './ServiceConfigurationReview';
 
 interface MicroService {
   id: string;
@@ -27,11 +27,11 @@ interface MicroService {
 interface ConfiguredService {
   micro_service_id: string;
   micro_service_name: string;
-  category: string;
-  subcategory: string;
+  category_name: string;
+  subcategory_name: string;
   pricing_type: 'hourly' | 'daily' | 'job';
   rate: number;
-  description: string;
+  description?: string;
 }
 
 interface Props {
@@ -40,19 +40,23 @@ interface Props {
   onComplete: () => void;
 }
 
-type Step = 'category' | 'subcategory' | 'micro' | 'config';
+type Step = 'overview' | 'subcategory' | 'micro' | 'config' | 'review';
+
+interface MappedCategory {
+  intro: string;
+  categoryId: string;
+  categoryName: string;
+}
 
 export function ServiceCascadeConfigurator({ professionalId, preselectedCategories, onComplete }: Props) {
-  console.log('🎯 ServiceCascadeConfigurator loaded - NEW VERSION with pricing options');
-  console.log('Categories:', preselectedCategories);
-  
-  const [currentStep, setCurrentStep] = useState<Step>('subcategory');
+  const [currentStep, setCurrentStep] = useState<Step>('overview');
+  const [mappedCategories, setMappedCategories] = useState<MappedCategory[]>([]);
   const [categoryIndex, setCategoryIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
   const [selectedMicroService, setSelectedMicroService] = useState<MicroService | null>(null);
   
-  const [subcategories, setSubcategories] = useState<string[]>([]);
+  const [subcategories, setSubcategories] = useState<Array<{ id: string; name: string }>>([]);
   const [microServices, setMicroServices] = useState<MicroService[]>([]);
   const [configuredServices, setConfiguredServices] = useState<ConfiguredService[]>([]);
   
@@ -61,96 +65,96 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isLoadingMapping, setIsLoadingMapping] = useState(true);
 
-  const currentCategory = preselectedCategories[categoryIndex];
-
+  // Load category mapping on mount
   useEffect(() => {
-    setSelectedCategory(currentCategory);
-    setCurrentStep('subcategory');
-  }, [currentCategory]);
-
-  useEffect(() => {
-    if (currentStep === 'subcategory' && selectedCategory) {
-      loadSubcategories();
-    }
-  }, [currentStep, selectedCategory]);
-
-  useEffect(() => {
-    if (currentStep === 'micro' && selectedSubcategory) {
-      loadMicroServices();
-    }
-  }, [currentStep, selectedSubcategory]);
-
-  const loadSubcategories = async () => {
-    try {
-      setLoading(true);
-      const categorySlug = selectedCategory.toLowerCase().replace(/\s+/g, '-');
+    async function loadCategoryMapping() {
+      setIsLoadingMapping(true);
+      console.log('🔍 Mapping intro categories:', preselectedCategories);
       
-      const { data: categoryData } = await supabase
+      const { data: categories, error } = await supabase
         .from('service_categories')
-        .select('id')
-        .or(`slug.eq.${categorySlug},name.ilike.${selectedCategory}`)
-        .limit(1)
-        .maybeSingle();
+        .select('id, name, slug')
+        .eq('is_active', true);
 
-      if (!categoryData) {
-        setSubcategories([]);
+      if (error || !categories) {
+        console.error('Failed to fetch categories:', error);
+        toast.error('Failed to load service categories');
+        setIsLoadingMapping(false);
         return;
       }
 
+      const mapped = preselectedCategories
+        .map(intro => {
+          const normalized = intro.toLowerCase().trim();
+          
+          // Try exact slug match
+          let match = categories.find(c => c.slug === normalized);
+          
+          // Try partial match
+          if (!match) {
+            match = categories.find(c => 
+              c.slug.includes(normalized) || 
+              normalized.includes(c.slug) ||
+              c.name.toLowerCase().includes(normalized)
+            );
+          }
+
+          if (match) {
+            console.log(`✅ Mapped "${intro}" → "${match.name}" (${match.id})`);
+            return { intro, categoryId: match.id, categoryName: match.name };
+          } else {
+            console.warn(`❌ No match for "${intro}"`);
+            return null;
+          }
+        })
+        .filter((m): m is NonNullable<typeof m> => m !== null);
+
+      setMappedCategories(mapped);
+      
+      if (mapped.length === 0) {
+        toast.error('Could not match any categories. Please contact support.');
+      } else if (mapped.length < preselectedCategories.length) {
+        toast.warning(`Matched ${mapped.length} out of ${preselectedCategories.length} categories`);
+      }
+      
+      setIsLoadingMapping(false);
+    }
+
+    loadCategoryMapping();
+  }, [preselectedCategories]);
+
+  const currentMappedCategory = mappedCategories[categoryIndex];
+
+  const loadSubcategories = async (categoryId: string) => {
+    try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('service_subcategories')
-        .select('name')
-        .eq('category_id', categoryData.id)
+        .select('id, name')
+        .eq('category_id', categoryId)
         .eq('is_active', true)
         .order('display_order');
 
       if (error) throw error;
-      setSubcategories(data?.map(s => s.name) || []);
+      setSubcategories(data || []);
     } catch (error) {
       console.error('Error loading subcategories:', error);
       toast.error('Failed to load subcategories');
+      setSubcategories([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadMicroServices = async () => {
+  const loadMicroServices = async (subcategoryId: string) => {
     try {
       setLoading(true);
-      const categorySlug = selectedCategory.toLowerCase().replace(/\s+/g, '-');
-      
-      const { data: categoryData } = await supabase
-        .from('service_categories')
-        .select('id')
-        .or(`slug.eq.${categorySlug},name.ilike.${selectedCategory}`)
-        .limit(1)
-        .maybeSingle();
-
-      if (!categoryData) {
-        setMicroServices([]);
-        return;
-      }
-
-      const subcategorySlug = selectedSubcategory.toLowerCase().replace(/\s+/g, '-');
-      
-      const { data: subcategoryData } = await supabase
-        .from('service_subcategories')
-        .select('id')
-        .eq('category_id', categoryData.id)
-        .or(`slug.eq.${subcategorySlug},name.ilike.${selectedSubcategory}`)
-        .limit(1)
-        .maybeSingle();
-
-      if (!subcategoryData) {
-        setMicroServices([]);
-        return;
-      }
-
       const { data, error } = await supabase
         .from('service_micro_categories')
         .select('id, name')
-        .eq('subcategory_id', subcategoryData.id)
+        .eq('subcategory_id', subcategoryId)
         .eq('is_active', true)
         .order('display_order');
 
@@ -159,20 +163,32 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
     } catch (error) {
       console.error('Error loading micro services:', error);
       toast.error('Failed to load services');
+      setMicroServices([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSelectSubcategory = (subcategory: string) => {
-    setSelectedSubcategory(subcategory);
+  const handleStartConfiguration = () => {
+    if (mappedCategories.length === 0) {
+      toast.error('No categories to configure');
+      return;
+    }
+    setSelectedCategory(mappedCategories[0].categoryName);
+    setCurrentStep('subcategory');
+    loadSubcategories(mappedCategories[0].categoryId);
+  };
+
+  const handleSelectSubcategory = (subcategory: { id: string; name: string }) => {
+    setSelectedSubcategory(subcategory.name);
     setCurrentStep('micro');
+    loadMicroServices(subcategory.id);
   };
 
   const handleSelectMicroService = (micro: MicroService) => {
     setSelectedMicroService(micro);
     setCurrentStep('config');
-    // Pre-fill with default values
+    // Pre-fill defaults
     setPricingType('hourly');
     setRate('50');
     setDescription('');
@@ -187,11 +203,11 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
     const newService: ConfiguredService = {
       micro_service_id: selectedMicroService.id,
       micro_service_name: selectedMicroService.name,
-      category: selectedCategory,
-      subcategory: selectedSubcategory,
+      category_name: currentMappedCategory.categoryName,
+      subcategory_name: selectedSubcategory,
       pricing_type: pricingType,
       rate: parseFloat(rate),
-      description: description.trim()
+      description: description.trim() || undefined
     };
 
     setConfiguredServices([...configuredServices, newService]);
@@ -221,13 +237,45 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
     setCurrentStep('subcategory');
   };
 
-  const handleChangeCategory = () => {
-    if (categoryIndex < preselectedCategories.length - 1) {
+  const handleBackFromSubcategory = () => {
+    setSelectedCategory('');
+    setSubcategories([]);
+    setCurrentStep('overview');
+  };
+
+  const handleSkipCategory = () => {
+    if (categoryIndex < mappedCategories.length - 1) {
       setCategoryIndex(categoryIndex + 1);
+      setSelectedCategory(mappedCategories[categoryIndex + 1].categoryName);
       setSelectedSubcategory('');
       setSelectedMicroService(null);
       setCurrentStep('subcategory');
+      loadSubcategories(mappedCategories[categoryIndex + 1].categoryId);
+    } else {
+      // All categories done, go to review
+      setCurrentStep('review');
     }
+  };
+
+  const handleNextCategory = () => {
+    if (categoryIndex < mappedCategories.length - 1) {
+      setCategoryIndex(categoryIndex + 1);
+      setSelectedCategory(mappedCategories[categoryIndex + 1].categoryName);
+      setSelectedSubcategory('');
+      setSelectedMicroService(null);
+      setCurrentStep('subcategory');
+      loadSubcategories(mappedCategories[categoryIndex + 1].categoryId);
+    } else {
+      setCurrentStep('review');
+    }
+  };
+
+  const handleEditService = (index: number) => {
+    toast.info('Edit functionality coming soon');
+  };
+
+  const handleBackToConfiguration = () => {
+    setCurrentStep('subcategory');
   };
 
   const handleSaveAndComplete = async () => {
@@ -238,6 +286,8 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
 
     try {
       setSaving(true);
+      console.group('💾 Saving Services');
+      console.log('Configured services:', configuredServices);
 
       // Delete existing services
       await supabase
@@ -245,7 +295,7 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
         .delete()
         .eq('professional_id', professionalId);
 
-      // Insert configured services
+      // Insert configured services with proper pricing_structure
       const servicesToInsert = configuredServices.map(service => ({
         professional_id: professionalId,
         micro_service_id: service.micro_service_id,
@@ -255,8 +305,11 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
           description: service.description || null
         },
         is_active: true,
-        created_at: new Date().toISOString()
+        service_areas: [],
+        portfolio_urls: []
       }));
+
+      console.log('Services to insert:', servicesToInsert);
 
       const { error } = await supabase
         .from('professional_services')
@@ -264,70 +317,166 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
 
       if (error) throw error;
 
-      toast.success(`${configuredServices.length} services saved!`);
+      console.log('✅ Services saved successfully');
+      console.groupEnd();
+      
+      toast.success(`${configuredServices.length} service${configuredServices.length !== 1 ? 's' : ''} saved!`);
       setTimeout(() => onComplete(), 500);
     } catch (error: any) {
-      console.error('Error saving services:', error);
-      toast.error('Failed to save services');
+      console.error('❌ Error saving services:', error);
+      console.groupEnd();
+      toast.error(error.message || 'Failed to save services');
     } finally {
       setSaving(false);
     }
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+  if (isLoadingMapping) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Loading service categories...</p>
+      </div>
+    );
+  }
+
+  if (mappedCategories.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-muted-foreground">
+          Unable to load service categories. Please contact support.
+        </p>
+      </div>
+    );
+  }
+
+  // Overview Step
+  if (currentStep === 'overview') {
+    return (
+      <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold">Configure Services</h2>
-          <p className="text-sm text-muted-foreground">
-            {selectedCategory} 
-            {selectedSubcategory && ` → ${selectedSubcategory}`}
-            {selectedMicroService && ` → ${selectedMicroService.name}`}
+          <h2 className="text-2xl font-bold text-foreground">Configure Your Services</h2>
+          <p className="text-muted-foreground mt-1">
+            Let's set up specific services and pricing for each category
           </p>
         </div>
-        <Badge variant="secondary" className="text-sm">
-          {configuredServices.length} configured
-        </Badge>
-      </div>
 
-      {/* Configured Services List */}
-      {configuredServices.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-primary" />
-              Your Services
+            <CardTitle>Selected Categories</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {mappedCategories.map((cat, index) => (
+                <div
+                  key={cat.categoryId}
+                  className="flex items-center justify-between p-3 rounded-lg border bg-card"
+                >
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary">{index + 1}</Badge>
+                    <div>
+                      <p className="font-medium">{cat.categoryName}</p>
+                      {cat.intro !== cat.categoryName && (
+                        <p className="text-xs text-muted-foreground">
+                          Mapped from: {cat.intro}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="bg-muted/50 p-4 rounded-lg">
+          <h3 className="font-medium mb-2">Next Steps:</h3>
+          <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+            <li>Select subcategories for each category</li>
+            <li>Choose specific services you offer</li>
+            <li>Set your pricing (hourly/daily/per job)</li>
+            <li>Review and confirm all services</li>
+          </ol>
+        </div>
+
+        <Button onClick={handleStartConfiguration} size="lg" className="w-full">
+          Start Configuring Services
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  // Review Step
+  if (currentStep === 'review') {
+    return (
+      <ServiceConfigurationReview
+        services={configuredServices}
+        onEdit={handleEditService}
+        onRemove={handleRemoveService}
+        onConfirm={handleSaveAndComplete}
+        onBack={handleBackToConfiguration}
+        loading={saving}
+      />
+    );
+  }
+
+  // Progress indicator
+  const progress = ((categoryIndex + 1) / mappedCategories.length) * 100;
+  const categoryServicesCount = configuredServices.filter(
+    s => s.category_name === currentMappedCategory.categoryName
+  ).length;
+
+  return (
+    <div className="space-y-6">
+      {/* Header with Progress */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">{currentMappedCategory.categoryName}</h2>
+            <p className="text-sm text-muted-foreground">
+              Category {categoryIndex + 1} of {mappedCategories.length}
+              {categoryServicesCount > 0 && ` • ${categoryServicesCount} service${categoryServicesCount !== 1 ? 's' : ''} configured`}
+            </p>
+          </div>
+          <Badge variant="secondary" className="text-sm">
+            {configuredServices.length} total
+          </Badge>
+        </div>
+        <Progress value={progress} className="h-2" />
+      </div>
+
+      {/* Breadcrumb */}
+      <div className="text-sm text-muted-foreground">
+        {currentMappedCategory.categoryName}
+        {selectedSubcategory && ` → ${selectedSubcategory}`}
+        {selectedMicroService && ` → ${selectedMicroService.name}`}
+      </div>
+
+      {/* Configured Services for Current Category */}
+      {categoryServicesCount > 0 && currentStep !== 'config' && (
+        <Card className="bg-primary/5 border-primary/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-primary" />
+              Configured in {currentMappedCategory.categoryName}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {configuredServices.map((service, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-              >
-                <div className="flex-1">
-                  <p className="font-medium">{service.micro_service_name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {service.category} → {service.subcategory}
-                  </p>
-                  <p className="text-sm text-primary font-semibold mt-1">
-                    €{service.rate}
-                    {service.pricing_type === 'hourly' && '/hour'}
-                    {service.pricing_type === 'daily' && '/day'}
-                    {service.pricing_type === 'job' && ' per job'}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveService(index)}
-                  className="text-destructive hover:text-destructive"
+            {configuredServices
+              .filter(s => s.category_name === currentMappedCategory.categoryName)
+              .map((service, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between text-sm p-2 rounded bg-background/50"
                 >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+                  <span className="font-medium">{service.micro_service_name}</span>
+                  <span className="text-primary font-semibold">
+                    €{service.rate}/{service.pricing_type === 'hourly' ? 'hr' : service.pricing_type === 'daily' ? 'day' : 'job'}
+                  </span>
+                </div>
+              ))}
           </CardContent>
         </Card>
       )}
@@ -335,25 +484,51 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
       {/* Subcategory Selection */}
       {currentStep === 'subcategory' && (
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Select subcategory in {selectedCategory}</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">Select subcategory</h3>
+            {categoryIndex > 0 && (
+              <Button variant="ghost" size="sm" onClick={handleBackFromSubcategory}>
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Back to Overview
+              </Button>
+            )}
+          </div>
           {loading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {subcategories.map((subcategory) => (
-                <Card
-                  key={subcategory}
-                  className="cursor-pointer transition-all hover:border-primary hover:shadow-md"
-                  onClick={() => handleSelectSubcategory(subcategory)}
+            <>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {subcategories.map((subcategory) => (
+                  <Card
+                    key={subcategory.id}
+                    className="cursor-pointer transition-all hover:border-primary hover:shadow-md"
+                    onClick={() => handleSelectSubcategory(subcategory)}
+                  >
+                    <CardContent className="p-4">
+                      <p className="font-medium">{subcategory.name}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={handleSkipCategory}
+                  className="flex-1"
                 >
-                  <CardHeader className="p-4">
-                    <CardTitle className="text-base">{subcategory}</CardTitle>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
+                  Skip {currentMappedCategory.categoryName}
+                </Button>
+                {categoryServicesCount > 0 && (
+                  <Button onClick={handleNextCategory} className="flex-1">
+                    {categoryIndex < mappedCategories.length - 1 
+                      ? `Next Category (${mappedCategories[categoryIndex + 1].categoryName})`
+                      : 'Review All Services'}
+                  </Button>
+                )}
+              </div>
+            </>
           )}
         </div>
       )}
@@ -453,7 +628,7 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
               </Label>
               <p className="text-sm text-muted-foreground">
                 {pricingType === 'hourly' && 'Your rate per hour for this service'}
-                {pricingType === 'daily' && 'Your rate per full day (8 hours) for this service'}
+                {pricingType === 'daily' && 'Your rate per full day for this service'}
                 {pricingType === 'job' && 'Fixed price per completed job'}
               </p>
               <div className="relative">
@@ -477,14 +652,11 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
 
             <div className="space-y-2">
               <Label htmlFor="description">Service Description (Optional)</Label>
-              <p className="text-sm text-muted-foreground">
-                Brief details about what you offer for this service
-              </p>
               <Textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g., I specialize in emergency repairs with same-day service..."
+                placeholder="Brief details about what you offer for this service..."
                 rows={3}
                 maxLength={200}
               />
@@ -499,44 +671,6 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
             </Button>
           </CardContent>
         </Card>
-      )}
-
-      {/* Navigation */}
-      <div className="flex items-center justify-between pt-4 border-t">
-        <div className="flex items-center gap-2">
-          {categoryIndex < preselectedCategories.length - 1 && currentStep === 'subcategory' && (
-            <Button variant="outline" onClick={handleChangeCategory}>
-              Next Category: {preselectedCategories[categoryIndex + 1]}
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          )}
-        </div>
-
-        <Button
-          onClick={handleSaveAndComplete}
-          disabled={saving || configuredServices.length === 0}
-          size="lg"
-          className="ml-auto"
-        >
-          {saving ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              Save & Continue
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </>
-          )}
-        </Button>
-      </div>
-
-      {configuredServices.length === 0 && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-          <AlertCircle className="h-4 w-4" />
-          <p>Select and configure at least one service to continue</p>
-        </div>
       )}
     </div>
   );
