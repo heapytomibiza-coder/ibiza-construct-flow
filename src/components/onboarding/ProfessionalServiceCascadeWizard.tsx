@@ -78,16 +78,22 @@ export function ProfessionalServiceCascadeWizard({
     try {
       setLoading(true);
       
-      // First get the category ID
+      // Try to find category by slug first, then by name (case-insensitive)
+      const categorySlug = currentCategory.toLowerCase().replace(/\s+/g, '-');
+      
       const { data: categoryData, error: categoryError } = await supabase
         .from('service_categories')
         .select('id')
-        .or(`slug.eq.${currentCategory},name.ilike.%${currentCategory}%`)
+        .or(`slug.eq.${categorySlug},name.ilike.${currentCategory}`)
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (categoryError || !categoryData) {
+      if (categoryError) {
         console.error('Error finding category:', categoryError);
+      }
+
+      if (!categoryData) {
+        console.warn(`Category not found for: ${currentCategory}`);
         setSubcategories([]);
         setLoading(false);
         return;
@@ -117,32 +123,44 @@ export function ProfessionalServiceCascadeWizard({
     try {
       setLoading(true);
       
-      // First get the category ID
+      // Try to find category by slug first, then by name
+      const categorySlug = currentCategory.toLowerCase().replace(/\s+/g, '-');
+      
       const { data: categoryData, error: categoryError } = await supabase
         .from('service_categories')
         .select('id')
-        .or(`slug.eq.${currentCategory},name.ilike.%${currentCategory}%`)
+        .or(`slug.eq.${categorySlug},name.ilike.${currentCategory}`)
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (categoryError || !categoryData) {
+      if (categoryError) {
         console.error('Error finding category:', categoryError);
+      }
+
+      if (!categoryData) {
+        console.warn(`Category not found for: ${currentCategory}`);
         setMicroServices([]);
         setLoading(false);
         return;
       }
 
       // Then get the subcategory ID
+      const subcategorySlug = (selectedSubcategory || '').toLowerCase().replace(/\s+/g, '-');
+      
       const { data: subcategoryData, error: subcategoryError } = await supabase
         .from('service_subcategories')
         .select('id')
         .eq('category_id', categoryData.id)
-        .or(`slug.eq.${selectedSubcategory},name.ilike.%${selectedSubcategory}%`)
+        .or(`slug.eq.${subcategorySlug},name.ilike.${selectedSubcategory}`)
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (subcategoryError || !subcategoryData) {
+      if (subcategoryError) {
         console.error('Error finding subcategory:', subcategoryError);
+      }
+
+      if (!subcategoryData) {
+        console.warn(`Subcategory not found for: ${selectedSubcategory}`);
         setMicroServices([]);
         setLoading(false);
         return;
@@ -199,40 +217,51 @@ export function ProfessionalServiceCascadeWizard({
   };
 
   const handleSaveAndComplete = async () => {
+    if (selectedMicroServices.size === 0) {
+      toast.error('Please select at least one service');
+      return;
+    }
+
     try {
       setSaving(true);
 
-      // Deactivate all existing services
-      const { error: deactivateError } = await supabase
+      // Delete all existing services first (cleaner than update)
+      const { error: deleteError } = await supabase
         .from('professional_services')
-        .update({ is_active: false })
+        .delete()
         .eq('professional_id', professionalId);
 
-      if (deactivateError) throw deactivateError;
+      if (deleteError) {
+        console.error('Error deleting services:', deleteError);
+        // Continue anyway - this might just mean no existing services
+      }
 
       // Insert selected services
       const servicesToInsert = Array.from(selectedMicroServices).map(microServiceId => ({
         professional_id: professionalId,
         micro_service_id: microServiceId,
-        is_active: true
+        is_active: true,
+        created_at: new Date().toISOString()
       }));
 
-      if (servicesToInsert.length > 0) {
-        const { error: insertError } = await supabase
-          .from('professional_services')
-          .upsert(servicesToInsert, {
-            onConflict: 'professional_id,micro_service_id',
-            ignoreDuplicates: false
-          });
+      const { error: insertError } = await supabase
+        .from('professional_services')
+        .insert(servicesToInsert);
 
-        if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        throw new Error(`Failed to save services: ${insertError.message}`);
       }
 
-      toast.success(`${selectedMicroServices.size} services configured successfully`);
-      onComplete?.();
-    } catch (error) {
+      toast.success(`${selectedMicroServices.size} services saved successfully!`);
+      
+      // Small delay to ensure database writes complete
+      setTimeout(() => {
+        onComplete?.();
+      }, 500);
+    } catch (error: any) {
       console.error('Error saving services:', error);
-      toast.error('Failed to save services');
+      toast.error(error.message || 'Failed to save services. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -341,18 +370,22 @@ export function ProfessionalServiceCascadeWizard({
           <Button
             onClick={handleSaveAndComplete}
             disabled={saving || selectedMicroServices.size === 0}
+            size="lg"
           >
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
+                Saving Services...
               </>
             ) : (
-              `Save ${selectedMicroServices.size} Services`
+              <>
+                Save {selectedMicroServices.size} Service{selectedMicroServices.size !== 1 ? 's' : ''} & Continue
+                <ChevronRight className="h-4 w-4 ml-2" />
+              </>
             )}
           </Button>
         ) : (
-          <Button onClick={handleNextCategory}>
+          <Button onClick={handleNextCategory} size="lg">
             Next Category
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
