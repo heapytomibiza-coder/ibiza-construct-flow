@@ -84,19 +84,32 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
 
       if (jobsError) throw jobsError;
 
-      // Get unique micro_ids
-      const microIds = [...new Set(jobsData?.map(job => job.micro_id).filter(Boolean) || [])];
+      // Get unique micro_ids (now slugs, not UUIDs)
+      const microSlugs = [...new Set(jobsData?.map(job => job.micro_id).filter(Boolean) || [])];
       
-      // Fetch service data for these micros
+      // Fetch service data from correct table
       let servicesMap: any = {};
-      if (microIds.length > 0) {
+      if (microSlugs.length > 0) {
         const { data: servicesData } = await supabase
-          .from('services_micro')
-          .select('id, category, subcategory, micro')
-          .in('id', microIds);
+          .from('service_micro_categories')
+          .select(`
+            slug,
+            name,
+            service_subcategories (
+              name,
+              service_categories (
+                name
+              )
+            )
+          `)
+          .in('slug', microSlugs);
         
         servicesMap = (servicesData || []).reduce((acc: any, service: any) => {
-          acc[service.id] = service;
+          acc[service.slug] = {
+            micro: service.name,
+            subcategory: service.service_subcategories?.name || '',
+            category: service.service_subcategories?.service_categories?.name || ''
+          };
           return acc;
         }, {});
       }
