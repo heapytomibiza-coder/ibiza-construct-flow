@@ -243,19 +243,17 @@ const Discovery = () => {
         {/* Results Section */}
         <div className="mt-6 space-y-6">
           {/* Results Count */}
-          {!loading && !loadingPros && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
+          {!loading && !loadingPros && (services.length > 0 || discoveredProfessionals.length > 0) && (
+            <div className="flex items-center justify-between bg-card p-4 rounded-lg border">
+              <p className="text-sm font-medium text-foreground">
                 {viewMode === 'services' 
                   ? `${services.length} service${services.length !== 1 ? 's' : ''} available`
                   : `${discoveredProfessionals.length} professional${discoveredProfessionals.length !== 1 ? 's' : ''} available`
                 }
               </p>
-              {(services.length > 0 || discoveredProfessionals.length > 0) && (
-                <p className="text-xs text-muted-foreground">
-                  {searchTerm ? `Results for "${searchTerm}"` : selectedCategory || 'All categories'}
-                </p>
-              )}
+              <p className="text-xs text-muted-foreground">
+                {searchTerm ? `Results for "${searchTerm}"` : selectedCategory || 'All categories'}
+              </p>
             </div>
           )}
 
