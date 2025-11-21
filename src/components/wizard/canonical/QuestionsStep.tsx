@@ -21,6 +21,7 @@ import { mapMicroIdToServiceId } from '@/lib/mappers/serviceIdMapper';
 
 interface QuestionsStepProps {
   microIds: string[];
+  microSlugs: string[];
   microNames: string[];
   category?: string;
   subcategory?: string;
@@ -32,6 +33,7 @@ interface QuestionsStepProps {
 
 export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   microIds,
+  microSlugs,
   microNames,
   category,
   subcategory,
@@ -47,13 +49,13 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const [packSource, setPackSource] = useState<'pack' | 'ai' | 'ai_contextual' | 'fallback' | 'static_json'>('fallback');
   const [showAISmartFill, setShowAISmartFill] = useState(false);
   
-  const primaryMicroId = microIds[0] || '';
-  const { presets, usePreset } = useJobPresets(primaryMicroId);
+  const primaryMicroSlug = microSlugs[0] || '';
+  const { presets, usePreset } = useJobPresets(primaryMicroSlug);
   const isMobile = useIsMobile();
 
   useEffect(() => {
     loadQuestions();
-  }, [microIds.join(','), microNames.join(',')]);
+  }, [microSlugs.join(','), microNames.join(',')]);
 
   const getFallbackQuestions = (): AIQuestion[] => {
     return [
@@ -147,7 +149,6 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       }
 
       // TIER 0: Check static JSON for matching service
-      const primaryMicroSlug = microIds[0];
       const serviceId = mapMicroIdToServiceId(primaryMicroSlug);
       
       if (serviceId) {
@@ -403,7 +404,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           {/* Recent Presets */}
           {presets.length > 0 && (
             <PresetChips
-              presetType={primaryMicroId}
+              presetType={primaryMicroSlug}
               onSelectPreset={async (presetData) => {
                 onAnswersChange(presetData);
               }}

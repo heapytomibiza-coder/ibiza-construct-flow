@@ -35,6 +35,7 @@ interface WizardState {
   microNames: string[];
   microIds: string[];
   microUuids: string[];
+  microSlugs: string[];
   answers: Record<string, any>;
   logistics: {
     location: string;
@@ -83,6 +84,7 @@ export const CanonicalJobWizard: React.FC = () => {
     microNames: [],
     microIds: [],
     microUuids: [],
+    microSlugs: [],
     answers: {},
     logistics: {
       location: '',
@@ -231,7 +233,7 @@ export const CanonicalJobWizard: React.FC = () => {
     setCurrentStep(3); // Auto-advance to micro
   }, []);
 
-  const handleMicroSelect = useCallback(async (micros: string[], microIds: string[]) => {
+  const handleMicroSelect = useCallback(async (micros: string[], microIds: string[], microSlugs: string[]) => {
     // Look up UUIDs for selected micros
     const microUuids: string[] = []
     try {
@@ -248,20 +250,21 @@ export const CanonicalJobWizard: React.FC = () => {
       ...prev, 
       microNames: micros, 
       microIds,
-      microUuids
+      microUuids,
+      microSlugs
     }));
     // Check if we should skip questions step (only fallback available)
-    checkShouldSkipQuestions(microIds, micros);
+    checkShouldSkipQuestions(microSlugs, micros);
   }, []);
 
-  const checkShouldSkipQuestions = async (microIds: string[], microNames: string[]) => {
-    if (microIds.length === 0 || microNames.length === 0) {
+  const checkShouldSkipQuestions = async (microSlugs: string[], microNames: string[]) => {
+    if (microSlugs.length === 0 || microNames.length === 0) {
       setSkipQuestions(true);
       return;
     }
 
     try {
-      const primaryMicroSlug = microIds[0];
+      const primaryMicroSlug = microSlugs[0];
       
       // Check 1: Question pack in database
       const { data: pack } = await supabase
@@ -466,6 +469,7 @@ export const CanonicalJobWizard: React.FC = () => {
             subcategory={wizardState.subcategory}
             selectedMicros={wizardState.microNames}
             selectedMicroIds={wizardState.microIds}
+            selectedMicroSlugs={wizardState.microSlugs}
             onSelect={handleMicroSelect}
             onNext={handleNext}
             onBack={handleBack}
@@ -476,6 +480,7 @@ export const CanonicalJobWizard: React.FC = () => {
         return (
           <QuestionsStep
             microIds={wizardState.microIds}
+            microSlugs={wizardState.microSlugs}
             microNames={wizardState.microNames}
             category={wizardState.mainCategory}
             subcategory={wizardState.subcategory}
