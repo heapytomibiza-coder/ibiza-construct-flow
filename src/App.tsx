@@ -96,6 +96,7 @@ const PricingManager = lazyWithRetry(() => import("./pages/admin/PricingManager"
 const CalculatorAnalytics = lazyWithRetry(() => import("./pages/admin/CalculatorAnalytics"));
 const ImportServices = lazyWithRetry(() => import("./pages/admin/ImportServices"));
 const QuestionBuilderPage = lazyWithRetry(() => import("./pages/admin/QuestionBuilderPage"));
+const AdminUtils = lazyWithRetry(() => import("./pages/AdminUtils"));
 
 // Job & Professional Pages
 const PostJob = lazyWithRetry(() => import("./pages/PostJob"));
@@ -468,6 +469,7 @@ function AppContent() {
                       {/* Tools */}
                       <Route path="health" element={<HealthMonitor />} />
                       <Route path="database" element={<AdminDatabaseOverview />} />
+                      <Route path="utils" element={<AdminUtils />} />
                       <Route path="user-inspector" element={<AdminUserInspector />} />
                       <Route path="test-runner" element={<AdminTestRunner />} />
                       <Route path="audit-log" element={<AuditLog />} />
