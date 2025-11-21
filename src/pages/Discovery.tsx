@@ -46,6 +46,7 @@ const Discovery = () => {
   const [viewMode, setViewMode] = useState<'services' | 'professionals'>('services');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showFairExhibitors, setShowFairExhibitors] = useState(false);
   const [filters, setFilters] = useState<Filters>({
     selectedTaxonomy: null,
     specialists: [],
@@ -199,36 +200,60 @@ const Discovery = () => {
 
         {/* Quick Browse Buttons - Show when no search */}
         {!searchTerm && !loading && !loadingPros && (
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 mb-6">
-            <button
-              onClick={() => setViewMode('services')}
-              className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl transition-all ${
-                viewMode === 'services'
-                  ? 'bg-primary text-primary-foreground shadow-lg scale-105'
-                  : 'bg-card border-2 border-border hover:border-primary hover:shadow-md'
-              }`}
-            >
-              <span className="text-2xl">🛠️</span>
-              <div className="text-left">
-                <div className="font-semibold">Browse Services</div>
-                <div className="text-xs opacity-80">Shop your exact needs</div>
-              </div>
-            </button>
-            <button
-              onClick={() => setViewMode('professionals')}
-              className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl transition-all ${
-                viewMode === 'professionals'
-                  ? 'bg-primary text-primary-foreground shadow-lg scale-105'
-                  : 'bg-card border-2 border-border hover:border-primary hover:shadow-md'
-              }`}
-            >
-              <span className="text-2xl">👥</span>
-              <div className="text-left">
-                <div className="font-semibold">Browse Professionals</div>
-                <div className="text-xs opacity-80">Explore by trade or expertise</div>
-              </div>
-            </button>
-          </div>
+          <>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 mb-6">
+              <button
+                onClick={() => setViewMode('services')}
+                className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl transition-all ${
+                  viewMode === 'services'
+                    ? 'bg-primary text-primary-foreground shadow-lg scale-105'
+                    : 'bg-card border-2 border-border hover:border-primary hover:shadow-md'
+                }`}
+              >
+                <span className="text-2xl">🛠️</span>
+                <div className="text-left">
+                  <div className="font-semibold">Browse Services</div>
+                  <div className="text-xs opacity-80">Shop your exact needs</div>
+                </div>
+              </button>
+              <button
+                onClick={() => setViewMode('professionals')}
+                className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl transition-all ${
+                  viewMode === 'professionals'
+                    ? 'bg-primary text-primary-foreground shadow-lg scale-105'
+                    : 'bg-card border-2 border-border hover:border-primary hover:shadow-md'
+                }`}
+              >
+                <span className="text-2xl">👥</span>
+                <div className="text-left">
+                  <div className="font-semibold">Browse Professionals</div>
+                  <div className="text-xs opacity-80">Explore by trade or expertise</div>
+                </div>
+              </button>
+            </div>
+            
+            {/* Fair Exhibitors Toggle */}
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => setShowFairExhibitors(!showFairExhibitors)}
+                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all ${
+                  showFairExhibitors
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                    : 'bg-card border-2 border-border hover:border-purple-500'
+                }`}
+              >
+                <span className="text-xl">🎪</span>
+                <span className="font-semibold">
+                  {showFairExhibitors ? 'Showing Fair Exhibitors' : 'View Ibiza Home Meeting 2025'}
+                </span>
+                {showFairExhibitors && (
+                  <Badge variant="secondary" className="ml-2">
+                    21 Companies
+                  </Badge>
+                )}
+              </button>
+            </div>
+          </>
         )}
 
         {/* View Mode Tabs - Show when searching */}
