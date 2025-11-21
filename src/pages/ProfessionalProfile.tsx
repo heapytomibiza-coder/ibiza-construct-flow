@@ -95,17 +95,18 @@ export default function ProfessionalProfile() {
       // Fetch user profile for name and avatar
       const { data: userProfile, error: userError } = await supabase
         .from('profiles')
-        .select('display_name, full_name, avatar_url')
+        .select('display_name, full_name, avatar_url, bio')
         .eq('id', professionalId)
         .single();
 
       if (userError) throw userError;
 
-      // Fetch services
+      // Fetch services from professional_service_items
       const { data: services } = await supabase
-        .from('professional_services')
+        .from('professional_service_items')
         .select('*')
-        .eq('professional_id', professionalId);
+        .eq('professional_id', professionalId)
+        .eq('is_active', true);
 
       // Fetch stats
       const { data: stats } = await supabase
@@ -114,52 +115,42 @@ export default function ProfessionalProfile() {
         .eq('professional_id', professionalId)
         .single();
 
+      // Fetch verifications
+      const { data: verifications } = await supabase
+        .from('professional_verifications')
+        .select('*')
+        .eq('professional_id', professionalId)
+        .eq('status', 'approved');
+
       // Fetch reviews
       const { data: reviews } = await supabase
-        .from('professional_reviews')
-        .select('*')
+        .from('reviews')
+        .select(`
+          *,
+          profiles!reviews_client_id_fkey(display_name, avatar_url)
+        `)
         .eq('professional_id', professionalId)
         .order('created_at', { ascending: false })
         .limit(10);
 
-      // Fetch portfolio images from new table
-      const { data: portfolioImages } = await supabase
-        .from('portfolio_images')
-        .select('*')
-        .eq('professional_id', professionalId)
-        .order('display_order', { ascending: true });
-
-      // Fetch job photos (before/after) for completed jobs
-      const { data: jobPhotos } = await supabase
-        .from('job_photos')
-        .select('*')
-        .eq('uploaded_by', professionalId)
-        .in('photo_type', ['before', 'after']);
-
-      // Get profile view count
-      const { data: viewCountData } = await supabase
-        .rpc('get_profile_view_count', { p_professional_id: professionalId });
-      
-      const viewCount = viewCountData || 0;
-
-      // Transform old portfolio images from storage (backward compatibility)
-      const legacyPortfolioItems = Array.isArray(proProfile.portfolio_images) 
-        ? proProfile.portfolio_images.map((url: string) => ({ url }))
-        : [];
+      // Portfolio images - use empty array for now
+      const portfolioItems: any[] = [];
 
       return {
         ...proProfile,
+        bio: userProfile.bio || proProfile.bio,
         display_name: userProfile.display_name || userProfile.full_name,
         avatar_url: userProfile.avatar_url,
         services: services || [],
-        stats: stats || { average_rating: 0, total_reviews: 0, completed_bookings: 0 },
+        stats: stats || { average_rating: 0, total_reviews: 0, jobs_completed: 0, completed_bookings: 0 },
+        verifications: verifications || [],
         reviews: reviews || [],
         zones: Array.isArray(proProfile.zones) ? proProfile.zones : [],
         skills: Array.isArray(proProfile.skills) ? proProfile.skills : [],
-        portfolio_images: legacyPortfolioItems,
-        new_portfolio_images: portfolioImages || [],
-        job_photos: jobPhotos || [],
-        view_count: viewCount
+        portfolio_images: portfolioItems,
+        new_portfolio_images: portfolioItems,
+        job_photos: [],
+        view_count: 0
       };
     },
     enabled: !!professionalId
@@ -336,8 +327,8 @@ export default function ProfessionalProfile() {
                   services={profile.services.length > 0 ? profile.services as any : [
                     {
                       id: 'example-1',
-                      micro_service_id: 'plumbing',
-                      service_name: 'Emergency Plumbing Repair',
+                      service_id: 'plumbing',
+                      name: 'Emergency Plumbing Repair',
                       description: 'Fast response for urgent plumbing issues including leaks, blocked drains, and pipe repairs. Available 24/7 for emergencies.',
                       pricing_structure: { price_range: { min: 80, max: 250 } },
                       estimated_duration: '1-3 hours',

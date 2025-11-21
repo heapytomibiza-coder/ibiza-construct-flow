@@ -167,17 +167,23 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
             onClick={handleViewDetails}
             className="flex-1"
             variant="outline"
+            asChild
           >
-            <Info className="h-4 w-4 mr-2" />
-            View Details
+            <a href={`/service/${item.id}`}>
+              <Info className="h-4 w-4 mr-2" />
+              View Details
+            </a>
           </Button>
           <Button
             onClick={handleContactNow}
             className="flex-1"
             variant="default"
+            asChild
           >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Contact Now
+            <a href={`/professionals/${item.professional_id}?service=${item.id}&action=contact`}>
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Contact Now
+            </a>
           </Button>
         </div>
       </div>
