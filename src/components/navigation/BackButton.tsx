@@ -18,11 +18,12 @@ export const BackButton = ({
   const location = useLocation();
 
   const handleBack = () => {
-    // Check if there's history to go back to
-    if (window.history.length > 1) {
+    // Use fallback path if provided, otherwise try to go back in history
+    if (fallbackPath && fallbackPath !== '/') {
+      navigate(fallbackPath);
+    } else if (window.history.state && window.history.state.idx > 0) {
       navigate(-1);
     } else {
-      // Fallback to home or specified path
       navigate(fallbackPath);
     }
   };
