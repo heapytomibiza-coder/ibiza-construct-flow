@@ -343,6 +343,8 @@ function AppContent() {
                     <Route path="/contracts" element={<ContractManagementPage />} />
                     <Route path="/contracts/:contractId" element={<ContractManagementPage />} />
                     <Route path="/contracts/:contractId/fund" element={<PaymentProcessingPage />} />
+                    {/* Legacy redirect for old payment processing route */}
+                    <Route path="/payment-processing/:contractId" element={<Navigate to="/contracts/:contractId/fund" replace />} />
                     <Route path="/escrow/:contractId" element={<EscrowManagementPage />} />
                     
                     {/* Professional Routes */}
