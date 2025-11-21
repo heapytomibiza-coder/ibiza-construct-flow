@@ -126,13 +126,12 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Cleaning'), name: 'Oven Cleaning', slug: 'oven-cleaning', icon_name: 'Sparkles', icon_emoji: '🔥', display_order: 7, is_active: true },
       { category_id: categoryMap.get('Cleaning'), name: 'Pressure Washing', slug: 'pressure-washing', icon_name: 'Droplet', icon_emoji: '💦', display_order: 8, is_active: true },
       
-      // Pool & Spa - 6 subcategories
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Maintenance', slug: 'pool-maintenance', icon_name: 'Waves', icon_emoji: '🌊', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Installation', slug: 'pool-installation', icon_name: 'Waves', icon_emoji: '🏊', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Repair', slug: 'pool-repair', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Spa Services', slug: 'spa-services', icon_name: 'Waves', icon_emoji: '♨️', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Heating', slug: 'pool-heating', icon_name: 'Zap', icon_emoji: '🔥', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool Equipment', slug: 'pool-equipment', icon_name: 'Wrench', icon_emoji: '⚙️', display_order: 6, is_active: true },
+      // Pool & Spa - 5 specialized subcategories
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool construction & installation', slug: 'pool-construction-installation', icon_name: 'Waves', icon_emoji: '🏊', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Pool maintenance & cleaning', slug: 'pool-maintenance-cleaning', icon_name: 'Sparkles', icon_emoji: '✨', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Water treatment & filtration', slug: 'water-treatment-filtration', icon_name: 'Droplet', icon_emoji: '💧', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Heating & energy systems', slug: 'heating-energy-systems', icon_name: 'Zap', icon_emoji: '🔥', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Pool & Spa'), name: 'Spas & hot tubs', slug: 'spa-hot-tubs', icon_name: 'Waves', icon_emoji: '♨️', display_order: 5, is_active: true },
       
       // Architects & Design - 6 subcategories
       { category_id: categoryMap.get('Architects & Design'), name: 'Residential Architects', slug: 'residential-architects', icon_name: 'Ruler', icon_emoji: '🏠', display_order: 1, is_active: true },
@@ -246,11 +245,51 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('outdoor-external-electrics'), name: 'Electric gates & entrances', slug: 'electric-gates-entrances', display_order: 4, is_active: true },
       { subcategory_id: subcategoryMap.get('outdoor-external-electrics'), name: 'EV charger installation', slug: 'ev-charger-installation', display_order: 5, is_active: true },
       
-      // Pool & Spa microservices (existing)
-      { subcategory_id: subcategoryMap.get('pool-maintenance'), name: 'Pool Cleaning', slug: 'pool-cleaning', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('pool-maintenance'), name: 'Chemical Balance', slug: 'chemical-balance', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('pool-equipment'), name: 'Pump Repair', slug: 'pump-repair', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('pool-equipment'), name: 'Filter Replacement', slug: 'filter-replacement', display_order: 2, is_active: true },
+      // Pool & Spa microservices (comprehensive - 35 services across 5 subcategories)
+      // Pool construction & installation (5)
+      { subcategory_id: subcategoryMap.get('pool-construction-installation'), name: 'New pool installation', slug: 'new-pool-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-construction-installation'), name: 'Concrete and tiled pools', slug: 'concrete-tiled-pools', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-construction-installation'), name: 'Prefab and fibreglass pools', slug: 'prefab-fibreglass-pools', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-construction-installation'), name: 'Plunge and small pools', slug: 'plunge-small-pools', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-construction-installation'), name: 'Pool renovation and refurbishment', slug: 'pool-renovation-refurbishment', display_order: 5, is_active: true },
+      
+      // Pool maintenance & cleaning (7)
+      { subcategory_id: subcategoryMap.get('pool-maintenance-cleaning'), name: 'Regular pool cleaning', slug: 'regular-pool-cleaning', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-maintenance-cleaning'), name: 'One-off deep clean', slug: 'one-off-deep-clean', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-maintenance-cleaning'), name: 'Spring opening and winterizing', slug: 'spring-opening-winterizing', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-maintenance-cleaning'), name: 'Filter cleaning and replacement', slug: 'filter-cleaning-replacement', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-maintenance-cleaning'), name: 'Pump servicing', slug: 'pump-servicing', display_order: 5, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-maintenance-cleaning'), name: 'Skimmer and drain maintenance', slug: 'skimmer-drain-maintenance', display_order: 6, is_active: true },
+      { subcategory_id: subcategoryMap.get('pool-maintenance-cleaning'), name: 'Pool cover repair and replacement', slug: 'pool-cover-repair-replacement', display_order: 7, is_active: true },
+      
+      // Water treatment & filtration (8)
+      { subcategory_id: subcategoryMap.get('water-treatment-filtration'), name: 'Water problem solving', slug: 'water-problem-solving', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('water-treatment-filtration'), name: 'Cloudy or discoloured water treatment', slug: 'cloudy-discoloured-water-treatment', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('water-treatment-filtration'), name: 'Algae removal and prevention', slug: 'algae-removal-prevention', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('water-treatment-filtration'), name: 'Filtration system installation', slug: 'filtration-system-installation', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('water-treatment-filtration'), name: 'Filtration system upgrades', slug: 'filtration-system-upgrades', display_order: 5, is_active: true },
+      { subcategory_id: subcategoryMap.get('water-treatment-filtration'), name: 'Saltwater chlorinator installation', slug: 'saltwater-chlorinator-installation', display_order: 6, is_active: true },
+      { subcategory_id: subcategoryMap.get('water-treatment-filtration'), name: 'UV sterilization systems', slug: 'uv-sterilization-systems', display_order: 7, is_active: true },
+      { subcategory_id: subcategoryMap.get('water-treatment-filtration'), name: 'Water testing and balance', slug: 'water-testing-balance', display_order: 8, is_active: true },
+      
+      // Heating & energy systems (7)
+      { subcategory_id: subcategoryMap.get('heating-energy-systems'), name: 'Solar pool heating', slug: 'solar-pool-heating', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-energy-systems'), name: 'Electric pool heaters', slug: 'electric-pool-heaters', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-energy-systems'), name: 'Heat pump installation', slug: 'heat-pump-installation', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-energy-systems'), name: 'Gas pool heaters', slug: 'gas-pool-heaters', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-energy-systems'), name: 'Pool heating repairs', slug: 'pool-heating-repairs', display_order: 5, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-energy-systems'), name: 'Pool blankets and covers', slug: 'pool-blankets-covers', display_order: 6, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-energy-systems'), name: 'Energy efficiency upgrades', slug: 'energy-efficiency-upgrades', display_order: 7, is_active: true },
+      
+      // Spas & hot tubs (8)
+      { subcategory_id: subcategoryMap.get('spa-hot-tubs'), name: 'Hot tub installation', slug: 'hot-tub-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('spa-hot-tubs'), name: 'Spa servicing and maintenance', slug: 'spa-servicing-maintenance', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('spa-hot-tubs'), name: 'Hot tub repair', slug: 'hot-tub-repair', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('spa-hot-tubs'), name: 'Spa jets and plumbing', slug: 'spa-jets-plumbing', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('spa-hot-tubs'), name: 'Spa cover replacement', slug: 'spa-cover-replacement', display_order: 5, is_active: true },
+      { subcategory_id: subcategoryMap.get('spa-hot-tubs'), name: 'Hot tub electrical work', slug: 'hot-tub-electrical-work', display_order: 6, is_active: true },
+      { subcategory_id: subcategoryMap.get('spa-hot-tubs'), name: 'Spa water treatment', slug: 'spa-water-treatment', display_order: 7, is_active: true },
+      { subcategory_id: subcategoryMap.get('spa-hot-tubs'), name: 'Jacuzzi installation and repair', slug: 'jacuzzi-installation-repair', display_order: 8, is_active: true },
       
       // Cleaning microservices (existing)
       { subcategory_id: subcategoryMap.get('house-cleaning'), name: 'Standard Cleaning', slug: 'standard-cleaning', display_order: 1, is_active: true },
