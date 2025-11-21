@@ -41,6 +41,9 @@ export function ServiceCascadeSelector({ onServiceSelect }: ServiceCascadeSelect
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('');
   const [selectedMicroCategory, setSelectedMicroCategory] = useState<string>('');
   
+  const [loadingSubcategories, setLoadingSubcategories] = useState(false);
+  const [loadingMicroCategories, setLoadingMicroCategories] = useState(false);
+  
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [suggestionType, setSuggestionType] = useState<'category' | 'subcategory' | 'micro_category'>('category');
   const [suggestionParentId, setSuggestionParentId] = useState<string>('');
@@ -89,6 +92,7 @@ export function ServiceCascadeSelector({ onServiceSelect }: ServiceCascadeSelect
 
   const loadSubcategories = async (categoryId: string) => {
     try {
+      setLoadingSubcategories(true);
       const { data, error } = await supabase
         .from('service_subcategories')
         .select('id, name, slug, category_id')
@@ -97,6 +101,7 @@ export function ServiceCascadeSelector({ onServiceSelect }: ServiceCascadeSelect
         .order('display_order', { ascending: true });
 
       if (error) throw error;
+      console.log('📦 Loaded subcategories:', data?.length);
       setSubcategories(data || []);
     } catch (error) {
       console.error('Error loading subcategories:', error);
@@ -105,11 +110,16 @@ export function ServiceCascadeSelector({ onServiceSelect }: ServiceCascadeSelect
         description: 'Failed to load subcategories',
         variant: 'destructive',
       });
+    } finally {
+      setLoadingSubcategories(false);
     }
   };
 
   const loadMicroCategories = async (subcategoryId: string) => {
     try {
+      setLoadingMicroCategories(true);
+      console.log('🔍 Loading micro categories for subcategory:', subcategoryId);
+      
       const { data, error } = await supabase
         .from('service_micro_categories')
         .select('id, name, slug, subcategory_id')
@@ -118,14 +128,25 @@ export function ServiceCascadeSelector({ onServiceSelect }: ServiceCascadeSelect
         .order('display_order', { ascending: true });
 
       if (error) throw error;
+      
+      console.log('✅ Loaded micro categories:', data?.length, data);
       setMicroCategories(data || []);
+      
+      if (!data || data.length === 0) {
+        toast({
+          title: 'No services found',
+          description: 'No specific services found for this subcategory. Try suggesting a new one.',
+        });
+      }
     } catch (error) {
-      console.error('Error loading micro categories:', error);
+      console.error('❌ Error loading micro categories:', error);
       toast({
         title: 'Error',
         description: 'Failed to load micro categories',
         variant: 'destructive',
       });
+    } finally {
+      setLoadingMicroCategories(false);
     }
   };
 
@@ -188,7 +209,7 @@ export function ServiceCascadeSelector({ onServiceSelect }: ServiceCascadeSelect
           <SelectTrigger className="bg-background">
             <SelectValue placeholder="Select main category" />
           </SelectTrigger>
-          <SelectContent className="bg-popover z-50">
+          <SelectContent className="bg-popover border border-border shadow-lg z-[100]">
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
@@ -213,11 +234,11 @@ export function ServiceCascadeSelector({ onServiceSelect }: ServiceCascadeSelect
               Suggest New
             </Button>
           </div>
-          <Select value={selectedSubcategory} onValueChange={setSelectedSubcategory}>
+          <Select value={selectedSubcategory} onValueChange={setSelectedSubcategory} disabled={loadingSubcategories}>
             <SelectTrigger className="bg-background">
-              <SelectValue placeholder="Select subcategory" />
+              <SelectValue placeholder={loadingSubcategories ? "Loading subcategories..." : "Select subcategory"} />
             </SelectTrigger>
-            <SelectContent className="bg-popover z-50">
+            <SelectContent className="bg-popover border border-border shadow-lg z-[100]">
               {subcategories.map((subcategory) => (
                 <SelectItem key={subcategory.id} value={subcategory.id}>
                   {subcategory.name}
@@ -243,16 +264,22 @@ export function ServiceCascadeSelector({ onServiceSelect }: ServiceCascadeSelect
               Suggest New
             </Button>
           </div>
-          <Select value={selectedMicroCategory} onValueChange={setSelectedMicroCategory}>
+          <Select value={selectedMicroCategory} onValueChange={setSelectedMicroCategory} disabled={loadingMicroCategories}>
             <SelectTrigger className="bg-background">
-              <SelectValue placeholder="Select specific service" />
+              <SelectValue placeholder={loadingMicroCategories ? "Loading services..." : "Select specific service"} />
             </SelectTrigger>
-            <SelectContent className="bg-popover z-50">
-              {microCategories.map((microCategory) => (
-                <SelectItem key={microCategory.id} value={microCategory.id}>
-                  {microCategory.name}
-                </SelectItem>
-              ))}
+            <SelectContent className="bg-popover border border-border shadow-lg z-[100]">
+              {microCategories.length === 0 ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  No services available. Try suggesting a new one above.
+                </div>
+              ) : (
+                microCategories.map((microCategory) => (
+                  <SelectItem key={microCategory.id} value={microCategory.id}>
+                    {microCategory.name}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </div>
