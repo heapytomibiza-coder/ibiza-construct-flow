@@ -483,9 +483,9 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     {/* Question Text */}
                     <div className="space-y-2">
                       <h2 className="text-xl md:text-2xl font-semibold text-charcoal">
-                        {currentQuestion.label.startsWith('microservices.') || currentQuestion.label.startsWith('questions.') 
+                        {currentQuestion?.label?.startsWith('microservices.') || currentQuestion?.label?.startsWith('questions.') 
                           ? t(currentQuestion.label) 
-                          : extractReadableText(currentQuestion.label)}
+                          : extractReadableText(currentQuestion?.label || '')}
                         {currentQuestion.required && (
                           <span className="text-primary ml-1">*</span>
                         )}
