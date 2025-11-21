@@ -106,6 +106,7 @@ const Discovery = lazyWithRetry(() => import("./pages/Discovery"));
 const DiscoveryPage = lazyWithRetry(() => import("./pages/DiscoveryPage"));
 const BrowseProfessionalsPage = lazyWithRetry(() => import("./pages/BrowseProfessionalsPage"));
 const ProfessionalProfile = lazyWithRetry(() => import("./pages/ProfessionalProfile"));
+const ServiceDetailPage = lazyWithRetry(() => import("./pages/ServiceDetailPage"));
 const ProfessionalOnboardingPage = lazyWithRetry(() => import("./pages/ProfessionalOnboardingPage"));
 const ProfessionalVerificationPage = lazyWithRetry(() => import("./pages/ProfessionalVerificationPage"));
 const ProfessionalServicesPage = lazyWithRetry(() => import("./pages/ProfessionalServicesPage"));
@@ -214,6 +215,7 @@ function AppContent() {
       <Route path="/demo-setup" element={<DemoSetup />} />
       <Route path="/demo-video-guide" element={<DemoVideoGuide />} />
                     <Route path="/discovery" element={<Discovery />} />
+                    <Route path="/service/:id" element={<ServiceDetailPage />} />
                     <Route path="/jobs-discovery" element={<DiscoveryPage />} />
                     <Route path="/professionals" element={<BrowseProfessionalsPage />} />
                     <Route path="/book" element={<BookingPage />} />

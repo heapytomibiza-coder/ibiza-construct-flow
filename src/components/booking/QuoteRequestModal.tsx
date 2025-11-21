@@ -36,6 +36,7 @@ interface QuoteRequestModalProps {
   professionalName: string;
   serviceId?: string;
   serviceName?: string;
+  preSelectedServiceId?: string;
 }
 
 export const QuoteRequestModal = ({
@@ -44,7 +45,8 @@ export const QuoteRequestModal = ({
   professionalId,
   professionalName,
   serviceId,
-  serviceName
+  serviceName,
+  preSelectedServiceId
 }: QuoteRequestModalProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -148,7 +150,10 @@ export const QuoteRequestModal = ({
         <DialogHeader>
           <DialogTitle>Request Quote from {professionalName}</DialogTitle>
           <DialogDescription>
-            Provide details about your project to receive an accurate quote
+            {preSelectedServiceId 
+              ? `Get a quote for: ${serviceName || 'this service'}`
+              : 'Provide details about your project to receive an accurate quote'
+            }
           </DialogDescription>
         </DialogHeader>
 

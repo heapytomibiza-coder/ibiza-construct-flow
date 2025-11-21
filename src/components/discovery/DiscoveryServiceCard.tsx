@@ -63,15 +63,14 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
     if (onViewDetails) {
       onViewDetails();
     } else {
-      // Navigate to professional's profile with service highlighted
-      navigate(`/professional/${item.professional_id}?service=${item.id}`);
+      // Navigate to dedicated service detail page
+      navigate(`/service/${item.id}`);
     }
   };
 
   const handleContactNow = () => {
-    // Navigate to professional's profile with contact/quote action
+    // Navigate to professional's profile with contact/quote action auto-open
     navigate(`/professional/${item.professional_id}?service=${item.id}&action=contact`);
-    toast.success('Opening professional profile...');
   };
 
   return (

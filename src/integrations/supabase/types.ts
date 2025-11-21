@@ -8776,6 +8776,45 @@ export type Database = {
         }
         Relationships: []
       }
+      service_bookmarks: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          service_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_bookmarks_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "professional_service_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_bookmarks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_categories: {
         Row: {
           category_group: string | null
@@ -9015,6 +9054,45 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_views: {
+        Row: {
+          created_at: string
+          id: string
+          service_id: string
+          session_id: string
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          service_id: string
+          session_id: string
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          service_id?: string
+          session_id?: string
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_views_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "professional_service_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -10942,6 +11020,10 @@ export type Database = {
           reviewer_name: string
           title: string
         }[]
+      }
+      get_service_view_count: {
+        Args: { p_service_id: string }
+        Returns: number
       }
       get_sla_breach_tickets: {
         Args: never
