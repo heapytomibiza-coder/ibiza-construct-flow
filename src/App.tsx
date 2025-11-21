@@ -45,6 +45,13 @@ const UnifiedClientDashboard = lazyWithRetry(() => import("./components/dashboar
 const UnifiedProfessionalDashboard = lazyWithRetry(() => import("./components/dashboards/UnifiedProfessionalDashboard"));
 const AdminDashboard = lazyWithRetry(() => import("./pages/admin/AdminDashboardPage"));
 
+// Client Analytics Pages
+const ClientAnalyticsOverview = lazyWithRetry(() => import("./pages/analytics/ClientAnalyticsOverview"));
+const ClientJobsAnalytics = lazyWithRetry(() => import("./pages/analytics/ClientJobsAnalytics"));
+const ClientHiringAnalytics = lazyWithRetry(() => import("./pages/analytics/ClientHiringAnalytics"));
+const ClientPaymentAnalytics = lazyWithRetry(() => import("./pages/analytics/ClientPaymentAnalytics"));
+const ClientProfessionalAnalytics = lazyWithRetry(() => import("./pages/analytics/ClientProfessionalAnalytics"));
+
 // Admin Pages
 const AdminHome = lazyWithRetry(() => import("./pages/admin/AdminHome"));
 const Analytics = lazyWithRetry(() => import("./pages/admin/Analytics"));
@@ -356,6 +363,38 @@ function AppContent() {
                     <Route path="/payments" element={
                       <RouteGuard>
                         <PaymentsPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Client Analytics Routes */}
+                    <Route path="/dashboard/client/analytics" element={
+                      <RouteGuard requiredRole="client">
+                        <ClientAnalyticsOverview />
+                      </RouteGuard>
+                    } />
+                    <Route path="/dashboard/client/analytics/overview" element={
+                      <RouteGuard requiredRole="client">
+                        <ClientAnalyticsOverview />
+                      </RouteGuard>
+                    } />
+                    <Route path="/dashboard/client/analytics/jobs" element={
+                      <RouteGuard requiredRole="client">
+                        <ClientJobsAnalytics />
+                      </RouteGuard>
+                    } />
+                    <Route path="/dashboard/client/analytics/hiring" element={
+                      <RouteGuard requiredRole="client">
+                        <ClientHiringAnalytics />
+                      </RouteGuard>
+                    } />
+                    <Route path="/dashboard/client/analytics/payments" element={
+                      <RouteGuard requiredRole="client">
+                        <ClientPaymentAnalytics />
+                      </RouteGuard>
+                    } />
+                    <Route path="/dashboard/client/analytics/professionals" element={
+                      <RouteGuard requiredRole="client">
+                        <ClientProfessionalAnalytics />
                       </RouteGuard>
                     } />
                     
