@@ -29,7 +29,8 @@ interface ConfiguredService {
   micro_service_name: string;
   category: string;
   subcategory: string;
-  hourly_rate: number;
+  pricing_type: 'hourly' | 'daily' | 'job';
+  rate: number;
   description: string;
 }
 
@@ -52,7 +53,8 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
   const [microServices, setMicroServices] = useState<MicroService[]>([]);
   const [configuredServices, setConfiguredServices] = useState<ConfiguredService[]>([]);
   
-  const [hourlyRate, setHourlyRate] = useState('');
+  const [pricingType, setPricingType] = useState<'hourly' | 'daily' | 'job'>('hourly');
+  const [rate, setRate] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -168,13 +170,14 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
     setSelectedMicroService(micro);
     setCurrentStep('config');
     // Pre-fill with default values
-    setHourlyRate('50');
+    setPricingType('hourly');
+    setRate('50');
     setDescription('');
   };
 
   const handleAddService = () => {
-    if (!selectedMicroService || !hourlyRate || parseFloat(hourlyRate) <= 0) {
-      toast.error('Please enter a valid hourly rate');
+    if (!selectedMicroService || !rate || parseFloat(rate) <= 0) {
+      toast.error('Please enter a valid rate');
       return;
     }
 
@@ -183,7 +186,8 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
       micro_service_name: selectedMicroService.name,
       category: selectedCategory,
       subcategory: selectedSubcategory,
-      hourly_rate: parseFloat(hourlyRate),
+      pricing_type: pricingType,
+      rate: parseFloat(rate),
       description: description.trim()
     };
 
@@ -191,7 +195,8 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
     toast.success('Service configured!');
     
     // Reset and go back to micro selection
-    setHourlyRate('');
+    setPricingType('hourly');
+    setRate('');
     setDescription('');
     setSelectedMicroService(null);
     setCurrentStep('micro');
@@ -241,8 +246,11 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
       const servicesToInsert = configuredServices.map(service => ({
         professional_id: professionalId,
         micro_service_id: service.micro_service_id,
-        hourly_rate: service.hourly_rate,
-        description: service.description || null,
+        pricing_structure: {
+          type: service.pricing_type,
+          rate: service.rate,
+          description: service.description || null
+        },
         is_active: true,
         created_at: new Date().toISOString()
       }));
@@ -301,7 +309,10 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
                     {service.category} → {service.subcategory}
                   </p>
                   <p className="text-sm text-primary font-semibold mt-1">
-                    €{service.hourly_rate}/hour
+                    €{service.rate}
+                    {service.pricing_type === 'hourly' && '/hour'}
+                    {service.pricing_type === 'daily' && '/day'}
+                    {service.pricing_type === 'job' && ' per job'}
                   </p>
                 </div>
                 <Button
@@ -400,23 +411,62 @@ export function ServiceCascadeConfigurator({ professionalId, preselectedCategori
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <Label>Pricing Type <span className="text-destructive">*</span></Label>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  type="button"
+                  variant={pricingType === 'hourly' ? 'default' : 'outline'}
+                  onClick={() => setPricingType('hourly')}
+                  className="w-full"
+                >
+                  Hourly
+                </Button>
+                <Button
+                  type="button"
+                  variant={pricingType === 'daily' ? 'default' : 'outline'}
+                  onClick={() => setPricingType('daily')}
+                  className="w-full"
+                >
+                  Daily
+                </Button>
+                <Button
+                  type="button"
+                  variant={pricingType === 'job' ? 'default' : 'outline'}
+                  onClick={() => setPricingType('job')}
+                  className="w-full"
+                >
+                  Per Job
+                </Button>
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="hourlyRate">
-                Hourly Rate <span className="text-destructive">*</span>
+              <Label htmlFor="rate">
+                {pricingType === 'hourly' && 'Hourly Rate'}
+                {pricingType === 'daily' && 'Daily Rate'}
+                {pricingType === 'job' && 'Job Rate'}
+                {' '}<span className="text-destructive">*</span>
               </Label>
               <p className="text-sm text-muted-foreground">
-                Your rate for this specific service
+                {pricingType === 'hourly' && 'Your rate per hour for this service'}
+                {pricingType === 'daily' && 'Your rate per full day (8 hours) for this service'}
+                {pricingType === 'job' && 'Fixed price per completed job'}
               </p>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
                 <Input
-                  id="hourlyRate"
+                  id="rate"
                   type="number"
                   min="0"
                   step="0.01"
-                  value={hourlyRate}
-                  onChange={(e) => setHourlyRate(e.target.value)}
-                  placeholder="50.00"
+                  value={rate}
+                  onChange={(e) => setRate(e.target.value)}
+                  placeholder={
+                    pricingType === 'hourly' ? '50.00' :
+                    pricingType === 'daily' ? '400.00' :
+                    '150.00'
+                  }
                   className="pl-8"
                 />
               </div>
