@@ -87,14 +87,12 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Electrical'), name: 'Lighting & Power', slug: 'lighting-power', icon_name: 'Lightbulb', icon_emoji: '💡', display_order: 4, is_active: true },
       { category_id: categoryMap.get('Electrical'), name: 'Outdoor & External Electrics', slug: 'outdoor-external-electrics', icon_name: 'PlugZap', icon_emoji: '⚡', display_order: 5, is_active: true },
       
-      // HVAC - 7 subcategories
-      { category_id: categoryMap.get('HVAC'), name: 'Air Conditioning', slug: 'air-conditioning', icon_name: 'Wind', icon_emoji: '❄️', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('HVAC'), name: 'Heating', slug: 'heating', icon_name: 'Wind', icon_emoji: '🔥', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('HVAC'), name: 'Ventilation', slug: 'ventilation', icon_name: 'Wind', icon_emoji: '🌬️', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('HVAC'), name: 'Boiler Repair', slug: 'boiler-repair', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('HVAC'), name: 'Heat Pump Installation', slug: 'heat-pump-installation', icon_name: 'Zap', icon_emoji: '♨️', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('HVAC'), name: 'Radiator Installation', slug: 'radiator-installation', icon_name: 'Square', icon_emoji: '🔥', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('HVAC'), name: 'Duct Cleaning', slug: 'duct-cleaning', icon_name: 'Wind', icon_emoji: '🌬️', display_order: 7, is_active: true },
+      // HVAC - 5 specialized subcategories
+      { category_id: categoryMap.get('HVAC'), name: 'AC installation & upgrades', slug: 'ac-installation-upgrade', icon_name: 'Fan', icon_emoji: '🧊', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'AC servicing & repairs', slug: 'ac-servicing-repairs', icon_name: 'Wrench', icon_emoji: '🛠️', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Heating systems', slug: 'heating-systems', icon_name: 'Flame', icon_emoji: '🔥', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Ventilation & air quality', slug: 'ventilation-air-quality', icon_name: 'Wind', icon_emoji: '💨', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('HVAC'), name: 'Controls & efficiency', slug: 'controls-efficiency', icon_name: 'Gauge', icon_emoji: '📊', display_order: 5, is_active: true },
       
       // Painting & Decorating - 7 subcategories
       { category_id: categoryMap.get('Painting & Decorating'), name: 'Interior Painting', slug: 'interior-painting', icon_name: 'Paintbrush', icon_emoji: '🎨', display_order: 1, is_active: true },
@@ -386,11 +384,37 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('landscaping'), name: 'Garden Design', slug: 'garden-design', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('tree-services'), name: 'Tree Trimming', slug: 'tree-trimming', display_order: 1, is_active: true },
       
-      // HVAC microservices (existing)
-      { subcategory_id: subcategoryMap.get('ac-repair'), name: 'AC Maintenance', slug: 'ac-maintenance', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('ac-repair'), name: 'AC Installation', slug: 'ac-installation', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('heating'), name: 'Heater Repair', slug: 'heater-repair', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('heating'), name: 'Heater Installation', slug: 'heater-installation', display_order: 2, is_active: true },
+      // HVAC microservices (21 services across 5 subcategories)
+      // AC installation & upgrades (5)
+      { subcategory_id: subcategoryMap.get('ac-installation-upgrade'), name: 'Wall split AC installation', slug: 'wall-split-ac-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('ac-installation-upgrade'), name: 'Multi-split AC installation', slug: 'multi-split-ac-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('ac-installation-upgrade'), name: 'Ducted AC installation', slug: 'ducted-ac-installation', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('ac-installation-upgrade'), name: 'AC unit relocation', slug: 'ac-relocation', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('ac-installation-upgrade'), name: 'AC system upgrade or replacement', slug: 'ac-upgrade-replacement', display_order: 5, is_active: true },
+      
+      // AC servicing & repairs (5)
+      { subcategory_id: subcategoryMap.get('ac-servicing-repairs'), name: 'Regular AC servicing', slug: 'regular-ac-servicing', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('ac-servicing-repairs'), name: 'AC emergency repair', slug: 'ac-emergency-repair', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('ac-servicing-repairs'), name: 'AC gas recharge', slug: 'ac-gas-recharge', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('ac-servicing-repairs'), name: 'AC leak detection & repair', slug: 'ac-leak-detection-repair', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('ac-servicing-repairs'), name: 'AC poor performance / noise issues', slug: 'ac-poor-performance-noise', display_order: 5, is_active: true },
+      
+      // Heating systems (4)
+      { subcategory_id: subcategoryMap.get('heating-systems'), name: 'Heat pump installation', slug: 'heat-pump-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-systems'), name: 'Underfloor heating installation', slug: 'underfloor-heating-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-systems'), name: 'Radiator system installation', slug: 'radiator-system-installation', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('heating-systems'), name: 'Heating system servicing & repair', slug: 'heating-system-servicing-repair', display_order: 4, is_active: true },
+      
+      // Ventilation & air quality (4)
+      { subcategory_id: subcategoryMap.get('ventilation-air-quality'), name: 'Mechanical ventilation installation', slug: 'mechanical-ventilation-install', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('ventilation-air-quality'), name: 'Kitchen extractor installation', slug: 'kitchen-extractor-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('ventilation-air-quality'), name: 'Bathroom extractor installation', slug: 'bathroom-extractor-installation', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('ventilation-air-quality'), name: 'Air purifier & filter systems', slug: 'air-purifier-filter-systems', display_order: 4, is_active: true },
+      
+      // Controls & efficiency (3)
+      { subcategory_id: subcategoryMap.get('controls-efficiency'), name: 'Smart thermostat installation', slug: 'smart-thermostat-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('controls-efficiency'), name: 'Zoning & control systems', slug: 'zoning-and-controls', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('controls-efficiency'), name: 'Energy efficiency assessment', slug: 'energy-efficiency-assessment', display_order: 3, is_active: true },
       
       // Painting microservices (existing)
       { subcategory_id: subcategoryMap.get('interior-painting'), name: 'Room Painting', slug: 'room-painting', display_order: 1, is_active: true },
