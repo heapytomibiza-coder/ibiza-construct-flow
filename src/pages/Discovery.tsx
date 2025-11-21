@@ -197,37 +197,84 @@ const Discovery = () => {
           onSelectCategory={handleCategorySelect}
         />
 
-        {/* View Mode Tabs - Now Sticky on Mobile */}
-        <DiscoveryTabs
-          activeMode={viewMode as any}
-          onModeChange={(mode) => setViewMode(mode as any)}
-          className="mt-4"
-        />
+        {/* Quick Browse Buttons - Show when no search */}
+        {!searchTerm && !loading && !loadingPros && (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 mb-6">
+            <button
+              onClick={() => setViewMode('services')}
+              className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl transition-all ${
+                viewMode === 'services'
+                  ? 'bg-primary text-primary-foreground shadow-lg scale-105'
+                  : 'bg-card border-2 border-border hover:border-primary hover:shadow-md'
+              }`}
+            >
+              <span className="text-2xl">🛠️</span>
+              <div className="text-left">
+                <div className="font-semibold">Browse Services</div>
+                <div className="text-xs opacity-80">Shop your exact needs</div>
+              </div>
+            </button>
+            <button
+              onClick={() => setViewMode('professionals')}
+              className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl transition-all ${
+                viewMode === 'professionals'
+                  ? 'bg-primary text-primary-foreground shadow-lg scale-105'
+                  : 'bg-card border-2 border-border hover:border-primary hover:shadow-md'
+              }`}
+            >
+              <span className="text-2xl">👥</span>
+              <div className="text-left">
+                <div className="font-semibold">Browse Professionals</div>
+                <div className="text-xs opacity-80">Explore by trade or expertise</div>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* View Mode Tabs - Show when searching */}
+        {searchTerm && (
+          <DiscoveryTabs
+            activeMode={viewMode as any}
+            onModeChange={(mode) => setViewMode(mode as any)}
+            className="mt-4"
+          />
+        )}
 
         {/* Results Section */}
         <div className="mt-6 space-y-6">
           {/* Results Count */}
-          {!loading && services.length > 0 && (
+          {!loading && !loadingPros && (
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                {services.length} service{services.length !== 1 ? 's' : ''} available
+                {viewMode === 'services' 
+                  ? `${services.length} service${services.length !== 1 ? 's' : ''} available`
+                  : `${discoveredProfessionals.length} professional${discoveredProfessionals.length !== 1 ? 's' : ''} available`
+                }
               </p>
+              {(services.length > 0 || discoveredProfessionals.length > 0) && (
+                <p className="text-xs text-muted-foreground">
+                  {searchTerm ? `Results for "${searchTerm}"` : selectedCategory || 'All categories'}
+                </p>
+              )}
             </div>
           )}
 
           {/* Results */}
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <SkeletonLoader key={i} variant="card" />
-              ))}
-            </div>
-          ) : viewMode === 'services' ? (
-            services.length === 0 ? (
+          {viewMode === 'services' ? (
+            loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <SkeletonLoader key={i} variant="card" />
+                ))}
+              </div>
+            ) : services.length === 0 ? (
               <EmptyState
-                type={searchTerm ? 'no-results' : 'no-search'}
-                searchTerm={searchTerm}
-                onClearSearch={() => setSearchTerm('')}
+                type={searchTerm || selectedCategory ? 'no-results' : 'no-search'}
+                searchTerm={searchTerm || selectedCategory || ''}
+                onClearSearch={() => {
+                  setSearchTerm('');
+                  setSelectedCategory(null);
+                }}
                 viewMode="services"
               />
             ) : (
@@ -255,9 +302,12 @@ const Discovery = () => {
               </div>
             ) : discoveredProfessionals.length === 0 ? (
               <EmptyState
-                type={searchTerm ? 'no-results' : 'no-search'}
-                searchTerm={searchTerm}
-                onClearSearch={() => setSearchTerm('')}
+                type={searchTerm || selectedCategory ? 'no-results' : 'no-search'}
+                searchTerm={searchTerm || selectedCategory || ''}
+                onClearSearch={() => {
+                  setSearchTerm('');
+                  setSelectedCategory(null);
+                }}
                 viewMode="professionals"
               />
             ) : (
@@ -278,7 +328,7 @@ const Discovery = () => {
           )}
 
           {/* Popular Services - Below Results */}
-          {!searchTerm && !loading && (
+          {!loading && !loadingPros && services.length === 0 && discoveredProfessionals.length === 0 && (
             <div className="mt-8">
               <PopularServicesSection
                 viewMode={viewMode}

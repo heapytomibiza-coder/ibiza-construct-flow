@@ -16,11 +16,13 @@ export const EmptyState = ({ type, searchTerm, onClearSearch, viewMode = 'servic
         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 animate-pulse">
           <Search className="w-10 h-10 text-primary" />
         </div>
-        <h3 className="text-xl font-semibold mb-2">Start Your Search</h3>
+        <h3 className="text-xl font-semibold mb-2">
+          {viewMode === 'services' ? 'Browse Services' : 'Find Professionals'}
+        </h3>
         <p className="text-muted-foreground max-w-sm">
           {viewMode === 'services' 
-            ? 'Search for specific services or browse popular options below'
-            : 'Find professionals by their trade or specialty'
+            ? 'Use the search bar or category filters to find specific services, or browse all available services below'
+            : 'Search by trade or specialty, or browse all professionals in your area below'
           }
         </p>
       </div>
@@ -37,7 +39,7 @@ export const EmptyState = ({ type, searchTerm, onClearSearch, viewMode = 'servic
         We couldn't find any {viewMode === 'services' ? 'services' : 'professionals'} matching "{searchTerm}"
       </p>
       <Button variant="outline" onClick={onClearSearch}>
-        Clear Search
+        Clear Filters & Search
       </Button>
     </div>
   );
