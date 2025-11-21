@@ -29,7 +29,7 @@ export function ProfessionalFeaturesShowcase() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Hero Stats Bar */}
       <HeroStatsBar />
 
@@ -96,7 +96,7 @@ export function ProfessionalFeaturesShowcase() {
       </FeatureCategorySection>
 
       {/* Client & Project Management */}
-      <FeatureCategorySection icon="💬" title="Manage Clients" columns={4}>
+      <FeatureCategorySection icon="💬" title="Client Management" columns={4}>
         <CompactFeatureCard
           icon={MessageSquare}
           title="Communications"
@@ -133,49 +133,49 @@ export function ProfessionalFeaturesShowcase() {
       <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen}>
         <Card className="border-border/50">
           <CollapsibleTrigger className="w-full">
-            <div className="p-4 flex items-center justify-between hover:bg-accent/50 transition-colors rounded-lg">
+            <div className="p-3 flex items-center justify-between hover:bg-accent/50 transition-colors rounded-lg">
               <div className="flex items-center gap-2">
-                <span className="text-xl">⚙️</span>
-                <h3 className="text-lg font-semibold">Settings & Tools</h3>
+                <span className="text-lg">⚙️</span>
+                <h3 className="text-base font-semibold">Settings & Tools</h3>
               </div>
-              <ChevronDown className={`h-5 w-5 transition-transform ${settingsOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 transition-transform ${settingsOpen ? 'rotate-180' : ''}`} />
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-4 pt-0">
-              <Card className="p-3 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/settings/notifications')}>
-                <div className="flex items-center gap-3">
-                  <Bell className="h-5 w-5 text-muted-foreground" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5 p-3 pt-0">
+              <Card className="p-2.5 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/settings/notifications')}>
+                <div className="flex items-center gap-2.5">
+                  <Bell className="h-4 w-4 text-sage" />
                   <div>
-                    <p className="font-medium text-sm">Smart Notifications</p>
-                    <p className="text-xs text-muted-foreground">Configure alerts</p>
+                    <p className="font-medium text-xs">Smart Notifications</p>
+                    <p className="text-[10px] text-muted-foreground">Configure alerts</p>
                   </div>
                 </div>
               </Card>
-              <Card className="p-3 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/professional/service-setup')}>
-                <div className="flex items-center gap-3">
-                  <Wrench className="h-5 w-5 text-muted-foreground" />
+              <Card className="p-2.5 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/professional/service-setup')}>
+                <div className="flex items-center gap-2.5">
+                  <Wrench className="h-4 w-4 text-sage" />
                   <div>
-                    <p className="font-medium text-sm">Service Setup</p>
-                    <p className="text-xs text-muted-foreground">Create packages</p>
+                    <p className="font-medium text-xs">Service Setup</p>
+                    <p className="text-[10px] text-muted-foreground">Create packages</p>
                   </div>
                 </div>
               </Card>
-              <Card className="p-3 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/professional/payout-setup')}>
-                <div className="flex items-center gap-3">
-                  <CreditCard className="h-5 w-5 text-muted-foreground" />
+              <Card className="p-2.5 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/professional/payout-setup')}>
+                <div className="flex items-center gap-2.5">
+                  <CreditCard className="h-4 w-4 text-sage" />
                   <div>
-                    <p className="font-medium text-sm">Payout Settings</p>
-                    <p className="text-xs text-muted-foreground">Bank details</p>
+                    <p className="font-medium text-xs">Payout Settings</p>
+                    <p className="text-[10px] text-muted-foreground">Bank details</p>
                   </div>
                 </div>
               </Card>
-              <Card className="p-3 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/settings/profile')}>
-                <div className="flex items-center gap-3">
-                  <Settings className="h-5 w-5 text-muted-foreground" />
+              <Card className="p-2.5 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/settings/profile')}>
+                <div className="flex items-center gap-2.5">
+                  <Settings className="h-4 w-4 text-sage" />
                   <div>
-                    <p className="font-medium text-sm">Account Settings</p>
-                    <p className="text-xs text-muted-foreground">Manage profile</p>
+                    <p className="font-medium text-xs">Account Settings</p>
+                    <p className="text-[10px] text-muted-foreground">Manage profile</p>
                   </div>
                 </div>
               </Card>
@@ -186,17 +186,16 @@ export function ProfessionalFeaturesShowcase() {
 
       {/* CTA */}
       <Card className="bg-gradient-to-r from-sage/25 to-sage-dark/15 border-sage/30">
-        <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <CardContent className="p-5 flex flex-col md:flex-row items-center justify-between gap-3">
           <div>
-            <h3 className="text-lg font-bold mb-1">Ready to Grow Your Business?</h3>
-            <p className="text-sm text-muted-foreground">
+            <h3 className="text-base font-bold mb-1">Ready to Grow Your Business?</h3>
+            <p className="text-xs text-muted-foreground">
               Complete your profile and start winning quality projects today
             </p>
           </div>
           <Button 
-            size="lg"
             onClick={() => navigate('/job-board')}
-            className="bg-primary hover:bg-primary/90"
+            className="bg-sage hover:bg-sage-dark text-white whitespace-nowrap"
           >
             Browse Jobs
           </Button>

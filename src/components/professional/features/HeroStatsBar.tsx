@@ -66,46 +66,46 @@ export function HeroStatsBar() {
     {
       label: 'Jobs Available',
       value: stats?.jobsAvailable || 0,
-      gradient: 'from-blue-500/10 to-cyan-400/5',
+      gradient: 'from-sage/15 to-sage-dark/8',
       icon: Briefcase,
-      iconColor: 'text-blue-500'
+      iconColor: 'text-sage'
     },
     {
       label: 'Unread Messages',
       value: stats?.unreadMessages || 0,
-      gradient: 'from-purple-500/10 to-pink-400/5',
+      gradient: 'from-sage-light/12 to-sage/6',
       icon: MessageSquare,
-      iconColor: 'text-purple-500'
+      iconColor: 'text-sage-dark'
     },
     {
       label: 'This Month',
       value: `€${Math.round(stats?.monthlyEarnings || 0)}`,
-      gradient: 'from-green-500/10 to-emerald-400/5',
+      gradient: 'from-sage/15 to-sage-dark/8',
       icon: TrendingUp,
-      iconColor: 'text-green-500'
+      iconColor: 'text-sage'
     },
     {
       label: 'Profile',
       value: `${stats?.profileCompletion || 0}%`,
-      gradient: 'from-orange-500/10 to-amber-400/5',
+      gradient: 'from-sage-light/12 to-sage/6',
       icon: User,
-      iconColor: 'text-orange-500'
+      iconColor: 'text-sage-dark'
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       {statCards.map((stat, index) => (
         <Card 
           key={index}
-          className={`p-4 bg-gradient-to-br ${stat.gradient} border-border/50 hover:shadow-lg transition-all duration-300 hover:scale-105`}
+          className={`p-3 bg-gradient-to-br ${stat.gradient} border-border/50 hover:shadow-md transition-all duration-300`}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-              <p className="text-2xl font-bold">{stat.value}</p>
+              <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
+              <p className="text-xl font-bold">{stat.value}</p>
             </div>
-            <stat.icon className={`h-8 w-8 ${stat.iconColor}`} />
+            <stat.icon className={`h-6 w-6 ${stat.iconColor} opacity-70`} />
           </div>
         </Card>
       ))}
