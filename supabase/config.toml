@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.seed-pool-spa-questions]
 verify_jwt = false
+
+[functions.seed-hvac-questions]
+verify_jwt = false
