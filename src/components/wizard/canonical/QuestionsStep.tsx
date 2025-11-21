@@ -498,48 +498,62 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     <div className="space-y-3">
                       <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
                         {(() => {
-                          // Try multiple sources for the question text
-                          let questionText = '';
+                          const q = currentQuestion as any;
+                          console.log('🔍 Full question object:', JSON.stringify(currentQuestion, null, 2));
                           
-                          // 1. Check 'question' property (from WizardQuestion/database)
-                          if ((currentQuestion as any).question) {
-                            questionText = (currentQuestion as any).question;
-                          }
-                          // 2. Check 'label' property (from AIQuestion)
-                          else if (currentQuestion?.label) {
-                            questionText = currentQuestion.label;
-                          }
-                          // 3. Check 'title' property (alternative)
-                          else if ((currentQuestion as any).title) {
-                            questionText = (currentQuestion as any).title;
-                          }
-                          // 4. Use ID as fallback
-                          else {
-                            questionText = currentQuestion?.id || 'Question';
-                          }
-
-                          console.log('🔍 Rendering question text:', questionText);
+                          // Try every possible property that might contain the question text
+                          const possibleTextFields = [
+                            q?.question,
+                            currentQuestion?.label,
+                            q?.title,
+                            q?.text,
+                          ];
                           
-                          // If empty, provide fallback
-                          if (!questionText || questionText.trim() === '') {
-                            return `Question ${currentQuestionIndex + 1}`;
+                          // Find the first non-empty text
+                          let questionText = possibleTextFields.find(text => 
+                            text && typeof text === 'string' && text.trim() !== ''
+                          ) || '';
+                          
+                          // If still empty, try to construct from options
+                          if (!questionText && currentQuestion?.options && currentQuestion.options.length > 0) {
+                            // Guess the question from the option values
+                            const firstOpt = currentQuestion.options[0];
+                            const optValue = typeof firstOpt === 'string' ? firstOpt : (firstOpt as any)?.value || '';
+                            
+                            if (optValue.includes('bed')) {
+                              questionText = 'How many bedrooms?';
+                            } else if (optValue.includes('room')) {
+                              questionText = 'How many rooms?';
+                            } else if (optValue.includes('floor')) {
+                              questionText = 'How many floors?';
+                            } else if (optValue.includes('bathroom')) {
+                              questionText = 'How many bathrooms?';
+                            }
                           }
+                          
+                          // If STILL empty, use the ID to create a readable question
+                          if (!questionText && currentQuestion?.id) {
+                            const id = currentQuestion.id;
+                            questionText = id
+                              .replace(/_/g, ' ')
+                              .replace(/([a-z])([A-Z])/g, '$1 $2')
+                              .split(' ')
+                              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                              .join(' ') + '?';
+                          }
+                          
+                          // Last resort fallback
+                          if (!questionText) {
+                            questionText = `Question ${currentQuestionIndex + 1}`;
+                          }
+                          
+                          console.log('✅ Final question text:', questionText);
                           
                           // Check if it's an i18n key and translate it
                           if (questionText.startsWith('microservices.') || questionText.startsWith('questions.')) {
-                            const translated = t(questionText);
-                            console.log('🌐 Translated:', translated);
-                            return translated;
+                            return t(questionText);
                           }
                           
-                          // If it looks like a key (has dots and isn't a sentence), extract readable text
-                          if (questionText.includes('.') && !questionText.includes(' ')) {
-                            const extracted = extractReadableText(questionText);
-                            console.log('📝 Extracted:', extracted);
-                            return extracted;
-                          }
-                          
-                          // Return as-is if it's already readable text
                           return questionText;
                         })()}
                         {currentQuestion.required && (
