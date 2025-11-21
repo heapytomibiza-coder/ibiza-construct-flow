@@ -16,7 +16,8 @@ interface MicroStepProps {
   subcategory: string;
   selectedMicros: string[];
   selectedMicroIds: string[];
-  onSelect: (micros: string[], microIds: string[]) => void;
+  selectedMicroSlugs: string[];
+  onSelect: (micros: string[], microIds: string[], microSlugs: string[]) => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -26,6 +27,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
   subcategory,
   selectedMicros,
   selectedMicroIds,
+  selectedMicroSlugs,
   onSelect,
   onNext,
   onBack
@@ -107,9 +109,10 @@ export const MicroStep: React.FC<MicroStepProps> = ({
 
         if (!mounted) return;
 
-        // Map to expected format (id and micro fields)
+        // Map to expected format (id, slug, and micro fields)
         const formattedData = (data || []).map(item => ({
           id: item.id,
+          slug: item.slug || '',
           micro: item.name
         }));
         
@@ -187,10 +190,15 @@ export const MicroStep: React.FC<MicroStepProps> = ({
                 // Remove from selection
                 const newMicros = selectedMicros.filter((_, i) => selectedMicroIds[i] !== micro.id);
                 const newIds = selectedMicroIds.filter(id => id !== micro.id);
-                onSelect(newMicros, newIds);
+                const newSlugs = selectedMicroSlugs.filter((_, i) => selectedMicroIds[i] !== micro.id);
+                onSelect(newMicros, newIds, newSlugs);
               } else {
                 // Add to selection
-                onSelect([...selectedMicros, micro.micro], [...selectedMicroIds, micro.id]);
+                onSelect(
+                  [...selectedMicros, micro.micro], 
+                  [...selectedMicroIds, micro.id],
+                  [...selectedMicroSlugs, micro.slug]
+                );
               }
             };
             
