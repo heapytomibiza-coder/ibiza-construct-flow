@@ -155,15 +155,31 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           };
           
           // Transform to AIQuestion format
-          const transformedQuestions: AIQuestion[] = constructionQuestions.map(q => ({
-            id: q.id,
-            type: mapToAIQuestionType(q.type),
-            label: q.question,
-            required: q.required,
-            options: q.options?.map(opt => ({ label: opt, value: opt })),
-            placeholder: q.placeholder,
-            helpText: q.validation?.message
-          }));
+          const transformedQuestions: AIQuestion[] = constructionQuestions.map(q => {
+            console.log('🔄 Transforming question:', {
+              id: q.id,
+              question: q.question,
+              type: q.type,
+              hasQuestion: !!q.question,
+              questionType: typeof q.question
+            });
+            
+            return {
+              id: q.id,
+              type: mapToAIQuestionType(q.type),
+              label: q.question,
+              required: q.required,
+              options: q.options?.map(opt => ({ label: opt, value: opt })),
+              placeholder: q.placeholder,
+              helpText: q.validation?.message
+            };
+          });
+
+          console.log('✅ Transformed questions:', transformedQuestions.map(q => ({ 
+            id: q.id, 
+            label: q.label, 
+            hasLabel: !!q.label 
+          })));
 
           setQuestions(transformedQuestions);
           setPackSource('static_json');
