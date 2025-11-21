@@ -43,7 +43,10 @@ interface Props {
 type Step = 'category' | 'subcategory' | 'micro' | 'config';
 
 export function ServiceCascadeConfigurator({ professionalId, preselectedCategories, onComplete }: Props) {
-  const [currentStep, setCurrentStep] = useState<Step>('category');
+  console.log('🎯 ServiceCascadeConfigurator loaded - NEW VERSION with pricing options');
+  console.log('Categories:', preselectedCategories);
+  
+  const [currentStep, setCurrentStep] = useState<Step>('subcategory');
   const [categoryIndex, setCategoryIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
