@@ -283,30 +283,52 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   };
 
   const transformPackToAIQuestions = (packContent: any): AIQuestion[] => {
+    console.log('🔍 Transform pack content:', JSON.stringify(packContent, null, 2));
     const microDef = packContent;
-    if (!microDef?.questions || !Array.isArray(microDef.questions)) return [];
+    if (!microDef?.questions || !Array.isArray(microDef.questions)) {
+      console.warn('❌ No questions array in pack content');
+      return [];
+    }
 
-    return microDef.questions.map((q: any) => ({
-      id: q.key,
-      type: mapPackTypeToAIType(q.type),
-      label: q.i18nKey, // i18n keys used directly (i18n resolver in future phase)
-      required: q.required ?? false,
-      options: q.options?.map((opt: any) => ({
-        label: opt.i18nKey, // i18n keys used directly (i18n resolver in future phase)
-        value: opt.value
-      })),
-      min: q.min,
-      max: q.max,
-      step: q.step,
-      meta: {
-        priority: 'core',
-        hint: q.aiHint,
-        show_if: q.visibility?.allOf?.map((cond: any) => ({
-          question: cond.questionKey,
-          equals_any: [String(cond.equals)]
-        }))
-      }
-    }));
+    console.log('📦 Pack has', microDef.questions.length, 'questions');
+    
+    return microDef.questions.map((q: any, index: number) => {
+      console.log(`🔍 Question ${index}:`, JSON.stringify(q, null, 2));
+      
+      // Extract question text from various possible sources
+      const questionText = q.i18nKey || q.question || q.label || q.title || q.text || `Question ${index + 1}`;
+      const questionId = q.key || q.id || `q${index}`;
+      
+      console.log(`✅ Extracted: id="${questionId}", text="${questionText}"`);
+      
+      const result = {
+        id: questionId,
+        type: mapPackTypeToAIType(q.type),
+        label: questionText,
+        required: q.required ?? false,
+        options: q.options?.map((opt: any) => {
+          const optLabel = opt.i18nKey || opt.label || opt.value || String(opt);
+          return {
+            label: optLabel,
+            value: opt.value || opt.i18nKey || optLabel
+          };
+        }),
+        min: q.min,
+        max: q.max,
+        step: q.step,
+        meta: {
+          priority: 'core',
+          hint: q.aiHint || q.hint || q.description,
+          show_if: q.visibility?.allOf?.map((cond: any) => ({
+            question: cond.questionKey,
+            equals_any: [String(cond.equals)]
+          }))
+        }
+      };
+      
+      console.log(`✅ Transformed question:`, result);
+      return result;
+    });
   };
 
   const mapPackTypeToAIType = (packType: string): AIQuestion['type'] => {
