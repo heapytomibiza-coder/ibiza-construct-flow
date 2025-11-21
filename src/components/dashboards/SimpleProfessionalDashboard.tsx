@@ -17,7 +17,7 @@ import { AvailabilitySettings } from '@/components/calendar/AvailabilitySettings
 import { 
   Home, Briefcase, Euro, LogOut, Play, Clock, 
   CheckCircle, Star, TrendingUp, Users, Calendar as CalendarIcon,
-  MessageSquare, Camera, FileText, Settings
+  MessageSquare, Camera, FileText, Settings, BarChart3, ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -230,6 +230,30 @@ const TodayTab = ({ stats, profile }: any) => (
         <span className="text-sm">Schedule</span>
       </Button>
     </div>
+
+    {/* Features Quick Access */}
+    <Card className="card-luxury border-primary/20">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-charcoal">Professional Tools & Features</h3>
+              <p className="text-sm text-muted-foreground">Discover all 16 features to grow your business</p>
+            </div>
+          </div>
+          <Button 
+            variant="outline"
+            onClick={() => window.location.href = '/dashboard/pro#features'}
+          >
+            View Features
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
 
     {/* Today's Overview */}
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

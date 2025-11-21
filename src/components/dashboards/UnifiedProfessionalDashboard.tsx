@@ -10,6 +10,7 @@ import { ProfessionalAnalytics } from '@/components/analytics/ProfessionalAnalyt
 import { BusinessInsights } from '@/components/analytics/BusinessInsights';
 import { EventAnalyticsDashboard } from '@/components/analytics/EventAnalyticsDashboard';
 import { EnhancedNotificationCenter } from '@/components/notifications/EnhancedNotificationCenter';
+import { ProfessionalFeaturesShowcase } from '@/components/professional/ProfessionalFeaturesShowcase';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedProfessionalDashboardProps {
@@ -73,8 +74,9 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
         <EnhancedNotificationCenter userId={user.id} />
       </div>
       <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="insights">Insights</TabsTrigger>
           <TabsTrigger value="recommendations">AI</TabsTrigger>
@@ -82,6 +84,10 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
         
         <TabsContent value="dashboard" className="mt-6">
           <DashboardContent />
+        </TabsContent>
+        
+        <TabsContent value="features" className="mt-6">
+          <ProfessionalFeaturesShowcase />
         </TabsContent>
         
         <TabsContent value="analytics" className="space-y-4 mt-6">
