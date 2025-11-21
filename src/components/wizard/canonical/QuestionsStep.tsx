@@ -49,7 +49,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const [packSource, setPackSource] = useState<'pack' | 'ai' | 'ai_contextual' | 'fallback' | 'static_json'>('fallback');
   const [showAISmartFill, setShowAISmartFill] = useState(false);
   
-  const primaryMicroSlug = microSlugs[0] || '';
+  const primaryMicroSlug = (microSlugs && microSlugs[0]) || '';
   const { presets, usePreset } = useJobPresets(primaryMicroSlug);
   const isMobile = useIsMobile();
 

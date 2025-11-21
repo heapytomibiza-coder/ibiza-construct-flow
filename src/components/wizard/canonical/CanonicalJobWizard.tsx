@@ -112,7 +112,13 @@ export const CanonicalJobWizard: React.FC = () => {
           .maybeSingle();
         
         if (data?.payload) {
-          setWizardState(data.payload as unknown as WizardState);
+          setWizardState(prev => ({
+            ...prev,
+            ...(data.payload as unknown as WizardState),
+            // Ensure arrays exist even if missing from payload
+            microSlugs: (data.payload as any).microSlugs || [],
+            microUuids: (data.payload as any).microUuids || []
+          }));
           return;
         }
       } catch (err) {
@@ -124,7 +130,12 @@ export const CanonicalJobWizard: React.FC = () => {
         const saved = sessionStorage.getItem('wizardState');
         if (saved) {
           const parsed = JSON.parse(saved);
-          setWizardState(prev => ({ ...prev, ...parsed }));
+          setWizardState(prev => ({
+            ...prev,
+            ...parsed,
+            microSlugs: parsed.microSlugs || [],
+            microUuids: parsed.microUuids || []
+          }));
         }
       } catch (err) {
         console.error('Failed to restore session draft:', err);
