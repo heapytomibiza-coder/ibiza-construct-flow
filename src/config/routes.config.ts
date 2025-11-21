@@ -71,7 +71,7 @@ export const ROUTE_PATHS = {
   // Contract Management Routes
   CONTRACTS: '/contracts',
   ESCROW: '/escrow',
-  PAYMENT_PROCESSING: '/payment-processing',
+  // Note: Payment processing uses /contracts/:contractId/fund route
   
   // Settings Routes
   SETTINGS: '/settings',
