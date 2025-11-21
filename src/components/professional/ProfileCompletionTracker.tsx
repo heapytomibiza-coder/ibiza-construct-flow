@@ -1,10 +1,9 @@
 import { useMemo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle, Circle, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Circle, Sparkles, Rocket, Trophy, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ProfileCompletionTrackerProps {
@@ -95,44 +94,163 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
     return null;
   }
 
+  const getMilestoneMessage = () => {
+    if (completionPercentage >= 80) return { icon: Trophy, text: "Almost there! You're crushing it!", color: "text-sage" };
+    if (completionPercentage >= 60) return { icon: Rocket, text: "Great progress! Keep the momentum!", color: "text-sage-dark" };
+    if (completionPercentage >= 40) return { icon: Sparkles, text: "You're on fire! Keep going!", color: "text-copper" };
+    return { icon: Clock, text: "Let's get you set up for success!", color: "text-sage" };
+  };
+
+  const milestone = getMilestoneMessage();
+  const MilestoneIcon = milestone.icon;
+
   return (
-    <Alert className="border-copper/20 bg-copper/5">
-      <AlertCircle className="h-4 w-4 text-copper" />
-      <AlertTitle className="flex items-center justify-between">
-        <span>Complete Your Profile ({completionPercentage}%)</span>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => navigate('/settings/professional')}
-        >
-          Complete Now
-        </Button>
-      </AlertTitle>
-      <AlertDescription className="mt-3 space-y-3">
-        <Progress value={completionPercentage} className="h-2" />
-        
-        <div className="space-y-2">
-          {completionItems.map(item => (
-            <div key={item.id} className="flex items-center gap-2 text-sm">
-              {item.completed ? (
-                <CheckCircle className="w-4 h-4 text-green-500" />
-              ) : (
-                <Circle className="w-4 h-4 text-muted-foreground" />
-              )}
-              <span className={item.completed ? 'text-muted-foreground line-through' : ''}>
-                {item.label}
-                {item.required && <span className="text-red-500 ml-1">*</span>}
-              </span>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="glass-primary rounded-3xl p-8 relative overflow-hidden"
+    >
+      {/* Animated background gradient */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-sage/10 via-copper/5 to-transparent"
+        animate={{
+          backgroundPosition: ['0% 0%', '100% 100%'],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          repeatType: 'reverse',
+        }}
+        style={{ backgroundSize: '200% 200%' }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <motion.div
+                animate={{ rotate: [0, 10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <MilestoneIcon className={`h-8 w-8 ${milestone.color}`} />
+              </motion.div>
+              <div>
+                <h3 className="text-2xl font-display font-bold text-foreground">
+                  {completionPercentage < 50 ? 'Welcome to Your Journey!' : 'Profile Setup'}
+                </h3>
+                <p className={`text-sm font-medium ${milestone.color}`}>
+                  {milestone.text}
+                </p>
+              </div>
             </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className="text-3xl font-display font-bold text-sage-dark">
+                {completionPercentage}%
+              </div>
+              <div className="text-xs text-muted-foreground">Complete</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Bar with Glow */}
+        <div className="relative mb-8">
+          <Progress value={completionPercentage} className="h-3 bg-sage/10" />
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-sage/20 via-copper/20 to-sage/20 rounded-full blur-lg -z-10"
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            style={{ width: `${completionPercentage}%` }}
+          />
+        </div>
+
+        {/* Completion Items Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+          {completionItems.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className={`
+                group relative p-4 rounded-xl border transition-all duration-300
+                ${item.completed 
+                  ? 'bg-sage/5 border-sage/30 hover:border-sage/40' 
+                  : 'bg-background/50 border-border/50 hover:border-sage/40 hover:bg-sage/5'
+                }
+              `}
+            >
+              <div className="flex items-center gap-3">
+                <motion.div
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className="flex-shrink-0"
+                >
+                  {item.completed ? (
+                    <CheckCircle2 className="h-5 w-5 text-sage" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-muted-foreground group-hover:text-sage transition-colors" />
+                  )}
+                </motion.div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className={`
+                      text-sm font-medium transition-all
+                      ${item.completed 
+                        ? 'text-muted-foreground line-through' 
+                        : 'text-foreground group-hover:text-sage-dark'
+                      }
+                    `}>
+                      {item.label}
+                    </p>
+                    {item.required && !item.completed && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-copper/10 text-copper font-medium">
+                        Required
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {item.loading && (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="h-4 w-4 border-2 border-sage border-t-transparent rounded-full"
+                  />
+                )}
+              </div>
+            </motion.div>
           ))}
         </div>
 
-        {incompleteRequired.length > 0 && (
-          <p className="text-xs text-muted-foreground pt-2 border-t">
-            Complete required items (*) to appear in professional search results
-          </p>
-        )}
-      </AlertDescription>
-    </Alert>
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-6 border-t border-sage/20">
+          <div className="text-sm text-muted-foreground">
+            {incompleteRequired.length > 0 ? (
+              <span>
+                <strong>{incompleteRequired.length}</strong> required {incompleteRequired.length === 1 ? 'step' : 'steps'} remaining to go live
+              </span>
+            ) : (
+              <span className="text-sage font-medium">
+                ✨ All required steps complete! Finish optional items for maximum impact.
+              </span>
+            )}
+          </div>
+          
+          <Button
+            onClick={() => navigate('/settings/professional')}
+            className="glass-magnetic"
+            size="lg"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            Continue Setup
+          </Button>
+        </div>
+      </div>
+    </motion.div>
   );
 };
