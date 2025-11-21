@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { ArrowLeft, Loader2, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
 import { AIQuestion } from '@/hooks/useAIQuestions';
@@ -18,10 +18,10 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import constructionServicesData from '@/data/construction-services.json';
 import { transformServiceToQuestions } from '@/lib/transformers/blockToQuestion';
 import { mapMicroIdToServiceId } from '@/lib/mappers/serviceIdMapper';
-import { ProgressiveStepAccordion } from '@/components/wizard/ProgressiveStepAccordion';
-import { groupQuestions, extractReadableText } from '@/lib/questionUtils';
+import { extractReadableText } from '@/lib/questionUtils';
 import { useQuestionValidation } from '@/hooks/useQuestionValidation';
-import { CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ProgressIndicator } from '@/components/calculator/ui/ProgressIndicator';
 
 interface QuestionsStepProps {
   microIds: string[];
@@ -52,15 +52,16 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const [invalidRequired, setInvalidRequired] = useState<string[]>([]);
   const [packSource, setPackSource] = useState<'pack' | 'ai' | 'ai_contextual' | 'fallback' | 'static_json'>('fallback');
   const [showAISmartFill, setShowAISmartFill] = useState(false);
-  const [currentGroupId, setCurrentGroupId] = useState<string>('core');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   
   const primaryMicroSlug = (microSlugs && microSlugs[0]) || '';
   const { presets, usePreset } = useJobPresets(primaryMicroSlug);
   const isMobile = useIsMobile();
   const { markAsTouched, getValidationMessage, isQuestionComplete } = useQuestionValidation();
 
-  // Group questions for accordion display
-  const questionGroups = groupQuestions(questions);
+  const currentQuestion = questions[currentQuestionIndex];
+  const isFirstQuestion = currentQuestionIndex === 0;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   useEffect(() => {
     loadQuestions();
@@ -344,11 +345,13 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const handleAnswerChange = (questionId: string, answer: any) => {
     markAsTouched(questionId);
     onAnswersChange({ ...answers, [questionId]: answer });
-  };
-
-  const handleAutoAdvance = () => {
-    if (canProceed) {
-      onNext();
+    
+    // Auto-advance for single-choice questions
+    const question = questions.find(q => q.id === questionId);
+    if (question && (question.type === 'radio' || question.type === 'select') && answer) {
+      setTimeout(() => {
+        handleNextQuestion();
+      }, 600); // Small delay for visual feedback
     }
   };
 
@@ -356,7 +359,31 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     setInvalidRequired(missing);
   };
 
-  const canProceed = invalidRequired.length === 0 && !loading;
+  const handleNextQuestion = () => {
+    if (isLastQuestion) {
+      // Check if all required questions are answered
+      const allAnswered = questions.every(q => 
+        !q.required || isQuestionComplete(q, answers[q.id])
+      );
+      if (allAnswered) {
+        onNext();
+      }
+    } else {
+      setCurrentQuestionIndex(prev => prev + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (!isFirstQuestion) {
+      setCurrentQuestionIndex(prev => prev - 1);
+    } else {
+      onBack();
+    }
+  };
+
+  const canProceed = questions.every(q => 
+    !q.required || isQuestionComplete(q, answers[q.id])
+  ) && !loading;
 
   return (
     <>
@@ -412,7 +439,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       ) : (
         <>
           {/* Recent Presets */}
-          {presets.length > 0 && (
+          {presets.length > 0 && currentQuestionIndex === 0 && (
             <PresetChips
               presetType={primaryMicroSlug}
               onSelectPreset={async (presetData) => {
@@ -421,102 +448,99 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
             />
           )}
           
-          {packSource === 'static_json' && (
-            <Alert className="bg-blue-50 border-blue-200 p-3 md:p-4">
-              <AlertDescription className="text-xs md:text-sm text-blue-800 flex items-center gap-2">
-                <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
-                Questions tailored to your selected services
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* Progress Indicator */}
+          <ProgressIndicator 
+            currentStep={currentQuestionIndex + 1}
+            totalSteps={questions.length}
+          />
 
-          {packSource === 'ai_contextual' && (
-            <Alert className="bg-blue-50 border-blue-200 p-3 md:p-4">
-              <AlertDescription className="text-xs md:text-sm text-blue-800 flex items-center gap-2">
-                <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
-                AI-generated questions for your services
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          {packSource === 'pack' && (
-            <Alert className="bg-green-50 border-green-200 p-3 md:p-4">
-              <AlertDescription className="text-xs md:text-sm text-green-800">
-                Using optimized question pack
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <div className="space-y-4">
-            {/* Progress indicator */}
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">
-                Complete the sections below to continue
-              </span>
-              <span className="font-medium text-primary">
-                {questionGroups.filter(g => 
-                  g.questions.every(q => isQuestionComplete(q, answers[q.id]))
-                ).length} / {questionGroups.length} Complete
-              </span>
-            </div>
-
-            {/* Accordion-based question groups */}
-            <ProgressiveStepAccordion
-              steps={questionGroups.map(group => {
-                const completedCount = group.questions.filter(q => 
-                  isQuestionComplete(q, answers[q.id])
-                ).length;
-                const isGroupComplete = completedCount === group.questions.length;
-
-                return {
-                  id: group.id,
-                  title: group.title,
-                  subtitle: group.subtitle,
-                  completed: isGroupComplete,
-                  icon: isGroupComplete ? <CheckCircle2 className="w-5 h-5" /> : undefined,
-                  content: (
-                    <div className="space-y-6 pt-2">
-                      {group.questions.map((question) => {
-                        const validation = getValidationMessage(question, answers[question.id]);
-                        const displayLabel = extractReadableText(question.label);
-
-                        return (
-                          <div key={question.id} className="space-y-2">
-                            <div className="space-y-2">
-                              <label className="text-sm font-medium">
-                                {displayLabel}
-                                {question.required && <span className="text-destructive ml-1">*</span>}
-                              </label>
-                              <AIQuestionRenderer
-                                questions={[question]}
-                                answers={answers}
-                                onAnswerChange={handleAnswerChange}
-                                onValidationChange={handleValidationChange}
-                                onAutoAdvance={handleAutoAdvance}
-                              />
-                            </div>
-                            {validation.type === 'success' && (
-                              <p className="text-sm text-green-600 flex items-center gap-1">
-                                <CheckCircle2 className="w-4 h-4" />
-                                {validation.message}
-                              </p>
-                            )}
-                            {validation.type === 'error' && (
-                              <p className="text-sm text-muted-foreground">
-                                {validation.message}
-                              </p>
-                            )}
-                          </div>
-                        );
-                      })}
+          {/* Conversational Question Flow */}
+          <AnimatePresence mode="wait">
+            {currentQuestion && (
+              <motion.div
+                key={currentQuestion.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-6"
+              >
+                {/* Question Card */}
+                <div className="bg-card rounded-2xl border border-sage-muted/30 p-6 md:p-8 shadow-card">
+                  <div className="space-y-6">
+                    {/* Question Number Badge */}
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                        {currentQuestionIndex + 1}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        of {questions.length}
+                      </span>
                     </div>
-                  )
-                };
-              })}
-              currentStep={currentGroupId}
-              onStepChange={setCurrentGroupId}
-            />
-          </div>
+
+                    {/* Question Text */}
+                    <div className="space-y-2">
+                      <h2 className="text-xl md:text-2xl font-semibold text-charcoal">
+                        {extractReadableText(currentQuestion.label)}
+                        {currentQuestion.required && (
+                          <span className="text-destructive ml-1">*</span>
+                        )}
+                      </h2>
+                    </div>
+
+                    {/* Question Input */}
+                    <div className="pt-2">
+                      <AIQuestionRenderer
+                        questions={[currentQuestion]}
+                        answers={answers}
+                        onAnswerChange={handleAnswerChange}
+                        onValidationChange={handleValidationChange}
+                        onAutoAdvance={() => {}}
+                      />
+                    </div>
+
+                    {/* Validation Feedback */}
+                    {isQuestionComplete(currentQuestion, answers[currentQuestion.id]) && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-2 text-sm text-green-600"
+                      >
+                        <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <span>Got it!</span>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex items-center justify-between gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={handlePreviousQuestion}
+                    className="gap-2"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    {isFirstQuestion ? 'Back' : 'Previous'}
+                  </Button>
+
+                  <Button
+                    onClick={handleNextQuestion}
+                    disabled={currentQuestion.required && !isQuestionComplete(currentQuestion, answers[currentQuestion.id])}
+                    className="gap-2 bg-gradient-hero text-white"
+                    size="lg"
+                  >
+                    {isLastQuestion ? 'Continue' : 'Next'}
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
           {/* AI Smart-Fill Dialog */}
           {showAISmartFill && (
@@ -532,31 +556,9 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         </>
       )}
 
-        <div className="hidden md:flex justify-end pt-6">
-          <Button
-            size="lg"
-            onClick={onNext}
-            disabled={!canProceed}
-            className="bg-gradient-hero text-white px-8"
-          >
-            Continue {invalidRequired.length > 0 && `(${invalidRequired.length} required)`}
-          </Button>
-        </div>
       </div>
 
-      {/* Mobile Sticky CTA */}
-      {isMobile && (
-        <StickyMobileCTA
-          primaryAction={{
-            label: invalidRequired.length > 0 
-              ? `Continue (${invalidRequired.length} required)` 
-              : 'Continue',
-            onClick: onNext,
-            disabled: !canProceed,
-            loading: false
-          }}
-        />
-      )}
+      {/* Mobile Sticky CTA - Hidden, navigation is in the card */}
     </>
   );
 };
