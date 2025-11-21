@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { IntroOnboarding, IntroData } from '@/components/onboarding/IntroOnboarding';
+import { ProfessionalOnboardingWizard, OnboardingData } from '@/components/onboarding/wizard/ProfessionalOnboardingWizard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -10,7 +10,7 @@ export default function ProfessionalOnboardingPage() {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (data: IntroData) => {
+  const handleSubmit = async (data: OnboardingData) => {
     if (!user) {
       toast.error('Please sign in to continue');
       navigate('/auth');
@@ -89,5 +89,5 @@ export default function ProfessionalOnboardingPage() {
     }
   };
 
-  return <IntroOnboarding onSubmit={handleSubmit} isLoading={isLoading} />;
+  return <ProfessionalOnboardingWizard onSubmit={handleSubmit} isLoading={isLoading} />;
 }
