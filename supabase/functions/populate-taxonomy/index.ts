@@ -101,15 +101,12 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Painting & Decorating'), name: 'Specialist coatings & effects', slug: 'specialist-coatings-effects', icon_name: 'Sparkles', icon_emoji: '✨', display_order: 4, is_active: true },
       
       // Gardening & Landscaping - 9 subcategories
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Lawn Care', slug: 'lawn-care', icon_name: 'Leaf', icon_emoji: '🌱', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Garden Design', slug: 'garden-design', icon_name: 'Leaf', icon_emoji: '🌿', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Tree Services', slug: 'tree-services', icon_name: 'Leaf', icon_emoji: '🌳', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Hedge Trimming', slug: 'hedge-trimming', icon_name: 'Leaf', icon_emoji: '🌿', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Paving & Driveways', slug: 'paving-driveways', icon_name: 'Square', icon_emoji: '🛣️', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Fencing', slug: 'fencing', icon_name: 'Square', icon_emoji: '🚧', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Artificial Grass', slug: 'artificial-grass', icon_name: 'Leaf', icon_emoji: '🌱', display_order: 7, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Garden Clearance', slug: 'garden-clearance', icon_name: 'Leaf', icon_emoji: '🗑️', display_order: 8, is_active: true },
-      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Irrigation Systems', slug: 'irrigation-systems', icon_name: 'Droplet', icon_emoji: '💧', display_order: 9, is_active: true },
+      // Gardening & Landscaping - 5 specialized subcategories (REPLACING 9 generic ones)
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Garden maintenance', slug: 'garden-maintenance', icon_name: 'Scissors', icon_emoji: '✂️', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Garden design & landscaping', slug: 'garden-design-landscaping', icon_name: 'Leaf', icon_emoji: '🌿', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Irrigation systems', slug: 'irrigation-systems', icon_name: 'Droplet', icon_emoji: '💧', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Tree & hedge care', slug: 'tree-hedge-care', icon_name: 'TreeDeciduous', icon_emoji: '🌳', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Lawn care & turfing', slug: 'lawn-care-turfing', icon_name: 'Leaf', icon_emoji: '🌱', display_order: 5, is_active: true },
       
       // Cleaning - 8 subcategories
       { category_id: categoryMap.get('Cleaning'), name: 'House Cleaning', slug: 'house-cleaning', icon_name: 'Sparkles', icon_emoji: '✨', display_order: 1, is_active: true },
@@ -441,6 +438,37 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('specialist-coatings-effects'), name: 'Decorative paint effects & textures', slug: 'decorative-effects-textures', display_order: 3, is_active: true },
       { subcategory_id: subcategoryMap.get('specialist-coatings-effects'), name: 'Anti-mould & stain-blocking solutions', slug: 'anti-mould-stain-blocking', display_order: 4, is_active: true },
       
+      // Gardening & Landscaping microservices (19 services across 5 subcategories)
+      
+      // Garden maintenance (4)
+      { subcategory_id: subcategoryMap.get('garden-maintenance'), name: 'Regular garden maintenance', slug: 'regular-garden-maintenance', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('garden-maintenance'), name: 'One-off garden clean-up / jungle clear', slug: 'one-off-garden-cleanup', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('garden-maintenance'), name: 'Seasonal pruning & preparation', slug: 'seasonal-pruning-preparation', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('garden-maintenance'), name: 'Holiday garden checks & watering', slug: 'holiday-garden-checks', display_order: 4, is_active: true },
+
+      // Garden design & landscaping (5)
+      { subcategory_id: subcategoryMap.get('garden-design-landscaping'), name: 'Garden redesign & landscaping', slug: 'garden-redesign-landscaping', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('garden-design-landscaping'), name: 'New lawn / turf installation', slug: 'new-lawn-turf-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('garden-design-landscaping'), name: 'Gravel paths & dry gardens', slug: 'gravel-paths-dry-gardens', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('garden-design-landscaping'), name: 'Retaining walls & raised beds', slug: 'retaining-walls-and-borders', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('garden-design-landscaping'), name: 'Garden steps / levels', slug: 'garden-steps-and-levels', display_order: 5, is_active: true },
+
+      // Irrigation systems (3)
+      { subcategory_id: subcategoryMap.get('irrigation-systems'), name: 'Irrigation system installation', slug: 'irrigation-system-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('irrigation-systems'), name: 'Irrigation repairs & leak fixing', slug: 'irrigation-repairs-leaks', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('irrigation-systems'), name: 'Irrigation check, setup & programming', slug: 'irrigation-check-and-setup', display_order: 3, is_active: true },
+
+      // Tree & hedge care (4)
+      { subcategory_id: subcategoryMap.get('tree-hedge-care'), name: 'Hedge cutting & shaping', slug: 'hedge-cutting-shaping', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('tree-hedge-care'), name: 'Tree pruning & reduction', slug: 'tree-pruning-reduction', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('tree-hedge-care'), name: 'Palm tree maintenance & cleaning', slug: 'palm-tree-maintenance', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('tree-hedge-care'), name: 'Tree felling & stump removal', slug: 'tree-felling-stump-removal', display_order: 4, is_active: true },
+
+      // Lawn care & turfing (3)
+      { subcategory_id: subcategoryMap.get('lawn-care-turfing'), name: 'Lawn treatment & feeding', slug: 'lawn-treatment-and-feeding', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('lawn-care-turfing'), name: 'Lawn repair & overseeding', slug: 'lawn-repair-overseeding', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('lawn-care-turfing'), name: 'Artificial grass installation', slug: 'artificial-grass-installation', display_order: 3, is_active: true },
+
       // NEW: Architects & Design microservices
       { subcategory_id: subcategoryMap.get('residential-architects'), name: 'House Extension Plans', slug: 'house-extension-plans', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('residential-architects'), name: 'Planning Drawings', slug: 'planning-drawings', display_order: 2, is_active: true },

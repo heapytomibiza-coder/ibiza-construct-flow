@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.seed-painting-decorating-questions]
 verify_jwt = false
+
+[functions.seed-gardening-landscaping-questions]
+verify_jwt = false
