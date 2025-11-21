@@ -18,6 +18,10 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import constructionServicesData from '@/data/construction-services.json';
 import { transformServiceToQuestions } from '@/lib/transformers/blockToQuestion';
 import { mapMicroIdToServiceId } from '@/lib/mappers/serviceIdMapper';
+import { ProgressiveStepAccordion } from '@/components/wizard/ProgressiveStepAccordion';
+import { groupQuestions, extractReadableText } from '@/lib/questionUtils';
+import { useQuestionValidation } from '@/hooks/useQuestionValidation';
+import { CheckCircle2 } from 'lucide-react';
 
 interface QuestionsStepProps {
   microIds: string[];
@@ -48,10 +52,15 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const [invalidRequired, setInvalidRequired] = useState<string[]>([]);
   const [packSource, setPackSource] = useState<'pack' | 'ai' | 'ai_contextual' | 'fallback' | 'static_json'>('fallback');
   const [showAISmartFill, setShowAISmartFill] = useState(false);
+  const [currentGroupId, setCurrentGroupId] = useState<string>('core');
   
   const primaryMicroSlug = (microSlugs && microSlugs[0]) || '';
   const { presets, usePreset } = useJobPresets(primaryMicroSlug);
   const isMobile = useIsMobile();
+  const { markAsTouched, getValidationMessage, isQuestionComplete } = useQuestionValidation();
+
+  // Group questions for accordion display
+  const questionGroups = groupQuestions(questions);
 
   useEffect(() => {
     loadQuestions();
@@ -333,6 +342,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   };
 
   const handleAnswerChange = (questionId: string, answer: any) => {
+    markAsTouched(questionId);
     onAnswersChange({ ...answers, [questionId]: answer });
   };
 
@@ -437,13 +447,76 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
             </Alert>
           )}
           
-          <AIQuestionRenderer
-            questions={questions}
-            answers={answers}
-            onAnswerChange={handleAnswerChange}
-            onValidationChange={handleValidationChange}
-            onAutoAdvance={handleAutoAdvance}
-          />
+          <div className="space-y-4">
+            {/* Progress indicator */}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
+                Complete the sections below to continue
+              </span>
+              <span className="font-medium text-primary">
+                {questionGroups.filter(g => 
+                  g.questions.every(q => isQuestionComplete(q, answers[q.id]))
+                ).length} / {questionGroups.length} Complete
+              </span>
+            </div>
+
+            {/* Accordion-based question groups */}
+            <ProgressiveStepAccordion
+              steps={questionGroups.map(group => {
+                const completedCount = group.questions.filter(q => 
+                  isQuestionComplete(q, answers[q.id])
+                ).length;
+                const isGroupComplete = completedCount === group.questions.length;
+
+                return {
+                  id: group.id,
+                  title: group.title,
+                  subtitle: group.subtitle,
+                  completed: isGroupComplete,
+                  icon: isGroupComplete ? <CheckCircle2 className="w-5 h-5" /> : undefined,
+                  content: (
+                    <div className="space-y-6 pt-2">
+                      {group.questions.map((question) => {
+                        const validation = getValidationMessage(question, answers[question.id]);
+                        const displayLabel = extractReadableText(question.label);
+
+                        return (
+                          <div key={question.id} className="space-y-2">
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">
+                                {displayLabel}
+                                {question.required && <span className="text-destructive ml-1">*</span>}
+                              </label>
+                              <AIQuestionRenderer
+                                questions={[question]}
+                                answers={answers}
+                                onAnswerChange={handleAnswerChange}
+                                onValidationChange={handleValidationChange}
+                                onAutoAdvance={handleAutoAdvance}
+                              />
+                            </div>
+                            {validation.type === 'success' && (
+                              <p className="text-sm text-green-600 flex items-center gap-1">
+                                <CheckCircle2 className="w-4 h-4" />
+                                {validation.message}
+                              </p>
+                            )}
+                            {validation.type === 'error' && (
+                              <p className="text-sm text-muted-foreground">
+                                {validation.message}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )
+                };
+              })}
+              currentStep={currentGroupId}
+              onStepChange={setCurrentGroupId}
+            />
+          </div>
           
           {/* AI Smart-Fill Dialog */}
           {showAISmartFill && (
