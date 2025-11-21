@@ -40,7 +40,6 @@ export function ProfessionalFeaturesShowcase() {
           title="Browse Jobs"
           description="24 new opportunities match your skills"
           metric="24"
-          gradient="from-blue-500/20 to-cyan-400/10"
           path="/job-board"
           action="Find Projects"
         />
@@ -48,7 +47,6 @@ export function ProfessionalFeaturesShowcase() {
           icon={FileText}
           title="My Services"
           description="Create and manage your service offerings with custom pricing"
-          gradient="from-orange-500/20 to-amber-400/10"
           path="/professional/services"
           action="Manage Services"
         />
@@ -56,7 +54,6 @@ export function ProfessionalFeaturesShowcase() {
           icon={Star}
           title="Portfolio"
           description="Showcase your completed projects and client testimonials"
-          gradient="from-purple-500/20 to-pink-400/10"
           path="/professional/portfolio"
           action="Update Portfolio"
         />
@@ -68,7 +65,7 @@ export function ProfessionalFeaturesShowcase() {
           icon={BarChart3}
           title="Earnings & Analytics"
           description="Track income, performance, and growth metrics"
-          gradient="from-green-500/10 to-emerald-400/5"
+          gradient="from-sage-light/15 to-sage/8"
           path="/earnings"
           action="View Earnings"
         />
@@ -76,7 +73,7 @@ export function ProfessionalFeaturesShowcase() {
           icon={Users}
           title="Client Matching"
           description="AI matches you with ideal clients"
-          gradient="from-blue-500/10 to-cyan-400/5"
+          gradient="from-sage-light/15 to-sage/8"
           path="/job-board"
           action="View Matches"
         />
@@ -84,7 +81,7 @@ export function ProfessionalFeaturesShowcase() {
           icon={TrendingUp}
           title="Performance Insights"
           description="Get personalized recommendations"
-          gradient="from-purple-500/10 to-pink-400/5"
+          gradient="from-sage-light/15 to-sage/8"
           path="/dashboard/pro"
           action="View Insights"
         />
@@ -92,7 +89,7 @@ export function ProfessionalFeaturesShowcase() {
           icon={Shield}
           title="Verification Badge"
           description="Build trust with credentials"
-          gradient="from-orange-500/10 to-amber-400/5"
+          gradient="from-sage-light/15 to-sage/8"
           path="/professional/verification"
           action="Get Verified"
         />
@@ -188,7 +185,7 @@ export function ProfessionalFeaturesShowcase() {
       </Collapsible>
 
       {/* CTA */}
-      <Card className="bg-gradient-to-r from-primary/20 to-primary/10 border-primary/30">
+      <Card className="bg-gradient-to-r from-sage/25 to-sage-dark/15 border-sage/30">
         <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold mb-1">Ready to Grow Your Business?</h3>

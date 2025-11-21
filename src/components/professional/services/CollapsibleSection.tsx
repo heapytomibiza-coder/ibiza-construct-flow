@@ -30,8 +30,8 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     <Card
       className={cn(
         "overflow-hidden transition-all border-2",
-        isActive && "border-primary shadow-md",
-        isComplete && !isActive && "border-green-500/30 bg-green-50/50 dark:bg-green-950/20",
+        isActive && "border-sage shadow-md bg-sage/5",
+        isComplete && !isActive && "border-sage/40 bg-sage/5",
         disabled && "opacity-50 cursor-not-allowed"
       )}
     >
@@ -42,13 +42,13 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         className={cn(
           "w-full flex items-center justify-between p-4 text-left transition-colors",
           !disabled && "hover:bg-accent/50",
-          isActive && "bg-primary/5",
-          isComplete && !isActive && "bg-green-50/50 dark:bg-green-950/20"
+          isActive && "bg-sage/10",
+          isComplete && !isActive && "bg-sage/5"
         )}
       >
         <div className="flex items-center gap-3 flex-1">
           {isComplete ? (
-            <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+            <CheckCircle2 className="h-5 w-5 text-sage flex-shrink-0" />
           ) : (
             <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
           )}
@@ -56,8 +56,8 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
             <div className="flex items-center gap-2">
               <h3 className={cn(
                 "font-semibold",
-                isActive && "text-primary",
-                isComplete && !isActive && "text-green-700 dark:text-green-400"
+                isActive && "text-sage",
+                isComplete && !isActive && "text-sage-dark"
               )}>
                 {title}
               </h3>

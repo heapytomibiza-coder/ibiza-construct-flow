@@ -155,3 +155,15 @@ export const shadows = {
   '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
   inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
 } as const;
+
+/**
+ * Mediterranean Sandy Gradients
+ * Core 3-color palette: Sandy Tan + Light Cream + Warm Charcoal
+ */
+export const mediterraneanGradients = {
+  primary: 'from-sage/20 to-sage-dark/10',           // Featured, high priority
+  secondary: 'from-sage-light/15 to-sage/8',         // Important items
+  subtle: 'from-sage-muted/10 to-background/5',      // Low priority
+  warm: 'from-sage/25 to-sage-dark/15',              // CTAs, accents
+  minimal: 'from-sage-muted/8 to-sage-muted/3',      // Very subtle
+} as const;

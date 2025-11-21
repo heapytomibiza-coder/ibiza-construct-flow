@@ -147,7 +147,7 @@ export const DynamicServiceBuilder: React.FC = () => {
             </div>
           )}
         </div>
-        <Progress value={progress} className="h-2" />
+        <Progress value={progress} className="h-2 bg-sage-muted/30 [&>div]:bg-sage" />
         <p className="text-sm text-muted-foreground mt-2">{Math.round(progress)}% Complete</p>
       </div>
 
