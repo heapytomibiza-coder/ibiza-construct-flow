@@ -94,14 +94,11 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('HVAC'), name: 'Ventilation & air quality', slug: 'ventilation-air-quality', icon_name: 'Wind', icon_emoji: '💨', display_order: 4, is_active: true },
       { category_id: categoryMap.get('HVAC'), name: 'Controls & efficiency', slug: 'controls-efficiency', icon_name: 'Gauge', icon_emoji: '📊', display_order: 5, is_active: true },
       
-      // Painting & Decorating - 7 subcategories
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Interior Painting', slug: 'interior-painting', icon_name: 'Paintbrush', icon_emoji: '🎨', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Exterior Painting', slug: 'exterior-painting', icon_name: 'Paintbrush', icon_emoji: '🏠', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Wallpapering', slug: 'wallpapering', icon_name: 'Paintbrush', icon_emoji: '🖼️', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Spray Painting', slug: 'spray-painting', icon_name: 'Paintbrush', icon_emoji: '🎨', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Fence Painting', slug: 'fence-painting', icon_name: 'Leaf', icon_emoji: '🌳', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Commercial Painting', slug: 'commercial-painting', icon_name: 'Building', icon_emoji: '🏢', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('Painting & Decorating'), name: 'Restoration', slug: 'restoration', icon_name: 'Paintbrush', icon_emoji: '🖌️', display_order: 7, is_active: true },
+      // Painting & Decorating - 4 specialized subcategories
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Interior painting & decorating', slug: 'interior-painting-decorating', icon_name: 'Paintbrush', icon_emoji: '🎨', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Exterior painting & façades', slug: 'exterior-painting-facades', icon_name: 'Home', icon_emoji: '🏠', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Woodwork, decking & pergolas', slug: 'woodwork-decking-pergolas', icon_name: 'TreeDeciduous', icon_emoji: '🌳', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Painting & Decorating'), name: 'Specialist coatings & effects', slug: 'specialist-coatings-effects', icon_name: 'Sparkles', icon_emoji: '✨', display_order: 4, is_active: true },
       
       // Gardening & Landscaping - 9 subcategories
       { category_id: categoryMap.get('Gardening & Landscaping'), name: 'Lawn Care', slug: 'lawn-care', icon_name: 'Leaf', icon_emoji: '🌱', display_order: 1, is_active: true },
@@ -416,11 +413,33 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('controls-efficiency'), name: 'Zoning & control systems', slug: 'zoning-and-controls', display_order: 2, is_active: true },
       { subcategory_id: subcategoryMap.get('controls-efficiency'), name: 'Energy efficiency assessment', slug: 'energy-efficiency-assessment', display_order: 3, is_active: true },
       
-      // Painting microservices (existing)
-      { subcategory_id: subcategoryMap.get('interior-painting'), name: 'Room Painting', slug: 'room-painting', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('interior-painting'), name: 'Cabinet Painting', slug: 'cabinet-painting', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('exterior-painting'), name: 'House Exterior', slug: 'house-exterior', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('exterior-painting'), name: 'Fence Painting', slug: 'fence-painting', display_order: 2, is_active: true },
+      // Painting & Decorating microservices (19 services across 4 subcategories)
+      // Interior painting & decorating (6)
+      { subcategory_id: subcategoryMap.get('interior-painting-decorating'), name: 'Full property interior painting', slug: 'full-property-interior-painting', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('interior-painting-decorating'), name: 'Single room painting', slug: 'single-room-painting', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('interior-painting-decorating'), name: 'Feature wall / accent design', slug: 'feature-wall-design', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('interior-painting-decorating'), name: 'Wallpaper installation', slug: 'wallpaper-installation', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('interior-painting-decorating'), name: 'Wallpaper removal & preparation', slug: 'wallpaper-removal-prep', display_order: 5, is_active: true },
+      { subcategory_id: subcategoryMap.get('interior-painting-decorating'), name: 'Plaster repair & prep before painting', slug: 'plaster-repair-prep-before-paint', display_order: 6, is_active: true },
+
+      // Exterior painting & façades (5)
+      { subcategory_id: subcategoryMap.get('exterior-painting-facades'), name: 'Exterior house repainting', slug: 'exterior-house-repainting', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('exterior-painting-facades'), name: 'Façade repainting on render', slug: 'facade-repainting-render', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('exterior-painting-facades'), name: 'Exterior wood windows & doors', slug: 'exterior-wood-windows-doors', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('exterior-painting-facades'), name: 'Exterior railings & metalwork', slug: 'exterior-metal-railings', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('exterior-painting-facades'), name: 'Anti-damp / weatherproof exterior treatments', slug: 'anti-damp-exterior-treatment', display_order: 5, is_active: true },
+
+      // Woodwork, decking & pergolas (4)
+      { subcategory_id: subcategoryMap.get('woodwork-decking-pergolas'), name: 'Decking & pergola paint / stain', slug: 'decking-pergola-paint-stain', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('woodwork-decking-pergolas'), name: 'Interior woodwork & trim painting', slug: 'interior-woodwork-painting-trim', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('woodwork-decking-pergolas'), name: 'Kitchen cabinet painting / spraying', slug: 'kitchen-cabinet-spraying', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('woodwork-decking-pergolas'), name: 'Varnish / oil & wood maintenance', slug: 'varnish-oil-wood-maintenance', display_order: 4, is_active: true },
+
+      // Specialist coatings & effects (4)
+      { subcategory_id: subcategoryMap.get('specialist-coatings-effects'), name: 'Microcement on walls / floors', slug: 'microcement-walls-floors', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('specialist-coatings-effects'), name: 'Epoxy / specialist floor coatings', slug: 'epoxy-garage-floor-coating', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('specialist-coatings-effects'), name: 'Decorative paint effects & textures', slug: 'decorative-effects-textures', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('specialist-coatings-effects'), name: 'Anti-mould & stain-blocking solutions', slug: 'anti-mould-stain-blocking', display_order: 4, is_active: true },
       
       // NEW: Architects & Design microservices
       { subcategory_id: subcategoryMap.get('residential-architects'), name: 'House Extension Plans', slug: 'house-extension-plans', display_order: 1, is_active: true },
