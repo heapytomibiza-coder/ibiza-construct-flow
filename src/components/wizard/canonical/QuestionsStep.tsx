@@ -468,32 +468,49 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                 className="space-y-6"
               >
                 {/* Question Card */}
-                <div className="bg-card rounded-2xl border border-sage-muted/30 p-6 md:p-8 shadow-card">
-                  <div className="space-y-6">
+                <div className="bg-card rounded-2xl border border-border/50 p-8 md:p-10 shadow-sm">
+                  <div className="space-y-8">
                     {/* Question Number Badge */}
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-base">
                         {currentQuestionIndex + 1}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
+                      </div>
+                      <span className="text-sm text-muted-foreground font-medium">
                         of {questions.length}
                       </span>
                     </div>
 
                     {/* Question Text */}
-                    <div className="space-y-2">
-                      <h2 className="text-xl md:text-2xl font-semibold text-charcoal">
-                        {currentQuestion?.label?.startsWith('microservices.') || currentQuestion?.label?.startsWith('questions.') 
-                          ? t(currentQuestion.label) 
-                          : extractReadableText(currentQuestion?.label || '')}
+                    <div className="space-y-3">
+                      <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                        {(() => {
+                          // Use question property first (from WizardQuestion), then label (from AIQuestion)
+                          const questionText = (currentQuestion as any).question || currentQuestion?.label || '';
+                          
+                          // Check if it's an i18n key and translate it
+                          if (questionText.startsWith('microservices.') || questionText.startsWith('questions.')) {
+                            return t(questionText);
+                          }
+                          
+                          // If it looks like a key (has dots), extract readable text
+                          if (questionText.includes('.')) {
+                            return extractReadableText(questionText);
+                          }
+                          
+                          // Return as-is if it's already readable text
+                          return questionText || 'Please provide your answer';
+                        })()}
                         {currentQuestion.required && (
-                          <span className="text-primary ml-1">*</span>
+                          <span className="text-destructive ml-2">*</span>
                         )}
                       </h2>
+                      <p className="text-base text-muted-foreground">
+                        Select the option that best describes your needs
+                      </p>
                     </div>
 
                     {/* Question Input */}
-                    <div className="pt-2">
+                    <div className="pt-4">
                       <ConversationalQuestionInput
                         question={currentQuestion}
                         value={answers[currentQuestion.id]}
@@ -506,14 +523,14 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-2 text-sm text-green-600"
+                        className="flex items-center gap-2 text-sm font-medium text-green-600 bg-green-50 dark:bg-green-950/30 px-4 py-3 rounded-lg"
                       >
-                        <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         </div>
-                        <span>Got it!</span>
+                        <span>Got it! Ready to continue</span>
                       </motion.div>
                     )}
                   </div>
