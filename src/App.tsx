@@ -142,6 +142,8 @@ const Contact = lazyWithRetry(() => import("./pages/Contact"));
 const SpecialistCategories = lazyWithRetry(() => import("./pages/SpecialistCategories"));
 const Calculator = lazyWithRetry(() => import("./pages/Calculator"));
 const Install = lazyWithRetry(() => import("./pages/Install"));
+const FairShowcase = lazyWithRetry(() => import("./pages/FairShowcase"));
+const FairExhibitorOnboarding = lazyWithRetry(() => import("./components/fair/FairExhibitorOnboarding"));
 
 // Other Pages
 const Templates = lazyWithRetry(() => import("./pages/Templates"));
@@ -211,9 +213,12 @@ function AppContent() {
                     {/* Public Routes */}
                     <Route path="/" element={<Index />} />
                     <Route path="/install" element={<Install />} />
-      <Route path="/calculator" element={<Calculator />} />
+                    <Route path="/calculator" element={<Calculator />} />
       <Route path="/demo-setup" element={<DemoSetup />} />
       <Route path="/demo-video-guide" element={<DemoVideoGuide />} />
+                    <Route path="/fair" element={<FairShowcase />} />
+                    <Route path="/fair/onboarding" element={<FairExhibitorOnboarding />} />
+                    <Route path="/fair/:sectorSlug" element={<FairShowcase />} />
                     <Route path="/discovery" element={<Discovery />} />
                     <Route path="/service/:id" element={<ServiceDetailPage />} />
                     <Route path="/jobs-discovery" element={<DiscoveryPage />} />

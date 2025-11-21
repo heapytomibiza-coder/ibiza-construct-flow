@@ -3212,6 +3212,39 @@ export type Database = {
         }
         Relationships: []
       }
+      fair_sectors: {
+        Row: {
+          created_at: string | null
+          description_en: string | null
+          description_es: string | null
+          display_order: number | null
+          icon: string | null
+          name_en: string
+          name_es: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          description_en?: string | null
+          description_es?: string | null
+          display_order?: number | null
+          icon?: string | null
+          name_en: string
+          name_es: string
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          description_en?: string | null
+          description_es?: string | null
+          display_order?: number | null
+          icon?: string | null
+          name_en?: string
+          name_es?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       feature_flag_exposures: {
         Row: {
           exposed_at: string | null
@@ -6550,109 +6583,163 @@ export type Database = {
       }
       professional_profiles: {
         Row: {
+          address: string | null
           availability: Json | null
           bank_details: Json | null
           bio: string | null
           business_name: string | null
           certifications: Json | null
+          company_type: string | null
           contact_email: string | null
           contact_phone: string | null
           cover_image_url: string | null
           created_at: string | null
+          emergency_service: boolean | null
           experience_years: string | null
+          featured_at_events: Json | null
           hourly_rate: number | null
+          ideal_clients: string | null
           instant_booking_enabled: boolean | null
           insurance_details: Json | null
           intro_categories: Json | null
           is_active: boolean | null
+          is_demo_profile: boolean | null
           languages: Json | null
+          max_project_value: number | null
+          max_projects_in_parallel: number | null
+          min_project_value: number | null
           onboarding_phase: string | null
           portfolio_images: Json | null
           primary_trade: string | null
           rejection_reason: string | null
           response_guarantee_hours: number | null
           response_time_hours: number | null
+          seasonality: string | null
           service_regions: Json | null
+          short_slug: string | null
           skills: Json | null
+          social_links: Json | null
           subscription_tier: string | null
+          subsector_tags: Json | null
+          sustainability_practices: Json | null
           tagline: string | null
+          team_size: number | null
+          typical_project_duration: string | null
+          unique_selling_points: Json | null
           updated_at: string | null
           user_id: string
           vat_number: string | null
           verification_status: string | null
           video_intro_url: string | null
+          whatsapp: string | null
           work_philosophy: string | null
           work_process_steps: Json | null
           zones: Json | null
         }
         Insert: {
+          address?: string | null
           availability?: Json | null
           bank_details?: Json | null
           bio?: string | null
           business_name?: string | null
           certifications?: Json | null
+          company_type?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          emergency_service?: boolean | null
           experience_years?: string | null
+          featured_at_events?: Json | null
           hourly_rate?: number | null
+          ideal_clients?: string | null
           instant_booking_enabled?: boolean | null
           insurance_details?: Json | null
           intro_categories?: Json | null
           is_active?: boolean | null
+          is_demo_profile?: boolean | null
           languages?: Json | null
+          max_project_value?: number | null
+          max_projects_in_parallel?: number | null
+          min_project_value?: number | null
           onboarding_phase?: string | null
           portfolio_images?: Json | null
           primary_trade?: string | null
           rejection_reason?: string | null
           response_guarantee_hours?: number | null
           response_time_hours?: number | null
+          seasonality?: string | null
           service_regions?: Json | null
+          short_slug?: string | null
           skills?: Json | null
+          social_links?: Json | null
           subscription_tier?: string | null
+          subsector_tags?: Json | null
+          sustainability_practices?: Json | null
           tagline?: string | null
+          team_size?: number | null
+          typical_project_duration?: string | null
+          unique_selling_points?: Json | null
           updated_at?: string | null
           user_id: string
           vat_number?: string | null
           verification_status?: string | null
           video_intro_url?: string | null
+          whatsapp?: string | null
           work_philosophy?: string | null
           work_process_steps?: Json | null
           zones?: Json | null
         }
         Update: {
+          address?: string | null
           availability?: Json | null
           bank_details?: Json | null
           bio?: string | null
           business_name?: string | null
           certifications?: Json | null
+          company_type?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          emergency_service?: boolean | null
           experience_years?: string | null
+          featured_at_events?: Json | null
           hourly_rate?: number | null
+          ideal_clients?: string | null
           instant_booking_enabled?: boolean | null
           insurance_details?: Json | null
           intro_categories?: Json | null
           is_active?: boolean | null
+          is_demo_profile?: boolean | null
           languages?: Json | null
+          max_project_value?: number | null
+          max_projects_in_parallel?: number | null
+          min_project_value?: number | null
           onboarding_phase?: string | null
           portfolio_images?: Json | null
           primary_trade?: string | null
           rejection_reason?: string | null
           response_guarantee_hours?: number | null
           response_time_hours?: number | null
+          seasonality?: string | null
           service_regions?: Json | null
+          short_slug?: string | null
           skills?: Json | null
+          social_links?: Json | null
           subscription_tier?: string | null
+          subsector_tags?: Json | null
+          sustainability_practices?: Json | null
           tagline?: string | null
+          team_size?: number | null
+          typical_project_duration?: string | null
+          unique_selling_points?: Json | null
           updated_at?: string | null
           user_id?: string
           vat_number?: string | null
           verification_status?: string | null
           video_intro_url?: string | null
+          whatsapp?: string | null
           work_philosophy?: string | null
           work_process_steps?: Json | null
           zones?: Json | null
@@ -10863,6 +10950,7 @@ export type Database = {
         Returns: Json
       }
       generate_receipt_number: { Args: never; Returns: string }
+      generate_short_slug: { Args: { company_name: string }; Returns: string }
       get_active_impersonation_session: {
         Args: never
         Returns: {
