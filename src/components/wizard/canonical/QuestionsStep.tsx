@@ -335,13 +335,16 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     const typeMap: Record<string, AIQuestion['type']> = {
       'single': 'radio',
       'multi': 'checkbox',
+      'multiple-choice': 'checkbox',
       'scale': 'scale',
       'text': 'text',
       'number': 'number',
       'yesno': 'yesno',
       'file': 'file'
     };
-    return typeMap[packType] || 'radio';
+    const mappedType = typeMap[packType] || 'radio';
+    console.log(`📝 Mapped question type: "${packType}" → "${mappedType}"`);
+    return mappedType;
   };
 
   const transformDatabaseToAIQuestions = (dbQuestions: any[]): AIQuestion[] => {
@@ -599,11 +602,17 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                         )}
                       </h2>
                       <p className="text-base text-muted-foreground">
-                        {currentQuestion.type === 'radio' || currentQuestion.type === 'select' 
-                          ? 'Select one option' 
-                          : currentQuestion.type === 'checkbox'
-                          ? 'Select all that apply'
-                          : 'Please provide your answer'}
+                        {(() => {
+                          if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
+                            return 'Select all that apply';
+                          } else if (currentQuestion.type === 'radio' || currentQuestion.type === 'select') {
+                            return 'Select one option';
+                          } else if (currentQuestion.type === 'yesno') {
+                            return 'Choose yes or no';
+                          } else {
+                            return 'Please provide your answer';
+                          }
+                        })()}
                       </p>
                     </div>
 
