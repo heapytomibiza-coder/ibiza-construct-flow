@@ -22,6 +22,7 @@ import { extractReadableText } from '@/lib/questionUtils';
 import { useQuestionValidation } from '@/hooks/useQuestionValidation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProgressIndicator } from '@/components/calculator/ui/ProgressIndicator';
+import { useTranslation } from '@/hooks/i18n/useTranslation';
 
 interface QuestionsStepProps {
   microIds: string[];
@@ -58,6 +59,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const { presets, usePreset } = useJobPresets(primaryMicroSlug);
   const isMobile = useIsMobile();
   const { markAsTouched, getValidationMessage, isQuestionComplete } = useQuestionValidation();
+  const { t } = useTranslation();
 
   const currentQuestion = questions[currentQuestionIndex];
   const isFirstQuestion = currentQuestionIndex === 0;
@@ -481,9 +483,11 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     {/* Question Text */}
                     <div className="space-y-2">
                       <h2 className="text-xl md:text-2xl font-semibold text-charcoal">
-                        {extractReadableText(currentQuestion.label)}
+                        {currentQuestion.label.startsWith('microservices.') || currentQuestion.label.startsWith('questions.') 
+                          ? t(currentQuestion.label) 
+                          : extractReadableText(currentQuestion.label)}
                         {currentQuestion.required && (
-                          <span className="text-destructive ml-1">*</span>
+                          <span className="text-primary ml-1">*</span>
                         )}
                       </h2>
                     </div>

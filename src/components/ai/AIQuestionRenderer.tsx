@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { AIQuestion } from '@/hooks/useAIQuestions';
+import { useTranslation } from '@/hooks/i18n/useTranslation';
 
 type Primitive = string | number | boolean;
 type AnswerMap = Record<string, Primitive | Primitive[] | File[] | null | undefined>;
@@ -76,6 +77,8 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
   onValidationChange,
   onAutoAdvance,
 }) => {
+  const { t } = useTranslation();
+  
   /** Compute visible questions with progressive disclosure */
   const visibleQuestions = useMemo(() => {
     if (!Array.isArray(questions)) return [];
@@ -123,7 +126,10 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
   const renderQuestion = (question: AIQuestion & { meta?: QuestionMeta; options?: Array<string | OptionLike> }) => {
     const qid = question.id;
     const value = answers[qid];
-    const label = question.meta?.label || question.label || qid;
+    const rawLabel = question.meta?.label || question.label || qid;
+    const label = rawLabel.startsWith('microservices.') || rawLabel.startsWith('questions.') 
+      ? t(rawLabel) 
+      : rawLabel;
     const hint = question.meta?.hint;
 
     // FILE / ASSET
@@ -171,10 +177,13 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
           >
             {normOptions.map((opt, index) => {
               const oid = `${qid}-${index}`;
+              const optLabel = opt.label.startsWith('microservices.') || opt.label.startsWith('questions.')
+                ? t(opt.label)
+                : opt.label;
               return (
                 <div key={oid} className="flex items-center space-x-2">
                   <RadioGroupItem value={opt.value} id={oid} />
-                  <Label htmlFor={oid} className="text-sm">{opt.label}</Label>
+                  <Label htmlFor={oid} className="text-sm">{optLabel}</Label>
                 </div>
               );
             })}
@@ -190,11 +199,16 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
               <SelectValue placeholder="Select an option..." />
             </SelectTrigger>
             <SelectContent>
-              {normOptions.map((opt, index) => (
-                <SelectItem key={`${qid}-${index}`} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
+              {normOptions.map((opt, index) => {
+                const optLabel = opt.label.startsWith('microservices.') || opt.label.startsWith('questions.')
+                  ? t(opt.label)
+                  : opt.label;
+                return (
+                  <SelectItem key={`${qid}-${index}`} value={opt.value}>
+                    {optLabel}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         );
@@ -207,6 +221,9 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
             {normOptions.map((opt, index) => {
               const oid = `${qid}-${index}`;
               const checked = selected.includes(opt.value);
+              const optLabel = opt.label.startsWith('microservices.') || opt.label.startsWith('questions.')
+                ? t(opt.label)
+                : opt.label;
               return (
                 <div key={oid} className="flex items-center space-x-2">
                   <Checkbox
@@ -217,7 +234,7 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
                       onAnswerChange(qid, next);
                     }}
                   />
-                  <Label htmlFor={oid} className="text-sm">{opt.label}</Label>
+                  <Label htmlFor={oid} className="text-sm">{optLabel}</Label>
                 </div>
               );
             })}
@@ -237,6 +254,9 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
               const oid = `${qid}-${index}`;
               const isChecked = selected.includes(opt.value);
               const disabled = !isChecked && selected.length >= maxSelections;
+              const optLabel = opt.label.startsWith('microservices.') || opt.label.startsWith('questions.')
+                ? t(opt.label)
+                : opt.label;
               return (
                 <div key={oid} className="flex items-center space-x-2">
                   <Checkbox
@@ -252,7 +272,7 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
                     htmlFor={oid}
                     className={`text-sm ${disabled ? 'text-muted-foreground' : ''}`}
                   >
-                    {opt.label}
+                    {optLabel}
                   </Label>
                 </div>
               );
@@ -358,37 +378,28 @@ export const AIQuestionRenderer: React.FC<AIQuestionRendererProps> = ({
     <Card className="w-full animate-fade-in shadow-sm md:shadow-md">
       <CardHeader className="p-4 md:p-6">
         <CardTitle className="flex items-center gap-2 md:gap-3 text-base md:text-lg">
-          <span>Your specialised questions</span>
+          <span>Project Details</span>
         </CardTitle>
         <p className="text-xs md:text-sm text-muted-foreground">
-          Answer core questions first, then we'll show relevant follow-ups
+          Answer the questions below to help professionals understand your needs
         </p>
-        {invalidRequired.length > 0 && (
-          <p className="text-xs text-destructive">
-            {invalidRequired.length} required question{invalidRequired.length > 1 ? 's are' : ' is'} missing.
-          </p>
-        )}
       </CardHeader>
       <CardContent className="space-y-4 md:space-y-6 p-4 md:p-6">
         {visibleQuestions.map((q) => {
-          const isCore = q.meta?.priority === 'core';
-          const isRequired = !!q.required;
-          const label = q.meta?.label || q.label || q.id;
+          const rawLabel = q.meta?.label || q.label || q.id;
+          const label = rawLabel.startsWith('microservices.') || rawLabel.startsWith('questions.') 
+            ? t(rawLabel) 
+            : rawLabel;
           const hint = q.meta?.hint;
-          const missing = invalidRequired.includes(q.id);
           return (
             <div key={q.id} className="space-y-2 md:space-y-3">
               <Label className="text-sm md:text-base font-medium" htmlFor={`${q.id}-field`}>
                 {label}
-                {isCore && <span className="ml-2 text-xs text-muted-foreground">(core)</span>}
               </Label>
               {hint && <p className="text-xs md:text-sm text-muted-foreground">{hint}</p>}
               <div id={`${q.id}-field`}>
                 {renderQuestion(q)}
               </div>
-              {missing && (
-                <p className="text-xs text-destructive">This question is required.</p>
-              )}
             </div>
           );
         })}
