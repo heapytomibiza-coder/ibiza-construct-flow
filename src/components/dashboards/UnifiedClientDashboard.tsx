@@ -9,6 +9,7 @@ import { AIRecommendations } from '@/components/ai/AIRecommendations';
 import { BusinessInsights } from '@/components/analytics/BusinessInsights';
 import { EventAnalyticsDashboard } from '@/components/analytics/EventAnalyticsDashboard';
 import { EnhancedNotificationCenter } from '@/components/notifications/EnhancedNotificationCenter';
+import { ClientFeaturesShowcase } from '@/components/client/ClientFeaturesShowcase';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface UnifiedClientDashboardProps {
@@ -85,8 +86,9 @@ const UnifiedClientDashboard: React.FC<UnifiedClientDashboardProps> = ({
         <EnhancedNotificationCenter userId={user.id} />
       </div>
       <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="insights">Insights</TabsTrigger>
           <TabsTrigger value="recommendations">AI</TabsTrigger>
@@ -94,6 +96,10 @@ const UnifiedClientDashboard: React.FC<UnifiedClientDashboardProps> = ({
         
         <TabsContent value="dashboard" className="mt-6">
           <DashboardContent />
+        </TabsContent>
+        
+        <TabsContent value="features" className="mt-6">
+          <ClientFeaturesShowcase />
         </TabsContent>
         
         <TabsContent value="analytics" className="mt-6">
