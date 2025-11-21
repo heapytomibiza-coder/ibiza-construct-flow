@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Tag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ServiceTreeSelector } from '@/components/services/ServiceTreeSelector';
-import { ProfessionalServiceCascadeWizard } from '@/components/onboarding/ProfessionalServiceCascadeWizard';
+import { ServiceCascadeConfigurator } from '@/components/onboarding/ServiceCascadeConfigurator';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
 import { OnboardingProgressBar } from '@/components/onboarding/OnboardingProgressBar';
@@ -176,7 +176,7 @@ export default function ServiceSetupWizard() {
                   </div>
                 )}
                 
-                <ProfessionalServiceCascadeWizard
+                <ServiceCascadeConfigurator
                   professionalId={user.id}
                   preselectedCategories={introCategories}
                   onComplete={handleNext}
