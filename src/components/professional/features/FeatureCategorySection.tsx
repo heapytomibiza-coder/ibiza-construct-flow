@@ -20,12 +20,12 @@ export function FeatureCategorySection({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <span className="text-2xl">{icon}</span>
-        <h3 className="text-xl font-bold">{title}</h3>
+        <span className="text-xl">{icon}</span>
+        <h3 className="text-lg font-bold">{title}</h3>
       </div>
-      <div className={`grid ${gridCols[columns as keyof typeof gridCols]} gap-4`}>
+      <div className={`grid ${gridCols[columns as keyof typeof gridCols]} gap-3`}>
         {children}
       </div>
     </div>

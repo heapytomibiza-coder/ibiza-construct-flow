@@ -24,22 +24,22 @@ export function FeaturedActionCard({
 
   return (
     <Card 
-      className="p-6 bg-gradient-to-br from-sage/20 to-sage-dark/10 border-border/50 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer group h-[200px] flex flex-col justify-between"
+      className="p-5 bg-gradient-to-br from-sage/20 to-sage-dark/10 border-border/50 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer group h-[180px] flex flex-col justify-between"
       onClick={() => navigate(path)}
     >
       <div>
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-3 bg-background/50 rounded-lg group-hover:bg-background/70 transition-colors">
-            <Icon className="h-8 w-8" />
+        <div className="flex items-start justify-between mb-3">
+          <div className="p-2.5 bg-background/50 rounded-lg group-hover:bg-background/70 transition-colors">
+            <Icon className="h-7 w-7" />
           </div>
           {metric && (
             <div className="text-right">
-              <p className="text-2xl font-bold">{metric}</p>
+              <p className="text-xl font-bold">{metric}</p>
             </div>
           )}
         </div>
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
-        <p className="text-sm text-muted-foreground line-clamp-2">{description}</p>
+        <h3 className="text-base font-semibold mb-1.5">{title}</h3>
+        <p className="text-xs text-muted-foreground line-clamp-2">{description}</p>
       </div>
       
       <Button 

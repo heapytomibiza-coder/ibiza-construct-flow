@@ -129,29 +129,29 @@ export const DynamicServiceBuilder: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-6 px-4">
+    <div className="container mx-auto py-4 px-4">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-bold">Create New Service</h1>
+          <h1 className="text-xl font-bold">Create New Service</h1>
           {autoSaveStatus === 'saved' && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground animate-in fade-in">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <div className="flex items-center gap-2 text-xs text-muted-foreground animate-in fade-in">
+              <CheckCircle2 className="h-3.5 w-3.5 text-sage" />
               Saved
             </div>
           )}
           {autoSaveStatus === 'saving' && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Save className="h-4 w-4 animate-pulse" />
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Save className="h-3.5 w-3.5 animate-pulse" />
               Saving...
             </div>
           )}
         </div>
-        <Progress value={progress} className="h-2 bg-sage-muted/30 [&>div]:bg-sage" />
-        <p className="text-sm text-muted-foreground mt-2">{Math.round(progress)}% Complete</p>
+        <Progress value={progress} className="h-1.5 bg-sage-muted/30 [&>div]:bg-sage" />
+        <p className="text-xs text-muted-foreground mt-1.5">{Math.round(progress)}% Complete</p>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr,400px] gap-6">
+      <div className="grid lg:grid-cols-[1fr,380px] gap-4">
         {/* Main Content */}
         <div className="space-y-3">
           {/* Service Type Section */}
@@ -216,11 +216,11 @@ export const DynamicServiceBuilder: React.FC = () => {
       </div>
 
       {/* Submit Button */}
-      <div className="mt-6 flex justify-end">
+      <div className="mt-4 flex justify-end">
         <Button
-          size="lg"
           onClick={handleSubmit}
           disabled={!state.serviceType.completed || !state.details.completed}
+          className="bg-sage hover:bg-sage-dark text-white"
         >
           Create Service
         </Button>
