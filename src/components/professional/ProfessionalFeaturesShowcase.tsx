@@ -1,206 +1,296 @@
-import { HeroStatsBar } from './features/HeroStatsBar';
-import { FeaturedActionCard } from './features/FeaturedActionCard';
-import { FeatureCategorySection } from './features/FeatureCategorySection';
-import { CompactFeatureCard } from './features/CompactFeatureCard';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   Briefcase, 
+  Package, 
   BarChart3, 
-  CreditCard, 
-  MessageSquare,
-  Star,
-  Users,
-  Shield,
-  TrendingUp,
+  MessageSquare, 
+  FileText, 
+  DollarSign, 
   Calendar,
-  Bell,
   Settings,
-  FileText,
-  Wrench,
+  Bell,
+  MapPin,
+  Award,
+  Camera,
   ChevronDown
 } from 'lucide-react';
-import { useState } from 'react';
+import { HeroStatsBar } from './features/HeroStatsBar';
+import { GlassFeaturedCard } from './features/GlassFeaturedCard';
+import { GlassCompactCard } from './features/GlassCompactCard';
+import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export function ProfessionalFeaturesShowcase() {
   const navigate = useNavigate();
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const unreadMessages = 3; // This should come from actual data
 
   return (
-    <div className="space-y-6">
-      {/* Hero Stats Bar */}
+    <div className="space-y-6 relative">
+      {/* Background gradient layer */}
+      <div className="absolute inset-0 bg-gradient-to-br from-sage/5 via-transparent to-sage/5 pointer-events-none -z-10" />
+
+      {/* Hero Stats Bar - Asymmetric Layout */}
       <HeroStatsBar />
 
-      {/* Featured Actions */}
-      <FeatureCategorySection icon="⭐" title="Featured Actions" columns={3}>
-        <FeaturedActionCard
-          icon={Briefcase}
-          title="Browse Jobs"
-          description="24 new opportunities match your skills"
-          metric="24"
-          path="/job-board"
-          action="Find Projects"
-        />
-        <FeaturedActionCard
-          icon={FileText}
-          title="My Services"
-          description="Create and manage your service offerings with custom pricing"
-          path="/professional/services"
-          action="Manage Services"
-        />
-        <FeaturedActionCard
-          icon={Star}
-          title="Portfolio"
-          description="Showcase your completed projects and client testimonials"
-          path="/professional/portfolio"
-          action="Update Portfolio"
-        />
-      </FeatureCategorySection>
+      {/* Featured Actions - Bento Grid with Priority Cards */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xl">⚡</span>
+          <h3 className="text-lg font-bold">Quick Actions</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Hero Card - Browse Jobs (Most Important) */}
+          <GlassFeaturedCard
+            icon={Briefcase}
+            title="Browse Jobs"
+            description="Find new opportunities matching your skills and expertise"
+            path="/job-board"
+            action="View All Jobs"
+            badge={24}
+            variant="hero"
+            delay={0}
+          />
+          
+          {/* Standard Featured Cards */}
+          <GlassFeaturedCard
+            icon={Package}
+            title="My Services"
+            description="Manage your service offerings and pricing"
+            path="/professional/services"
+            action="Manage Services"
+            variant="standard"
+            delay={0.1}
+          />
+          <GlassFeaturedCard
+            icon={Camera}
+            title="Portfolio"
+            description="Showcase your best work and projects"
+            path="/professional/portfolio"
+            action="Edit Portfolio"
+            variant="standard"
+            delay={0.2}
+          />
+        </div>
+      </div>
 
-      {/* Core Business Tools */}
-      <FeatureCategorySection icon="🎯" title="Grow Your Business" columns={3}>
-        <CompactFeatureCard
-          icon={BarChart3}
-          title="Earnings & Analytics"
-          description="Track income, performance, and growth metrics"
-          gradient="from-sage-light/15 to-sage/8"
-          path="/earnings"
-          action="View Earnings"
-        />
-        <CompactFeatureCard
-          icon={Users}
-          title="Client Matching"
-          description="AI matches you with ideal clients"
-          gradient="from-sage-light/15 to-sage/8"
-          path="/job-board"
-          action="View Matches"
-        />
-        <CompactFeatureCard
-          icon={TrendingUp}
-          title="Performance Insights"
-          description="Get personalized recommendations"
-          gradient="from-sage-light/15 to-sage/8"
-          path="/dashboard/pro"
-          action="View Insights"
-        />
-        <CompactFeatureCard
-          icon={Shield}
-          title="Verification Badge"
-          description="Build trust with credentials"
-          gradient="from-sage-light/15 to-sage/8"
-          path="/professional/verification"
-          action="Get Verified"
-        />
-      </FeatureCategorySection>
+      {/* Business Tools - Compact Hover-Reveal Grid */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xl">💼</span>
+          <h3 className="text-lg font-bold">Business Tools</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <GlassCompactCard
+            icon={BarChart3}
+            title="Analytics"
+            description="Track your performance metrics and growth"
+            path="/dashboard/pro/analytics"
+            action="View Analytics"
+            delay={0}
+          />
+          <GlassCompactCard
+            icon={MessageSquare}
+            title="Messages"
+            description="Client communications and inquiries"
+            path="/messages"
+            action="Open Inbox"
+            badge={unreadMessages}
+            delay={0.05}
+          />
+          <GlassCompactCard
+            icon={FileText}
+            title="Contracts"
+            description="Manage agreements and proposals"
+            path="/contracts"
+            action="View Contracts"
+            delay={0.1}
+          />
+          <GlassCompactCard
+            icon={DollarSign}
+            title="Payments"
+            description="Financial overview and invoices"
+            path="/payments"
+            action="View Payments"
+            delay={0.15}
+          />
+        </div>
+      </div>
 
-      {/* Client & Project Management */}
-      <FeatureCategorySection icon="💬" title="Client Management" columns={4}>
-        <CompactFeatureCard
-          icon={MessageSquare}
-          title="Communications"
-          description="Chat with clients and share updates"
-          path="/messages"
-          action="Open Messages"
-          badge={3}
-        />
-        <CompactFeatureCard
-          icon={FileText}
-          title="Contracts"
-          description="Review and manage agreements"
-          path="/contracts"
-          action="View Contracts"
-          badge={1}
-        />
-        <CompactFeatureCard
-          icon={CreditCard}
-          title="Secure Payments"
-          description="Track earnings and payouts"
-          path="/payments"
-          action="Manage Payments"
-        />
-        <CompactFeatureCard
-          icon={Calendar}
-          title="Availability"
-          description="Set working hours and blocked dates"
-          path="/availability"
-          action="Set Schedule"
-        />
-      </FeatureCategorySection>
+      {/* Client Management - Bento Grid Layout */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xl">🤝</span>
+          <h3 className="text-lg font-bold">Client Management</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Communications - Prominent if has messages */}
+          <div className={unreadMessages > 0 ? 'sm:col-span-2' : ''}>
+            <GlassCompactCard
+              icon={MessageSquare}
+              title="Communications"
+              description="Message history and client inquiries"
+              path="/messages"
+              action="View Messages"
+              badge={unreadMessages}
+              delay={0}
+            />
+          </div>
+          
+          <GlassCompactCard
+            icon={FileText}
+            title="Active Contracts"
+            description="Current agreements and proposals"
+            path="/contracts"
+            action="View Contracts"
+            delay={0.05}
+          />
+          <GlassCompactCard
+            icon={DollarSign}
+            title="Payment History"
+            description="Transaction records and invoices"
+            path="/payments"
+            action="View History"
+            delay={0.1}
+          />
+          <div className="sm:col-span-2 lg:col-span-4">
+            <GlassCompactCard
+              icon={Calendar}
+              title="Availability"
+              description="Manage your schedule and booking windows"
+              path="/availability"
+              action="Set Availability"
+              delay={0.15}
+            />
+          </div>
+        </div>
+      </div>
 
-      {/* Settings & Configuration */}
-      <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <Card className="border-border/50">
-          <CollapsibleTrigger className="w-full">
-            <div className="p-3 flex items-center justify-between hover:bg-accent/50 transition-colors rounded-lg">
+      {/* Settings & Tools - Collapsible Glass Card */}
+      <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <motion.div
+          initial={false}
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sage/8 via-sage/4 to-transparent backdrop-blur-lg border border-sage/20"
+        >
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="ghost"
+              className="w-full flex items-center justify-between p-4 hover:bg-sage/5 transition-colors"
+            >
               <div className="flex items-center gap-2">
-                <span className="text-lg">⚙️</span>
-                <h3 className="text-base font-semibold">Settings & Tools</h3>
+                <Settings className="h-4 w-4 text-sage-dark" />
+                <span className="font-semibold text-sm">Settings & Tools</span>
               </div>
-              <ChevronDown className={`h-4 w-4 transition-transform ${settingsOpen ? 'rotate-180' : ''}`} />
-            </div>
+              <motion.div
+                animate={{ rotate: isSettingsOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              </motion.div>
+            </Button>
           </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5 p-3 pt-0">
-              <Card className="p-2.5 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/settings/notifications')}>
-                <div className="flex items-center gap-2.5">
-                  <Bell className="h-4 w-4 text-sage" />
-                  <div>
-                    <p className="font-medium text-xs">Smart Notifications</p>
-                    <p className="text-[10px] text-muted-foreground">Configure alerts</p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-2.5 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/professional/service-setup')}>
-                <div className="flex items-center gap-2.5">
-                  <Wrench className="h-4 w-4 text-sage" />
-                  <div>
-                    <p className="font-medium text-xs">Service Setup</p>
-                    <p className="text-[10px] text-muted-foreground">Create packages</p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-2.5 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/professional/payout-setup')}>
-                <div className="flex items-center gap-2.5">
-                  <CreditCard className="h-4 w-4 text-sage" />
-                  <div>
-                    <p className="font-medium text-xs">Payout Settings</p>
-                    <p className="text-[10px] text-muted-foreground">Bank details</p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-2.5 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/settings/profile')}>
-                <div className="flex items-center gap-2.5">
-                  <Settings className="h-4 w-4 text-sage" />
-                  <div>
-                    <p className="font-medium text-xs">Account Settings</p>
-                    <p className="text-[10px] text-muted-foreground">Manage profile</p>
-                  </div>
-                </div>
-              </Card>
-            </div>
+          <CollapsibleContent className="px-4 pb-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2"
+            >
+              <GlassCompactCard
+                icon={Settings}
+                title="Profile Settings"
+                description="Update your professional information"
+                path="/settings/profile"
+                action="Edit Profile"
+                delay={0}
+              />
+              <GlassCompactCard
+                icon={Bell}
+                title="Notifications"
+                description="Manage alerts and preferences"
+                path="/settings/notifications"
+                action="Configure"
+                delay={0.05}
+              />
+              <GlassCompactCard
+                icon={MapPin}
+                title="Service Areas"
+                description="Define coverage zones"
+                path="/professional/service-areas"
+                action="Edit Areas"
+                delay={0.1}
+              />
+              <GlassCompactCard
+                icon={Award}
+                title="Certifications"
+                description="Licenses and credentials"
+                path="/professional/verification"
+                action="Manage Certs"
+                delay={0.15}
+              />
+            </motion.div>
           </CollapsibleContent>
-        </Card>
+        </motion.div>
       </Collapsible>
 
-      {/* CTA */}
-      <Card className="bg-gradient-to-r from-sage/25 to-sage-dark/15 border-sage/30">
-        <CardContent className="p-5 flex flex-col md:flex-row items-center justify-between gap-3">
-          <div>
-            <h3 className="text-base font-bold mb-1">Ready to Grow Your Business?</h3>
-            <p className="text-xs text-muted-foreground">
-              Complete your profile and start winning quality projects today
-            </p>
-          </div>
-          <Button 
-            onClick={() => navigate('/job-board')}
-            className="bg-sage hover:bg-sage-dark text-white whitespace-nowrap"
+      {/* CTA Card - Floating Glass Effect */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.4 }}
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sage/15 via-sage/8 to-transparent backdrop-blur-xl border border-sage/30 p-8 shadow-[0_20px_60px_0_rgba(0,0,0,0.1)]"
+      >
+        {/* Animated background glow */}
+        <motion.div
+          className="absolute top-0 right-0 w-96 h-96 bg-sage/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        <div className="relative z-10 text-center space-y-4">
+          <motion.h3
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="text-2xl font-display font-bold text-foreground"
           >
-            Browse Jobs
-          </Button>
-        </CardContent>
-      </Card>
+            Ready to Grow Your Business?
+          </motion.h3>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="text-sm text-muted-foreground max-w-md mx-auto"
+          >
+            Complete your profile and start getting more client inquiries
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, type: "spring" }}
+          >
+            <Button
+              size="lg"
+              className="bg-sage hover:bg-sage-dark text-white shadow-[0_8px_24px_rgba(var(--sage),0.3)] hover:shadow-[0_12px_32px_rgba(var(--sage),0.4)] transition-all duration-300"
+              onClick={() => navigate('/settings/profile')}
+            >
+              Complete Profile
+            </Button>
+          </motion.div>
+        </div>
+      </motion.div>
     </div>
   );
 }

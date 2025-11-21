@@ -384,13 +384,68 @@ All colors MUST be HSL. Premium construction platform aesthetic.
     @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
   }
 
-  /* Glass Morphism Effects */
-  .glass {
-    @apply bg-background/80 backdrop-blur-md border border-border/50;
+  /* Glassmorphism System - Premium Professional UI */
+  
+  /* Primary Glass - Featured elements */
+  .glass-primary {
+    @apply bg-gradient-to-br from-sage/15 via-sage/10 to-transparent 
+           backdrop-blur-xl border-2 border-sage/30
+           shadow-[0_8px_32px_0_rgba(0,0,0,0.08)];
+  }
+  
+  .glass-primary:hover {
+    @apply border-sage/50 shadow-[0_20px_60px_0_rgba(0,0,0,0.15)];
   }
 
+  /* Secondary Glass - Standard elements */
+  .glass-secondary {
+    @apply bg-gradient-to-br from-sage/10 via-sage/6 to-transparent 
+           backdrop-blur-lg border border-sage/25
+           shadow-[0_8px_32px_0_rgba(0,0,0,0.08)];
+  }
+  
+  .glass-secondary:hover {
+    @apply border-sage/40 shadow-[0_12px_48px_0_rgba(0,0,0,0.12)];
+  }
+
+  /* Tertiary Glass - Compact/utility elements */
+  .glass-tertiary {
+    @apply bg-gradient-to-br from-sage/6 via-sage/3 to-transparent 
+           backdrop-blur-md border border-sage/15
+           shadow-[0_4px_16px_0_rgba(0,0,0,0.04)];
+  }
+  
+  .glass-tertiary:hover {
+    @apply border-sage/30 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)];
+  }
+
+  /* Glass Card Wrapper */
   .glass-card {
-    @apply glass rounded-xl p-6 shadow-card;
+    @apply rounded-2xl overflow-hidden relative;
+  }
+
+  /* Glass Shine Effect - Overlay for hover */
+  .glass-shine {
+    @apply absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent 
+           opacity-0 transition-opacity duration-300 pointer-events-none;
+  }
+
+  /* 3D Transform Base */
+  .glass-3d {
+    transform-style: preserve-3d;
+  }
+
+  /* Micro-interaction utilities for glass cards */
+  .glass-lift {
+    @apply transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .glass-tilt {
+    @apply transition-transform duration-200;
+  }
+
+  .glass-magnetic {
+    @apply cursor-pointer;
   }
 }
 
