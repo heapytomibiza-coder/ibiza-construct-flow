@@ -54,7 +54,7 @@ export const ServiceTypeSelector: React.FC<Props> = ({ selected, onSelect }) => 
         subcategory: cat.name,
         label: cat.name,
         icon: Object.values(iconMap)[idx % 6],
-        gradient: `from-${['blue', 'orange', 'green', 'purple', 'pink', 'cyan'][idx % 6]}-500/10 to-${['cyan', 'amber', 'emerald', 'pink', 'orange', 'blue'][idx % 6]}-400/5`,
+        gradient: 'from-sage-light/10 to-sage-muted/5',
       })) || [];
 
       setCategories(formatted);
@@ -86,8 +86,8 @@ export const ServiceTypeSelector: React.FC<Props> = ({ selected, onSelect }) => 
               className={cn(
                 "p-4 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]",
                 "border-2",
-                isSelected && "border-primary ring-2 ring-primary/20",
-                !isSelected && "border-border hover:border-primary/50"
+                isSelected && "border-sage ring-2 ring-sage/20 bg-sage/10",
+                !isSelected && "border-sage-muted/30 hover:border-sage/50"
               )}
               onClick={() => onSelect(type)}
             >

@@ -27,7 +27,7 @@ export function CompactFeatureCard({
 
   return (
     <Card 
-      className={`p-4 hover:shadow-md transition-all duration-300 cursor-pointer group h-[120px] flex flex-col justify-between ${gradient ? `bg-gradient-to-br ${gradient} border-border/50` : ''}`}
+      className={`p-4 hover:shadow-md transition-all duration-300 cursor-pointer group h-[120px] flex flex-col justify-between ${gradient ? `bg-gradient-to-br ${gradient} border-border/50` : 'bg-card'}`}
       onClick={() => navigate(path)}
     >
       <div className="flex items-start justify-between">

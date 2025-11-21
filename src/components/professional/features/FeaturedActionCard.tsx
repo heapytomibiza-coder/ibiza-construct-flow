@@ -8,7 +8,6 @@ interface FeaturedActionCardProps {
   title: string;
   description: string;
   metric?: string;
-  gradient: string;
   path: string;
   action: string;
 }
@@ -18,7 +17,6 @@ export function FeaturedActionCard({
   title,
   description,
   metric,
-  gradient,
   path,
   action
 }: FeaturedActionCardProps) {
@@ -26,7 +24,7 @@ export function FeaturedActionCard({
 
   return (
     <Card 
-      className={`p-6 bg-gradient-to-br ${gradient} border-border/50 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer group h-[200px] flex flex-col justify-between`}
+      className="p-6 bg-gradient-to-br from-sage/20 to-sage-dark/10 border-border/50 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer group h-[200px] flex flex-col justify-between"
       onClick={() => navigate(path)}
     >
       <div>

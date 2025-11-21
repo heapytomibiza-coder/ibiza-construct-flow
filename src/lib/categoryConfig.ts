@@ -27,127 +27,134 @@ export interface CategoryConfig {
   description?: string;
 }
 
+// Mediterranean Sandy Gradients - Professional consistency
+const MEDITERRANEAN_GRADIENTS = {
+  primary: 'from-sage/20 to-sage-dark/10',
+  secondary: 'from-sage-light/15 to-sage/8',
+  subtle: 'from-sage-muted/10 to-background/5',
+} as const;
+
 export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
-  // Main Services
+  // Main Services - All use primary sandy gradient
   'building': {
     icon: HardHat,
-    gradient: 'from-orange-500/20 to-amber-500/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 8,
     description: 'General construction and building services'
   },
   'carpentry': {
     icon: Hammer,
-    gradient: 'from-amber-700/20 to-yellow-600/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 6,
     description: 'Custom woodwork and furniture'
   },
   'electrical': {
     icon: Zap,
-    gradient: 'from-yellow-500/20 to-amber-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 9,
     description: 'Electrical installations and repairs'
   },
   'plumbing': {
     icon: Droplet,
-    gradient: 'from-blue-500/20 to-cyan-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 12,
     description: 'Plumbing and water systems'
   },
   'air-conditioning': {
     icon: Wind,
-    gradient: 'from-cyan-500/20 to-blue-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 5,
     description: 'HVAC and climate control'
   },
   'landscaping': {
     icon: Trees,
-    gradient: 'from-green-500/20 to-emerald-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 7,
     description: 'Garden and outdoor maintenance'
   },
   'painting': {
     icon: Paintbrush,
-    gradient: 'from-purple-500/20 to-pink-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 6,
     description: 'Interior and exterior painting'
   },
   'flooring': {
     icon: Square,
-    gradient: 'from-gray-500/20 to-slate-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.secondary,
     serviceCount: 5,
     description: 'Floor installation and repair'
   },
   'windows-doors': {
     icon: DoorOpen,
-    gradient: 'from-indigo-500/20 to-purple-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.secondary,
     serviceCount: 4,
     description: 'Window and door services'
   },
   'metalwork': {
     icon: Wrench,
-    gradient: 'from-slate-600/20 to-gray-500/10',
+    gradient: MEDITERRANEAN_GRADIENTS.secondary,
     serviceCount: 4,
     description: 'Metal fabrication and welding'
   },
   'handyman': {
     icon: Wrench,
-    gradient: 'from-red-500/20 to-orange-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 15,
     description: 'General repairs and maintenance'
   },
   'cleaning': {
     icon: Sparkles,
-    gradient: 'from-teal-500/20 to-cyan-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.secondary,
     serviceCount: 8,
     description: 'Professional cleaning services'
   },
   
-  // Specialist Services
+  // Specialist Services - Use subtle gradients
   'architecture': {
     icon: Ruler,
-    gradient: 'from-violet-500/20 to-purple-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.subtle,
     serviceCount: 4,
     description: 'Architectural design and planning'
   },
   'project-management': {
     icon: FileText,
-    gradient: 'from-emerald-500/20 to-teal-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.subtle,
     serviceCount: 3,
     description: 'Construction project management'
   },
   'interior-design': {
     icon: Layers,
-    gradient: 'from-pink-500/20 to-rose-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.subtle,
     serviceCount: 5,
     description: 'Interior design and decoration'
   },
   'property-management': {
     icon: Building2,
-    gradient: 'from-teal-500/20 to-cyan-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.subtle,
     serviceCount: 6,
     description: 'Property management services'
   },
   'legal-consulting': {
     icon: FileText,
-    gradient: 'from-blue-700/20 to-indigo-500/10',
+    gradient: MEDITERRANEAN_GRADIENTS.subtle,
     serviceCount: 3,
     description: 'Legal advice and consulting'
   },
   'pool-maintenance': {
     icon: Waves,
-    gradient: 'from-blue-400/20 to-cyan-300/10',
+    gradient: MEDITERRANEAN_GRADIENTS.secondary,
     serviceCount: 4,
     description: 'Pool cleaning and maintenance'
   },
   'bathroom-renovation': {
     icon: Bath,
-    gradient: 'from-sky-500/20 to-blue-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.secondary,
     serviceCount: 6,
     description: 'Complete bathroom renovations'
   },
   'home-renovation': {
     icon: Home,
-    gradient: 'from-orange-600/20 to-red-400/10',
+    gradient: MEDITERRANEAN_GRADIENTS.primary,
     serviceCount: 10,
     description: 'Full home renovation projects'
   }
