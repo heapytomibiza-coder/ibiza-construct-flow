@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, Loader2, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { AIQuestionRenderer } from '@/components/ai/AIQuestionRenderer';
+import { ConversationalQuestionInput } from '@/components/wizard/ConversationalQuestionInput';
 import { AIQuestion } from '@/hooks/useAIQuestions';
 import { PresetChips } from '@/components/wizard/PresetChips';
 import { AISmartFill } from '@/components/wizard/AISmartFill';
@@ -494,12 +494,10 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
                     {/* Question Input */}
                     <div className="pt-2">
-                      <AIQuestionRenderer
-                        questions={[currentQuestion]}
-                        answers={answers}
-                        onAnswerChange={handleAnswerChange}
-                        onValidationChange={handleValidationChange}
-                        onAutoAdvance={() => {}}
+                      <ConversationalQuestionInput
+                        question={currentQuestion}
+                        value={answers[currentQuestion.id]}
+                        onChange={(value) => handleAnswerChange(currentQuestion.id, value)}
                       />
                     </div>
 
