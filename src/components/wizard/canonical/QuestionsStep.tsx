@@ -65,6 +65,20 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const isFirstQuestion = currentQuestionIndex === 0;
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
+  // Debug: Log the current question to console
+  useEffect(() => {
+    if (currentQuestion) {
+      console.log('📋 Current Question Data:', {
+        id: currentQuestion.id,
+        type: currentQuestion.type,
+        label: currentQuestion.label,
+        question: (currentQuestion as any).question,
+        options: currentQuestion.options,
+        fullObject: currentQuestion
+      });
+    }
+  }, [currentQuestion]);
+
   useEffect(() => {
     loadQuestions();
   }, [microSlugs.join(','), microNames.join(',')]);
@@ -484,28 +498,60 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     <div className="space-y-3">
                       <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
                         {(() => {
-                          // Use question property first (from WizardQuestion), then label (from AIQuestion)
-                          const questionText = (currentQuestion as any).question || currentQuestion?.label || '';
+                          // Try multiple sources for the question text
+                          let questionText = '';
+                          
+                          // 1. Check 'question' property (from WizardQuestion/database)
+                          if ((currentQuestion as any).question) {
+                            questionText = (currentQuestion as any).question;
+                          }
+                          // 2. Check 'label' property (from AIQuestion)
+                          else if (currentQuestion?.label) {
+                            questionText = currentQuestion.label;
+                          }
+                          // 3. Check 'title' property (alternative)
+                          else if ((currentQuestion as any).title) {
+                            questionText = (currentQuestion as any).title;
+                          }
+                          // 4. Use ID as fallback
+                          else {
+                            questionText = currentQuestion?.id || 'Question';
+                          }
+
+                          console.log('🔍 Rendering question text:', questionText);
+                          
+                          // If empty, provide fallback
+                          if (!questionText || questionText.trim() === '') {
+                            return `Question ${currentQuestionIndex + 1}`;
+                          }
                           
                           // Check if it's an i18n key and translate it
                           if (questionText.startsWith('microservices.') || questionText.startsWith('questions.')) {
-                            return t(questionText);
+                            const translated = t(questionText);
+                            console.log('🌐 Translated:', translated);
+                            return translated;
                           }
                           
-                          // If it looks like a key (has dots), extract readable text
-                          if (questionText.includes('.')) {
-                            return extractReadableText(questionText);
+                          // If it looks like a key (has dots and isn't a sentence), extract readable text
+                          if (questionText.includes('.') && !questionText.includes(' ')) {
+                            const extracted = extractReadableText(questionText);
+                            console.log('📝 Extracted:', extracted);
+                            return extracted;
                           }
                           
                           // Return as-is if it's already readable text
-                          return questionText || 'Please provide your answer';
+                          return questionText;
                         })()}
                         {currentQuestion.required && (
                           <span className="text-destructive ml-2">*</span>
                         )}
                       </h2>
                       <p className="text-base text-muted-foreground">
-                        Select the option that best describes your needs
+                        {currentQuestion.type === 'radio' || currentQuestion.type === 'select' 
+                          ? 'Select one option' 
+                          : currentQuestion.type === 'checkbox'
+                          ? 'Select all that apply'
+                          : 'Please provide your answer'}
                       </p>
                     </div>
 
