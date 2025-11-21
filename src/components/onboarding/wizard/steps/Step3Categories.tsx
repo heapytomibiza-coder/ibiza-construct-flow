@@ -1,37 +1,36 @@
-import { AlertCircle, Briefcase, Search } from 'lucide-react';
+import { AlertCircle, Briefcase, Search, Hammer } from 'lucide-react';
 import { ModernCategoryCard } from '../shared/ModernCategoryCard';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { getMainCategories, getSpecialistCategories, getServiceIconName } from '@/utils/serviceHelpers';
-import { 
-  Hammer, Wrench, Paintbrush, Zap, Droplet, Grid3x3, Layers, 
-  Home, Trees, Waves, Wind, Ruler, HardHat, DoorOpen, Bath, Building2, FileText 
-} from 'lucide-react';
+import { getCategoryConfig } from '@/lib/categoryConfig';
 
-const getIconComponent = (iconName: string, size: string = "w-10 h-10") => {
-  const icons: Record<string, any> = {
-    'Hammer': Hammer,
-    'Droplets': Droplet,
-    'Zap': Zap,
-    'Wrench': Wrench,
-    'Paintbrush': Paintbrush,
-    'Grid3x3': Grid3x3,
-    'Layers': Layers,
-    'Home': Home,
-    'Trees': Trees,
-    'Waves': Waves,
-    'Wind': Wind,
-    'Ruler': Ruler,
-    'HardHat': HardHat,
-    'DoorOpen': DoorOpen,
-    'Bath': Bath,
-    'Building2': Building2,
-    'FileText': FileText,
-  };
-  const Icon = icons[iconName] || Wrench;
-  return <Icon className={size} />;
-};
+// Category data with slugs
+const MAIN_CATEGORIES = [
+  { name: 'Builder', slug: 'building' },
+  { name: 'Carpenter', slug: 'carpentry' },
+  { name: 'Electrician', slug: 'electrical' },
+  { name: 'Plumber', slug: 'plumbing' },
+  { name: 'Air Conditioning', slug: 'air-conditioning' },
+  { name: 'Landscaping', slug: 'landscaping' },
+  { name: 'Painter', slug: 'painting' },
+  { name: 'Flooring', slug: 'flooring' },
+  { name: 'Windows & Doors', slug: 'windows-doors' },
+  { name: 'Metalwork', slug: 'metalwork' },
+  { name: 'Handyman', slug: 'handyman' },
+  { name: 'Cleaning', slug: 'cleaning' },
+];
+
+const SPECIALIST_CATEGORIES = [
+  { name: 'Architect', slug: 'architecture' },
+  { name: 'Project Manager', slug: 'project-management' },
+  { name: 'Interior Designer', slug: 'interior-design' },
+  { name: 'Property Manager', slug: 'property-management' },
+  { name: 'Legal Consultant', slug: 'legal-consulting' },
+  { name: 'Pool Maintenance', slug: 'pool-maintenance' },
+  { name: 'Bathroom Renovation', slug: 'bathroom-renovation' },
+  { name: 'Home Renovation', slug: 'home-renovation' },
+];
 
 interface Step3CategoriesProps {
   data: {
@@ -43,16 +42,13 @@ interface Step3CategoriesProps {
 
 export function Step3Categories({ data, onChange, errors }: Step3CategoriesProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const mainCategories = getMainCategories();
-  const specialistCategories = getSpecialistCategories();
   const popularCategories = ['Builder', 'Plumber', 'Electrician'];
 
-  const allCategories = [...mainCategories, ...specialistCategories];
-  const filteredMain = mainCategories.filter(cat => 
-    cat.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredMain = MAIN_CATEGORIES.filter(cat => 
+    cat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const filteredSpecialist = specialistCategories.filter(cat => 
-    cat.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredSpecialist = SPECIALIST_CATEGORIES.filter(cat => 
+    cat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const toggleCategory = (category: string) => {
@@ -118,17 +114,22 @@ export function Step3Categories({ data, onChange, errors }: Step3CategoriesProps
               <p className="text-sm text-muted-foreground mt-1">Core trades and services</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filteredMain.map(cat => (
-                <ModernCategoryCard
-                  key={cat}
-                  name={cat}
-                  icon={getIconComponent(getServiceIconName(cat))}
-                  isSelected={data.categories.includes(cat)}
-                  onClick={() => toggleCategory(cat)}
-                  isPopular={popularCategories.includes(cat)}
-                  gradient="from-blue-500/20 to-primary/10"
-                />
-              ))}
+              {filteredMain.map(cat => {
+                const config = getCategoryConfig(cat.slug);
+                const Icon = config.icon;
+                return (
+                  <ModernCategoryCard
+                    key={cat.slug}
+                    name={cat.name}
+                    icon={<Icon className="w-8 h-8" />}
+                    isSelected={data.categories.includes(cat.name)}
+                    onClick={() => toggleCategory(cat.name)}
+                    isPopular={popularCategories.includes(cat.name)}
+                    gradient={config.gradient}
+                    serviceCount={config.serviceCount}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
@@ -144,16 +145,21 @@ export function Step3Categories({ data, onChange, errors }: Step3CategoriesProps
               <p className="text-sm text-muted-foreground mt-1">Specialized professional services</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filteredSpecialist.map(cat => (
-                <ModernCategoryCard
-                  key={cat}
-                  name={cat}
-                  icon={getIconComponent(getServiceIconName(cat))}
-                  isSelected={data.categories.includes(cat)}
-                  onClick={() => toggleCategory(cat)}
-                  gradient="from-purple-500/20 to-primary/10"
-                />
-              ))}
+              {filteredSpecialist.map(cat => {
+                const config = getCategoryConfig(cat.slug);
+                const Icon = config.icon;
+                return (
+                  <ModernCategoryCard
+                    key={cat.slug}
+                    name={cat.name}
+                    icon={<Icon className="w-8 h-8" />}
+                    isSelected={data.categories.includes(cat.name)}
+                    onClick={() => toggleCategory(cat.name)}
+                    gradient={config.gradient}
+                    serviceCount={config.serviceCount}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
