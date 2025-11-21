@@ -6554,6 +6554,7 @@ export type Database = {
           bank_details: Json | null
           bio: string | null
           business_name: string | null
+          certifications: Json | null
           contact_email: string | null
           contact_phone: string | null
           cover_image_url: string | null
@@ -6589,6 +6590,7 @@ export type Database = {
           bank_details?: Json | null
           bio?: string | null
           business_name?: string | null
+          certifications?: Json | null
           contact_email?: string | null
           contact_phone?: string | null
           cover_image_url?: string | null
@@ -6624,6 +6626,7 @@ export type Database = {
           bank_details?: Json | null
           bio?: string | null
           business_name?: string | null
+          certifications?: Json | null
           contact_email?: string | null
           contact_phone?: string | null
           cover_image_url?: string | null
