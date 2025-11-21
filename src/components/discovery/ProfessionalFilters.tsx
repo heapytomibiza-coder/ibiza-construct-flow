@@ -16,25 +16,32 @@ interface ProfessionalFiltersProps {
 
 export function ProfessionalFilters({ filters, onFiltersChange }: ProfessionalFiltersProps) {
   return (
-    <Card className="p-6 mb-6">
-      <h3 className="font-semibold mb-4">Filters</h3>
+    <Card className="p-6 mb-6 border-2">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-semibold text-lg text-foreground">Filter Professionals</h3>
+        <span className="text-xs text-muted-foreground">Refine your search</span>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Location */}
-        <div className="space-y-2">
-          <Label>Location</Label>
+        <div className="space-y-3">
+          <Label className="text-sm font-medium text-foreground">📍 Location</Label>
           <Input
-            placeholder="Enter city or area"
+            placeholder="e.g., Ibiza Town, Santa Eulalia"
             value={filters.location}
             onChange={(e) =>
               onFiltersChange({ ...filters, location: e.target.value })
             }
+            className="h-10"
           />
+          <p className="text-xs text-muted-foreground">Search by city or area</p>
         </div>
 
         {/* Min Rating */}
-        <div className="space-y-2">
-          <Label>Minimum Rating: {filters.minRating || 'Any'}</Label>
+        <div className="space-y-3">
+          <Label className="text-sm font-medium text-foreground">
+            ⭐ Minimum Rating: <span className="text-primary">{filters.minRating > 0 ? filters.minRating : 'Any'}</span>
+          </Label>
           <Slider
             value={[filters.minRating]}
             onValueChange={([value]) =>
@@ -43,23 +50,26 @@ export function ProfessionalFilters({ filters, onFiltersChange }: ProfessionalFi
             min={0}
             max={5}
             step={0.5}
+            className="py-4"
           />
+          <p className="text-xs text-muted-foreground">Filter by customer ratings</p>
         </div>
 
         {/* Verified Only */}
-        <div className="space-y-2">
-          <Label>Verified Professionals Only</Label>
-          <div className="flex items-center gap-2">
+        <div className="space-y-3">
+          <Label className="text-sm font-medium text-foreground">✓ Verification Status</Label>
+          <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg">
             <Switch
               checked={filters.verified}
               onCheckedChange={(checked) =>
                 onFiltersChange({ ...filters, verified: checked })
               }
             />
-            <span className="text-sm text-muted-foreground">
-              {filters.verified ? 'Yes' : 'No'}
+            <span className="text-sm font-medium text-foreground">
+              {filters.verified ? 'Verified only' : 'All professionals'}
             </span>
           </div>
+          <p className="text-xs text-muted-foreground">Show only ID-verified professionals</p>
         </div>
       </div>
     </Card>

@@ -110,23 +110,23 @@ BEGIN
   -- ============================================================================
   
   INSERT INTO public.professional_profiles (
-    user_id, business_name, trade_type, hourly_rate, currency, 
-    years_experience, service_radius_km, verification_status, is_active, created_at
+    user_id, business_name, primary_trade, hourly_rate, experience_years, 
+    verification_status, is_active, created_at
   )
   VALUES
-    (v_miguel_id, NULL, 'plumbing', 45.00, 'EUR', 15, 25, 'verified', true, now() - interval '2 years'),
-    (v_construction_id, 'Ibiza Construction Group S.L.', 'construction', 65.00, 'EUR', 20, 50, 'verified', true, now() - interval '5 years'),
-    (v_sofia_id, NULL, 'cleaning', 30.00, 'EUR', 8, 20, 'verified', true, now() - interval '3 years'),
-    (v_greenscape_id, 'GreenScape Ibiza', 'landscaping', 55.00, 'EUR', 12, 35, 'verified', true, now() - interval '4 years'),
-    (v_carlos_id, NULL, 'electrical', 50.00, 'EUR', 18, 30, 'verified', true, now() - interval '8 years'),
-    (v_antonio_id, NULL, 'handyman', 35.00, 'EUR', 5, 15, 'pending', true, now() - interval '1 year'),
-    (v_perfect_id, 'Perfect Home Services S.L.', 'home_services', 60.00, 'EUR', 15, 40, 'verified', true, now() - interval '6 years'),
-    (v_elena_id, NULL, 'painting', 40.00, 'EUR', 10, 25, 'verified', true, now() - interval '4 years')
+    (v_miguel_id, NULL, 'Plumbing', 45.00, '15', 'verified', true, now() - interval '2 years'),
+    (v_construction_id, 'Ibiza Construction Group S.L.', 'Construction', 65.00, '20', 'verified', true, now() - interval '5 years'),
+    (v_sofia_id, NULL, 'Cleaning', 30.00, '8', 'verified', true, now() - interval '3 years'),
+    (v_greenscape_id, 'GreenScape Ibiza', 'Landscaping', 55.00, '12', 'verified', true, now() - interval '4 years'),
+    (v_carlos_id, NULL, 'Electrical', 50.00, '18', 'verified', true, now() - interval '8 years'),
+    (v_antonio_id, NULL, 'Handyman', 35.00, '5', 'pending', true, now() - interval '1 year'),
+    (v_perfect_id, 'Perfect Home Services S.L.', 'Home Services', 60.00, '15', 'verified', true, now() - interval '6 years'),
+    (v_elena_id, NULL, 'Painting', 40.00, '10', 'verified', true, now() - interval '4 years')
   ON CONFLICT (user_id) DO UPDATE SET
     business_name = EXCLUDED.business_name,
-    trade_type = EXCLUDED.trade_type,
+    primary_trade = EXCLUDED.primary_trade,
     hourly_rate = EXCLUDED.hourly_rate,
-    years_experience = EXCLUDED.years_experience;
+    experience_years = EXCLUDED.experience_years;
 
   -- ============================================================================
   -- STEP 5: Seed professional stats
@@ -134,17 +134,17 @@ BEGIN
   
   INSERT INTO public.professional_stats (
     professional_id, total_bookings, completed_bookings, total_reviews, 
-    average_rating, completion_rate, response_time_hours, created_at
+    average_rating, completion_rate, response_rate, created_at
   )
   VALUES
-    (v_miguel_id, 127, 124, 98, 4.9, 97.6, 2, now() - interval '2 years'),
-    (v_construction_id, 89, 85, 71, 4.8, 95.5, 4, now() - interval '5 years'),
-    (v_sofia_id, 203, 203, 156, 5.0, 100.0, 1, now() - interval '3 years'),
-    (v_greenscape_id, 64, 61, 48, 4.7, 95.3, 6, now() - interval '4 years'),
-    (v_carlos_id, 156, 151, 119, 4.9, 96.8, 1, now() - interval '8 years'),
-    (v_antonio_id, 78, 72, 54, 4.6, 92.3, 8, now() - interval '1 year'),
-    (v_perfect_id, 142, 136, 108, 4.8, 95.8, 3, now() - interval '6 years'),
-    (v_elena_id, 91, 88, 72, 4.9, 96.7, 2, now() - interval '4 years')
+    (v_miguel_id, 127, 124, 98, 4.9, 97.6, 95.0, now() - interval '2 years'),
+    (v_construction_id, 89, 85, 71, 4.8, 95.5, 92.0, now() - interval '5 years'),
+    (v_sofia_id, 203, 203, 156, 5.0, 100.0, 98.0, now() - interval '3 years'),
+    (v_greenscape_id, 64, 61, 48, 4.7, 95.3, 88.0, now() - interval '4 years'),
+    (v_carlos_id, 156, 151, 119, 4.9, 96.8, 97.0, now() - interval '8 years'),
+    (v_antonio_id, 78, 72, 54, 4.6, 92.3, 85.0, now() - interval '1 year'),
+    (v_perfect_id, 142, 136, 108, 4.8, 95.8, 93.0, now() - interval '6 years'),
+    (v_elena_id, 91, 88, 72, 4.9, 96.7, 96.0, now() - interval '4 years')
   ON CONFLICT (professional_id) DO UPDATE SET
     total_bookings = EXCLUDED.total_bookings,
     completed_bookings = EXCLUDED.completed_bookings,
@@ -152,31 +152,7 @@ BEGIN
     average_rating = EXCLUDED.average_rating;
 
   -- ============================================================================
-  -- STEP 6: Create professional verifications
-  -- ============================================================================
-  
-  INSERT INTO public.professional_verifications (
-    professional_id, verification_type, status, verified_at, 
-    verified_by, document_url, notes
-  )
-  VALUES
-    (v_miguel_id, 'identity', 'approved', now() - interval '2 years', NULL, NULL, 'ID verified'),
-    (v_miguel_id, 'license', 'approved', now() - interval '2 years', NULL, NULL, 'Plumbing license verified'),
-    (v_construction_id, 'business', 'approved', now() - interval '5 years', NULL, NULL, 'Business registration verified'),
-    (v_construction_id, 'license', 'approved', now() - interval '5 years', NULL, NULL, 'Construction license verified'),
-    (v_sofia_id, 'identity', 'approved', now() - interval '3 years', NULL, NULL, 'ID verified'),
-    (v_greenscape_id, 'business', 'approved', now() - interval '4 years', NULL, NULL, 'Business registration verified'),
-    (v_carlos_id, 'identity', 'approved', now() - interval '8 years', NULL, NULL, 'ID verified'),
-    (v_carlos_id, 'license', 'approved', now() - interval '8 years', NULL, NULL, 'Electrical license verified'),
-    (v_antonio_id, 'identity', 'pending', NULL, NULL, NULL, 'Under review'),
-    (v_perfect_id, 'business', 'approved', now() - interval '6 years', NULL, NULL, 'Business registration verified'),
-    (v_elena_id, 'identity', 'approved', now() - interval '4 years', NULL, NULL, 'ID verified')
-  ON CONFLICT (professional_id, verification_type) DO UPDATE SET
-    status = EXCLUDED.status,
-    verified_at = EXCLUDED.verified_at;
-
-  -- ============================================================================
-  -- STEP 7: Redistribute existing services among professionals
+  -- STEP 6: Redistribute existing services among professionals
   -- ============================================================================
   
   -- Get existing service IDs and redistribute them
@@ -185,7 +161,7 @@ BEGIN
   -- Miguel Torres gets plumbing-related services (3 services)
   WITH miguel_services AS (
     SELECT id FROM public.professional_service_items 
-    WHERE title ILIKE '%plumb%' OR title ILIKE '%leak%' OR title ILIKE '%drain%'
+    WHERE name ILIKE '%plumb%' OR name ILIKE '%leak%' OR name ILIKE '%drain%'
     LIMIT 3
   )
   UPDATE public.professional_service_items
@@ -195,7 +171,7 @@ BEGIN
   -- Sofia Martínez gets cleaning services (2 services)
   WITH sofia_services AS (
     SELECT id FROM public.professional_service_items 
-    WHERE title ILIKE '%clean%'
+    WHERE name ILIKE '%clean%'
     LIMIT 2
   )
   UPDATE public.professional_service_items
@@ -205,7 +181,7 @@ BEGIN
   -- GreenScape gets landscaping services (2 services)
   WITH greenscape_services AS (
     SELECT id FROM public.professional_service_items 
-    WHERE title ILIKE '%garden%' OR title ILIKE '%landscape%' OR title ILIKE '%lawn%'
+    WHERE name ILIKE '%garden%' OR name ILIKE '%landscape%' OR name ILIKE '%lawn%'
     LIMIT 2
   )
   UPDATE public.professional_service_items
@@ -215,7 +191,7 @@ BEGIN
   -- Carlos gets electrical services (2 services)
   WITH carlos_services AS (
     SELECT id FROM public.professional_service_items 
-    WHERE title ILIKE '%electric%' OR title ILIKE '%wiring%'
+    WHERE name ILIKE '%electric%' OR name ILIKE '%wiring%'
     LIMIT 2
   )
   UPDATE public.professional_service_items
@@ -225,7 +201,7 @@ BEGIN
   -- Ibiza Construction gets construction services (2 services)
   WITH construction_services AS (
     SELECT id FROM public.professional_service_items 
-    WHERE title ILIKE '%construction%' OR title ILIKE '%renovation%' OR title ILIKE '%building%'
+    WHERE name ILIKE '%construction%' OR name ILIKE '%renovation%' OR name ILIKE '%building%'
     LIMIT 2
   )
   UPDATE public.professional_service_items
@@ -235,7 +211,7 @@ BEGIN
   -- Perfect Home Services gets general maintenance (2 services)
   WITH perfect_services AS (
     SELECT id FROM public.professional_service_items 
-    WHERE title ILIKE '%maintenance%' OR title ILIKE '%repair%' OR title ILIKE '%hvac%'
+    WHERE name ILIKE '%maintenance%' OR name ILIKE '%repair%' OR name ILIKE '%hvac%'
     LIMIT 2
   )
   UPDATE public.professional_service_items
@@ -245,7 +221,7 @@ BEGIN
   -- Antonio gets handyman service (1 service)
   WITH antonio_services AS (
     SELECT id FROM public.professional_service_items 
-    WHERE title ILIKE '%handyman%' OR title ILIKE '%assembly%'
+    WHERE name ILIKE '%handyman%' OR name ILIKE '%assembly%'
     LIMIT 1
   )
   UPDATE public.professional_service_items
@@ -255,7 +231,7 @@ BEGIN
   -- Elena gets painting service (1 service)
   WITH elena_services AS (
     SELECT id FROM public.professional_service_items 
-    WHERE title ILIKE '%paint%'
+    WHERE name ILIKE '%paint%'
     LIMIT 1
   )
   UPDATE public.professional_service_items
