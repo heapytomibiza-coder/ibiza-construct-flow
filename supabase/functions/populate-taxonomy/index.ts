@@ -80,15 +80,12 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Plumbing'), name: 'Water Heaters', slug: 'water-heaters', icon_name: 'Zap', icon_emoji: '♨️', display_order: 7, is_active: true },
       { category_id: categoryMap.get('Plumbing'), name: 'Gas Services', slug: 'gas-services', icon_name: 'Zap', icon_emoji: '🔥', display_order: 8, is_active: true },
       
-      // Electrical - 8 subcategories
-      { category_id: categoryMap.get('Electrical'), name: 'General Electrical', slug: 'general-electrical', icon_name: 'Zap', icon_emoji: '⚡', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'Lighting', slug: 'lighting', icon_name: 'Zap', icon_emoji: '💡', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'Smart Home', slug: 'smart-home', icon_name: 'Zap', icon_emoji: '🏡', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'Rewiring', slug: 'rewiring', icon_name: 'Zap', icon_emoji: '🔌', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'Fuse Box', slug: 'fuse-box', icon_name: 'Square', icon_emoji: '⚡', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'EV Charging', slug: 'ev-charging', icon_name: 'Zap', icon_emoji: '🔌', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'Security Systems', slug: 'security-systems', icon_name: 'Zap', icon_emoji: '🔒', display_order: 7, is_active: true },
-      { category_id: categoryMap.get('Electrical'), name: 'Emergency Electrician', slug: 'emergency-electrician', icon_name: 'Zap', icon_emoji: '🚨', display_order: 8, is_active: true },
+      // Electrical - 5 NEW subcategories (detailed structure)
+      { category_id: categoryMap.get('Electrical'), name: 'Faults, Repairs & Safety', slug: 'faults-repairs-safety', icon_name: 'AlertTriangle', icon_emoji: '🚨', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Rewiring & New Circuits', slug: 'rewiring-new-circuits', icon_name: 'Cable', icon_emoji: '🔌', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Fuse Boxes & Consumer Units', slug: 'fuse-boxes-consumer-units', icon_name: 'PanelLeft', icon_emoji: '⚡', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Lighting & Power', slug: 'lighting-power', icon_name: 'Lightbulb', icon_emoji: '💡', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Electrical'), name: 'Outdoor & External Electrics', slug: 'outdoor-external-electrics', icon_name: 'PlugZap', icon_emoji: '⚡', display_order: 5, is_active: true },
       
       // HVAC - 7 subcategories
       { category_id: categoryMap.get('HVAC'), name: 'Air Conditioning', slug: 'air-conditioning', icon_name: 'Wind', icon_emoji: '❄️', display_order: 1, is_active: true },
@@ -213,14 +210,41 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('installation'), name: 'Dishwasher Installation', slug: 'dishwasher-installation', display_order: 2, is_active: true },
       { subcategory_id: subcategoryMap.get('installation'), name: 'Washing Machine Installation', slug: 'washing-machine-installation', display_order: 3, is_active: true },
       
-      // Electrical microservices (existing)
-      { subcategory_id: subcategoryMap.get('general-electrical'), name: 'Outlet Installation', slug: 'outlet-installation', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('general-electrical'), name: 'Switch Repair', slug: 'switch-repair', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('general-electrical'), name: 'Circuit Breaker Repair', slug: 'circuit-breaker-repair', display_order: 3, is_active: true },
-      { subcategory_id: subcategoryMap.get('general-electrical'), name: 'Wiring Upgrade', slug: 'wiring-upgrade', display_order: 4, is_active: true },
-      { subcategory_id: subcategoryMap.get('lighting'), name: 'Light Fixture Installation', slug: 'light-fixture-installation', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('lighting'), name: 'Outdoor Lighting', slug: 'outdoor-lighting', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('lighting'), name: 'LED Upgrade', slug: 'led-upgrade', display_order: 3, is_active: true },
+      // Electrical microservices (25 NEW detailed micro-services)
+      // Faults, Repairs & Safety (5)
+      { subcategory_id: subcategoryMap.get('faults-repairs-safety'), name: 'No power / tripping circuits', slug: 'no-power-tripping-circuits', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('faults-repairs-safety'), name: 'Fault finding & repairs', slug: 'fault-finding-repairs', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('faults-repairs-safety'), name: 'Socket & switch repairs', slug: 'socket-switch-repairs', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('faults-repairs-safety'), name: 'Electrical safety checks & reports', slug: 'electrical-safety-checks-reports', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('faults-repairs-safety'), name: 'Smoke & heat alarm installation', slug: 'smoke-heat-alarm-installation', display_order: 5, is_active: true },
+      
+      // Rewiring & New Circuits (5)
+      { subcategory_id: subcategoryMap.get('rewiring-new-circuits'), name: 'Full house rewiring', slug: 'full-house-rewiring', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('rewiring-new-circuits'), name: 'Partial rewiring', slug: 'partial-rewiring', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('rewiring-new-circuits'), name: 'New circuits for extensions & refits', slug: 'new-circuits-extensions-refits', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('rewiring-new-circuits'), name: 'New cooker / oven circuits', slug: 'new-cooker-oven-circuits', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('rewiring-new-circuits'), name: 'Electric shower circuits', slug: 'electric-shower-circuits', display_order: 5, is_active: true },
+      
+      // Fuse Boxes & Consumer Units (4)
+      { subcategory_id: subcategoryMap.get('fuse-boxes-consumer-units'), name: 'Fuse box / consumer unit replacement', slug: 'fuse-box-consumer-unit-replacement', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('fuse-boxes-consumer-units'), name: 'Fuse box upgrades & RCD protection', slug: 'fuse-box-upgrades-rcd-protection', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('fuse-boxes-consumer-units'), name: 'Earthing & bonding upgrades', slug: 'earthing-bonding-upgrades', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('fuse-boxes-consumer-units'), name: 'Moving consumer unit', slug: 'moving-consumer-unit', display_order: 4, is_active: true },
+      
+      // Lighting & Power (6)
+      { subcategory_id: subcategoryMap.get('lighting-power'), name: 'Indoor lighting installation', slug: 'indoor-lighting-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('lighting-power'), name: 'Outdoor & garden lighting', slug: 'outdoor-garden-lighting', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('lighting-power'), name: 'Downlights / spotlights', slug: 'downlights-spotlights', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('lighting-power'), name: 'Feature & LED strip lighting', slug: 'feature-led-strip-lighting', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('lighting-power'), name: 'Extra sockets & power points', slug: 'extra-sockets-power-points', display_order: 5, is_active: true },
+      { subcategory_id: subcategoryMap.get('lighting-power'), name: 'Dimmer & smart switch installation', slug: 'dimmer-smart-switch-installation', display_order: 6, is_active: true },
+      
+      // Outdoor & External Electrics (5)
+      { subcategory_id: subcategoryMap.get('outdoor-external-electrics'), name: 'Outdoor sockets & power supplies', slug: 'outdoor-sockets-power-supplies', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('outdoor-external-electrics'), name: 'Shed, garage & outbuilding power', slug: 'shed-garage-outbuilding-power', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('outdoor-external-electrics'), name: 'Hot tub / pool electrical supply', slug: 'hot-tub-pool-electrical-supply', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('outdoor-external-electrics'), name: 'Electric gates & entrances', slug: 'electric-gates-entrances', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('outdoor-external-electrics'), name: 'EV charger installation', slug: 'ev-charger-installation', display_order: 5, is_active: true },
       
       // Pool & Spa microservices (existing)
       { subcategory_id: subcategoryMap.get('pool-maintenance'), name: 'Pool Cleaning', slug: 'pool-cleaning', display_order: 1, is_active: true },
