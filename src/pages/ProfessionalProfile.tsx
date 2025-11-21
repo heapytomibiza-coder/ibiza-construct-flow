@@ -51,8 +51,24 @@ export default function ProfessionalProfile() {
   const { user } = useAuth();
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   
+  // Check URL params for auto-actions
+  const [searchParams] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      serviceId: params.get('service'),
+      action: params.get('action')
+    };
+  });
+  
   // Analytics tracking
   const { trackInteraction } = useProfileAnalytics(professionalId || '');
+
+  // Auto-open quote modal if action param is present
+  useState(() => {
+    if (searchParams.action === 'contact' || searchParams.action === 'quote') {
+      setTimeout(() => setQuoteModalOpen(true), 500);
+    }
+  });
 
   // Track profile view
   const [sessionId] = useState(() => {
