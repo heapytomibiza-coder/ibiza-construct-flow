@@ -226,6 +226,7 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
         .select(`
           id,
           name,
+          slug,
           service_subcategories!inner(
             name,
             service_categories!inner(
@@ -244,6 +245,7 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
         micro: item.name,
         subcategory: item.service_subcategories?.name || '',
         category: item.service_subcategories?.service_categories?.name || '',
+        slug: item.slug || '', // Include database slug
       }));
       
       return services;
@@ -307,7 +309,7 @@ export const ServicesRegistryProvider: React.FC<{ children: ReactNode }> = ({ ch
       };
     }
 
-    const slug = toSlug(`${service.category}-${service.subcategory}-${service.micro}`);
+    const slug = service.slug || toSlug(`${service.category}-${service.subcategory}-${service.micro}`);
     
     try {
       // Priority 1: Check for active approved question pack
