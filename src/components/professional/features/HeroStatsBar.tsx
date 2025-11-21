@@ -65,7 +65,7 @@ export function HeroStatsBar() {
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-7 gap-3 sm:gap-4">
       {/* Primary Featured Stat - Jobs Available (spans more columns) */}
       <div className="lg:col-span-3">
         <GlassStatsCard
@@ -78,7 +78,7 @@ export function HeroStatsBar() {
       </div>
 
       {/* Secondary Stats - Smaller cards */}
-      <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="lg:col-span-4 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
         <GlassStatsCard
           icon={MessageSquare}
           label="Messages"
