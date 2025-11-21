@@ -106,14 +106,14 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
                   <Star 
                     key={i} 
                     className={`w-4 h-4 ${
-                      i < Math.floor(professional.rating || 0) 
+                      i < Math.floor(professional.rating || (professional as any).stats?.average_rating || 0) 
                         ? 'text-yellow-400 fill-current' 
                         : 'text-gray-300'
                     }`} 
                   />
                 ))}
                 <span className="text-sm text-muted-foreground ml-2">
-                  {professional.rating?.toFixed(1) || '4.8'} ({professional.total_jobs_completed || 0} jobs)
+                  {(professional.rating || (professional as any).stats?.average_rating || 4.8).toFixed(1)} ({professional.total_jobs_completed || (professional as any).stats?.jobs_completed || 0} jobs)
                 </span>
               </div>
             </div>
@@ -182,9 +182,12 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
               e.stopPropagation();
               handleViewProfile();
             }}
+            asChild
           >
-            <FileText className="w-4 h-4 mr-2" />
-            View Details
+            <a href={`/professionals/${professional.user_id}`}>
+              <FileText className="w-4 h-4 mr-2" />
+              View Details
+            </a>
           </Button>
           <Button 
             size="sm" 
