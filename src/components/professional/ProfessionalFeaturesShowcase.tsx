@@ -1,4 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { HeroStatsBar } from './features/HeroStatsBar';
+import { FeaturedActionCard } from './features/FeaturedActionCard';
+import { FeatureCategorySection } from './features/FeatureCategorySection';
+import { CompactFeatureCard } from './features/CompactFeatureCard';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -9,263 +13,193 @@ import {
   Star,
   Users,
   Shield,
-  CheckCircle,
   TrendingUp,
   Calendar,
   Bell,
   Settings,
   FileText,
-  Award,
-  Wrench
+  Wrench,
+  ChevronDown
 } from 'lucide-react';
-
-interface FeatureCardProps {
-  icon: any;
-  title: string;
-  description: string;
-  status: 'active' | 'ready' | 'coming-soon';
-  path?: string;
-  action?: string;
-}
+import { useState } from 'react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export function ProfessionalFeaturesShowcase() {
   const navigate = useNavigate();
-
-  const features: FeatureCardProps[] = [
-    {
-      icon: Briefcase,
-      title: 'Job Board',
-      description: 'Browse available jobs, submit quotes, and win projects. Filter by category, budget, and location.',
-      status: 'active',
-      path: '/job-board',
-      action: 'Browse Jobs'
-    },
-    {
-      icon: FileText,
-      title: 'My Services',
-      description: 'Create and manage your service offerings. Set pricing, availability, and showcase your expertise.',
-      status: 'active',
-      path: '/professional/services',
-      action: 'Manage Services'
-    },
-    {
-      icon: Star,
-      title: 'Portfolio',
-      description: 'Showcase your best work with photos, descriptions, and client testimonials to attract more clients.',
-      status: 'active',
-      path: '/professional/portfolio',
-      action: 'Build Portfolio'
-    },
-    {
-      icon: BarChart3,
-      title: 'Earnings & Analytics',
-      description: 'Track your income, job performance, client satisfaction ratings, and business growth metrics.',
-      status: 'active',
-      path: '/earnings',
-      action: 'View Earnings'
-    },
-    {
-      icon: MessageSquare,
-      title: 'Client Communications',
-      description: 'Chat with clients, share project updates, negotiate terms, and build lasting relationships.',
-      status: 'active',
-      path: '/messages',
-      action: 'Open Messages'
-    },
-    {
-      icon: FileText,
-      title: 'Contract Management',
-      description: 'Review and accept contracts, track milestones, manage deliverables, and ensure clear agreements.',
-      status: 'active',
-      path: '/contracts',
-      action: 'View Contracts'
-    },
-    {
-      icon: CreditCard,
-      title: 'Secure Payments',
-      description: 'Receive payments through escrow protection. Track earnings, request payouts, and view transaction history.',
-      status: 'active',
-      path: '/payments',
-      action: 'Manage Payments'
-    },
-    {
-      icon: Calendar,
-      title: 'Availability Calendar',
-      description: 'Set your working hours, block off dates, and let clients know when you\'re available for projects.',
-      status: 'active',
-      path: '/availability',
-      action: 'Set Availability'
-    },
-    {
-      icon: Shield,
-      title: 'Verification Badge',
-      description: 'Get verified to build trust. Upload credentials, certifications, and insurance documentation.',
-      status: 'active',
-      path: '/professional/verification',
-      action: 'Get Verified'
-    },
-    {
-      icon: Users,
-      title: 'Client Matching',
-      description: 'Our AI matches you with ideal clients based on your skills, experience, and preferences.',
-      status: 'active',
-      path: '/job-board',
-      action: 'View Matches'
-    },
-    {
-      icon: TrendingUp,
-      title: 'Performance Insights',
-      description: 'Get personalized recommendations to improve your profile, win more jobs, and increase earnings.',
-      status: 'active',
-      path: '/dashboard/pro',
-      action: 'View Insights'
-    },
-    {
-      icon: Award,
-      title: 'Professional Profile',
-      description: 'Your public profile showcasing skills, experience, reviews, and completed projects to attract clients.',
-      status: 'active',
-      path: '/settings/professional',
-      action: 'Edit Profile'
-    },
-    {
-      icon: Bell,
-      title: 'Smart Notifications',
-      description: 'Instant alerts for new job opportunities, client messages, payments, and contract updates.',
-      status: 'active',
-      path: '/settings/notifications',
-      action: 'Configure'
-    },
-    {
-      icon: Wrench,
-      title: 'Service Setup Wizard',
-      description: 'Guided setup to create professional service packages with pricing tiers and add-ons.',
-      status: 'active',
-      path: '/professional/service-setup',
-      action: 'Setup Services'
-    },
-    {
-      icon: CreditCard,
-      title: 'Payout Settings',
-      description: 'Configure bank account details, payment schedules, and tax information for smooth payouts.',
-      status: 'active',
-      path: '/professional/payout-setup',
-      action: 'Setup Payouts'
-    },
-    {
-      icon: Settings,
-      title: 'Account Settings',
-      description: 'Manage your profile, service radius, notification preferences, and security settings.',
-      status: 'active',
-      path: '/settings/profile',
-      action: 'Settings'
-    }
-  ];
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return (
-          <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
-            Active
-          </span>
-        );
-      case 'ready':
-        return (
-          <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
-            Ready
-          </span>
-        );
-      case 'coming-soon':
-        return (
-          <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 rounded-full">
-            Coming Soon
-          </span>
-        );
-    }
-  };
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold mb-1">Professional Tools & Features</h2>
-        <p className="text-sm text-muted-foreground">
-          Everything you need to grow your business and win more projects.
-        </p>
-      </div>
+    <div className="space-y-8">
+      {/* Hero Stats Bar */}
+      <HeroStatsBar />
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-4">
-        <div className="text-center p-3 bg-accent/50 rounded-lg">
-          <div className="text-xl font-bold text-primary">16</div>
-          <div className="text-xs text-muted-foreground">Features</div>
-        </div>
-        <div className="text-center p-3 bg-accent/50 rounded-lg">
-          <div className="text-xl font-bold text-green-600">100%</div>
-          <div className="text-xs text-muted-foreground">Protected</div>
-        </div>
-        <div className="text-center p-3 bg-accent/50 rounded-lg">
-          <div className="text-xl font-bold text-blue-600">24/7</div>
-          <div className="text-xs text-muted-foreground">Support</div>
-        </div>
-        <div className="text-center p-3 bg-accent/50 rounded-lg">
-          <div className="text-xl font-bold text-purple-600">Fast</div>
-          <div className="text-xs text-muted-foreground">Payouts</div>
-        </div>
-      </div>
+      {/* Featured Actions */}
+      <FeatureCategorySection icon="⭐" title="Featured Actions" columns={3}>
+        <FeaturedActionCard
+          icon={Briefcase}
+          title="Browse Jobs"
+          description="24 new opportunities match your skills"
+          metric="24"
+          gradient="from-blue-500/20 to-cyan-400/10"
+          path="/job-board"
+          action="Find Projects"
+        />
+        <FeaturedActionCard
+          icon={FileText}
+          title="My Services"
+          description="Create and manage your service offerings with custom pricing"
+          gradient="from-orange-500/20 to-amber-400/10"
+          path="/professional/services"
+          action="Manage Services"
+        />
+        <FeaturedActionCard
+          icon={Star}
+          title="Portfolio"
+          description="Showcase your completed projects and client testimonials"
+          gradient="from-purple-500/20 to-pink-400/10"
+          path="/professional/portfolio"
+          action="Update Portfolio"
+        />
+      </FeatureCategorySection>
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        {features.map((feature, index) => (
-          <Card 
-            key={index}
-            className="hover:shadow-md transition-all cursor-pointer group"
-            onClick={() => feature.path && navigate(feature.path)}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-primary/10 rounded-md group-hover:bg-primary/20 transition-colors">
-                  <feature.icon className="h-4 w-4 text-primary" />
-                </div>
-                {getStatusBadge(feature.status)}
+      {/* Core Business Tools */}
+      <FeatureCategorySection icon="🎯" title="Grow Your Business" columns={3}>
+        <CompactFeatureCard
+          icon={BarChart3}
+          title="Earnings & Analytics"
+          description="Track income, performance, and growth metrics"
+          gradient="from-green-500/10 to-emerald-400/5"
+          path="/earnings"
+          action="View Earnings"
+        />
+        <CompactFeatureCard
+          icon={Users}
+          title="Client Matching"
+          description="AI matches you with ideal clients"
+          gradient="from-blue-500/10 to-cyan-400/5"
+          path="/job-board"
+          action="View Matches"
+        />
+        <CompactFeatureCard
+          icon={TrendingUp}
+          title="Performance Insights"
+          description="Get personalized recommendations"
+          gradient="from-purple-500/10 to-pink-400/5"
+          path="/dashboard/pro"
+          action="View Insights"
+        />
+        <CompactFeatureCard
+          icon={Shield}
+          title="Verification Badge"
+          description="Build trust with credentials"
+          gradient="from-orange-500/10 to-amber-400/5"
+          path="/professional/verification"
+          action="Get Verified"
+        />
+      </FeatureCategorySection>
+
+      {/* Client & Project Management */}
+      <FeatureCategorySection icon="💬" title="Manage Clients" columns={4}>
+        <CompactFeatureCard
+          icon={MessageSquare}
+          title="Communications"
+          description="Chat with clients and share updates"
+          path="/messages"
+          action="Open Messages"
+          badge={3}
+        />
+        <CompactFeatureCard
+          icon={FileText}
+          title="Contracts"
+          description="Review and manage agreements"
+          path="/contracts"
+          action="View Contracts"
+          badge={1}
+        />
+        <CompactFeatureCard
+          icon={CreditCard}
+          title="Secure Payments"
+          description="Track earnings and payouts"
+          path="/payments"
+          action="Manage Payments"
+        />
+        <CompactFeatureCard
+          icon={Calendar}
+          title="Availability"
+          description="Set working hours and blocked dates"
+          path="/availability"
+          action="Set Schedule"
+        />
+      </FeatureCategorySection>
+
+      {/* Settings & Configuration */}
+      <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <Card className="border-border/50">
+          <CollapsibleTrigger className="w-full">
+            <div className="p-4 flex items-center justify-between hover:bg-accent/50 transition-colors rounded-lg">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">⚙️</span>
+                <h3 className="text-lg font-semibold">Settings & Tools</h3>
               </div>
-              <CardTitle className="text-sm leading-tight">{feature.title}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 pt-0">
-              <p className="text-xs text-muted-foreground line-clamp-2">
-                {feature.description}
-              </p>
-              {feature.path && feature.status !== 'coming-soon' && (
-                <Button 
-                  size="sm"
-                  variant="outline" 
-                  className="w-full h-7 text-xs group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(feature.path!);
-                  }}
-                >
-                  {feature.action}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              <ChevronDown className={`h-5 w-5 transition-transform ${settingsOpen ? 'rotate-180' : ''}`} />
+            </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-4 pt-0">
+              <Card className="p-3 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/settings/notifications')}>
+                <div className="flex items-center gap-3">
+                  <Bell className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium text-sm">Smart Notifications</p>
+                    <p className="text-xs text-muted-foreground">Configure alerts</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-3 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/professional/service-setup')}>
+                <div className="flex items-center gap-3">
+                  <Wrench className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium text-sm">Service Setup</p>
+                    <p className="text-xs text-muted-foreground">Create packages</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-3 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/professional/payout-setup')}>
+                <div className="flex items-center gap-3">
+                  <CreditCard className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium text-sm">Payout Settings</p>
+                    <p className="text-xs text-muted-foreground">Bank details</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-3 hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate('/settings/profile')}>
+                <div className="flex items-center gap-3">
+                  <Settings className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium text-sm">Account Settings</p>
+                    <p className="text-xs text-muted-foreground">Manage profile</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
-      {/* Call to Action */}
-      <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-        <CardContent className="p-4 flex items-center justify-between">
+      {/* CTA */}
+      <Card className="bg-gradient-to-r from-primary/20 to-primary/10 border-primary/30">
+        <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h3 className="font-bold mb-1">Ready to Grow Your Business?</h3>
-            <p className="text-xs text-muted-foreground">
+            <h3 className="text-lg font-bold mb-1">Ready to Grow Your Business?</h3>
+            <p className="text-sm text-muted-foreground">
               Complete your profile and start winning quality projects today
             </p>
           </div>
           <Button 
+            size="lg"
             onClick={() => navigate('/job-board')}
-            className="bg-primary hover:bg-primary/90 ml-4"
+            className="bg-primary hover:bg-primary/90"
           >
             Browse Jobs
           </Button>
