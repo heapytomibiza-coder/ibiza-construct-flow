@@ -240,6 +240,18 @@ export default function UnifiedAuth() {
                       t('signin.signIn')
                     )}
                   </Button>
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => {
+                      const redirectTo = searchParams.get('redirect');
+                      navigate(redirectTo || '/dashboard');
+                    }}
+                  >
+                    Skip for now
+                  </Button>
                 </form>
               </TabsContent>
 
@@ -356,6 +368,18 @@ export default function UnifiedAuth() {
                     ) : (
                       t('signup.createAccount')
                     )}
+                  </Button>
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => {
+                      const redirectTo = searchParams.get('redirect');
+                      navigate(redirectTo || '/dashboard');
+                    }}
+                  >
+                    Skip for now
                   </Button>
                 </form>
               </TabsContent>
