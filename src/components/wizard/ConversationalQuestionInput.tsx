@@ -91,17 +91,27 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
         <RadioGroup
           value={radioVal}
           onValueChange={(newValue) => onChange(newValue)}
-          className="space-y-3"
+          className="space-y-4"
         >
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
             const optLabel = opt.label.startsWith('microservices.') || opt.label.startsWith('questions.')
               ? t(opt.label)
               : opt.label;
+            const isSelected = radioVal === opt.value;
             return (
-              <div key={oid} className="flex items-center space-x-3">
-                <RadioGroupItem value={opt.value} id={oid} />
-                <Label htmlFor={oid} className="text-base font-normal cursor-pointer">{optLabel}</Label>
+              <div 
+                key={oid} 
+                className={`flex items-center space-x-4 p-4 rounded-xl border-2 transition-all cursor-pointer hover:border-primary/50 hover:bg-primary/5 ${
+                  isSelected 
+                    ? 'border-primary bg-primary/10' 
+                    : 'border-border bg-card'
+                }`}
+              >
+                <RadioGroupItem value={opt.value} id={oid} className="flex-shrink-0" />
+                <Label htmlFor={oid} className="text-lg font-medium cursor-pointer flex-1">
+                  {optLabel}
+                </Label>
               </div>
             );
           })}
@@ -135,7 +145,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
     case 'checkbox': {
       const selected = Array.isArray(value) ? (value as string[]) : [];
       return (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
             const checked = selected.includes(opt.value);
@@ -143,7 +153,14 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
               ? t(opt.label)
               : opt.label;
             return (
-              <div key={oid} className="flex items-center space-x-3">
+              <div 
+                key={oid} 
+                className={`flex items-center space-x-4 p-4 rounded-xl border-2 transition-all cursor-pointer hover:border-primary/50 hover:bg-primary/5 ${
+                  checked 
+                    ? 'border-primary bg-primary/10' 
+                    : 'border-border bg-card'
+                }`}
+              >
                 <Checkbox
                   id={oid}
                   checked={checked}
@@ -151,8 +168,11 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                     const next = c ? [...selected, opt.value] : selected.filter(v => v !== opt.value);
                     onChange(next);
                   }}
+                  className="flex-shrink-0"
                 />
-                <Label htmlFor={oid} className="text-base font-normal cursor-pointer">{optLabel}</Label>
+                <Label htmlFor={oid} className="text-lg font-medium cursor-pointer flex-1">
+                  {optLabel}
+                </Label>
               </div>
             );
           })}
@@ -248,17 +268,27 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
         <RadioGroup
           value={current}
           onValueChange={(v) => onChange(v === 'true')}
-          className="space-y-3"
+          className="space-y-4"
         >
           {[
             { label: 'Yes', value: 'true' },
             { label: 'No', value: 'false' },
           ].map((opt, i) => {
             const oid = `${qid}-yn-${i}`;
+            const isSelected = current === opt.value;
             return (
-              <div key={oid} className="flex items-center space-x-3">
-                <RadioGroupItem value={opt.value} id={oid} />
-                <Label htmlFor={oid} className="text-base font-normal cursor-pointer">{opt.label}</Label>
+              <div 
+                key={oid} 
+                className={`flex items-center space-x-4 p-4 rounded-xl border-2 transition-all cursor-pointer hover:border-primary/50 hover:bg-primary/5 ${
+                  isSelected 
+                    ? 'border-primary bg-primary/10' 
+                    : 'border-border bg-card'
+                }`}
+              >
+                <RadioGroupItem value={opt.value} id={oid} className="flex-shrink-0" />
+                <Label htmlFor={oid} className="text-lg font-medium cursor-pointer flex-1">
+                  {opt.label}
+                </Label>
               </div>
             );
           })}
