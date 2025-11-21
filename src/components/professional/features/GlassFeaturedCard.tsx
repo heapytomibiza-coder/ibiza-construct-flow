@@ -41,16 +41,16 @@ export function GlassFeaturedCard({
       whileTap={{ scale: 0.98 }}
       onClick={() => navigate(path)}
       className={`
-        group relative cursor-pointer overflow-hidden rounded-2xl
+        group relative cursor-pointer overflow-hidden rounded-xl sm:rounded-2xl
         ${isHero 
-          ? 'md:col-span-2 lg:col-span-1 bg-gradient-to-br from-sage/20 via-sage/12 to-transparent backdrop-blur-xl border-2 border-sage/40 p-8' 
-          : 'bg-gradient-to-br from-sage/10 via-sage/6 to-transparent backdrop-blur-lg border border-sage/25 p-6'
+          ? 'md:col-span-2 lg:col-span-1 bg-gradient-to-br from-sage/20 via-sage/12 to-transparent backdrop-blur-xl border-2 border-sage/40 p-6 sm:p-8' 
+          : 'bg-gradient-to-br from-sage/10 via-sage/6 to-transparent backdrop-blur-lg border border-sage/25 p-4 sm:p-6'
         }
         shadow-[0_8px_32px_0_rgba(0,0,0,0.08)]
-        hover:shadow-[0_20px_60px_0_rgba(0,0,0,0.15)]
-        hover:border-sage/50
+        active:shadow-[0_20px_60px_0_rgba(0,0,0,0.15)]
+        active:border-sage/50
         transition-all duration-300
-        ${isHero ? 'min-h-[280px]' : 'min-h-[240px]'}
+        ${isHero ? 'min-h-[240px] sm:min-h-[280px]' : 'min-h-[200px] sm:min-h-[240px]'}
         flex flex-col justify-between
       `}
       style={{
@@ -79,20 +79,20 @@ export function GlassFeaturedCard({
       
       {/* Content */}
       <div className="relative z-10 flex-1">
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-3 sm:mb-4">
           <motion.div 
             className={`
-              rounded-xl bg-gradient-to-br from-sage/25 to-sage/15 
+              rounded-lg sm:rounded-xl bg-gradient-to-br from-sage/25 to-sage/15 
               backdrop-blur-sm border border-sage/30
-              group-hover:border-sage/50 group-hover:from-sage/35 group-hover:to-sage/20
-              group-hover:shadow-[0_0_20px_rgba(var(--sage),0.2)]
+              group-active:border-sage/50 group-active:from-sage/35 group-active:to-sage/20
+              group-active:shadow-[0_0_20px_rgba(var(--sage),0.2)]
               transition-all duration-300
-              ${isHero ? 'p-4' : 'p-3'}
+              ${isHero ? 'p-3 sm:p-4' : 'p-2 sm:p-3'}
             `}
             whileHover={{ rotate: [0, -5, 5, 0] }}
             transition={{ duration: 0.3 }}
           >
-            <Icon className={`${isHero ? 'h-10 w-10' : 'h-7 w-7'} text-sage-dark`} />
+            <Icon className={`${isHero ? 'h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10' : 'h-6 w-6 sm:h-7 sm:w-7'} text-sage-dark`} />
           </motion.div>
           
           {badge !== undefined && badge > 0 && (
@@ -104,7 +104,7 @@ export function GlassFeaturedCard({
               <Badge 
                 variant="destructive" 
                 className={`
-                  ${isHero ? 'text-base px-3 py-1' : 'text-sm px-2 py-0.5'}
+                  ${isHero ? 'text-sm sm:text-base px-2 sm:px-3 py-0.5 sm:py-1' : 'text-xs sm:text-sm px-1.5 sm:px-2 py-0.5'}
                   shadow-lg backdrop-blur-sm
                   animate-pulse
                 `}
@@ -117,13 +117,13 @@ export function GlassFeaturedCard({
         
         <h3 className={`
           font-display font-bold text-foreground mb-2
-          ${isHero ? 'text-3xl' : 'text-xl'}
+          ${isHero ? 'text-xl sm:text-2xl md:text-3xl' : 'text-lg sm:text-xl'}
         `}>
           {title}
         </h3>
         <p className={`
           text-muted-foreground
-          ${isHero ? 'text-base line-clamp-3' : 'text-sm line-clamp-2'}
+          ${isHero ? 'text-sm sm:text-base line-clamp-3' : 'text-xs sm:text-sm line-clamp-2'}
         `}>
           {description}
         </p>
@@ -131,13 +131,13 @@ export function GlassFeaturedCard({
       
       <Button 
         className={`
-          relative z-10 w-full mt-4
+          relative z-10 w-full mt-3 sm:mt-4
           ${isHero 
-            ? 'bg-sage hover:bg-sage-dark text-white h-12 text-base shadow-lg' 
-            : 'bg-sage/10 hover:bg-sage hover:text-white border-sage/30 h-10'
+            ? 'bg-sage hover:bg-sage-dark active:bg-sage-dark text-white h-11 sm:h-12 text-sm sm:text-base shadow-lg' 
+            : 'bg-sage/10 hover:bg-sage active:bg-sage hover:text-white active:text-white border-sage/30 h-9 sm:h-10 text-sm'
           }
           backdrop-blur-sm
-          group-hover:shadow-[0_4px_20px_rgba(var(--sage),0.3)]
+          group-active:shadow-[0_4px_20px_rgba(var(--sage),0.3)]
           transition-all duration-300
         `}
         variant={isHero ? "default" : "outline"}

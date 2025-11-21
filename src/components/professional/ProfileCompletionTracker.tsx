@@ -108,7 +108,7 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-primary rounded-3xl p-8 relative overflow-hidden"
+      className="glass-primary rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 relative overflow-hidden"
     >
       {/* Animated background gradient */}
       <motion.div
@@ -127,29 +127,30 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
       {/* Content */}
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+          <div className="space-y-2 flex-1">
+            <div className="flex items-center gap-2 sm:gap-3">
               <motion.div
                 animate={{ rotate: [0, 10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
+                className="flex-shrink-0"
               >
-                <MilestoneIcon className={`h-8 w-8 ${milestone.color}`} />
+                <MilestoneIcon className={`h-6 w-6 sm:h-8 sm:w-8 ${milestone.color}`} />
               </motion.div>
               <div>
-                <h3 className="text-2xl font-display font-bold text-foreground">
-                  {completionPercentage < 50 ? 'Welcome to Your Journey!' : 'Profile Setup'}
+                <h3 className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground leading-tight">
+                  {completionPercentage < 50 ? 'Welcome!' : 'Profile Setup'}
                 </h3>
-                <p className={`text-sm font-medium ${milestone.color}`}>
+                <p className={`text-xs sm:text-sm font-medium ${milestone.color}`}>
                   {milestone.text}
                 </p>
               </div>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 self-end sm:self-auto">
             <div className="text-right">
-              <div className="text-3xl font-display font-bold text-sage-dark">
+              <div className="text-2xl sm:text-3xl font-display font-bold text-sage-dark">
                 {completionPercentage}%
               </div>
               <div className="text-xs text-muted-foreground">Complete</div>
@@ -158,8 +159,8 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
         </div>
 
         {/* Progress Bar with Glow */}
-        <div className="relative mb-8">
-          <Progress value={completionPercentage} className="h-3 bg-sage/10" />
+        <div className="relative mb-4 sm:mb-6 md:mb-8">
+          <Progress value={completionPercentage} className="h-2 sm:h-3 bg-sage/10" />
           <motion.div
             className="absolute inset-0 bg-gradient-to-r from-sage/20 via-copper/20 to-sage/20 rounded-full blur-lg -z-10"
             animate={{ opacity: [0.3, 0.6, 0.3] }}
@@ -169,7 +170,7 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
         </div>
 
         {/* Completion Items Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
           {completionItems.map((item, index) => (
             <motion.div
               key={item.id}
@@ -177,10 +178,10 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
               className={`
-                group relative p-4 rounded-xl border transition-all duration-300
+                group relative p-3 sm:p-4 rounded-xl border transition-all duration-300
                 ${item.completed 
-                  ? 'bg-sage/5 border-sage/30 hover:border-sage/40' 
-                  : 'bg-background/50 border-border/50 hover:border-sage/40 hover:bg-sage/5'
+                  ? 'bg-sage/5 border-sage/30 active:border-sage/40' 
+                  : 'bg-background/50 border-border/50 active:border-sage/40 active:bg-sage/5'
                 }
               `}
             >
@@ -190,19 +191,19 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
                   className="flex-shrink-0"
                 >
                   {item.completed ? (
-                    <CheckCircle2 className="h-5 w-5 text-sage" />
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-sage" />
                   ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground group-hover:text-sage transition-colors" />
+                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-active:text-sage transition-colors" />
                   )}
                 </motion.div>
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className={`
-                      text-sm font-medium transition-all
+                      text-xs sm:text-sm font-medium transition-all
                       ${item.completed 
                         ? 'text-muted-foreground line-through' 
-                        : 'text-foreground group-hover:text-sage-dark'
+                        : 'text-foreground group-active:text-sage-dark'
                       }
                     `}>
                       {item.label}
@@ -228,8 +229,8 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-6 border-t border-sage/20">
-          <div className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 pt-4 sm:pt-6 border-t border-sage/20">
+          <div className="text-xs sm:text-sm text-muted-foreground">
             {incompleteRequired.length > 0 ? (
               <span>
                 <strong>{incompleteRequired.length}</strong> required {incompleteRequired.length === 1 ? 'step' : 'steps'} remaining to go live
@@ -243,7 +244,7 @@ export const ProfileCompletionTracker = ({ profile }: ProfileCompletionTrackerPr
           
           <Button
             onClick={() => navigate('/settings/professional')}
-            className="glass-magnetic"
+            className="glass-magnetic w-full sm:w-auto min-h-[44px]"
             size="lg"
           >
             <Sparkles className="h-4 w-4 mr-2" />
