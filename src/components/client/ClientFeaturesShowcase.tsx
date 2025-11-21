@@ -151,41 +151,61 @@ export function ClientFeaturesShowcase() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2">Platform Features</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Everything you need to hire, manage, and collaborate with professionals. 
-          All features are designed to make your projects successful.
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold mb-1">Platform Features</h2>
+        <p className="text-sm text-muted-foreground">
+          Everything you need to hire, manage, and collaborate with professionals.
         </p>
       </div>
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Quick Stats - Moved to top */}
+      <div className="grid grid-cols-4 gap-3 mb-4">
+        <div className="text-center p-3 bg-accent/50 rounded-lg">
+          <div className="text-xl font-bold text-primary">12</div>
+          <div className="text-xs text-muted-foreground">Features</div>
+        </div>
+        <div className="text-center p-3 bg-accent/50 rounded-lg">
+          <div className="text-xl font-bold text-green-600">100%</div>
+          <div className="text-xs text-muted-foreground">Uptime</div>
+        </div>
+        <div className="text-center p-3 bg-accent/50 rounded-lg">
+          <div className="text-xl font-bold text-blue-600">24/7</div>
+          <div className="text-xs text-muted-foreground">Support</div>
+        </div>
+        <div className="text-center p-3 bg-accent/50 rounded-lg">
+          <div className="text-xl font-bold text-purple-600">Secure</div>
+          <div className="text-xs text-muted-foreground">Escrow</div>
+        </div>
+      </div>
+
+      {/* Features Grid - Compact */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         {features.map((feature, index) => (
           <Card 
             key={index}
-            className="hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group"
+            className="hover:shadow-md transition-all cursor-pointer group"
             onClick={() => feature.path && navigate(feature.path)}
           >
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                  <feature.icon className="h-6 w-6 text-primary" />
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-primary/10 rounded-md group-hover:bg-primary/20 transition-colors">
+                  <feature.icon className="h-4 w-4 text-primary" />
                 </div>
                 {getStatusBadge(feature.status)}
               </div>
-              <CardTitle className="text-lg mt-4">{feature.title}</CardTitle>
+              <CardTitle className="text-sm leading-tight">{feature.title}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
+            <CardContent className="space-y-2 pt-0">
+              <p className="text-xs text-muted-foreground line-clamp-2">
                 {feature.description}
               </p>
               {feature.path && feature.status !== 'coming-soon' && (
                 <Button 
+                  size="sm"
                   variant="outline" 
-                  className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                  className="w-full h-7 text-xs group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(feature.path!);
@@ -199,46 +219,20 @@ export function ClientFeaturesShowcase() {
         ))}
       </div>
 
-      {/* Quick Stats */}
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>Your Platform Usage</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-accent/50 rounded-lg">
-              <div className="text-2xl font-bold text-primary">12</div>
-              <div className="text-sm text-muted-foreground">Features Active</div>
-            </div>
-            <div className="text-center p-4 bg-accent/50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">100%</div>
-              <div className="text-sm text-muted-foreground">Uptime</div>
-            </div>
-            <div className="text-center p-4 bg-accent/50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">24/7</div>
-              <div className="text-sm text-muted-foreground">Support</div>
-            </div>
-            <div className="text-center p-4 bg-accent/50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">Secure</div>
-              <div className="text-sm text-muted-foreground">Escrow Protected</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Call to Action */}
+      {/* Call to Action - Compact */}
       <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-        <CardContent className="p-6 text-center">
-          <h3 className="text-xl font-bold mb-2">Ready to Get Started?</h3>
-          <p className="text-muted-foreground mb-4">
-            Post your first job and experience the full power of our platform
-          </p>
+        <CardContent className="p-4 flex items-center justify-between">
+          <div>
+            <h3 className="font-bold mb-1">Ready to Get Started?</h3>
+            <p className="text-xs text-muted-foreground">
+              Post your first job and experience the full power of our platform
+            </p>
+          </div>
           <Button 
-            size="lg"
             onClick={() => navigate('/post')}
-            className="bg-primary hover:bg-primary/90"
+            className="bg-primary hover:bg-primary/90 ml-4"
           >
-            Post Your First Job
+            Post Job
           </Button>
         </CardContent>
       </Card>
