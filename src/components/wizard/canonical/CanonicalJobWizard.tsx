@@ -367,8 +367,7 @@ export const CanonicalJobWizard: React.FC = () => {
         .from('jobs')
         .insert([{
           client_id: user.id,
-          micro_id: primaryMicroId, // Always use slug for micro_id
-          micro_uuid: primaryMicroUuid, // UUID from micro_services table
+          micro_id: primaryMicroId,
           title: combinedTitle,
           description: wizardState.extras.notes || `${combinedTitle} - ${wizardState.mainCategory} / ${wizardState.subcategory}`,
           answers: {
