@@ -1,12 +1,12 @@
 /**
- * /services/new route - Direct launch into Professional Service Creation Wizard
+ * /services/new route - Dynamic Professional Service Creation
  */
 import React from 'react';
-import { ProfessionalServiceWizard } from '@/components/wizard/professional/ProfessionalServiceWizard';
+import { DynamicServiceBuilder } from '@/components/professional/services/DynamicServiceBuilder';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 
 const CreateService: React.FC = () => {
-  console.log('🎯 CreateService page rendering');
+  console.log('🎯 CreateService page rendering - Dynamic Builder');
   
   return (
     <ErrorBoundary
@@ -14,7 +14,7 @@ const CreateService: React.FC = () => {
         console.error('🚨 CreateService Error Boundary caught error:', error, errorInfo);
       }}
     >
-      <ProfessionalServiceWizard />
+      <DynamicServiceBuilder />
     </ErrorBoundary>
   );
 };
