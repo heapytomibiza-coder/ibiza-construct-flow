@@ -35,7 +35,7 @@ export function ProfessionalFeaturesShowcase() {
   const navigate = useNavigate();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const unreadMessages = 3; // This should come from actual data
-  const unreadJobs = 24; // This should come from actual data
+  const unreadJobs: number = 24; // This should come from actual data
 
   return (
     <div className="space-y-4 sm:space-y-6 relative px-4 sm:px-0">

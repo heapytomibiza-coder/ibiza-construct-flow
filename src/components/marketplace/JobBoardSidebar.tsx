@@ -69,7 +69,39 @@ export const JobBoardSidebar: React.FC = () => {
 
   return (
     <div className="space-y-6 sticky top-6">
-      {/* Quick Stats Card */}
+      {/* Earnings Potential Card */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 border-green-200 dark:border-green-800">
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-green-600" />
+              Earnings Potential
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <p className="text-3xl font-bold text-green-900 dark:text-green-100">
+                €2,400
+              </p>
+              <p className="text-sm text-green-700 dark:text-green-300">
+                Available this week from matching jobs
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-2 pt-2 border-t border-green-200 dark:border-green-800">
+              <Badge className="bg-green-600 text-white">
+                +15% vs last week
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Smart Insights */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -78,29 +110,69 @@ export const JobBoardSidebar: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-copper" />
-              Your Activity
+              <Lightbulb className="w-4 h-4 text-copper" />
+              Smart Insights
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Profile</span>
-                <span className="text-sm font-medium">85%</span>
+          <CardContent className="space-y-3">
+            <div className="space-y-2 text-sm">
+              <div className="flex items-start gap-2 p-2 bg-muted/50 rounded">
+                <span>🔥</span>
+                <p className="text-muted-foreground">
+                  Jobs in your category <span className="font-semibold text-foreground">+40% today</span>
+                </p>
               </div>
-              <Progress value={85} className="h-2" />
+              <div className="flex items-start gap-2 p-2 bg-muted/50 rounded">
+                <span>⚡</span>
+                <p className="text-muted-foreground">
+                  Average response time: <span className="font-semibold text-foreground">45 min</span> - be fast!
+                </p>
+              </div>
+              <div className="flex items-start gap-2 p-2 bg-muted/50 rounded">
+                <span>👀</span>
+                <p className="text-muted-foreground">
+                  Your profile views <span className="font-semibold text-foreground">increased 3×</span> this week
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Application Tracker */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <PieChart className="w-4 h-4 text-copper" />
+              Application Pipeline
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+              <div>
+                <p className="text-sm text-muted-foreground">Applied</p>
+                <p className="text-2xl font-bold">5</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-muted-foreground">Viewed</p>
+                <p className="text-2xl font-bold text-blue-600">3</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-muted-foreground">Shortlisted</p>
+                <p className="text-2xl font-bold text-green-600">1</p>
+              </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
-                <p className="text-2xl font-bold text-copper">0</p>
-                <p className="text-xs text-muted-foreground">Applications</p>
-              </div>
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
-                <p className="text-2xl font-bold text-primary">0</p>
-                <p className="text-xs text-muted-foreground">Saved Jobs</p>
-              </div>
-            </div>
+            <Button variant="outline" className="w-full" size="sm">
+              View Full Dashboard
+            </Button>
           </CardContent>
         </Card>
       </motion.div>
