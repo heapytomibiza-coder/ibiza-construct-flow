@@ -83,14 +83,15 @@ export default function ProfessionalProfile() {
   const { data: profile, isLoading, error: queryError, refetch } = useQuery({
     queryKey: ['professional', professionalId],
     queryFn: async () => {
-      // Fetch professional profile with new fields
-      const { data: proProfile, error: proError } = await supabase
+      // Fetch professional profile with new fields (cast to any to avoid deep type issues)
+      const proProfileResult = await supabase
         .from('professional_profiles')
-        .select('*, cover_image_url, tagline, video_intro_url, work_philosophy, response_guarantee_hours, instant_booking_enabled')
-        .eq('user_id', professionalId)
+        .select('user_id, primary_trade, experience_years, verification_status, cover_image_url, tagline, video_intro_url, work_philosophy, response_guarantee_hours, instant_booking_enabled, zones, skills, bio')
+        .eq('user_id', professionalId || '')
         .single();
-
-      if (proError) throw proError;
+      
+      if (proProfileResult.error) throw proProfileResult.error;
+      const proProfile: any = proProfileResult.data;
 
       // Fetch user profile for name and avatar
       const { data: userProfile, error: userError } = await supabase
@@ -101,57 +102,70 @@ export default function ProfessionalProfile() {
 
       if (userError) throw userError;
 
-      // Fetch services from professional_service_items
-      const { data: services } = await supabase
+      // Fetch services from professional_service_items (explicit columns)
+      const servicesResult = await supabase
         .from('professional_service_items')
-        .select('*')
-        .eq('professional_id', professionalId)
+        .select('id, professional_id, service_id, name, description, base_price, pricing_type, category, is_active')
+        .eq('professional_id', professionalId || '')
         .eq('is_active', true);
+      const services: any[] = servicesResult.data || [];
 
-      // Fetch stats
-      const { data: stats } = await supabase
+      // Fetch stats (explicit columns)
+      const statsResult = await supabase
         .from('professional_stats')
-        .select('*')
-        .eq('professional_id', professionalId)
+        .select('professional_id, jobs_completed, average_rating, total_reviews, completed_bookings')
+        .eq('professional_id', professionalId || '')
         .single();
+      const stats: any = statsResult.data;
 
-      // Fetch verifications
-      const { data: verifications } = await supabase
+      // Fetch verifications (explicit columns)
+      const verificationsResult = await supabase
         .from('professional_verifications')
-        .select('*')
-        .eq('professional_id', professionalId)
+        .select('id, professional_id, verification_type, status, verified_at')
+        .eq('professional_id', professionalId || '')
         .eq('status', 'approved');
+      const verifications: any[] = verificationsResult.data || [];
 
-      // Fetch reviews
-      const { data: reviews } = await supabase
+      // Fetch reviews - cast to bypass type issues
+      const reviewsResult: any = await (supabase as any)
         .from('reviews')
-        .select(`
-          *,
-          profiles!reviews_client_id_fkey(display_name, avatar_url)
-        `)
-        .eq('professional_id', professionalId)
+        .select('id, professional_id, client_id, rating, comment, response, created_at')
+        .eq('professional_id', professionalId || '')
         .order('created_at', { ascending: false })
         .limit(10);
+      const reviews: any[] = reviewsResult.data || [];
 
       // Portfolio images - use empty array for now
       const portfolioItems: any[] = [];
 
-      return {
-        ...proProfile,
-        bio: userProfile.bio || proProfile.bio,
-        display_name: userProfile.display_name || userProfile.full_name,
-        avatar_url: userProfile.avatar_url,
-        services: services || [],
+      // Return with explicit typing to avoid deep instantiation
+      const profileData: any = {
+        user_id: proProfile?.user_id,
+        primary_trade: proProfile?.primary_trade,
+        experience_years: proProfile?.experience_years,
+        verification_status: proProfile?.verification_status,
+        cover_image_url: proProfile?.cover_image_url,
+        tagline: proProfile?.tagline,
+        video_intro_url: proProfile?.video_intro_url,
+        work_philosophy: proProfile?.work_philosophy,
+        response_guarantee_hours: proProfile?.response_guarantee_hours,
+        instant_booking_enabled: proProfile?.instant_booking_enabled,
+        zones: Array.isArray(proProfile?.zones) ? proProfile.zones : [],
+        skills: Array.isArray(proProfile?.skills) ? proProfile.skills : [],
+        bio: userProfile?.bio || proProfile?.bio,
+        display_name: userProfile?.display_name || userProfile?.full_name,
+        avatar_url: userProfile?.avatar_url,
+        services: services,
         stats: stats || { average_rating: 0, total_reviews: 0, jobs_completed: 0, completed_bookings: 0 },
-        verifications: verifications || [],
-        reviews: reviews || [],
-        zones: Array.isArray(proProfile.zones) ? proProfile.zones : [],
-        skills: Array.isArray(proProfile.skills) ? proProfile.skills : [],
+        verifications: verifications,
+        reviews: reviews,
         portfolio_images: portfolioItems,
         new_portfolio_images: portfolioItems,
         job_photos: [],
         view_count: 0
       };
+
+      return profileData;
     },
     enabled: !!professionalId
   });
@@ -593,7 +607,7 @@ export default function ProfessionalProfile() {
         professionalId={professionalId!}
         professionalName={profile.display_name}
         serviceId={profile.services[0]?.id}
-        serviceName={profile.services[0]?.micro_service_id}
+        serviceName={profile.services[0]?.name}
       />
 
       {/* Accessibility Toolbar */}
