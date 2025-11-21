@@ -13,6 +13,9 @@ import { JobDetailsModal } from './JobDetailsModal';
 import { ServiceCategoryBadge } from './ServiceCategoryBadge';
 import { JobMetadataBadges } from './JobMetadataBadges';
 import { getServiceVisuals } from '@/data/serviceCategoryImages';
+import { JobMatchScore } from './JobMatchScore';
+import { JobIntelligenceBar } from './JobIntelligenceBar';
+import { QuickApplyButton } from './QuickApplyButton';
 
 interface JobListingCardProps {
   job: {
@@ -62,6 +65,22 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   const heroImage = job.answers?.extras?.photos?.[0] || serviceVisuals.hero;
   const photoCount = job.answers?.extras?.photos?.length || 0;
   const answerCount = job.answers?.microAnswers ? Object.keys(job.answers.microAnswers).length : 0;
+  
+  // Calculate match score (mock logic - replace with real matching algorithm)
+  const matchScore = Math.floor(Math.random() * (95 - 60) + 60);
+  const matchBreakdown = {
+    skillMatch: Math.floor(Math.random() * (100 - 70) + 70),
+    locationMatch: job.location ? Math.floor(Math.random() * (100 - 60) + 60) : undefined,
+    budgetMatch: Math.floor(Math.random() * (100 - 50) + 50),
+    availabilityMatch: Math.floor(Math.random() * (100 - 80) + 80)
+  };
+  
+  // Intelligence data (mock - replace with real-time data)
+  const viewCount = Math.floor(Math.random() * 10) + 1;
+  const quoteCount = Math.floor(Math.random() * 5);
+  const clientActivity = isNew ? 'active' : Math.random() > 0.5 ? 'recent' : 'inactive';
+  const successProbability = matchScore > 75 ? Math.floor(Math.random() * (85 - 65) + 65) : undefined;
+  const suggestedQuote = Math.round(job.budget_value * (0.9 + Math.random() * 0.2));
   
   if (viewMode === 'compact') {
     return (
@@ -137,12 +156,18 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
         
         {/* Floating badges on hero */}
         <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
-          <ServiceCategoryBadge
-            category={job.category}
-            subcategory={job.subcategory}
-            micro={job.micro}
-            icon={serviceVisuals.icon}
-          />
+          <div className="flex flex-col gap-2">
+            <ServiceCategoryBadge
+              category={job.category}
+              subcategory={job.subcategory}
+              micro={job.micro}
+              icon={serviceVisuals.icon}
+            />
+            <JobMatchScore 
+              score={matchScore} 
+              breakdown={matchBreakdown}
+            />
+          </div>
           
           <div className="flex gap-2">
             {isNew && (
@@ -203,9 +228,19 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
         </div>
 
         {/* Description */}
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
           {job.description}
         </p>
+
+        {/* Intelligence Bar */}
+        <JobIntelligenceBar
+          viewCount={viewCount}
+          quoteCount={quoteCount}
+          clientActivity={clientActivity as any}
+          successProbability={successProbability}
+          averageQuote={suggestedQuote}
+          className="mb-4"
+        />
 
         {/* Budget & Location Grid */}
         <div className="grid grid-cols-2 gap-3 mb-4 p-3 bg-gradient-to-br from-muted/50 to-muted/30 rounded-lg">
@@ -245,7 +280,6 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => onSave?.(job.id)}
-            className="flex-1"
           >
             <Heart className="w-4 h-4" />
           </Button>
@@ -254,7 +288,6 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => onMessage?.(job.id)}
-            className="flex-1"
           >
             <MessageSquare className="w-4 h-4" />
           </Button>
@@ -267,12 +300,13 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             Details
           </Button>
           
-          <Button 
-            onClick={() => onSendOffer?.(job.id)}
-            className="flex-1 bg-gradient-hero text-white hover:opacity-90"
-          >
-            Apply
-          </Button>
+          <QuickApplyButton
+            jobId={job.id}
+            jobTitle={job.title}
+            suggestedQuote={suggestedQuote}
+            onSuccess={() => onSendOffer?.(job.id)}
+            className="flex-1"
+          />
         </div>
         
         <JobDetailsModal
