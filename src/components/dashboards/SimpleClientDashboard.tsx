@@ -312,6 +312,30 @@ const HomeTab = ({ stats, bookings, onTabChange, navigate }: any) => (
       </Card>
     </div>
 
+    {/* Analytics Quick Access */}
+    <Card className="card-luxury border-primary/20">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-charcoal">Analytics & Insights</h3>
+              <p className="text-sm text-muted-foreground">View detailed performance metrics</p>
+            </div>
+          </div>
+          <Button 
+            variant="outline"
+            onClick={() => navigate('/dashboard/client/analytics')}
+          >
+            View Analytics
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+
     {/* Recent Activity */}
     {bookings.length > 0 && (
       <Card>
