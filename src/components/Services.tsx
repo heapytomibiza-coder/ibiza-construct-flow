@@ -4,7 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 
-const Services = React.memo(() => {
+interface ServicesProps {
+  maxServices?: number;
+}
+
+const Services = React.memo(({ maxServices }: ServicesProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation('components');
   const { getServiceCards, loading } = useServicesRegistry();
@@ -20,12 +24,13 @@ const Services = React.memo(() => {
     'Car': Car
   };
 
-  const services = React.useMemo(() => 
-    getServiceCards().map(service => ({
+  const services = React.useMemo(() => {
+    const allServices = getServiceCards().map(service => ({
       ...service,
       icon: iconMap[service.icon as keyof typeof iconMap] || Wrench
-    })), [getServiceCards]
-  );
+    }));
+    return maxServices ? allServices.slice(0, maxServices) : allServices;
+  }, [getServiceCards, maxServices]);
 
   const handleServiceClick = React.useCallback((service: any) => {
     navigate(`/service/${service.slug}`);
