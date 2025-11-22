@@ -212,6 +212,7 @@ function AppContent() {
                   <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<Index />} />
+                    <Route path="/services" element={<Navigate to="/discovery" replace />} />
                     <Route path="/install" element={<Install />} />
                     <Route path="/calculator" element={<Calculator />} />
       <Route path="/demo-setup" element={<DemoSetup />} />
