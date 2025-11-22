@@ -139,15 +139,11 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Worktops, Units and Storage', slug: 'worktops-units-storage', icon_name: 'LayoutDashboard', icon_emoji: '📦', display_order: 3, is_active: true },
       { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Wetrooms and Specialist Bathrooms', slug: 'wetrooms-specialist-bathrooms', icon_name: 'Droplets', icon_emoji: '💧', display_order: 4, is_active: true },
       
-      // Floors, Doors & Windows - 8 subcategories
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Flooring Installation', slug: 'flooring-installation', icon_name: 'Layers', icon_emoji: '📏', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Laminate Flooring', slug: 'laminate-flooring', icon_name: 'Layers', icon_emoji: '📏', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Hardwood Flooring', slug: 'hardwood-flooring', icon_name: 'Layers', icon_emoji: '🪵', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Door Installation', slug: 'door-installation', icon_name: 'DoorOpen', icon_emoji: '🚪', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Window Installation', slug: 'window-installation', icon_name: 'Square', icon_emoji: '🪟', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Double Glazing', slug: 'double-glazing', icon_name: 'Square', icon_emoji: '🪟', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Floor Sanding', slug: 'floor-sanding', icon_name: 'Layers', icon_emoji: '🪵', display_order: 7, is_active: true },
-      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Garage Doors', slug: 'garage-doors', icon_name: 'DoorOpen', icon_emoji: '🚪', display_order: 8, is_active: true },
+      // Floors, Doors & Windows - 4 NEW subcategories
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Flooring Installation and Replacement', slug: 'flooring-installation-replacement', icon_name: 'Square', icon_emoji: '📏', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Internal Doors', slug: 'internal-doors', icon_name: 'DoorClosed', icon_emoji: '🚪', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'External Doors and Entrances', slug: 'external-doors-entrances', icon_name: 'DoorOpen', icon_emoji: '🚪', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Windows and Glazing', slug: 'windows-glazing', icon_name: 'PanelTop', icon_emoji: '🪟', display_order: 4, is_active: true },
       
       // Handyman & General Services - 6 subcategories
       { category_id: categoryMap.get('Handyman & General Services'), name: 'General Repairs', slug: 'general-repairs', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 1, is_active: true },
@@ -499,13 +495,35 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('wetrooms-specialist-bathrooms'), name: 'Accessible and mobility bathrooms', slug: 'accessible-mobility-bathrooms', display_order: 3, is_active: true },
       { subcategory_id: subcategoryMap.get('wetrooms-specialist-bathrooms'), name: 'Bathroom waterproofing and tanking', slug: 'bathroom-waterproofing-tanking', display_order: 4, is_active: true },
       
-      // NEW: Floors, Doors & Windows microservices
-      { subcategory_id: subcategoryMap.get('flooring'), name: 'Hardwood Flooring', slug: 'hardwood-flooring', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('flooring'), name: 'Vinyl Flooring', slug: 'vinyl-flooring', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('door-installation'), name: 'Interior Doors', slug: 'interior-doors', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('door-installation'), name: 'Exterior Doors', slug: 'exterior-doors', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('window-fitting'), name: 'Double Glazing', slug: 'double-glazing', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('window-fitting'), name: 'Window Replacement', slug: 'window-replacement', display_order: 2, is_active: true },
+      // NEW: Floors, Doors & Windows microservices (4 subcategories, 21 services total)
+      // Flooring Installation and Replacement (6 services)
+      { subcategory_id: subcategoryMap.get('flooring-installation-replacement'), name: 'New flooring installation', slug: 'new-flooring-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('flooring-installation-replacement'), name: 'Laminate and engineered wood', slug: 'laminate-engineered-wood', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('flooring-installation-replacement'), name: 'Solid wood flooring', slug: 'solid-wood-flooring', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('flooring-installation-replacement'), name: 'Tile and stone flooring', slug: 'tile-stone-flooring', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('flooring-installation-replacement'), name: 'Vinyl and LVT flooring', slug: 'vinyl-lvt-flooring', display_order: 5, is_active: true },
+      { subcategory_id: subcategoryMap.get('flooring-installation-replacement'), name: 'Floor sanding and refinishing', slug: 'floor-sanding-refinishing', display_order: 6, is_active: true },
+      
+      // Internal Doors (5 services)
+      { subcategory_id: subcategoryMap.get('internal-doors'), name: 'Internal door fitting', slug: 'internal-door-fitting', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('internal-doors'), name: 'Internal door replacement', slug: 'internal-door-replacement', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('internal-doors'), name: 'Sliding and pocket doors', slug: 'sliding-pocket-doors', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('internal-doors'), name: 'Door frames and linings', slug: 'door-frames-linings', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('internal-doors'), name: 'Door hardware and locks', slug: 'door-hardware-locks', display_order: 5, is_active: true },
+      
+      // External Doors and Entrances (5 services)
+      { subcategory_id: subcategoryMap.get('external-doors-entrances'), name: 'Front door installation', slug: 'front-door-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('external-doors-entrances'), name: 'Patio and balcony doors', slug: 'patio-balcony-doors', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('external-doors-entrances'), name: 'Bifold and large sliding doors', slug: 'bifold-large-sliding-doors', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('external-doors-entrances'), name: 'Security and reinforced doors', slug: 'security-reinforced-doors', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('external-doors-entrances'), name: 'Garage doors', slug: 'garage-doors', display_order: 5, is_active: true },
+      
+      // Windows and Glazing (5 services)
+      { subcategory_id: subcategoryMap.get('windows-glazing'), name: 'Window installation and replacement', slug: 'window-installation-replacement', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('windows-glazing'), name: 'Window repairs and adjustments', slug: 'window-repairs-adjustments', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('windows-glazing'), name: 'Double glazing upgrades', slug: 'double-glazing-upgrades', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('windows-glazing'), name: 'Roof windows and skylights', slug: 'roof-windows-skylights', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('windows-glazing'), name: 'Shutters, blinds and screens', slug: 'shutters-blinds-screens', display_order: 5, is_active: true },
       
       // NEW: Handyman microservices
       { subcategory_id: subcategoryMap.get('general-repairs'), name: 'Picture Hanging', slug: 'picture-hanging', display_order: 1, is_active: true },
