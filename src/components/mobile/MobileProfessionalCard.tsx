@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 interface MobileProfessionalCardProps {
   professional: {
     id: string;
+    business_name?: string | null;
     full_name: string | null;
     bio?: string | null;
     specializations?: string[] | null;
+    subsector_tags?: string[] | null;
     experience_years?: number | null;
     hourly_rate?: number | null;
     location?: string | null;
@@ -55,7 +57,7 @@ export const MobileProfessionalCard = ({
           {/* Name and Rating */}
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-base leading-tight mb-1 text-foreground truncate">
-              {professional.full_name || 'Professional'}
+              {professional.business_name || professional.full_name || 'Professional'}
             </h3>
             <div className="flex items-center gap-2 mb-1">
               <div className="flex items-center gap-1">
@@ -92,10 +94,23 @@ export const MobileProfessionalCard = ({
 
         {/* Specializations */}
         <div className="flex flex-wrap gap-1 mb-3">
-          {Array.isArray(professional.specializations) && professional.specializations.length > 0 ? (
+          {Array.isArray(professional.subsector_tags) && professional.subsector_tags.length > 0 ? (
+            <>
+              {professional.subsector_tags.slice(0, 2).map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+              {professional.subsector_tags.length > 2 && (
+                <Badge variant="outline" className="text-xs">
+                  +{professional.subsector_tags.length - 2}
+                </Badge>
+              )}
+            </>
+          ) : Array.isArray(professional.specializations) && professional.specializations.length > 0 ? (
             <>
               {professional.specializations.slice(0, 2).map((spec) => (
-                <Badge key={spec} variant="secondary" className="text-xs">
+                <Badge key={spec} variant="outline" className="text-xs">
                   {spec}
                 </Badge>
               ))}
@@ -113,7 +128,7 @@ export const MobileProfessionalCard = ({
           
           {professional.experience_years && (
             <Badge variant="secondary" className="text-xs">
-              {professional.experience_years}+ years exp
+              {professional.experience_years}+ años exp
             </Badge>
           )}
         </div>

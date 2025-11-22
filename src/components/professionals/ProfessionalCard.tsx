@@ -9,9 +9,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface ProfessionalCardProps {
   professional: {
     id: string;
+    business_name?: string | null;
     full_name: string | null;
     bio?: string | null;
     specializations?: string[] | null;
+    subsector_tags?: string[] | null;
     experience_years?: number | null;
     hourly_rate?: number | null;
     location?: string | null;
@@ -69,7 +71,7 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-lg truncate">{professional.full_name || 'Professional'}</h3>
+              <h3 className="font-semibold text-lg truncate">{professional.business_name || professional.full_name || 'Professional'}</h3>
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm font-medium">{professional.rating || 5.0}</span>
@@ -89,21 +91,22 @@ export default function ProfessionalCard({ professional }: ProfessionalCardProps
             )}
             
             <div className="flex flex-wrap gap-1 mb-3">
-              {Array.isArray(professional.specializations) && professional.specializations.slice(0, 3).map((spec) => (
-                <Badge key={spec} variant="secondary" className="text-xs">
+              {Array.isArray(professional.subsector_tags) && professional.subsector_tags.slice(0, 3).map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+              {Array.isArray(professional.subsector_tags) && professional.subsector_tags.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{professional.subsector_tags.length - 3}
+                </Badge>
+              )}
+              {(!professional.subsector_tags || !Array.isArray(professional.subsector_tags) || professional.subsector_tags.length === 0) && 
+               Array.isArray(professional.specializations) && professional.specializations.slice(0, 2).map((spec) => (
+                <Badge key={spec} variant="outline" className="text-xs">
                   {spec}
                 </Badge>
               ))}
-              {Array.isArray(professional.specializations) && professional.specializations.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{professional.specializations.length - 3}
-                </Badge>
-              )}
-              {(!professional.specializations || !Array.isArray(professional.specializations) || professional.specializations.length === 0) && (
-                <Badge variant="outline" className="text-xs">
-                  General Services
-                </Badge>
-              )}
             </div>
             
             <div className="flex items-center justify-between">
