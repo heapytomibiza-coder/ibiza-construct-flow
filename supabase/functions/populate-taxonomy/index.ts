@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
       { name: 'Architects & Design', slug: 'architects-design', icon_emoji: '📐', icon_name: 'Ruler', display_order: 10, category_group: 'PROFESSIONAL', is_active: true, examples: ['Building plans', 'Interior design', '3D renders', 'Structural calculations'] },
       { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom', icon_emoji: '🚿', icon_name: 'Bath', display_order: 11, category_group: 'PROFESSIONAL', is_active: true, examples: ['Kitchen fitting', 'Bathroom design', 'Wetrooms', 'Cabinet installation'] },
       { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows', icon_emoji: '🚪', icon_name: 'DoorOpen', display_order: 12, category_group: 'PROFESSIONAL', is_active: true, examples: ['Flooring', 'Window installation', 'Door fitting', 'Double glazing'] },
-      { name: 'Handyman & General Services', slug: 'handyman-general', icon_emoji: '🔧', icon_name: 'Wrench', display_order: 13, category_group: 'SERVICES', is_active: true, examples: ['General repairs', 'Furniture assembly', 'Odd jobs', 'Maintenance'] },
+      { name: 'Handyman and General Services', slug: 'handyman-general-services', icon_emoji: '🔧', icon_name: 'Wrench', display_order: 13, category_group: 'SERVICES', is_active: true, examples: ['General repairs', 'Furniture assembly', 'Odd jobs', 'Maintenance'] },
       { name: 'Commercial & Industrial', slug: 'commercial-industrial', icon_emoji: '🏢', icon_name: 'Building', display_order: 14, category_group: 'PROFESSIONAL', is_active: true, examples: ['Office fit-outs', 'Retail spaces', 'Commercial projects', 'Industrial work'] },
       { name: 'Legal & Regulatory', slug: 'legal-regulatory', icon_emoji: '📋', icon_name: 'FileText', display_order: 15, category_group: 'PROFESSIONAL', is_active: true, examples: ['Building permits', 'Planning applications', 'Compliance', 'Legal support'] }
     ]
@@ -145,14 +145,13 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'External Doors and Entrances', slug: 'external-doors-entrances', icon_name: 'DoorOpen', icon_emoji: '🚪', display_order: 3, is_active: true },
       { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Windows and Glazing', slug: 'windows-glazing', icon_name: 'PanelTop', icon_emoji: '🪟', display_order: 4, is_active: true },
       
-      // Handyman & General Services - 6 subcategories
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'General Repairs', slug: 'general-repairs', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'Furniture Assembly', slug: 'furniture-assembly', icon_name: 'Wrench', icon_emoji: '🪑', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'TV Mounting', slug: 'tv-mounting', icon_name: 'Wrench', icon_emoji: '📺', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'Picture Hanging', slug: 'picture-hanging', icon_name: 'Wrench', icon_emoji: '🖼️', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'Property Maintenance', slug: 'property-maintenance', icon_name: 'Home', icon_emoji: '🏠', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Handyman & General Services'), name: 'Multi-Trade', slug: 'multi-trade', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 6, is_active: true },
-      
+      // Handyman & General Services - 5 NEW subcategories
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'General Repairs and Maintenance', slug: 'general-repairs-maintenance', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'Furniture Assembly and Installation', slug: 'furniture-assembly-installation', icon_name: 'PackageOpen', icon_emoji: '📦', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'Mounting and Fixtures', slug: 'mounting-fixtures', icon_name: 'Hammer', icon_emoji: '🔨', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'Small Carpentry and Home Improvements', slug: 'small-carpentry-home-improvements', icon_name: 'RulerSquare', icon_emoji: '📐', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Handyman & General Services'), name: 'Odd Jobs and Help', slug: 'odd-jobs-help', icon_name: 'ListChecks', icon_emoji: '✅', display_order: 5, is_active: true },
+
       // Commercial & Industrial - 6 subcategories
       { category_id: categoryMap.get('Commercial & Industrial'), name: 'Office Fit-outs', slug: 'office-fitouts', icon_name: 'Building', icon_emoji: '🏢', display_order: 1, is_active: true },
       { category_id: categoryMap.get('Commercial & Industrial'), name: 'Retail Spaces', slug: 'retail-spaces', icon_name: 'Building', icon_emoji: '🏪', display_order: 2, is_active: true },
@@ -525,12 +524,40 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('windows-glazing'), name: 'Roof windows and skylights', slug: 'roof-windows-skylights', display_order: 4, is_active: true },
       { subcategory_id: subcategoryMap.get('windows-glazing'), name: 'Shutters, blinds and screens', slug: 'shutters-blinds-screens', display_order: 5, is_active: true },
       
-      // NEW: Handyman microservices
-      { subcategory_id: subcategoryMap.get('general-repairs'), name: 'Picture Hanging', slug: 'picture-hanging', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('general-repairs'), name: 'Small Repairs', slug: 'small-repairs', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('furniture-assembly'), name: 'Flat-Pack Assembly', slug: 'flat-pack-assembly', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('furniture-assembly'), name: 'Furniture Installation', slug: 'furniture-installation', display_order: 2, is_active: true },
+      // NEW: Handyman & General Services microservices (5 subcategories, 23 services total)
+      // General Repairs and Maintenance (5 services)
+      { subcategory_id: subcategoryMap.get('general-repairs-maintenance'), name: 'General home repairs', slug: 'general-home-repairs', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('general-repairs-maintenance'), name: 'Minor wall and ceiling repairs', slug: 'minor-wall-ceiling-repairs', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('general-repairs-maintenance'), name: 'Doors, hinges and handles', slug: 'doors-hinges-handles', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('general-repairs-maintenance'), name: 'Small leaks and silicone repairs', slug: 'small-leaks-silicone-repairs', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('general-repairs-maintenance'), name: 'Squeaks, rattles and loose items', slug: 'squeaks-rattles-loose-items', display_order: 5, is_active: true },
       
+      // Furniture Assembly and Installation (5 services)
+      { subcategory_id: subcategoryMap.get('furniture-assembly-installation'), name: 'Furniture assembly', slug: 'furniture-assembly', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('furniture-assembly-installation'), name: 'Bed and wardrobe assembly', slug: 'bed-wardrobe-assembly', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('furniture-assembly-installation'), name: 'Office furniture assembly', slug: 'office-furniture-assembly', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('furniture-assembly-installation'), name: 'Outdoor furniture assembly', slug: 'outdoor-furniture-assembly', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('furniture-assembly-installation'), name: 'Furniture disassembly and reassembly', slug: 'furniture-disassembly-reassembly', display_order: 5, is_active: true },
+      
+      // Mounting and Fixtures (5 services)
+      { subcategory_id: subcategoryMap.get('mounting-fixtures'), name: 'TV wall mounting', slug: 'tv-wall-mounting', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('mounting-fixtures'), name: 'Shelf installation', slug: 'shelf-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('mounting-fixtures'), name: 'Curtain rails and blinds', slug: 'curtain-rails-blinds', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('mounting-fixtures'), name: 'Pictures and mirrors hanging', slug: 'pictures-mirrors-hanging', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('mounting-fixtures'), name: 'Bathroom accessories fitting', slug: 'bathroom-accessories-fitting', display_order: 5, is_active: true },
+      
+      // Small Carpentry and Home Improvements (4 services)
+      { subcategory_id: subcategoryMap.get('small-carpentry-home-improvements'), name: 'Boxing-in pipes and cables', slug: 'boxing-in-pipes-cables', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('small-carpentry-home-improvements'), name: 'Skirting, trims and beading', slug: 'skirting-trims-beading', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('small-carpentry-home-improvements'), name: 'Adjusting doors and windows', slug: 'adjusting-doors-windows', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('small-carpentry-home-improvements'), name: 'Fitting locks and latches', slug: 'fitting-locks-latches', display_order: 4, is_active: true },
+      
+      // Odd Jobs and Help (4 services)
+      { subcategory_id: subcategoryMap.get('odd-jobs-help'), name: 'Odd jobs and small tasks', slug: 'odd-jobs-small-tasks', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('odd-jobs-help'), name: 'Help moving items in the home', slug: 'help-moving-items-home', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('odd-jobs-help'), name: 'Minor outdoor and garden jobs', slug: 'minor-outdoor-garden-jobs', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('odd-jobs-help'), name: "I'm not sure – need a handyman", slug: 'not-sure-need-handyman', display_order: 4, is_active: true },
+
       // NEW: Commercial & Industrial microservices
       { subcategory_id: subcategoryMap.get('office-fitouts'), name: 'Office Partitions', slug: 'office-partitions', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('office-fitouts'), name: 'Office Renovation', slug: 'office-renovation', display_order: 2, is_active: true },

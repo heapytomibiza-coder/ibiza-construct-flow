@@ -33,5 +33,8 @@ verify_jwt = false
 [functions.seed-floors-doors-windows-questions]
 verify_jwt = false
 
+[functions.seed-handyman-questions]
+verify_jwt = false
+
 [functions.create-custom-demo]
 verify_jwt = false
