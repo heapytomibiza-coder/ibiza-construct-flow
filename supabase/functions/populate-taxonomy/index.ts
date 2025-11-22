@@ -40,7 +40,8 @@ Deno.serve(async (req) => {
       { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows', icon_emoji: '🚪', icon_name: 'DoorOpen', display_order: 12, category_group: 'PROFESSIONAL', is_active: true, examples: ['Flooring', 'Window installation', 'Door fitting', 'Double glazing'] },
       { name: 'Handyman and General Services', slug: 'handyman-general-services', icon_emoji: '🔧', icon_name: 'Wrench', display_order: 13, category_group: 'SERVICES', is_active: true, examples: ['General repairs', 'Furniture assembly', 'Odd jobs', 'Maintenance'] },
       { name: 'Commercial & Industrial', slug: 'commercial-industrial', icon_emoji: '🏢', icon_name: 'Building', display_order: 14, category_group: 'PROFESSIONAL', is_active: true, examples: ['Office fit-outs', 'Retail spaces', 'Commercial projects', 'Industrial work'] },
-      { name: 'Legal & Regulatory', slug: 'legal-regulatory', icon_emoji: '📋', icon_name: 'FileText', display_order: 15, category_group: 'PROFESSIONAL', is_active: true, examples: ['Building permits', 'Planning applications', 'Compliance', 'Legal support'] }
+      { name: 'Legal & Regulatory', slug: 'legal-regulatory', icon_emoji: '📋', icon_name: 'FileText', display_order: 15, category_group: 'PROFESSIONAL', is_active: true, examples: ['Building permits', 'Planning applications', 'Compliance', 'Legal support'] },
+      { name: 'Transportation, Moving and Delivery', slug: 'transport-moving-delivery', icon_emoji: '🚚', icon_name: 'Truck', display_order: 16, category_group: 'SERVICES', is_active: true, examples: ['House moves', 'Man with van', 'Courier services', 'Airport transfers'] }
     ]
 
     const { error: catError, data: insertedCategories } = await supabase
@@ -164,7 +165,14 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Legal & Regulatory'), name: 'Building Permits and Licences', slug: 'building-permits-licences', icon_name: 'FileBadge2', icon_emoji: '📜', display_order: 2, is_active: true },
       { category_id: categoryMap.get('Legal & Regulatory'), name: 'Technical and Safety Compliance', slug: 'technical-safety-compliance', icon_name: 'ShieldAlert', icon_emoji: '🛡️', display_order: 3, is_active: true },
       { category_id: categoryMap.get('Legal & Regulatory'), name: 'Commercial, Licences and Operating', slug: 'commercial-licences-operating', icon_name: 'ScrollText', icon_emoji: '📃', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Reports, Surveys and Legal Support', slug: 'reports-surveys-legal-support', icon_name: 'FileText', icon_emoji: '📋', display_order: 5, is_active: true }
+      { category_id: categoryMap.get('Legal & Regulatory'), name: 'Reports, Surveys and Legal Support', slug: 'reports-surveys-legal-support', icon_name: 'FileText', icon_emoji: '📋', display_order: 5, is_active: true },
+      
+      // Transportation, Moving and Delivery - 5 NEW subcategories (detailed structure)
+      { category_id: categoryMap.get('Transportation, Moving and Delivery'), name: 'Home and Office Moves', slug: 'home-office-moves', icon_name: 'Home', icon_emoji: '🏠', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Transportation, Moving and Delivery'), name: 'Man with a Van & Small Moves', slug: 'man-with-van-small-moves', icon_name: 'Truck', icon_emoji: '🚐', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Transportation, Moving and Delivery'), name: 'Delivery and Courier', slug: 'delivery-courier', icon_name: 'Send', icon_emoji: '📦', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Transportation, Moving and Delivery'), name: 'Passenger & Airport Transfers', slug: 'passenger-airport-transfers', icon_name: 'Car', icon_emoji: '🚗', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Transportation, Moving and Delivery'), name: 'Vehicle Transport & Recovery', slug: 'vehicle-transport-recovery', icon_name: 'TruckIcon', icon_emoji: '🚛', display_order: 5, is_active: true }
     ]
 
     const { error: subError, data: insertedSubcategories } = await supabase
@@ -658,7 +666,36 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('reports-surveys-legal-support'), name: 'Technical reports and certificates', slug: 'technical-reports-certificates', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('reports-surveys-legal-support'), name: 'Legalisation of existing works', slug: 'legalisation-existing-works', display_order: 2, is_active: true },
       { subcategory_id: subcategoryMap.get('reports-surveys-legal-support'), name: 'Due diligence for purchase or lease', slug: 'due-diligence-purchase-lease', display_order: 3, is_active: true },
-      { subcategory_id: subcategoryMap.get('reports-surveys-legal-support'), name: 'Neighbour and community agreements', slug: 'neighbour-community-agreements', display_order: 4, is_active: true }
+      { subcategory_id: subcategoryMap.get('reports-surveys-legal-support'), name: 'Neighbour and community agreements', slug: 'neighbour-community-agreements', display_order: 4, is_active: true },
+      
+      // NEW: Transportation, Moving and Delivery microservices (19 services)
+      // Home and Office Moves (4 services)
+      { subcategory_id: subcategoryMap.get('home-office-moves'), name: 'House or flat move (local)', slug: 'house-flat-move-local', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('home-office-moves'), name: 'House or flat move (long distance)', slug: 'house-flat-move-long-distance', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('home-office-moves'), name: 'Office and business moves', slug: 'office-business-moves', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('home-office-moves'), name: 'Single large item transport', slug: 'single-large-item-transport', display_order: 4, is_active: true },
+      
+      // Man with a Van & Small Moves (4 services)
+      { subcategory_id: subcategoryMap.get('man-with-van-small-moves'), name: 'Small van jobs', slug: 'small-van-jobs', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('man-with-van-small-moves'), name: 'Few items / partial move', slug: 'few-items-partial-move', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('man-with-van-small-moves'), name: 'Store / shop collections', slug: 'store-shop-collections', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('man-with-van-small-moves'), name: 'Rubbish / tip runs', slug: 'rubbish-tip-runs', display_order: 4, is_active: true },
+      
+      // Delivery and Courier (4 services)
+      { subcategory_id: subcategoryMap.get('delivery-courier'), name: 'Same-day local delivery', slug: 'same-day-local-delivery', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('delivery-courier'), name: 'Scheduled delivery', slug: 'scheduled-delivery', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('delivery-courier'), name: 'Document / sensitive delivery', slug: 'document-sensitive-delivery', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('delivery-courier'), name: 'Regular courier runs', slug: 'regular-courier-runs', display_order: 4, is_active: true },
+      
+      // Passenger & Airport Transfers (3 services)
+      { subcategory_id: subcategoryMap.get('passenger-airport-transfers'), name: 'Airport transfers', slug: 'airport-transfers', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('passenger-airport-transfers'), name: 'Staff / crew transport', slug: 'staff-crew-transport', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('passenger-airport-transfers'), name: 'Event shuttle service', slug: 'event-shuttle-service', display_order: 3, is_active: true },
+      
+      // Vehicle Transport & Recovery (3 services)
+      { subcategory_id: subcategoryMap.get('vehicle-transport-recovery'), name: 'Car or motorbike transport', slug: 'car-motorbike-transport', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('vehicle-transport-recovery'), name: 'Breakdown recovery', slug: 'breakdown-recovery', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('vehicle-transport-recovery'), name: 'Boat / jet-ski trailer transport', slug: 'boat-jet-ski-transport', display_order: 3, is_active: true }
     ]
 
     const { error: microError, data: insertedMicro } = await supabase
@@ -672,7 +709,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Service taxonomy populated successfully with 14 categories',
+        message: 'Service taxonomy populated successfully with 16 categories',
         counts: {
           categories: insertedCategories?.length || 0,
           subcategories: insertedSubcategories?.length || 0,
