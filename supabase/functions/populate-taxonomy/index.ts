@@ -133,14 +133,11 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Architects & Design'), name: '3D Visualization', slug: '3d-visualization', icon_name: 'Layers', icon_emoji: '🖼️', display_order: 5, is_active: true },
       { category_id: categoryMap.get('Architects & Design'), name: 'Planning Consultants', slug: 'planning-consultants', icon_name: 'FileText', icon_emoji: '📋', display_order: 6, is_active: true },
       
-      // Kitchen & Bathroom - 7 subcategories
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Kitchen Installation', slug: 'kitchen-installation', icon_name: 'Bath', icon_emoji: '🍽️', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Bathroom Fitting', slug: 'bathroom-fitting', icon_name: 'Bath', icon_emoji: '🚿', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Kitchen Design', slug: 'kitchen-design', icon_name: 'Ruler', icon_emoji: '📐', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Bathroom Design', slug: 'bathroom-design', icon_name: 'Ruler', icon_emoji: '📐', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Wetrooms', slug: 'wetrooms', icon_name: 'Droplet', icon_emoji: '💧', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Kitchen Worktops', slug: 'kitchen-worktops', icon_name: 'Square', icon_emoji: '⬜', display_order: 6, is_active: true },
-      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Tiling', slug: 'kitchen-bathroom-tiling', icon_name: 'Layers', icon_emoji: '⬜', display_order: 7, is_active: true },
+      // Kitchen & Bathroom - 4 NEW subcategories
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Kitchen Fitting and Renovation', slug: 'kitchen-fitting-renovation', icon_name: 'Utensils', icon_emoji: '🍽️', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Bathroom Fitting and Renovation', slug: 'bathroom-fitting-renovation', icon_name: 'Bath', icon_emoji: '🚿', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Worktops, Units and Storage', slug: 'worktops-units-storage', icon_name: 'LayoutDashboard', icon_emoji: '📦', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Kitchen & Bathroom'), name: 'Wetrooms and Specialist Bathrooms', slug: 'wetrooms-specialist-bathrooms', icon_name: 'Droplets', icon_emoji: '💧', display_order: 4, is_active: true },
       
       // Floors, Doors & Windows - 8 subcategories
       { category_id: categoryMap.get('Floors, Doors & Windows'), name: 'Flooring Installation', slug: 'flooring-installation', icon_name: 'Layers', icon_emoji: '📏', display_order: 1, is_active: true },
@@ -477,11 +474,30 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('structural-engineers'), name: 'Structural Calculations', slug: 'structural-calculations', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('structural-engineers'), name: 'Load Assessment', slug: 'load-assessment', display_order: 2, is_active: true },
       
-      // NEW: Kitchen & Bathroom microservices
-      { subcategory_id: subcategoryMap.get('kitchen-installation'), name: 'Full Kitchen Fit', slug: 'full-kitchen-fit', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('kitchen-installation'), name: 'Worktop Installation', slug: 'worktop-installation', display_order: 2, is_active: true },
-      { subcategory_id: subcategoryMap.get('bathroom-fitting'), name: 'Full Bathroom Fit', slug: 'full-bathroom-fit', display_order: 1, is_active: true },
-      { subcategory_id: subcategoryMap.get('bathroom-fitting'), name: 'Wetroom Installation', slug: 'wetroom-installation', display_order: 2, is_active: true },
+      // NEW: Kitchen & Bathroom microservices (4 subcategories, 16 services total)
+      // Kitchen Fitting and Renovation (4 services)
+      { subcategory_id: subcategoryMap.get('kitchen-fitting-renovation'), name: 'Kitchen fitting', slug: 'kitchen-fitting', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('kitchen-fitting-renovation'), name: 'New kitchen installation', slug: 'new-kitchen-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('kitchen-fitting-renovation'), name: 'Kitchen refurbishment', slug: 'kitchen-refurbishment', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('kitchen-fitting-renovation'), name: 'Small kitchen updates', slug: 'small-kitchen-updates', display_order: 4, is_active: true },
+      
+      // Bathroom Fitting and Renovation (4 services)
+      { subcategory_id: subcategoryMap.get('bathroom-fitting-renovation'), name: 'Bathroom design', slug: 'bathroom-design', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('bathroom-fitting-renovation'), name: 'New bathroom installation', slug: 'new-bathroom-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('bathroom-fitting-renovation'), name: 'Bathroom refurbishment', slug: 'bathroom-refurbishment', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('bathroom-fitting-renovation'), name: 'Cloakroom and ensuite bathrooms', slug: 'cloakroom-ensuite-bathrooms', display_order: 4, is_active: true },
+      
+      // Worktops, Units and Storage (4 services)
+      { subcategory_id: subcategoryMap.get('worktops-units-storage'), name: 'Worktop installation and replacement', slug: 'worktop-installation-replacement', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('worktops-units-storage'), name: 'Kitchen unit installation', slug: 'kitchen-unit-installation', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('worktops-units-storage'), name: 'Pantry and utility room storage', slug: 'pantry-utility-storage', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('worktops-units-storage'), name: 'Kitchen island installation', slug: 'kitchen-island-installation', display_order: 4, is_active: true },
+      
+      // Wetrooms and Specialist Bathrooms (4 services)
+      { subcategory_id: subcategoryMap.get('wetrooms-specialist-bathrooms'), name: 'Wetroom installation', slug: 'wetroom-installation', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('wetrooms-specialist-bathrooms'), name: 'Walk-in shower conversions', slug: 'walk-in-shower-conversions', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('wetrooms-specialist-bathrooms'), name: 'Accessible and mobility bathrooms', slug: 'accessible-mobility-bathrooms', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('wetrooms-specialist-bathrooms'), name: 'Bathroom waterproofing and tanking', slug: 'bathroom-waterproofing-tanking', display_order: 4, is_active: true },
       
       // NEW: Floors, Doors & Windows microservices
       { subcategory_id: subcategoryMap.get('flooring'), name: 'Hardwood Flooring', slug: 'hardwood-flooring', display_order: 1, is_active: true },
