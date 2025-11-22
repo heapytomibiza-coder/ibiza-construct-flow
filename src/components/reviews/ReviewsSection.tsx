@@ -17,7 +17,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   const { reviews, loading, stats, respondToReview } = useReviews(professionalId, 'professional');
   const [sortBy, setSortBy] = useState<'recent' | 'highest' | 'lowest'>('recent');
 
-  const sortedReviews = [...reviews].sort((a, b) => {
+  const sortedReviews = [...(reviews || [])].sort((a, b) => {
     switch (sortBy) {
       case 'highest':
         return b.rating - a.rating;
@@ -106,7 +106,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
       <Card className="flex flex-col">
         <CardHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
-            <CardTitle>All Reviews ({reviews.length})</CardTitle>
+            <CardTitle>All Reviews ({reviews?.length || 0})</CardTitle>
             <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
               <SelectTrigger className="w-40">
                 <SelectValue />
