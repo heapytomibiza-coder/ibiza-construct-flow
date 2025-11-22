@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useBookingCart } from '@/contexts/BookingCartContext';
-import { Star, Clock, MapPin, MessageSquare, Info } from 'lucide-react';
+import { Star, Clock, MapPin, MessageSquare, Info, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { getCategoryIcon } from '@/lib/categoryIcons';
 
 interface DiscoveryServiceCardProps {
   item: {
@@ -39,18 +40,48 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
 
   const formatPrice = () => {
     if (item.pricing_type === 'quote_required') {
-      return 'Quote Required';
+      return 'Price on request';
     }
     if (item.pricing_type === 'flat_rate') {
-      return `€${item.base_price}`;
+      return `€${item.base_price}/job`;
     }
     if (item.pricing_type === 'per_hour') {
-      return `From €${item.base_price}/hr`;
+      return `€${item.base_price}/hour`;
     }
     if (item.pricing_type === 'per_unit') {
-      return `€${item.base_price}/${item.unit_type}`;
+      const unitLabel = item.unit_type || 'item';
+      return `€${item.base_price}/${unitLabel}`;
     }
     return 'Price on request';
+  };
+
+  const getCategoryIconComponent = (): LucideIcon => {
+    // Try to get icon from category metadata
+    const categoryLower = item.category?.toLowerCase() || '';
+    
+    if (categoryLower.includes('door') || categoryLower.includes('window')) {
+      return getCategoryIcon('DoorOpen');
+    }
+    if (categoryLower.includes('kitchen')) {
+      return getCategoryIcon('Home');
+    }
+    if (categoryLower.includes('metalwork') || categoryLower.includes('welding')) {
+      return getCategoryIcon('Hammer');
+    }
+    if (categoryLower.includes('machinery') || categoryLower.includes('industrial')) {
+      return getCategoryIcon('HardHat');
+    }
+    if (categoryLower.includes('electrical')) {
+      return getCategoryIcon('Zap');
+    }
+    if (categoryLower.includes('plumbing')) {
+      return getCategoryIcon('Droplet');
+    }
+    if (categoryLower.includes('painting')) {
+      return getCategoryIcon('Paintbrush');
+    }
+    
+    return getCategoryIcon('Wrench');
   };
 
   const getPriceBadgeVariant = () => {
@@ -93,20 +124,25 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-            <span className="text-4xl">{item.category === 'Electrical' ? '⚡' : '🔧'}</span>
+            {React.createElement(getCategoryIconComponent(), {
+              className: "h-16 w-16 text-primary/60"
+            })}
           </div>
         )}
 
         {/* Price Badge Overlay */}
         <div className="absolute top-3 right-3">
-          <Badge variant={getPriceBadgeVariant()} className="shadow-lg font-semibold">
+          <Badge 
+            variant={getPriceBadgeVariant()} 
+            className="shadow-lg font-semibold text-sm px-3 py-1 bg-background/95 backdrop-blur-sm border-primary/30"
+          >
             {formatPrice()}
           </Badge>
         </div>
 
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
-          <Badge variant="outline" className="bg-background/90 backdrop-blur-sm">
+          <Badge variant="outline" className="bg-background/95 backdrop-blur-sm text-xs">
             {item.category}
           </Badge>
         </div>
@@ -137,7 +173,7 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
           {item.professional?.rating && (
             <div className="flex items-center gap-1">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              <span>{item.professional.rating}</span>
+              <span className="font-medium">{Number(item.professional.rating).toFixed(1)}</span>
             </div>
           )}
           {item.estimated_duration_minutes && (
