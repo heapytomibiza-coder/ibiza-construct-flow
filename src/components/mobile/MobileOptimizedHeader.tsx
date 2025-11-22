@@ -175,32 +175,20 @@ export const MobileOptimizedHeader = ({
 
               {/* Navigation Links */}
               <div className="space-y-1">
-                {/* Discover - Collapsible with nested Services & Professionals */}
-                <Accordion type="single" collapsible className="border-none">
-                  <AccordionItem value="discover" className="border-none">
-                    <AccordionTrigger className="px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted hover:no-underline">
-                      {t('discovery')}
-                    </AccordionTrigger>
-                    <AccordionContent className="pl-3 space-y-1 pb-0">
-                      <Link 
-                        to="/discovery" 
-                        className="block px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        {t('services')}
-                      </Link>
-                      <Link 
-                        to="/professionals" 
-                        className="block px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        {t('professionals')}
-                      </Link>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-
-                {/* Top-level links */}
+                <Link 
+                  to="/discovery" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t('discovery')}
+                </Link>
+                <Link 
+                  to="/professionals" 
+                  className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t('professionals')}
+                </Link>
                 <Link 
                   to="/post" 
                   className="block px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
