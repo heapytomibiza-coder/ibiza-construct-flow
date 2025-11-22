@@ -39,5 +39,8 @@ verify_jwt = false
 [functions.seed-commercial-industrial-questions]
 verify_jwt = false
 
+[functions.seed-legal-regulatory-questions]
+verify_jwt = false
+
 [functions.create-custom-demo]
 verify_jwt = false
