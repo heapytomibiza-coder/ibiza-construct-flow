@@ -144,7 +144,6 @@ const Calculator = lazyWithRetry(() => import("./pages/Calculator"));
 const Install = lazyWithRetry(() => import("./pages/Install"));
 const FairShowcase = lazyWithRetry(() => import("./pages/FairShowcase"));
 const FairExhibitorOnboarding = lazyWithRetry(() => import("./components/fair/FairExhibitorOnboarding"));
-const PublicServicesPage = lazyWithRetry(() => import("./pages/ServicesPage"));
 
 // Other Pages
 const Templates = lazyWithRetry(() => import("./pages/Templates"));
@@ -213,7 +212,6 @@ function AppContent() {
                   <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<Index />} />
-                    <Route path="/services" element={<PublicServicesPage />} />
                     <Route path="/install" element={<Install />} />
                     <Route path="/calculator" element={<Calculator />} />
       <Route path="/demo-setup" element={<DemoSetup />} />

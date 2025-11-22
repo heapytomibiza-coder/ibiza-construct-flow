@@ -49,7 +49,7 @@ export const MobileOptimizedHeader = ({
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/services?search=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/discovery?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
       setSearchQuery('');
     }
@@ -183,7 +183,7 @@ export const MobileOptimizedHeader = ({
                     </AccordionTrigger>
                     <AccordionContent className="pl-3 space-y-1 pb-0">
                       <Link 
-                        to="/services" 
+                        to="/discovery" 
                         className="block px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors"
                         onClick={() => setIsMenuOpen(false)}
                       >
