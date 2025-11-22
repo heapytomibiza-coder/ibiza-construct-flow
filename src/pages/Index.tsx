@@ -69,7 +69,7 @@ const Index = () => {
         </section>
         
         {(layout?.showBenefitsStrip ?? benefitsStripEnabled) && <BenefitsStrip />}
-        {(layout?.showCarousel ?? featuredCarouselEnabled) ? <FeaturedServicesCarousel /> : <Services />}
+        {(layout?.showCarousel ?? featuredCarouselEnabled) ? <FeaturedServicesCarousel /> : <Services maxServices={8} />}
         <ExpressModeSection />
         <HowItWorks />
         <ProfessionalNetwork />
