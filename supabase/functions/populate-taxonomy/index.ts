@@ -152,13 +152,12 @@ Deno.serve(async (req) => {
       { category_id: categoryMap.get('Handyman & General Services'), name: 'Small Carpentry and Home Improvements', slug: 'small-carpentry-home-improvements', icon_name: 'RulerSquare', icon_emoji: '📐', display_order: 4, is_active: true },
       { category_id: categoryMap.get('Handyman & General Services'), name: 'Odd Jobs and Help', slug: 'odd-jobs-help', icon_name: 'ListChecks', icon_emoji: '✅', display_order: 5, is_active: true },
 
-      // Commercial & Industrial - 6 subcategories
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Office Fit-outs', slug: 'office-fitouts', icon_name: 'Building', icon_emoji: '🏢', display_order: 1, is_active: true },
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Retail Spaces', slug: 'retail-spaces', icon_name: 'Building', icon_emoji: '🏪', display_order: 2, is_active: true },
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Industrial Projects', slug: 'industrial-projects', icon_name: 'Building', icon_emoji: '🏭', display_order: 3, is_active: true },
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Warehouses', slug: 'warehouses', icon_name: 'Building', icon_emoji: '📦', display_order: 4, is_active: true },
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Restaurant Fit-outs', slug: 'restaurant-fitouts', icon_name: 'Building', icon_emoji: '🍽️', display_order: 5, is_active: true },
-      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Facilities Management', slug: 'facilities-management', icon_name: 'Building', icon_emoji: '⚙️', display_order: 6, is_active: true },
+      // Commercial & Industrial - 5 NEW subcategories (detailed structure)
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Office Fit-Outs and Refurbishments', slug: 'office-fit-outs-refurbishments', icon_name: 'Building2', icon_emoji: '🏢', display_order: 1, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Retail, Hospitality and Leisure', slug: 'retail-hospitality-leisure', icon_name: 'Store', icon_emoji: '🏪', display_order: 2, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Industrial, Warehouse and Storage', slug: 'industrial-warehouse-storage', icon_name: 'Warehouse', icon_emoji: '🏭', display_order: 3, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Commercial Maintenance and Repairs', slug: 'commercial-maintenance-repairs', icon_name: 'Wrench', icon_emoji: '🔧', display_order: 4, is_active: true },
+      { category_id: categoryMap.get('Commercial & Industrial'), name: 'Building Services and Compliance', slug: 'building-services-compliance', icon_name: 'ShieldCheck', icon_emoji: '✅', display_order: 5, is_active: true },
       
       // Legal & Regulatory - 5 subcategories
       { category_id: categoryMap.get('Legal & Regulatory'), name: 'Building Permits', slug: 'building-permits', icon_name: 'FileText', icon_emoji: '📋', display_order: 1, is_active: true },
@@ -557,7 +556,43 @@ Deno.serve(async (req) => {
       { subcategory_id: subcategoryMap.get('odd-jobs-help'), name: 'Help moving items in the home', slug: 'help-moving-items-home', display_order: 2, is_active: true },
       { subcategory_id: subcategoryMap.get('odd-jobs-help'), name: 'Minor outdoor and garden jobs', slug: 'minor-outdoor-garden-jobs', display_order: 3, is_active: true },
       { subcategory_id: subcategoryMap.get('odd-jobs-help'), name: "I'm not sure – need a handyman", slug: 'not-sure-need-handyman', display_order: 4, is_active: true },
-
+      
+      // NEW: Commercial & Industrial microservices (5 subcategories, 25 services total)
+      // Office Fit-Outs and Refurbishments (5 services)
+      { subcategory_id: subcategoryMap.get('office-fit-outs-refurbishments'), name: 'Office fit-outs', slug: 'office-fit-outs', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('office-fit-outs-refurbishments'), name: 'Office refurbishments', slug: 'office-refurbishments', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('office-fit-outs-refurbishments'), name: 'Co-working and shared offices', slug: 'coworking-shared-offices', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('office-fit-outs-refurbishments'), name: 'Meeting and boardrooms', slug: 'meeting-boardrooms', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('office-fit-outs-refurbishments'), name: 'Large commercial projects', slug: 'commercial-projects', display_order: 5, is_active: true },
+      
+      // Retail, Hospitality and Leisure (5 services)
+      { subcategory_id: subcategoryMap.get('retail-hospitality-leisure'), name: 'Retail spaces', slug: 'retail-spaces', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('retail-hospitality-leisure'), name: 'Restaurant and bar fit-outs', slug: 'restaurant-bar-fitouts', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('retail-hospitality-leisure'), name: 'Cafe and takeaway refurbishments', slug: 'cafe-takeaway-refurbishments', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('retail-hospitality-leisure'), name: 'Clubs and venue fit-outs', slug: 'clubs-venue-fitouts', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('retail-hospitality-leisure'), name: 'Pop-up and temporary shops', slug: 'popup-temporary-shops', display_order: 5, is_active: true },
+      
+      // Industrial, Warehouse and Storage (5 services)
+      { subcategory_id: subcategoryMap.get('industrial-warehouse-storage'), name: 'Warehouse fit-outs', slug: 'warehouse-fitouts', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('industrial-warehouse-storage'), name: 'Industrial unit refurbishments', slug: 'industrial-unit-refurbishments', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('industrial-warehouse-storage'), name: 'Racking and storage systems', slug: 'racking-storage-systems', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('industrial-warehouse-storage'), name: 'Loading bay and access works', slug: 'loading-bay-access-works', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('industrial-warehouse-storage'), name: 'Clean rooms and specialist areas', slug: 'clean-rooms-specialist-areas', display_order: 5, is_active: true },
+      
+      // Commercial Maintenance and Repairs (5 services)
+      { subcategory_id: subcategoryMap.get('commercial-maintenance-repairs'), name: 'General commercial repairs', slug: 'general-commercial-repairs', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('commercial-maintenance-repairs'), name: 'Planned maintenance contracts', slug: 'planned-maintenance-contracts', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('commercial-maintenance-repairs'), name: 'Emergency call-outs', slug: 'emergency-callouts', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('commercial-maintenance-repairs'), name: 'Common areas and stairwells', slug: 'common-areas-stairwells', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('commercial-maintenance-repairs'), name: 'Shopfront and facade repairs', slug: 'shopfront-facade-repairs', display_order: 5, is_active: true },
+      
+      // Building Services and Compliance (5 services)
+      { subcategory_id: subcategoryMap.get('building-services-compliance'), name: 'Fire safety works', slug: 'fire-safety-works', display_order: 1, is_active: true },
+      { subcategory_id: subcategoryMap.get('building-services-compliance'), name: 'Accessibility improvements', slug: 'accessibility-improvements', display_order: 2, is_active: true },
+      { subcategory_id: subcategoryMap.get('building-services-compliance'), name: 'Partitioning and layout changes', slug: 'partitioning-layout-changes', display_order: 3, is_active: true },
+      { subcategory_id: subcategoryMap.get('building-services-compliance'), name: 'Acoustic treatments', slug: 'acoustic-treatments', display_order: 4, is_active: true },
+      { subcategory_id: subcategoryMap.get('building-services-compliance'), name: 'Signage and wayfinding', slug: 'signage-wayfinding', display_order: 5, is_active: true },
+      
       // NEW: Commercial & Industrial microservices
       { subcategory_id: subcategoryMap.get('office-fitouts'), name: 'Office Partitions', slug: 'office-partitions', display_order: 1, is_active: true },
       { subcategory_id: subcategoryMap.get('office-fitouts'), name: 'Office Renovation', slug: 'office-renovation', display_order: 2, is_active: true },

@@ -36,5 +36,8 @@ verify_jwt = false
 [functions.seed-handyman-questions]
 verify_jwt = false
 
+[functions.seed-commercial-industrial-questions]
+verify_jwt = false
+
 [functions.create-custom-demo]
 verify_jwt = false
