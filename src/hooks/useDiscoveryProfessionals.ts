@@ -22,16 +22,25 @@ export function useDiscoveryProfessionals(searchTerm: string, filters: Discovery
         .from('professional_profiles')
         .select(`
           user_id,
+          business_name,
           primary_trade,
           bio,
           experience_years,
           hourly_rate,
           zones,
           skills,
+          subsector_tags,
+          ideal_clients,
+          unique_selling_points,
+          team_size,
+          languages,
           portfolio_images,
           response_time_hours,
           is_active,
           subscription_tier,
+          whatsapp,
+          contact_phone,
+          contact_email,
           profiles!inner(
             full_name,
             avatar_url
@@ -91,16 +100,24 @@ export function useDiscoveryProfessionals(searchTerm: string, filters: Discovery
         return {
           ...prof,
           id: prof.user_id,
-          full_name: prof.profiles?.full_name || 'Professional',
+          business_name: prof.business_name,
+          full_name: prof.profiles?.full_name || prof.business_name || 'Professional',
           profile_image_url: prof.profiles?.avatar_url,
           specializations: Array.isArray(prof.skills) ? prof.skills : [],
+          subsector_tags: Array.isArray(prof.subsector_tags) ? prof.subsector_tags : [],
+          ideal_clients: prof.ideal_clients,
+          unique_selling_points: Array.isArray(prof.unique_selling_points) ? prof.unique_selling_points : [],
+          team_size: prof.team_size,
+          languages: Array.isArray(prof.languages) ? prof.languages : [],
           rating: stats?.average_rating || 0,
           total_jobs_completed: stats?.completed_bookings || 0,
           total_reviews: stats?.total_reviews || 0,
           verification_status: isVerified ? 'verified' : 'unverified',
           availability_status: 'available',
           base_price_band: prof.hourly_rate > 50 ? 'premium' : prof.hourly_rate < 25 ? 'budget' : 'standard',
-          coverage_area: Array.isArray(prof.zones) ? prof.zones : []
+          coverage_area: Array.isArray(prof.zones) ? prof.zones : [],
+          phone: prof.whatsapp || prof.contact_phone,
+          location: Array.isArray(prof.zones) && prof.zones.length > 0 ? prof.zones[0] : null
         };
       }) || [];
 
