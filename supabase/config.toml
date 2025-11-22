@@ -27,5 +27,8 @@ verify_jwt = false
 [functions.seed-gardening-landscaping-questions]
 verify_jwt = false
 
+[functions.seed-kitchen-bathroom-questions]
+verify_jwt = false
+
 [functions.create-custom-demo]
 verify_jwt = false
