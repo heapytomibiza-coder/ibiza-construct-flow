@@ -149,39 +149,31 @@ export const MicroStep: React.FC<MicroStepProps> = ({
         <Button
           variant="ghost"
           onClick={onBack}
-          className="mb-4"
+          size="sm"
+          className="mb-2"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
 
-        <div>
-          <div className="flex gap-2 mb-4">
-            <Badge variant="outline">{mainCategory}</Badge>
-            <Badge variant="outline">{subcategory}</Badge>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
-            What specific tasks do you need?
+        <div className="text-center">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            What tasks do you need completing?
           </h1>
-          <p className="text-lg text-muted-foreground mt-2">
-            Select one or more services (click to select/deselect)
+          <p className="text-sm text-muted-foreground mt-2">
+            Select all that apply
           </p>
-          {selectedMicroIds.length > 0 && (
-            <p className="text-sm text-copper font-medium">
-              {selectedMicroIds.length} service{selectedMicroIds.length > 1 ? 's' : ''} selected
-            </p>
-          )}
         </div>
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="h-28 bg-muted/30 animate-pulse rounded-xl" />
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div key={i} className="h-20 bg-muted/30 animate-pulse rounded-xl" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
           {micros.map((micro) => {
             const isSelected = selectedMicroIds.includes(micro.id);
             
@@ -203,37 +195,38 @@ export const MicroStep: React.FC<MicroStepProps> = ({
             };
             
             return (
-              <Card
+              <button
                 key={micro.id}
                 className={cn(
-                  "p-4 cursor-pointer transition-all hover:shadow-md min-h-[100px]",
-                  "flex items-center justify-center text-center",
-                  isSelected && "ring-2 ring-copper shadow-md"
+                  "flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left",
+                  "hover:shadow-md active:scale-[0.98] bg-card",
+                  isSelected 
+                    ? "border-primary shadow-sm" 
+                    : "border-border hover:border-primary/30"
                 )}
                 onClick={handleClick}
               >
-                <div className="space-y-2 w-full">
-                  <h3 className="font-semibold text-charcoal text-sm leading-tight">
-                    {micro.micro}
-                  </h3>
-                  {isSelected && (
-                    <CheckCircle2 className="w-5 h-5 text-copper mx-auto" />
-                  )}
-                </div>
-              </Card>
+                <CheckCircle2 className={cn(
+                  "w-5 h-5 flex-shrink-0",
+                  isSelected ? "text-primary" : "text-muted-foreground/30"
+                )} />
+                <span className="text-sm font-medium leading-tight">
+                  {micro.micro}
+                </span>
+              </button>
             );
           })}
         </div>
       )}
 
       {selectedMicroIds.length > 0 && !loading && (
-        <div className="flex justify-end pt-6">
+        <div className="flex justify-center pt-6">
           <Button
             size="lg"
             onClick={onNext}
-            className="bg-gradient-hero text-white px-8"
+            className="min-w-[200px]"
           >
-            Continue
+            Continue ({selectedMicroIds.length})
           </Button>
         </div>
       )}

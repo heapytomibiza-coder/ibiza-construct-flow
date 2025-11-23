@@ -103,77 +103,64 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="space-y-4">
-        <Button variant="ghost" onClick={onBack} className="mb-4">
+        <Button variant="ghost" onClick={onBack} size="sm" className="mb-2">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
 
-        <div>
-          <Badge variant="outline" className="mb-4">
-            {categoryName}
-          </Badge>
-          <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
-            What specific service do you need?
+        <div className="text-center">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            What type of {categoryName.toLowerCase()} job is it?
           </h1>
-          <p className="text-lg text-muted-foreground mt-2">
-            Select the type of work within this category
+          <p className="text-sm text-muted-foreground mt-2">
+            Select an option
           </p>
         </div>
       </div>
 
       {loading ? (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Loading services...</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-32 bg-muted/30 animate-pulse rounded-xl" />
+              <div key={i} className="h-28 bg-muted/30 animate-pulse rounded-xl" />
             ))}
           </div>
         </div>
       ) : subcategories.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No services found for "{categoryName}"</p>
+          <p className="text-muted-foreground">No services found</p>
           <Button onClick={onBack} className="mt-4">Go Back</Button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
           {subcategories.map((sub) => {
             const isSelected = selectedSubcategoryId === sub.id;
-            const IconComponent = sub.icon_name ? getCategoryIcon(sub.icon_name) : null;
             
             return (
-              <Card
+              <button
                 key={sub.id}
                 className={cn(
-                  "p-6 cursor-pointer transition-all hover:shadow-lg",
-                  isSelected && "ring-2 ring-copper shadow-lg"
+                  "flex flex-col items-center justify-center gap-2 p-6 rounded-xl border-2 transition-all",
+                  "hover:shadow-md active:scale-[0.98] bg-card min-h-[120px]",
+                  isSelected 
+                    ? "border-primary shadow-sm" 
+                    : "border-border hover:border-primary/30"
                 )}
                 onClick={() => handleSelect(sub)}
               >
-                <div className="flex flex-col items-center justify-center gap-3 h-full">
-                  {/* Icon */}
-                  {IconComponent && (
-                    <div className="p-3 rounded-lg bg-primary/10">
-                      <IconComponent className="w-6 h-6 text-primary" />
-                    </div>
-                  )}
-                  {!IconComponent && sub.icon_emoji && (
-                    <span className="text-3xl">{sub.icon_emoji}</span>
-                  )}
-                  
-                  {/* Name */}
-                  <span className="font-medium text-center text-charcoal">
-                    {sub.name}
+                <span className={cn(
+                  "font-medium text-center text-sm leading-tight",
+                  isSelected ? "text-primary" : "text-foreground"
+                )}>
+                  {sub.name}
+                </span>
+                
+                {sub.description && (
+                  <span className="text-xs text-muted-foreground text-center line-clamp-2">
+                    {sub.description}
                   </span>
-                  
-                  {/* Description hint */}
-                  {sub.description && (
-                    <span className="text-xs text-muted-foreground text-center line-clamp-2">
-                      {sub.description}
-                    </span>
-                  )}
-                </div>
-              </Card>
+                )}
+              </button>
             );
           })}
         </div>

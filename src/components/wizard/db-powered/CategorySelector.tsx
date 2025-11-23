@@ -105,84 +105,48 @@ export const CategorySelector = ({
   }
 
   return (
-    <div className={cn("max-w-6xl mx-auto", className)}>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+    <div className={cn("max-w-5xl mx-auto", className)}>
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {categories.map((category) => {
           const isSelected = selectedCategory === category.slug;
           const IconComponent = category.icon_name ? ICON_MAP[category.icon_name] : null;
           
           return (
-            <Card
+            <button
               key={category.id}
               className={cn(
-                "cursor-pointer transition-all hover:scale-[1.01] hover:shadow-lg",
-                "border-2 p-5",
+                "flex flex-col items-center justify-center gap-3 p-6 rounded-xl border-2 transition-all",
+                "hover:shadow-md active:scale-[0.98] bg-card",
                 isSelected
-                  ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20"
-                  : "border-border hover:border-primary/50"
+                  ? "border-primary shadow-sm"
+                  : "border-border hover:border-primary/30"
               )}
               onClick={() => {
                 onSelect(category.slug, category.id);
                 if (onNext) {
-                  setTimeout(() => onNext(), 400);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelect(category.slug, category.id);
-                  if (onNext) {
-                    setTimeout(() => onNext(), 400);
-                  }
+                  setTimeout(() => onNext(), 200);
                 }
               }}
               aria-pressed={isSelected}
             >
-              <div className="flex flex-col items-center text-center space-y-3">
-                {/* Category Name */}
-                <h3 className={cn(
-                  "font-semibold text-base leading-tight w-full",
-                  isSelected ? "text-primary" : "text-foreground"
-                )}>
-                  {category.name}
-                </h3>
-                
-                {/* Icon */}
-                {IconComponent && (
-                  <div className={cn(
-                    "p-3 rounded-full transition-colors",
-                    isSelected 
-                      ? "bg-primary/10 text-primary" 
-                      : "bg-muted text-muted-foreground"
-                  )}>
-                    <IconComponent className="h-7 w-7" />
-                  </div>
-                )}
-                
-                {/* Examples */}
-                {category.examples && category.examples.length > 0 && (
-                  <div className="space-y-0.5 w-full">
-                    {category.examples.slice(0, 3).map((example, idx) => (
-                      <p key={idx} className="text-xs text-muted-foreground/80">
-                        {example}
-                      </p>
-                    ))}
-                  </div>
-                )}
-                
-                {/* Featured Badge */}
-                {category.is_featured && (
-                  <Badge 
-                    variant="secondary" 
-                    className="text-[10px] px-2 py-0.5"
-                  >
-                    Popular
-                  </Badge>
-                )}
-              </div>
-            </Card>
+              {/* Icon */}
+              {IconComponent && (
+                <div className="w-12 h-12 flex items-center justify-center">
+                  <IconComponent className={cn(
+                    "w-8 h-8",
+                    isSelected ? "text-primary" : "text-muted-foreground"
+                  )} />
+                </div>
+              )}
+              
+              {/* Category Name */}
+              <span className={cn(
+                "text-sm font-medium text-center leading-tight",
+                isSelected ? "text-primary" : "text-foreground"
+              )}>
+                {category.name}
+              </span>
+            </button>
           );
         })}
       </div>
