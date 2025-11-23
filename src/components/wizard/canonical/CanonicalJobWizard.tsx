@@ -445,12 +445,12 @@ export const CanonicalJobWizard: React.FC = () => {
       case 1:
         return (
           <div id="wizard-step-category" className="max-w-6xl mx-auto space-y-6">
-            <div className="text-center space-y-3">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+            <div className="text-center space-y-3 py-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
                 What type of work do you need?
               </h1>
-              <p className="text-lg text-muted-foreground">
-                Choose the category that best fits your project
+              <p className="text-sm text-muted-foreground">
+                Choose your category
               </p>
             </div>
             <CategorySelector
