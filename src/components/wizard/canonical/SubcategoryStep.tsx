@@ -217,9 +217,12 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
       {loading ? (
         <div className="space-y-3" data-testid="loader">
           <p className="text-sm text-muted-foreground">Loading subcategories...</p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-32 bg-muted/30 animate-pulse rounded-xl" />
+              <div 
+                key={i} 
+                className="h-48 bg-gradient-to-br from-sage-muted/10 to-copper/5 animate-pulse rounded-xl border border-sage-muted/20"
+              />
             ))}
           </div>
         </div>
@@ -229,7 +232,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
           <Button onClick={onBack} className="mt-4">Go Back</Button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {subcategories.map((sub) => {
             const isSelected = selectedSubcategory === sub.name;
             const Icon = sub.icon_name ? getCategoryIcon(sub.icon_name) : null;
@@ -250,9 +253,11 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
                 key={sub.name}
                 data-testid="subcategory-tile"
                 className={cn(
-                  "p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-105 duration-200",
-                  "flex flex-col gap-3 relative",
-                  isSelected && "ring-2 ring-copper shadow-lg"
+                  "group p-6 cursor-pointer transition-all duration-300",
+                  "flex flex-col gap-3 relative overflow-hidden",
+                  "hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1",
+                  "before:absolute before:inset-0 before:bg-gradient-to-br before:from-sage/5 before:to-copper/5 before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100",
+                  isSelected && "ring-2 ring-copper shadow-xl scale-[1.02] before:opacity-100"
                 )}
                 onClick={() => handleTileClick(sub.name)}
               >
@@ -261,38 +266,48 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="absolute top-3 right-3">
-                          <div className={cn("w-3 h-3 rounded-full", indicatorColor)} />
+                        <div className="absolute top-3 right-3 z-10">
+                          <div className={cn(
+                            "w-3 h-3 rounded-full transition-transform duration-300 group-hover:scale-125",
+                            indicatorColor,
+                            (sub.coverage_percentage || 0) >= 80 && "animate-pulse"
+                          )} />
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">{questionsTooltip}</p>
+                      <TooltipContent side="left">
+                        <p className="text-xs font-medium">{questionsTooltip}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 )}
                 
                 {Icon && (
-                  <div className="flex justify-center">
-                    <Icon className="w-12 h-12 text-copper" />
+                  <div className="flex justify-center transition-transform duration-300 group-hover:scale-110">
+                    <div className="relative">
+                      <Icon className="w-12 h-12 text-copper relative z-10 transition-colors duration-300 group-hover:text-copper/80" />
+                      <div className="absolute inset-0 bg-copper/20 blur-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    </div>
                   </div>
                 )}
                 
-                <div className="flex-1 flex flex-col gap-2">
-                  <h3 className="font-semibold text-center text-charcoal">
+                <div className="flex-1 flex flex-col gap-2 relative z-10">
+                  <h3 className="font-semibold text-center text-charcoal transition-colors duration-300 group-hover:text-charcoal/90">
                     {sub.name}
                   </h3>
                   
                   {sub.description && (
-                    <p className="text-sm text-muted-foreground text-center line-clamp-2">
+                    <p className="text-sm text-muted-foreground text-center line-clamp-2 transition-colors duration-300 group-hover:text-muted-foreground/80">
                       {sub.description}
                     </p>
                   )}
                 </div>
                 
                 {sub.service_count !== undefined && sub.service_count > 0 && (
-                  <div className="flex justify-center pt-2 border-t border-sage-muted/20">
-                    <Badge variant="secondary" className="text-xs">
+                  <div className="flex justify-center pt-2 border-t border-sage-muted/20 relative z-10">
+                    <Badge 
+                      variant="secondary" 
+                      className="text-xs transition-all duration-300 group-hover:bg-copper/10 group-hover:text-copper group-hover:border-copper/20"
+                    >
                       {sub.service_count} service{sub.service_count !== 1 ? 's' : ''}
                     </Badge>
                   </div>
