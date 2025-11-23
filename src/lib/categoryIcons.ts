@@ -22,6 +22,7 @@ import {
   FileText,
   Layers,
   Sparkles,
+  Truck,
   LucideIcon
 } from 'lucide-react';
 
@@ -45,6 +46,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   FileText,
   Layers,
   Sparkles,
+  Truck,
 };
 
 /**
