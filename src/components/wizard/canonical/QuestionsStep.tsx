@@ -225,7 +225,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         .eq('micro_slug', primaryMicroSlug)
         .eq('status', 'approved')
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       if (!packError && pack?.content) {
         console.log('✅ Loaded questions from database pack');
