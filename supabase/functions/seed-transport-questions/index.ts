@@ -21,7 +21,7 @@ Deno.serve(async (req: Request) => {
       try {
         // 1. Check if microservice exists
         const { data: micro, error: microError } = await supabase
-          .from('services_micro')
+          .from('service_micro_categories')
           .select('id, slug')
           .eq('slug', pack.microSlug)
           .maybeSingle();
@@ -126,8 +126,7 @@ function mapQuestionType(type: string): string {
     'textarea': 'text',
     'select': 'single',
     'radio': 'single',
-    'checkbox': 'multi',
-    'file': 'file'
+    'checkbox': 'multi'
   };
   return typeMap[type] || 'text';
 }
