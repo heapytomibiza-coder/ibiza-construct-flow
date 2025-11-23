@@ -150,6 +150,7 @@ const FairExhibitorOnboarding = lazyWithRetry(() => import("./components/fair/Fa
 const Templates = lazyWithRetry(() => import("./pages/Templates"));
 const ColorPreview = lazyWithRetry(() => import("./pages/ColorPreview"));
 const DesignTest = lazyWithRetry(() => import("./pages/DesignTest"));
+const MicroServicesReference = lazyWithRetry(() => import("./pages/MicroServicesReference"));
 
 // Legal Pages
 const TermsOfService = lazyWithRetry(() => import("./pages/TermsOfService"));
@@ -218,6 +219,7 @@ function AppContent() {
                     <Route path="/calculator" element={<Calculator />} />
       <Route path="/demo-setup" element={<DemoSetup />} />
       <Route path="/demo-video-guide" element={<DemoVideoGuide />} />
+                    <Route path="/micro-services-reference" element={<MicroServicesReference />} />
                     <Route path="/fair" element={<FairShowcase />} />
                     <Route path="/fair/onboarding" element={<FairExhibitorOnboarding />} />
                     <Route path="/fair/:sectorSlug" element={<FairShowcase />} />
