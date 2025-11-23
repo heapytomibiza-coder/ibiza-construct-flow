@@ -135,6 +135,7 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
           {subcategories.map((sub) => {
             const isSelected = selectedSubcategoryId === sub.id;
+            const IconComponent = sub.icon_name ? getCategoryIcon(sub.icon_name) : null;
             
             return (
               <button
@@ -148,6 +149,16 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
                 )}
                 onClick={() => handleSelect(sub)}
               >
+                {/* Icon */}
+                {IconComponent && (
+                  <div className="w-10 h-10 flex items-center justify-center">
+                    <IconComponent className={cn(
+                      "w-6 h-6",
+                      isSelected ? "text-primary" : "text-muted-foreground"
+                    )} />
+                  </div>
+                )}
+                
                 <span className={cn(
                   "font-medium text-center text-sm leading-tight",
                   isSelected ? "text-primary" : "text-foreground"
