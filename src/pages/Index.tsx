@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
@@ -14,6 +15,8 @@ import { Link } from 'react-router-dom';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Helmet } from 'react-helmet-async';
 import { UserPlus, Shield, Settings } from 'lucide-react';
+import { useTour } from '@/components/tours/InteractiveTour';
+import { homepageTourSteps } from '@/config/tours';
 
 const Index = () => {
   const { t } = useTranslation('components');
@@ -23,20 +26,45 @@ const Index = () => {
   const benefitsStripEnabled = useFeature('enable_home_benefits_strip');
   const { value: layout } = useSiteSettings('homepage', 'layout');
   
+  // Tour system integration
+  const { TourComponent, startTour } = useTour('homepage-tour', homepageTourSteps);
+
+  // Register tour triggers for header button
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('register-tour-trigger', {
+      detail: { key: 'startHomeTour', trigger: startTour },
+    }));
+
+    // Reset all tours function
+    const resetAllTours = () => {
+      localStorage.removeItem('tour-homepage-tour');
+      localStorage.removeItem('tour-job-wizard-tour');
+      window.location.reload();
+    };
+    
+    window.dispatchEvent(new CustomEvent('register-tour-trigger', {
+      detail: { key: 'resetAllTours', trigger: resetAllTours },
+    }));
+  }, [startTour]);
+  
   return (
-    <div className="min-h-screen">
-      <Helmet>
-        <title>CS Ibiza - Professional Construction & Renovation Services in Ibiza</title>
-        <meta 
-          name="description" 
-          content="Connect with verified construction professionals in Ibiza. Get instant quotes for renovations, repairs, and building projects. Trusted by homeowners and businesses." 
-        />
-        <link rel="canonical" href="https://csibiza.com/" />
-      </Helmet>
-      <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
-      
-      <main className="pt-0">
-        <Hero />
+    <>
+      {TourComponent}
+      <div className="min-h-screen">
+        <Helmet>
+          <title>CS Ibiza - Professional Construction & Renovation Services in Ibiza</title>
+          <meta 
+            name="description" 
+            content="Connect with verified construction professionals in Ibiza. Get instant quotes for renovations, repairs, and building projects. Trusted by homeowners and businesses." 
+          />
+          <link rel="canonical" href="https://csibiza.com/" />
+        </Helmet>
+        <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
+        
+        <main id="main-content" className="pt-0">
+          <section id="hero-section">
+            <Hero />
+          </section>
         
         {/* Quick Access - Professional Onboarding Pages */}
         <section className="container py-12 bg-muted/30">
@@ -68,14 +96,25 @@ const Index = () => {
           </div>
         </section>
         
-        {(layout?.showBenefitsStrip ?? benefitsStripEnabled) && <BenefitsStrip />}
-        {(layout?.showCarousel ?? featuredCarouselEnabled) ? <FeaturedServicesCarousel /> : <Services maxServices={8} />}
-        <ExpressModeSection />
-        <HowItWorks />
-        <ProfessionalNetwork />
-      </main>
-      <Footer />
-    </div>
+          {(layout?.showBenefitsStrip ?? benefitsStripEnabled) && <BenefitsStrip />}
+          
+          <section id="service-categories">
+            {(layout?.showCarousel ?? featuredCarouselEnabled) ? <FeaturedServicesCarousel /> : <Services maxServices={8} />}
+          </section>
+          
+          <ExpressModeSection />
+          
+          <section id="how-it-works-section">
+            <HowItWorks />
+          </section>
+          
+          <section id="professional-network-section">
+            <ProfessionalNetwork />
+          </section>
+        </main>
+        <Footer />
+      </div>
+    </>
   );
 };
 
