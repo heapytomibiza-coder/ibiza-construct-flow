@@ -97,8 +97,21 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
 
   return (
     <>
-      {/* Overlay - Increased z-index to z-[60] */}
-      <div className="fixed inset-0 bg-black/50 z-[60]" />
+      {/* Overlay - Non-blocking with pointer-events: none */}
+      <div 
+        className="fixed inset-0 bg-black/50 z-[60]" 
+        style={{ pointerEvents: 'none' }}
+      />
+
+      {/* Close button - Top right corner */}
+      <button
+        onClick={handleSkip}
+        className="fixed top-4 right-4 z-[63] p-2 rounded-full bg-background/90 hover:bg-background shadow-lg transition-colors"
+        style={{ pointerEvents: 'auto' }}
+        aria-label="Close tour"
+      >
+        <X className="h-5 w-5" />
+      </button>
 
       {/* Tour Card - Increased z-index to z-[62] */}
       <div
@@ -106,6 +119,7 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
         style={{
           top: `${position.top}px`,
           left: `${position.left}px`,
+          pointerEvents: 'auto',
         }}
       >
         <Card>
