@@ -332,16 +332,19 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   };
 
   const mapPackTypeToAIType = (packType: string): AIQuestion['type'] => {
-    const typeMap: Record<string, AIQuestion['type']> = {
-      'single': 'radio',
-      'multi': 'checkbox',
-      'multiple-choice': 'checkbox',
-      'scale': 'scale',
-      'text': 'text',
-      'number': 'number',
-      'yesno': 'yesno',
-      'file': 'file'
-    };
+          const typeMap: Record<string, AIQuestion['type']> = {
+            'single': 'radio',
+            'multi': 'checkbox',
+            'multiple-choice': 'checkbox',
+            'scale': 'scale',
+            'text': 'text',
+            'textarea': 'textarea',
+            'select': 'select',
+            'radio': 'radio',
+            'number': 'number',
+            'yesno': 'yesno',
+            'file': 'file'
+          };
     const mappedType = typeMap[packType] || 'radio';
     console.log(`📝 Mapped question type: "${packType}" → "${mappedType}"`);
     return mappedType;
