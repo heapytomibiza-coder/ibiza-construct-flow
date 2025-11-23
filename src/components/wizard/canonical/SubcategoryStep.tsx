@@ -11,6 +11,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getCategoryIcon } from '@/lib/categoryIcons';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SubcategoryStepProps {
   mainCategory: string;
@@ -27,6 +33,8 @@ interface SubcategoryData {
   description: string | null;
   icon_name: string | null;
   service_count?: number;
+  questions_count?: number;
+  coverage_percentage?: number;
 }
 
 export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
@@ -98,14 +106,59 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
 
         if (!mounted) return;
         
-        // Transform data to include service counts
-        const transformedData = (data || []).map((sub: any) => ({
-          name: sub.name,
-          slug: sub.slug,
-          description: sub.description,
-          icon_name: sub.icon_name,
-          service_count: sub.service_micro_categories?.[0]?.count || 0
-        }));
+        // Get question pack coverage for each subcategory
+        const subcategoryIds = (data || []).map((sub: any) => sub.id);
+        
+        let coverageMap = new Map<string, { total: number; withQuestions: number }>();
+        
+        if (subcategoryIds.length > 0) {
+          // Get all micro-services for these subcategories
+          const { data: microData } = await supabase
+            .from('service_micro_categories')
+            .select('id, subcategory_id, slug')
+            .in('subcategory_id', subcategoryIds)
+            .eq('is_active', true);
+          
+          // Get all active question packs
+          const { data: questionPacksData } = await supabase
+            .from('question_packs')
+            .select('micro_slug')
+            .eq('is_active', true)
+            .eq('status', 'approved');
+          
+          const questionPackSlugs = new Set(
+            questionPacksData?.map(qp => qp.micro_slug) || []
+          );
+          
+          // Build coverage map
+          subcategoryIds.forEach(id => {
+            const microsForSub = microData?.filter(m => m.subcategory_id === id) || [];
+            const total = microsForSub.length;
+            const withQuestions = microsForSub.filter(m => 
+              questionPackSlugs.has(m.slug)
+            ).length;
+            coverageMap.set(id, { total, withQuestions });
+          });
+        }
+        
+        // Transform data to include service counts and question coverage
+        const transformedData = (data || []).map((sub: any) => {
+          const serviceCount = sub.service_micro_categories?.[0]?.count || 0;
+          const coverage = coverageMap.get(sub.id) || { total: 0, withQuestions: 0 };
+          const coveragePercentage = coverage.total > 0 
+            ? Math.round((coverage.withQuestions / coverage.total) * 100) 
+            : 0;
+          
+          return {
+            name: sub.name,
+            slug: sub.slug,
+            description: sub.description,
+            icon_name: sub.icon_name,
+            service_count: serviceCount,
+            questions_count: coverage.withQuestions,
+            coverage_percentage: coveragePercentage
+          };
+        });
         
         setSubcategories(transformedData);
       } catch (error) {
@@ -181,17 +234,44 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
             const isSelected = selectedSubcategory === sub.name;
             const Icon = sub.icon_name ? getCategoryIcon(sub.icon_name) : null;
             
+            // Determine question pack indicator color
+            const hasQuestions = (sub.coverage_percentage || 0) > 0;
+            const indicatorColor = 
+              (sub.coverage_percentage || 0) >= 80 ? 'bg-green-500' :
+              (sub.coverage_percentage || 0) >= 40 ? 'bg-yellow-500' :
+              hasQuestions ? 'bg-orange-500' : 'bg-gray-300';
+            
+            const questionsTooltip = sub.service_count && sub.service_count > 0
+              ? `${sub.questions_count || 0}/${sub.service_count} services have guided questions`
+              : 'No services available';
+            
             return (
               <Card
                 key={sub.name}
                 data-testid="subcategory-tile"
                 className={cn(
                   "p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-105 duration-200",
-                  "flex flex-col gap-3",
+                  "flex flex-col gap-3 relative",
                   isSelected && "ring-2 ring-copper shadow-lg"
                 )}
                 onClick={() => handleTileClick(sub.name)}
               >
+                {/* Question Pack Indicator */}
+                {sub.service_count !== undefined && sub.service_count > 0 && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="absolute top-3 right-3">
+                          <div className={cn("w-3 h-3 rounded-full", indicatorColor)} />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">{questionsTooltip}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                
                 {Icon && (
                   <div className="flex justify-center">
                     <Icon className="w-12 h-12 text-copper" />
