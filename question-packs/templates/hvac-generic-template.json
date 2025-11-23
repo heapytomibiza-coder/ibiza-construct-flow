@@ -1,0 +1,139 @@
+{
+  "id": "REPLACE_WITH_UUID",
+  "category": "hvac",
+  "name": "SERVICE_NAME",
+  "slug": "MICRO_SLUG",
+  "i18nPrefix": "hvac.MICRO_SLUG",
+  "questions": [
+    {
+      "key": "system_type",
+      "type": "multi",
+      "i18nKey": "hvac.common.system_type",
+      "required": true,
+      "options": [
+        { "i18nKey": "hvac.common.system_type.split_ac", "value": "split_ac", "order": 1 },
+        { "i18nKey": "hvac.common.system_type.multi_split", "value": "multi_split", "order": 2 },
+        { "i18nKey": "hvac.common.system_type.central_ac", "value": "central_ac", "order": 3 },
+        { "i18nKey": "hvac.common.system_type.ducted", "value": "ducted", "order": 4 },
+        { "i18nKey": "hvac.common.system_type.heat_pump", "value": "heat_pump", "order": 5 },
+        { "i18nKey": "hvac.common.system_type.boiler", "value": "boiler", "order": 6 },
+        { "i18nKey": "hvac.common.system_type.other", "value": "other", "order": 7 }
+      ],
+      "aiHint": "Key for routing to the right HVAC specialist"
+    },
+    {
+      "key": "job_type",
+      "type": "single",
+      "i18nKey": "hvac.common.job_type",
+      "required": true,
+      "options": [
+        { "i18nKey": "hvac.common.job_type.install_new", "value": "install_new", "order": 1 },
+        { "i18nKey": "hvac.common.job_type.replace_existing", "value": "replace_existing", "order": 2 },
+        { "i18nKey": "hvac.common.job_type.service_maintenance", "value": "service_maintenance", "order": 3 },
+        { "i18nKey": "hvac.common.job_type.repair_fault", "value": "repair_fault", "order": 4 },
+        { "i18nKey": "hvac.common.job_type.remove_system", "value": "remove_system", "order": 5 }
+      ],
+      "aiHint": "Defines workflow and typical time needed"
+    },
+    {
+      "key": "property_type",
+      "type": "single",
+      "i18nKey": "hvac.common.property_type",
+      "required": true,
+      "options": [
+        { "i18nKey": "common.property_type.apartment", "value": "apartment", "order": 1 },
+        { "i18nKey": "common.property_type.house_villa", "value": "house_villa", "order": 2 },
+        { "i18nKey": "common.property_type.commercial", "value": "commercial", "order": 3 }
+      ],
+      "aiHint": "Impacts access and load requirements"
+    },
+    {
+      "key": "number_of_units",
+      "type": "single",
+      "i18nKey": "hvac.common.number_of_units",
+      "required": true,
+      "options": [
+        { "i18nKey": "hvac.common.number_of_units.1", "value": "1", "order": 1 },
+        { "i18nKey": "hvac.common.number_of_units.2_3", "value": "2_3", "order": 2 },
+        { "i18nKey": "hvac.common.number_of_units.4_6", "value": "4_6", "order": 3 },
+        { "i18nKey": "hvac.common.number_of_units.7plus", "value": "7_plus", "order": 4 }
+      ],
+      "aiHint": "Scaling of duration and cost"
+    },
+    {
+      "key": "unit_age_condition",
+      "type": "single",
+      "i18nKey": "hvac.common.unit_age_condition",
+      "required": false,
+      "options": [
+        { "i18nKey": "hvac.common.unit_age_condition.less_5", "value": "less_5", "order": 1 },
+        { "i18nKey": "hvac.common.unit_age_condition.5_10", "value": "5_10", "order": 2 },
+        { "i18nKey": "hvac.common.unit_age_condition.10plus", "value": "10_plus", "order": 3 },
+        { "i18nKey": "hvac.common.unit_age_condition.not_sure", "value": "not_sure", "order": 4 }
+      ],
+      "aiHint": "Helps anticipate failures and parts needs"
+    },
+    {
+      "key": "power_source",
+      "type": "single",
+      "i18nKey": "hvac.common.power_source",
+      "required": false,
+      "options": [
+        { "i18nKey": "hvac.common.power_source.electric", "value": "electric", "order": 1 },
+        { "i18nKey": "hvac.common.power_source.gas", "value": "gas", "order": 2 },
+        { "i18nKey": "hvac.common.power_source.heat_pump", "value": "heat_pump", "order": 3 },
+        { "i18nKey": "hvac.common.power_source.not_sure", "value": "not_sure", "order": 4 }
+      ],
+      "aiHint": "Licensing and safety considerations"
+    },
+    {
+      "key": "access_difficulty",
+      "type": "single",
+      "i18nKey": "hvac.common.access_difficulty",
+      "required": true,
+      "options": [
+        { "i18nKey": "hvac.common.access_difficulty.easy", "value": "easy", "order": 1 },
+        { "i18nKey": "hvac.common.access_difficulty.ladder", "value": "ladder", "order": 2 },
+        { "i18nKey": "hvac.common.access_difficulty.roof", "value": "roof", "order": 3 },
+        { "i18nKey": "hvac.common.access_difficulty.difficult", "value": "difficult", "order": 4 }
+      ],
+      "aiHint": "Scaffolding/lifting requirements"
+    },
+    {
+      "key": "urgency",
+      "type": "single",
+      "i18nKey": "hvac.common.urgency",
+      "required": true,
+      "options": [
+        { "i18nKey": "common.urgency.emergency", "value": "emergency", "order": 1 },
+        { "i18nKey": "common.urgency.soon", "value": "soon", "order": 2 },
+        { "i18nKey": "common.urgency.flexible", "value": "flexible", "order": 3 }
+      ],
+      "aiHint": "Scheduling and premium call-out"
+    },
+    {
+      "key": "materials",
+      "type": "single",
+      "i18nKey": "hvac.common.materials",
+      "required": true,
+      "options": [
+        { "i18nKey": "common.materials.provides_all", "value": "pro_provides_all", "order": 1 },
+        { "i18nKey": "common.materials.client_has_unit", "value": "client_has_unit", "order": 2 },
+        { "i18nKey": "common.materials.mixed", "value": "mixed", "order": 3 },
+        { "i18nKey": "common.materials.not_sure", "value": "not_sure", "order": 4 }
+      ],
+      "aiHint": "Impacts quote structure"
+    },
+    {
+      "key": "photos",
+      "type": "file",
+      "i18nKey": "hvac.common.photos",
+      "required": false,
+      "aiHint": "Photos of current installation or area",
+      "meta": {
+        "accept": ["image/*"],
+        "max_files": 6
+      }
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "category": "hvac",
+  "generated_at": "2025-11-23",
+  "total_services": 20,
+  "services": [
+    {
+      "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "name": "Air Conditioning Installation",
+      "slug": "ac-installation",
+      "micro_slug": "ac-installation"
+    },
+    {
+      "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+      "name": "Air Conditioning Repair",
+      "slug": "ac-repair",
+      "micro_slug": "ac-repair"
+    },
+    {
+      "id": "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
+      "name": "Air Conditioning Maintenance",
+      "slug": "ac-maintenance",
+      "micro_slug": "ac-maintenance"
+    },
+    {
+      "id": "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a",
+      "name": "Central AC Installation",
+      "slug": "central-ac-installation",
+      "micro_slug": "central-ac-installation"
+    },
+    {
+      "id": "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b",
+      "name": "Split AC Installation",
+      "slug": "split-ac-installation",
+      "micro_slug": "split-ac-installation"
+    },
+    {
+      "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c",
+      "name": "Ducted AC Installation",
+      "slug": "ducted-ac-installation",
+      "micro_slug": "ducted-ac-installation"
+    },
+    {
+      "id": "a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c1d",
+      "name": "Heat Pump Installation",
+      "slug": "heat-pump-installation",
+      "micro_slug": "heat-pump-installation"
+    },
+    {
+      "id": "b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d2e",
+      "name": "Heat Pump Repair",
+      "slug": "heat-pump-repair",
+      "micro_slug": "heat-pump-repair"
+    },
+    {
+      "id": "c9d0e1f2-a3b4-4c5d-6e7f-8a9b0c1d2e3f",
+      "name": "Boiler Installation",
+      "slug": "boiler-installation",
+      "micro_slug": "boiler-installation"
+    },
+    {
+      "id": "d0e1f2a3-b4c5-4d6e-7f8a-9b0c1d2e3f4a",
+      "name": "Boiler Repair",
+      "slug": "boiler-repair",
+      "micro_slug": "boiler-repair"
+    },
+    {
+      "id": "e1f2a3b4-c5d6-4e7f-8a9b-0c1d2e3f4a5b",
+      "name": "Boiler Maintenance",
+      "slug": "boiler-maintenance",
+      "micro_slug": "boiler-maintenance"
+    },
+    {
+      "id": "f2a3b4c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c",
+      "name": "HVAC System Inspection",
+      "slug": "hvac-inspection",
+      "micro_slug": "hvac-inspection"
+    },
+    {
+      "id": "a3b4c5d6-e7f8-4a9b-0c1d-2e3f4a5b6c7d",
+      "name": "Duct Cleaning",
+      "slug": "duct-cleaning",
+      "micro_slug": "duct-cleaning"
+    },
+    {
+      "id": "b4c5d6e7-f8a9-4b0c-1d2e-3f4a5b6c7d8e",
+      "name": "Duct Installation",
+      "slug": "duct-installation",
+      "micro_slug": "duct-installation"
+    },
+    {
+      "id": "c5d6e7f8-a9b0-4c1d-2e3f-4a5b6c7d8e9f",
+      "name": "Thermostat Installation",
+      "slug": "thermostat-installation",
+      "micro_slug": "thermostat-installation"
+    },
+    {
+      "id": "d6e7f8a9-b0c1-4d2e-3f4a-5b6c7d8e9f0a",
+      "name": "Refrigerant Recharge",
+      "slug": "refrigerant-recharge",
+      "micro_slug": "refrigerant-recharge"
+    },
+    {
+      "id": "e7f8a9b0-c1d2-4e3f-4a5b-6c7d8e9f0a1b",
+      "name": "AC Unit Removal",
+      "slug": "ac-removal",
+      "micro_slug": "ac-removal"
+    },
+    {
+      "id": "f8a9b0c1-d2e3-4f4a-5b6c-7d8e9f0a1b2c",
+      "name": "Heating System Repair",
+      "slug": "heating-repair",
+      "micro_slug": "heating-repair"
+    },
+    {
+      "id": "a9b0c1d2-e3f4-4a5b-6c7d-8e9f0a1b2c3d",
+      "name": "Ventilation Installation",
+      "slug": "ventilation-installation",
+      "micro_slug": "ventilation-installation"
+    },
+    {
+      "id": "b0c1d2e3-f4a5-4b6c-7d8e-9f0a1b2c3d4e",
+      "name": "HVAC Emergency Repair",
+      "slug": "hvac-emergency",
+      "micro_slug": "hvac-emergency"
+    }
+  ]
+}
