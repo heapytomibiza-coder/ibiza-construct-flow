@@ -2,15 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, HardHat, Droplet, Zap, Hammer, Wrench, Paintbrush, Square, Layers, Home, Leaf, Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, Truck, Grid3x3, Sheet, Palette, Lock, ClipboardList, Scale, LucideIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// Icon mapping for dynamic icon rendering
-const ICON_MAP: Record<string, LucideIcon> = {
-  HardHat, Droplet, Zap, Hammer, Wrench, Paintbrush, Square, Layers, Home, Leaf, 
-  Waves, Wind, Ruler, Building2, DoorOpen, Bath, Building, FileText, Truck,
-  Grid3x3, Sheet, Palette, Lock, ClipboardList, Scale
-};
+import { getCategoryIcon } from '@/lib/categoryIcons';
 
 interface Category {
   id: string;
@@ -109,7 +103,8 @@ export const CategorySelector = ({
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {categories.map((category) => {
           const isSelected = selectedCategory === category.slug;
-          const IconComponent = category.icon_name ? ICON_MAP[category.icon_name] : null;
+          const IconComponent = category.icon_name ? getCategoryIcon(category.icon_name) : null;
+          const examples = category.examples?.slice(0, 3) || [];
           
           return (
             <button
@@ -146,6 +141,13 @@ export const CategorySelector = ({
               )}>
                 {category.name}
               </span>
+              
+              {/* Examples */}
+              {examples.length > 0 && (
+                <span className="text-xs text-muted-foreground text-center leading-tight px-2">
+                  {examples.join(' • ')}
+                </span>
+              )}
             </button>
           );
         })}
