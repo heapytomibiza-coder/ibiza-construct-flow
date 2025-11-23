@@ -56,12 +56,17 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
 
       setPosition({ top, left });
 
-      // Highlight the target element
+      // Highlight the target element with increased z-index
       element.classList.add('tour-highlight');
+      const htmlElement = element as HTMLElement;
+      htmlElement.style.position = 'relative';
+      htmlElement.style.zIndex = '61';
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
       return () => {
         element.classList.remove('tour-highlight');
+        htmlElement.style.position = '';
+        htmlElement.style.zIndex = '';
       };
     }
   }, [currentStep, step]);
@@ -92,12 +97,12 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
 
   return (
     <>
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-black/50 z-40" />
+      {/* Overlay - Increased z-index to z-[60] */}
+      <div className="fixed inset-0 bg-black/50 z-[60]" />
 
-      {/* Tour Card */}
+      {/* Tour Card - Increased z-index to z-[62] */}
       <div
-        className="fixed z-50 w-[300px] animate-in fade-in"
+        className="fixed z-[62] w-[300px] animate-in fade-in"
         style={{
           top: `${position.top}px`,
           left: `${position.left}px`,
@@ -170,7 +175,7 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
   );
 }
 
-// Example usage hook
+// Enhanced usage hook with manual triggers
 export function useTour(tourKey: string, steps: TourStep[]) {
   const [showTour, setShowTour] = useState(false);
 
@@ -191,8 +196,20 @@ export function useTour(tourKey: string, steps: TourStep[]) {
     setShowTour(false);
   };
 
+  // Manual trigger functions for demo mode
+  const startTour = () => {
+    setShowTour(true);
+  };
+
+  const resetTour = () => {
+    localStorage.removeItem(`tour-${tourKey}`);
+    setShowTour(true);
+  };
+
   return {
     showTour,
+    startTour,
+    resetTour,
     TourComponent: showTour ? (
       <InteractiveTour
         steps={steps}

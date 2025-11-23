@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, Home, Briefcase, Users, Phone, User, LogOut, Settings } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,8 @@ import { Badge } from '@/components/ui/badge';
 import { useConversationList } from '@/hooks/useConversationList';
 import { MessageSquare } from 'lucide-react';
 import { getDashboardForRole } from '@/lib/navigation';
+import { DemoModeButton } from '@/components/tours/DemoModeButton';
+import { useTourKeyboardShortcuts } from '@/hooks/useTourKeyboardShortcuts';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -36,6 +38,46 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { totalUnread } = useConversationList(user?.id);
+
+  // Tour management state
+  const [tourTriggers, setTourTriggers] = useState({
+    startHomeTour: () => {},
+    startWizardTour: () => {},
+    resetAllTours: () => {},
+  });
+
+  // Listen for tour trigger functions from pages
+  useEffect(() => {
+    const handleTourRegistration = (event: CustomEvent) => {
+      setTourTriggers(prev => ({
+        ...prev,
+        [event.detail.key]: event.detail.trigger,
+      }));
+    };
+
+    window.addEventListener('register-tour-trigger', handleTourRegistration as EventListener);
+    return () => {
+      window.removeEventListener('register-tour-trigger', handleTourRegistration as EventListener);
+    };
+  }, []);
+
+  // Enable keyboard shortcuts globally
+  useTourKeyboardShortcuts({
+    onStartHomeTour: tourTriggers.startHomeTour,
+    onStartWizardTour: tourTriggers.startWizardTour,
+    onResetAllTours: tourTriggers.resetAllTours,
+  });
+
+  // Check if user is admin
+  const [isAdminUser, setIsAdminUser] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      isAdmin().then(setIsAdminUser);
+    } else {
+      setIsAdminUser(false);
+    }
+  }, [user, isAdmin]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -83,6 +125,16 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
           {/* CTA Buttons / User Menu */}
           <div className="hidden md:flex items-center space-x-4">
             <LanguageSwitcher />
+            
+            {/* Demo Mode Button - Admin Only, Desktop Only */}
+            {isAdminUser && (
+              <DemoModeButton
+                onStartHomeTour={tourTriggers.startHomeTour}
+                onStartWizardTour={tourTriggers.startWizardTour}
+                onResetAllTours={tourTriggers.resetAllTours}
+              />
+            )}
+            
             {user ? (
               <>
                 <NotificationDropdown />

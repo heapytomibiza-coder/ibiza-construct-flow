@@ -438,7 +438,7 @@ export const CanonicalJobWizard: React.FC = () => {
       switch (currentStep) {
       case 1:
         return (
-          <div className="max-w-6xl mx-auto space-y-6">
+          <div id="wizard-step-category" className="max-w-6xl mx-auto space-y-6">
             <div className="text-center space-y-3">
               <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                 What type of work do you need?
@@ -460,84 +460,96 @@ export const CanonicalJobWizard: React.FC = () => {
           return <div className="text-center text-red-500">Error: No category selected. Please go back.</div>;
         }
         return (
-          <SubcategorySelector
-            key={`sub:${wizardState.mainCategoryId || 'none'}`}
-            categoryId={wizardState.mainCategoryId}
-            categoryName={wizardState.mainCategory}
-            selectedSubcategoryId={wizardState.subcategoryId}
-            onSelect={handleSubcategorySelect}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
+          <div id="wizard-step-subcategory">
+            <SubcategorySelector
+              key={`sub:${wizardState.mainCategoryId || 'none'}`}
+              categoryId={wizardState.mainCategoryId}
+              categoryName={wizardState.mainCategory}
+              selectedSubcategoryId={wizardState.subcategoryId}
+              onSelect={handleSubcategorySelect}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          </div>
         );
 
       case 3:
         return (
-          <MicroStep
-            key={`micro:${wizardState.mainCategory}|${wizardState.subcategory || 'none'}`}
-            mainCategory={wizardState.mainCategory}
-            subcategory={wizardState.subcategory}
-            selectedMicros={wizardState.microNames}
-            selectedMicroIds={wizardState.microIds}
-            selectedMicroSlugs={wizardState.microSlugs}
-            onSelect={handleMicroSelect}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
+          <div id="wizard-step-micro">
+            <MicroStep
+              key={`micro:${wizardState.mainCategory}|${wizardState.subcategory || 'none'}`}
+              mainCategory={wizardState.mainCategory}
+              subcategory={wizardState.subcategory}
+              selectedMicros={wizardState.microNames}
+              selectedMicroIds={wizardState.microIds}
+              selectedMicroSlugs={wizardState.microSlugs}
+              onSelect={handleMicroSelect}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          </div>
         );
 
       case 4:
         return (
-          <QuestionsStep
-            microIds={wizardState.microIds}
-            microSlugs={wizardState.microSlugs}
-            microNames={wizardState.microNames}
-            category={wizardState.mainCategory}
-            subcategory={wizardState.subcategory}
-            answers={wizardState.answers}
-            onAnswersChange={handleAnswersChange}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
+          <div id="wizard-step-questions">
+            <QuestionsStep
+              microIds={wizardState.microIds}
+              microSlugs={wizardState.microSlugs}
+              microNames={wizardState.microNames}
+              category={wizardState.mainCategory}
+              subcategory={wizardState.subcategory}
+              answers={wizardState.answers}
+              onAnswersChange={handleAnswersChange}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          </div>
         );
 
       case 5:
         return (
-          <LogisticsStep
-            microName={wizardState.microNames.join(' + ')}
-            logistics={wizardState.logistics}
-            onLogisticsChange={handleLogisticsChange}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
+          <div id="wizard-step-logistics">
+            <LogisticsStep
+              microName={wizardState.microNames.join(' + ')}
+              logistics={wizardState.logistics}
+              onLogisticsChange={handleLogisticsChange}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          </div>
         );
 
       case 6:
         return (
-          <ExtrasStep
-            microName={wizardState.microNames.join(' + ')}
-            extras={wizardState.extras}
-            onExtrasChange={handleExtrasChange}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
+          <div id="wizard-step-extras">
+            <ExtrasStep
+              microName={wizardState.microNames.join(' + ')}
+              extras={wizardState.extras}
+              onExtrasChange={handleExtrasChange}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          </div>
         );
 
       case 7:
         return (
-          <ReviewStep
-            jobData={{
-              microName: wizardState.microNames.join(' + '),
-              category: wizardState.mainCategory,
-              subcategory: wizardState.subcategory,
-              answers: wizardState.answers,
-              logistics: wizardState.logistics,
-              extras: wizardState.extras
-            }}
-            onBack={handleBack}
-            onSubmit={handleSubmit}
-            loading={loading}
-          />
+          <div id="wizard-step-review">
+            <ReviewStep
+              jobData={{
+                microName: wizardState.microNames.join(' + '),
+                category: wizardState.mainCategory,
+                subcategory: wizardState.subcategory,
+                answers: wizardState.answers,
+                logistics: wizardState.logistics,
+                extras: wizardState.extras
+              }}
+              onBack={handleBack}
+              onSubmit={handleSubmit}
+              loading={loading}
+            />
+          </div>
         );
 
       default:
@@ -588,7 +600,7 @@ export const CanonicalJobWizard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 pb-24 md:pb-0">
+    <div id="job-wizard-root" className="min-h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 pb-24 md:pb-0">
       {/* Header with Progress */}
       <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 sticky top-0 z-40 shadow-sm">
         <div className="container mx-auto px-4 py-6">
