@@ -99,6 +99,7 @@ const ImportServices = lazyWithRetry(() => import("./pages/admin/ImportServices"
 const QuestionBuilderPage = lazyWithRetry(() => import("./pages/admin/QuestionBuilderPage"));
 const AdminUtils = lazyWithRetry(() => import("./pages/AdminUtils"));
 const SeedCommercialQuestions = lazyWithRetry(() => import("./pages/admin/SeedCommercialQuestions"));
+const SeedArchitectsDesignQuestions = lazyWithRetry(() => import("./pages/admin/SeedArchitectsDesignQuestions"));
 
 // Job & Professional Pages
 const PostJob = lazyWithRetry(() => import("./pages/PostJob"));
@@ -492,6 +493,7 @@ function AppContent() {
                       <Route path="question-packs/:categorySlug" element={<CategoryPackManager />} />
                       <Route path="import-services" element={<ImportServices />} />
                       <Route path="seed-commercial" element={<SeedCommercialQuestions />} />
+                      <Route path="seed-architects-design" element={<SeedArchitectsDesignQuestions />} />
                       <Route path="question-builder" element={<QuestionBuilderPage />} />
                       <Route path="bulk-import" element={<BulkImport />} />
                       <Route path="website-settings" element={<WebsiteSettings />} />
