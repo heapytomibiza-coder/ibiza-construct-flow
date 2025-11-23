@@ -588,6 +588,16 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                             questionText = `Question ${currentQuestionIndex + 1}`;
                           }
                           
+                          // Fix wording for selection-type questions
+                          const isSelectionType = currentQuestion.type === 'radio' || 
+                                                  currentQuestion.type === 'select' ||
+                                                  currentQuestion.type === 'checkbox' ||
+                                                  currentQuestion.type === 'multiple-choice';
+                          
+                          if (isSelectionType && questionText.toLowerCase().includes('describe')) {
+                            questionText = questionText.replace(/describe/gi, 'select').replace(/Describe/g, 'Select');
+                          }
+                          
                           console.log('✅ Final question text:', questionText);
                           
                           // Check if it's an i18n key and translate it
