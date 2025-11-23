@@ -10,6 +10,7 @@ import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { getCategoryIcon } from '@/lib/categoryIcons';
 
 interface SubcategoryStepProps {
   mainCategory: string;
@@ -20,6 +21,14 @@ interface SubcategoryStepProps {
   autoAdvanceOnSelect?: boolean;
 }
 
+interface SubcategoryData {
+  name: string;
+  slug: string;
+  description: string | null;
+  icon_name: string | null;
+  service_count?: number;
+}
+
 export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
   mainCategory,
   selectedSubcategory,
@@ -28,7 +37,7 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
   onBack,
   autoAdvanceOnSelect = false,
 }) => {
-  const [subcategories, setSubcategories] = useState<{ name: string }[]>([]);
+  const [subcategories, setSubcategories] = useState<SubcategoryData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -62,10 +71,18 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
           return;
         }
 
-        // Now get subcategories for this category
+        // Now get subcategories for this category with service counts
         const { data, error } = await supabase
           .from('service_subcategories')
-          .select('id, name, slug, display_order')
+          .select(`
+            id, 
+            name, 
+            slug, 
+            description,
+            icon_name,
+            display_order,
+            service_micro_categories(count)
+          `)
           .eq('category_id', categoryData.id)
           .eq('is_active', true)
           .order('display_order', { ascending: true });
@@ -80,7 +97,17 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
         }
 
         if (!mounted) return;
-        setSubcategories(data || []);
+        
+        // Transform data to include service counts
+        const transformedData = (data || []).map((sub: any) => ({
+          name: sub.name,
+          slug: sub.slug,
+          description: sub.description,
+          icon_name: sub.icon_name,
+          service_count: sub.service_micro_categories?.[0]?.count || 0
+        }));
+        
+        setSubcategories(transformedData);
       } catch (error) {
         if (mounted) {
           console.error('Failed to load subcategories:', error);
@@ -152,21 +179,44 @@ export const SubcategoryStep: React.FC<SubcategoryStepProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {subcategories.map((sub) => {
             const isSelected = selectedSubcategory === sub.name;
+            const Icon = sub.icon_name ? getCategoryIcon(sub.icon_name) : null;
+            
             return (
               <Card
                 key={sub.name}
                 data-testid="subcategory-tile"
                 className={cn(
-                  "p-6 cursor-pointer transition-all hover:shadow-lg",
+                  "p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-105 duration-200",
+                  "flex flex-col gap-3",
                   isSelected && "ring-2 ring-copper shadow-lg"
                 )}
                 onClick={() => handleTileClick(sub.name)}
               >
-                <div className="flex items-center justify-center h-full">
-                  <span className="font-medium text-center text-charcoal">
+                {Icon && (
+                  <div className="flex justify-center">
+                    <Icon className="w-12 h-12 text-copper" />
+                  </div>
+                )}
+                
+                <div className="flex-1 flex flex-col gap-2">
+                  <h3 className="font-semibold text-center text-charcoal">
                     {sub.name}
-                  </span>
+                  </h3>
+                  
+                  {sub.description && (
+                    <p className="text-sm text-muted-foreground text-center line-clamp-2">
+                      {sub.description}
+                    </p>
+                  )}
                 </div>
+                
+                {sub.service_count !== undefined && sub.service_count > 0 && (
+                  <div className="flex justify-center pt-2 border-t border-sage-muted/20">
+                    <Badge variant="secondary" className="text-xs">
+                      {sub.service_count} service{sub.service_count !== 1 ? 's' : ''}
+                    </Badge>
+                  </div>
+                )}
               </Card>
             );
           })}
