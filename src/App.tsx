@@ -64,6 +64,7 @@ const ServicesPage = lazyWithRetry(() => import("./pages/admin/ServicesPage"));
 const HealthMonitor = lazyWithRetry(() => import("./pages/admin/HealthMonitor"));
 const AdminSettingsPage = lazyWithRetry(() => import("./pages/admin/AdminSettingsPage"));
 const AdminQuestions = lazyWithRetry(() => import("./pages/AdminQuestions"));
+const CategoryPackManager = lazyWithRetry(() => import("./pages/admin/CategoryPackManager"));
 const PackCompareView = lazyWithRetry(() => import("./components/admin/packs/PackCompareView").then(m => ({ default: m.PackCompareView })));
 const WebsiteSettings = lazyWithRetry(() => import("./pages/admin/WebsiteSettings"));
 const AdminVerificationsPage = lazyWithRetry(() => import("./pages/AdminVerificationsPage"));
@@ -485,6 +486,7 @@ function AppContent() {
                       {/* Content Management */}
                       <Route path="questions" element={<AdminQuestions />} />
                       <Route path="questions/compare/:slug" element={<PackCompareView />} />
+                      <Route path="question-packs/:categorySlug" element={<CategoryPackManager />} />
                       <Route path="import-services" element={<ImportServices />} />
                       <Route path="question-builder" element={<QuestionBuilderPage />} />
                       <Route path="bulk-import" element={<BulkImport />} />

@@ -4,10 +4,12 @@
  */
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sparkles } from 'lucide-react';
 import { PackBrowser } from '@/components/admin/packs/PackBrowser';
 import { PackImporter } from '@/components/admin/packs/PackImporter';
 import { PackAnalytics } from '@/components/admin/packs/PackAnalytics';
@@ -17,6 +19,7 @@ import QuestionBuilder from '@/components/admin/packs/QuestionBuilder';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 
 export default function AdminQuestions() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('form-builder');
   const [packToEdit, setPackToEdit] = useState<string | null>(null);
   
@@ -28,11 +31,20 @@ export default function AdminQuestions() {
   return (
     <AdminGuard redirectPath="/dashboard">
     <div className="container mx-auto py-4 sm:py-8 space-y-4 sm:space-y-6 px-2 sm:px-4">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Question Pack Management</h1>
-        <p className="text-muted-foreground text-sm sm:text-base">
-          Manage versioned question sets for all microservices
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Question Pack Management</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
+            Manage versioned question sets for all microservices
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => navigate('/admin/question-packs/painting-decorating')}
+        >
+          <Sparkles className="h-4 w-4 mr-2" />
+          Generate Packs
+        </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
