@@ -50,51 +50,15 @@ export const homepageTourSteps: TourStep[] = [
 ];
 
 /**
- * Job Wizard Tour (7 steps)
- * Guides users through the smart job posting wizard
+ * Job Wizard Tour (1 step)
+ * Simple welcome message for the job posting wizard
  */
 export const jobWizardTourSteps: TourStep[] = [
   {
-    target: '#job-wizard-root',
-    title: 'Smart Job Posting Wizard',
-    description: 'This intelligent wizard asks the right questions so professionals can provide accurate quotes the first time - no back-and-forth needed.',
+    target: 'body',
+    title: 'Welcome to the Job Posting Wizard',
+    description: 'Follow the steps to describe your project and receive quotes from verified professionals. The wizard will guide you through everything needed for accurate pricing.',
     placement: 'bottom',
-  },
-  {
-    target: '#wizard-step-category',
-    title: 'Step 1: Choose Main Category',
-    description: 'Start by selecting the primary type of work: Construction, Painting, HVAC, Cleaning, Gardening, or Specialized services.',
-    placement: 'right',
-  },
-  {
-    target: '#wizard-step-subcategory',
-    title: 'Step 2: Select Specific Service',
-    description: 'Narrow down to the exact service you need. For example: Roofing, Exterior Painting, Pool Maintenance, Kitchen Renovation, etc.',
-    placement: 'right',
-  },
-  {
-    target: '#wizard-step-micro',
-    title: 'Step 3: Choose Micro-Service',
-    description: 'Select the precise task or combination of tasks. You can choose multiple related services for a complete quote.',
-    placement: 'right',
-  },
-  {
-    target: '#wizard-step-questions',
-    title: 'Step 4: Answer Smart Questions',
-    description: 'These questions adapt to your selections and capture all details professionals need: site conditions, access, materials, timeline, and expectations.',
-    placement: 'left',
-  },
-  {
-    target: '#wizard-step-logistics',
-    title: 'Step 5: Location & Timing',
-    description: 'Tell us where on the island the work is located and your preferred timeline. This helps match you with available professionals.',
-    placement: 'top',
-  },
-  {
-    target: '#wizard-step-review',
-    title: 'Step 6: Review & Submit',
-    description: 'Review all details, add photos or additional notes, then submit. Verified professionals will be notified immediately and can send structured quotes.',
-    placement: 'top',
   },
 ];
 
