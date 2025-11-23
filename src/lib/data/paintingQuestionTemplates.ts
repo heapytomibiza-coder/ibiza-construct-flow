@@ -1,0 +1,833 @@
+/**
+ * Painting & Decorating Question Pack Templates
+ * All 8 interior painting micro-services with 7 questions each
+ */
+
+import type { MicroserviceDef } from '@/types/packs';
+
+export interface MicroservicePack {
+  microSlug: string;
+  content: MicroserviceDef;
+}
+
+export const paintingQuestionPacks: MicroservicePack[] = [
+  // 1. Room Painting (multi-room)
+  {
+    microSlug: 'room-painting',
+    content: {
+      id: '11111111-2222-4333-8444-555555555555',
+      category: 'painting-decorating',
+      name: 'Room Painting',
+      slug: 'room-painting',
+      i18nPrefix: 'painting.room_painting',
+      questions: [
+        {
+          key: 'surfaces_to_paint',
+          type: 'multi',
+          i18nKey: 'painting.room_painting.surfaces_to_paint.title',
+          required: true,
+          aiHint: 'Identifies which surfaces are included across the rooms so painters can allow for prep and coatings',
+          options: [
+            { i18nKey: 'painting.room_painting.surfaces_to_paint.options.walls', value: 'walls', order: 0 },
+            { i18nKey: 'painting.room_painting.surfaces_to_paint.options.ceilings', value: 'ceilings', order: 1 },
+            { i18nKey: 'painting.room_painting.surfaces_to_paint.options.woodwork_trim', value: 'woodwork_trim', order: 2 },
+            { i18nKey: 'painting.room_painting.surfaces_to_paint.options.doors', value: 'doors', order: 3 },
+            { i18nKey: 'painting.room_painting.surfaces_to_paint.options.radiators', value: 'radiators', order: 4 },
+            { i18nKey: 'painting.room_painting.surfaces_to_paint.options.window_frames', value: 'window_frames', order: 5 },
+            { i18nKey: 'painting.room_painting.surfaces_to_paint.options.built_in_units', value: 'built_in_units', order: 6 },
+          ],
+        },
+        {
+          key: 'number_of_rooms',
+          type: 'single',
+          i18nKey: 'painting.room_painting.number_of_rooms.title',
+          required: true,
+          aiHint: 'Shows how many rooms are included so painters can estimate time and team size',
+          options: [
+            { i18nKey: 'painting.room_painting.number_of_rooms.options.two_to_three', value: 'two_to_three', order: 0 },
+            { i18nKey: 'painting.room_painting.number_of_rooms.options.four_to_five', value: 'four_to_five', order: 1 },
+            { i18nKey: 'painting.room_painting.number_of_rooms.options.six_to_eight', value: 'six_to_eight', order: 2 },
+            { i18nKey: 'painting.room_painting.number_of_rooms.options.more_than_eight', value: 'more_than_eight', order: 3 },
+          ],
+        },
+        {
+          key: 'typical_wall_condition',
+          type: 'single',
+          i18nKey: 'painting.room_painting.typical_wall_condition.title',
+          required: true,
+          aiHint: 'Gives an average condition for walls across the rooms so prep can be allowed for',
+          options: [
+            { i18nKey: 'painting.room_painting.typical_wall_condition.options.mostly_smooth', value: 'mostly_smooth', order: 0 },
+            { i18nKey: 'painting.room_painting.typical_wall_condition.options.minor_marks_and_holes', value: 'minor_marks_and_holes', order: 1 },
+            { i18nKey: 'painting.room_painting.typical_wall_condition.options.cracks_or_flaking_paint', value: 'cracks_or_flaking_paint', order: 2 },
+            { i18nKey: 'painting.room_painting.typical_wall_condition.options.heavily_damaged_or_uneven', value: 'heavily_damaged_or_uneven', order: 3 },
+          ],
+        },
+        {
+          key: 'existing_paint',
+          type: 'single',
+          i18nKey: 'painting.room_painting.existing_paint.title',
+          required: true,
+          aiHint: 'Shows whether surfaces are already painted and if any failure is visible',
+          options: [
+            { i18nKey: 'painting.room_painting.existing_paint.options.recent_sound_paint', value: 'recent_sound_paint', order: 0 },
+            { i18nKey: 'painting.room_painting.existing_paint.options.older_worn_paint', value: 'older_worn_paint', order: 1 },
+            { i18nKey: 'painting.room_painting.existing_paint.options.peeling_or_flaking_paint', value: 'peeling_or_flaking_paint', order: 2 },
+            { i18nKey: 'painting.room_painting.existing_paint.options.not_sure', value: 'not_sure', order: 3 },
+          ],
+        },
+        {
+          key: 'finish_preference',
+          type: 'single',
+          i18nKey: 'painting.room_painting.finish_preference.title',
+          required: false,
+          aiHint: 'Preferred sheen level so painters can specify suitable products',
+          options: [
+            { i18nKey: 'painting.room_painting.finish_preference.options.matt', value: 'matt', order: 0 },
+            { i18nKey: 'painting.room_painting.finish_preference.options.satin_eggshell', value: 'satin_eggshell', order: 1 },
+            { i18nKey: 'painting.room_painting.finish_preference.options.gloss', value: 'gloss', order: 2 },
+            { i18nKey: 'painting.room_painting.finish_preference.options.washable_durable', value: 'washable_durable', order: 3 },
+            { i18nKey: 'painting.room_painting.finish_preference.options.open_to_advice', value: 'open_to_advice', order: 4 },
+          ],
+        },
+        {
+          key: 'furnishing_level',
+          type: 'single',
+          i18nKey: 'painting.room_painting.furnishing_level.title',
+          required: true,
+          aiHint: 'Furnishing level affects masking, covering and time needed to work in each room',
+          options: [
+            { i18nKey: 'painting.room_painting.furnishing_level.options.mostly_empty_rooms', value: 'mostly_empty_rooms', order: 0 },
+            { i18nKey: 'painting.room_painting.furnishing_level.options.some_furniture_to_work_around', value: 'some_furniture_to_work_around', order: 1 },
+            { i18nKey: 'painting.room_painting.furnishing_level.options.fully_furnished_rooms', value: 'fully_furnished_rooms', order: 2 },
+          ],
+        },
+        {
+          key: 'colour_change_scope',
+          type: 'single',
+          i18nKey: 'painting.room_painting.colour_change_scope.title',
+          required: true,
+          aiHint: 'Shows whether most rooms are staying similar colours or changing significantly',
+          options: [
+            { i18nKey: 'painting.room_painting.colour_change_scope.options.similar_colours', value: 'similar_colours', order: 0 },
+            { i18nKey: 'painting.room_painting.colour_change_scope.options.most_rooms_new_colours', value: 'most_rooms_new_colours', order: 1 },
+            { i18nKey: 'painting.room_painting.colour_change_scope.options.many_dark_to_light_or_light_to_dark', value: 'many_dark_to_light_or_light_to_dark', order: 2 },
+            { i18nKey: 'painting.room_painting.colour_change_scope.options.mix_of_feature_colours', value: 'mix_of_feature_colours', order: 3 },
+          ],
+        },
+      ],
+    },
+  },
+
+  // 2. Full Property Interior Painting
+  {
+    microSlug: 'full-property-interior-painting',
+    content: {
+      id: '22222222-3333-4444-8555-666666666666',
+      category: 'painting-decorating',
+      name: 'Full property interior painting',
+      slug: 'full-property-interior-painting',
+      i18nPrefix: 'painting.full_property_interior_painting',
+      questions: [
+        {
+          key: 'property_type',
+          type: 'single',
+          i18nKey: 'painting.full_property_interior_painting.property_type.title',
+          required: true,
+          aiHint: 'Property type affects layout complexity and access inside',
+          options: [
+            { i18nKey: 'painting.full_property_interior_painting.property_type.options.apartment', value: 'apartment', order: 0 },
+            { i18nKey: 'painting.full_property_interior_painting.property_type.options.villa_house', value: 'villa_house', order: 1 },
+            { i18nKey: 'painting.full_property_interior_painting.property_type.options.townhouse_duplex', value: 'townhouse_duplex', order: 2 },
+            { i18nKey: 'painting.full_property_interior_painting.property_type.options.other', value: 'other', order: 3 },
+          ],
+        },
+        {
+          key: 'bedroom_count',
+          type: 'single',
+          i18nKey: 'painting.full_property_interior_painting.bedroom_count.title',
+          required: true,
+          aiHint: 'Bedroom count is a quick indicator of overall property size',
+          options: [
+            { i18nKey: 'painting.full_property_interior_painting.bedroom_count.options.studio_or_one', value: 'studio_or_one', order: 0 },
+            { i18nKey: 'painting.full_property_interior_painting.bedroom_count.options.two_to_three', value: 'two_to_three', order: 1 },
+            { i18nKey: 'painting.full_property_interior_painting.bedroom_count.options.four_to_five', value: 'four_to_five', order: 2 },
+            { i18nKey: 'painting.full_property_interior_painting.bedroom_count.options.more_than_five', value: 'more_than_five', order: 3 },
+          ],
+        },
+        {
+          key: 'areas_included',
+          type: 'multi',
+          i18nKey: 'painting.full_property_interior_painting.areas_included.title',
+          required: true,
+          aiHint: 'Lists which interior areas are part of the full repaint',
+          options: [
+            { i18nKey: 'painting.full_property_interior_painting.areas_included.options.bedrooms', value: 'bedrooms', order: 0 },
+            { i18nKey: 'painting.full_property_interior_painting.areas_included.options.living_areas', value: 'living_areas', order: 1 },
+            { i18nKey: 'painting.full_property_interior_painting.areas_included.options.kitchen', value: 'kitchen', order: 2 },
+            { i18nKey: 'painting.full_property_interior_painting.areas_included.options.bathrooms', value: 'bathrooms', order: 3 },
+            { i18nKey: 'painting.full_property_interior_painting.areas_included.options.halls_stairs_landings', value: 'halls_stairs_landings', order: 4 },
+            { i18nKey: 'painting.full_property_interior_painting.areas_included.options.other_internal_spaces', value: 'other_internal_spaces', order: 5 },
+          ],
+        },
+        {
+          key: 'overall_condition',
+          type: 'single',
+          i18nKey: 'painting.full_property_interior_painting.overall_condition.title',
+          required: true,
+          aiHint: 'Gives an overview of the condition of paintwork throughout the property',
+          options: [
+            { i18nKey: 'painting.full_property_interior_painting.overall_condition.options.generally_good', value: 'generally_good', order: 0 },
+            { i18nKey: 'painting.full_property_interior_painting.overall_condition.options.minors_wear_and_marks', value: 'minors_wear_and_marks', order: 1 },
+            { i18nKey: 'painting.full_property_interior_painting.overall_condition.options.cracks_or_flaking_in_places', value: 'cracks_or_flaking_in_places', order: 2 },
+            { i18nKey: 'painting.full_property_interior_painting.overall_condition.options.heavily_worn_or_stained', value: 'heavily_worn_or_stained', order: 3 },
+          ],
+        },
+        {
+          key: 'property_furnished',
+          type: 'single',
+          i18nKey: 'painting.full_property_interior_painting.property_furnished.title',
+          required: true,
+          aiHint: 'Shows whether painters will work around furniture or in an empty property',
+          options: [
+            { i18nKey: 'painting.full_property_interior_painting.property_furnished.options.empty', value: 'empty', order: 0 },
+            { i18nKey: 'painting.full_property_interior_painting.property_furnished.options.partly_furnished_or_holiday_home', value: 'partly_furnished_or_holiday_home', order: 1 },
+            { i18nKey: 'painting.full_property_interior_painting.property_furnished.options.fully_lived_in', value: 'fully_lived_in', order: 2 },
+          ],
+        },
+        {
+          key: 'colour_scheme_goal',
+          type: 'single',
+          i18nKey: 'painting.full_property_interior_painting.colour_scheme_goal.title',
+          required: true,
+          aiHint: 'Explains the level of design input and colour variety required',
+          options: [
+            { i18nKey: 'painting.full_property_interior_painting.colour_scheme_goal.options.same_colour_throughout', value: 'same_colour_throughout', order: 0 },
+            { i18nKey: 'painting.full_property_interior_painting.colour_scheme_goal.options.neutral_with_some_accents', value: 'neutral_with_some_accents', order: 1 },
+            { i18nKey: 'painting.full_property_interior_painting.colour_scheme_goal.options.lots_of_different_colours', value: 'lots_of_different_colours', order: 2 },
+            { i18nKey: 'painting.full_property_interior_painting.colour_scheme_goal.options.undecided_need_advice', value: 'undecided_need_advice', order: 3 },
+          ],
+        },
+        {
+          key: 'paint_type_preference',
+          type: 'single',
+          i18nKey: 'painting.full_property_interior_painting.paint_type_preference.title',
+          required: false,
+          aiHint: 'Any specific requirements for paint performance or eco credentials',
+          options: [
+            { i18nKey: 'painting.full_property_interior_painting.paint_type_preference.options.standard_paints', value: 'standard_paints', order: 0 },
+            { i18nKey: 'painting.full_property_interior_painting.paint_type_preference.options.hard_wearing_washable', value: 'hard_wearing_washable', order: 1 },
+            { i18nKey: 'painting.full_property_interior_painting.paint_type_preference.options.low_odour_or_eco', value: 'low_odour_or_eco', order: 2 },
+            { i18nKey: 'painting.full_property_interior_painting.paint_type_preference.options.specific_brand_preference', value: 'specific_brand_preference', order: 3 },
+            { i18nKey: 'painting.full_property_interior_painting.paint_type_preference.options.not_sure', value: 'not_sure', order: 4 },
+          ],
+        },
+      ],
+    },
+  },
+
+  // 3. Cabinet Painting
+  {
+    microSlug: 'cabinet-painting',
+    content: {
+      id: '33333333-4444-4555-8666-777777777777',
+      category: 'painting-decorating',
+      name: 'Cabinet Painting',
+      slug: 'cabinet-painting',
+      i18nPrefix: 'painting.cabinet_painting',
+      questions: [
+        {
+          key: 'cabinet_location',
+          type: 'single',
+          i18nKey: 'painting.cabinet_painting.cabinet_location.title',
+          required: true,
+          aiHint: 'Location indicates moisture, wear and visibility which affect product choice',
+          options: [
+            { i18nKey: 'painting.cabinet_painting.cabinet_location.options.kitchen', value: 'kitchen', order: 0 },
+            { i18nKey: 'painting.cabinet_painting.cabinet_location.options.bathroom_or_utility', value: 'bathroom_or_utility', order: 1 },
+            { i18nKey: 'painting.cabinet_painting.cabinet_location.options.bedroom_wardrobes', value: 'bedroom_wardrobes', order: 2 },
+            { i18nKey: 'painting.cabinet_painting.cabinet_location.options.other_storage', value: 'other_storage', order: 3 },
+          ],
+        },
+        {
+          key: 'cabinet_material',
+          type: 'single',
+          i18nKey: 'painting.cabinet_painting.cabinet_material.title',
+          required: true,
+          aiHint: 'Material affects preparation, primers and durability of the finish',
+          options: [
+            { i18nKey: 'painting.cabinet_painting.cabinet_material.options.solid_wood', value: 'solid_wood', order: 0 },
+            { i18nKey: 'painting.cabinet_painting.cabinet_material.options.mdf_or_painted_board', value: 'mdf_or_painted_board', order: 1 },
+            { i18nKey: 'painting.cabinet_painting.cabinet_material.options.laminate_or_foil_wrapped', value: 'laminate_or_foil_wrapped', order: 2 },
+            { i18nKey: 'painting.cabinet_painting.cabinet_material.options.mixed_or_unsure', value: 'mixed_or_unsure', order: 3 },
+          ],
+        },
+        {
+          key: 'front_count',
+          type: 'single',
+          i18nKey: 'painting.cabinet_painting.front_count.title',
+          required: true,
+          aiHint: 'Door and drawer front count is a simple measure of job size',
+          options: [
+            { i18nKey: 'painting.cabinet_painting.front_count.options.up_to_10_fronts', value: 'up_to_10_fronts', order: 0 },
+            { i18nKey: 'painting.cabinet_painting.front_count.options.eleven_to_twenty_fronts', value: 'eleven_to_twenty_fronts', order: 1 },
+            { i18nKey: 'painting.cabinet_painting.front_count.options.twenty_one_to_thirty_five_fronts', value: 'twenty_one_to_thirty_five_fronts', order: 2 },
+            { i18nKey: 'painting.cabinet_painting.front_count.options.more_than_thirty_five_fronts', value: 'more_than_thirty_five_fronts', order: 3 },
+            { i18nKey: 'painting.cabinet_painting.front_count.options.not_sure', value: 'not_sure', order: 4 },
+          ],
+        },
+        {
+          key: 'current_condition',
+          type: 'single',
+          i18nKey: 'painting.cabinet_painting.current_condition.title',
+          required: true,
+          aiHint: 'Shows how much repair and preparation the cabinets may need',
+          options: [
+            { i18nKey: 'painting.cabinet_painting.current_condition.options.light_wear_only', value: 'light_wear_only', order: 0 },
+            { i18nKey: 'painting.cabinet_painting.current_condition.options.chipped_edges_or_small_damage', value: 'chipped_edges_or_small_damage', order: 1 },
+            { i18nKey: 'painting.cabinet_painting.current_condition.options.peeling_or_damaged_finish', value: 'peeling_or_damaged_finish', order: 2 },
+            { i18nKey: 'painting.cabinet_painting.current_condition.options.some_doors_need_repair_or_replacement', value: 'some_doors_need_repair_or_replacement', order: 3 },
+          ],
+        },
+        {
+          key: 'handles_and_knobs',
+          type: 'single',
+          i18nKey: 'painting.cabinet_painting.handles_and_knobs.title',
+          required: false,
+          aiHint: 'Clarifies whether hardware changes are part of the scope',
+          options: [
+            { i18nKey: 'painting.cabinet_painting.handles_and_knobs.options.keep_existing', value: 'keep_existing', order: 0 },
+            { i18nKey: 'painting.cabinet_painting.handles_and_knobs.options.replace_same_positions', value: 'replace_same_positions', order: 1 },
+            { i18nKey: 'painting.cabinet_painting.handles_and_knobs.options.move_or_fill_handle_positions', value: 'move_or_fill_handle_positions', order: 2 },
+            { i18nKey: 'painting.cabinet_painting.handles_and_knobs.options.not_decided', value: 'not_decided', order: 3 },
+          ],
+        },
+        {
+          key: 'finish_required',
+          type: 'single',
+          i18nKey: 'painting.cabinet_painting.finish_required.title',
+          required: true,
+          aiHint: 'Desired sheen and look for the finished cabinets',
+          options: [
+            { i18nKey: 'painting.cabinet_painting.finish_required.options.matt', value: 'matt', order: 0 },
+            { i18nKey: 'painting.cabinet_painting.finish_required.options.satin_or_eggshell', value: 'satin_or_eggshell', order: 1 },
+            { i18nKey: 'painting.cabinet_painting.finish_required.options.gloss_or_high_sheen', value: 'gloss_or_high_sheen', order: 2 },
+            { i18nKey: 'painting.cabinet_painting.finish_required.options.open_to_recommendation', value: 'open_to_recommendation', order: 3 },
+          ],
+        },
+        {
+          key: 'inside_surfaces',
+          type: 'single',
+          i18nKey: 'painting.cabinet_painting.inside_surfaces.title',
+          required: false,
+          aiHint: 'Clarifies whether only fronts or also inside shelves and carcasses are to be painted',
+          options: [
+            { i18nKey: 'painting.cabinet_painting.inside_surfaces.options.fronts_only', value: 'fronts_only', order: 0 },
+            { i18nKey: 'painting.cabinet_painting.inside_surfaces.options.fronts_and_visible_edges', value: 'fronts_and_visible_edges', order: 1 },
+            { i18nKey: 'painting.cabinet_painting.inside_surfaces.options.fronts_and_interior_shelves', value: 'fronts_and_interior_shelves', order: 2 },
+            { i18nKey: 'painting.cabinet_painting.inside_surfaces.options.not_sure', value: 'not_sure', order: 3 },
+          ],
+        },
+      ],
+    },
+  },
+
+  // 4. Single Room Painting
+  {
+    microSlug: 'single-room-painting',
+    content: {
+      id: '44444444-5555-4666-8777-888888888888',
+      category: 'painting-decorating',
+      name: 'Single Room Painting',
+      slug: 'single-room-painting',
+      i18nPrefix: 'painting.single_room_painting',
+      questions: [
+        {
+          key: 'room_type',
+          type: 'single',
+          i18nKey: 'painting.single_room_painting.room_type.title',
+          required: true,
+          aiHint: 'Room type affects surface prep and furniture level',
+          options: [
+            { i18nKey: 'painting.single_room_painting.room_type.options.bedroom', value: 'bedroom', order: 0 },
+            { i18nKey: 'painting.single_room_painting.room_type.options.living_room', value: 'living_room', order: 1 },
+            { i18nKey: 'painting.single_room_painting.room_type.options.kitchen', value: 'kitchen', order: 2 },
+            { i18nKey: 'painting.single_room_painting.room_type.options.bathroom', value: 'bathroom', order: 3 },
+            { i18nKey: 'painting.single_room_painting.room_type.options.hall_or_corridor', value: 'hall_or_corridor', order: 4 },
+          ],
+        },
+        {
+          key: 'surfaces',
+          type: 'multi',
+          i18nKey: 'painting.single_room_painting.surfaces.title',
+          required: true,
+          aiHint: 'Defines which surfaces need painting',
+          options: [
+            { i18nKey: 'painting.single_room_painting.surfaces.options.walls', value: 'walls', order: 0 },
+            { i18nKey: 'painting.single_room_painting.surfaces.options.ceiling', value: 'ceiling', order: 1 },
+            { i18nKey: 'painting.single_room_painting.surfaces.options.woodwork', value: 'woodwork', order: 2 },
+            { i18nKey: 'painting.single_room_painting.surfaces.options.radiators', value: 'radiators', order: 3 },
+          ],
+        },
+        {
+          key: 'room_size',
+          type: 'single',
+          i18nKey: 'painting.single_room_painting.room_size.title',
+          required: true,
+          aiHint: 'Room size helps estimate paint quantity and time',
+          options: [
+            { i18nKey: 'painting.single_room_painting.room_size.options.small_under_10m2', value: 'small_under_10m2', order: 0 },
+            { i18nKey: 'painting.single_room_painting.room_size.options.medium_10_20m2', value: 'medium_10_20m2', order: 1 },
+            { i18nKey: 'painting.single_room_painting.room_size.options.large_over_20m2', value: 'large_over_20m2', order: 2 },
+          ],
+        },
+        {
+          key: 'wall_condition',
+          type: 'single',
+          i18nKey: 'painting.single_room_painting.wall_condition.title',
+          required: true,
+          aiHint: 'Defines prep work needed',
+          options: [
+            { i18nKey: 'painting.single_room_painting.wall_condition.options.smooth', value: 'smooth', order: 0 },
+            { i18nKey: 'painting.single_room_painting.wall_condition.options.minor_marks', value: 'minor_marks', order: 1 },
+            { i18nKey: 'painting.single_room_painting.wall_condition.options.cracks_or_flaking', value: 'cracks_or_flaking', order: 2 },
+            { i18nKey: 'painting.single_room_painting.wall_condition.options.heavy_damage', value: 'heavy_damage', order: 3 },
+          ],
+        },
+        {
+          key: 'colour_change',
+          type: 'single',
+          i18nKey: 'painting.single_room_painting.colour_change.title',
+          required: true,
+          aiHint: 'Indicates if extra coats are needed due to dramatic colour changes',
+          options: [
+            { i18nKey: 'painting.single_room_painting.colour_change.options.staying_similar', value: 'staying_similar', order: 0 },
+            { i18nKey: 'painting.single_room_painting.colour_change.options.light_to_dark', value: 'light_to_dark', order: 1 },
+            { i18nKey: 'painting.single_room_painting.colour_change.options.dark_to_light', value: 'dark_to_light', order: 2 },
+            { i18nKey: 'painting.single_room_painting.colour_change.options.multiple_colours', value: 'multiple_colours', order: 3 },
+          ],
+        },
+        {
+          key: 'furnishings',
+          type: 'single',
+          i18nKey: 'painting.single_room_painting.furnishings.title',
+          required: true,
+          aiHint: 'Determines masking/covering time',
+          options: [
+            { i18nKey: 'painting.single_room_painting.furnishings.options.empty', value: 'empty', order: 0 },
+            { i18nKey: 'painting.single_room_painting.furnishings.options.some_furniture', value: 'some_furniture', order: 1 },
+            { i18nKey: 'painting.single_room_painting.furnishings.options.fully_furnished', value: 'fully_furnished', order: 2 },
+          ],
+        },
+        {
+          key: 'paint_supply',
+          type: 'single',
+          i18nKey: 'painting.single_room_painting.paint_supply.title',
+          required: true,
+          aiHint: 'Clarifies if painter must supply materials',
+          options: [
+            { i18nKey: 'painting.single_room_painting.paint_supply.options.client_supply', value: 'client_supply', order: 0 },
+            { i18nKey: 'painting.single_room_painting.paint_supply.options.painter_supply', value: 'painter_supply', order: 1 },
+            { i18nKey: 'painting.single_room_painting.paint_supply.options.unsure', value: 'unsure', order: 2 },
+          ],
+        },
+      ],
+    },
+  },
+
+  // 5. Feature Wall / Accent Design
+  {
+    microSlug: 'feature-wall-accent-design',
+    content: {
+      id: '55555555-6666-4777-8888-999999999999',
+      category: 'painting-decorating',
+      name: 'Feature Wall / Accent Design',
+      slug: 'feature-wall-accent-design',
+      i18nPrefix: 'painting.feature_wall_accent_design',
+      questions: [
+        {
+          key: 'feature_type',
+          type: 'single',
+          i18nKey: 'painting.feature_wall_accent_design.feature_type.title',
+          required: true,
+          aiHint: 'Defines material/design direction',
+          options: [
+            { i18nKey: 'painting.feature_wall_accent_design.feature_type.options.solid_colour', value: 'solid_colour', order: 0 },
+            { i18nKey: 'painting.feature_wall_accent_design.feature_type.options.geometric_design', value: 'geometric_design', order: 1 },
+            { i18nKey: 'painting.feature_wall_accent_design.feature_type.options.texture_or_effects', value: 'texture_or_effects', order: 2 },
+            { i18nKey: 'painting.feature_wall_accent_design.feature_type.options.decorative_mural', value: 'decorative_mural', order: 3 },
+          ],
+        },
+        {
+          key: 'wall_size',
+          type: 'single',
+          i18nKey: 'painting.feature_wall_accent_design.wall_size.title',
+          required: true,
+          aiHint: 'Size determines complexity and materials',
+          options: [
+            { i18nKey: 'painting.feature_wall_accent_design.wall_size.options.small_under_3m', value: 'small_under_3m', order: 0 },
+            { i18nKey: 'painting.feature_wall_accent_design.wall_size.options.medium_3_5m', value: 'medium_3_5m', order: 1 },
+            { i18nKey: 'painting.feature_wall_accent_design.wall_size.options.large_above_5m', value: 'large_above_5m', order: 2 },
+          ],
+        },
+        {
+          key: 'surface_condition',
+          type: 'single',
+          i18nKey: 'painting.feature_wall_accent_design.surface_condition.title',
+          required: true,
+          aiHint: 'Smoothness triggers prep work',
+          options: [
+            { i18nKey: 'painting.feature_wall_accent_design.surface_condition.options.smooth', value: 'smooth', order: 0 },
+            { i18nKey: 'painting.feature_wall_accent_design.surface_condition.options.minor_prep_needed', value: 'minor_prep_needed', order: 1 },
+            { i18nKey: 'painting.feature_wall_accent_design.surface_condition.options.major_prep_needed', value: 'major_prep_needed', order: 2 },
+          ],
+        },
+        {
+          key: 'colour_complexity',
+          type: 'single',
+          i18nKey: 'painting.feature_wall_accent_design.colour_complexity.title',
+          required: true,
+          aiHint: 'Indicates time and masking required',
+          options: [
+            { i18nKey: 'painting.feature_wall_accent_design.colour_complexity.options.single_colour', value: 'single_colour', order: 0 },
+            { i18nKey: 'painting.feature_wall_accent_design.colour_complexity.options.two_or_three_colours', value: 'two_or_three_colours', order: 1 },
+            { i18nKey: 'painting.feature_wall_accent_design.colour_complexity.options.multiple_colours', value: 'multiple_colours', order: 2 },
+          ],
+        },
+        {
+          key: 'design_provided',
+          type: 'single',
+          i18nKey: 'painting.feature_wall_accent_design.design_provided.title',
+          required: true,
+          aiHint: 'Shows whether painter must interpret or create design',
+          options: [
+            { i18nKey: 'painting.feature_wall_accent_design.design_provided.options.i_have_a_design', value: 'i_have_a_design', order: 0 },
+            { i18nKey: 'painting.feature_wall_accent_design.design_provided.options.i_need_help_designing', value: 'i_need_help_designing', order: 1 },
+          ],
+        },
+        {
+          key: 'finish_type',
+          type: 'single',
+          i18nKey: 'painting.feature_wall_accent_design.finish_type.title',
+          required: false,
+          aiHint: 'Defines styling expectations',
+          options: [
+            { i18nKey: 'painting.feature_wall_accent_design.finish_type.options.matt', value: 'matt', order: 0 },
+            { i18nKey: 'painting.feature_wall_accent_design.finish_type.options.satin', value: 'satin', order: 1 },
+            { i18nKey: 'painting.feature_wall_accent_design.finish_type.options.gloss', value: 'gloss', order: 2 },
+          ],
+        },
+        {
+          key: 'feature_wall_purpose',
+          type: 'single',
+          i18nKey: 'painting.feature_wall_accent_design.feature_wall_purpose.title',
+          required: false,
+          aiHint: 'Helps match design style to goal',
+          options: [
+            { i18nKey: 'painting.feature_wall_accent_design.feature_wall_purpose.options.visual_focus', value: 'visual_focus', order: 0 },
+            { i18nKey: 'painting.feature_wall_accent_design.feature_wall_purpose.options.add_texture', value: 'add_texture', order: 1 },
+            { i18nKey: 'painting.feature_wall_accent_design.feature_wall_purpose.options.cover_imperfections', value: 'cover_imperfections', order: 2 },
+          ],
+        },
+      ],
+    },
+  },
+
+  // 6. Wallpaper Installation
+  {
+    microSlug: 'wallpaper-installation',
+    content: {
+      id: '66666666-7777-4888-8999-aaaaaaaaaaaa',
+      category: 'painting-decorating',
+      name: 'Wallpaper Installation',
+      slug: 'wallpaper-installation',
+      i18nPrefix: 'painting.wallpaper_installation',
+      questions: [
+        {
+          key: 'wallpaper_type',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_installation.wallpaper_type.title',
+          required: true,
+          aiHint: 'Different wallpaper types require different adhesive and skill levels',
+          options: [
+            { i18nKey: 'painting.wallpaper_installation.wallpaper_type.options.standard', value: 'standard', order: 0 },
+            { i18nKey: 'painting.wallpaper_installation.wallpaper_type.options.vinyl', value: 'vinyl', order: 1 },
+            { i18nKey: 'painting.wallpaper_installation.wallpaper_type.options.fabric_or_textured', value: 'fabric_or_textured', order: 2 },
+            { i18nKey: 'painting.wallpaper_installation.wallpaper_type.options.peel_and_stick', value: 'peel_and_stick', order: 3 },
+            { i18nKey: 'painting.wallpaper_installation.wallpaper_type.options.unsure', value: 'unsure', order: 4 },
+          ],
+        },
+        {
+          key: 'area_size',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_installation.area_size.title',
+          required: true,
+          aiHint: 'Helps calculate number of rolls needed',
+          options: [
+            { i18nKey: 'painting.wallpaper_installation.area_size.options.single_wall', value: 'single_wall', order: 0 },
+            { i18nKey: 'painting.wallpaper_installation.area_size.options.entire_room', value: 'entire_room', order: 1 },
+            { i18nKey: 'painting.wallpaper_installation.area_size.options.multiple_rooms', value: 'multiple_rooms', order: 2 },
+          ],
+        },
+        {
+          key: 'surface_condition',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_installation.surface_condition.title',
+          required: true,
+          aiHint: 'Surface condition affects smoothing and priming',
+          options: [
+            { i18nKey: 'painting.wallpaper_installation.surface_condition.options.smooth', value: 'smooth', order: 0 },
+            { i18nKey: 'painting.wallpaper_installation.surface_condition.options.minor_prep_needed', value: 'minor_prep_needed', order: 1 },
+            { i18nKey: 'painting.wallpaper_installation.surface_condition.options.major_prep_needed', value: 'major_prep_needed', order: 2 },
+          ],
+        },
+        {
+          key: 'pattern_match_required',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_installation.pattern_match_required.title',
+          required: true,
+          aiHint: 'Pattern matching affects labour time and roll waste',
+          options: [
+            { i18nKey: 'painting.wallpaper_installation.pattern_match_required.options.no', value: 'no', order: 0 },
+            { i18nKey: 'painting.wallpaper_installation.pattern_match_required.options.yes_simple', value: 'yes_simple', order: 1 },
+            { i18nKey: 'painting.wallpaper_installation.pattern_match_required.options.yes_complex', value: 'yes_complex', order: 2 },
+          ],
+        },
+        {
+          key: 'existing_wallpaper',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_installation.existing_wallpaper.title',
+          required: true,
+          aiHint: 'Determines whether removal is required before installation',
+          options: [
+            { i18nKey: 'painting.wallpaper_installation.existing_wallpaper.options.no_existing', value: 'no_existing', order: 0 },
+            { i18nKey: 'painting.wallpaper_installation.existing_wallpaper.options.some_existing', value: 'some_existing', order: 1 },
+            { i18nKey: 'painting.wallpaper_installation.existing_wallpaper.options.full_existing', value: 'full_existing', order: 2 },
+          ],
+        },
+        {
+          key: 'wall_obstacles',
+          type: 'multi',
+          i18nKey: 'painting.wallpaper_installation.wall_obstacles.title',
+          required: false,
+          aiHint: 'Obstacles increase complexity',
+          options: [
+            { i18nKey: 'painting.wallpaper_installation.wall_obstacles.options.windows', value: 'windows', order: 0 },
+            { i18nKey: 'painting.wallpaper_installation.wall_obstacles.options.doors', value: 'doors', order: 1 },
+            { i18nKey: 'painting.wallpaper_installation.wall_obstacles.options.switches_or_sockets', value: 'switches_or_sockets', order: 2 },
+            { i18nKey: 'painting.wallpaper_installation.wall_obstacles.options.radiators', value: 'radiators', order: 3 },
+          ],
+        },
+        {
+          key: 'adhesive_supply',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_installation.adhesive_supply.title',
+          required: true,
+          aiHint: 'Clarifies if the professional must supply adhesive',
+          options: [
+            { i18nKey: 'painting.wallpaper_installation.adhesive_supply.options.client_supply', value: 'client_supply', order: 0 },
+            { i18nKey: 'painting.wallpaper_installation.adhesive_supply.options.installer_supply', value: 'installer_supply', order: 1 },
+            { i18nKey: 'painting.wallpaper_installation.adhesive_supply.options.unsure', value: 'unsure', order: 2 },
+          ],
+        },
+      ],
+    },
+  },
+
+  // 7. Wallpaper Removal & Preparation
+  {
+    microSlug: 'wallpaper-removal-preparation',
+    content: {
+      id: '77777777-8888-4999-8aaa-bbbbbbbbbbbb',
+      category: 'painting-decorating',
+      name: 'Wallpaper Removal & Preparation',
+      slug: 'wallpaper-removal-preparation',
+      i18nPrefix: 'painting.wallpaper_removal_preparation',
+      questions: [
+        {
+          key: 'removal_area_size',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_removal_preparation.removal_area_size.title',
+          required: true,
+          aiHint: 'Size affects duration and difficulty of removal',
+          options: [
+            { i18nKey: 'painting.wallpaper_removal_preparation.removal_area_size.options.single_wall', value: 'single_wall', order: 0 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.removal_area_size.options.entire_room', value: 'entire_room', order: 1 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.removal_area_size.options.multiple_rooms', value: 'multiple_rooms', order: 2 },
+          ],
+        },
+        {
+          key: 'wallpaper_layers',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_removal_preparation.wallpaper_layers.title',
+          required: true,
+          aiHint: 'Multiple layers significantly increase time',
+          options: [
+            { i18nKey: 'painting.wallpaper_removal_preparation.wallpaper_layers.options.single_layer', value: 'single_layer', order: 0 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.wallpaper_layers.options.two_layers', value: 'two_layers', order: 1 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.wallpaper_layers.options.multiple_layers', value: 'multiple_layers', order: 2 },
+          ],
+        },
+        {
+          key: 'wall_condition_after_removal',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_removal_preparation.wall_condition_after_removal.title',
+          required: true,
+          aiHint: 'Helps determine how much prep is required after stripping',
+          options: [
+            { i18nKey: 'painting.wallpaper_removal_preparation.wall_condition_after_removal.options.usually_good', value: 'usually_good', order: 0 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.wall_condition_after_removal.options.moderate_damage', value: 'moderate_damage', order: 1 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.wall_condition_after_removal.options.heavy_damage_or_gouges', value: 'heavy_damage_or_gouges', order: 2 },
+          ],
+        },
+        {
+          key: 'existing_paint_underneath',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_removal_preparation.existing_paint_underneath.title',
+          required: true,
+          aiHint: 'Old paint underneath can peel during removal',
+          options: [
+            { i18nKey: 'painting.wallpaper_removal_preparation.existing_paint_underneath.options.no_paint', value: 'no_paint', order: 0 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.existing_paint_underneath.options.old_paint_present', value: 'old_paint_present', order: 1 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.existing_paint_underneath.options.unsure', value: 'unsure', order: 2 },
+          ],
+        },
+        {
+          key: 'damp_or_mould_present',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_removal_preparation.damp_or_mould_present.title',
+          required: true,
+          aiHint: 'Damp impacts prep and safety',
+          options: [
+            { i18nKey: 'painting.wallpaper_removal_preparation.damp_or_mould_present.options.no', value: 'no', order: 0 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.damp_or_mould_present.options.yes_some_areas', value: 'yes_some_areas', order: 1 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.damp_or_mould_present.options.yes_major_areas', value: 'yes_major_areas', order: 2 },
+          ],
+        },
+        {
+          key: 'follow_up_work',
+          type: 'multi',
+          i18nKey: 'painting.wallpaper_removal_preparation.follow_up_work.title',
+          required: false,
+          aiHint: 'Determines next steps after stripping',
+          options: [
+            { i18nKey: 'painting.wallpaper_removal_preparation.follow_up_work.options.painting', value: 'painting', order: 0 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.follow_up_work.options.new_wallpaper', value: 'new_wallpaper', order: 1 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.follow_up_work.options.replastering', value: 'replastering', order: 2 },
+          ],
+        },
+        {
+          key: 'accessibility',
+          type: 'single',
+          i18nKey: 'painting.wallpaper_removal_preparation.accessibility.title',
+          required: false,
+          aiHint: 'Shows if obstacles will slow down removal',
+          options: [
+            { i18nKey: 'painting.wallpaper_removal_preparation.accessibility.options.clear_open_wall', value: 'clear_open_wall', order: 0 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.accessibility.options.heavy_furniture_to_move_around', value: 'heavy_furniture_to_move_around', order: 1 },
+            { i18nKey: 'painting.wallpaper_removal_preparation.accessibility.options.built_in_units_or_obstacles', value: 'built_in_units_or_obstacles', order: 2 },
+          ],
+        },
+      ],
+    },
+  },
+
+  // 8. Plaster Repair & Prep Before Painting
+  {
+    microSlug: 'plaster-repair-prep-before-painting',
+    content: {
+      id: '88888888-9999-4aaa-8bbb-cccccccccccc',
+      category: 'painting-decorating',
+      name: 'Plaster Repair & Prep Before Painting',
+      slug: 'plaster-repair-prep-before-painting',
+      i18nPrefix: 'painting.plaster_repair_prep_before_painting',
+      questions: [
+        {
+          key: 'repair_type',
+          type: 'single',
+          i18nKey: 'painting.plaster_repair_prep_before_painting.repair_type.title',
+          required: true,
+          aiHint: 'Defines the kind of plaster repair needed',
+          options: [
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.repair_type.options.small_filling', value: 'small_filling', order: 0 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.repair_type.options.cracks_and_patching', value: 'cracks_and_patching', order: 1 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.repair_type.options.large_section_repair', value: 'large_section_repair', order: 2 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.repair_type.options.full_reskim', value: 'full_reskim', order: 3 },
+          ],
+        },
+        {
+          key: 'affected_area_size',
+          type: 'single',
+          i18nKey: 'painting.plaster_repair_prep_before_painting.affected_area_size.title',
+          required: true,
+          aiHint: 'Helps scale time/materials needed',
+          options: [
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.affected_area_size.options.small_under_1m2', value: 'small_under_1m2', order: 0 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.affected_area_size.options.medium_1_5m2', value: 'medium_1_5m2', order: 1 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.affected_area_size.options.large_over_5m2', value: 'large_over_5m2', order: 2 },
+          ],
+        },
+        {
+          key: 'surface_type',
+          type: 'single',
+          i18nKey: 'painting.plaster_repair_prep_before_painting.surface_type.title',
+          required: true,
+          aiHint: 'Different surfaces require different bonding coats',
+          options: [
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.surface_type.options.wall', value: 'wall', order: 0 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.surface_type.options.ceiling', value: 'ceiling', order: 1 },
+          ],
+        },
+        {
+          key: 'damage_cause',
+          type: 'single',
+          i18nKey: 'painting.plaster_repair_prep_before_painting.damage_cause.title',
+          required: true,
+          aiHint: 'Cause impacts long-term repair stability',
+          options: [
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.damage_cause.options.settlement_cracks', value: 'settlement_cracks', order: 0 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.damage_cause.options.impact_damage', value: 'impact_damage', order: 1 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.damage_cause.options.water_damage', value: 'water_damage', order: 2 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.damage_cause.options.unknown', value: 'unknown', order: 3 },
+          ],
+        },
+        {
+          key: 'existing_coatings',
+          type: 'single',
+          i18nKey: 'painting.plaster_repair_prep_before_painting.existing_coatings.title',
+          required: true,
+          aiHint: 'Existing coatings can affect adhesion and bonding',
+          options: [
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.existing_coatings.options.bare_plaster', value: 'bare_plaster', order: 0 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.existing_coatings.options.old_paint', value: 'old_paint', order: 1 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.existing_coatings.options.flaking_or_peeling', value: 'flaking_or_peeling', order: 2 },
+          ],
+        },
+        {
+          key: 'finish_quality_required',
+          type: 'single',
+          i18nKey: 'painting.plaster_repair_prep_before_painting.finish_quality_required.title',
+          required: true,
+          aiHint: 'Specifies how perfect the final surface needs to be',
+          options: [
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.finish_quality_required.options.basic_smooth_finish', value: 'basic_smooth_finish', order: 0 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.finish_quality_required.options.high_quality_finish', value: 'high_quality_finish', order: 1 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.finish_quality_required.options.perfect_show_home_finish', value: 'perfect_show_home_finish', order: 2 },
+          ],
+        },
+        {
+          key: 'ready_for_painting',
+          type: 'single',
+          i18nKey: 'painting.plaster_repair_prep_before_painting.ready_for_painting.title',
+          required: false,
+          aiHint: 'Shows whether painter should also include mist coats or final prep',
+          options: [
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.ready_for_painting.options.yes_include_final_preparation', value: 'yes_include_final_preparation', order: 0 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.ready_for_painting.options.no_just_repair', value: 'no_just_repair', order: 1 },
+            { i18nKey: 'painting.plaster_repair_prep_before_painting.ready_for_painting.options.not_sure', value: 'not_sure', order: 2 },
+          ],
+        },
+      ],
+    },
+  },
+];
