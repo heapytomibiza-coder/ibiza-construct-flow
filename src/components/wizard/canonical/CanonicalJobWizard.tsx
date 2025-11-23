@@ -278,19 +278,25 @@ export const CanonicalJobWizard: React.FC = () => {
       const primaryMicroSlug = microSlugs[0];
       
       // Check 1: Question pack in database
-      const { data: pack } = await supabase
+      const { data: pack, error: packError } = await supabase
         .from('question_packs')
-        .select('id')
+        .select('pack_id')
         .eq('micro_slug', primaryMicroSlug)
         .eq('status', 'approved')
         .eq('is_active', true)
         .maybeSingle();
 
+      if (packError) {
+        console.error('❌ Error checking question packs:', packError);
+      }
+
       if (pack) {
-        console.log('✅ Found question pack in database');
+        console.log('✅ Found question pack in database:', pack.pack_id, 'for micro:', primaryMicroSlug);
         setSkipQuestions(false);
         return;
       }
+
+      console.log('ℹ️ No question pack found in database for:', primaryMicroSlug);
 
       // Check 2: Static JSON service definition
       const serviceId = mapMicroIdToServiceId(primaryMicroSlug);
