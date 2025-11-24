@@ -7,7 +7,7 @@ export interface CartItem {
   serviceName: string;
   quantity: number;
   pricePerUnit: number;
-  pricingType: 'flat_rate' | 'per_hour' | 'per_unit' | 'quote_required';
+  pricingType: 'fixed' | 'per_hour' | 'per_unit' | 'per_square_meter' | 'per_project' | 'range' | 'quote_required';
   unitType?: string;
   imageUrl?: string;
 }
