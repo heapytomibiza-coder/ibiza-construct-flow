@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Calendar, DollarSign } from 'lucide-react';
+import { useProfessionalEarnings } from '@/hooks/dashboard';
+import { useAuth } from '@/hooks/useAuth';
 
 interface EarningsData {
   period: string;
@@ -10,32 +12,29 @@ interface EarningsData {
 }
 
 interface EarningsChartProps {
-  weeklyData?: EarningsData[];
-  monthlyData?: EarningsData[];
-  totalEarnings: number;
   weeklyTarget?: number;
 }
 
 export function EarningsChart({ 
-  weeklyData = [],
-  monthlyData = [],
-  totalEarnings,
   weeklyTarget = 1000
 }: EarningsChartProps) {
-  // Sample data if none provided
+  const { user } = useAuth();
+  const { weeklyData, totalEarnings, loading } = useProfessionalEarnings(user?.id);
+
+  // Fallback data if loading or no data
   const defaultWeeklyData: EarningsData[] = [
-    { period: 'Mon', amount: 180, jobs: 3 },
-    { period: 'Tue', amount: 240, jobs: 4 },
-    { period: 'Wed', amount: 165, jobs: 2 },
-    { period: 'Thu', amount: 310, jobs: 5 },
-    { period: 'Fri', amount: 220, jobs: 3 },
-    { period: 'Sat', amount: 95, jobs: 1 },
-    { period: 'Sun', amount: 30, jobs: 1 },
+    { period: 'Mon', amount: 0, jobs: 0 },
+    { period: 'Tue', amount: 0, jobs: 0 },
+    { period: 'Wed', amount: 0, jobs: 0 },
+    { period: 'Thu', amount: 0, jobs: 0 },
+    { period: 'Fri', amount: 0, jobs: 0 },
+    { period: 'Sat', amount: 0, jobs: 0 },
+    { period: 'Sun', amount: 0, jobs: 0 },
   ];
 
-  const data = weeklyData.length > 0 ? weeklyData : defaultWeeklyData;
+  const data = loading ? defaultWeeklyData : weeklyData;
   const maxAmount = Math.max(...data.map(d => d.amount), weeklyTarget);
-  const weekTotal = data.reduce((sum, d) => sum + d.amount, 0);
+  const weekTotal = totalEarnings;
   const targetProgress = (weekTotal / weeklyTarget) * 100;
 
   return (

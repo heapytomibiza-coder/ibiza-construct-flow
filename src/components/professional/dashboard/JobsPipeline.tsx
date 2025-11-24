@@ -12,6 +12,8 @@ import {
   ChevronRight,
   DollarSign
 } from 'lucide-react';
+import { useProfessionalPipeline } from '@/hooks/dashboard';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Job {
   id: string;
@@ -23,59 +25,13 @@ interface Job {
   dueDate?: string;
 }
 
-interface JobsPipelineProps {
-  jobs?: Job[];
-}
+interface JobsPipelineProps {}
 
-export function JobsPipeline({ jobs = [] }: JobsPipelineProps) {
-  // Sample data if none provided
-  const defaultJobs: Job[] = [
-    { 
-      id: '1', 
-      title: 'Kitchen Cabinet Installation', 
-      client: 'Maria G.', 
-      status: 'lead',
-      value: 2400,
-      urgency: 'high'
-    },
-    { 
-      id: '2', 
-      title: 'Bathroom Vanity Build', 
-      client: 'John S.', 
-      status: 'quoted',
-      value: 1800,
-      urgency: 'medium',
-      dueDate: 'Tomorrow'
-    },
-    { 
-      id: '3', 
-      title: 'Office Furniture Set', 
-      client: 'Tech Corp', 
-      status: 'accepted',
-      value: 3200,
-      urgency: 'low',
-      dueDate: 'Next week'
-    },
-    { 
-      id: '4', 
-      title: 'Custom Wardrobe', 
-      client: 'Sarah M.', 
-      status: 'in_progress',
-      value: 2100,
-      urgency: 'medium',
-      dueDate: 'In 3 days'
-    },
-    { 
-      id: '5', 
-      title: 'Bookshelf Unit', 
-      client: 'Alex P.', 
-      status: 'review',
-      value: 950,
-      urgency: 'low'
-    },
-  ];
+export function JobsPipeline({}: JobsPipelineProps) {
+  const { user } = useAuth();
+  const { jobs, loading } = useProfessionalPipeline(user?.id);
 
-  const data = jobs.length > 0 ? jobs : defaultJobs;
+  const data = loading ? [] : jobs;
 
   const stages = [
     { 

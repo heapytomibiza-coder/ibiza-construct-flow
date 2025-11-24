@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Euro, TrendingUp, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useClientSpending } from '@/hooks/dashboard';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SpendingData {
   category: string;
@@ -19,28 +21,20 @@ interface SpendingData {
 }
 
 export interface SpendingChartProps {
-  data?: SpendingData[];
-  totalSpent: number;
   monthlyBudget?: number;
   className?: string;
 }
 
 export function SpendingChart({ 
-  data = [], 
-  totalSpent = 0,
   monthlyBudget,
   className 
 }: SpendingChartProps) {
-  const maxAmount = Math.max(...data.map(d => d.amount), 1);
-  const budgetUsage = monthlyBudget ? (totalSpent / monthlyBudget) * 100 : 0;
+  const { user } = useAuth();
+  const { spendingData, totalSpent, loading } = useClientSpending(user?.id);
 
-  // Default mock data if none provided
-  const displayData = data.length > 0 ? data : [
-    { category: 'Carpentry', amount: 2400, projects: 2, color: 'bg-copper' },
-    { category: 'Electrical', amount: 1800, projects: 1, color: 'bg-amber-500' },
-    { category: 'Plumbing', amount: 1200, projects: 1, color: 'bg-blue-500' },
-    { category: 'Painting', amount: 900, projects: 1, color: 'bg-emerald-500' }
-  ];
+  const displayData = loading ? [] : spendingData;
+  const maxAmount = Math.max(...displayData.map(d => d.amount), 1);
+  const budgetUsage = monthlyBudget ? (totalSpent / monthlyBudget) * 100 : 0;
 
   return (
     <Card className={cn('card-luxury', className)}>

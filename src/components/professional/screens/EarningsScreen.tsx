@@ -104,7 +104,6 @@ export const EarningsScreen = ({ user, stats }: EarningsScreenProps) => {
 
       {/* Earnings Chart */}
       <EarningsChart
-        totalEarnings={earnings.week.amount}
         weeklyTarget={earnings.week.target}
       />
 
