@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { EnhancedServiceCard } from '@/components/services/EnhancedServiceCard';
 import EnhancedProfessionalCard from '@/components/professionals/EnhancedProfessionalCard';
 import { MobileServiceCard } from '@/components/mobile/MobileServiceCard';
@@ -30,7 +29,6 @@ export const HybridResultsGrid = ({
   showFilters
 }: HybridResultsGridProps) => {
   const navigate = useNavigate();
-  const { t } = useTranslation('services');
   const isMobile = useIsMobile();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
 

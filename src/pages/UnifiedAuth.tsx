@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Eye, EyeOff, Loader2, Home, Wrench, ArrowLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useSignIn, useSignUp } from '../../packages/@contracts/clients';
 import { QuickDemoLogin } from '@/components/auth/QuickDemoLogin';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -25,7 +24,6 @@ export default function UnifiedAuth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { t } = useTranslation('auth');
   
   const defaultTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
   const preSelectedRole = searchParams.get('role') as 'client' | 'professional' | null;
@@ -90,8 +88,8 @@ export default function UnifiedAuth() {
 
         console.log('🔵 [UnifiedAuth] ✅ Session confirmed, showing toast');
         toast({
-          title: t('signin.welcomeBack'),
-          description: t('signin.signInSuccess')
+          title: 'Welcome back!',
+          description: 'Successfully signed in'
         });
         
         // Respect redirect parameter from URL
@@ -190,11 +188,11 @@ export default function UnifiedAuth() {
               <TabsContent value="signin" className="space-y-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">{t('signin.email')}</Label>
+                    <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder={t('signin.emailPlaceholder')}
+                      placeholder="your.email@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -203,16 +201,16 @@ export default function UnifiedAuth() {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="password">{t('signin.password')}</Label>
+                      <Label htmlFor="password">Password</Label>
                       <Link to="/auth/forgot-password" className="text-xs text-primary hover:underline">
-                        {t('signin.forgotPassword')}
+                        Forgot password?
                       </Link>
                     </div>
                     <div className="relative">
                       <Input
                         id="password"
                         type={showPassword ? 'text' : 'password'}
-                        placeholder={t('signin.passwordPlaceholder')}
+                        placeholder="Enter your password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -237,10 +235,10 @@ export default function UnifiedAuth() {
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t('signin.signingIn')}
+                        Signing in...
                       </>
                     ) : (
-                      t('signin.signIn')
+                      'Sign In'
                     )}
                   </Button>
                   
@@ -309,22 +307,22 @@ export default function UnifiedAuth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">{t('signup.fullName')}</Label>
+                    <Label htmlFor="fullName">Full Name</Label>
                     <Input
                       id="fullName"
                       type="text"
-                      placeholder={t('signup.fullNamePlaceholder')}
+                      placeholder="Your full name"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">{t('signup.email')}</Label>
+                    <Label htmlFor="signup-email">Email</Label>
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder={t('signup.emailPlaceholder')}
+                      placeholder="your.email@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -332,12 +330,12 @@ export default function UnifiedAuth() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">{t('signup.password')}</Label>
+                    <Label htmlFor="signup-password">Password</Label>
                     <div className="relative">
                       <Input
                         id="signup-password"
                         type={showPassword ? 'text' : 'password'}
-                        placeholder={t('signup.passwordPlaceholder')}
+                        placeholder="Create a secure password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -366,10 +364,10 @@ export default function UnifiedAuth() {
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t('signup.creatingAccount')}
+                        Creating account...
                       </>
                     ) : (
-                      t('signup.createAccount')
+                      'Create Account'
                     )}
                   </Button>
                   
@@ -393,24 +391,24 @@ export default function UnifiedAuth() {
             <div className="text-center text-sm text-muted-foreground">
               {tab === 'signin' ? (
                 <>
-                  {t('signin.noAccount')}{' '}
+                  Don't have an account?{' '}
                   <Button
                     variant="link"
                     className="p-0 h-auto font-semibold"
                     onClick={() => setTab('signup')}
                   >
-                    {t('signin.createOne')}
+                    Sign up
                   </Button>
                 </>
               ) : (
                 <>
-                  {t('signup.haveAccount')}{' '}
+                  Already have an account?{' '}
                   <Button
                     variant="link"
                     className="p-0 h-auto font-semibold"
                     onClick={() => setTab('signin')}
                   >
-                    {t('signup.signIn')}
+                    Sign in
                   </Button>
                 </>
               )}

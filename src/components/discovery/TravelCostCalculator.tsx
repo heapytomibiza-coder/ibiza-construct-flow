@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Car, MapPin, Calculator, Info, Navigation } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface TravelCostCalculatorProps {
   location: { lat: number; lng: number; address: string } | null;
@@ -27,7 +26,6 @@ export const TravelCostCalculator = ({
   location, 
   professionalLocations = [] 
 }: TravelCostCalculatorProps) => {
-  const { t } = useTranslation('services');
   const [travelCosts, setTravelCosts] = useState<TravelCost[]>([]);
   const [showDetails, setShowDetails] = useState(false);
 

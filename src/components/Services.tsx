@@ -1,7 +1,6 @@
 import React from 'react';
 import { Wrench, Home, Zap, Paintbrush, Hammer, Droplets, Thermometer, Car } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 
 interface ServicesProps {
@@ -10,7 +9,6 @@ interface ServicesProps {
 
 const Services = React.memo(({ maxServices }: ServicesProps) => {
   const navigate = useNavigate();
-  const { t } = useTranslation('components');
   const { getServiceCards, loading } = useServicesRegistry();
   
   const iconMap = {
@@ -46,11 +44,11 @@ const Services = React.memo(({ maxServices }: ServicesProps) => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-display text-4xl md:text-5xl font-bold text-charcoal mb-6">
-            {t('services.title')}<br />
-            <span className="text-copper">{t('services.titleHighlight')}</span>
+            Professional Services<br />
+            <span className="text-copper">Across Ibiza</span>
           </h2>
           <p className="text-body text-xl text-muted-foreground max-w-3xl mx-auto">
-            {t('services.subtitle')}
+            Connect with verified professionals for all your service needs
           </p>
         </div>
 
@@ -79,7 +77,7 @@ const Services = React.memo(({ maxServices }: ServicesProps) => {
                 >
                   {service.popular && (
                     <div className="absolute -top-3 -right-3 bg-gradient-hero text-white px-3 py-1 rounded-full text-xs font-semibold">
-                      {t('services.popular')}
+                      Popular
                     </div>
                   )}
                   
@@ -111,10 +109,10 @@ const Services = React.memo(({ maxServices }: ServicesProps) => {
         {/* CTA */}
         <div className="text-center mt-12">
           <button className="btn-hero" onClick={handleGetQuoteClick}>
-            {t('services.ctaButton')}
+            Get Free Quote
           </button>
           <p className="text-body text-muted-foreground mt-4">
-            {t('services.ctaSubtext')}
+            No obligation, response within 24 hours
           </p>
         </div>
       </div>

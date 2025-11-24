@@ -9,11 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Flag, Trash2, Edit } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import type { FeatureFlag } from '@/hooks/useFeatureFlags';
 
 export default function FeatureFlagsManager() {
-  const { t } = useTranslation('admin');
   const { flags, loading, createFlag, updateFlag, toggleFlag, deleteFlag } = useFeatureFlags();
   const [showDialog, setShowDialog] = useState(false);
   const [editingFlag, setEditingFlag] = useState<FeatureFlag | null>(null);
@@ -62,7 +60,7 @@ export default function FeatureFlagsManager() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">{t('featureFlags.title')}</h2>
+          <h2 className="text-2xl font-bold">Feature Flags Manager</h2>
           <p className="text-muted-foreground">Manage feature rollouts and experiments</p>
         </div>
         <Button onClick={() => setShowDialog(true)}>
@@ -72,7 +70,7 @@ export default function FeatureFlagsManager() {
       </div>
 
       {loading && !flags.length ? (
-        <p className="text-center text-muted-foreground py-8">{t('featureFlags.loading')}</p>
+        <p className="text-center text-muted-foreground py-8">Loading feature flags...</p>
       ) : (
         <div className="grid gap-4">
           {flags.map((flag) => {
@@ -86,7 +84,7 @@ export default function FeatureFlagsManager() {
                         <Flag className="h-4 w-4" />
                         <span className="font-medium">{flag.key}</span>
                         {flag.enabled && (
-                          <Badge variant="default">{t('featureFlags.active')}</Badge>
+                          <Badge variant="default">Active</Badge>
                         )}
                       </div>
                       {flag.description && (

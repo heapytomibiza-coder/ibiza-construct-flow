@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Users, TrendingUp, MapPin } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface LocationAvailabilityTrackerProps {
   location: { lat: number; lng: number; address: string } | null;
@@ -23,7 +22,6 @@ export const LocationAvailabilityTracker = ({
   location, 
   selectedService 
 }: LocationAvailabilityTrackerProps) => {
-  const { t } = useTranslation('services');
   const [availabilityData, setAvailabilityData] = useState<AvailabilityData[]>([]);
   const [loading, setLoading] = useState(false);
 
