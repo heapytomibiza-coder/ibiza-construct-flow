@@ -5,8 +5,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { UnifiedSearchBar } from '@/components/discovery/UnifiedSearchBar';
 import { DiscoveryTabs } from '@/components/discovery/DiscoveryTabs';
-import { MobileDiscoveryHero } from '@/components/discovery/MobileDiscoveryHero';
-import { CategoryPillNav } from '@/components/discovery/CategoryPillNav';
 import { EmptyState } from '@/components/discovery/EmptyState';
 import { PopularServicesSection } from '@/components/discovery/PopularServicesSection';
 import { DiscoveryServiceCard } from '@/components/discovery/DiscoveryServiceCard';
@@ -18,9 +16,11 @@ import { useDiscoveryAnalytics } from '@/hooks/useDiscoveryAnalytics';
 import { SkeletonLoader } from '@/components/loading/SkeletonLoader';
 import EnhancedServiceFilters from '@/components/services/EnhancedServiceFilters';
 import EnhancedProfessionalCard from '@/components/professionals/EnhancedProfessionalCard';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
+import { SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Filters {
   selectedTaxonomy: {
@@ -45,8 +45,8 @@ const Discovery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'services' | 'professionals'>('services');
   const [showFilters, setShowFilters] = useState(false);
+  const [filtersCollapsed, setFiltersCollapsed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [showFairExhibitors, setShowFairExhibitors] = useState(false);
   const [filters, setFilters] = useState<Filters>({
     selectedTaxonomy: null,
     specialists: [],
@@ -146,219 +146,251 @@ const Discovery = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 pt-32 pb-8">
-        {/* Mobile Hero */}
-        <MobileDiscoveryHero viewMode={viewMode} />
-        
-        {/* Desktop Hero */}
-        <div className="text-center space-y-3 sm:space-y-4 mb-8 hidden lg:block">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary-dark to-copper bg-clip-text text-transparent">
-            Find What You Need, Your Way
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Know your exact job? Browse specific services. Exploring options? Browse by professional trade.
-          </p>
+      <main className="pt-24 pb-8">
+        {/* Hero Section */}
+        <div className="bg-gradient-to-b from-primary/5 to-background py-8 border-b">
+          <div className="container mx-auto px-4">
+            <div className="text-center space-y-3 mb-6">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-copper bg-clip-text text-transparent">
+                Find Your Perfect Professional
+              </h1>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Browse services or explore professionals. Filter to find exactly what you need.
+              </p>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex justify-center gap-3 mb-6">
+              <Button
+                variant={viewMode === 'services' ? 'default' : 'outline'}
+                onClick={() => setViewMode('services')}
+                className="gap-2"
+              >
+                🛠️ Services
+              </Button>
+              <Button
+                variant={viewMode === 'professionals' ? 'default' : 'outline'}
+                onClick={() => setViewMode('professionals')}
+                className="gap-2"
+              >
+                👥 Professionals
+              </Button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="max-w-3xl mx-auto">
+              <UnifiedSearchBar
+                searchTerm={searchTerm}
+                onSearchChange={handleSearchChange}
+                onFilterToggle={() => setShowFilters(!showFilters)}
+                showFilters={showFilters}
+                placeholder={
+                  viewMode === 'services' 
+                    ? "Search services like 'plumbing', 'electrical'..."
+                    : "Search professionals like 'electrician', 'builder'..."
+                }
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative mt-6 lg:mt-8">
-          <UnifiedSearchBar
-            searchTerm={searchTerm}
-            onSearchChange={handleSearchChange}
-            onFilterToggle={() => setShowFilters(!showFilters)}
-            showFilters={showFilters}
-            placeholder={
-              viewMode === 'services' 
-                ? t('discovery.services.searchPlaceholder', "Search for 'sink repair', 'outlet installation'...")
-                : t('discovery.professionals.searchPlaceholder', "Search for 'electrician', 'plumber', 'carpenter'...")
-            }
-          />
-          {getActiveFilterCount() > 0 && (
-            <Badge className="absolute -top-2 right-14 sm:right-16 z-10 animate-scale-in" variant="default">
-              {getActiveFilterCount()}
-            </Badge>
-          )}
-        </div>
-
-        {/* Filter Sheet */}
+        {/* Mobile Filter Sheet */}
         <Sheet open={showFilters} onOpenChange={setShowFilters}>
-          <SheetContent side="left" className="w-80 overflow-y-auto">
-            <EnhancedServiceFilters
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-              categories={categories}
-              visible={showFilters}
-            />
+          <SheetContent side="left" className="w-80 overflow-y-auto bg-background">
+            <div className="py-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Filters</h2>
+                <Button variant="ghost" size="sm" onClick={() => setShowFilters(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <EnhancedServiceFilters
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+                categories={categories}
+                visible={true}
+              />
+            </div>
           </SheetContent>
         </Sheet>
 
-        {/* Category Pills Navigation */}
-        <CategoryPillNav
-          selectedCategory={selectedCategory}
-          onSelectCategory={handleCategorySelect}
-        />
+        {/* Main Content Area with Sidebar */}
+        <div className="container mx-auto px-4 mt-6">
+          <div className="flex gap-6">
+            {/* Left Sidebar - Desktop Only */}
+            <aside className={`hidden lg:block transition-all duration-300 ${filtersCollapsed ? 'w-12' : 'w-80'} flex-shrink-0`}>
+              <div className="sticky top-24 space-y-4">
+                {/* Collapse Toggle */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFiltersCollapsed(!filtersCollapsed)}
+                  className="w-full justify-between"
+                >
+                  {!filtersCollapsed && (
+                    <>
+                      <span className="flex items-center gap-2">
+                        <SlidersHorizontal className="h-4 w-4" />
+                        Filters
+                        {getActiveFilterCount() > 0 && (
+                          <Badge variant="secondary" className="ml-2">
+                            {getActiveFilterCount()}
+                          </Badge>
+                        )}
+                      </span>
+                      <ChevronLeft className="h-4 w-4" />
+                    </>
+                  )}
+                  {filtersCollapsed && <ChevronRight className="h-4 w-4 mx-auto" />}
+                </Button>
 
-        {/* Quick Browse Buttons - Show when no search */}
-        {!searchTerm && !loading && !loadingPros && (
-          <>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 mb-6">
-              <button
-                onClick={() => setViewMode('services')}
-                className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl transition-all ${
-                  viewMode === 'services'
-                    ? 'bg-primary text-primary-foreground shadow-lg scale-105'
-                    : 'bg-card border-2 border-border hover:border-primary hover:shadow-md'
-                }`}
-              >
-                <span className="text-2xl">🛠️</span>
-                <div className="text-left">
-                  <div className="font-semibold">Browse Services</div>
-                  <div className="text-xs opacity-80">Shop your exact needs</div>
-                </div>
-              </button>
-              <button
-                onClick={() => setViewMode('professionals')}
-                className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl transition-all ${
-                  viewMode === 'professionals'
-                    ? 'bg-primary text-primary-foreground shadow-lg scale-105'
-                    : 'bg-card border-2 border-border hover:border-primary hover:shadow-md'
-                }`}
-              >
-                <span className="text-2xl">👥</span>
-                <div className="text-left">
-                  <div className="font-semibold">Browse Professionals</div>
-                  <div className="text-xs opacity-80">Explore by trade or expertise</div>
-                </div>
-              </button>
-            </div>
-            
-            {/* Fair Exhibitors Toggle */}
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() => setShowFairExhibitors(!showFairExhibitors)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all ${
-                  showFairExhibitors
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                    : 'bg-card border-2 border-border hover:border-purple-500'
-                }`}
-              >
-                <span className="text-xl">🎪</span>
-                <span className="font-semibold">
-                  {showFairExhibitors ? 'Showing Fair Exhibitors' : 'View Ibiza Home Meeting 2025'}
-                </span>
-                {showFairExhibitors && (
-                  <Badge variant="secondary" className="ml-2">
-                    21 Companies
-                  </Badge>
+                {/* Filters Content */}
+                {!filtersCollapsed && (
+                  <div className="bg-card border rounded-lg overflow-hidden">
+                    <div className="max-h-[calc(100vh-200px)] overflow-y-auto p-4">
+                      <EnhancedServiceFilters
+                        filters={filters}
+                        onFiltersChange={handleFiltersChange}
+                        categories={categories}
+                        visible={true}
+                      />
+                    </div>
+                  </div>
                 )}
-              </button>
-            </div>
-          </>
-        )}
-
-        {/* View Mode Tabs - Show when searching */}
-        {searchTerm && (
-          <DiscoveryTabs
-            activeMode={viewMode as any}
-            onModeChange={(mode) => setViewMode(mode as any)}
-            className="mt-4"
-          />
-        )}
-
-        {/* Results Section */}
-        <div className="mt-6 space-y-6">
-          {/* Results Count */}
-          {!loading && !loadingPros && (services.length > 0 || discoveredProfessionals.length > 0) && (
-            <div className="flex items-center justify-between bg-card p-4 rounded-lg border">
-              <p className="text-sm font-medium text-foreground">
-                {viewMode === 'services' 
-                  ? `${services.length} service${services.length !== 1 ? 's' : ''} available`
-                  : `${discoveredProfessionals.length} professional${discoveredProfessionals.length !== 1 ? 's' : ''} available`
-                }
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {searchTerm ? `Results for "${searchTerm}"` : selectedCategory || 'All categories'}
-              </p>
-            </div>
-          )}
-
-          {/* Results */}
-          {viewMode === 'services' ? (
-            loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <SkeletonLoader key={i} variant="card" />
-                ))}
               </div>
-            ) : services.length === 0 ? (
-              <EmptyState
-                type={searchTerm || selectedCategory ? 'no-results' : 'no-search'}
-                searchTerm={searchTerm || selectedCategory || ''}
-                onClearSearch={() => {
-                  setSearchTerm('');
-                  setSelectedCategory(null);
-                }}
-                viewMode="services"
-              />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-fade-in">
-                {services.map((service, index) => (
-                  <div
-                    key={service.id}
-                    className="animate-scale-in"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <DiscoveryServiceCard
-                      item={service}
-                      onViewDetails={() => handleServiceClick(service)}
-                    />
+            </aside>
+
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              {/* Results Header */}
+              {!loading && !loadingPros && (services.length > 0 || discoveredProfessionals.length > 0) && (
+                <div className="flex items-center justify-between bg-card p-4 rounded-lg border mb-6">
+                  <div>
+                    <p className="text-lg font-semibold">
+                      {viewMode === 'services' 
+                        ? `${services.length} ${services.length === 1 ? 'Service' : 'Services'}`
+                        : `${discoveredProfessionals.length} ${discoveredProfessionals.length === 1 ? 'Professional' : 'Professionals'}`
+                      }
+                    </p>
+                    {(searchTerm || getActiveFilterCount() > 0) && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {searchTerm && `Searching for "${searchTerm}"`}
+                        {getActiveFilterCount() > 0 && ` • ${getActiveFilterCount()} filter${getActiveFilterCount() > 1 ? 's' : ''} applied`}
+                      </p>
+                    )}
                   </div>
-                ))}
-              </div>
-            )
-          ) : (
-            loadingPros ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <SkeletonLoader key={i} variant="card" />
-                ))}
-              </div>
-            ) : discoveredProfessionals.length === 0 ? (
-              <EmptyState
-                type={searchTerm || selectedCategory ? 'no-results' : 'no-search'}
-                searchTerm={searchTerm || selectedCategory || ''}
-                onClearSearch={() => {
-                  setSearchTerm('');
-                  setSelectedCategory(null);
-                }}
-                viewMode="professionals"
-              />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-fade-in">
-                {discoveredProfessionals.map((prof, index) => (
-                  <div
-                    key={prof.id}
-                    className="animate-scale-in"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <EnhancedProfessionalCard
-                      professional={prof}
-                    />
-                  </div>
-                ))}
-              </div>
-            )
-          )}
+                  {getActiveFilterCount() > 0 && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setFilters({
+                        selectedTaxonomy: null,
+                        specialists: [],
+                        priceRange: [0, 10000],
+                        availability: [],
+                        location: '',
+                      })}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Clear Filters
+                    </Button>
+                  )}
+                </div>
+              )}
 
-          {/* Popular Services - Below Results */}
-          {!loading && !loadingPros && services.length === 0 && discoveredProfessionals.length === 0 && (
-            <div className="mt-8">
-              <PopularServicesSection
-                viewMode={viewMode}
-                onSelectSuggestion={(term) => setSearchTerm(term)}
-              />
+              {/* Results Grid */}
+              {viewMode === 'services' ? (
+                loading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <SkeletonLoader key={i} variant="card" />
+                    ))}
+                  </div>
+                ) : services.length === 0 ? (
+                  <EmptyState
+                    type={searchTerm || selectedCategory ? 'no-results' : 'no-search'}
+                    searchTerm={searchTerm || selectedCategory || ''}
+                    onClearSearch={() => {
+                      setSearchTerm('');
+                      setSelectedCategory(null);
+                      setFilters({
+                        selectedTaxonomy: null,
+                        specialists: [],
+                        priceRange: [0, 10000],
+                        availability: [],
+                        location: '',
+                      });
+                    }}
+                    viewMode="services"
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fade-in">
+                    {services.map((service, index) => (
+                      <div
+                        key={service.id}
+                        className="animate-scale-in"
+                        style={{ animationDelay: `${index * 30}ms` }}
+                      >
+                        <DiscoveryServiceCard
+                          item={service}
+                          onViewDetails={() => handleServiceClick(service)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )
+              ) : (
+                loadingPros ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <SkeletonLoader key={i} variant="card" />
+                    ))}
+                  </div>
+                ) : discoveredProfessionals.length === 0 ? (
+                  <EmptyState
+                    type={searchTerm || selectedCategory ? 'no-results' : 'no-search'}
+                    searchTerm={searchTerm || selectedCategory || ''}
+                    onClearSearch={() => {
+                      setSearchTerm('');
+                      setSelectedCategory(null);
+                      setFilters({
+                        selectedTaxonomy: null,
+                        specialists: [],
+                        priceRange: [0, 10000],
+                        availability: [],
+                        location: '',
+                      });
+                    }}
+                    viewMode="professionals"
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fade-in">
+                    {discoveredProfessionals.map((prof, index) => (
+                      <div
+                        key={prof.id}
+                        className="animate-scale-in"
+                        style={{ animationDelay: `${index * 30}ms` }}
+                      >
+                        <EnhancedProfessionalCard
+                          professional={prof}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
+
+              {/* Popular Services */}
+              {!loading && !loadingPros && services.length === 0 && discoveredProfessionals.length === 0 && !searchTerm && (
+                <div className="mt-8">
+                  <PopularServicesSection
+                    viewMode={viewMode}
+                    onSelectSuggestion={(term) => setSearchTerm(term)}
+                  />
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </main>
 

@@ -199,8 +199,6 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
            (localFilters.minRating ? 1 : 0);
   };
 
-  if (!visible) return null;
-
   return (
     <div className="space-y-6">
       {/* Filter Header */}
