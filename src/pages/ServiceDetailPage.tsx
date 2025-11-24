@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useToast } from '@/components/ui/use-toast';
-import { ServiceMenuSection } from '@/components/services/ServiceMenuSection';
+import { EnhancedServiceMenuItemCard } from '@/components/services/EnhancedServiceMenuItemCard';
 import { QuoteBasket } from '@/components/services/QuoteBasket';
 import { useQuoteBasket } from '@/hooks/useQuoteBasket';
 import { VisualMaterialPicker } from '@/components/wizard/VisualMaterialPicker';
@@ -557,42 +557,59 @@ export default function ServiceDetailPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold">Service Menu</h3>
-                  {totalItems > 0 && (
-                    <span className="text-sm text-muted-foreground lg:hidden">
-                      {totalItems} in quote
-                    </span>
-                  )}
-                </div>
-
-                {isLoadingMenu && (
-                  <div className="space-y-3">
-                    <Skeleton className="h-6 w-44" />
-                    <Skeleton className="h-24 w-full" />
-                    <Skeleton className="h-24 w-full" />
-                  </div>
-                )}
-
-                {!isLoadingMenu && serviceMenuItems.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    The professional hasn't configured their menu yet. Check back soon for available options.
+            {/* Service Menu with Enhanced Cards */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold">Available Services</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Select services to add to your quote request
                   </p>
+                </div>
+                {totalItems > 0 && (
+                  <Badge variant="default" className="lg:hidden">
+                    {totalItems} selected
+                  </Badge>
                 )}
+              </div>
 
-                 {!isLoadingMenu &&
-                   Object.entries(groupedItems).map(([groupName, items]) => (
-                     <ServiceMenuSection
-                       key={groupName}
-                       groupName={groupName}
-                       items={items}
-                       onAddToBasket={handleAddToBasket}
-                     />
-                   ))}
-              </CardContent>
-            </Card>
+              {isLoadingMenu && (
+                <div className="space-y-4">
+                  <Skeleton className="h-48 w-full rounded-lg" />
+                  <Skeleton className="h-48 w-full rounded-lg" />
+                  <Skeleton className="h-48 w-full rounded-lg" />
+                </div>
+              )}
+
+              {!isLoadingMenu && serviceMenuItems.length === 0 && (
+                <Card className="border-dashed">
+                  <CardContent className="py-12 text-center">
+                    <p className="text-muted-foreground">
+                      The professional hasn't configured their menu yet. Check back soon for available options.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {!isLoadingMenu && Object.entries(groupedItems).map(([groupName, items]) => (
+                <div key={groupName} className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+                    <h4 className="text-lg font-semibold px-4">{groupName}</h4>
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+                  </div>
+                  <div className="grid gap-4">
+                    {items.map((item) => (
+                      <EnhancedServiceMenuItemCard
+                        key={item.id}
+                        item={item}
+                        onAddToBasket={(qty) => handleAddToBasket(item, qty)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
 
             {/* Trust & Guarantee Section */}
             <Card className="bg-gradient-to-br from-primary/5 to-background border-primary/20">
