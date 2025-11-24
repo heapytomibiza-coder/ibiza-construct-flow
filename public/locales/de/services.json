@@ -1,0 +1,16 @@
+{
+  "title": "Dienstleistungen",
+  "available": "Verfügbare Dienstleistungen",
+  "selectService": "Dienstleistung auswählen",
+  "addToQuote": "Zum Angebot hinzufügen",
+  "requestQuote": "Angebot anfordern",
+  "viewDetails": "Details ansehen",
+  "whatsIncluded": "Was ist enthalten",
+  "basePackage": "Basispaket",
+  "optionalAddons": "Optionale Extras",
+  "materials": "Materialien & Oberflächen",
+  "portfolio": "Service-Galerie",
+  "pricing": "Preise",
+  "fromPrice": "Ab {{price}}",
+  "quoteRequired": "Angebot erforderlich"
+}

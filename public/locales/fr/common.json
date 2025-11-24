@@ -1,0 +1,19 @@
+{
+  "loading": "Chargement...",
+  "error": "Erreur",
+  "success": "Succès",
+  "save": "Enregistrer",
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "edit": "Modifier",
+  "view": "Voir",
+  "search": "Rechercher",
+  "filter": "Filtrer",
+  "sort": "Trier",
+  "back": "Retour",
+  "next": "Suivant",
+  "previous": "Précédent",
+  "submit": "Soumettre",
+  "close": "Fermer",
+  "confirm": "Confirmer"
+}

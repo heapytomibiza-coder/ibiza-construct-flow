@@ -1,0 +1,103 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "close": "Fermer",
+    "confirm": "Confirmer"
+  },
+  "nav": {
+    "home": "Accueil",
+    "discovery": "Découvrir",
+    "services": "Services",
+    "professionals": "Professionnels",
+    "jobs": "Emplois",
+    "messages": "Messages",
+    "profile": "Profil",
+    "admin": "Admin",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter"
+  },
+  "services": {
+    "title": "Services",
+    "available": "Services Disponibles",
+    "selectService": "Sélectionner un service",
+    "addToQuote": "Ajouter au Devis",
+    "requestQuote": "Demander un Devis",
+    "viewDetails": "Voir les Détails",
+    "whatsIncluded": "Ce qui est Inclus",
+    "basePackage": "Forfait de Base",
+    "optionalAddons": "Options Supplémentaires",
+    "materials": "Matériaux et Finitions",
+    "portfolio": "Galerie du Service",
+    "pricing": "Tarifs",
+    "fromPrice": "À partir de {{price}}",
+    "quoteRequired": "Devis Requis"
+  },
+  "booking": {
+    "title": "Réservation",
+    "selectDate": "Sélectionner une Date",
+    "selectTime": "Sélectionner une Heure",
+    "notes": "Notes Supplémentaires",
+    "submit": "Soumettre la Réservation",
+    "confirm": "Confirmer la Réservation",
+    "status": {
+      "pending": "En Attente",
+      "confirmed": "Confirmé",
+      "completed": "Terminé",
+      "cancelled": "Annulé"
+    }
+  },
+  "professional": {
+    "title": "Professionnel",
+    "verified": "Vérifié",
+    "reviews": "Avis",
+    "projects": "Projets Complétés",
+    "responseTime": "Temps de Réponse",
+    "experience": "Années d'Expérience",
+    "viewProfile": "Voir le Profil",
+    "contactPro": "Contacter le Professionnel"
+  },
+  "quote": {
+    "title": "Demande de Devis",
+    "yourQuote": "Votre Devis",
+    "itemsSelected": "{{count}} article(s) sélectionné(s)",
+    "total": "Total",
+    "estimate": "Total Estimé",
+    "notes": "Notes pour le Professionnel",
+    "send": "Envoyer la Demande",
+    "addedToQuote": "Ajouté au Devis",
+    "removeFromQuote": "Retirer du Devis"
+  },
+  "auth": {
+    "signIn": "Se Connecter",
+    "signUp": "S'inscrire",
+    "email": "Email",
+    "password": "Mot de Passe",
+    "forgotPassword": "Mot de passe oublié?",
+    "noAccount": "Pas encore de compte?",
+    "hasAccount": "Vous avez déjà un compte?",
+    "signInWith": "Se connecter avec {{provider}}",
+    "signUpWith": "S'inscrire avec {{provider}}"
+  },
+  "errors": {
+    "general": "Quelque chose s'est mal passé",
+    "notFound": "Non trouvé",
+    "unauthorized": "Non autorisé",
+    "serverError": "Erreur serveur",
+    "networkError": "Erreur réseau",
+    "tryAgain": "Veuillez réessayer"
+  }
+}

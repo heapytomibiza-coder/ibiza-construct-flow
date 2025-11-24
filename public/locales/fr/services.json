@@ -1,0 +1,16 @@
+{
+  "title": "Services",
+  "available": "Services Disponibles",
+  "selectService": "Sélectionner un service",
+  "addToQuote": "Ajouter au Devis",
+  "requestQuote": "Demander un Devis",
+  "viewDetails": "Voir les Détails",
+  "whatsIncluded": "Ce qui est Inclus",
+  "basePackage": "Forfait de Base",
+  "optionalAddons": "Options Supplémentaires",
+  "materials": "Matériaux et Finitions",
+  "portfolio": "Galerie du Service",
+  "pricing": "Tarifs",
+  "fromPrice": "À partir de {{price}}",
+  "quoteRequired": "Devis Requis"
+}

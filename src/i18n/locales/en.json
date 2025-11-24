@@ -1,0 +1,103 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
+  "nav": {
+    "home": "Home",
+    "discovery": "Discovery",
+    "services": "Services",
+    "professionals": "Professionals",
+    "jobs": "Jobs",
+    "messages": "Messages",
+    "profile": "Profile",
+    "admin": "Admin",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "services": {
+    "title": "Services",
+    "available": "Available Services",
+    "selectService": "Select a service",
+    "addToQuote": "Add to Quote",
+    "requestQuote": "Request Quote",
+    "viewDetails": "View Details",
+    "whatsIncluded": "What's Included",
+    "basePackage": "Base Package",
+    "optionalAddons": "Optional Add-ons",
+    "materials": "Materials & Finishes",
+    "portfolio": "Service Gallery",
+    "pricing": "Pricing",
+    "fromPrice": "From {{price}}",
+    "quoteRequired": "Quote Required"
+  },
+  "booking": {
+    "title": "Booking",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "notes": "Additional Notes",
+    "submit": "Submit Booking",
+    "confirm": "Confirm Booking",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "professional": {
+    "title": "Professional",
+    "verified": "Verified",
+    "reviews": "Reviews",
+    "projects": "Projects Completed",
+    "responseTime": "Response Time",
+    "experience": "Years Experience",
+    "viewProfile": "View Profile",
+    "contactPro": "Contact Professional"
+  },
+  "quote": {
+    "title": "Quote Request",
+    "yourQuote": "Your Quote",
+    "itemsSelected": "{{count}} item(s) selected",
+    "total": "Total",
+    "estimate": "Estimated Total",
+    "notes": "Notes for Professional",
+    "send": "Send Quote Request",
+    "addedToQuote": "Added to Quote",
+    "removeFromQuote": "Remove from Quote"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signInWith": "Sign in with {{provider}}",
+    "signUpWith": "Sign up with {{provider}}"
+  },
+  "errors": {
+    "general": "Something went wrong",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "serverError": "Server error",
+    "networkError": "Network error",
+    "tryAgain": "Please try again"
+  }
+}

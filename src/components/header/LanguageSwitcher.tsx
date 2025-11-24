@@ -1,37 +1,51 @@
+/**
+ * Language Switcher Component
+ * Phase 16: Internationalization
+ * Updated to support EN, ES, DE, FR
+ */
+
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Globe } from 'lucide-react';
+import { Languages } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { supportedLanguages, type SupportedLanguage } from '@/i18n/config';
 
 export const LanguageSwitcher = () => {
-  const { t, i18n } = useTranslation('common');
+  const { i18n } = useTranslation();
 
-  const changeLanguage = (lng: string) => {
+  const changeLanguage = (lng: SupportedLanguage) => {
     i18n.changeLanguage(lng);
   };
+
+  const currentLanguage = (i18n.language.split('-')[0] as SupportedLanguage) || 'en';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
-          <Globe className="h-4 w-4" />
+        <Button variant="ghost" size="sm" className="gap-2 relative">
+          <Languages className="h-4 w-4" />
           <span className="hidden sm:inline">
-            {i18n.language === 'es' ? t('lang.es') : t('lang.en')}
+            {supportedLanguages[currentLanguage]?.flag} {supportedLanguages[currentLanguage]?.name}
           </span>
+          <span className="sm:hidden">{supportedLanguages[currentLanguage]?.flag}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => changeLanguage('en')}>
-          {t('lang.en')}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => changeLanguage('es')}>
-          {t('lang.es')}
-        </DropdownMenuItem>
+        {Object.entries(supportedLanguages).map(([code, { name, flag }]) => (
+          <DropdownMenuItem
+            key={code}
+            onClick={() => changeLanguage(code as SupportedLanguage)}
+            className={currentLanguage === code ? 'bg-accent' : ''}
+          >
+            <span className="mr-2">{flag}</span>
+            <span>{name}</span>
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

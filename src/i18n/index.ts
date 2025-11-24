@@ -54,7 +54,7 @@ const IbizaLanguageDetector = {
 
     // Fallback to browser language
     const browserLang = navigator.language.split('-')[0];
-    callback(browserLang === 'es' ? 'es' : 'en');
+    callback(['es', 'de', 'fr'].includes(browserLang) ? browserLang : 'en');
   },
   init: () => {},
   cacheUserLanguage: (lng: string) => {
@@ -99,7 +99,7 @@ i18n
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
     fallbackLng: 'en',
-    supportedLngs: ['en', 'es'],
+    supportedLngs: ['en', 'es', 'de', 'fr'],
     ns: ['common', 'navigation', 'services', 'auth', 'dashboard', 'hero', 'components', 'howItWorks', 'footer', 'pages', 'wizard', 'admin'],
     defaultNS: 'common',
     interpolation: { 
