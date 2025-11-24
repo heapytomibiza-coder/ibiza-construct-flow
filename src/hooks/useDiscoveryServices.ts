@@ -51,7 +51,6 @@ export const useDiscoveryServices = (searchTerm?: string, filters?: Filters) => 
           .from('professional_service_items')
           .select('*')
           .eq('is_active', true)
-          .order('created_at', { ascending: false })
           .limit(50);
 
         // Apply price filter
@@ -157,7 +156,17 @@ export const useDiscoveryServices = (searchTerm?: string, filters?: Filters) => 
           );
         }
 
-        setServices(transformedData);
+        // Shuffle array for visual variety (Fisher-Yates algorithm)
+        const shuffleArray = (array: any[]) => {
+          const shuffled = [...array];
+          for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+          }
+          return shuffled;
+        };
+
+        setServices(shuffleArray(transformedData));
       } catch (err: any) {
         setError(err.message);
         console.error('Error fetching discovery services:', err);
