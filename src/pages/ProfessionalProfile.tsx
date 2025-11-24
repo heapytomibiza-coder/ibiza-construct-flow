@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
 import { ProfessionalAboutSection } from '@/components/professionals/ProfessionalAboutSection';
-import { CompactServiceCards } from '@/components/professionals/CompactServiceCards';
+import { DetailedServiceMenu } from '@/components/professionals/DetailedServiceMenu';
 import { EmptyPortfolioState } from '@/components/professionals/EmptyPortfolioState';
 import { ProfessionalPortfolioGallery } from '@/components/professionals/ProfessionalPortfolioGallery';
 import { BeforeAfterGallery } from '@/components/professionals/BeforeAfterGallery';
@@ -103,12 +103,30 @@ export default function ProfessionalProfile() {
 
       if (userError) throw userError;
 
-      // Fetch services from professional_service_items (explicit columns)
+      // Fetch services from professional_service_items with full detail fields
       const servicesResult = await supabase
         .from('professional_service_items')
-        .select('id, professional_id, service_id, name, description, base_price, pricing_type, category, is_active')
+        .select(`
+          id, 
+          professional_id, 
+          service_id, 
+          name, 
+          description,
+          long_description,
+          base_price, 
+          pricing_type, 
+          unit_type,
+          category,
+          group_name,
+          whats_included,
+          specifications,
+          estimated_duration_minutes,
+          is_active,
+          sort_order
+        `)
         .eq('professional_id', professionalId || '')
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
       const services: any[] = servicesResult.data || [];
 
       // Fetch stats (explicit columns)
@@ -341,14 +359,14 @@ export default function ProfessionalProfile() {
                 />
               </motion.div>
 
-              {/* Compact Services Section */}
+              {/* Detailed Service Menu */}
               {profile.services.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  <CompactServiceCards
+                  <DetailedServiceMenu
                     services={profile.services as any}
                     professionalId={professionalId}
                     onRequestQuote={handleRequestQuote}
