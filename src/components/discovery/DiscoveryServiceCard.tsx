@@ -104,8 +104,8 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
   };
 
   const formatPrice = () => {
-    // Always show a starting price for transparency
-    const price = item.base_price || 50; // Default starting price if missing
+    // Show actual price, or starting price for quote_required
+    const price = item.base_price;
     return `€${price.toFixed(0)}`;
   };
 
@@ -117,7 +117,7 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
       return `/${unitLabel}`;
     }
     if (item.pricing_type === 'quote_required') return '+ (from)';
-    return '+ (from)';
+    return '';
   };
 
   const getCategoryImage = (): string | null => {

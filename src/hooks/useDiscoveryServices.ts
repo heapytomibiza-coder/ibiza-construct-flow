@@ -157,13 +157,6 @@ export const useDiscoveryServices = (searchTerm?: string, filters?: Filters) => 
           );
         }
 
-        // Sort by price (lowest first) for comparison transparency
-        transformedData = transformedData.sort((a: any, b: any) => {
-          const priceA = a.base_price || 0;
-          const priceB = b.base_price || 0;
-          return priceA - priceB;
-        });
-
         setServices(transformedData);
       } catch (err: any) {
         setError(err.message);
