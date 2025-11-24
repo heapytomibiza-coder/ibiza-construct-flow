@@ -121,7 +121,7 @@ const Discovery = () => {
 
   const handleServiceClick = (item: any) => {
     trackItemClick('service', item.id, 0);
-    navigate(`/professional/${item.professional_id}`);
+    navigate(`/service/${item.service_id}?professional=${item.professional_id}`);
   };
 
   // Group services by professional for professionals view
