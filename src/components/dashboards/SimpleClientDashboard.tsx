@@ -328,7 +328,6 @@ const HomeTab = ({ stats, bookings, onTabChange, navigate }: any) => (
     {/* Spending & Timeline Grid - Mobile Stacked */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
       <SpendingChart 
-        totalSpent={stats.totalSpent || 6300}
         monthlyBudget={10000}
       />
       

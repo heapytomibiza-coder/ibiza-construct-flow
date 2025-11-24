@@ -94,7 +94,6 @@ export const TodayScreen = ({ stats, user }: TodayScreenProps) => {
 
       {/* Weekly Earnings Chart */}
       <EarningsChart
-        totalEarnings={stats.weekEarnings}
         weeklyTarget={stats.weeklyTarget || 1000}
       />
 

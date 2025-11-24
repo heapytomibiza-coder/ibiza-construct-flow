@@ -14,6 +14,8 @@ import {
   Calendar, Euro, ChevronRight 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useClientProjects } from '@/hooks/dashboard';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Project {
   id: string;
@@ -27,7 +29,6 @@ interface Project {
 }
 
 export interface ProjectTimelineProps {
-  projects?: Project[];
   onProjectClick?: (projectId: string) => void;
   className?: string;
 }
@@ -78,40 +79,13 @@ const statusConfig = {
 };
 
 export function ProjectTimeline({ 
-  projects = [], 
   onProjectClick,
   className 
 }: ProjectTimelineProps) {
-  // Mock data if none provided
-  const displayProjects = projects.length > 0 ? projects : [
-    {
-      id: '1',
-      title: 'Kitchen Cabinet Installation',
-      category: 'Carpentry',
-      status: 'in_progress' as const,
-      budget: '€2,400',
-      startDate: '2024-01-15',
-      professionalName: 'Ibiza Woodcraft Solutions',
-      progress: 65
-    },
-    {
-      id: '2',
-      title: 'Electrical Panel Upgrade',
-      category: 'Electrical',
-      status: 'matched' as const,
-      budget: '€1,800',
-      startDate: '2024-01-20',
-      professionalName: 'BrightWorks Ibiza'
-    },
-    {
-      id: '3',
-      title: 'Bathroom Renovation',
-      category: 'Multiple',
-      status: 'posted' as const,
-      budget: '€3,500',
-      startDate: '2024-01-22'
-    }
-  ];
+  const { user } = useAuth();
+  const { projects, loading } = useClientProjects(user?.id);
+
+  const displayProjects = loading ? [] : projects;
 
   const groupedProjects = {
     active: displayProjects.filter(p => 
