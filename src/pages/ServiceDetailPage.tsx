@@ -215,9 +215,12 @@ export default function ServiceDetailPage() {
 
   const formatPrice = () => {
     if (service.pricing_type === 'quote_required') return 'Quote Required';
-    if (service.pricing_type === 'flat_rate') return `€${service.base_price}`;
+    if (service.pricing_type === 'fixed') return `€${service.base_price}`;
     if (service.pricing_type === 'per_hour') return `€${service.base_price}/hr`;
     if (service.pricing_type === 'per_unit') return `€${service.base_price}/${service.unit_type}`;
+    if (service.pricing_type === 'per_square_meter') return `€${service.base_price}/m²`;
+    if (service.pricing_type === 'per_project') return `€${service.base_price}/project`;
+    if (service.pricing_type === 'range') return `From €${service.base_price}`;
     return 'Contact for pricing';
   };
 

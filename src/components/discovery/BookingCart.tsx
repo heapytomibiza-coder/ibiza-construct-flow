@@ -92,7 +92,7 @@ export const BookingCart = () => {
                       </Badge>
                     ) : (
                       <>
-                        {item.pricingType !== 'flat_rate' && (
+                        {item.pricingType !== 'fixed' && (
                           <div className="flex items-center border rounded">
                             <Button
                               variant="ghost"

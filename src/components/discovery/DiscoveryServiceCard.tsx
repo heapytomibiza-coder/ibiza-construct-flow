@@ -34,7 +34,7 @@ interface DiscoveryServiceCardProps {
     name: string;
     description: string | null;
     base_price: number;
-    pricing_type: 'flat_rate' | 'per_hour' | 'per_unit' | 'quote_required';
+    pricing_type: 'fixed' | 'per_hour' | 'per_unit' | 'per_square_meter' | 'per_project' | 'range' | 'quote_required';
     unit_type: string;
     category: string;
     estimated_duration_minutes: number | null;
@@ -110,14 +110,36 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
   };
 
   const getPriceUnit = () => {
-    if (item.pricing_type === 'flat_rate') return '/project';
-    if (item.pricing_type === 'per_hour') return '/hour';
+    // Handle actual database values
+    if (item.pricing_type === 'per_square_meter') return '/m²';
     if (item.pricing_type === 'per_unit') {
-      const unitLabel = item.unit_type || 'unit';
-      return `/${unitLabel}`;
+      // Use unit_type for context
+      if (item.unit_type === 'sqm') return '/m²';
+      if (item.unit_type === 'set') return '/set';
+      if (item.unit_type === 'item') return '/unit';
+      return '/unit';
     }
-    if (item.pricing_type === 'quote_required' || item.base_price <= 0) return '+ (from)';
+    if (item.pricing_type === 'per_project') return '/project';
+    if (item.pricing_type === 'fixed') return '';
+    if (item.pricing_type === 'per_hour') return '/hour';
+    if (item.pricing_type === 'range') return '+';
+    if (item.pricing_type === 'quote_required' || item.base_price <= 0) return '+';
     return '';
+  };
+
+  const getPricingExplanation = () => {
+    if (item.pricing_type === 'per_square_meter') return 'Price per square meter';
+    if (item.pricing_type === 'per_unit') {
+      if (item.unit_type === 'set') return 'Price per complete set';
+      if (item.unit_type === 'sqm') return 'Price per square meter';
+      return 'Price per unit';
+    }
+    if (item.pricing_type === 'per_project') return 'Total project price';
+    if (item.pricing_type === 'fixed') return 'Fixed price';
+    if (item.pricing_type === 'per_hour') return 'Hourly rate';
+    if (item.pricing_type === 'range') return 'Starting from this price';
+    if (item.pricing_type === 'quote_required' || item.base_price <= 0) return 'Custom quote required';
+    return 'Contact for pricing';
   };
 
   const getCategoryImage = (): string | null => {
@@ -314,6 +336,9 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
             <span className="text-sm font-medium text-muted-foreground">
               {getPriceUnit()}
             </span>
+          </div>
+          <div className="text-xs text-center text-muted-foreground mt-1">
+            {getPricingExplanation()}
           </div>
         </div>
 

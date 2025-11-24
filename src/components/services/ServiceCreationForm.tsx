@@ -64,7 +64,7 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
     name: '',
     description: '',
     base_price: 0,
-    pricing_type: 'flat_rate',
+    pricing_type: 'fixed',
     unit_type: 'service',
     min_quantity: 1,
     max_quantity: null as number | null,
@@ -139,7 +139,7 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
         name: '',
         description: '',
         base_price: 0,
-        pricing_type: 'flat_rate',
+        pricing_type: 'fixed',
         unit_type: 'service',
         min_quantity: 1,
         max_quantity: null,
@@ -227,9 +227,12 @@ export const ServiceCreationForm: React.FC<ServiceCreationFormProps> = ({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="flat_rate">Fixed</SelectItem>
+                      <SelectItem value="fixed">Fixed</SelectItem>
                       <SelectItem value="per_hour">Per Hour</SelectItem>
                       <SelectItem value="per_unit">Per Unit</SelectItem>
+                      <SelectItem value="per_square_meter">Per m²</SelectItem>
+                      <SelectItem value="per_project">Per Project</SelectItem>
+                      <SelectItem value="range">Range</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

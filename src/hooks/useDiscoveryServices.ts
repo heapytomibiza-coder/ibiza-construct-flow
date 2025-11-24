@@ -20,7 +20,7 @@ interface DiscoveryServiceItem {
   name: string;
   description: string | null;
   base_price: number;
-  pricing_type: 'flat_rate' | 'per_hour' | 'per_unit' | 'quote_required';
+  pricing_type: 'fixed' | 'per_hour' | 'per_unit' | 'per_square_meter' | 'per_project' | 'range' | 'quote_required';
   unit_type: string;
   category: string;
   estimated_duration_minutes: number | null;

@@ -61,10 +61,12 @@ export const ServiceItemCard = ({ item, onSelectionChange, viewMode = 'detailed'
 
   const getPricingTypeLabel = () => {
     switch (item.pricing_type) {
-      case 'hourly': return 'per hour';
-      case 'per_item': return 'per item';
+      case 'per_hour': return 'per hour';
       case 'per_unit': return `per ${item.unit_type}`;
-      case 'flat_rate': return 'flat rate';
+      case 'per_square_meter': return 'per m²';
+      case 'per_project': return 'per project';
+      case 'fixed': return 'fixed price';
+      case 'range': return 'from';
       case 'quote_required': return 'quote required';
       default: return item.pricing_type;
     }
