@@ -13,7 +13,6 @@ import {
   AlertTriangle,
   ThermometerSun
 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface SeasonalInsightsProps {
   location: { lat: number; lng: number; address: string } | null;
@@ -39,7 +38,6 @@ export const SeasonalInsights = ({
   location, 
   selectedService 
 }: SeasonalInsightsProps) => {
-  const { t } = useTranslation('services');
   const [seasonalData, setSeasonalData] = useState<SeasonalData[]>([]);
   const [expandedSeason, setExpandedSeason] = useState<string | null>(null);
 

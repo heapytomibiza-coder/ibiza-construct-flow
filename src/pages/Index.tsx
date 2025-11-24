@@ -9,7 +9,6 @@ import ProfessionalNetwork from '@/components/ProfessionalNetwork';
 import ExpressModeSection from '@/components/ExpressModeSection';
 import Footer from '@/components/Footer';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
@@ -19,7 +18,6 @@ import { useTour } from '@/components/tours/InteractiveTour';
 import { homepageTourSteps } from '@/config/tours';
 
 const Index = () => {
-  const { t } = useTranslation('components');
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
   const featuredCarouselEnabled = useFeature('enable_featured_services_carousel');

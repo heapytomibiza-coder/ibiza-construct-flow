@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
 
 interface PopularServicesSectionProps {
   viewMode: 'services' | 'professionals';
@@ -9,7 +8,6 @@ interface PopularServicesSectionProps {
 }
 
 export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: PopularServicesSectionProps) => {
-  const { t } = useTranslation('services');
   const [isExpanded, setIsExpanded] = useState(false);
 
   const servicesSuggestions = [
@@ -51,8 +49,8 @@ export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: Popular
         <Sparkles className="h-5 w-5 text-primary" />
         <h3 className="font-semibold">
           {viewMode === 'services' 
-            ? t('discovery.services.popularTitle', 'Popular Services')
-            : t('discovery.professionals.popularTitle', 'Popular Trades')}
+            ? 'Popular Services'
+            : 'Popular Trades'}
         </h3>
       </div>
 
@@ -60,8 +58,8 @@ export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: Popular
       <div className={`${isExpanded ? 'block' : 'hidden'} lg:block px-4 pb-4 lg:px-6 lg:pb-6`}>
         <p className="text-xs sm:text-sm text-muted-foreground mb-3 hidden lg:block">
           {viewMode === 'services' 
-            ? t('discovery.services.popularSubtitle', 'Browse our most requested specific services')
-            : t('discovery.professionals.popularSubtitle', 'Find professionals by their main trade or specialty')}
+            ? 'Browse our most requested specific services'
+            : 'Find professionals by their main trade or specialty'}
         </p>
         
         {/* Mobile: Horizontal Scroll */}

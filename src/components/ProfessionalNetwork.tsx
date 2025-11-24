@@ -1,33 +1,31 @@
 import { Shield, Award, Clock, Star, Users, Briefcase } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import professionalImage from '@/assets/professional-network.jpg';
 
 const ProfessionalNetwork = () => {
-  const { t } = useTranslation('components');
 
   const stats = [
-    { icon: Users, number: "500+", label: t('professionalNetwork.stats.professionals') },
-    { icon: Briefcase, number: "2,000+", label: t('professionalNetwork.stats.projects') },  
-    { icon: Star, number: "4.9/5", label: t('professionalNetwork.stats.rating') },
-    { icon: Shield, number: "100%", label: t('professionalNetwork.stats.protection') }
+    { icon: Users, number: "500+", label: "Verified Professionals" },
+    { icon: Briefcase, number: "2,000+", label: "Projects Completed" },  
+    { icon: Star, number: "4.9/5", label: "Average Rating" },
+    { icon: Shield, number: "100%", label: "SafePay Protected" }
   ];
 
   const benefits = [
     {
       icon: Shield,
-      title: t('professionalNetwork.benefits.verified.title'),
-      description: t('professionalNetwork.benefits.verified.description')
+      title: "Verified Professionals",
+      description: "Every professional is verified with background checks, licenses, and insurance"
     },
     {
       icon: Award,
-      title: t('professionalNetwork.benefits.excellence.title'), 
-      description: t('professionalNetwork.benefits.excellence.description')
+      title: "Excellence Guaranteed", 
+      description: "All work backed by our satisfaction guarantee and dispute resolution"
     },
     {
       icon: Clock,
-      title: t('professionalNetwork.benefits.rapid.title'),
-      description: t('professionalNetwork.benefits.rapid.description')
+      title: "Rapid Response",
+      description: "Get matched with available professionals within 24 hours"
     }
   ];
 
@@ -38,13 +36,12 @@ const ProfessionalNetwork = () => {
           {/* Content */}
           <div>
             <h2 className="text-display text-4xl md:text-5xl font-bold text-charcoal mb-6">
-              {t('professionalNetwork.title')}
-              <br />
-              <span className="text-copper">{t('professionalNetwork.titleHighlight')}</span>
+              Join Ibiza's Premier<br />
+              <span className="text-copper">Professional Network</span>
             </h2>
             
             <p className="text-body text-xl text-muted-foreground mb-8 leading-relaxed">
-              {t('professionalNetwork.subtitle')}
+              Connect with verified, trusted professionals ready to bring your vision to life
             </p>
 
             {/* Benefits */}
@@ -72,10 +69,10 @@ const ProfessionalNetwork = () => {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button className="btn-hero">
-                {t('professionalNetwork.buttons.findProfessionals')}
+                Find Professionals
               </button>
               <button className="btn-secondary">
-                {t('professionalNetwork.buttons.joinNetwork')}
+                Join Network
               </button>
             </div>
           </div>
@@ -121,7 +118,7 @@ const ProfessionalNetwork = () => {
         {/* Professional Categories */}
         <div className="mt-24">
           <h3 className="text-display text-3xl font-semibold text-charcoal text-center mb-12">
-            {t('professionalNetwork.categoriesTitle')}
+            Professional Categories
           </h3>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">

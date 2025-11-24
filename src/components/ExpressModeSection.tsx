@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Clock, Zap, Wrench } from 'lucide-react';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 
 const ExpressModeSection: React.FC = () => {
-  const { t } = useTranslation('components');
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const { services, loading } = useServicesRegistry();
@@ -54,15 +52,15 @@ const ExpressModeSection: React.FC = () => {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full mb-6">
             <Zap className="w-4 h-4 text-white" />
-            <span className="text-white font-medium">{t('expressMode.badge')}</span>
+            <span className="text-white font-medium">Express Mode</span>
           </div>
           
           <h2 className="text-display text-3xl md:text-4xl font-bold text-white mb-4">
-            {t('expressMode.title')}
+            Quick Fixes, Fast
           </h2>
           
           <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
-            {t('expressMode.subtitle')}
+            Get instant quotes for common repairs and small jobs
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -101,7 +99,7 @@ const ExpressModeSection: React.FC = () => {
 
           <div className="mt-8">
             <p className="text-white/60 text-sm">
-              {t('expressMode.features')}
+              ⚡ Instant quotes • 🎯 Verified pros • 💬 Direct messaging
             </p>
           </div>
         </div>

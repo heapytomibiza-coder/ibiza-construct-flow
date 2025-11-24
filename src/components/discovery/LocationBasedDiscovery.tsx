@@ -11,7 +11,6 @@ interface LocationBasedDiscoveryProps {
 }
 
 export const LocationBasedDiscovery = ({ onLocationChange, currentLocation }: LocationBasedDiscoveryProps) => {
-  const { t } = useTranslation('services');
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
 

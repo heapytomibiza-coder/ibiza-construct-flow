@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,7 +22,6 @@ const contactFormSchema = z.object({
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 const Contact = () => {
-  const { t } = useTranslation('pages');
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<'idle' | 'success' | 'error'>('idle');
@@ -84,10 +82,10 @@ const Contact = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-charcoal mb-4">
-              {t('contact.hero.title')}
+              Get in Touch
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              {t('contact.hero.subtitle')}
+              We'd love to hear from you. Send us a message and we'll respond as soon as possible.
             </p>
           </div>
 
@@ -96,9 +94,9 @@ const Contact = () => {
               <CardHeader>
                 <CardTitle className="text-2xl font-bold flex items-center gap-2">
                   <MessageSquare className="h-6 w-6 text-primary" />
-                  {t('contact.form.title')}
+                  Send us a Message
                 </CardTitle>
-                <CardDescription>{t('contact.form.description', 'Fill out the form below and we\'ll get back to you soon')}</CardDescription>
+                <CardDescription>Fill out the form below and we'll get back to you soon</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
@@ -106,25 +104,25 @@ const Contact = () => {
                     <InputFormField
                       control={form.control}
                       name="name"
-                      label={t('contact.form.name')}
-                      placeholder={t('contact.form.namePlaceholder')}
+                      label="Name"
+                      placeholder="Your full name"
                       icon={<User className="h-4 w-4" />}
                     />
 
                     <InputFormField
                       control={form.control}
                       name="email"
-                      label={t('contact.form.email')}
+                      label="Email"
                       type="email"
-                      placeholder={t('contact.form.emailPlaceholder')}
+                      placeholder="your.email@example.com"
                       icon={<Mail className="h-4 w-4" />}
                     />
 
                     <TextareaFormField
                       control={form.control}
                       name="message"
-                      label={t('contact.form.message')}
-                      placeholder={t('contact.form.messagePlaceholder')}
+                      label="Message"
+                      placeholder="Tell us about your project..."
                       rows={6}
                     />
 
@@ -146,7 +144,7 @@ const Contact = () => {
                       ) : (
                         <>
                           <Send className="h-4 w-4" />
-                          {t('contact.form.submit')}
+                          Send Message
                         </>
                       )}
                     </Button>

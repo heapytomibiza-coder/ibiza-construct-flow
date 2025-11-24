@@ -1,30 +1,28 @@
 import { Search, MessageSquare, CheckCircle } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 const HowItWorks = () => {
-  const { t } = useTranslation('howItWorks');
   
   const steps = [
     {
       number: "01",
       icon: Search,
-      title: t('steps.describe.title'),
-      description: t('steps.describe.description'),
-      details: t('steps.describe.details', { returnObjects: true }) as string[]
+      title: "Describe Your Project",
+      description: "Tell us what you need done using our simple wizard. Upload photos, set your budget, and specify your timeline.",
+      details: ["5-minute setup", "Photo upload", "Budget guidance", "Timeline planning"]
     },
     {
       number: "02", 
       icon: MessageSquare,
-      title: t('steps.match.title'),
-      description: t('steps.match.description'),
-      details: t('steps.match.details', { returnObjects: true }) as string[]
+      title: "Get Matched & Compare",
+      description: "Our AI connects you with verified professionals. Compare quotes, reviews, and portfolios to find your perfect match.",
+      details: ["AI-powered matching", "Instant quotes", "Verified reviews", "Portfolio showcase"]
     },
     {
       number: "03",
       icon: CheckCircle,
-      title: t('steps.work.title'),
-      description: t('steps.work.description'),
-      details: t('steps.work.details', { returnObjects: true }) as string[]
+      title: "Secure Work",
+      description: "Collaborate safely with SafePay escrow protection. Track progress, communicate, and pay only when satisfied.",
+      details: ["SafePay protection", "Progress tracking", "Direct messaging", "Satisfaction guarantee"]
     }
   ];
 
@@ -34,10 +32,10 @@ const HowItWorks = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-display text-4xl md:text-5xl font-bold text-charcoal mb-6">
-            {t('title')}
+            How It Works
           </h2>
           <p className="text-body text-xl text-muted-foreground max-w-2xl mx-auto">
-            {t('subtitle')}
+            Three simple steps to connect with Ibiza's best construction professionals
           </p>
         </div>
 
@@ -100,13 +98,13 @@ const HowItWorks = () => {
         <div className="text-center mt-16">
           <div className="bg-gradient-premium rounded-2xl p-8 shadow-elegant max-w-2xl mx-auto">
             <h3 className="text-display text-2xl font-semibold text-white mb-4">
-              {t('cta.title')}
+              Ready to Start Your Project?
             </h3>
             <p className="text-white/90 mb-6">
-              {t('cta.subtitle')}
+              Join thousands of satisfied clients who've found their perfect professionals through CS Ibiza
             </p>
             <button className="btn-hero">
-              {t('cta.button')}
+              Post Your Project Now
             </button>
           </div>
         </div>
