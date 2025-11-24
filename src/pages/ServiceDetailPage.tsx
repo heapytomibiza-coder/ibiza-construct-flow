@@ -23,11 +23,14 @@ export default function ServiceDetailPage() {
   const { toast } = useToast();
   const [isBasketOpen, setIsBasketOpen] = useState(false);
   const [isSubmittingQuote, setIsSubmittingQuote] = useState(false);
+  
+  const searchParams = new URLSearchParams(window.location.search);
+  const filterByProfessional = searchParams.get('professional');
 
   const { data: service, isLoading } = useQuery({
-    queryKey: ['service-detail', serviceId],
+    queryKey: ['service-detail', serviceId, filterByProfessional],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('professional_service_items')
         .select(`
           id,
@@ -35,6 +38,7 @@ export default function ServiceDetailPage() {
           description,
           category,
           professional_id,
+          service_id,
           profiles!professional_service_items_professional_id_fkey (
             id,
             full_name,
@@ -42,8 +46,13 @@ export default function ServiceDetailPage() {
             avatar_url
           )
         `)
-        .eq('id', serviceId!)
-        .single();
+        .eq('service_id', serviceId!);
+      
+      if (filterByProfessional) {
+        query = query.eq('professional_id', filterByProfessional);
+      }
+      
+      const { data, error } = await query.limit(1).maybeSingle();
       
       if (error) throw error;
       return data;
@@ -52,9 +61,9 @@ export default function ServiceDetailPage() {
   });
 
   const { data: serviceMenuItems = [], isLoading: isLoadingMenu } = useQuery({
-    queryKey: ['service-menu-items', serviceId],
+    queryKey: ['service-menu-items', serviceId, filterByProfessional],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('professional_service_items')
         .select(`
           id,
@@ -70,7 +79,14 @@ export default function ServiceDetailPage() {
           sort_order,
           professional_id
         `)
-        .eq('id', serviceId!);
+        .eq('service_id', serviceId!)
+        .eq('is_active', true);
+
+      if (filterByProfessional) {
+        query = query.eq('professional_id', filterByProfessional);
+      }
+
+      const { data, error } = await query.order('group_name').order('sort_order');
 
       if (error) throw error;
 

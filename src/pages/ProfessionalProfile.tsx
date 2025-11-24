@@ -350,6 +350,7 @@ export default function ProfessionalProfile() {
                 >
                   <CompactServiceCards
                     services={profile.services as any}
+                    professionalId={professionalId}
                     onRequestQuote={handleRequestQuote}
                   />
                 </motion.div>

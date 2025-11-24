@@ -7,6 +7,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 interface Service {
   id: string;
@@ -24,10 +25,12 @@ interface Service {
 
 interface CompactServiceCardsProps {
   services: Service[];
+  professionalId?: string;
   onRequestQuote?: (serviceId: string) => void;
 }
 
-export const CompactServiceCards = ({ services, onRequestQuote }: CompactServiceCardsProps) => {
+export const CompactServiceCards = ({ services, professionalId, onRequestQuote }: CompactServiceCardsProps) => {
+  const navigate = useNavigate();
   const activeServices = services.filter(s => s.is_active);
 
   if (activeServices.length === 0) {
@@ -103,16 +106,14 @@ export const CompactServiceCards = ({ services, onRequestQuote }: CompactService
                 )}
 
                 {/* CTA Button */}
-                {onRequestQuote && (
-                  <Button
-                    onClick={() => onRequestQuote(service.id)}
-                    className="w-full font-semibold group-hover:shadow-md"
-                    size="lg"
-                  >
-                    Get Quote
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                )}
+                <Button
+                  onClick={() => navigate(`/service/${service.micro_service_id}${professionalId ? `?professional=${professionalId}` : ''}`)}
+                  className="w-full font-semibold group-hover:shadow-md"
+                  size="lg"
+                >
+                  View Service Menu
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
               </CardContent>
             </Card>
           </motion.div>
