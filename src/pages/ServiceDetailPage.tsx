@@ -1,200 +1,206 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
-import { 
-  ArrowLeft, 
-  Star, 
-  Clock, 
-  MessageSquare, 
-  Bookmark,
-  CheckCircle,
-  Package,
-  MapPin,
-  Award,
-  TrendingUp
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useToast } from '@/components/ui/use-toast';
+import { ServiceMenuSection } from '@/components/services/ServiceMenuSection';
+import { QuoteBasket } from '@/components/services/QuoteBasket';
+import { useQuoteBasket } from '@/hooks/useQuoteBasket';
+import { ArrowLeft, Shield } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import type { ServiceMenuItem } from '@/types/services';
 
 export default function ServiceDetailPage() {
-  const { id: serviceId } = useParams();
+  const { id: serviceId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [sessionId] = useState(() => {
-    let sid = sessionStorage.getItem('session_id');
-    if (!sid) {
-      sid = crypto.randomUUID();
-      sessionStorage.setItem('session_id', sid);
-    }
-    return sid;
-  });
+  const { toast } = useToast();
+  const [isBasketOpen, setIsBasketOpen] = useState(false);
+  const [isSubmittingQuote, setIsSubmittingQuote] = useState(false);
 
-  // Fetch service details with professional info
   const { data: service, isLoading } = useQuery({
-    queryKey: ['service', serviceId],
+    queryKey: ['service-detail', serviceId],
     queryFn: async () => {
-      // Get service details
-      const { data: serviceData, error: serviceError } = await supabase
+      const { data, error } = await supabase
         .from('professional_service_items')
-        .select('*')
-        .eq('id', serviceId)
+        .select(`
+          id,
+          name,
+          description,
+          category,
+          professional_id,
+          profiles!professional_service_items_professional_id_fkey (
+            id,
+            full_name,
+            display_name,
+            avatar_url
+          )
+        `)
+        .eq('id', serviceId!)
         .single();
-
-      if (serviceError) throw serviceError;
-
-      // Get professional profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url')
-        .eq('id', serviceData.professional_id)
-        .single();
-
-      // Get professional details
-      const { data: proProfile } = await supabase
-        .from('professional_profiles')
-        .select('primary_trade, experience_years, bio')
-        .eq('user_id', serviceData.professional_id)
-        .maybeSingle();
-
-      // Get professional stats
-      const { data: stats } = await supabase
-        .from('professional_stats')
-        .select('average_rating, total_reviews, completed_bookings')
-        .eq('professional_id', serviceData.professional_id)
-        .maybeSingle();
-
-      return {
-        ...serviceData,
-        professional: profile,
-        professional_profile: proProfile,
-        professional_stats: stats
-      };
-    },
-    enabled: !!serviceId
-  });
-
-  // Check if bookmarked
-  useQuery({
-    queryKey: ['bookmark', serviceId, user?.id],
-    queryFn: async () => {
-      if (!user) return null;
-      const { data } = await supabase
-        .from('service_bookmarks')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('service_id', serviceId!)
-        .maybeSingle();
       
-      setIsBookmarked(!!data);
+      if (error) throw error;
       return data;
     },
-    enabled: !!user && !!serviceId
+    enabled: !!serviceId,
   });
 
-  // Track view
-  useEffect(() => {
-    if (serviceId && sessionId) {
-      supabase.from('service_views').insert({
-        service_id: serviceId,
-        viewer_id: user?.id || null,
-        session_id: sessionId
+  const { data: serviceMenuItems = [], isLoading: isLoadingMenu } = useQuery({
+    queryKey: ['service-menu-items', serviceId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('professional_service_items')
+        .select(`
+          id,
+          name,
+          description,
+          long_description,
+          base_price,
+          pricing_type,
+          unit_type,
+          group_name,
+          whats_included,
+          specifications,
+          sort_order
+        `)
+        .eq('id', serviceId!);
+
+      if (error) throw error;
+
+      return ((data || []) as any[]).map((item) => ({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        long_description: item.long_description,
+        price: item.base_price || 0,
+        pricing_type: item.pricing_type || 'fixed',
+        unit_label: item.unit_type || 'unidad',
+        group_name: item.group_name || 'General Services',
+        whats_included: Array.isArray(item.whats_included) ? item.whats_included : [],
+        specifications: typeof item.specifications === 'object' ? item.specifications : {},
+      })) as ServiceMenuItem[];
+    },
+    enabled: !!serviceId,
+  });
+
+  const {
+    items: basketItems,
+    notes,
+    setNotes,
+    totalEstimate,
+    totalItems,
+    addItem,
+    updateQuantity,
+    removeItem,
+    clearBasket,
+  } = useQuoteBasket(serviceId || 'service');
+
+  const groupedItems = useMemo(() => {
+    return (serviceMenuItems || []).reduce((groups, item) => {
+      const key = item.group_name || 'Servicios';
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+      return groups;
+    }, {} as Record<string, ServiceMenuItem[]>);
+  }, [serviceMenuItems]);
+
+  const handleAddToBasket = (item: ServiceMenuItem, quantity: number) => {
+    addItem(
+      {
+        serviceItemId: item.id,
+        name: item.name,
+        pricePerUnit:
+          item.pricing_type === 'quote_required' || item.pricing_type === 'range'
+            ? 0
+            : item.price || 0,
+        pricingType: item.pricing_type,
+        unitLabel: item.unit_label || 'unidad',
+      },
+      quantity
+    );
+
+    toast({
+      title: 'Añadido al presupuesto',
+      description: `${item.name} se ha añadido a tu selección`,
+    });
+  };
+
+  const handleRequestQuote = async () => {
+    if (!serviceId || !basketItems.length) {
+      toast({
+        title: 'Añade servicios',
+        description: 'Selecciona al menos un elemento para solicitar un presupuesto.',
+        variant: 'destructive',
       });
-    }
-  }, [serviceId, sessionId, user?.id]);
-
-  const handleBookmark = async () => {
-    if (!user) {
-      toast.error('Please sign in to save services');
-      navigate('/auth');
       return;
     }
+
+    setIsSubmittingQuote(true);
 
     try {
-      if (isBookmarked) {
-        await supabase
-          .from('service_bookmarks')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('service_id', serviceId!);
-        setIsBookmarked(false);
-        toast.success('Removed from saved services');
-      } else {
-        await supabase
-          .from('service_bookmarks')
-          .insert({ user_id: user.id, service_id: serviceId! });
-        setIsBookmarked(true);
-        toast.success('Saved to your collection');
+      const { data: userData } = await supabase.auth.getUser();
+      const clientId = userData?.user?.id;
+
+      if (!clientId) {
+        toast({
+          title: 'Inicia sesión',
+          description: 'Debes iniciar sesión para solicitar un presupuesto.',
+          variant: 'destructive',
+        });
+        navigate('/auth');
+        return;
       }
+
+      // For now, just store quote request metadata
+      // TODO: Integrate with proper job creation flow
+      toast({
+        title: 'Función en desarrollo',
+        description: 'La solicitud de presupuestos múltiples estará disponible próximamente.',
+      });
+
+      clearBasket();
+      setIsBasketOpen(false);
     } catch (error) {
-      toast.error('Failed to update bookmark');
+      console.error('[quote_request]', error);
+      toast({
+        title: 'No se pudo enviar la solicitud',
+        description: 'Inténtalo de nuevo o revisa tu conexión.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmittingQuote(false);
     }
   };
 
-  const handleRequestQuote = () => {
-    if (!user) {
-      toast.error('Please sign in to request a quote');
-      navigate('/auth');
-      return;
+  useEffect(() => {
+    if (service) {
+      document.title = `${service.name} | TaskMasters Ibiza`;
     }
-    setQuoteModalOpen(true);
-  };
-
-  const handleMessage = async () => {
-    if (!user) {
-      navigate('/auth');
-      return;
-    }
-
-    try {
-      const professionalId = service?.professional_id;
-      const { data: existing } = await supabase
-        .from('conversations')
-        .select('*')
-        .or(`and(participant_1_id.eq.${user.id},participant_2_id.eq.${professionalId}),and(participant_1_id.eq.${professionalId},participant_2_id.eq.${user.id})`)
-        .maybeSingle();
-
-      if (existing) {
-        navigate(`/messages?conversation=${existing.id}`);
-      } else {
-        const { data: newConv, error } = await supabase
-          .from('conversations')
-          .insert({
-            participant_1_id: user.id,
-            participant_2_id: professionalId!
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        navigate(`/messages?conversation=${newConv.id}`);
-      }
-    } catch (error) {
-      toast.error('Failed to start conversation');
-    }
-  };
+  }, [service]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="container pt-32 pb-16">
-          <div className="animate-pulse space-y-8">
-            <div className="h-96 bg-muted rounded-lg" />
-            <div className="h-40 bg-muted rounded-lg" />
+        <main className="container mx-auto px-4 py-8 pt-32">
+          <Skeleton className="h-8 w-24 mb-6" />
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="md:col-span-2 space-y-6">
+              <Skeleton className="h-96 w-full rounded-lg" />
+              <Skeleton className="h-40 w-full" />
+            </div>
+            <div className="space-y-4">
+              <Skeleton className="h-64 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
           </div>
-        </div>
+        </main>
         <Footer />
       </div>
     );
@@ -204,208 +210,129 @@ export default function ServiceDetailPage() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="container pt-32 pb-16 text-center">
-          <h1 className="text-2xl font-bold mb-4">Service not found</h1>
-          <Button onClick={() => navigate('/discovery')}>Back to Discovery</Button>
-        </div>
+        <main className="container mx-auto px-4 py-8 pt-32">
+          <Card>
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground">Service not found</p>
+              <Button onClick={() => navigate('/discovery')} className="mt-4">
+                Back to Discovery
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
         <Footer />
       </div>
     );
   }
 
-  const formatPrice = () => {
-    if (service.pricing_type === 'quote_required') return 'Quote Required';
-    if (service.pricing_type === 'fixed') return `€${service.base_price}`;
-    if (service.pricing_type === 'per_hour') return `€${service.base_price}/hr`;
-    if (service.pricing_type === 'per_unit') return `€${service.base_price}/${service.unit_type}`;
-    if (service.pricing_type === 'per_square_meter') return `€${service.base_price}/m²`;
-    if (service.pricing_type === 'per_project') return `€${service.base_price}/project`;
-    if (service.pricing_type === 'range') return `From €${service.base_price}`;
-    return 'Contact for pricing';
-  };
+  const professional = service.profiles;
 
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>{service.name} | Professional Services</title>
-        <meta name="description" content={service.description || `Book ${service.name} with verified professionals`} />
+        <title>{service.name} | TaskMasters Ibiza</title>
+        <meta name="description" content={service.description || `Professional ${service.name} service`} />
       </Helmet>
 
       <Header />
       
-      <main className="container pt-32 pb-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Back Button */}
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mb-6"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
+      <main className="container mx-auto px-4 py-8 pt-32">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Volver
+        </Button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content - Left Column */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Hero Image Section */}
-              <div className="relative h-96 rounded-lg overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5">
-                {service.primary_image_url ? (
-                  <img
-                    src={service.primary_image_url}
-                    alt={service.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-6xl">{service.category === 'Electrical' ? '⚡' : '🔧'}</span>
+        <div className="grid lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)] gap-8">
+          {/* Main Content */}
+          <div className="space-y-6">
+            {/* Header */}
+            <div>
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h1 className="text-3xl font-bold mb-2">{service.name}</h1>
+                  <p className="text-muted-foreground">{service.category}</p>
+                </div>
+                <Badge variant="secondary">
+                  <Shield className="h-3 w-3 mr-1" />
+                  Profesional Verificado
+                </Badge>
+              </div>
+
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                {professional && (
+                  <div className="flex items-center">
+                    <span className="font-medium">{professional.display_name || professional.full_name}</span>
                   </div>
                 )}
-                
-                {/* Overlay Badges */}
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
-                    {service.category}
-                  </Badge>
-                  {service.difficulty_level && (
-                    <Badge variant="outline" className="bg-background/90 backdrop-blur-sm">
-                      {service.difficulty_level}
-                    </Badge>
-                  )}
-                </div>
-
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={handleBookmark}
-                  className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm"
-                >
-                  <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-current' : ''}`} />
-                </Button>
               </div>
-
-              {/* Service Title & Price */}
-              <div>
-                <h1 className="text-3xl font-bold mb-2">{service.name}</h1>
-                <div className="flex items-center gap-4">
-                  <span className="text-2xl font-semibold text-primary">{formatPrice()}</span>
-                  {service.estimated_duration_minutes && (
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>{Math.round(service.estimated_duration_minutes / 60)}h duration</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Description */}
-              <div>
-                <h2 className="text-xl font-semibold mb-3">Service Description</h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {service.description || 'Professional service with quality guaranteed.'}
-                </p>
-              </div>
-
-              {/* Bulk Pricing */}
-              {service.bulk_discount_threshold && service.bulk_discount_price && (
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Package className="h-5 w-5 text-primary" />
-                    Bulk Pricing Available
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Save more with bulk orders!
-                  </p>
-                  <p className="text-sm">
-                    Order {service.bulk_discount_threshold}+ units and pay only <span className="font-semibold text-primary">€{service.bulk_discount_price}</span> per unit
-                  </p>
-                </Card>
-              )}
             </div>
 
-            {/* Sidebar - Professional Info */}
-            <div className="space-y-6">
-              {/* Professional Card */}
-              <Card className="p-6 sticky top-24">
-                <div className="flex items-center gap-4 mb-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage src={service.professional?.avatar_url} />
-                    <AvatarFallback>
-                      {service.professional?.full_name?.split(' ').map(n => n[0]).join('') || 'PR'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{service.professional?.full_name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {service.professional_profile?.primary_trade}
-                    </p>
-                  </div>
+            {/* Service Description */}
+            {service.description && (
+              <Card>
+                <CardContent className="pt-6">
+                  <p className="text-muted-foreground whitespace-pre-wrap">
+                    {service.description}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-semibold">Menú de servicios</h3>
+                  {totalItems > 0 && (
+                    <span className="text-sm text-muted-foreground lg:hidden">
+                      {totalItems} en presupuesto
+                    </span>
+                  )}
                 </div>
 
-                {/* Stats */}
-                {service.professional_stats && (
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-2">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        Rating
-                      </span>
-                      <span className="font-medium">
-                        {service.professional_stats.average_rating?.toFixed(1) || 'N/A'} 
-                        ({service.professional_stats.total_reviews || 0} reviews)
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-2">
-                        <Award className="h-4 w-4" />
-                        Jobs Completed
-                      </span>
-                      <span className="font-medium">
-                        {service.professional_stats.completed_bookings || 0}+
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4" />
-                        Experience
-                      </span>
-                      <span className="font-medium">
-                        {service.professional_profile?.experience_years || 0} years
-                      </span>
-                    </div>
+                {isLoadingMenu && (
+                  <div className="space-y-3">
+                    <Skeleton className="h-6 w-44" />
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
                   </div>
                 )}
 
-                <Separator className="my-4" />
+                {!isLoadingMenu && serviceMenuItems.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    El profesional aún no ha configurado su menú. Vuelve pronto para ver las opciones disponibles.
+                  </p>
+                )}
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <Button 
-                    onClick={handleRequestQuote}
-                    className="w-full"
-                    size="lg"
-                  >
-                    Request Quote
-                  </Button>
-                  <Button
-                    onClick={handleMessage}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Message Professional
-                  </Button>
-                  <Button
-                    onClick={() => navigate(`/professional/${service.professional_id}`)}
-                    variant="ghost"
-                    className="w-full"
-                  >
-                    View Full Profile
-                  </Button>
-                </div>
-              </Card>
+                {!isLoadingMenu &&
+                  Object.entries(groupedItems).map(([groupName, items]) => (
+                    <ServiceMenuSection
+                      key={groupName}
+                      groupName={groupName}
+                      items={items}
+                      onAddToBasket={handleAddToBasket}
+                    />
+                  ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar - Quote Basket (Desktop) */}
+          <div className="hidden lg:block">
+            <div className="sticky top-24">
+              <QuoteBasket
+                items={basketItems}
+                notes={notes}
+                onNotesChange={setNotes}
+                totalEstimate={totalEstimate}
+                onUpdateQuantity={updateQuantity}
+                onRemove={removeItem}
+                onRequestQuote={handleRequestQuote}
+                isSubmitting={isSubmittingQuote}
+              />
             </div>
           </div>
         </div>
@@ -413,16 +340,41 @@ export default function ServiceDetailPage() {
 
       <Footer />
 
-      {/* Quote Request Modal */}
-      <QuoteRequestModal
-        open={quoteModalOpen}
-        onOpenChange={setQuoteModalOpen}
-        professionalId={service.professional_id}
-        professionalName={service.professional?.full_name || 'Professional'}
-        serviceId={service.service_id}
-        serviceName={service.name}
-        preSelectedServiceId={service.id}
-      />
+      {/* Mobile Quote Basket Drawer */}
+      <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
+        <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Tu presupuesto</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">
+            <QuoteBasket
+              items={basketItems}
+              notes={notes}
+              onNotesChange={setNotes}
+              totalEstimate={totalEstimate}
+              onUpdateQuantity={updateQuantity}
+              onRemove={removeItem}
+              onRequestQuote={handleRequestQuote}
+              isSubmitting={isSubmittingQuote}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Mobile Fixed Bottom Bar */}
+      {totalItems > 0 && (
+        <div className="fixed bottom-4 left-0 right-0 px-4 lg:hidden">
+          <div className="bg-background border shadow-lg rounded-full px-4 py-3 flex items-center justify-between max-w-md mx-auto">
+            <div>
+              <p className="text-sm font-semibold">{totalItems} tarea(s) seleccionadas</p>
+              <p className="text-xs text-muted-foreground">{totalEstimate.toFixed(2)} €</p>
+            </div>
+            <Button size="sm" onClick={() => setIsBasketOpen(true)}>
+              Ver presupuesto
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
