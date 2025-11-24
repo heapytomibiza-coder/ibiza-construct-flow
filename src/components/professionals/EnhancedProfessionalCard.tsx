@@ -12,7 +12,9 @@ import {
   MessageCircle,
   Phone,
   Calendar,
-  FileText
+  FileText,
+  Award,
+  Briefcase
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { QuoteRequestModal } from '@/components/booking/QuoteRequestModal';
@@ -74,30 +76,42 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
 
   return (
     <Card 
-      className="hover:shadow-lg transition-all duration-300 cursor-pointer group"
+      className="hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group overflow-hidden"
       onClick={handleViewProfile}
     >
-      <CardContent className="p-6">
-        {/* Header */}
-        <div className="flex items-start gap-4 mb-4">
-          <Avatar className="w-16 h-16">
+      {/* Cover Image with Gradient */}
+      <div className="relative h-32 bg-gradient-to-br from-primary/20 via-primary/10 to-copper/10">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        {/* Avatar positioned to overlap */}
+        <div className="absolute -bottom-8 left-6">
+          <Avatar className="w-20 h-20 border-4 border-background shadow-lg">
             <AvatarImage 
               src={professional.profile_image_url} 
               alt={professional.full_name}
             />
-            <AvatarFallback className="text-lg font-semibold bg-gradient-hero text-white">
+            <AvatarFallback className="text-xl font-bold bg-gradient-hero text-white">
               {professional.full_name?.split(' ').map(n => n[0]).join('') || 'P'}
             </AvatarFallback>
           </Avatar>
-          
+          {professional.verification_status === 'verified' && (
+            <div className="absolute -bottom-1 -right-1 bg-green-600 rounded-full p-1">
+              <Shield className="w-4 h-4 text-white" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <CardContent className="pt-12 pb-6 px-6">
+        {/* Header */}
+        <div className="mb-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-lg text-foreground truncate">
+            <div className="mb-1">
+              <h3 className="font-bold text-xl text-foreground truncate">
                 {professional.full_name}
               </h3>
-              {professional.verification_status === 'verified' && (
-                <Shield className="w-4 h-4 text-green-600" />
-              )}
+              <p className="text-sm text-muted-foreground">
+                {professional.specializations?.[0] || 'Professional'}
+              </p>
             </div>
             
             <div className="flex items-center gap-2 mb-2">
@@ -143,19 +157,35 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
           </p>
         )}
 
-        {/* Specializations */}
-        <div className="mb-4">
-          <div className="flex flex-wrap gap-1">
+        {/* Service Categories Pricing */}
+        <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+          <div className="text-xs font-medium text-muted-foreground mb-2">Top Services</div>
+          <div className="space-y-1">
             {professional.specializations?.slice(0, 3).map((spec, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {spec}
-              </Badge>
+              <div key={index} className="flex items-center justify-between text-sm">
+                <span>{spec}</span>
+                <span className="text-primary font-semibold">€50+</span>
+              </div>
             ))}
-            {professional.specializations?.length > 3 && (
-              <Badge variant="secondary" className="text-xs">
-                +{professional.specializations.length - 3} more
-              </Badge>
-            )}
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="text-center p-2 bg-muted/30 rounded">
+            <Briefcase className="w-4 h-4 mx-auto mb-1 text-primary" />
+            <div className="text-sm font-bold">{professional.total_jobs_completed || 0}</div>
+            <div className="text-xs text-muted-foreground">Jobs</div>
+          </div>
+          <div className="text-center p-2 bg-muted/30 rounded">
+            <Star className="w-4 h-4 mx-auto mb-1 text-yellow-500" />
+            <div className="text-sm font-bold">{(professional.rating || 4.8).toFixed(1)}</div>
+            <div className="text-xs text-muted-foreground">Rating</div>
+          </div>
+          <div className="text-center p-2 bg-muted/30 rounded">
+            <Award className="w-4 h-4 mx-auto mb-1 text-primary" />
+            <div className="text-sm font-bold">5+</div>
+            <div className="text-xs text-muted-foreground">Years</div>
           </div>
         </div>
 
