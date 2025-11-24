@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
-import { SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SlidersHorizontal, X, ChevronLeft, ChevronRight, Shield, Star, Clock } from 'lucide-react';
 
 interface Filters {
   selectedTaxonomy: {
@@ -145,15 +145,43 @@ const Discovery = () => {
       <Header />
       
       <main className="pt-24 pb-8">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-b from-primary/5 to-background py-8 border-b">
-          <div className="container mx-auto px-4">
-            <div className="text-center space-y-3 mb-6">
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-copper bg-clip-text text-transparent">
-                Find Your Perfect Professional
+        {/* Enhanced Hero Section */}
+        <div className="relative bg-gradient-to-br from-primary/10 via-background to-copper/5 py-12 border-b overflow-hidden">
+          {/* Subtle Pattern Overlay */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute inset-0" style={{
+              backgroundImage: 'radial-gradient(circle at 2px 2px, hsl(var(--primary) / 0.1) 1px, transparent 0)',
+              backgroundSize: '32px 32px'
+            }}></div>
+          </div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            {/* Trust Metrics Banner */}
+            <div className="flex flex-wrap justify-center gap-6 mb-8">
+              <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
+                <Shield className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">500+ Verified Pros</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
+                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                <span className="text-sm font-medium">4.9 Avg Rating</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
+                <Clock className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">24h Response</span>
+              </div>
+            </div>
+
+            <div className="text-center space-y-4 mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold">
+                <span className="bg-gradient-to-r from-primary via-primary-dark to-copper bg-clip-text text-transparent">
+                  Find Your Perfect
+                </span>
+                <br />
+                <span className="text-foreground">Professional</span>
               </h1>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Browse services or explore professionals. Filter to find exactly what you need.
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Browse premium services or explore verified professionals. Use filters to find exactly what you need for your project.
               </p>
             </div>
 

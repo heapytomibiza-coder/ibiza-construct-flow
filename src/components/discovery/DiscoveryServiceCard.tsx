@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useBookingCart } from '@/contexts/BookingCartContext';
-import { Star, Clock, MapPin, MessageSquare, Info, LucideIcon } from 'lucide-react';
+import { Star, Clock, MapPin, MessageSquare, Info, LucideIcon, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getCategoryIcon } from '@/lib/categoryIcons';
@@ -236,13 +236,29 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
     <Card
       className={cn(
         "group overflow-hidden cursor-pointer transition-all duration-300 h-full flex flex-col",
-        "hover:shadow-lg hover:scale-[1.01]"
+        "hover:shadow-2xl hover:scale-[1.02] hover:border-primary/50"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image Section - Fixed Height */}
+      {/* Image Section - Fixed Height with Hover Overlay */}
       <div className="relative h-40 overflow-hidden bg-muted flex-shrink-0">
+        {/* Hover Overlay */}
+        {isHovered && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10 flex items-center justify-center">
+            <div className="text-white text-center space-y-2 p-4">
+              <p className="text-sm font-medium">Quick View</p>
+              <div className="flex gap-2">
+                <Button size="sm" variant="secondary" onClick={handleViewDetails} className="h-7 text-xs">
+                  View Details
+                </Button>
+                <Button size="sm" onClick={handleContactNow} className="h-7 text-xs">
+                  Contact
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         {item.images?.[0] ? (
           <img
             src={item.images[0]}
@@ -264,17 +280,27 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
         )}
 
         {/* Category Badge */}
-        <div className="absolute top-2 left-2">
-          <Badge variant="secondary" className="bg-background/95 backdrop-blur-sm text-xs font-medium">
+        <div className="absolute top-2 left-2 z-20">
+          <Badge variant="secondary" className="bg-background/95 backdrop-blur-sm text-xs font-medium border border-primary/20">
             {getCategoryDisplayName()}
           </Badge>
         </div>
 
-        {/* Professional Demo Badge */}
+        {/* Verified Badge */}
         {item.professional && (
-          <div className="absolute top-2 right-2">
-            <Badge className="bg-primary/90 backdrop-blur-sm text-xs font-semibold px-2 py-0.5">
-              PD
+          <div className="absolute top-2 right-2 z-20">
+            <Badge className="bg-green-600/90 backdrop-blur-sm text-xs font-semibold px-2 py-0.5 flex items-center gap-1">
+              <Shield className="w-3 h-3" />
+              Verified
+            </Badge>
+          </div>
+        )}
+        
+        {/* Starting From Price Badge - Bottom Left */}
+        {!isHovered && (
+          <div className="absolute bottom-2 left-2 z-20">
+            <Badge className="bg-primary/90 backdrop-blur-sm text-white font-bold px-3 py-1">
+              From {formatPrice()}
             </Badge>
           </div>
         )}
