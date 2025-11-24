@@ -7,6 +7,9 @@ export { ServiceHeroSection } from './ServiceHeroSection';
 export { ServiceBenefits } from './ServiceBenefits';
 export { ImageCarousel } from './ImageCarousel';
 export { PortfolioGallery } from './PortfolioGallery';
+export { ServicePortfolioGallery } from './ServicePortfolioGallery';
+export { ServiceMaterialSelector } from './ServiceMaterialSelector';
+export { ServicePricingAddons } from './ServicePricingAddons';
 export { ProfessionalProfileHeader } from './ProfessionalProfileHeader';
 
 // Service Configuration

@@ -12,9 +12,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { useToast } from '@/components/ui/use-toast';
 import { EnhancedServiceMenuItemCard } from '@/components/services/EnhancedServiceMenuItemCard';
 import { QuoteBasket } from '@/components/services/QuoteBasket';
+import { ServicePortfolioGallery } from '@/components/services/ServicePortfolioGallery';
+import { ServiceMaterialSelector } from '@/components/services/ServiceMaterialSelector';
+import { ServicePricingAddons } from '@/components/services/ServicePricingAddons';
 import { useQuoteBasket } from '@/hooks/useQuoteBasket';
-import { VisualMaterialPicker } from '@/components/wizard/VisualMaterialPicker';
-import { VisualFinishPicker } from '@/components/wizard/VisualFinishPicker';
+import { useServiceMaterials } from '@/hooks/useServiceMaterials';
+import { useServicePricingAddons } from '@/hooks/useServicePricingAddons';
+import { useServicePortfolio } from '@/hooks/useServicePortfolio';
 import { ArrowLeft, Shield, ChevronRight, Award, Clock, CheckCircle, Star } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import type { ServiceMenuItem } from '@/types/services';
@@ -26,7 +30,8 @@ export default function ServiceDetailPage() {
   const [isBasketOpen, setIsBasketOpen] = useState(false);
   const [isSubmittingQuote, setIsSubmittingQuote] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<string>('');
-  const [selectedFinish, setSelectedFinish] = useState<string>('');
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [adjustedPrice, setAdjustedPrice] = useState<number>(0);
   
   const searchParams = new URLSearchParams(window.location.search);
   const filterByProfessional = searchParams.get('professional');
@@ -168,6 +173,14 @@ export default function ServiceDetailPage() {
     },
     enabled: !!professionalId,
   });
+
+  // Get the first service item ID for fetching materials/addons/portfolio
+  const firstServiceItemId = useMemo(() => serviceMenuItems[0]?.id, [serviceMenuItems]);
+
+  // Fetch service-specific data
+  const { data: serviceMaterials = [] } = useServiceMaterials(firstServiceItemId || '');
+  const { data: servicePricingAddons = [] } = useServicePricingAddons(firstServiceItemId || '');
+  const { data: servicePortfolio } = useServicePortfolio(firstServiceItemId || '');
 
   const {
     items: basketItems,
@@ -477,8 +490,18 @@ export default function ServiceDetailPage() {
           </CardContent>
         </Card>
 
-        {/* Portfolio Gallery */}
-        {portfolioImages.length > 0 && (
+        {/* Service-Specific Portfolio Gallery */}
+        {servicePortfolio?.portfolioImages && servicePortfolio.portfolioImages.length > 0 && (
+          <div className="mb-6">
+            <ServicePortfolioGallery
+              images={servicePortfolio.portfolioImages}
+              serviceName={service.name}
+            />
+          </div>
+        )}
+
+        {/* Professional Portfolio Gallery (fallback) */}
+        {(!servicePortfolio?.portfolioImages || servicePortfolio.portfolioImages.length === 0) && portfolioImages.length > 0 && (
           <Card className="mb-6 overflow-hidden">
             <CardContent className="p-0">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-4">
@@ -523,39 +546,26 @@ export default function ServiceDetailPage() {
               </Card>
             )}
 
-            {/* Material & Finish Selectors */}
-            <Card>
-              <CardContent className="pt-6 space-y-6">
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">Customize Your Project</h3>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Select your preferred materials and finishes. Our professional will incorporate your choices into the final quote.
-                  </p>
-                  
-                  <div className="space-y-6">
-                    <VisualMaterialPicker 
-                      value={selectedMaterial}
-                      onChange={setSelectedMaterial}
-                    />
-                    
-                    <VisualFinishPicker 
-                      value={selectedFinish}
-                      onChange={setSelectedFinish}
-                    />
-                  </div>
-                  
-                  {(selectedMaterial || selectedFinish) && (
-                    <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-                      <p className="text-sm">
-                        <span className="font-medium">Your selections:</span>
-                        {selectedMaterial && <span className="ml-2">Material: {selectedMaterial}</span>}
-                        {selectedFinish && <span className="ml-2">• Finish: {selectedFinish}</span>}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Material Selector */}
+            {serviceMaterials.length > 0 && (
+              <ServiceMaterialSelector
+                materials={serviceMaterials}
+                selectedMaterial={selectedMaterial}
+                onSelectMaterial={setSelectedMaterial}
+              />
+            )}
+
+            {/* Dynamic Pricing Add-ons */}
+            {servicePricingAddons.length > 0 && firstServiceItemId && (
+              <ServicePricingAddons
+                addons={servicePricingAddons}
+                basePrice={serviceMenuItems[0]?.price || 0}
+                onSelectionChange={(addons, total) => {
+                  setSelectedAddons(addons);
+                  setAdjustedPrice(total);
+                }}
+              />
+            )}
 
             {/* Service Menu with Enhanced Cards */}
             <div className="space-y-6">

@@ -6908,6 +6908,7 @@ export type Database = {
           difficulty_level: string | null
           display_order: number | null
           estimated_duration_minutes: number | null
+          featured_image: string | null
           gallery_images: Json | null
           group_name: string | null
           id: string
@@ -6919,6 +6920,7 @@ export type Database = {
           micro: string | null
           min_quantity: number | null
           name: string
+          portfolio_images: string[] | null
           pricing_type: string
           primary_image_url: string | null
           professional_id: string
@@ -6941,6 +6943,7 @@ export type Database = {
           difficulty_level?: string | null
           display_order?: number | null
           estimated_duration_minutes?: number | null
+          featured_image?: string | null
           gallery_images?: Json | null
           group_name?: string | null
           id?: string
@@ -6952,6 +6955,7 @@ export type Database = {
           micro?: string | null
           min_quantity?: number | null
           name: string
+          portfolio_images?: string[] | null
           pricing_type?: string
           primary_image_url?: string | null
           professional_id: string
@@ -6974,6 +6978,7 @@ export type Database = {
           difficulty_level?: string | null
           display_order?: number | null
           estimated_duration_minutes?: number | null
+          featured_image?: string | null
           gallery_images?: Json | null
           group_name?: string | null
           id?: string
@@ -6985,6 +6990,7 @@ export type Database = {
           micro?: string | null
           min_quantity?: number | null
           name?: string
+          portfolio_images?: string[] | null
           pricing_type?: string
           primary_image_url?: string | null
           professional_id?: string
@@ -9022,6 +9028,47 @@ export type Database = {
         }
         Relationships: []
       }
+      service_materials: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_default: boolean | null
+          material_category: string
+          material_icon: string | null
+          material_name: string
+          service_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_default?: boolean | null
+          material_category: string
+          material_icon?: string | null
+          material_name: string
+          service_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_default?: boolean | null
+          material_category?: string
+          material_icon?: string | null
+          material_name?: string
+          service_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_materials_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "professional_service_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_micro_categories: {
         Row: {
           created_at: string | null
@@ -9131,6 +9178,50 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      service_pricing_addons: {
+        Row: {
+          addon_description: string | null
+          addon_name: string
+          addon_price: number
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_included_in_base: boolean | null
+          is_optional: boolean | null
+          service_id: string | null
+        }
+        Insert: {
+          addon_description?: string | null
+          addon_name: string
+          addon_price: number
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_included_in_base?: boolean | null
+          is_optional?: boolean | null
+          service_id?: string | null
+        }
+        Update: {
+          addon_description?: string | null
+          addon_name?: string
+          addon_price?: number
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_included_in_base?: boolean | null
+          is_optional?: boolean | null
+          service_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_pricing_addons_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "professional_service_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_questions: {
         Row: {
