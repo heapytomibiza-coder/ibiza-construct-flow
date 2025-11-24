@@ -24,6 +24,7 @@ import { MessageSquare } from 'lucide-react';
 import { getDashboardForRole } from '@/lib/navigation';
 import { DemoModeButton } from '@/components/tours/DemoModeButton';
 import { useTourKeyboardShortcuts } from '@/hooks/useTourKeyboardShortcuts';
+import { UserOnboardingTour } from '@/components/tours/UserOnboardingTour';
 
 interface HeaderProps {
   jobWizardEnabled?: boolean;
@@ -92,8 +93,10 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-sand-dark/20 z-50">
-      <div className="container mx-auto px-4 py-4">
+    <>
+      <UserOnboardingTour />
+      <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-sand-dark/20 z-50">
+        <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
@@ -159,7 +162,11 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                 <HeaderRoleSwitcher />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2">
+                    <Button 
+                      variant="ghost" 
+                      className="flex items-center space-x-2"
+                      data-tour="user-profile"
+                    >
                       <div className="w-8 h-8 bg-gradient-hero rounded-full flex items-center justify-center">
                         <User className="w-4 h-4 text-white" />
                       </div>
@@ -176,7 +183,10 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem onClick={() => navigate(dashboardPath)}>
+                    <DropdownMenuItem 
+                      onClick={() => navigate(dashboardPath)}
+                      data-tour="dashboard-menu"
+                    >
                       <Settings className="w-4 h-4 mr-2" />
                       {t('dashboard')}
                     </DropdownMenuItem>
@@ -299,7 +309,8 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
           </div>
         )}
       </div>
-    </header>
+      </header>
+    </>
   );
 };
 
