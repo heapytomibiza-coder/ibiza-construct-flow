@@ -34,6 +34,7 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useConversationList } from '@/hooks/useConversationList';
+import { ClientMetricCard, SpendingChart, ProjectTimeline } from '@/components/client/dashboard';
 
 interface SimpleClientDashboardProps {
   user: any;
@@ -272,7 +273,11 @@ const HomeTab = ({ stats, bookings, onTabChange, navigate }: any) => (
               <p className="text-sm text-muted-foreground">Find and compare local experts</p>
             </div>
           </div>
-          <Button variant="outline" className="w-full mt-4">
+          <Button 
+            variant="outline" 
+            className="w-full mt-4"
+            onClick={() => navigate('/discover')}
+          >
             <Users className="w-4 h-4 mr-2" />
             Find Pros
           </Button>
@@ -280,36 +285,56 @@ const HomeTab = ({ stats, bookings, onTabChange, navigate }: any) => (
       </Card>
     </div>
 
-    {/* Stats Overview */}
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <Card>
-        <CardContent className="p-4 text-center">
-          <Clock className="w-8 h-8 text-copper mx-auto mb-2" />
-          <div className="text-2xl font-bold text-charcoal">{stats.active}</div>
-          <p className="text-xs text-muted-foreground">Active</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-4 text-center">
-          <CheckCircle className="w-8 h-8 text-copper mx-auto mb-2" />
-          <div className="text-2xl font-bold text-charcoal">{stats.completed}</div>
-          <p className="text-xs text-muted-foreground">Completed</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-4 text-center">
-          <AlertCircle className="w-8 h-8 text-copper mx-auto mb-2" />
-          <div className="text-2xl font-bold text-charcoal">{stats.pending}</div>
-          <p className="text-xs text-muted-foreground">Pending</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-4 text-center">
-          <TrendingUp className="w-8 h-8 text-copper mx-auto mb-2" />
-          <div className="text-2xl font-bold text-charcoal">€{stats.totalSpent}</div>
-          <p className="text-xs text-muted-foreground">Spent</p>
-        </CardContent>
-      </Card>
+    {/* Premium Stats Cards */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <ClientMetricCard
+        title="Active Projects"
+        value={stats.active}
+        subtitle="Currently in progress"
+        icon={Clock}
+        trend={{ value: 12, label: 'vs last month', direction: 'up' }}
+        gradient="from-copper/10 to-copper/5"
+        onClick={() => onTabChange('jobs')}
+      />
+      
+      <ClientMetricCard
+        title="Completed"
+        value={stats.completed}
+        subtitle="Successfully finished"
+        icon={CheckCircle}
+        badge={{ text: 'All Time', variant: 'outline' }}
+        gradient="from-emerald-500/10 to-emerald-500/5"
+      />
+      
+      <ClientMetricCard
+        title="Finding Pros"
+        value={stats.pending}
+        subtitle="Awaiting quotes"
+        icon={AlertCircle}
+        gradient="from-amber-500/10 to-amber-500/5"
+        onClick={() => onTabChange('jobs')}
+      />
+      
+      <ClientMetricCard
+        title="This Month"
+        value={`€${stats.totalSpent.toLocaleString()}`}
+        subtitle="Total invested"
+        icon={Euro}
+        trend={{ value: 8, label: 'vs last month', direction: 'up' }}
+        gradient="from-blue-500/10 to-blue-500/5"
+      />
+    </div>
+
+    {/* Spending & Timeline Grid */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <SpendingChart 
+        totalSpent={stats.totalSpent || 6300}
+        monthlyBudget={10000}
+      />
+      
+      <ProjectTimeline 
+        onProjectClick={(id) => navigate(`/jobs/${id}`)}
+      />
     </div>
 
     {/* Analytics Quick Access */}
