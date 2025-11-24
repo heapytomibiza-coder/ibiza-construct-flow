@@ -301,7 +301,7 @@ const Discovery = () => {
               {/* Results Grid */}
               {viewMode === 'services' ? (
                 loading ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {Array.from({ length: 9 }).map((_, i) => (
                       <SkeletonLoader key={i} variant="card" />
                     ))}
@@ -324,7 +324,7 @@ const Discovery = () => {
                     viewMode="services"
                   />
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fade-in">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
                     {services.map((service, index) => (
                       <div
                         key={service.id}
@@ -341,7 +341,7 @@ const Discovery = () => {
                 )
               ) : (
                 loadingPros ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {Array.from({ length: 9 }).map((_, i) => (
                       <SkeletonLoader key={i} variant="card" />
                     ))}
@@ -364,7 +364,7 @@ const Discovery = () => {
                     viewMode="professionals"
                   />
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fade-in">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
                     {discoveredProfessionals.map((prof, index) => (
                       <div
                         key={prof.id}

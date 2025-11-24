@@ -10,6 +10,22 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getCategoryIcon } from '@/lib/categoryIcons';
 
+// Import category images
+import constructionImg from '@/assets/categories/construction.jpg';
+import carpentryImg from '@/assets/categories/carpentry.jpg';
+import electricalImg from '@/assets/categories/electrical.jpg';
+import plumbingImg from '@/assets/categories/plumbing.jpg';
+import hvacImg from '@/assets/categories/hvac.jpg';
+import paintingImg from '@/assets/categories/painting.jpg';
+import landscapingImg from '@/assets/categories/landscaping.jpg';
+import flooringImg from '@/assets/categories/flooring.jpg';
+import cleaningImg from '@/assets/categories/cleaning.jpg';
+import poolImg from '@/assets/categories/pool.jpg';
+import handymanImg from '@/assets/categories/handyman.jpg';
+import architectureImg from '@/assets/categories/architecture.jpg';
+import propertyImg from '@/assets/categories/property.jpg';
+import bathroomImg from '@/assets/categories/bathroom.jpg';
+
 interface DiscoveryServiceCardProps {
   item: {
     id: string;
@@ -53,6 +69,38 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
       return `€${item.base_price}/${unitLabel}`;
     }
     return 'Price on request';
+  };
+
+  const getCategoryImage = (): string | null => {
+    const categoryLower = item.category?.toLowerCase() || '';
+    
+    const categoryImageMap: Record<string, string> = {
+      'building': constructionImg,
+      'construction': constructionImg,
+      'carpentry': carpentryImg,
+      'electrical': electricalImg,
+      'plumbing': plumbingImg,
+      'air-conditioning': hvacImg,
+      'hvac': hvacImg,
+      'painting': paintingImg,
+      'landscaping': landscapingImg,
+      'flooring': flooringImg,
+      'cleaning': cleaningImg,
+      'pool': poolImg,
+      'handyman': handymanImg,
+      'architecture': architectureImg,
+      'property': propertyImg,
+      'bathroom': bathroomImg,
+    };
+
+    // Try to find matching category
+    for (const [key, image] of Object.entries(categoryImageMap)) {
+      if (categoryLower.includes(key)) {
+        return image;
+      }
+    }
+    
+    return null;
   };
 
   const getCategoryIconComponent = (): LucideIcon => {
@@ -120,6 +168,12 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
           <img
             src={item.images[0]}
             alt={item.name}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          />
+        ) : getCategoryImage() ? (
+          <img
+            src={getCategoryImage()!}
+            alt={item.category}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
         ) : (
