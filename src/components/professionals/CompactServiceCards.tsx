@@ -105,15 +105,27 @@ export const CompactServiceCards = ({ services, professionalId, onRequestQuote }
                   </div>
                 )}
 
-                {/* CTA Button */}
-                <Button
-                  onClick={() => navigate(`/service/${service.micro_service_id}${professionalId ? `?professional=${professionalId}` : ''}`)}
-                  className="w-full font-semibold group-hover:shadow-md"
-                  size="lg"
-                >
-                  View Service Menu
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                {/* CTA Buttons */}
+                <div className="flex gap-2">
+                  {onRequestQuote && (
+                    <Button
+                      variant="outline"
+                      onClick={() => onRequestQuote(service.id)}
+                      className="flex-1 font-semibold"
+                      size="lg"
+                    >
+                      Quick Quote
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => navigate(`/service/${service.micro_service_id}${professionalId ? `?professional=${professionalId}` : ''}`)}
+                    className="flex-1 font-semibold group-hover:shadow-md"
+                    size="lg"
+                  >
+                    View Menu
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </motion.div>
