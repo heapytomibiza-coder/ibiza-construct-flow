@@ -41,7 +41,7 @@ export function ProfessionalFeaturesShowcase() {
             </div>
             <Button 
               className="bg-gradient-hero hover:bg-copper text-white"
-              onClick={() => navigate('/professional/profile/edit')}
+              onClick={() => navigate('/settings/profile')}
             >
               Complete Profile
               <ChevronRight className="w-4 h-4 ml-2" />

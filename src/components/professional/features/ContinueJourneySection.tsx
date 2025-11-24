@@ -20,7 +20,7 @@ export function ContinueJourneySection() {
       title: 'Submit Quotes',
       description: 'Respond to client requests and grow your business',
       action: 'View Requests',
-      path: '/professional/quotes',
+      path: '/job-board',
       variant: 'secondary' as const
     },
     {
