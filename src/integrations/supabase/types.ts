@@ -6909,9 +6909,12 @@ export type Database = {
           display_order: number | null
           estimated_duration_minutes: number | null
           gallery_images: Json | null
+          group_name: string | null
           id: string
           image_alt_text: string | null
           is_active: boolean | null
+          is_featured: boolean | null
+          long_description: string | null
           max_quantity: number | null
           micro: string | null
           min_quantity: number | null
@@ -6920,10 +6923,13 @@ export type Database = {
           primary_image_url: string | null
           professional_id: string
           service_id: string
+          sort_order: number | null
+          specifications: Json | null
           subcategory: string | null
           unit_type: string | null
           updated_at: string
           video_url: string | null
+          whats_included: Json | null
         }
         Insert: {
           base_price?: number
@@ -6936,9 +6942,12 @@ export type Database = {
           display_order?: number | null
           estimated_duration_minutes?: number | null
           gallery_images?: Json | null
+          group_name?: string | null
           id?: string
           image_alt_text?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
+          long_description?: string | null
           max_quantity?: number | null
           micro?: string | null
           min_quantity?: number | null
@@ -6947,10 +6956,13 @@ export type Database = {
           primary_image_url?: string | null
           professional_id: string
           service_id: string
+          sort_order?: number | null
+          specifications?: Json | null
           subcategory?: string | null
           unit_type?: string | null
           updated_at?: string
           video_url?: string | null
+          whats_included?: Json | null
         }
         Update: {
           base_price?: number
@@ -6963,9 +6975,12 @@ export type Database = {
           display_order?: number | null
           estimated_duration_minutes?: number | null
           gallery_images?: Json | null
+          group_name?: string | null
           id?: string
           image_alt_text?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
+          long_description?: string | null
           max_quantity?: number | null
           micro?: string | null
           min_quantity?: number | null
@@ -6974,10 +6989,13 @@ export type Database = {
           primary_image_url?: string | null
           professional_id?: string
           service_id?: string
+          sort_order?: number | null
+          specifications?: Json | null
           subcategory?: string | null
           unit_type?: string | null
           updated_at?: string
           video_url?: string | null
+          whats_included?: Json | null
         }
         Relationships: [
           {
@@ -7575,6 +7593,54 @@ export type Database = {
           },
         ]
       }
+      quote_request_items: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          quantity: number
+          quote_request_id: string
+          service_item_id: string
+          subtotal: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          quantity?: number
+          quote_request_id: string
+          service_item_id: string
+          subtotal: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          quantity?: number
+          quote_request_id?: string
+          service_item_id?: string
+          subtotal?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_request_items_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_request_items_service_item_id_fkey"
+            columns: ["service_item_id"]
+            isOneToOne: false
+            referencedRelation: "professional_service_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quote_requests: {
         Row: {
           created_at: string
@@ -7582,6 +7648,7 @@ export type Database = {
           id: string
           job_id: string
           message: string | null
+          notes: string | null
           professional_id: string
           status: string
           updated_at: string
@@ -7592,6 +7659,7 @@ export type Database = {
           id?: string
           job_id: string
           message?: string | null
+          notes?: string | null
           professional_id: string
           status?: string
           updated_at?: string
@@ -7602,6 +7670,7 @@ export type Database = {
           id?: string
           job_id?: string
           message?: string | null
+          notes?: string | null
           professional_id?: string
           status?: string
           updated_at?: string
