@@ -34,28 +34,28 @@ export const QuoteBasket: React.FC<Props> = ({
     switch (item.pricingType) {
       case 'fixed':
       case 'flat_rate':
-        return `${item.pricePerUnit.toFixed(2)} € (precio fijo)`;
+        return `€${item.pricePerUnit.toFixed(2)} (fixed price)`;
       case 'per_hour':
-        return `${item.pricePerUnit.toFixed(2)} € / hora`;
+        return `€${item.pricePerUnit.toFixed(2)} / hour`;
       case 'per_unit':
-        return `${item.pricePerUnit.toFixed(2)} € / ${item.unitLabel}`;
+        return `€${item.pricePerUnit.toFixed(2)} / ${item.unitLabel}`;
       case 'per_square_meter':
-        return `${item.pricePerUnit.toFixed(2)} € / m²`;
+        return `€${item.pricePerUnit.toFixed(2)} / m²`;
       case 'per_project':
-        return `${item.pricePerUnit.toFixed(2)} € / proyecto`;
+        return `€${item.pricePerUnit.toFixed(2)} / project`;
       case 'range':
-        return `Desde ${item.pricePerUnit.toFixed(2)} €`;
+        return `From €${item.pricePerUnit.toFixed(2)}`;
       case 'quote_required':
-        return 'Precio bajo presupuesto';
+        return 'Price on quote';
       default:
-        return `${item.pricePerUnit.toFixed(2)} €`;
+        return `€${item.pricePerUnit.toFixed(2)}`;
     }
   };
 
   return (
     <Card className="shadow-md">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Tu presupuesto {items.length ? `(${items.length})` : ''}</CardTitle>
+        <CardTitle className="text-lg">Your Quote {items.length ? `(${items.length})` : ''}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-0">
         {professionalName && (
@@ -75,14 +75,14 @@ export const QuoteBasket: React.FC<Props> = ({
             )}
             <div className="text-sm">
               <p className="font-medium">{professionalName}</p>
-              <p className="text-xs text-muted-foreground">Profesional</p>
+              <p className="text-xs text-muted-foreground">Professional</p>
             </div>
           </div>
         )}
 
         {!items.length && (
           <p className="text-sm text-muted-foreground">
-            Añade tareas desde el menú para construir un presupuesto detallado y enviar la solicitud al profesional.
+            Add items from the menu to build a detailed quote and send the request to the professional.
           </p>
         )}
 
@@ -101,7 +101,7 @@ export const QuoteBasket: React.FC<Props> = ({
                     className="h-8 px-2 text-xs"
                     onClick={() => onRemove(item.id)}
                   >
-                    Quitar
+                    Remove
                   </Button>
                 </div>
 
@@ -112,7 +112,7 @@ export const QuoteBasket: React.FC<Props> = ({
                       size="icon"
                       className="h-7 w-7"
                       onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                      aria-label="Disminuir cantidad"
+                      aria-label="Decrease quantity"
                     >
                       -
                     </Button>
@@ -122,7 +122,7 @@ export const QuoteBasket: React.FC<Props> = ({
                       size="icon"
                       className="h-7 w-7"
                       onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                      aria-label="Aumentar cantidad"
+                      aria-label="Increase quantity"
                     >
                       +
                     </Button>
@@ -139,11 +139,11 @@ export const QuoteBasket: React.FC<Props> = ({
         {items.length > 0 && (
           <>
             <div className="space-y-2">
-              <label className="text-xs text-muted-foreground">Notas adicionales</label>
+              <label className="text-xs text-muted-foreground">Additional Notes</label>
               <Textarea
                 value={notes}
                 onChange={(event) => onNotesChange(event.target.value)}
-                placeholder="Cuéntanos fechas aproximadas, urgencia, acceso, materiales incluidos, etc."
+                placeholder="Tell us about dates, urgency, access, materials included, etc."
                 className="min-h-[80px]"
               />
             </div>
@@ -152,15 +152,15 @@ export const QuoteBasket: React.FC<Props> = ({
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total estimado</p>
-                <p className="text-2xl font-semibold">{totalEstimate.toFixed(2)} €</p>
+                <p className="text-sm text-muted-foreground">Estimated Total</p>
+                <p className="text-2xl font-semibold">€{totalEstimate.toFixed(2)}</p>
               </div>
               <Button
                 size="lg"
                 disabled={!items.length || isSubmitting}
                 onClick={onRequestQuote}
               >
-                {isSubmitting ? 'Enviando...' : 'Solicitar presupuesto'}
+                {isSubmitting ? 'Sending...' : 'Request Quote'}
               </Button>
             </div>
           </>

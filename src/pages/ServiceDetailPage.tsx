@@ -127,6 +127,23 @@ export default function ServiceDetailPage() {
     enabled: !!professionalId,
   });
 
+  const { data: portfolioImages = [] } = useQuery({
+    queryKey: ['portfolio-images', professionalId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('portfolio_images')
+        .select('*')
+        .eq('professional_id', professionalId!)
+        .in('category', ['metalwork', 'gates'])
+        .order('display_order')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!professionalId,
+  });
+
   const {
     items: basketItems,
     notes,
@@ -164,8 +181,8 @@ export default function ServiceDetailPage() {
     );
 
     toast({
-      title: 'Añadido al presupuesto',
-      description: `${item.name} se ha añadido a tu selección`,
+      title: 'Added to Quote',
+      description: `${item.name} has been added to your selection`,
     });
   };
 
@@ -174,8 +191,8 @@ export default function ServiceDetailPage() {
 
     if (!basketItems.length) {
       toast({
-        title: 'Añade servicios',
-        description: 'Selecciona al menos un elemento para solicitar un presupuesto.',
+        title: 'Add Services',
+        description: 'Select at least one item to request a quote.',
         variant: 'destructive',
       });
       return;
@@ -188,8 +205,8 @@ export default function ServiceDetailPage() {
       
       if (authError || !userData?.user) {
         toast({
-          title: 'Debes iniciar sesión',
-          description: 'Inicia sesión para solicitar un presupuesto.',
+          title: 'Please Sign In',
+          description: 'Sign in to request a quote.',
           variant: 'destructive',
         });
         navigate('/auth?redirect=' + encodeURIComponent(window.location.pathname));
@@ -199,12 +216,12 @@ export default function ServiceDetailPage() {
       const clientId = userData.user.id;
 
       const jobTitle = basketItems.length === 1
-        ? `Presupuesto: ${basketItems[0].name}`
-        : `Presupuesto: ${basketItems.length} servicios`;
+        ? `Quote Request: ${basketItems[0].name}`
+        : `Quote Request: ${basketItems.length} services`;
 
       const jobDescription = notes 
-        ? `${notes}\n\nServicios solicitados:\n${basketItems.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}`
-        : `Servicios solicitados:\n${basketItems.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}`;
+        ? `${notes}\n\nRequested services:\n${basketItems.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}`
+        : `Requested services:\n${basketItems.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}`;
 
       const jobPayload = {
         client_id: clientId,
@@ -260,14 +277,14 @@ export default function ServiceDetailPage() {
         event_type: 'quote_request_received',
         entity_type: 'quote_request',
         entity_id: quoteRequest.id,
-        title: 'Nueva solicitud de presupuesto',
-        description: `${basketItems.length} servicio(s) solicitado(s). Total estimado: ${totalEstimate.toFixed(2)} €`,
+        title: 'New Quote Request',
+        description: `${basketItems.length} service(s) requested. Estimated total: €${totalEstimate.toFixed(2)}`,
         action_url: `/jobs/${job.id}`,
       });
 
       toast({
-        title: 'Solicitud enviada',
-        description: 'El profesional revisará tu solicitud y te responderá pronto.',
+        title: 'Request Sent',
+        description: 'The professional will review your request and respond soon.',
       });
 
       clearBasket();
@@ -276,8 +293,8 @@ export default function ServiceDetailPage() {
     } catch (error) {
       console.error('[quote_request]', error);
       toast({
-        title: 'No se pudo enviar la solicitud',
-        description: 'Inténtalo de nuevo o contacta con soporte.',
+        title: 'Could Not Send Request',
+        description: 'Please try again or contact support.',
         variant: 'destructive',
       });
     } finally {
@@ -357,6 +374,38 @@ export default function ServiceDetailPage() {
           <span className="text-foreground font-medium">{service.category || service.name}</span>
         </div>
 
+        {/* Portfolio Gallery */}
+        {portfolioImages.length > 0 && (
+          <Card className="mb-6 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-4">
+                {portfolioImages.slice(0, 8).map((img, idx) => (
+                  <div key={img.id} className="relative aspect-square overflow-hidden rounded-lg group cursor-pointer">
+                    <img 
+                      src={img.image_url} 
+                      alt={img.title || 'Portfolio image'}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                      <div className="text-white text-sm">
+                        <p className="font-semibold">{img.title}</p>
+                        {img.description && <p className="text-xs opacity-90 mt-1">{img.description}</p>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {portfolioImages.length > 8 && (
+                <div className="px-4 pb-4">
+                  <Button variant="outline" className="w-full" onClick={() => navigate(`/professionals/${professionalId}`)}>
+                    View All {portfolioImages.length} Projects
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)] gap-8">
           {/* Main Content */}
           <div className="space-y-6">
@@ -369,7 +418,7 @@ export default function ServiceDetailPage() {
                 </div>
                 <Badge variant="secondary">
                   <Shield className="h-3 w-3 mr-1" />
-                  Profesional Verificado
+                  Verified Professional
                 </Badge>
               </div>
 
@@ -396,10 +445,10 @@ export default function ServiceDetailPage() {
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold">Menú de servicios</h3>
+                  <h3 className="text-xl font-semibold">Service Menu</h3>
                   {totalItems > 0 && (
                     <span className="text-sm text-muted-foreground lg:hidden">
-                      {totalItems} en presupuesto
+                      {totalItems} in quote
                     </span>
                   )}
                 </div>
@@ -414,7 +463,7 @@ export default function ServiceDetailPage() {
 
                 {!isLoadingMenu && serviceMenuItems.length === 0 && (
                   <p className="text-sm text-muted-foreground">
-                    El profesional aún no ha configurado su menú. Vuelve pronto para ver las opciones disponibles.
+                    The professional hasn't configured their menu yet. Check back soon for available options.
                   </p>
                 )}
 
@@ -457,7 +506,7 @@ export default function ServiceDetailPage() {
       <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
         <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Tu presupuesto</SheetTitle>
+            <SheetTitle>Your Quote</SheetTitle>
           </SheetHeader>
           <div className="mt-4">
             <QuoteBasket
@@ -481,11 +530,11 @@ export default function ServiceDetailPage() {
         <div className="fixed bottom-4 left-0 right-0 px-4 lg:hidden">
           <div className="bg-background border shadow-lg rounded-full px-4 py-3 flex items-center justify-between max-w-md mx-auto">
             <div>
-              <p className="text-sm font-semibold">{totalItems} tarea(s) seleccionadas</p>
-              <p className="text-xs text-muted-foreground">{totalEstimate.toFixed(2)} €</p>
+              <p className="text-sm font-semibold">{totalItems} item(s) selected</p>
+              <p className="text-xs text-muted-foreground">€{totalEstimate.toFixed(2)}</p>
             </div>
             <Button size="sm" onClick={() => setIsBasketOpen(true)}>
-              Ver presupuesto
+              View Quote
             </Button>
           </div>
         </div>
