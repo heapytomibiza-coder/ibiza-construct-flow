@@ -1,11 +1,71 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Mail } from 'lucide-react';
+import { Mail, Loader2 } from 'lucide-react';
 import { getAuthRoute } from '@/lib/navigation';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function VerifyEmail() {
   const { toast } = useToast();
+  const [resending, setResending] = useState(false);
+  const [cooldown, setCooldown] = useState(false);
+
+  const handleResendEmail = async () => {
+    if (cooldown) {
+      toast({
+        title: 'Please wait',
+        description: 'You can request a new email in a moment',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setResending(true);
+    
+    try {
+      // Get the email from localStorage if available
+      const email = localStorage.getItem('pending_verification_email');
+      
+      if (!email) {
+        toast({
+          title: 'Email not found',
+          description: 'Please return to sign up and try again',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Email sent!',
+        description: 'Check your inbox for the verification link'
+      });
+
+      // Set cooldown for 60 seconds
+      setCooldown(true);
+      setTimeout(() => setCooldown(false), 60000);
+      
+    } catch (error: any) {
+      console.error('Resend error:', error);
+      toast({
+        title: 'Failed to resend',
+        description: error.message || 'Please try again later',
+        variant: 'destructive'
+      });
+    } finally {
+      setResending(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background flex items-center justify-center p-4">
@@ -35,18 +95,37 @@ export default function VerifyEmail() {
                   <br />
                   • Make sure the email address is correct
                   <br />
-                  • Return to sign in to request a new link
+                  • Click the button below to resend
                 </p>
               </div>
 
-              <Button 
-                onClick={() => window.location.href = getAuthRoute('signin')} 
-                variant="outline"
-                className="w-full"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Back to Sign In
-              </Button>
+              <div className="space-y-2">
+                <Button 
+                  onClick={handleResendEmail}
+                  disabled={resending || cooldown}
+                  className="w-full"
+                >
+                  {resending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Resending...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4 mr-2" />
+                      Resend Verification Email
+                    </>
+                  )}
+                </Button>
+
+                <Button 
+                  onClick={() => window.location.href = getAuthRoute('signin')} 
+                  variant="outline"
+                  className="w-full"
+                >
+                  Back to Sign In
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
