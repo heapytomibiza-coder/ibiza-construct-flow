@@ -13,7 +13,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { ServiceMenuSection } from '@/components/services/ServiceMenuSection';
 import { QuoteBasket } from '@/components/services/QuoteBasket';
 import { useQuoteBasket } from '@/hooks/useQuoteBasket';
-import { ArrowLeft, Shield } from 'lucide-react';
+import { ArrowLeft, Shield, ChevronRight } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import type { ServiceMenuItem } from '@/types/services';
 
@@ -344,14 +344,18 @@ export default function ServiceDetailPage() {
       <Header />
       
       <main className="container mx-auto px-4 py-8 pt-32">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="mb-6"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Volver
-        </Button>
+        {/* Breadcrumb Navigation */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+          <Button
+            variant="link"
+            onClick={() => filterByProfessional ? navigate(`/professionals/${filterByProfessional}`) : navigate(-1)}
+            className="p-0 h-auto font-normal hover:text-foreground"
+          >
+            {professionalProfile?.full_name || 'Professional'}
+          </Button>
+          <ChevronRight className="h-4 w-4" />
+          <span className="text-foreground font-medium">{service.category || service.name}</span>
+        </div>
 
         <div className="grid lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)] gap-8">
           {/* Main Content */}
