@@ -7645,6 +7645,13 @@ export type Database = {
             referencedRelation: "professional_service_items"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quote_request_items_service_item_id_fkey"
+            columns: ["service_item_id"]
+            isOneToOne: false
+            referencedRelation: "searchable_services"
+            referencedColumns: ["service_item_id"]
+          },
         ]
       }
       quote_requests: {
@@ -8969,6 +8976,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "service_bookmarks_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "searchable_services"
+            referencedColumns: ["service_item_id"]
+          },
+          {
             foreignKeyName: "service_bookmarks_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -9066,6 +9080,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "professional_service_items"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_materials_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "searchable_services"
+            referencedColumns: ["service_item_id"]
           },
         ]
       }
@@ -9221,6 +9242,13 @@ export type Database = {
             referencedRelation: "professional_service_items"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "service_pricing_addons_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "searchable_services"
+            referencedColumns: ["service_item_id"]
+          },
         ]
       }
       service_questions: {
@@ -9334,6 +9362,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "professional_service_items"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_views_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "searchable_services"
+            referencedColumns: ["service_item_id"]
           },
           {
             foreignKeyName: "service_views_viewer_id_fkey"
@@ -10926,6 +10961,46 @@ export type Database = {
             foreignKeyName: "professional_profiles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_profile_ratings: {
+        Row: {
+          communication_avg: number | null
+          professional_id: string | null
+          quality_avg: number | null
+          rating_avg: number | null
+          reliability_avg: number | null
+          reviews_count: number | null
+        }
+        Relationships: []
+      }
+      searchable_services: {
+        Row: {
+          avatar_url: string | null
+          category: string | null
+          description: string | null
+          featured_image: string | null
+          location: string | null
+          micro: string | null
+          portfolio_images: string[] | null
+          price: number | null
+          pricing_type: string | null
+          professional_id: string | null
+          professional_name: string | null
+          rating_avg: number | null
+          reviews_count: number | null
+          service_item_id: string | null
+          service_name: string | null
+          subcategory: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_service_items_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },

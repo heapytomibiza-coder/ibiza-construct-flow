@@ -165,3 +165,51 @@ export const useReviews = (entityId?: string, entityType: 'job' | 'contract' | '
     },
   };
 };
+
+/**
+ * Professional Ratings Hook
+ * Fetches aggregated ratings from public_profile_ratings view
+ */
+export function useProfessionalRatings(professionalId: string | null) {
+  return useQuery({
+    queryKey: ['professional-ratings', professionalId],
+    queryFn: async () => {
+      if (!professionalId) return null;
+
+      const { data, error } = await supabase
+        .from('public_profile_ratings')
+        .select('*')
+        .eq('professional_id', professionalId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching professional ratings:', error);
+        return null;
+      }
+
+      return data as {
+        professional_id: string;
+        reviews_count: number;
+        rating_avg: number;
+        quality_avg: number | null;
+        reliability_avg: number | null;
+        communication_avg: number | null;
+      };
+    },
+    enabled: !!professionalId,
+  });
+}
+
+export interface RatingDistribution {
+  [rating: number]: number;
+}
+
+export interface ReviewStats {
+  averageRating: number;
+  average_rating: number;
+  totalReviews: number;
+  total_reviews: number;
+  ratingDistribution: RatingDistribution;
+  rating_distribution: RatingDistribution;
+}
+

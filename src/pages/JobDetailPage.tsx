@@ -12,6 +12,9 @@ import { JobVerificationDialog } from '@/components/jobs/JobVerificationDialog';
 import { ReviewDialog } from '@/components/reviews/ReviewDialog';
 import { JobQuotesView } from '@/components/jobs/JobQuotesView';
 import { SubmitQuoteDialog } from '@/components/jobs/SubmitQuoteDialog';
+import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
+import { EscrowStatusBadge } from '@/components/payments/EscrowStatusBadge';
+import { usePaymentStatus } from '@/hooks/usePaymentStatus';
 import { useState } from 'react';
 import { Loader2, MapPin, Calendar, DollarSign, User, FileText } from 'lucide-react';
 
@@ -86,6 +89,8 @@ export default function JobDetailPage() {
   const isClient = user?.id === job?.client_id;
   const isProfessional = user?.id === job?.contracts?.[0]?.tasker_id;
   const contract = job?.contracts?.[0];
+  
+  const { data: paymentStatus } = usePaymentStatus(jobId || null);
 
   if (isLoading) {
     return (
@@ -132,9 +137,19 @@ export default function JobDetailPage() {
           </div>
         </div>
         {contract && (
-          <div className="text-right">
-            <p className="text-sm text-muted-foreground">Contract Amount</p>
-            <p className="text-2xl font-bold">${contract.agreed_amount}</p>
+          <div className="text-right space-y-2">
+            <div>
+              <p className="text-sm text-muted-foreground">Contract Amount</p>
+              <p className="text-2xl font-bold">${contract.agreed_amount}</p>
+            </div>
+            <div className="flex flex-col gap-2 items-end">
+              {paymentStatus?.status && (
+                <PaymentStatusBadge status={paymentStatus.status} />
+              )}
+              {contract.escrow_status && (
+                <EscrowStatusBadge status={contract.escrow_status} />
+              )}
+            </div>
           </div>
         )}
       </div>
