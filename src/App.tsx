@@ -122,6 +122,7 @@ const ProfessionalEarningsPage = lazyWithRetry(() => import("./pages/Professiona
 const ServiceSetupWizard = lazyWithRetry(() => import("./pages/ServiceSetupWizard"));
 const ProfessionalPayoutSetup = lazyWithRetry(() => import("./pages/ProfessionalPayoutSetup"));
 const CreateService = lazyWithRetry(() => import("./pages/CreateService"));
+const ServiceMenuBuilder = lazyWithRetry(() => import("./pages/dashboard/professional/ServiceMenuBuilder"));
 
 // Contract & Payment Pages
 const BookingPage = lazyWithRetry(() => import("./pages/BookingPage"));
@@ -438,6 +439,11 @@ function AppContent() {
                           <UnifiedProfessionalDashboard />
                         </RouteGuard>
                       </ErrorBoundary>
+                    } />
+                    <Route path="/dashboard/pro/service-menu" element={
+                      <RouteGuard requiredRole="professional">
+                        <ServiceMenuBuilder />
+                      </RouteGuard>
                     } />
                     <Route path="/dashboard/admin" element={
                       <RouteGuard requiredRole="admin">
