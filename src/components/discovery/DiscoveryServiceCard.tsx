@@ -222,8 +222,8 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
     if (onViewDetails) {
       onViewDetails();
     } else {
-      // Navigate to dedicated service detail page
-      navigate(`/service/${item.id}`);
+      // Navigate to dedicated service detail page with correct service_id and professional filter
+      navigate(`/service/${item.service_id}?professional=${item.professional_id}`);
     }
   };
 
