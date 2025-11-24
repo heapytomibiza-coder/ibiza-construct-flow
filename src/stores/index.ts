@@ -15,3 +15,7 @@ export type { Notification } from './notificationStore';
 
 export { useCartStore } from './cartStore';
 export type { CartItem } from './cartStore';
+
+export { useDashboardStore } from './dashboardStore';
+export { useFilterStore } from './filterStore';
+export { useCacheStore } from './cacheStore';
