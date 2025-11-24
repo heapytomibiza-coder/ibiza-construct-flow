@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProfessionalProfileHeader } from '@/components/services/ProfessionalProfileHeader';
@@ -280,6 +281,15 @@ export default function ProfessionalProfile() {
       
       <main className="container pt-32 pb-8 px-4">
         <div className="max-w-7xl mx-auto">
+          {/* Back Button */}
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="mb-6 gap-2 hover:gap-3 transition-all"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
             {/* Main Content - Left Side */}
