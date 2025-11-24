@@ -5,3 +5,9 @@
 
 export { usePerformanceMonitor } from './usePerformanceMonitor';
 export type { PerformanceMonitorOptions } from './usePerformanceMonitor';
+
+// useDebounce is available from hooks/shared
+export { useThrottle } from './useThrottle';
+export { useIntersectionObserver } from './useIntersectionObserver';
+export { useMemoCompare } from './useMemoCompare';
+export { useVirtualization } from './useVirtualization';
