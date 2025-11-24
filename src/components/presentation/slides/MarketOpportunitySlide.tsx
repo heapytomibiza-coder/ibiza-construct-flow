@@ -1,5 +1,6 @@
 import { SlideLayout, SlideTitle, SlideSubtitle } from "../SlideLayout";
 import { TrendingUp, Home, Users, Euro } from "lucide-react";
+import { StatCounter } from "../StatCounter";
 
 export const MarketOpportunitySlide = () => {
   return (
@@ -10,30 +11,50 @@ export const MarketOpportunitySlide = () => {
       <div className="grid grid-cols-2 gap-6 mt-12">
         <div className="p-8 rounded-2xl bg-background/80 backdrop-blur border border-sage-muted/30 text-center">
           <Euro className="h-12 w-12 text-copper mx-auto mb-4" />
-          <div className="text-5xl font-bold text-copper mb-2">€200M+</div>
-          <div className="text-lg font-medium mb-2">Ibiza Construction Market</div>
-          <div className="text-muted-foreground">Annual construction spending</div>
+          <StatCounter 
+            value={200} 
+            label="Ibiza Construction Market" 
+            prefix="€" 
+            suffix="M+" 
+            duration={2500}
+          />
+          <div className="text-sm text-muted-foreground mt-2">Annual construction spending</div>
         </div>
 
         <div className="p-8 rounded-2xl bg-background/80 backdrop-blur border border-sage-muted/30 text-center">
           <Home className="h-12 w-12 text-sage mx-auto mb-4" />
-          <div className="text-5xl font-bold text-sage mb-2">60,000+</div>
-          <div className="text-lg font-medium mb-2">Property Owners</div>
-          <div className="text-muted-foreground">Tourist and investment properties</div>
+          <StatCounter 
+            value={60000} 
+            label="Property Owners" 
+            suffix="+" 
+            duration={2800}
+            valueColor="text-sage"
+          />
+          <div className="text-sm text-muted-foreground mt-2">Tourist and investment properties</div>
         </div>
 
         <div className="p-8 rounded-2xl bg-background/80 backdrop-blur border border-sage-muted/30 text-center">
           <TrendingUp className="h-12 w-12 text-copper mx-auto mb-4" />
-          <div className="text-5xl font-bold text-copper mb-2">+15%</div>
-          <div className="text-lg font-medium mb-2">Annual Growth</div>
-          <div className="text-muted-foreground">Luxury villa market expansion</div>
+          <StatCounter 
+            value={15} 
+            label="Annual Growth" 
+            suffix="%" 
+            prefix="+" 
+            duration={2000}
+          />
+          <div className="text-sm text-muted-foreground mt-2">Luxury villa market expansion</div>
         </div>
 
         <div className="p-8 rounded-2xl bg-background/80 backdrop-blur border border-sage-muted/30 text-center">
           <Users className="h-12 w-12 text-sage mx-auto mb-4" />
-          <div className="text-5xl font-bold text-sage mb-2">2,500+</div>
-          <div className="text-lg font-medium mb-2">Active Professionals</div>
-          <div className="text-muted-foreground">Licensed contractors on island</div>
+          <StatCounter 
+            value={2500} 
+            label="Active Professionals" 
+            suffix="+" 
+            duration={2300}
+            valueColor="text-sage"
+          />
+          <div className="text-sm text-muted-foreground mt-2">Licensed contractors on island</div>
         </div>
       </div>
 
