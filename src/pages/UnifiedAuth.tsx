@@ -138,6 +138,9 @@ export default function UnifiedAuth() {
 
         if (error) throw error;
 
+        // Store email for resend functionality
+        localStorage.setItem('pending_verification_email', email);
+
         toast({
           title: 'Account created!',
           description: 'Check your email to verify your account'
