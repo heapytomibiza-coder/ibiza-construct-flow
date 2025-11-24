@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, Home, Briefcase, Users, Phone, User, LogOut, Settings } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -32,7 +31,6 @@ interface HeaderProps {
 }
 
 const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderProps) => {
-  const { t } = useTranslation(['navigation', 'common']);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, profile, signOut, isAdmin, isProfessional, isClient } = useAuth();
   const { activeRole } = useActiveRole();
@@ -112,16 +110,16 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('discovery')}
+              Discovery
             </Link>
             <Link to="/post" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('postProject')}
+              Post Project
             </Link>
             <Link to="/job-board" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('jobBoard')}
+              Job Board
             </Link>
             <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-              {t('howItWorks')}
+              How It Works
             </Link>
           </nav>
 
@@ -188,17 +186,17 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                       data-tour="dashboard-menu"
                     >
                       <Settings className="w-4 h-4 mr-2" />
-                      {t('dashboard')}
+                      Dashboard
                     </DropdownMenuItem>
                     {jobWizardEnabled && isClient() && (
                       <>
                         <DropdownMenuItem onClick={() => navigate('/post')}>
                           <Briefcase className="w-4 h-4 mr-2" />
-                          {t('postProject')}
+                          Post Project
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => navigate('/templates')}>
                           <Settings className="w-4 h-4 mr-2" />
-                          {t('templates')}
+                          Templates
                         </DropdownMenuItem>
                       </>
                     )}
@@ -209,7 +207,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="w-4 h-4 mr-2" />
-                      {t('signOut')}
+                      Sign Out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -220,14 +218,14 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                 variant="outline" 
                 onClick={() => navigate('/auth')}
               >
-                {t('signIn')}
+                Sign In
               </Button>
               <Button 
                 onClick={() => navigate('/auth?tab=signup')}
                 className="bg-gradient-hero text-white"
               >
-                  {t('signUp')}
-                </Button>
+                Sign Up
+              </Button>
               </>
             )}
           </div>
@@ -246,16 +244,16 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
           <div className="md:hidden mt-4 pb-4 border-t border-sand-dark/20 pt-4">
             <nav className="flex flex-col space-y-4">
               <Link to="/discovery" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('discovery')}
+                Discovery
               </Link>
               <Link to="/post" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('postProject')}
+                Post Project
               </Link>
               <Link to="/job-board" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('jobBoard')}
+                Job Board
               </Link>
               <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
-                {t('howItWorks')}
+                How It Works
               </Link>
               <div className="flex flex-col space-y-3 pt-4">
                 <LanguageSwitcher />
@@ -265,20 +263,20 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                       <HeaderRoleSwitcher />
                     </div>
                     <Link to={dashboardPath} className="btn-secondary">
-                      {t('dashboard')}
+                      Dashboard
                     </Link>
                     {jobWizardEnabled && isClient() && (
                       <>
                         <Link to="/post" className="btn-hero">
-                          {t('postProject')}
+                          Post Project
                         </Link>
                         <Link to="/templates" className="btn-secondary">
-                          {t('templates')}
+                          Templates
                         </Link>
                       </>
                     )}
                     <Button onClick={handleSignOut} variant="outline" className="w-full">
-                      {t('signOut')}
+                      Sign Out
                     </Button>
                   </>
                 ) : (
@@ -291,7 +289,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                         setIsMenuOpen(false);
                       }}
                     >
-                      {t('signIn')}
+                      Sign In
                     </Button>
                     <Button 
                       className="w-full bg-gradient-hero text-white"
@@ -300,7 +298,7 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
                         setIsMenuOpen(false);
                       }}
                     >
-                      {t('signUp')}
+                      Sign Up
                     </Button>
                   </>
                 )}

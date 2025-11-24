@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -37,7 +36,6 @@ interface Filters {
 }
 
 const Discovery = () => {
-  const { t } = useTranslation('services');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { getCategories } = useServicesRegistry();
