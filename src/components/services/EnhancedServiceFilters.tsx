@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
-import { Filter, X, ChevronRight, Star, ShieldCheck } from 'lucide-react';
+import { Filter, X, ChevronRight, Star, ShieldCheck, ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import Cascader from '@/components/common/Cascader';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { useCategories, useSubcategories } from '@/hooks/useCategories';
+import { getCategoryIcon } from '@/lib/categoryIcons';
 
 interface FilterProps {
   filters: {
@@ -27,65 +29,53 @@ interface FilterProps {
   visible: boolean;
 }
 
-const specialistCategories = [
-  {
-    category: 'Architecture & Design',
-    specialists: [
-      'Architect (Home Design)',
-      'Technical Architect',
-      'Structural Engineer',
-      'Civil Engineer',
-      'MEP Engineer',
-      'Interior Designer',
-      'Land Surveyor',
-      'Geotechnical Specialist'
-    ]
-  },
-  {
-    category: 'Construction & Building',
-    specialists: [
-      'Groundworks & Excavation',
-      'Foundations & Concrete',
-      'Bricklaying & Masonry',
-      'Stonework & Restoration',
-      'Timber Framing',
-      'Structural Steel & Welding',
-      'Formwork Carpentry'
-    ]
-  },
-  {
-    category: 'Flooring & Finishes',
-    specialists: [
-      'Tiling (Floors & Walls)',
-      'Wood Flooring',
-      'Carpet & Vinyl Flooring',
-      'Door Fitting',
-      'Window Fitting & Glazing',
-      'Skylights & Roof Windows'
-    ]
-  },
-  {
-    category: 'Kitchen & Bathroom',
-    specialists: [
-      'Kitchen Installation',
-      'Kitchen Renovation',
-      'Bathroom Installation',
-      'Wetrooms & Waterproofing',
-      'Joinery & Cabinetry'
-    ]
-  },
-  {
-    category: 'Commercial Projects',
-    specialists: [
-      'Project Management',
-      'Structural & Heavy Works',
-      'MEP Systems',
-      'Interior Fit-Out',
-      'Exterior & Infrastructure',
-      'Commissioning'
-    ]
-  }
-];
+// Component to fetch and display subcategories for a specific category
+const CategoryWithSubcategories: React.FC<{
+  categoryId: string;
+  categoryName: string;
+  categoryIcon: string | null;
+  isExpanded: boolean;
+  onToggle: () => void;
+  selectedSubcategory: string | null;
+  onSubcategoryChange: (subcategorySlug: string) => void;
+}> = ({ categoryId, categoryName, categoryIcon, isExpanded, onToggle, selectedSubcategory, onSubcategoryChange }) => {
+  const { data: subcategories = [], isLoading } = useSubcategories(categoryId);
+  const Icon = categoryIcon ? getCategoryIcon(categoryIcon) : null;
+
+  return (
+    <Collapsible open={isExpanded} onOpenChange={onToggle}>
+      <CollapsibleTrigger className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors text-left group">
+        <ChevronRight className={`h-4 w-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+        {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
+        <span className="text-sm font-medium text-foreground">{categoryName}</span>
+      </CollapsibleTrigger>
+      
+      <CollapsibleContent className="ml-8 space-y-2 py-2 border-l-2 border-border pl-4">
+        {isLoading ? (
+          <div className="text-xs text-muted-foreground py-2">Loading...</div>
+        ) : subcategories.length > 0 ? (
+          subcategories.map((subcategory) => (
+            <div key={subcategory.id} className="flex items-center gap-2">
+              <Checkbox
+                id={`sub-${subcategory.id}`}
+                checked={selectedSubcategory === subcategory.slug}
+                onCheckedChange={() => onSubcategoryChange(subcategory.slug)}
+              />
+              <label
+                htmlFor={`sub-${subcategory.id}`}
+                className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors leading-none"
+              >
+                {subcategory.name}
+              </label>
+            </div>
+          ))
+        ) : (
+          <div className="text-xs text-muted-foreground py-2">No subcategories available</div>
+        )}
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 const EnhancedServiceFilters: React.FC<FilterProps> = ({
   filters,
@@ -95,6 +85,9 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [localFilters, setLocalFilters] = useState(filters);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  const { data: allCategories = [], isLoading: categoriesLoading } = useCategories();
 
   // Load filters from URL on mount
   useEffect(() => {
@@ -224,9 +217,9 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
         </CardHeader>
       </Card>
 
-      {/* Service Taxonomy Cascader */}
+      {/* Browse by Category */}
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Browse by Category</CardTitle>
             {localFilters.selectedTaxonomy && (
@@ -236,70 +229,36 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
             )}
           </div>
         </CardHeader>
-        <CardContent>
-          {localFilters.selectedTaxonomy ? (
-            <div className="space-y-2">
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="font-medium text-primary">
-                    {localFilters.selectedTaxonomy.category}
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    {localFilters.selectedTaxonomy.subcategory}
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-foreground font-medium">
-                    {localFilters.selectedTaxonomy.micro}
-                  </span>
-                </div>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={clearTaxonomy}
-                className="w-full"
-              >
-                Change Selection
-              </Button>
+        <CardContent className="space-y-1">
+          {categoriesLoading ? (
+            <div className="text-sm text-muted-foreground py-4 text-center">Loading categories...</div>
+          ) : allCategories.length > 0 ? (
+            <div className="space-y-1">
+              {allCategories.map((category) => (
+                <CategoryWithSubcategories
+                  key={category.id}
+                  categoryId={category.id}
+                  categoryName={category.name}
+                  categoryIcon={category.icon_name}
+                  isExpanded={expandedCategory === category.id}
+                  onToggle={() => setExpandedCategory(expandedCategory === category.id ? null : category.id)}
+                  selectedSubcategory={localFilters.selectedTaxonomy?.subcategory || null}
+                  onSubcategoryChange={(subcategorySlug) => {
+                    updateFilters({
+                      ...localFilters,
+                      selectedTaxonomy: {
+                        category: category.slug,
+                        subcategory: subcategorySlug,
+                        micro: ''
+                      }
+                    });
+                  }}
+                />
+              ))}
             </div>
           ) : (
-            <Cascader 
-              onChange={handleTaxonomySelect}
-              placeholder="Select category → subcategory → service"
-            />
+            <div className="text-sm text-muted-foreground py-4 text-center">No categories available</div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Specialist Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Specialist Services</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {specialistCategories.map((group) => (
-            <div key={group.category} className="space-y-2">
-              <h4 className="font-medium text-sm text-primary">{group.category}</h4>
-              <div className="space-y-2 pl-4">
-                {group.specialists.map((specialist) => (
-                  <div key={specialist} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`specialist-${specialist}`}
-                      checked={localFilters.specialists.includes(specialist)}
-                      onCheckedChange={() => toggleSpecialist(specialist)}
-                    />
-                    <label
-                      htmlFor={`specialist-${specialist}`}
-                      className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                    >
-                      {specialist}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
         </CardContent>
       </Card>
 
