@@ -104,19 +104,9 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
   };
 
   const formatPrice = () => {
-    if (item.pricing_type === 'quote_required') {
-      return 'On Request';
-    }
-    if (item.pricing_type === 'flat_rate') {
-      return `€${item.base_price.toFixed(0)}`;
-    }
-    if (item.pricing_type === 'per_hour') {
-      return `€${item.base_price.toFixed(0)}`;
-    }
-    if (item.pricing_type === 'per_unit') {
-      return `€${item.base_price.toFixed(0)}`;
-    }
-    return 'On Request';
+    // Always show a starting price for transparency
+    const price = item.base_price || 50; // Default starting price if missing
+    return `€${price.toFixed(0)}`;
   };
 
   const getPriceUnit = () => {
@@ -126,7 +116,8 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
       const unitLabel = item.unit_type || 'unit';
       return `/${unitLabel}`;
     }
-    return '';
+    if (item.pricing_type === 'quote_required') return '+ (from)';
+    return '+ (from)';
   };
 
   const getCategoryImage = (): string | null => {
