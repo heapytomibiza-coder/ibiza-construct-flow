@@ -10,6 +10,7 @@ import {
   Navigation, AlertCircle, Pause, CheckSquare
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { JobsPipeline } from '../dashboard/JobsPipeline';
 
 interface MyJobsScreenProps {
   user: any;
@@ -255,7 +256,11 @@ export const MyJobsScreen = ({ user }: MyJobsScreenProps) => {
   );
 
   return (
-    <div className="p-4">
+    <div className="p-4 space-y-6">
+      {/* Jobs Pipeline Overview */}
+      <JobsPipeline />
+      
+      {/* Detailed Jobs Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="active" className="flex items-center gap-2">

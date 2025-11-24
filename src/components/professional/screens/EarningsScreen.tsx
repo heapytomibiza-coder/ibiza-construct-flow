@@ -9,6 +9,8 @@ import {
   FileText, Download, ExternalLink, Trophy,
   Zap, Clock
 } from 'lucide-react';
+import { EarningsChart } from '../dashboard/EarningsChart';
+import { MetricCard } from '../dashboard/MetricCard';
 
 interface EarningsScreenProps {
   user: any;
@@ -57,54 +59,54 @@ export const EarningsScreen = ({ user, stats }: EarningsScreenProps) => {
 
   return (
     <div className="p-4 space-y-6">
-      {/* Earnings Overview */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5" />
-            Earnings Dashboard
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Period Selector */}
-          <div className="flex gap-2 mb-4">
-            {['today', 'week', 'month'].map((period) => (
-              <Button
-                key={period}
-                variant={selectedPeriod === period ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedPeriod(period)}
-                className="capitalize"
-              >
-                {period}
-              </Button>
-            ))}
-          </div>
+      {/* Earnings Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <MetricCard
+          title="Today"
+          value={`€${earnings.today.amount}`}
+          subtitle={`€${earnings.today.target} target`}
+          icon={DollarSign}
+          trend={{
+            value: earnings.today.progress - 100,
+            label: 'of target',
+            positive: earnings.today.progress >= 100
+          }}
+          gradient="from-green-500/10 to-emerald-500/5"
+        />
+        
+        <MetricCard
+          title="This Week"
+          value={`€${earnings.week.amount}`}
+          subtitle={`€${earnings.week.target} target`}
+          icon={TrendingUp}
+          trend={{
+            value: earnings.week.progress - 100,
+            label: 'of target',
+            positive: earnings.week.progress >= 100
+          }}
+          badge={earnings.week.progress >= 100 ? { text: 'Target Met! 🎉', variant: 'default' } : undefined}
+          gradient="from-blue-500/10 to-cyan-500/5"
+        />
+        
+        <MetricCard
+          title="This Month"
+          value={`€${earnings.month.amount}`}
+          subtitle={`€${earnings.month.target} target`}
+          icon={Target}
+          trend={{
+            value: earnings.month.progress - 100,
+            label: 'of target',
+            positive: earnings.month.progress >= 100
+          }}
+          gradient="from-purple-500/10 to-pink-500/5"
+        />
+      </div>
 
-          {/* Earnings Thermometer */}
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-2xl font-bold">€{getCurrentEarnings().amount}</span>
-              <span className="text-sm text-muted-foreground">
-                Target: €{getCurrentEarnings().target}
-              </span>
-            </div>
-            <Progress value={Math.min(getCurrentEarnings().progress, 100)} className="h-3" />
-            <div className="flex justify-between text-sm">
-              <span className="flex items-center gap-1">
-                <TrendingUp className="w-3 h-3 text-green-500" />
-                {getCurrentEarnings().progress}% of target
-              </span>
-              {getCurrentEarnings().progress >= 100 && (
-                <Badge variant="default" className="bg-green-500">
-                  <Trophy className="w-3 h-3 mr-1" />
-                  Target Reached! 🎉
-                </Badge>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Earnings Chart */}
+      <EarningsChart
+        totalEarnings={earnings.week.amount}
+        weeklyTarget={earnings.week.target}
+      />
 
       {/* Tabs for different earning views */}
       <Tabs defaultValue="payouts" className="w-full">
