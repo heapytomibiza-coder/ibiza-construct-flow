@@ -31,6 +31,7 @@ const RouteFallback = () => <PageLoader />;
 
 // Phase 11: Lazy load components with retry logic for better reliability
 const Index = lazyWithRetry(() => import("./pages/Index"));
+const Presentation = lazyWithRetry(() => import("./pages/Presentation"));
 const Dashboard = lazyWithRetry(() => import("./pages/Dashboard"));
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
 const UnifiedAuth = lazyWithRetry(() => import("./pages/UnifiedAuth"));
@@ -217,6 +218,7 @@ function AppContent() {
                   <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<Index />} />
+                    <Route path="/presentation" element={<Presentation />} />
                     <Route path="/services" element={<Navigate to="/discovery" replace />} />
                     <Route path="/install" element={<Install />} />
                     <Route path="/calculator" element={<Calculator />} />
