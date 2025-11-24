@@ -19,7 +19,7 @@ export const ServiceMenuSection: React.FC<Props> = ({
     <section className="mb-8">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold">{groupName}</h3>
-        <span className="text-sm text-muted-foreground">{items.length} opciones</span>
+        <span className="text-sm text-muted-foreground">{items.length} options</span>
       </div>
       <div className="space-y-3">
         {items.map((item) => (

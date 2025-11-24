@@ -15,28 +15,28 @@ export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) =>
     switch (pricingType) {
       case 'fixed':
       case 'flat_rate':
-        return `${item.price.toFixed(2)} € (precio fijo)`;
+        return `€${item.price.toFixed(2)} (fixed price)`;
       case 'per_hour':
-        return `${item.price.toFixed(2)} € / hora`;
+        return `€${item.price.toFixed(2)} / hour`;
       case 'per_unit':
-        return `${item.price.toFixed(2)} € / ${item.unit_label || 'unidad'}`;
+        return `€${item.price.toFixed(2)} / ${item.unit_label || 'unit'}`;
       case 'per_square_meter':
-        return `${item.price.toFixed(2)} € / m²`;
+        return `€${item.price.toFixed(2)} / m²`;
       case 'per_project':
-        return `${item.price.toFixed(2)} € / proyecto`;
+        return `€${item.price.toFixed(2)} / project`;
       case 'range':
-        return `Desde ${item.price.toFixed(2)} €`;
+        return `From €${item.price.toFixed(2)}`;
       case 'quote_required':
-        return 'Precio bajo presupuesto';
+        return 'Price on quote';
       default:
-        return `${item.price.toFixed(2)} €`;
+        return `€${item.price.toFixed(2)}`;
     }
   };
 
   const priceLabel = formatPriceLabel(item.pricing_type);
 
   const description =
-    item.long_description || item.description || 'Descripción disponible bajo solicitud.';
+    item.long_description || item.description || 'Description available on request.';
 
   const specs = Object.entries(item.specifications || {}).filter(
     ([, value]) => Boolean(value)
@@ -90,7 +90,7 @@ export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) =>
                   size="icon"
                   className="h-8 w-8"
                   onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                  aria-label="Disminuir cantidad"
+                  aria-label="Decrease quantity"
                 >
                   -
                 </Button>
@@ -100,7 +100,7 @@ export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) =>
                   size="icon"
                   className="h-8 w-8"
                   onClick={() => setQuantity((prev) => prev + 1)}
-                  aria-label="Aumentar cantidad"
+                  aria-label="Increase quantity"
                 >
                   +
                 </Button>
@@ -108,7 +108,7 @@ export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) =>
             )}
 
             <Button className="mt-3 w-full" size="sm" onClick={handleAdd}>
-              Añadir al presupuesto
+              Add to Quote
             </Button>
           </div>
         </div>
