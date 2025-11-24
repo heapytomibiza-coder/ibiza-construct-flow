@@ -101,11 +101,31 @@ export const useDiscoveryServices = (searchTerm?: string, filters?: Filters) => 
 
         // Apply client-side filters
         
+        // Filter by category first (matches exactly what's in the database)
+        if (filters?.selectedTaxonomy?.category) {
+          transformedData = transformedData.filter((item: any) => {
+            const itemCategory = item.category?.toLowerCase() || '';
+            const filterCategory = filters.selectedTaxonomy?.category.toLowerCase() || '';
+            
+            // Match by exact category or if item category contains filter category
+            return itemCategory === filterCategory || 
+                   itemCategory.includes(filterCategory) ||
+                   filterCategory.includes(itemCategory);
+          });
+        }
+
         // Filter by subcategory
         if (filters?.selectedTaxonomy?.subcategory) {
-          transformedData = transformedData.filter((item: any) => 
-            item.subcategory === filters.selectedTaxonomy?.subcategory
-          );
+          transformedData = transformedData.filter((item: any) => {
+            const itemSubcategory = item.subcategory?.toLowerCase() || '';
+            const itemCategory = item.category?.toLowerCase() || '';
+            const filterSubcategory = filters.selectedTaxonomy?.subcategory.toLowerCase() || '';
+            
+            // Match subcategory in either subcategory field or category field
+            return itemSubcategory === filterSubcategory ||
+                   itemSubcategory.includes(filterSubcategory) ||
+                   itemCategory.includes(filterSubcategory);
+          });
         }
 
         // Filter by micro
@@ -136,6 +156,13 @@ export const useDiscoveryServices = (searchTerm?: string, filters?: Filters) => 
             )
           );
         }
+
+        // Sort by price (lowest first) for comparison transparency
+        transformedData = transformedData.sort((a: any, b: any) => {
+          const priceA = a.base_price || 0;
+          const priceB = b.base_price || 0;
+          return priceA - priceB;
+        });
 
         setServices(transformedData);
       } catch (err: any) {
