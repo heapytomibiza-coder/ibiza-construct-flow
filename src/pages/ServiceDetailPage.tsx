@@ -13,7 +13,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { ServiceMenuSection } from '@/components/services/ServiceMenuSection';
 import { QuoteBasket } from '@/components/services/QuoteBasket';
 import { useQuoteBasket } from '@/hooks/useQuoteBasket';
-import { ArrowLeft, Shield, ChevronRight } from 'lucide-react';
+import { VisualMaterialPicker } from '@/components/wizard/VisualMaterialPicker';
+import { VisualFinishPicker } from '@/components/wizard/VisualFinishPicker';
+import { ArrowLeft, Shield, ChevronRight, Award, Clock, CheckCircle, Star } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import type { ServiceMenuItem } from '@/types/services';
 
@@ -23,6 +25,8 @@ export default function ServiceDetailPage() {
   const { toast } = useToast();
   const [isBasketOpen, setIsBasketOpen] = useState(false);
   const [isSubmittingQuote, setIsSubmittingQuote] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState<string>('');
+  const [selectedFinish, setSelectedFinish] = useState<string>('');
   
   const searchParams = new URLSearchParams(window.location.search);
   const filterByProfessional = searchParams.get('professional');
@@ -117,11 +121,32 @@ export default function ServiceDetailPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url')
+        .select(`
+          id, 
+          full_name, 
+          display_name,
+          avatar_url,
+          bio
+        `)
         .eq('id', professionalId!)
         .single();
       
       if (error) throw error;
+      return data;
+    },
+    enabled: !!professionalId,
+  });
+
+  const { data: professionalStats } = useQuery({
+    queryKey: ['professional-stats', professionalId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('professional_profiles')
+        .select('*')
+        .eq('user_id', professionalId!)
+        .single();
+      
+      if (error) return null;
       return data;
     },
     enabled: !!professionalId,
@@ -374,6 +399,84 @@ export default function ServiceDetailPage() {
           <span className="text-foreground font-medium">{service.category || service.name}</span>
         </div>
 
+        {/* Hero Section with Professional Branding */}
+        <Card className="mb-6 overflow-hidden">
+          <div className="relative h-48 md:h-64 bg-gradient-to-br from-primary/20 via-primary/10 to-background">
+            {portfolioImages[0]?.image_url && (
+              <img 
+                src={portfolioImages[0].image_url} 
+                alt={service.name}
+                className="absolute inset-0 w-full h-full object-cover opacity-40"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+            <div className="relative h-full flex items-end p-6 md:p-8">
+              <div className="flex items-center gap-4">
+                {professionalProfile?.avatar_url && (
+                  <img 
+                    src={professionalProfile.avatar_url} 
+                    alt={professionalProfile.full_name}
+                    className="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-background object-cover"
+                  />
+                )}
+                <div>
+                  <h1 className="text-2xl md:text-4xl font-bold mb-1">{service.name}</h1>
+                  <p className="text-muted-foreground flex items-center gap-2">
+                    <span className="font-medium">{professionalProfile?.display_name || professionalProfile?.full_name}</span>
+                    <Badge variant="secondary" className="ml-2">
+                      <Shield className="h-3 w-3 mr-1" />
+                      Verified
+                    </Badge>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Trust Indicators */}
+          <CardContent className="pt-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-1 text-lg font-bold">
+                  <Star className="h-4 w-4 fill-primary text-primary" />
+                  4.9
+                </div>
+                <p className="text-xs text-muted-foreground">125 reviews</p>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-1 text-lg font-bold">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                  87
+                </div>
+                <p className="text-xs text-muted-foreground">Projects completed</p>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-1 text-lg font-bold">
+                  <Clock className="h-4 w-4 text-primary" />
+                  2h
+                </div>
+                <p className="text-xs text-muted-foreground">Response time</p>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-1 text-lg font-bold">
+                  <Award className="h-4 w-4 text-primary" />
+                  8+
+                </div>
+                <p className="text-xs text-muted-foreground">Years experience</p>
+              </div>
+            </div>
+            
+            {professionalProfile?.bio && (
+              <p className="mt-4 text-sm text-muted-foreground border-t pt-4">
+                {professionalProfile.bio}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Portfolio Gallery */}
         {portfolioImages.length > 0 && (
           <Card className="mb-6 overflow-hidden">
@@ -409,28 +512,6 @@ export default function ServiceDetailPage() {
         <div className="grid lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)] gap-8">
           {/* Main Content */}
           <div className="space-y-6">
-            {/* Header */}
-            <div>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h1 className="text-3xl font-bold mb-2">{service.name}</h1>
-                  <p className="text-muted-foreground">{service.category}</p>
-                </div>
-                <Badge variant="secondary">
-                  <Shield className="h-3 w-3 mr-1" />
-                  Verified Professional
-                </Badge>
-              </div>
-
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                {professional && (
-                  <div className="flex items-center">
-                    <span className="font-medium">{professional.display_name || professional.full_name}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
             {/* Service Description */}
             {service.description && (
               <Card>
@@ -441,6 +522,40 @@ export default function ServiceDetailPage() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Material & Finish Selectors */}
+            <Card>
+              <CardContent className="pt-6 space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Customize Your Project</h3>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Select your preferred materials and finishes. Our professional will incorporate your choices into the final quote.
+                  </p>
+                  
+                  <div className="space-y-6">
+                    <VisualMaterialPicker 
+                      value={selectedMaterial}
+                      onChange={setSelectedMaterial}
+                    />
+                    
+                    <VisualFinishPicker 
+                      value={selectedFinish}
+                      onChange={setSelectedFinish}
+                    />
+                  </div>
+                  
+                  {(selectedMaterial || selectedFinish) && (
+                    <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                      <p className="text-sm">
+                        <span className="font-medium">Your selections:</span>
+                        {selectedMaterial && <span className="ml-2">Material: {selectedMaterial}</span>}
+                        {selectedFinish && <span className="ml-2">• Finish: {selectedFinish}</span>}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
             <Card>
               <CardContent className="pt-6 space-y-4">
@@ -467,15 +582,71 @@ export default function ServiceDetailPage() {
                   </p>
                 )}
 
-                {!isLoadingMenu &&
-                  Object.entries(groupedItems).map(([groupName, items]) => (
-                    <ServiceMenuSection
-                      key={groupName}
-                      groupName={groupName}
-                      items={items}
-                      onAddToBasket={handleAddToBasket}
-                    />
-                  ))}
+                 {!isLoadingMenu &&
+                   Object.entries(groupedItems).map(([groupName, items]) => (
+                     <ServiceMenuSection
+                       key={groupName}
+                       groupName={groupName}
+                       items={items}
+                       onAddToBasket={handleAddToBasket}
+                     />
+                   ))}
+              </CardContent>
+            </Card>
+
+            {/* Trust & Guarantee Section */}
+            <Card className="bg-gradient-to-br from-primary/5 to-background border-primary/20">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-4">Our Commitment to Quality</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Shield className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">Quality Guarantee</h4>
+                      <p className="text-sm text-muted-foreground">
+                        All work comes with comprehensive warranty coverage and quality assurance
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">Satisfaction Promise</h4>
+                      <p className="text-sm text-muted-foreground">
+                        We work until you're completely satisfied with the results
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Clock className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">On-Time Delivery</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Projects completed within agreed timelines or your money back
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Award className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">Licensed & Insured</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Fully certified professionals with comprehensive liability insurance
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>

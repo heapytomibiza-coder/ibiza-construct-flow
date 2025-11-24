@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { ServiceMenuItem, PricingType } from '@/types/services';
 
 interface Props {
@@ -10,6 +12,7 @@ interface Props {
 
 export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) => {
   const [quantity, setQuantity] = useState(1);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const formatPriceLabel = (pricingType: PricingType) => {
     switch (pricingType) {
@@ -33,7 +36,25 @@ export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) =>
     }
   };
 
+  const getPricingTypeBadge = (pricingType: PricingType) => {
+    switch (pricingType) {
+      case 'range':
+        return 'Price Range';
+      case 'quote_required':
+        return 'Custom Quote';
+      case 'per_hour':
+        return 'Hourly Rate';
+      case 'per_unit':
+        return 'Per Unit';
+      case 'per_square_meter':
+        return 'Per m²';
+      default:
+        return null;
+    }
+  };
+
   const priceLabel = formatPriceLabel(item.pricing_type);
+  const pricingBadge = getPricingTypeBadge(item.pricing_type);
 
   const description =
     item.long_description || item.description || 'Description available on request.';
@@ -53,38 +74,81 @@ export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) =>
   };
 
   return (
-    <Card className="shadow-sm">
+    <Card className="shadow-sm hover:shadow-md transition-all duration-200 hover:border-primary/50">
       <CardContent className="pt-4 space-y-3">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <h4 className="font-semibold leading-tight">{item.name}</h4>
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-3">{description}</p>
+          <div className="flex-1">
+            <div className="flex items-start gap-2 mb-2">
+              <h4 className="font-semibold leading-tight flex-1">{item.name}</h4>
+              {pricingBadge && (
+                <Badge variant="secondary" className="text-xs">
+                  {pricingBadge}
+                </Badge>
+              )}
+            </div>
+            
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{description}</p>
 
             {item.whats_included && item.whats_included.length > 0 && (
-              <ul className="mt-2 text-xs text-muted-foreground list-disc list-inside space-y-1">
-                {item.whats_included.map((point, idx) => (
-                  <li key={idx}>{point}</li>
-                ))}
-              </ul>
+              <div className="mt-3">
+                <p className="text-xs font-medium text-foreground mb-2">What's Included:</p>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  {item.whats_included.slice(0, isExpanded ? undefined : 3).map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">✓</span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                {item.whats_included.length > 3 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 mt-2 text-xs"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                  >
+                    {isExpanded ? (
+                      <>
+                        <ChevronUp className="h-3 w-3 mr-1" />
+                        Show Less
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-3 w-3 mr-1" />
+                        Show {item.whats_included.length - 3} More
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             )}
 
-            {specs.length > 0 && (
-              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
-                {specs.map(([label, value]) => (
-                  <div key={label} className="flex items-center gap-1">
-                    <span className="font-medium text-foreground">{label}:</span>
-                    <span>{value}</span>
-                  </div>
-                ))}
+            {specs.length > 0 && isExpanded && (
+              <div className="mt-3 pt-3 border-t">
+                <p className="text-xs font-medium text-foreground mb-2">Specifications:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  {specs.map(([label, value]) => (
+                    <div key={label} className="flex flex-col">
+                      <span className="font-medium text-foreground capitalize">
+                        {label.replace(/_/g, ' ')}
+                      </span>
+                      <span className="text-muted-foreground">{value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
 
-          <div className="text-right min-w-[140px]">
-            <div className="text-sm font-semibold text-foreground">{priceLabel}</div>
+          <div className="text-right min-w-[160px] flex flex-col items-end">
+            <div className="text-lg font-bold text-foreground mb-1">{priceLabel}</div>
+            
+            {item.pricing_type === 'range' && (
+              <p className="text-xs text-muted-foreground mb-3">Final price varies by project</p>
+            )}
 
-            {item.pricing_type !== 'quote_required' && (
-              <div className="flex items-center justify-end gap-2 mt-3">
+            {item.pricing_type !== 'quote_required' && item.pricing_type !== 'range' && (
+              <div className="flex items-center justify-end gap-2 mt-2 mb-3">
                 <Button
                   variant="outline"
                   size="icon"
@@ -94,7 +158,7 @@ export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) =>
                 >
                   -
                 </Button>
-                <span className="w-8 text-center text-sm">{quantity}</span>
+                <span className="w-8 text-center text-sm font-medium">{quantity}</span>
                 <Button
                   variant="outline"
                   size="icon"
@@ -107,9 +171,24 @@ export const ServiceMenuItemCard: React.FC<Props> = ({ item, onAddToBasket }) =>
               </div>
             )}
 
-            <Button className="mt-3 w-full" size="sm" onClick={handleAdd}>
+            <Button 
+              className="w-full shadow-sm hover:shadow-md transition-shadow" 
+              size="sm" 
+              onClick={handleAdd}
+            >
               Add to Quote
             </Button>
+            
+            {specs.length > 0 && !isExpanded && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 mt-2 text-xs text-muted-foreground"
+                onClick={() => setIsExpanded(true)}
+              >
+                View Details
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>
