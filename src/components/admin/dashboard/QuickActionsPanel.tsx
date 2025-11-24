@@ -101,14 +101,14 @@ export function QuickActionsPanel({
 
   return (
     <Card className={cn('card-luxury', className)}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Zap className="w-5 h-5 text-primary" />
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Zap className="w-4 w-4 sm:w-5 sm:h-5 text-primary" />
           Quick Actions
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 sm:space-y-3 p-4 sm:p-6 pt-0">
         {displayActions.map((action) => {
           const Icon = action.icon;
           
@@ -117,26 +117,26 @@ export function QuickActionsPanel({
               key={action.id}
               variant="outline"
               className={cn(
-                'w-full justify-between h-auto py-4 px-4 transition-all',
+                'w-full justify-between h-auto py-3 sm:py-4 px-3 sm:px-4 transition-all',
                 action.priority && priorityConfig[action.priority]
               )}
               onClick={action.onClick}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                 <div className={cn(
-                  'p-2 rounded-lg',
+                  'p-1.5 sm:p-2 rounded-lg flex-shrink-0',
                   action.priority === 'high' && 'bg-rose-100 dark:bg-rose-950/30',
                   action.priority === 'medium' && 'bg-amber-100 dark:bg-amber-950/30',
                   !action.priority && 'bg-muted'
                 )}>
                   <Icon className={cn(
-                    'w-4 h-4',
+                    'w-3 h-3 sm:w-4 sm:h-4',
                     action.priority === 'high' && 'text-rose-600',
                     action.priority === 'medium' && 'text-amber-600',
                     !action.priority && 'text-foreground'
                   )} />
                 </div>
-                <span className="font-medium text-foreground">{action.label}</span>
+                <span className="font-medium text-foreground text-xs sm:text-sm truncate">{action.label}</span>
               </div>
               
               {action.count !== undefined && action.count > 0 && (

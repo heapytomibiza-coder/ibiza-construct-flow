@@ -285,8 +285,8 @@ const HomeTab = ({ stats, bookings, onTabChange, navigate }: any) => (
       </Card>
     </div>
 
-    {/* Premium Stats Cards */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    {/* Premium Stats Cards - Mobile Responsive */}
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <ClientMetricCard
         title="Active Projects"
         value={stats.active}
@@ -325,8 +325,8 @@ const HomeTab = ({ stats, bookings, onTabChange, navigate }: any) => (
       />
     </div>
 
-    {/* Spending & Timeline Grid */}
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    {/* Spending & Timeline Grid - Mobile Stacked */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
       <SpendingChart 
         totalSpent={stats.totalSpent || 6300}
         monthlyBudget={10000}
@@ -337,24 +337,26 @@ const HomeTab = ({ stats, bookings, onTabChange, navigate }: any) => (
       />
     </div>
 
-    {/* Analytics Quick Access */}
+    {/* Analytics Quick Access - Mobile Optimized */}
     <Card className="card-luxury border-primary/20">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-              <BarChart3 className="w-6 h-6 text-primary" />
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+              <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-charcoal">Analytics & Insights</h3>
-              <p className="text-sm text-muted-foreground">View detailed performance metrics</p>
+              <h3 className="font-semibold text-charcoal text-sm sm:text-base">Analytics & Insights</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">View detailed metrics</p>
             </div>
           </div>
           <Button 
             variant="outline"
+            size="sm"
+            className="w-full sm:w-auto"
             onClick={() => navigate('/dashboard/client/analytics')}
           >
-            View Analytics
+            View
             <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
         </div>

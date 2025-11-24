@@ -61,18 +61,18 @@ export function AdminMetricCard({
     >
       <div className={cn('absolute inset-0 bg-gradient-to-br opacity-50', gradient)} />
       
-      <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-foreground/80">
+      <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+        <CardTitle className="text-xs sm:text-sm font-medium text-foreground/80">
           {title}
         </CardTitle>
-        <div className="p-2.5 bg-background/60 rounded-lg backdrop-blur-sm shadow-sm">
-          <Icon className="h-5 w-5 text-primary" />
+        <div className="p-1.5 sm:p-2.5 bg-background/60 rounded-lg backdrop-blur-sm shadow-sm">
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
         </div>
       </CardHeader>
       
-      <CardContent className="relative space-y-3">
+      <CardContent className="relative space-y-3 p-3 sm:p-6 pt-0">
         <div className="flex items-baseline gap-2">
-          <div className="text-3xl font-bold text-foreground">{value}</div>
+          <div className="text-2xl sm:text-3xl font-bold text-foreground">{value}</div>
         </div>
         
         {subtitle && (
@@ -97,10 +97,10 @@ export function AdminMetricCard({
         )}
 
         {alert && (
-          <div className={cn('p-2 border rounded-lg text-xs', alertConfig[alert.level])}>
+          <div className={cn('p-2 border rounded-lg text-xs leading-relaxed', alertConfig[alert.level])}>
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-              <span className="flex-1">{alert.message}</span>
+              <span className="flex-1 break-words">{alert.message}</span>
             </div>
           </div>
         )}
@@ -115,8 +115,8 @@ export function AdminMetricCard({
               onDrillDown();
             }}
           >
-            {actionLabel}
-            <ChevronRight className="w-3 h-3" />
+            <span className="truncate">{actionLabel}</span>
+            <ChevronRight className="w-3 h-3 flex-shrink-0 ml-1" />
           </Button>
         )}
       </CardContent>
