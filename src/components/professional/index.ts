@@ -7,6 +7,9 @@ export { EnhancedProfileCard } from './EnhancedProfileCard';
 export { ProfileCompletionTracker } from './ProfileCompletionTracker';
 export { VerificationStatusCard } from './VerificationStatusCard';
 
+// Enhanced Dashboard Visualizations (Phase 6)
+export { MetricCard, EarningsChart, JobsPipeline } from './dashboard';
+
 // Job & Quote Management
 export { ProfessionalJobQuotesSection } from './ProfessionalJobQuotesSection';
 

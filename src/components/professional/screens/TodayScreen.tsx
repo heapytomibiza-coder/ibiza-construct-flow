@@ -4,8 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   MapPin, Clock, TrendingUp, Target, Zap, 
-  Play, Navigation, CheckCircle2, AlertCircle
+  Play, Navigation, CheckCircle2, AlertCircle,
+  DollarSign, Briefcase, Star, Users
 } from 'lucide-react';
+import { MetricCard } from '../dashboard/MetricCard';
+import { EarningsChart } from '../dashboard/EarningsChart';
 
 interface TodayScreenProps {
   stats: any;
@@ -42,90 +45,58 @@ export const TodayScreen = ({ stats, user }: TodayScreenProps) => {
 
   return (
     <div className="p-4 space-y-6">
-      {/* Top Widgets Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Earnings Thermometer */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              Today's Progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>€{stats.todayEarnings}</span>
-                <span className="text-muted-foreground">/ €{Math.round(stats.weeklyTarget / 7)}</span>
-              </div>
-              <Progress value={earningsProgress} className="h-2" />
-              <p className="text-xs text-muted-foreground">
-                {earningsProgress.toFixed(0)}% of daily target
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Next Job */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Next Job
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {stats.nextJob ? (
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm">{stats.nextJob.title}</h4>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Clock className="w-3 h-3" />
-                  <span>{stats.nextJob.eta}</span>
-                  <MapPin className="w-3 h-3 ml-1" />
-                  <span>{stats.nextJob.distance}</span>
-                </div>
-                <Button size="sm" className="w-full">
-                  <Play className="w-3 h-3 mr-1" />
-                  Start Job
-                </Button>
-              </div>
-            ) : (
-              <div className="text-center text-sm text-muted-foreground">
-                <Target className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>No jobs scheduled</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Gaps & Suggestions */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Zap className="w-4 h-4" />
-              Fill Gaps
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <p className="text-xs text-muted-foreground">3 filler jobs nearby</p>
-              <div className="space-y-1">
-                <div className="text-xs">
-                  <span className="font-medium">2:00-4:00 PM</span>
-                  <span className="text-muted-foreground ml-2">Leak Repair (5 min away)</span>
-                </div>
-                <div className="text-xs">
-                  <span className="font-medium">Evening slot</span>
-                  <span className="text-muted-foreground ml-2">Consultation (virtual)</span>
-                </div>
-              </div>
-              <Button size="sm" variant="outline" className="w-full text-xs">
-                Auto-bid on gaps
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Enhanced Metric Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          title="Today's Earnings"
+          value={`€${stats.todayEarnings}`}
+          subtitle={`€${Math.round((stats.weeklyTarget || 1000) / 7)} daily target`}
+          icon={DollarSign}
+          trend={{
+            value: 12.5,
+            label: 'vs yesterday',
+            positive: true
+          }}
+          gradient="from-green-500/10 to-emerald-500/5"
+        />
+        
+        <MetricCard
+          title="Active Jobs"
+          value={stats.activeJobs}
+          subtitle="In progress today"
+          icon={Briefcase}
+          badge={{ text: '2 pending', variant: 'secondary' }}
+          gradient="from-blue-500/10 to-cyan-500/5"
+        />
+        
+        <MetricCard
+          title="Client Rating"
+          value={stats.rating.toFixed(1)}
+          subtitle="Based on 47 reviews"
+          icon={Star}
+          trend={{
+            value: 0.2,
+            label: 'this month',
+            positive: true
+          }}
+          gradient="from-amber-500/10 to-yellow-500/5"
+        />
+        
+        <MetricCard
+          title="Response Time"
+          value={`${stats.responseTime}m`}
+          subtitle="Average response"
+          icon={Clock}
+          badge={{ text: 'Excellent', variant: 'default' }}
+          gradient="from-purple-500/10 to-pink-500/5"
+        />
       </div>
+
+      {/* Weekly Earnings Chart */}
+      <EarningsChart
+        totalEarnings={stats.weekEarnings}
+        weeklyTarget={stats.weeklyTarget || 1000}
+      />
 
       {/* Job Queue */}
       <Card>
