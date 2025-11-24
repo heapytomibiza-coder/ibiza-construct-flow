@@ -11,13 +11,12 @@ import { useNavigate } from 'react-router-dom';
 
 interface Service {
   id: string;
-  micro_service_id: string;
-  service_name?: string;
+  service_id: string;
+  name?: string;
   description?: string;
-  pricing_structure?: {
-    base_price?: number;
-    price_range?: { min: number; max: number };
-  };
+  base_price?: number;
+  pricing_type?: string;
+  category?: string;
   estimated_duration?: string;
   is_active: boolean;
   image_url?: string;
@@ -61,23 +60,17 @@ export const CompactServiceCards = ({ services, professionalId, onRequestQuote }
               <div className="relative h-48 overflow-hidden bg-muted">
                 <img 
                   src={service.image_url || `https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=600&fit=crop`}
-                  alt={service.service_name || service.micro_service_id}
+                  alt={service.name || service.service_id}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 
                 {/* Pricing Badge on Image */}
                 <div className="absolute top-4 right-4">
-                  {service.pricing_structure?.base_price && (
+                  {service.base_price && (
                     <Badge className="bg-primary text-primary-foreground font-bold text-base px-3 py-1.5 shadow-lg">
                       <Euro className="w-4 h-4 mr-1" />
-                      From €{service.pricing_structure.base_price}
-                    </Badge>
-                  )}
-                  {service.pricing_structure?.price_range && (
-                    <Badge className="bg-primary text-primary-foreground font-bold text-base px-3 py-1.5 shadow-lg">
-                      <Euro className="w-4 h-4 mr-1" />
-                      €{service.pricing_structure.price_range.min} - €{service.pricing_structure.price_range.max}
+                      From €{service.base_price}
                     </Badge>
                   )}
                 </div>
@@ -86,7 +79,7 @@ export const CompactServiceCards = ({ services, professionalId, onRequestQuote }
               {/* Card Content */}
               <CardContent className="p-5 flex-1 flex flex-col">
                 <h3 className="font-bold text-xl mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                  {service.service_name || service.micro_service_id}
+                  {service.name || service.service_id}
                 </h3>
                 
                 {service.description && (
@@ -118,7 +111,7 @@ export const CompactServiceCards = ({ services, professionalId, onRequestQuote }
                     </Button>
                   )}
                   <Button
-                    onClick={() => navigate(`/service/${service.micro_service_id}${professionalId ? `?professional=${professionalId}` : ''}`)}
+                    onClick={() => navigate(`/service/${service.service_id}${professionalId ? `?professional=${professionalId}` : ''}`)}
                     className="flex-1 font-semibold group-hover:shadow-md"
                     size="lg"
                   >
