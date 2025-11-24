@@ -14,6 +14,8 @@ interface Props {
   onRemove: (itemId: string) => void;
   onRequestQuote: () => void;
   isSubmitting?: boolean;
+  professionalName?: string;
+  professionalAvatar?: string;
 }
 
 export const QuoteBasket: React.FC<Props> = ({
@@ -25,6 +27,8 @@ export const QuoteBasket: React.FC<Props> = ({
   onRemove,
   onRequestQuote,
   isSubmitting,
+  professionalName,
+  professionalAvatar,
 }) => {
   const describePrice = (item: BasketItem) => {
     switch (item.pricingType) {
@@ -54,6 +58,28 @@ export const QuoteBasket: React.FC<Props> = ({
         <CardTitle className="text-lg">Tu presupuesto {items.length ? `(${items.length})` : ''}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-0">
+        {professionalName && (
+          <div className="flex items-center gap-2 pb-2 border-b">
+            {professionalAvatar ? (
+              <img 
+                src={professionalAvatar} 
+                alt={professionalName}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                <span className="text-xs font-medium">
+                  {professionalName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
+            <div className="text-sm">
+              <p className="font-medium">{professionalName}</p>
+              <p className="text-xs text-muted-foreground">Profesional</p>
+            </div>
+          </div>
+        )}
+
         {!items.length && (
           <p className="text-sm text-muted-foreground">
             Añade tareas desde el menú para construir un presupuesto detallado y enviar la solicitud al profesional.

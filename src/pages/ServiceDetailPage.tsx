@@ -67,7 +67,8 @@ export default function ServiceDetailPage() {
           group_name,
           whats_included,
           specifications,
-          sort_order
+          sort_order,
+          professional_id
         `)
         .eq('id', serviceId!);
 
@@ -84,9 +85,30 @@ export default function ServiceDetailPage() {
         group_name: item.group_name || 'General Services',
         whats_included: Array.isArray(item.whats_included) ? item.whats_included : [],
         specifications: typeof item.specifications === 'object' ? item.specifications : {},
+        professional_id: item.professional_id,
       })) as ServiceMenuItem[];
     },
     enabled: !!serviceId,
+  });
+
+  const professionalId = useMemo(() => {
+    if (!serviceMenuItems.length) return service?.professional_id || null;
+    return (serviceMenuItems[0] as any).professional_id;
+  }, [serviceMenuItems, service]);
+
+  const { data: professionalProfile } = useQuery({
+    queryKey: ['professional-profile', professionalId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('id', professionalId!)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!professionalId,
   });
 
   const {
@@ -132,7 +154,9 @@ export default function ServiceDetailPage() {
   };
 
   const handleRequestQuote = async () => {
-    if (!serviceId || !basketItems.length) {
+    if (!serviceId || !professionalId) return;
+
+    if (!basketItems.length) {
       toast({
         title: 'Añade servicios',
         description: 'Selecciona al menos un elemento para solicitar un presupuesto.',
@@ -144,33 +168,100 @@ export default function ServiceDetailPage() {
     setIsSubmittingQuote(true);
 
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const clientId = userData?.user?.id;
-
-      if (!clientId) {
+      const { data: userData, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !userData?.user) {
         toast({
-          title: 'Inicia sesión',
-          description: 'Debes iniciar sesión para solicitar un presupuesto.',
+          title: 'Debes iniciar sesión',
+          description: 'Inicia sesión para solicitar un presupuesto.',
           variant: 'destructive',
         });
-        navigate('/auth');
+        navigate('/auth?redirect=' + encodeURIComponent(window.location.pathname));
         return;
       }
 
-      // For now, just store quote request metadata
-      // TODO: Integrate with proper job creation flow
+      const clientId = userData.user.id;
+
+      const jobTitle = basketItems.length === 1
+        ? `Presupuesto: ${basketItems[0].name}`
+        : `Presupuesto: ${basketItems.length} servicios`;
+
+      const jobDescription = notes 
+        ? `${notes}\n\nServicios solicitados:\n${basketItems.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}`
+        : `Servicios solicitados:\n${basketItems.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}`;
+
+      const jobPayload = {
+        client_id: clientId,
+        micro_id: serviceId,
+        title: jobTitle,
+        description: jobDescription,
+        status: 'open' as const,
+        answers: {
+          quote_notes: notes,
+          service_id: serviceId,
+          basket_items: basketItems,
+          total_estimate: totalEstimate,
+        } as any,
+      };
+
+      const { data: jobData, error: jobError } = await supabase
+        .from('jobs')
+        .insert(jobPayload as any)
+        .select('id');
+
+      if (jobError || !jobData?.[0]) throw jobError;
+      const job = jobData[0];
+
+      const { data: quoteData, error: quoteError } = await supabase
+        .from('quote_requests')
+        .insert({
+          job_id: job.id,
+          professional_id: professionalId,
+          notes,
+          status: 'pending',
+        })
+        .select('id');
+
+      if (quoteError || !quoteData?.[0]) throw quoteError;
+      const quoteRequest = quoteData[0];
+
+      const itemsPayload = basketItems.map((item) => ({
+        quote_request_id: quoteRequest.id,
+        service_item_id: item.serviceItemId,
+        quantity: item.quantity,
+        unit_price: item.pricePerUnit,
+        subtotal: item.subtotal,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('quote_request_items')
+        .insert(itemsPayload);
+
+      if (itemsError) throw itemsError;
+
+      await supabase.from('activity_feed').insert({
+        user_id: professionalId,
+        event_type: 'quote_request_received',
+        entity_type: 'quote_request',
+        entity_id: quoteRequest.id,
+        title: 'Nueva solicitud de presupuesto',
+        description: `${basketItems.length} servicio(s) solicitado(s). Total estimado: ${totalEstimate.toFixed(2)} €`,
+        action_url: `/jobs/${job.id}`,
+      });
+
       toast({
-        title: 'Función en desarrollo',
-        description: 'La solicitud de presupuestos múltiples estará disponible próximamente.',
+        title: 'Solicitud enviada',
+        description: 'El profesional revisará tu solicitud y te responderá pronto.',
       });
 
       clearBasket();
       setIsBasketOpen(false);
+      navigate(`/jobs/${job.id}`);
     } catch (error) {
       console.error('[quote_request]', error);
       toast({
         title: 'No se pudo enviar la solicitud',
-        description: 'Inténtalo de nuevo o revisa tu conexión.',
+        description: 'Inténtalo de nuevo o contacta con soporte.',
         variant: 'destructive',
       });
     } finally {
@@ -332,6 +423,8 @@ export default function ServiceDetailPage() {
                 onRemove={removeItem}
                 onRequestQuote={handleRequestQuote}
                 isSubmitting={isSubmittingQuote}
+                professionalName={professionalProfile?.full_name}
+                professionalAvatar={professionalProfile?.avatar_url}
               />
             </div>
           </div>
@@ -356,6 +449,8 @@ export default function ServiceDetailPage() {
               onRemove={removeItem}
               onRequestQuote={handleRequestQuote}
               isSubmitting={isSubmittingQuote}
+              professionalName={professionalProfile?.full_name}
+              professionalAvatar={professionalProfile?.avatar_url}
             />
           </div>
         </SheetContent>

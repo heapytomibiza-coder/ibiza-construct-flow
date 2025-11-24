@@ -19,4 +19,5 @@ export interface ServiceMenuItem {
   group_name?: string | null;
   whats_included?: string[];
   specifications?: Record<string, string>;
+  professional_id?: string;
 }
