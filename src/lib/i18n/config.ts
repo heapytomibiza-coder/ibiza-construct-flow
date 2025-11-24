@@ -13,11 +13,13 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en.json';
 import es from './locales/es.json';
 import fr from './locales/fr.json';
+import de from './locales/de.json';
 
 export const supportedLanguages = {
-  en: { name: 'English', nativeName: 'English' },
-  es: { name: 'Spanish', nativeName: 'Español' },
-  fr: { name: 'French', nativeName: 'Français' },
+  en: { name: 'English', nativeName: 'English', flag: '🇬🇧' },
+  es: { name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
+  fr: { name: 'French', nativeName: 'Français', flag: '🇫🇷' },
+  de: { name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
 } as const;
 
 export type SupportedLanguage = keyof typeof supportedLanguages;
@@ -33,6 +35,7 @@ i18n
       en: { translation: en },
       es: { translation: es },
       fr: { translation: fr },
+      de: { translation: de },
     },
     fallbackLng: defaultLanguage,
     supportedLngs: Object.keys(supportedLanguages),

@@ -1,0 +1,62 @@
+{
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "submit": "Absenden",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "clear": "Löschen",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "login": "Anmelden",
+    "signup": "Registrieren"
+  },
+  "auth": {
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "forgotPassword": "Passwort vergessen?",
+    "rememberMe": "Angemeldet bleiben",
+    "loginTitle": "Willkommen zurück",
+    "loginSubtitle": "Melden Sie sich bei Ihrem Konto an",
+    "signupTitle": "Konto erstellen",
+    "signupSubtitle": "Starten Sie noch heute",
+    "logoutConfirm": "Möchten Sie sich wirklich abmelden?"
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Ungültige E-Mail-Adresse",
+    "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "invalidUrl": "Ungültiges URL-Format"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "markAllRead": "Alle als gelesen markieren",
+    "noNotifications": "Noch keine Benachrichtigungen",
+    "newNotification": "Sie haben eine neue Benachrichtigung"
+  },
+  "errors": {
+    "somethingWrong": "Etwas ist schief gelaufen",
+    "tryAgain": "Bitte versuchen Sie es erneut",
+    "notFound": "Nicht gefunden",
+    "unauthorized": "Unberechtigter Zugriff",
+    "forbidden": "Zugriff verboten"
+  }
+}
