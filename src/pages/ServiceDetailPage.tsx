@@ -560,7 +560,7 @@ export default function ServiceDetailPage() {
               <ServicePricingAddons
                 addons={servicePricingAddons}
                 basePrice={serviceMenuItems[0]?.price || 0}
-                onSelectionChange={(addons, total) => {
+                onSelectionChange={(addons, total, quantity) => {
                   setSelectedAddons(addons);
                   setAdjustedPrice(total);
                 }}

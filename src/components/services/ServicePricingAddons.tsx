@@ -2,13 +2,14 @@ import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Check, Minus, Plus } from 'lucide-react';
 import type { ServicePricingAddon } from '@/types/services';
 
 interface ServicePricingAddonsProps {
   addons: ServicePricingAddon[];
   basePrice: number;
-  onSelectionChange?: (selectedAddons: string[], totalPrice: number) => void;
+  onSelectionChange?: (selectedAddons: string[], totalPrice: number, quantity: number) => void;
 }
 
 export const ServicePricingAddons = ({
@@ -17,6 +18,7 @@ export const ServicePricingAddons = ({
   onSelectionChange,
 }: ServicePricingAddonsProps) => {
   const [selectedAddons, setSelectedAddons] = useState<Set<string>>(new Set());
+  const [quantity, setQuantity] = useState(1);
 
   const { includedAddons, optionalAddons } = useMemo(() => {
     return {
@@ -30,8 +32,8 @@ export const ServicePricingAddons = ({
       const addon = addons.find(a => a.id === addonId);
       return sum + (addon?.addon_price || 0);
     }, 0);
-    return basePrice + addonsTotal;
-  }, [selectedAddons, addons, basePrice]);
+    return (basePrice + addonsTotal) * quantity;
+  }, [selectedAddons, addons, basePrice, quantity]);
 
   const handleToggleAddon = (addonId: string, checked: boolean) => {
     setSelectedAddons(prev => {
@@ -47,11 +49,24 @@ export const ServicePricingAddons = ({
           const addon = addons.find(a => a.id === id);
           return sum + (addon?.addon_price || 0);
         }, 0);
-        onSelectionChange(Array.from(newSet), basePrice + addonsTotal);
+        onSelectionChange(Array.from(newSet), (basePrice + addonsTotal) * quantity, quantity);
       }
       
       return newSet;
     });
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity < 1 || newQuantity > 99) return;
+    setQuantity(newQuantity);
+    
+    if (onSelectionChange) {
+      const addonsTotal = Array.from(selectedAddons).reduce((sum, id) => {
+        const addon = addons.find(a => a.id === id);
+        return sum + (addon?.addon_price || 0);
+      }, 0);
+      onSelectionChange(Array.from(selectedAddons), (basePrice + addonsTotal) * newQuantity, newQuantity);
+    }
   };
 
   if (!addons || addons.length === 0) return null;
@@ -62,9 +77,13 @@ export const ServicePricingAddons = ({
         <h3 className="text-lg font-semibold mb-2">What's Included</h3>
         <div className="flex items-baseline gap-2">
           <span className="text-3xl font-bold">€{totalPrice.toFixed(2)}</span>
-          {selectedAddons.size > 0 && (
+          {(selectedAddons.size > 0 || quantity > 1) && (
             <span className="text-sm text-muted-foreground">
-              (Base: €{basePrice.toFixed(2)})
+              {quantity > 1 && `(${quantity} × €${((basePrice + Array.from(selectedAddons).reduce((sum, id) => {
+                const addon = addons.find(a => a.id === id);
+                return sum + (addon?.addon_price || 0);
+              }, 0))).toFixed(2)})`}
+              {quantity === 1 && selectedAddons.size > 0 && `(Base: €${basePrice.toFixed(2)})`}
             </span>
           )}
         </div>
@@ -144,6 +163,41 @@ export const ServicePricingAddons = ({
           </div>
         </div>
       )}
+
+      {/* Quantity Selector */}
+      <div className="mt-6 pt-6 border-t border-border">
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-medium text-muted-foreground">Quantity:</span>
+          
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => handleQuantityChange(quantity - 1)}
+              disabled={quantity <= 1}
+              className="h-10 w-10 rounded-md shrink-0"
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+
+            <div className="flex items-center justify-center min-w-[60px] h-10 px-4 rounded-md border-2 border-border bg-background">
+              <span className="text-lg font-semibold tabular-nums">{quantity}</span>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => handleQuantityChange(quantity + 1)}
+              disabled={quantity >= 99}
+              className="h-10 w-10 rounded-md shrink-0"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
     </Card>
   );
 };
