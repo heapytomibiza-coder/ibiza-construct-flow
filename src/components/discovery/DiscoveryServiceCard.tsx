@@ -54,21 +54,79 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
 
+  // Map database categories to display-friendly names
+  const getCategoryDisplayName = (): string => {
+    const categoryLower = item.category?.toLowerCase() || '';
+    
+    const categoryNameMap: Record<string, string> = {
+      'carpentry': 'Carpentry',
+      'carpentry-woodwork': 'Carpentry',
+      'electricity-lighting': 'Electrical',
+      'electrical': 'Electrical',
+      'plumbing': 'Plumbing',
+      'security-systems': 'Security',
+      'domotics-sonorisation': 'Smart Home',
+      'metalwork': 'Metalwork',
+      'labor': 'General Labor',
+      'masonry': 'Masonry',
+      'proveedores': 'Suppliers',
+      'building': 'Construction',
+      'construction': 'Construction',
+      'air-conditioning': 'HVAC',
+      'hvac': 'HVAC',
+      'painting': 'Painting',
+      'landscaping': 'Landscaping',
+      'flooring': 'Flooring',
+      'cleaning': 'Cleaning',
+      'pool': 'Pool Services',
+      'handyman': 'Handyman',
+      'architecture': 'Architecture',
+      'property': 'Property',
+      'bathroom': 'Bathroom',
+    };
+
+    // Try exact match first
+    if (categoryNameMap[categoryLower]) {
+      return categoryNameMap[categoryLower];
+    }
+
+    // Try partial match
+    for (const [key, displayName] of Object.entries(categoryNameMap)) {
+      if (categoryLower.includes(key) || key.includes(categoryLower)) {
+        return displayName;
+      }
+    }
+    
+    // Fallback to original category with capitalization
+    return item.category?.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ') || 'Service';
+  };
+
   const formatPrice = () => {
     if (item.pricing_type === 'quote_required') {
-      return 'Price on request';
+      return 'On Request';
     }
     if (item.pricing_type === 'flat_rate') {
-      return `€${item.base_price}/job`;
+      return `€${item.base_price.toFixed(0)}`;
     }
     if (item.pricing_type === 'per_hour') {
-      return `€${item.base_price}/hour`;
+      return `€${item.base_price.toFixed(0)}`;
     }
     if (item.pricing_type === 'per_unit') {
-      const unitLabel = item.unit_type || 'item';
-      return `€${item.base_price}/${unitLabel}`;
+      return `€${item.base_price.toFixed(0)}`;
     }
-    return 'Price on request';
+    return 'On Request';
+  };
+
+  const getPriceUnit = () => {
+    if (item.pricing_type === 'flat_rate') return '/project';
+    if (item.pricing_type === 'per_hour') return '/hour';
+    if (item.pricing_type === 'per_unit') {
+      const unitLabel = item.unit_type || 'unit';
+      return `/${unitLabel}`;
+    }
+    return '';
   };
 
   const getCategoryImage = (): string | null => {
@@ -78,7 +136,9 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
       'building': constructionImg,
       'construction': constructionImg,
       'carpentry': carpentryImg,
+      'carpentry-woodwork': carpentryImg,
       'electrical': electricalImg,
+      'electricity-lighting': electricalImg,
       'plumbing': plumbingImg,
       'air-conditioning': hvacImg,
       'hvac': hvacImg,
@@ -88,14 +148,27 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
       'cleaning': cleaningImg,
       'pool': poolImg,
       'handyman': handymanImg,
+      'labor': handymanImg,
       'architecture': architectureImg,
       'property': propertyImg,
       'bathroom': bathroomImg,
+      'security-systems': electricalImg,
+      'security': electricalImg,
+      'domotics-sonorisation': hvacImg,
+      'smart': hvacImg,
+      'metalwork': constructionImg,
+      'masonry': constructionImg,
+      'proveedores': propertyImg,
     };
 
-    // Try to find matching category
+    // Try exact match first
+    if (categoryImageMap[categoryLower]) {
+      return categoryImageMap[categoryLower];
+    }
+
+    // Try partial match
     for (const [key, image] of Object.entries(categoryImageMap)) {
-      if (categoryLower.includes(key)) {
+      if (categoryLower.includes(key) || key.includes(categoryLower)) {
         return image;
       }
     }
@@ -132,12 +205,6 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
     return getCategoryIcon('Wrench');
   };
 
-  const getPriceBadgeVariant = () => {
-    if (item.pricing_type === 'quote_required') return 'secondary';
-    if (item.pricing_type === 'flat_rate') return 'default';
-    return 'outline';
-  };
-
   const handleViewDetails = () => {
     if (onViewDetails) {
       onViewDetails();
@@ -155,15 +222,14 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
   return (
     <Card
       className={cn(
-        "group overflow-hidden cursor-pointer transition-all duration-300",
-        "hover:shadow-lg hover:scale-[1.02]"
+        "group overflow-hidden cursor-pointer transition-all duration-300 h-full flex flex-col",
+        "hover:shadow-lg hover:scale-[1.01]"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onViewDetails?.()}
     >
-      {/* Image Section */}
-      <div className="relative h-48 overflow-hidden bg-muted">
+      {/* Image Section - Fixed Height */}
+      <div className="relative h-40 overflow-hidden bg-muted flex-shrink-0">
         {item.images?.[0] ? (
           <img
             src={item.images[0]}
@@ -179,101 +245,105 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
             {React.createElement(getCategoryIconComponent(), {
-              className: "h-16 w-16 text-primary/60"
+              className: "h-12 w-12 text-primary/60"
             })}
           </div>
         )}
 
-        {/* Price Badge Overlay */}
-        <div className="absolute top-3 right-3">
-          <Badge 
-            variant={getPriceBadgeVariant()} 
-            className="shadow-lg font-semibold text-sm px-3 py-1 bg-background/95 backdrop-blur-sm border-primary/30"
-          >
-            {formatPrice()}
+        {/* Category Badge */}
+        <div className="absolute top-2 left-2">
+          <Badge variant="secondary" className="bg-background/95 backdrop-blur-sm text-xs font-medium">
+            {getCategoryDisplayName()}
           </Badge>
         </div>
 
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3">
-          <Badge variant="outline" className="bg-background/95 backdrop-blur-sm text-xs">
-            {item.category}
-          </Badge>
-        </div>
+        {/* Professional Demo Badge */}
+        {item.professional && (
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-primary/90 backdrop-blur-sm text-xs font-semibold px-2 py-0.5">
+              PD
+            </Badge>
+          </div>
+        )}
       </div>
 
-      {/* Content Section */}
-      <div className="p-4 space-y-3">
-        {/* Service Name */}
-        <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
+      {/* Content Section - Flex Grow */}
+      <div className="p-3 flex flex-col flex-grow">
+        {/* Service Name - Fixed 2 Lines */}
+        <h3 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition-colors min-h-[3rem]">
           {item.name}
         </h3>
 
-        {/* Professional Info */}
-        {item.professional && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Avatar className="h-6 w-6">
-              <AvatarImage src={item.professional.avatar_url} />
-              <AvatarFallback>
-                {item.professional.full_name.split(' ').map(n => n[0]).join('')}
-              </AvatarFallback>
-            </Avatar>
-            <span className="font-medium truncate">{item.professional.full_name}</span>
+        {/* Professional & Quick Stats - Compact Single Row */}
+        <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground mt-2 mb-2">
+          {item.professional && (
+            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+              <Avatar className="h-5 w-5 flex-shrink-0">
+                <AvatarImage src={item.professional.avatar_url} />
+                <AvatarFallback className="text-[10px]">
+                  {item.professional.full_name.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
+              <span className="font-medium truncate">{item.professional.full_name}</span>
+            </div>
+          )}
+          
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {item.professional?.rating && (
+              <div className="flex items-center gap-0.5">
+                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                <span className="font-medium">{Number(item.professional.rating).toFixed(1)}</span>
+              </div>
+            )}
+            {item.professional?.distance && (
+              <div className="flex items-center gap-0.5">
+                <MapPin className="h-3 w-3" />
+                <span>{item.professional.distance.toFixed(1)}km</span>
+              </div>
+            )}
           </div>
-        )}
-
-        {/* Quick Stats */}
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          {item.professional?.rating && (
-            <div className="flex items-center gap-1">
-              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              <span className="font-medium">{Number(item.professional.rating).toFixed(1)}</span>
-            </div>
-          )}
-          {item.estimated_duration_minutes && (
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>{Math.round(item.estimated_duration_minutes / 60)}h</span>
-            </div>
-          )}
-          {item.professional?.distance && (
-            <div className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
-              <span>{item.professional.distance.toFixed(1)}km</span>
-            </div>
-          )}
         </div>
 
-        {/* Description */}
+        {/* Description - Optional, 2 Lines Max */}
         {item.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
             {item.description}
           </p>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
+        {/* Spacer to push pricing and buttons to bottom */}
+        <div className="flex-grow" />
+
+        {/* Prominent Pricing Section */}
+        <div className="mb-3 py-2 px-3 bg-primary/5 rounded-lg border border-primary/10">
+          <div className="flex items-baseline justify-center gap-1">
+            <span className="text-2xl font-bold text-primary">
+              {formatPrice()}
+            </span>
+            <span className="text-sm font-medium text-muted-foreground">
+              {getPriceUnit()}
+            </span>
+          </div>
+        </div>
+
+        {/* Action Buttons - Compact */}
+        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
           <Button
             onClick={handleViewDetails}
-            className="flex-1"
+            size="sm"
+            className="flex-1 h-8 text-xs"
             variant="outline"
-            asChild
           >
-            <a href={`/service/${item.id}`}>
-              <Info className="h-4 w-4 mr-2" />
-              View Details
-            </a>
+            <Info className="h-3 w-3 mr-1" />
+            Details
           </Button>
           <Button
             onClick={handleContactNow}
-            className="flex-1"
-            variant="default"
-            asChild
+            size="sm"
+            className="flex-1 h-8 text-xs"
           >
-            <a href={`/professionals/${item.professional_id}?service=${item.id}&action=contact`}>
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Contact Now
-            </a>
+            <MessageSquare className="h-3 w-3 mr-1" />
+            Contact
           </Button>
         </div>
       </div>
