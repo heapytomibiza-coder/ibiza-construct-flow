@@ -11,6 +11,8 @@ import {
   Settings,
   Bell
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useConversationList } from '@/hooks/useConversationList';
 
 interface ToolCard {
   icon: any;
@@ -22,7 +24,8 @@ interface ToolCard {
 
 export function BusinessToolsGrid() {
   const navigate = useNavigate();
-  const unreadMessages = 3; // Should come from actual data
+  const { user } = useAuth();
+  const { totalUnread } = useConversationList(user?.id);
 
   const tools: ToolCard[] = [
     {
@@ -48,7 +51,7 @@ export function BusinessToolsGrid() {
       title: 'Messages',
       description: 'Chat with clients',
       path: '/messages',
-      badge: unreadMessages
+      badge: totalUnread || undefined
     },
     {
       icon: FileText,
