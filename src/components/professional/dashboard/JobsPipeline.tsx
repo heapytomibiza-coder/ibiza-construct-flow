@@ -137,93 +137,94 @@ export function JobsPipeline({ jobs = [] }: JobsPipelineProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              Jobs Pipeline
-              <Badge variant="secondary">{data.length} active</Badge>
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="w-full sm:w-auto">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <span className="hidden sm:inline">Jobs Pipeline</span>
+              <span className="sm:hidden">Pipeline</span>
+              <Badge variant="secondary" className="text-xs">{data.length} active</Badge>
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Total pipeline value: <span className="font-bold text-foreground">€{totalValue.toLocaleString()}</span>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              Pipeline value: <span className="font-bold text-foreground">€{totalValue.toLocaleString()}</span>
             </p>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent>
-        <ScrollArea className="h-[600px] pr-4">
-          <div className="space-y-6">
+      <CardContent className="p-4 sm:p-6 pt-0">
+        <ScrollArea className="h-[500px] sm:h-[600px] pr-2 sm:pr-4">
+          <div className="space-y-4 sm:space-y-6">
             {stages.map((stage) => {
               const stageJobs = getJobsByStage(stage.key);
               const stageValue = stageJobs.reduce((sum, job) => sum + (job.value || 0), 0);
               const StageIcon = stage.icon;
 
               return (
-                <div key={stage.key} className="space-y-3">
-                  {/* Stage Header */}
+                <div key={stage.key} className="space-y-2 sm:space-y-3">
+                  {/* Stage Header - Mobile Optimized */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className={`p-1.5 rounded-lg ${stage.bgColor}`}>
-                        <StageIcon className={`h-4 w-4 ${stage.color}`} />
+                      <div className={`p-1 sm:p-1.5 rounded-lg ${stage.bgColor}`}>
+                        <StageIcon className={`h-3 w-3 sm:h-4 sm:w-4 ${stage.color}`} />
                       </div>
-                      <h3 className="font-semibold text-sm">{stage.label}</h3>
-                      <Badge variant="outline" className="text-xs">
+                      <h3 className="font-semibold text-xs sm:text-sm">{stage.label}</h3>
+                      <Badge variant="outline" className="text-[10px] sm:text-xs">
                         {stageJobs.length}
                       </Badge>
                     </div>
-                    <div className="text-xs font-medium text-muted-foreground">
+                    <div className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                       €{stageValue.toLocaleString()}
                     </div>
                   </div>
 
-                  {/* Stage Jobs */}
-                  <div className="space-y-2 pl-2">
+                  {/* Stage Jobs - Mobile Optimized */}
+                  <div className="space-y-2 pl-1 sm:pl-2">
                     {stageJobs.length === 0 ? (
-                      <div className="text-xs text-muted-foreground italic py-2">
+                      <div className="text-[10px] sm:text-xs text-muted-foreground italic py-2">
                         No jobs in this stage
                       </div>
                     ) : (
                       stageJobs.map((job) => (
                         <Card 
                           key={job.id} 
-                          className={`border-l-4 ${stage.borderColor} hover:shadow-md transition-all cursor-pointer group`}
+                          className={`border-l-4 ${stage.borderColor} hover:shadow-md transition-all cursor-pointer group active:scale-[0.98]`}
                         >
-                          <CardContent className="p-3">
+                          <CardContent className="p-2 sm:p-3">
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+                                <div className="flex items-center gap-1 sm:gap-2 mb-1 flex-wrap">
+                                  <h4 className="font-medium text-xs sm:text-sm truncate group-hover:text-primary transition-colors">
                                     {job.title}
                                   </h4>
                                   {job.urgency && (
                                     <Badge 
                                       variant={getUrgencyColor(job.urgency)} 
-                                      className="text-xs flex-shrink-0"
+                                      className="text-[10px] sm:text-xs flex-shrink-0"
                                     >
-                                      {job.urgency === 'high' && <AlertCircle className="h-3 w-3 mr-1" />}
+                                      {job.urgency === 'high' && <AlertCircle className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />}
                                       {job.urgency}
                                     </Badge>
                                   )}
                                 </div>
                                 
-                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                  <span>{job.client}</span>
+                                <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-muted-foreground flex-wrap">
+                                  <span className="truncate">{job.client}</span>
                                   {job.value && (
                                     <>
-                                      <span>•</span>
+                                      <span className="hidden sm:inline">•</span>
                                       <div className="flex items-center gap-1">
-                                        <DollarSign className="h-3 w-3" />
+                                        <DollarSign className="h-2 w-2 sm:h-3 sm:w-3" />
                                         <span className="font-medium">€{job.value.toLocaleString()}</span>
                                       </div>
                                     </>
                                   )}
                                   {job.dueDate && (
                                     <>
-                                      <span>•</span>
+                                      <span className="hidden sm:inline">•</span>
                                       <div className="flex items-center gap-1">
-                                        <Clock className="h-3 w-3" />
-                                        <span>{job.dueDate}</span>
+                                        <Clock className="h-2 w-2 sm:h-3 sm:w-3" />
+                                        <span className="hidden sm:inline">{job.dueDate}</span>
                                       </div>
                                     </>
                                   )}
@@ -233,9 +234,9 @@ export function JobsPipeline({ jobs = [] }: JobsPipelineProps) {
                               <Button 
                                 size="sm" 
                                 variant="ghost" 
-                                className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8 p-0 sm:opacity-0 group-hover:opacity-100 transition-opacity"
                               >
-                                <ChevronRight className="h-4 w-4" />
+                                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
                               </Button>
                             </div>
                           </CardContent>

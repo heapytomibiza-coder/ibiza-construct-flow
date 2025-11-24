@@ -84,20 +84,26 @@ export function SystemHealthMonitor({ className }: SystemHealthMonitorProps) {
 
   return (
     <Card className={cn('card-luxury', className)}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-primary" />
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Activity className="w-4 w-4 sm:w-5 sm:h-5 text-primary" />
             System Health
           </CardTitle>
-          <Badge variant={statusConfig[overallHealth].badge as any}>
-            {overallHealth === 'healthy' ? 'All Systems Operational' : 
-             overallHealth === 'warning' ? 'Minor Issues' : 'Critical Alert'}
+          <Badge variant={statusConfig[overallHealth].badge as any} className="text-xs">
+            <span className="hidden sm:inline">
+              {overallHealth === 'healthy' ? 'All Systems Operational' : 
+               overallHealth === 'warning' ? 'Minor Issues' : 'Critical Alert'}
+            </span>
+            <span className="sm:hidden">
+              {overallHealth === 'healthy' ? 'Healthy' : 
+               overallHealth === 'warning' ? 'Warning' : 'Critical'}
+            </span>
           </Badge>
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
         {/* Overall Status */}
         <div className={cn(
           'p-4 rounded-lg border transition-all',

@@ -52,18 +52,18 @@ export function ClientMetricCard({
     >
       <div className={cn('absolute inset-0 bg-gradient-to-br opacity-50', gradient)} />
       
-      <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-foreground/80">
+      <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+        <CardTitle className="text-xs sm:text-sm font-medium text-foreground/80">
           {title}
         </CardTitle>
-        <div className="p-2 bg-background/50 rounded-lg backdrop-blur-sm">
-          <Icon className="h-4 w-4 text-copper" />
+        <div className="p-1.5 sm:p-2 bg-background/50 rounded-lg backdrop-blur-sm">
+          <Icon className="h-3 w-3 sm:h-4 sm:w-4 text-copper" />
         </div>
       </CardHeader>
       
-      <CardContent className="relative">
+      <CardContent className="relative p-3 sm:p-6 pt-0">
         <div className="flex items-baseline gap-2 mb-1">
-          <div className="text-2xl font-bold text-charcoal">{value}</div>
+          <div className="text-xl sm:text-2xl font-bold text-charcoal">{value}</div>
           {badge && (
             <Badge 
               variant={badge.variant || 'secondary'} 
@@ -91,7 +91,7 @@ export function ClientMetricCard({
             )}>
               {trend.value}%
             </span>
-            <span className="text-muted-foreground">{trend.label}</span>
+            <span className="text-muted-foreground hidden sm:inline">{trend.label}</span>
           </div>
         )}
       </CardContent>

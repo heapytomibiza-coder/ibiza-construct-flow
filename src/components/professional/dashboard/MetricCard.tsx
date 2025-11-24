@@ -42,14 +42,14 @@ export function MetricCard({
         gradient
       )} />
       
-      {/* Content */}
-      <CardContent className="relative p-5">
+      {/* Content - Mobile Optimized */}
+      <CardContent className="relative p-4 sm:p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-background/80 rounded-lg shadow-sm">
-              <Icon className="h-5 w-5 text-primary" />
+            <div className="p-1.5 sm:p-2 bg-background/80 rounded-lg shadow-sm">
+              <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            <span className="text-sm font-medium text-muted-foreground">{title}</span>
+            <span className="text-xs sm:text-sm font-medium text-muted-foreground">{title}</span>
           </div>
           {badge && (
             <Badge variant={badge.variant || 'secondary'} className="text-xs">
@@ -59,7 +59,7 @@ export function MetricCard({
         </div>
 
         <div className="space-y-1">
-          <div className="text-3xl font-bold">{value}</div>
+          <div className="text-2xl sm:text-3xl font-bold">{value}</div>
           {subtitle && (
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           )}
@@ -70,7 +70,7 @@ export function MetricCard({
             )}>
               <span>{trend.positive ? '↗' : '↘'}</span>
               <span>{trend.value}%</span>
-              <span className="text-muted-foreground ml-1">{trend.label}</span>
+              <span className="text-muted-foreground ml-1 hidden sm:inline">{trend.label}</span>
             </div>
           )}
         </div>

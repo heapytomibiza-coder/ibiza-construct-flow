@@ -127,19 +127,20 @@ export function ProjectTimeline({
 
   return (
     <Card className={cn('card-luxury', className)}>
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-copper" />
-            Project Timeline
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Calendar className="w-4 w-4 sm:w-5 sm:h-5 text-copper" />
+            <span className="hidden sm:inline">Project Timeline</span>
+            <span className="sm:hidden">Projects</span>
           </CardTitle>
-          <Badge variant="secondary">
-            {displayProjects.length} Total
+          <Badge variant="secondary" className="text-xs">
+            {displayProjects.length}
           </Badge>
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
         {/* Active Projects */}
         {groupedProjects.active.length > 0 && (
           <div className="space-y-3">
@@ -158,7 +159,7 @@ export function ProjectTimeline({
               return (
                 <div 
                   key={project.id}
-                  className="p-4 border border-sand-dark/20 rounded-lg hover:shadow-md transition-all cursor-pointer"
+                  className="p-3 sm:p-4 border border-sand-dark/20 rounded-lg hover:shadow-md transition-all cursor-pointer"
                   onClick={() => onProjectClick?.(project.id)}
                 >
                   <div className="flex items-start justify-between mb-3">

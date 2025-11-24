@@ -44,21 +44,21 @@ export function SpendingChart({
 
   return (
     <Card className={cn('card-luxury', className)}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Euro className="w-5 h-5 text-copper" />
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Euro className="w-4 w-4 sm:w-5 sm:h-5 text-copper" />
             Spending Breakdown
           </CardTitle>
           {monthlyBudget && (
-            <Badge variant={budgetUsage > 90 ? 'destructive' : 'secondary'}>
+            <Badge variant={budgetUsage > 90 ? 'destructive' : 'secondary'} className="text-xs">
               {budgetUsage.toFixed(0)}% of budget
             </Badge>
           )}
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
         {/* Total Summary */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-copper/10 to-copper/5 rounded-lg">
           <div>

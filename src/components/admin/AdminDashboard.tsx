@@ -39,17 +39,17 @@ export const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="p-8 space-y-6">
-      {/* Header */}
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+      {/* Header - Mobile Optimized */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">Admin Command Center</h1>
-          <p className="text-muted-foreground">Real-time platform oversight and management</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">Admin Command Center</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Real-time platform oversight and management</p>
         </div>
       </div>
 
-      {/* Premium Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Premium Metrics Grid - Mobile Responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <AdminMetricCard
           title="Total Users"
           value={stats.total_users.toLocaleString()}
@@ -94,8 +94,8 @@ export const AdminDashboard: React.FC = () => {
         />
       </div>
 
-      {/* Secondary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Secondary Metrics - Mobile Responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <AdminMetricCard
           title="Total Bookings"
           value={stats.total_bookings.toLocaleString()}
@@ -131,8 +131,8 @@ export const AdminDashboard: React.FC = () => {
         />
       </div>
 
-      {/* Analytics & System Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Analytics & System Grid - Mobile Stacked */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <RevenueChart 
           totalRevenue={stats.total_revenue / 100}
           growth={15}
