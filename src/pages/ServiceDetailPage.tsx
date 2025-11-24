@@ -19,6 +19,9 @@ import { useQuoteBasket } from '@/hooks/useQuoteBasket';
 import { useServiceMaterials } from '@/hooks/useServiceMaterials';
 import { useServicePricingAddons } from '@/hooks/useServicePricingAddons';
 import { useServicePortfolio } from '@/hooks/useServicePortfolio';
+import { useProfessionalRatings } from '@/hooks/useReviews';
+import { RatingDisplay } from '@/components/reviews/RatingDisplay';
+import { logActivity } from '@/lib/logActivity';
 import { ArrowLeft, Shield, ChevronRight, Award, Clock, CheckCircle, Star } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import type { ServiceMenuItem } from '@/types/services';
@@ -174,6 +177,8 @@ export default function ServiceDetailPage() {
     enabled: !!professionalId,
   });
 
+  const { data: professionalRating } = useProfessionalRatings(professionalId || null);
+
   // Get the first service item ID for fetching materials/addons/portfolio
   const firstServiceItemId = useMemo(() => serviceMenuItems[0]?.id, [serviceMenuItems]);
 
@@ -310,14 +315,14 @@ export default function ServiceDetailPage() {
 
       if (itemsError) throw itemsError;
 
-      await supabase.from('activity_feed').insert({
-        user_id: professionalId,
-        event_type: 'quote_request_received',
-        entity_type: 'quote_request',
-        entity_id: quoteRequest.id,
+      await logActivity({
+        userId: professionalId,
+        eventType: 'quote_request_received',
+        entityType: 'quote_request',
+        entityId: quoteRequest.id,
         title: 'New Quote Request',
         description: `${basketItems.length} service(s) requested. Estimated total: €${totalEstimate.toFixed(2)}`,
-        action_url: `/jobs/${job.id}`,
+        actionUrl: `/jobs/${job.id}`,
       });
 
       toast({
@@ -449,13 +454,15 @@ export default function ServiceDetailPage() {
           {/* Trust Indicators */}
           <CardContent className="pt-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div className="flex flex-col items-center gap-1">
-                <div className="flex items-center gap-1 text-lg font-bold">
-                  <Star className="h-4 w-4 fill-primary text-primary" />
-                  4.9
+              {professionalRating && (
+                <div className="flex flex-col items-center gap-1">
+                  <RatingDisplay 
+                    rating={professionalRating.rating_avg} 
+                    count={professionalRating.reviews_count}
+                    size="lg"
+                  />
                 </div>
-                <p className="text-xs text-muted-foreground">125 reviews</p>
-              </div>
+              )}
               
               <div className="flex flex-col items-center gap-1">
                 <div className="flex items-center gap-1 text-lg font-bold">
