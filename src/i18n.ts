@@ -2,11 +2,10 @@
  * i18n Import Alias
  * Phase 16: Internationalization
  * 
- * Allows importing i18n from src/i18n as shown in main.tsx
+ * Re-exports the configured i18n instance
  */
 
-// Re-export the main i18n instance
-export { default } from './i18n/index';
+import i18n from './i18n/index';
 
-// Export config types
-export * from './i18n/config';
+export default i18n;
+export { supportedLanguages, type SupportedLanguage } from './lib/i18n/config';

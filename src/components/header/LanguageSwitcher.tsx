@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { supportedLanguages, type SupportedLanguage } from '@/i18n/config';
+import { supportedLanguages, type SupportedLanguage } from '@/lib/i18n/config';
 
 export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();

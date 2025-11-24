@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type SupportedLanguage } from '@/i18n/config';
+import { type SupportedLanguage } from '@/lib/i18n/config';
 
 export const useLanguage = () => {
   const { i18n, t } = useTranslation();
