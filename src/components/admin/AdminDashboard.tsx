@@ -4,13 +4,21 @@ import { useAdminDashboard } from '@/hooks/useAdminDashboard';
 import { 
   Users, 
   Briefcase, 
-  DollarSign, 
+  Euro, 
   AlertCircle,
   TrendingUp,
   Calendar,
   Star,
-  FileText
+  FileText,
+  Shield,
+  CheckCircle
 } from 'lucide-react';
+import { 
+  AdminMetricCard, 
+  RevenueChart, 
+  SystemHealthMonitor, 
+  QuickActionsPanel 
+} from './dashboard';
 
 export const AdminDashboard: React.FC = () => {
   const { stats, loading } = useAdminDashboard();
@@ -30,90 +38,111 @@ export const AdminDashboard: React.FC = () => {
     );
   }
 
-  const statCards = [
-    {
-      title: 'Total Users',
-      value: stats.total_users.toLocaleString(),
-      icon: Users,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
-    },
-    {
-      title: 'Professionals',
-      value: stats.total_professionals.toLocaleString(),
-      icon: Briefcase,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
-    },
-    {
-      title: 'Active Jobs',
-      value: `${stats.active_jobs}/${stats.total_jobs}`,
-      icon: FileText,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
-    },
-    {
-      title: 'Total Bookings',
-      value: stats.total_bookings.toLocaleString(),
-      icon: Calendar,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
-    },
-    {
-      title: 'Total Reviews',
-      value: stats.total_reviews.toLocaleString(),
-      icon: Star,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-100',
-    },
-    {
-      title: 'Pending Disputes',
-      value: stats.pending_disputes.toLocaleString(),
-      icon: AlertCircle,
-      color: 'text-red-600',
-      bgColor: 'bg-red-100',
-    },
-    {
-      title: 'Total Revenue',
-      value: `$${(stats.total_revenue / 100).toLocaleString()}`,
-      icon: DollarSign,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
-    },
-    {
-      title: 'Pending Payments',
-      value: `$${(stats.pending_payments / 100).toLocaleString()}`,
-      icon: TrendingUp,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
-    },
-  ];
-
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground">Overview of platform statistics and metrics</p>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-display font-bold text-foreground">Admin Command Center</h1>
+          <p className="text-muted-foreground">Real-time platform oversight and management</p>
+        </div>
       </div>
 
+      {/* Premium Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                <div className={`p-2 rounded-full ${stat.bgColor}`}>
-                  <Icon className={`h-4 w-4 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-              </CardContent>
-            </Card>
-          );
-        })}
+        <AdminMetricCard
+          title="Total Users"
+          value={stats.total_users.toLocaleString()}
+          subtitle="Registered accounts"
+          icon={Users}
+          trend={{ value: 12, label: 'vs last month', direction: 'up' }}
+          gradient="from-blue-500/10 to-blue-500/5"
+          onDrillDown={() => console.log('View users')}
+        />
+        
+        <AdminMetricCard
+          title="Professionals"
+          value={stats.total_professionals.toLocaleString()}
+          subtitle="Active service providers"
+          icon={Briefcase}
+          trend={{ value: 8, label: 'vs last month', direction: 'up' }}
+          gradient="from-emerald-500/10 to-emerald-500/5"
+          onDrillDown={() => console.log('View professionals')}
+        />
+        
+        <AdminMetricCard
+          title="Active Jobs"
+          value={stats.active_jobs}
+          subtitle={`${stats.total_jobs} total projects`}
+          icon={FileText}
+          gradient="from-purple-500/10 to-purple-500/5"
+          onDrillDown={() => console.log('View jobs')}
+        />
+        
+        <AdminMetricCard
+          title="Pending Disputes"
+          value={stats.pending_disputes}
+          subtitle="Require immediate action"
+          icon={AlertCircle}
+          alert={stats.pending_disputes > 0 ? {
+            level: stats.pending_disputes > 5 ? 'critical' : 'warning',
+            message: `${stats.pending_disputes} disputes need resolution`
+          } : undefined}
+          gradient="from-rose-500/10 to-rose-500/5"
+          onDrillDown={() => console.log('View disputes')}
+          actionLabel="Resolve Now"
+        />
       </div>
+
+      {/* Secondary Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <AdminMetricCard
+          title="Total Bookings"
+          value={stats.total_bookings.toLocaleString()}
+          subtitle="All-time bookings"
+          icon={Calendar}
+          gradient="from-amber-500/10 to-amber-500/5"
+        />
+        
+        <AdminMetricCard
+          title="Reviews"
+          value={stats.total_reviews.toLocaleString()}
+          subtitle="Platform feedback"
+          icon={Star}
+          gradient="from-yellow-500/10 to-yellow-500/5"
+        />
+        
+        <AdminMetricCard
+          title="Total Revenue"
+          value={`€${(stats.total_revenue / 100).toLocaleString()}`}
+          subtitle="Platform earnings"
+          icon={Euro}
+          trend={{ value: 15, label: 'vs last month', direction: 'up' }}
+          gradient="from-emerald-500/10 to-emerald-500/5"
+        />
+        
+        <AdminMetricCard
+          title="Pending Payments"
+          value={`€${(stats.pending_payments / 100).toLocaleString()}`}
+          subtitle="Awaiting processing"
+          icon={TrendingUp}
+          gradient="from-blue-500/10 to-blue-500/5"
+          onDrillDown={() => console.log('View payments')}
+        />
+      </div>
+
+      {/* Analytics & System Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <RevenueChart 
+          totalRevenue={stats.total_revenue / 100}
+          growth={15}
+        />
+        
+        <SystemHealthMonitor />
+      </div>
+
+      {/* Quick Actions */}
+      <QuickActionsPanel />
     </div>
   );
 };
