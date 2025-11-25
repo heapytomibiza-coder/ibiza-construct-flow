@@ -2160,6 +2160,82 @@ export type Database = {
         }
         Relationships: []
       }
+      counter_proposals: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          dispute_id: string
+          expires_at: string | null
+          id: string
+          notes: string | null
+          proposal_type: string
+          proposed_by: string
+          responded_at: string | null
+          responded_by: string | null
+          response_notes: string | null
+          status: string
+          terms: Json
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          dispute_id: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          proposal_type: string
+          proposed_by: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response_notes?: string | null
+          status?: string
+          terms?: Json
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          dispute_id?: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          proposal_type?: string
+          proposed_by?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response_notes?: string | null
+          status?: string
+          terms?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "counter_proposals_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "counter_proposals_proposed_by_fkey"
+            columns: ["proposed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "counter_proposals_responded_by_fkey"
+            columns: ["responded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       data_breach_incidents: {
         Row: {
           affected_data_types: Json | null
@@ -2420,6 +2496,60 @@ export type Database = {
             columns: ["parent_resolution_id"]
             isOneToOne: false
             referencedRelation: "dispute_resolutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispute_escalation_history: {
+        Row: {
+          created_at: string
+          dispute_id: string
+          escalated_by: string | null
+          escalation_level: number
+          escalation_type: string
+          id: string
+          metadata: Json | null
+          new_state: string | null
+          previous_state: string | null
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          dispute_id: string
+          escalated_by?: string | null
+          escalation_level: number
+          escalation_type: string
+          id?: string
+          metadata?: Json | null
+          new_state?: string | null
+          previous_state?: string | null
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          dispute_id?: string
+          escalated_by?: string | null
+          escalation_level?: number
+          escalation_type?: string
+          id?: string
+          metadata?: Json | null
+          new_state?: string | null
+          previous_state?: string | null
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_escalation_history_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_escalation_history_escalated_by_fkey"
+            columns: ["escalated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -4677,6 +4807,78 @@ export type Database = {
           points_required?: number
         }
         Relationships: []
+      }
+      mediation_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          dispute_id: string
+          duration_minutes: number | null
+          id: string
+          mediator_id: string | null
+          meeting_link: string | null
+          notes: string | null
+          outcome: string | null
+          recording_url: string | null
+          scheduled_at: string | null
+          session_type: string
+          started_at: string | null
+          status: string
+          transcript: Json | null
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          dispute_id: string
+          duration_minutes?: number | null
+          id?: string
+          mediator_id?: string | null
+          meeting_link?: string | null
+          notes?: string | null
+          outcome?: string | null
+          recording_url?: string | null
+          scheduled_at?: string | null
+          session_type: string
+          started_at?: string | null
+          status?: string
+          transcript?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          dispute_id?: string
+          duration_minutes?: number | null
+          id?: string
+          mediator_id?: string | null
+          meeting_link?: string | null
+          notes?: string | null
+          outcome?: string | null
+          recording_url?: string | null
+          scheduled_at?: string | null
+          session_type?: string
+          started_at?: string | null
+          status?: string
+          transcript?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mediation_sessions_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mediation_sessions_mediator_id_fkey"
+            columns: ["mediator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       message_attachment_metadata: {
         Row: {
@@ -8895,6 +9097,53 @@ export type Database = {
           },
         ]
       }
+      resolution_execution_log: {
+        Row: {
+          created_at: string
+          details: string | null
+          error_message: string | null
+          executed_at: string | null
+          execution_step: string
+          id: string
+          metadata: Json | null
+          resolution_id: string
+          retry_count: number | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          error_message?: string | null
+          executed_at?: string | null
+          execution_step: string
+          id?: string
+          metadata?: Json | null
+          resolution_id: string
+          retry_count?: number | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          error_message?: string | null
+          executed_at?: string | null
+          execution_step?: string
+          id?: string
+          metadata?: Json | null
+          resolution_id?: string
+          retry_count?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resolution_execution_log_resolution_id_fkey"
+            columns: ["resolution_id"]
+            isOneToOne: false
+            referencedRelation: "dispute_resolutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       revenue_analytics: {
         Row: {
           analysis_date: string
@@ -12046,10 +12295,9 @@ export type Database = {
         Args: { p_pattern_type: string; p_severity: string; p_user_id: string }
         Returns: boolean
       }
-      escalation_reasons_updater: {
-        Args: { p_dispute_id: string }
-        Returns: undefined
-      }
+      escalation_reasons_updater:
+        | { Args: { p_dispute_id: string; p_reason: string }; Returns: Json }
+        | { Args: { p_dispute_id: string }; Returns: undefined }
       execute_resolution: { Args: { p_resolution_id: string }; Returns: Json }
       generate_payment_receipt: {
         Args: { p_payment_id: string }
