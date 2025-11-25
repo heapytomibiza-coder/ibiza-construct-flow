@@ -6698,6 +6698,81 @@ export type Database = {
           },
         ]
       }
+      professional_category_ratings: {
+        Row: {
+          average_rating: number | null
+          avg_communication: number | null
+          avg_professionalism: number | null
+          avg_quality: number | null
+          avg_timeliness: number | null
+          avg_value: number | null
+          created_at: string | null
+          five_star_count: number | null
+          four_star_count: number | null
+          id: string
+          micro_service_id: string | null
+          one_star_count: number | null
+          professional_id: string
+          three_star_count: number | null
+          total_reviews: number | null
+          two_star_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          average_rating?: number | null
+          avg_communication?: number | null
+          avg_professionalism?: number | null
+          avg_quality?: number | null
+          avg_timeliness?: number | null
+          avg_value?: number | null
+          created_at?: string | null
+          five_star_count?: number | null
+          four_star_count?: number | null
+          id?: string
+          micro_service_id?: string | null
+          one_star_count?: number | null
+          professional_id: string
+          three_star_count?: number | null
+          total_reviews?: number | null
+          two_star_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          average_rating?: number | null
+          avg_communication?: number | null
+          avg_professionalism?: number | null
+          avg_quality?: number | null
+          avg_timeliness?: number | null
+          avg_value?: number | null
+          created_at?: string | null
+          five_star_count?: number | null
+          four_star_count?: number | null
+          id?: string
+          micro_service_id?: string | null
+          one_star_count?: number | null
+          professional_id?: string
+          three_star_count?: number | null
+          total_reviews?: number | null
+          two_star_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_category_ratings_micro_service_id_fkey"
+            columns: ["micro_service_id"]
+            isOneToOne: false
+            referencedRelation: "micro_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_category_ratings_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professional_deals: {
         Row: {
           created_at: string
@@ -8866,6 +8941,72 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      review_summaries: {
+        Row: {
+          areas_mentioned: string[] | null
+          common_praise: string[] | null
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          key_strengths: string[] | null
+          last_generated_at: string | null
+          micro_service_id: string | null
+          professional_id: string
+          reviews_analyzed: number | null
+          summary_text: string
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          areas_mentioned?: string[] | null
+          common_praise?: string[] | null
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_strengths?: string[] | null
+          last_generated_at?: string | null
+          micro_service_id?: string | null
+          professional_id: string
+          reviews_analyzed?: number | null
+          summary_text: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          areas_mentioned?: string[] | null
+          common_praise?: string[] | null
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          key_strengths?: string[] | null
+          last_generated_at?: string | null
+          micro_service_id?: string | null
+          professional_id?: string
+          reviews_analyzed?: number | null
+          summary_text?: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_summaries_micro_service_id_fkey"
+            columns: ["micro_service_id"]
+            isOneToOne: false
+            referencedRelation: "micro_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_summaries_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       review_votes: {
         Row: {
@@ -11927,6 +12068,10 @@ export type Database = {
           micro_slug: string
           status: string
         }[]
+      }
+      recalculate_category_ratings: {
+        Args: { p_micro_service_id: string; p_professional_id: string }
+        Returns: undefined
       }
       should_expose_feature: {
         Args: { p_flag_key: string; p_user_id: string }

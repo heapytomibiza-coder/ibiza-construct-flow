@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star, ImageIcon, CheckCircle } from 'lucide-react';
 import { ReviewsSummaryCard } from './ReviewsSummaryCard';
+import { AISummaryCard } from './AISummaryCard';
+import { CategoryRatingsCard } from './CategoryRatingsCard';
 import { Badge } from '@/components/ui/badge';
+import { useCategoryRatings } from '@/hooks/reviews/useCategoryRatings';
+import { useReviewSummary } from '@/hooks/reviews/useReviewSummary';
 import {
   Select,
   SelectContent,
@@ -20,9 +24,13 @@ interface ReviewsListProps {
   totalReviews: number;
   averageRatings?: any;
   ratingDistribution?: Record<number, number>;
+  professionalId?: string;
+  microServiceId?: string;
   onRespond?: (reviewId: string, response: string) => void;
   onVote?: (reviewId: string, voteType: 'helpful' | 'not_helpful') => void;
   isResponding?: boolean;
+  showAISummary?: boolean;
+  showCategoryRatings?: boolean;
 }
 
 export const ReviewsList = ({
@@ -31,10 +39,21 @@ export const ReviewsList = ({
   totalReviews,
   averageRatings,
   ratingDistribution,
+  professionalId,
+  microServiceId,
   onRespond,
   onVote,
   isResponding,
+  showAISummary = true,
+  showCategoryRatings = true,
 }: ReviewsListProps) => {
+  // Fetch AI summary and category ratings
+  const { data: categoryRatings } = useCategoryRatings(professionalId || '');
+  const { 
+    summary, 
+    generateSummary, 
+    isGenerating 
+  } = useReviewSummary(professionalId || '', microServiceId);
   const [sortBy, setSortBy] = useState<'recent' | 'helpful' | 'rating_high' | 'rating_low'>('recent');
   const [filterRating, setFilterRating] = useState<number | 'all'>('all');
   const [filterVerified, setFilterVerified] = useState(false);
@@ -95,7 +114,23 @@ export const ReviewsList = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Reviews Summary - Left Side (1/3) */}
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-1 space-y-6">
+        {/* AI-Powered Summary */}
+        {showAISummary && professionalId && (
+          <AISummaryCard
+            summary={summary}
+            onRegenerate={() => generateSummary.mutate()}
+            isGenerating={isGenerating}
+            showRegenerateButton={totalReviews >= 3}
+          />
+        )}
+        
+        {/* Category Ratings */}
+        {showCategoryRatings && categoryRatings && categoryRatings.length > 0 && (
+          <CategoryRatingsCard ratings={categoryRatings} />
+        )}
+        
+        {/* Overall Summary */}
         <ReviewsSummaryCard
           overallRating={averageRating}
           totalReviews={totalReviews}

@@ -49,9 +49,12 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
       totalReviews={totalReviews}
       averageRatings={averageRatings}
       ratingDistribution={ratingDistribution}
+      professionalId={professionalId}
       onRespond={canRespond ? (reviewId, responseText) => respondToReview.mutate({ reviewId, responseText }) : undefined}
       onVote={(reviewId, voteType) => voteReview.mutate({ reviewId, voteType })}
       isResponding={respondToReview.isPending}
+      showAISummary={true}
+      showCategoryRatings={true}
     />
   );
 };
