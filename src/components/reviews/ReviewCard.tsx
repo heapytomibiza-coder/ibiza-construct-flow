@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Star, MessageSquare, CheckCircle, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Star, MessageSquare, CheckCircle, ThumbsUp, ThumbsDown, ShieldCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
 import { CategoryRatingsDisplay } from './CategoryRatingsDisplay';
@@ -75,9 +75,9 @@ export const ReviewCard = ({
                     {review.reviewer?.full_name || 'Anonymous'}
                   </p>
                   {review.is_verified && (
-                    <Badge variant="secondary" className="text-xs">
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Verified
+                    <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3" />
+                      Verified Purchase
                     </Badge>
                   )}
                 </div>

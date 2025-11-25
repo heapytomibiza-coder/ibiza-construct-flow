@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { logActivity } from "@/lib/logActivity";
 import type { Review, ReviewWithDetails, CategoryRatings } from "@/types/review";
 
 export const useReviewSystem = (revieweeId?: string) => {
@@ -98,11 +99,24 @@ export const useReviewSystem = (revieweeId?: string) => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
       toast({
         title: "Success",
         description: "Your review has been submitted",
+      });
+
+      // Log activity for reviewee
+      await logActivity({
+        userId: variables.revieweeId,
+        eventType: "review_received",
+        entityType: "review",
+        entityId: data.id,
+        title: "New Review Received",
+        description: "Someone left you a review",
+        actorId: user?.id,
+        actionUrl: `/reviews/${data.id}`,
+        priority: "high",
       });
     },
     onError: (error: any) => {
@@ -133,13 +147,37 @@ export const useReviewSystem = (revieweeId?: string) => {
         .eq("reviewee_id", user?.id);
 
       if (error) throw error;
+      
+      // Get review details for notification
+      const { data: review } = await supabase
+        .from("reviews")
+        .select("reviewer_id")
+        .eq("id", reviewId)
+        .single();
+      
+      return review;
     },
-    onSuccess: () => {
+    onSuccess: async (review, variables) => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
       toast({
         title: "Success",
         description: "Response added successfully",
       });
+
+      // Log activity for reviewer
+      if (review?.reviewer_id) {
+        await logActivity({
+          userId: review.reviewer_id,
+          eventType: "review_response",
+          entityType: "review",
+          entityId: variables.reviewId,
+          title: "Review Response Added",
+          description: "The professional responded to your review",
+          actorId: user?.id,
+          actionUrl: `/reviews/${variables.reviewId}`,
+          priority: "medium",
+        });
+      }
     },
     onError: (error: any) => {
       toast({
@@ -168,9 +206,32 @@ export const useReviewSystem = (revieweeId?: string) => {
       });
 
       if (error) throw error;
+      
+      // Get review details for notification
+      const { data: review } = await supabase
+        .from("reviews")
+        .select("reviewee_id")
+        .eq("id", reviewId)
+        .single();
+      
+      return { review, voteType };
     },
-    onSuccess: () => {
+    onSuccess: async (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
+
+      // Log activity for reviewee if vote is helpful
+      if (result?.review?.reviewee_id && result.voteType === "helpful") {
+        await logActivity({
+          userId: result.review.reviewee_id,
+          eventType: "review_helpful_vote",
+          entityType: "review",
+          entityId: variables.reviewId,
+          title: "Review Marked Helpful",
+          description: "Someone found your review helpful",
+          actorId: user?.id,
+          priority: "low",
+        });
+      }
     },
   });
 
