@@ -4,41 +4,59 @@
  */
 
 export const SUBSCRIPTION_TIERS = {
-  basic: {
-    name: 'Basic',
+  free: {
+    name: 'Free',
     price: 0,
     priceId: null,
     productId: null,
+    commissionRate: 0.20,
     features: [
-      'See jobs after 24 hours',
-      'Manual job browsing',
-      'Basic profile',
+      'Post jobs for free',
+      'Browse professionals',
+      'Basic messaging',
       'Standard support'
     ]
   },
-  pro: {
-    name: 'Pro',
-    price: 29,
-    priceId: 'price_1SETNQH8naL2G8ZS3GaSnpLY',
-    productId: 'prod_TAp1bdyRCxlaAU',
+  basic: {
+    name: 'Basic Professional',
+    price: 40,
+    priceId: 'price_1SXIVIH8naL2G8ZSMaL4g6M9',
+    productId: 'prod_TUH3CcoWU6ElBp',
+    commissionRate: 0.20,
     features: [
-      'Instant job notifications',
-      'See jobs 24 hours early',
-      'Priority in search results',
+      'Accept job offers',
+      'Basic profile',
+      '20% commission per job',
       'Email support'
     ]
   },
-  premium: {
-    name: 'Premium',
-    price: 99,
-    priceId: 'price_1SETO1H8naL2G8ZSOkDaZgL6',
-    productId: 'prod_TAp2xlyZAo489L',
+  pro: {
+    name: 'Pro Professional',
+    price: 80,
+    priceId: 'price_1SXIVhH8naL2G8ZSz4XA2iYR',
+    productId: 'prod_TUH3WVIFUdA8XV',
+    commissionRate: 0.15,
     features: [
-      'Everything in Pro',
+      'Priority in search results',
+      'Featured listing placement',
+      '15% commission per job',
+      'Advanced analytics',
+      'Priority support'
+    ]
+  },
+  premium: {
+    name: 'Premium Professional',
+    price: 180,
+    priceId: 'price_1SXIWCH8naL2G8ZSTvdeJfxx',
+    productId: 'prod_TUH4IBot7xGXOz',
+    commissionRate: 0.08,
+    features: [
+      'Top search ranking',
       'Verified professional badge',
+      '8% commission per job',
       'Advanced analytics',
       'Premium placement',
-      'Priority support'
+      'Dedicated support'
     ]
   }
 } as const;

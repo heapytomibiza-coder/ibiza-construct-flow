@@ -1,18 +1,22 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Sparkles } from 'lucide-react';
-import { useSubscription } from '@/hooks/useSubscription';
+import { useProfessionalSubscription } from '@/hooks/useProfessionalSubscription';
 
-const SubscriptionSuccess: React.FC = () => {
+const SubscriptionSuccess = () => {
   const navigate = useNavigate();
-  const { checkSubscription } = useSubscription();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session_id');
+  const tier = searchParams.get('tier');
+  const { verifySubscriptionPayment, subscriptionStatus } = useProfessionalSubscription();
 
   useEffect(() => {
-    // Refresh subscription status after successful payment
-    checkSubscription();
-  }, []);
+    if (sessionId && tier) {
+      verifySubscriptionPayment({ sessionId, tier });
+    }
+  }, [sessionId, tier]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
@@ -24,26 +28,33 @@ const SubscriptionSuccess: React.FC = () => {
           
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-foreground">
-              Subscription Activated! 🎉
+              Professional Subscription Activated! 🎉
             </h1>
             <p className="text-muted-foreground">
-              Your subscription has been successfully activated. You now have access to all premium features.
+              Your professional subscription has been successfully activated. 
+              You can now accept jobs with your reduced commission rate.
             </p>
           </div>
 
           <div className="bg-primary/5 rounded-lg p-4 space-y-2">
             <div className="flex items-center gap-2 text-sm">
               <Sparkles className="w-4 h-4 text-copper" />
-              <span>Instant job notifications</span>
+              <span>Accept unlimited job offers</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Sparkles className="w-4 h-4 text-copper" />
-              <span>24-hour early access to jobs</span>
+              <span>Reduced commission: {subscriptionStatus?.commissionRate ? (subscriptionStatus.commissionRate * 100) : '20'}%</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Sparkles className="w-4 h-4 text-copper" />
               <span>Priority in search results</span>
             </div>
+            {subscriptionStatus?.tier === 'premium' && (
+              <div className="flex items-center gap-2 text-sm">
+                <Sparkles className="w-4 h-4 text-copper" />
+                <span>Verified professional badge</span>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
