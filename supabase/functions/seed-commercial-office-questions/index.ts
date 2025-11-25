@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log(`🏪 Seeding ${commercialOfficeQuestionPacks.length} Commercial, Office, Retail & Kitchen/Bathroom question packs...`);
+    console.log(`🏪 Seeding ${commercialOfficeQuestionPacks.length} Commercial, Office, Retail, Kitchen/Bathroom & Storage question packs...`);
 
     const results = {
       success: [] as string[],
@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({
-        message: 'Commercial, Office, Retail & Kitchen/Bathroom question packs seeded',
+        message: 'Commercial, Office, Retail, Kitchen/Bathroom & Storage question packs seeded',
         results,
       }),
       {
