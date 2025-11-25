@@ -10071,6 +10071,419 @@ export const commercialOfficeQuestionPacks = [
         required: false
       }
     ]
+  },
+
+  // Internal Doors - Floors, Doors & Windows
+  {
+    microSlug: 'door-frames-linings',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'internal.doors',
+    version: 1,
+    questions: [
+      {
+        id: 'frames_job_type',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_frames', label: 'Install new frames and linings' },
+          { value: 'replace_existing', label: 'Replace existing frames and linings' },
+          { value: 'repair_existing', label: 'Repair or straighten existing frames' }
+        ]
+      },
+      {
+        id: 'frames_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_two', label: '1–2 openings' },
+          { value: 'three_five', label: '3–5 openings' },
+          { value: 'six_ten', label: '6–10 openings' },
+          { value: 'ten_plus', label: 'More than 10 openings' }
+        ]
+      },
+      {
+        id: 'wall_type',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'solid_masonry', label: 'Solid masonry wall' },
+          { value: 'stud_partition', label: 'Stud / partition wall' },
+          { value: 'mixed', label: 'Mix of both' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'frames_condition',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'square_and_sound', label: 'Square and sound, minor wear' },
+          { value: 'slightly_out_of_square', label: 'Slightly out of square / sticking doors' },
+          { value: 'damaged_or_rotten', label: 'Damaged or rotten parts' },
+          { value: 'new_openings', label: 'Newly created openings' }
+        ]
+      },
+      {
+        id: 'frames_profile_style',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'simple_modern', label: 'Simple, modern square edge' },
+          { value: 'traditional_profile', label: 'Traditional / decorative profile' },
+          { value: 'match_existing', label: 'Match existing in the property' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'frames_material',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'softwood_primed', label: 'Softwood, primed for painting' },
+          { value: 'hardwood', label: 'Hardwood for staining/varnish' },
+          { value: 'mdf', label: 'MDF (painted finish only)' },
+          { value: 'match_existing', label: 'Match existing material' }
+        ]
+      },
+      {
+        id: 'frames_additional_work',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'making_opening_bigger', label: 'Make the opening larger' },
+          { value: 'making_opening_smaller', label: 'Make the opening smaller' },
+          { value: 'plaster_touchups', label: 'Plastering/touch-ups around frames' },
+          { value: 'none', label: 'No additional work' }
+        ]
+      },
+      {
+        id: 'frames_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'door-hardware-locks',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'internal.doors',
+    version: 1,
+    questions: [
+      {
+        id: 'hardware_scope',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'new_handles', label: 'Install new handles' },
+          { value: 'new_latches_locks', label: 'Install new latches/locks' },
+          { value: 'replace_cylinders', label: 'Replace lock cylinders' },
+          { value: 'adjust_existing', label: 'Adjust/repair existing hardware' }
+        ]
+      },
+      {
+        id: 'hardware_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_two', label: '1–2 doors' },
+          { value: 'three_five', label: '3–5 doors' },
+          { value: 'six_ten', label: '6–10 doors' },
+          { value: 'ten_plus', label: 'More than 10 doors' }
+        ]
+      },
+      {
+        id: 'hardware_security_level',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'internal_low_security', label: 'Standard internal privacy only' },
+          { value: 'bed_bath_privacy', label: 'Bathroom/bedroom privacy locks' },
+          { value: 'high_security_internal', label: 'Higher security (office/storage)' }
+        ]
+      },
+      {
+        id: 'hardware_supplied',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'client_supplies', label: 'I will supply all hardware' },
+          { value: 'pro_supplies', label: 'I\'d like the professional to supply and fit' },
+          { value: 'mixed', label: 'Mix of both (some items already bought)' }
+        ]
+      },
+      {
+        id: 'hardware_finish',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'brushed_nickel', label: 'Brushed nickel / stainless' },
+          { value: 'chrome', label: 'Chrome (shiny)' },
+          { value: 'black', label: 'Black' },
+          { value: 'brass_bronze', label: 'Brass/bronze' },
+          { value: 'match_existing', label: 'Match existing hardware' }
+        ]
+      },
+      {
+        id: 'hardware_issues',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'sticking', label: 'Handles/locks sticking' },
+          { value: 'not_latching', label: 'Doors not latching properly' },
+          { value: 'keys_not_turning', label: 'Keys difficult to turn' },
+          { value: 'loose_handles', label: 'Loose or wobbly handles' },
+          { value: 'none', label: 'No problems, just upgrading' }
+        ]
+      },
+      {
+        id: 'hardware_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'internal-door-fitting',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'internal.doors',
+    version: 1,
+    questions: [
+      {
+        id: 'door_fitting_scope',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'hang_new_doors', label: 'Hang new doors in existing frames' },
+          { value: 'fit_pre_assembled_sets', label: 'Fit pre-assembled door sets' },
+          { value: 'fit_blank_doors', label: 'Fit and cut plain/blank doors' }
+        ]
+      },
+      {
+        id: 'door_fitting_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_two', label: '1–2 doors' },
+          { value: 'three_five', label: '3–5 doors' },
+          { value: 'six_ten', label: '6–10 doors' },
+          { value: 'ten_plus', label: 'More than 10 doors' }
+        ]
+      },
+      {
+        id: 'door_fitting_sizes',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard_sizes', label: 'Standard sizes throughout' },
+          { value: 'mix_of_sizes', label: 'Mix of sizes' },
+          { value: 'not_measured', label: 'Not measured yet' }
+        ]
+      },
+      {
+        id: 'door_fitting_material',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'hollow_core', label: 'Hollow-core/lightweight' },
+          { value: 'semi_solid', label: 'Semi-solid' },
+          { value: 'solid_wood', label: 'Solid wood' },
+          { value: 'glazed_doors', label: 'Glazed doors (with glass)' }
+        ]
+      },
+      {
+        id: 'door_fitting_prep',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'trim_height', label: 'Trim door height' },
+          { value: 'trim_width', label: 'Trim door width' },
+          { value: 'hinge_positions', label: 'Cut new hinge positions' },
+          { value: 'latch_handles', label: 'Drill for latch and handles' }
+        ]
+      },
+      {
+        id: 'door_fitting_hardware',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'reuse_existing', label: 'Reuse existing hinges and handles' },
+          { value: 'client_supplies_new', label: 'I will supply all new hardware' },
+          { value: 'pro_supply_fit', label: 'I\'d like the professional to supply and fit hardware' }
+        ]
+      },
+      {
+        id: 'door_fitting_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'internal-door-replacement',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'internal.doors',
+    version: 1,
+    questions: [
+      {
+        id: 'door_replacement_scope',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'replace_leaf_only', label: 'Replace door leaf only, keep frames' },
+          { value: 'replace_doors_and_frames', label: 'Replace doors and frames' },
+          { value: 'mixed', label: 'Mix – some leaf only, some full replacement' }
+        ]
+      },
+      {
+        id: 'door_replacement_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_two', label: '1–2 doors' },
+          { value: 'three_five', label: '3–5 doors' },
+          { value: 'six_ten', label: '6–10 doors' },
+          { value: 'ten_plus', label: 'More than 10 doors' }
+        ]
+      },
+      {
+        id: 'door_replacement_reasons',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'outdated_style', label: 'Outdated style' },
+          { value: 'damage_or_wear', label: 'Damaged or warped doors' },
+          { value: 'poor_fit', label: 'Poor fit / draughts / noise' },
+          { value: 'upgrade_fire_or_sound', label: 'Upgrade to fire/sound-rated doors' }
+        ]
+      },
+      {
+        id: 'door_replacement_style',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'modern_flush', label: 'Modern flush doors' },
+          { value: 'panelled_traditional', label: 'Panelled/traditional doors' },
+          { value: 'cottage_rustic', label: 'Cottage/rustic style' },
+          { value: 'glazed_for_light', label: 'Glazed doors to bring in light' }
+        ]
+      },
+      {
+        id: 'door_replacement_special_types',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'fire_doors', label: 'Fire-rated doors' },
+          { value: 'acoustic_doors', label: 'Acoustic/sound reduction doors' },
+          { value: 'bathroom_privacy', label: 'Bathroom privacy doors' },
+          { value: 'extra_tall_or_wide', label: 'Extra tall or wide doors' }
+        ]
+      },
+      {
+        id: 'door_replacement_paint_finish',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'pre_finished', label: 'Pre-finished from manufacturer' },
+          { value: 'primed_only', label: 'Primed only, ready for painting' },
+          { value: 'to_be_stained', label: 'To be stained/varnished' },
+          { value: 'need_painting_service', label: 'Need painting/staining included' }
+        ]
+      },
+      {
+        id: 'door_replacement_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'sliding-pocket-doors',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'internal.doors',
+    version: 1,
+    questions: [
+      {
+        id: 'sliding_door_type',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'surface_sliding', label: 'Surface-mounted sliding door' },
+          { value: 'single_pocket', label: 'Single pocket door (into wall)' },
+          { value: 'double_pocket', label: 'Double pocket doors' },
+          { value: 'room_divider', label: 'Sliding room divider' }
+        ]
+      },
+      {
+        id: 'sliding_door_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one', label: '1 door set' },
+          { value: 'two_three', label: '2–3 door sets' },
+          { value: 'four_plus', label: '4 or more door sets' }
+        ]
+      },
+      {
+        id: 'sliding_wall_type',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'solid_wall', label: 'Solid masonry wall' },
+          { value: 'stud_wall', label: 'Stud/partition wall' },
+          { value: 'new_partition', label: 'New partition wall to be built' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'sliding_door_purpose',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'save_space', label: 'Save space in a small room' },
+          { value: 'open_plan_flex', label: 'Flexible open-plan layout' },
+          { value: 'separate_zones', label: 'Separate living or work zones' },
+          { value: 'hide_utility_area', label: 'Conceal utility/storage areas' }
+        ]
+      },
+      {
+        id: 'sliding_door_finish',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'solid_plain', label: 'Solid plain door' },
+          { value: 'panelled', label: 'Panelled door' },
+          { value: 'glass', label: 'Glass or part-glazed door' },
+          { value: 'frameless_glass', label: 'Frameless glass system' }
+        ]
+      },
+      {
+        id: 'sliding_kit_status',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'kit_supplied_by_client', label: 'Yes, I have the full kit' },
+          { value: 'door_only_no_kit', label: 'I have doors but no sliding kit' },
+          { value: 'need_supply_and_fit', label: 'I\'d like the professional to supply and fit the full system' }
+        ]
+      },
+      {
+        id: 'sliding_access_constraints',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'electrics_in_wall', label: 'Switches/sockets in the wall area' },
+          { value: 'plumbing_in_wall', label: 'Plumbing/pipes in the wall' },
+          { value: 'limited_ceiling_height', label: 'Limited ceiling height above opening' },
+          { value: 'structural_beams', label: 'Structural beams or obstacles' },
+          { value: 'none_known', label: 'No known constraints' }
+        ]
+      },
+      {
+        id: 'sliding_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
   }
 ];
 
