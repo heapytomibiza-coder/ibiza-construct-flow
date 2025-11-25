@@ -455,7 +455,283 @@ const genericLegalRegPacks: MicroservicePack[] = genericLegalRegServices.map(s =
   buildGenericLegalRegPack(s.microSlug, s.name, s.subcategorySlug)
 );
 
+/**
+ * Detailed pack: Change of use
+ */
+const changeOfUsePack: MicroservicePack = {
+  microSlug: "change-of-use",
+  subcategorySlug: "planning-permissions",
+  categorySlug: "legal-regulatory",
+  version: 1,
+  questions: [
+    {
+      id: "current_use",
+      question: "What is the current use of the property?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "residential", label: "Residential" },
+        { value: "commercial", label: "Commercial" },
+        { value: "industrial", label: "Industrial" },
+        { value: "agricultural", label: "Agricultural" },
+        { value: "mixed", label: "Mixed use" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "proposed_use",
+      question: "What is the proposed new use?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "residential", label: "Residential" },
+        { value: "commercial", label: "Commercial" },
+        { value: "tourist", label: "Tourist/accommodation" },
+        { value: "restaurant", label: "Restaurant/bar" },
+        { value: "retail", label: "Retail" },
+        { value: "other", label: "Other / unsure" }
+      ]
+    },
+    {
+      id: "property_type",
+      question: "What type of property is it?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "house", label: "House" },
+        { value: "apartment", label: "Apartment" },
+        { value: "shop", label: "Shop" },
+        { value: "warehouse", label: "Warehouse" },
+        { value: "office", label: "Office" },
+        { value: "land", label: "Land/plot" },
+        { value: "other", label: "Other" }
+      ]
+    },
+    {
+      id: "plans_available",
+      question: "Do you already have architectural drawings?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "full", label: "Yes, full drawings" },
+        { value: "concept", label: "Concept drawings only" },
+        { value: "need_created", label: "Need drawings created" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "previous_applications",
+      question: "Has any planning application been submitted before?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "approved", label: "Yes, approved" },
+        { value: "rejected", label: "Yes, rejected" },
+        { value: "in_progress", label: "In progress" },
+        { value: "no", label: "No" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "support_needed",
+      question: "What support do you require?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "full", label: "Full application management" },
+        { value: "documents", label: "Prepare documents only" },
+        { value: "consultation", label: "Consultation/advice" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    }
+  ]
+};
+
+/**
+ * Detailed pack: Planning permission
+ */
+const planningPermissionPack: MicroservicePack = {
+  microSlug: "planning-permission",
+  subcategorySlug: "planning-permissions",
+  categorySlug: "legal-regulatory",
+  version: 1,
+  questions: [
+    {
+      id: "project_type",
+      question: "What type of project requires planning?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "extension", label: "Extension" },
+        { value: "new_build", label: "New build" },
+        { value: "renovation", label: "Renovation" },
+        { value: "commercial", label: "Commercial works" },
+        { value: "change_of_use", label: "Change of use" },
+        { value: "other", label: "Other / unsure" }
+      ]
+    },
+    {
+      id: "property_type",
+      question: "What type of property is involved?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "house", label: "House" },
+        { value: "apartment", label: "Apartment" },
+        { value: "commercial", label: "Commercial building" },
+        { value: "warehouse", label: "Warehouse/industrial" },
+        { value: "land", label: "Land/plot" },
+        { value: "other", label: "Other" }
+      ]
+    },
+    {
+      id: "documents_available",
+      question: "Which documents do you already have?",
+      type: "checkbox",
+      required: false,
+      options: [
+        { value: "drawings", label: "Architectural drawings" },
+        { value: "sketches", label: "Concept sketches" },
+        { value: "site_plan", label: "Site plan" },
+        { value: "none", label: "None" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "site_status",
+      question: "What describes the site?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "urban", label: "Urban" },
+        { value: "rural", label: "Rural" },
+        { value: "protected", label: "Protected zone" },
+        { value: "historic", label: "Historic building" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "services_needed",
+      question: "What level of support do you need?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "full_application", label: "Full planning application" },
+        { value: "reports", label: "Technical reports only" },
+        { value: "drawings", label: "Drawings only" },
+        { value: "pre_app", label: "Pre-application check" },
+        { value: "advice", label: "Advice session" }
+      ]
+    },
+    {
+      id: "deadline",
+      question: "Do you have a project deadline?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "urgent", label: "Yes, urgent" },
+        { value: "3_months", label: "Within 3 months" },
+        { value: "flexible", label: "Flexible" },
+        { value: "no_deadline", label: "No fixed deadline" }
+      ]
+    }
+  ]
+};
+
+/**
+ * Detailed pack: Town hall permits
+ */
+const townHallPermitsPack: MicroservicePack = {
+  microSlug: "town-hall-permits",
+  subcategorySlug: "permits",
+  categorySlug: "legal-regulatory",
+  version: 1,
+  questions: [
+    {
+      id: "permit_type",
+      question: "What type of permit do you need?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "construction", label: "Construction permit" },
+        { value: "activity", label: "Activity license" },
+        { value: "noise", label: "Noise permit" },
+        { value: "outdoor_seating", label: "Outdoor seating/terrace permit" },
+        { value: "events", label: "Events permit" },
+        { value: "other", label: "Other / unsure" }
+      ]
+    },
+    {
+      id: "property_type",
+      question: "What type of property or space is involved?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "residential", label: "Residential home" },
+        { value: "commercial", label: "Commercial premises" },
+        { value: "outdoor", label: "Outdoor public space" },
+        { value: "land", label: "Land/plot" },
+        { value: "mixed", label: "Mixed area" }
+      ]
+    },
+    {
+      id: "documentation",
+      question: "Which documents do you already have?",
+      type: "checkbox",
+      required: false,
+      options: [
+        { value: "plans", label: "Architectural plans" },
+        { value: "photographs", label: "Photographs" },
+        { value: "site_plan", label: "Site plan" },
+        { value: "none", label: "None yet" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "language_support",
+      question: "Do you need translation or local representation?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "translation", label: "Translation only" },
+        { value: "representation", label: "Representation at town hall" },
+        { value: "both", label: "Both translation and representation" },
+        { value: "no", label: "No" }
+      ]
+    },
+    {
+      id: "project_stage",
+      question: "What stage is your project at?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "early", label: "Early planning" },
+        { value: "ready", label: "Ready to submit" },
+        { value: "missing", label: "Documents missing" },
+        { value: "submitted", label: "Already submitted, need follow-up" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "extras",
+      question: "Any additional support needed?",
+      type: "checkbox",
+      required: false,
+      options: [
+        { value: "drawings", label: "Technical drawings" },
+        { value: "photos", label: "Photographic survey" },
+        { value: "noise", label: "Noise/acoustic report" },
+        { value: "structural", label: "Structural report" },
+        { value: "none", label: "None" }
+      ]
+    }
+  ]
+};
+
 export const legalRegulatoryQuestionPacks: MicroservicePack[] = [
+  changeOfUsePack,
+  planningPermissionPack,
+  townHallPermitsPack,
   planningApplicationsPack,
   buildingPermitsPack,
   generalCompliancePack,
