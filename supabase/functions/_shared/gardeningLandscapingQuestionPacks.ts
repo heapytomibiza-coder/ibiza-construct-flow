@@ -3,8 +3,8 @@
  * Defines questions for all gardening & landscaping microservices
  */
 
-// Inline type definitions for Deno environment
-type QuestionType = 'single' | 'multi' | 'scale' | 'text' | 'number' | 'yesno' | 'file' | 'textarea' | 'select' | 'radio' | 'checkbox';
+// Inline type definitions for Deno environment (canonical types only)
+type QuestionType = 'single' | 'multi' | 'scale' | 'text' | 'number' | 'yesno' | 'file';
 
 interface QuestionOption {
   value: string;
@@ -39,17 +39,9 @@ const buildGenericGardeningPack = (
 ): MicroservicePack => {
   const questions: QuestionDef[] = [
     {
-      id: "description",
-      question: `Briefly describe what you need for "${readableName}".`,
-      type: "textarea",
-      required: true,
-      placeholder:
-        "Which areas of the garden need work, what condition are they in now, and what result would you like?"
-    },
-    {
       id: "property_type",
       question: "What type of property is this?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "apartment", label: "Apartment with terrace / garden" },
@@ -63,7 +55,7 @@ const buildGenericGardeningPack = (
     {
       id: "garden_area_type",
       question: "What type of outdoor areas are involved?",
-      type: "checkbox",
+      type: "multi",
       required: false,
       options: [
         { value: "front_garden", label: "Front garden" },
@@ -77,7 +69,7 @@ const buildGenericGardeningPack = (
     {
       id: "approx_size",
       question: "Do you know roughly how big the garden or area is?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "small_under_50", label: "Small – up to 50 m²" },
@@ -90,7 +82,7 @@ const buildGenericGardeningPack = (
     {
       id: "access",
       question: "How is access to the garden / work area?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "easy_vehicle", label: "Easy – vehicle access close by" },
@@ -103,7 +95,7 @@ const buildGenericGardeningPack = (
     {
       id: "water_source",
       question: "What water source is available for the garden?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "mains_tap", label: "Standard mains tap(s)" },
@@ -116,7 +108,7 @@ const buildGenericGardeningPack = (
     {
       id: "urgency",
       question: "How urgent is this job?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "emergency_safety", label: "Urgent – safety issue (fallen trees, etc.)" },
@@ -155,7 +147,7 @@ const regularGardenMaintenancePack: MicroservicePack = {
     {
       id: "service_frequency",
       question: "How often would you like garden maintenance?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "weekly", label: "Weekly" },
@@ -168,7 +160,7 @@ const regularGardenMaintenancePack: MicroservicePack = {
     {
       id: "tasks_required",
       question: "Which tasks should be included in the maintenance?",
-      type: "checkbox",
+      type: "multi",
       required: true,
       options: [
         { value: "mowing", label: "Lawn mowing / edging" },
@@ -183,7 +175,7 @@ const regularGardenMaintenancePack: MicroservicePack = {
     {
       id: "green_waste",
       question: "What should happen with green waste?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "contractor_remove", label: "Contractor to remove and dispose" },
@@ -194,7 +186,7 @@ const regularGardenMaintenancePack: MicroservicePack = {
     {
       id: "garden_complexity",
       question: "How would you describe the garden?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "simple", label: "Simple – mostly lawn and a few beds" },
@@ -204,16 +196,22 @@ const regularGardenMaintenancePack: MicroservicePack = {
       ]
     },
     {
-      id: "access_details",
+      id: "access_arrangement",
       question: "How will the gardener access the property?",
-      type: "textarea",
+      type: "single",
       required: false,
-      placeholder: "Gate codes, keys, parking details, on-site staff, etc."
+      options: [
+        { value: "gate_code", label: "Gate code / key code access" },
+        { value: "key_collection", label: "Key collection required" },
+        { value: "on_site_staff", label: "On-site staff will assist" },
+        { value: "always_open", label: "Always open / no restriction" },
+        { value: "other", label: "Other (add details in notes)" }
+      ]
     },
     {
       id: "start_date",
       question: "When would you like the maintenance to start?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "asap", label: "As soon as possible" },
@@ -237,7 +235,7 @@ const gardenRedesignLandscapingPack: MicroservicePack = {
     {
       id: "project_scope",
       question: "What best describes your project?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "refresh_existing", label: "Refresh / improve existing layout" },
@@ -249,7 +247,7 @@ const gardenRedesignLandscapingPack: MicroservicePack = {
     {
       id: "features_interest",
       question: "Which features are you interested in including or improving?",
-      type: "checkbox",
+      type: "multi",
       required: false,
       options: [
         { value: "lawns", label: "Lawns / turf" },
@@ -265,7 +263,7 @@ const gardenRedesignLandscapingPack: MicroservicePack = {
     {
       id: "style_preference",
       question: "Do you have a preferred garden style?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "mediterranean", label: "Mediterranean / drought-tolerant" },
@@ -278,7 +276,7 @@ const gardenRedesignLandscapingPack: MicroservicePack = {
     {
       id: "irrigation_consideration",
       question: "Would you like to include or upgrade an irrigation system?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "new_irrigation", label: "Yes – new irrigation system" },
@@ -290,7 +288,7 @@ const gardenRedesignLandscapingPack: MicroservicePack = {
     {
       id: "budget_range",
       question: "Do you have a budget range in mind for the landscaping work?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "under_5k", label: "Under €5k" },
@@ -303,7 +301,7 @@ const gardenRedesignLandscapingPack: MicroservicePack = {
     {
       id: "design_support",
       question: "Do you need full design support (plans, mood boards, plant lists)?",
-      type: "radio",
+      type: "single",
       required: false,
       options: [
         { value: "yes_full_design", label: "Yes – full design service" },
@@ -314,7 +312,7 @@ const gardenRedesignLandscapingPack: MicroservicePack = {
     {
       id: "timeline",
       question: "When would you like the landscaping project to take place?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "asap", label: "As soon as possible" },
@@ -338,7 +336,7 @@ const irrigationSystemPack: MicroservicePack = {
     {
       id: "irrigation_project_type",
       question: "Is this a new irrigation system or work on an existing one?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "new_system", label: "New irrigation system" },
@@ -350,7 +348,7 @@ const irrigationSystemPack: MicroservicePack = {
     {
       id: "area_coverage",
       question: "Which areas need to be covered by irrigation?",
-      type: "checkbox",
+      type: "multi",
       required: true,
       options: [
         { value: "lawns", label: "Lawns / grass areas" },
@@ -362,7 +360,7 @@ const irrigationSystemPack: MicroservicePack = {
     {
       id: "water_source_detail",
       question: "What water source will be used?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "mains", label: "Mains water" },
@@ -375,7 +373,7 @@ const irrigationSystemPack: MicroservicePack = {
     {
       id: "control_type",
       question: "What type of control would you like?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "manual_tap", label: "Manual (tap on/off)" },
@@ -387,7 +385,7 @@ const irrigationSystemPack: MicroservicePack = {
     {
       id: "existing_issues",
       question: "If you already have a system, what issues are you experiencing?",
-      type: "checkbox",
+      type: "multi",
       required: false,
       options: [
         { value: "leaks", label: "Leaks / broken pipes" },
@@ -400,7 +398,7 @@ const irrigationSystemPack: MicroservicePack = {
     {
       id: "budget_range",
       question: "Do you have a budget range for the irrigation work?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "under_2k", label: "Under €2k" },
@@ -413,7 +411,7 @@ const irrigationSystemPack: MicroservicePack = {
     {
       id: "timeline",
       question: "When would you like the irrigation work to be done?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "asap", label: "As soon as possible" },
@@ -441,7 +439,7 @@ const fertilizationPack: MicroservicePack = {
     {
       id: "area_type",
       question: "Which areas need fertilizing?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "lawn", label: "Lawn" },
@@ -454,7 +452,7 @@ const fertilizationPack: MicroservicePack = {
     {
       id: "garden_size",
       question: "What is the approximate size of the garden?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "small", label: "Small (up to 50m²)" },
@@ -467,7 +465,7 @@ const fertilizationPack: MicroservicePack = {
     {
       id: "fertilizer_type",
       question: "Do you have a preferred type of fertilizer?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "organic", label: "Organic" },
@@ -480,7 +478,7 @@ const fertilizationPack: MicroservicePack = {
     {
       id: "condition",
       question: "What condition is the lawn/garden currently in?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "healthy", label: "Healthy" },
@@ -493,7 +491,7 @@ const fertilizationPack: MicroservicePack = {
     {
       id: "watering",
       question: "Is irrigation or watering available?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "sprinkler", label: "Sprinkler system" },
@@ -506,7 +504,7 @@ const fertilizationPack: MicroservicePack = {
     {
       id: "frequency",
       question: "How often do you need fertilization services?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "one_time", label: "One-time treatment" },
@@ -530,7 +528,7 @@ const lawnMowingPack: MicroservicePack = {
     {
       id: "lawn_size",
       question: "What is the approximate size of the lawn?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "small", label: "Small (up to 50m²)" },
@@ -543,7 +541,7 @@ const lawnMowingPack: MicroservicePack = {
     {
       id: "grass_length",
       question: "What is the current grass length?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "short", label: "Short/regularly maintained" },
@@ -556,7 +554,7 @@ const lawnMowingPack: MicroservicePack = {
     {
       id: "obstacles",
       question: "Are there obstacles in the lawn?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "trees_shrubs", label: "Trees/shrubs" },
@@ -569,7 +567,7 @@ const lawnMowingPack: MicroservicePack = {
     {
       id: "clippings",
       question: "What should be done with the grass clippings?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "leave_mulch", label: "Leave on lawn (mulch)" },
@@ -581,7 +579,7 @@ const lawnMowingPack: MicroservicePack = {
     {
       id: "frequency",
       question: "How often do you need mowing?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "one_time", label: "One-time cut" },
@@ -594,7 +592,7 @@ const lawnMowingPack: MicroservicePack = {
     {
       id: "access",
       question: "How is access to the garden?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "easy", label: "Easy access" },
@@ -619,7 +617,7 @@ const treeTrimmingPack: MicroservicePack = {
     {
       id: "tree_type",
       question: "What type of trees need trimming?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "palm", label: "Palm trees" },
@@ -633,7 +631,7 @@ const treeTrimmingPack: MicroservicePack = {
     {
       id: "tree_height",
       question: "What is the approximate height of the tree(s)?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "up_to_3m", label: "Up to 3m" },
@@ -647,7 +645,7 @@ const treeTrimmingPack: MicroservicePack = {
     {
       id: "work_required",
       question: "What type of trimming is needed?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "light_shaping", label: "Light shaping" },
@@ -661,7 +659,7 @@ const treeTrimmingPack: MicroservicePack = {
     {
       id: "waste_disposal",
       question: "Do you need waste removed?",
-      type: "select",
+      type: "single",
       required: true,
       options: [
         { value: "remove_all", label: "Yes, remove all waste" },
@@ -673,7 +671,7 @@ const treeTrimmingPack: MicroservicePack = {
     {
       id: "access",
       question: "How is access to the tree(s)?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "easy", label: "Easy access" },
@@ -686,7 +684,7 @@ const treeTrimmingPack: MicroservicePack = {
     {
       id: "equipment",
       question: "Is specialist equipment required?",
-      type: "select",
+      type: "single",
       required: false,
       options: [
         { value: "ladder", label: "Ladder only" },
