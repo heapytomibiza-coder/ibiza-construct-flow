@@ -36,10 +36,10 @@ export const useSavedSearches = () => {
       const mappedData = (data || []).map(item => ({
         id: item.id,
         name: item.name,
-        query: (item as any).search_query || '',
+        query: item.search_query || '',
         filters: item.filters as any,
-        notification_enabled: item.notification_enabled,
-        notification_frequency: (item as any).notification_frequency,
+        notification_enabled: item.notify_on_new_results,
+        notification_frequency: undefined,
         result_count: 0,
         created_at: item.created_at,
         updated_at: item.updated_at
@@ -74,12 +74,13 @@ export const useSavedSearches = () => {
       if (!user) throw new Error('User not authenticated');
 
       const { error } = await supabase.from('saved_searches').insert({
+        user_id: user.id,
         name,
         search_query: searchQuery,
         search_type: searchType,
         filters: filters as any,
-        notification_enabled: notificationEnabled
-      } as any);
+        notify_on_new_results: notificationEnabled
+      });
 
       if (error) throw error;
 
@@ -128,7 +129,7 @@ export const useSavedSearches = () => {
     try {
       const { error } = await supabase
         .from('saved_searches')
-        .update({ notification_enabled: enabled })
+        .update({ notify_on_new_results: enabled })
         .eq('id', searchId);
 
       if (error) throw error;

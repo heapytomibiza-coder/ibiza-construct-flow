@@ -3876,6 +3876,53 @@ export type Database = {
         }
         Relationships: []
       }
+      filter_presets: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          filter_type: string
+          filters: Json
+          id: string
+          is_public: boolean | null
+          name: string
+          updated_at: string | null
+          usage_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          filter_type: string
+          filters: Json
+          id?: string
+          is_public?: boolean | null
+          name: string
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          filter_type?: string
+          filters?: Json
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filter_presets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       financial_reports: {
         Row: {
           created_at: string
@@ -10257,42 +10304,53 @@ export type Database = {
       }
       saved_searches: {
         Row: {
-          created_at: string
+          created_at: string | null
           filters: Json | null
           id: string
+          is_active: boolean | null
           last_checked_at: string | null
           name: string
-          notification_enabled: boolean | null
+          notify_on_new_results: boolean | null
           search_query: string | null
           search_type: string
-          updated_at: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           filters?: Json | null
           id?: string
+          is_active?: boolean | null
           last_checked_at?: string | null
           name: string
-          notification_enabled?: boolean | null
+          notify_on_new_results?: boolean | null
           search_query?: string | null
           search_type: string
-          updated_at?: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           filters?: Json | null
           id?: string
+          is_active?: boolean | null
           last_checked_at?: string | null
           name?: string
-          notification_enabled?: boolean | null
+          notify_on_new_results?: boolean | null
           search_query?: string | null
           search_type?: string
-          updated_at?: string
+          updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "saved_searches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scheduled_payments: {
         Row: {
@@ -10402,6 +10460,7 @@ export type Database = {
           results_count: number | null
           search_query: string
           search_type: string
+          session_id: string | null
           user_id: string
         }
         Insert: {
@@ -10412,6 +10471,7 @@ export type Database = {
           results_count?: number | null
           search_query: string
           search_type: string
+          session_id?: string | null
           user_id: string
         }
         Update: {
@@ -10422,9 +10482,51 @@ export type Database = {
           results_count?: number | null
           search_query?: string
           search_type?: string
+          session_id?: string | null
           user_id?: string
         }
         Relationships: []
+      }
+      search_suggestions: {
+        Row: {
+          category_id: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          popularity_score: number | null
+          suggestion_text: string
+          suggestion_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          popularity_score?: number | null
+          suggestion_text: string
+          suggestion_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          popularity_score?: number | null
+          suggestion_text?: string
+          suggestion_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_suggestions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       security_audit_log: {
         Row: {
@@ -13197,6 +13299,13 @@ export type Database = {
           total_revenue: number
         }[]
       }
+      get_trending_searches: {
+        Args: { p_limit?: number }
+        Returns: {
+          search_count: number
+          search_query: string
+        }[]
+      }
       get_unread_message_count: { Args: { p_user_id: string }; Returns: number }
       get_upcoming_payments: {
         Args: { p_days_ahead?: number; p_user_id?: string }
@@ -13237,6 +13346,10 @@ export type Database = {
       }
       increment_message_count: {
         Args: { p_user_id: string }
+        Returns: undefined
+      }
+      increment_suggestion_popularity: {
+        Args: { p_suggestion_text: string }
         Returns: undefined
       }
       is_admin:
