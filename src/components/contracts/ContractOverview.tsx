@@ -13,6 +13,7 @@ import { FundEscrowDialog } from './FundEscrowDialog';
 import { MilestonesList } from './MilestonesList';
 import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { ReviewsList } from '@/components/reviews/ReviewsList';
+import { QuickReviewPrompt } from '@/components/reviews/QuickReviewPrompt';
 import { useAuth } from '@/hooks/useAuth';
 import { useMessages } from '@/hooks/useMessages';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +28,6 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
   const { contract, contractLoading } = useContract(jobId);
   const [showSplitDialog, setShowSplitDialog] = useState(false);
   const [showFundDialog, setShowFundDialog] = useState(false);
-  const [showReviewForm, setShowReviewForm] = useState(false);
   const { getOrCreateConversation } = useMessages();
   const navigate = useNavigate();
 
@@ -220,15 +220,6 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
               <MessageCircle className="h-4 w-4 mr-2" />
               Message {isProfessional ? 'Client' : 'Professional'}
             </Button>
-            {canLeaveReview && (
-              <Button
-                variant="outline"
-                onClick={() => setShowReviewForm(true)}
-              >
-                <Star className="h-4 w-4 mr-2" />
-                Leave Review
-              </Button>
-            )}
           </div>
 
           {needsFunding && isClient && (
@@ -258,29 +249,21 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
       </Card>
 
       {/* Review Section */}
-      {showReviewForm && canLeaveReview && (
-        <ReviewForm
+      {canLeaveReview && (
+        <QuickReviewPrompt
+          contractId={contract.id}
+          jobId={contract.job_id}
+          revieweeId={contract.tasker_id}
           revieweeName={professionalName}
-          onSubmit={(ratings, title, comment) => {
-            submitReview.mutate({
-              jobId: contract.job_id,
-              contractId: contract.id,
-              revieweeId: contract?.tasker_id || '',
-              ratings,
-              title: title || `Review for ${professionalName}`,
-              comment,
-            });
-            setShowReviewForm(false);
-          }}
-          isSubmitting={submitReview.isPending}
         />
       )}
 
       {totalReviews > 0 && (
         <ReviewsList
           reviews={reviews || []}
-          averageRating={overallRating}
+          averageRating={overallRating || 0}
           totalReviews={totalReviews}
+          averageRatings={averageRatings}
           onRespond={(reviewId, responseText) => respondToReview.mutate({ reviewId, responseText })}
           isResponding={respondToReview.isPending}
         />
