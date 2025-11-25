@@ -59,7 +59,6 @@ const Analytics = lazyWithRetry(() => import("./pages/admin/Analytics"));
 const ProfilesQueue = lazyWithRetry(() => import("./pages/admin/ProfilesQueue"));
 const JobsQueue = lazyWithRetry(() => import("./pages/admin/JobsQueue"));
 const BulkImport = lazyWithRetry(() => import("./pages/admin/BulkImport"));
-const ReviewsQueue = lazyWithRetry(() => import("./pages/admin/ReviewsQueue"));
 const DisputesQueue = lazyWithRetry(() => import("./pages/admin/DisputesQueue"));
 const ServicesPage = lazyWithRetry(() => import("./pages/admin/ServicesPage"));
 const HealthMonitor = lazyWithRetry(() => import("./pages/admin/HealthMonitor"));
@@ -492,7 +491,6 @@ function AppContent() {
                       <Route path="profiles" element={<ProfilesQueue />} />
                       <Route path="jobs" element={<AdminJobs />} />
                       <Route path="bookings" element={<AdminBookings />} />
-                      <Route path="reviews" element={<ReviewsQueue />} />
                       <Route path="disputes" element={<DisputesQueue />} />
                       <Route path="disputes/:id" element={<AdminDisputeDetailPage />} />
                       <Route path="services" element={<AdminServices />} />

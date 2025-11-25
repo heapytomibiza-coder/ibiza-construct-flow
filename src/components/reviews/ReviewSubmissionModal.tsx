@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Star } from 'lucide-react';
-import { useReviews } from '@/hooks/useReviews';
+import { useReviewSystem } from '@/hooks/useReviewSystem';
 import { toast } from 'sonner';
+import type { CategoryRatings } from '@/types/review';
 
 interface ReviewSubmissionModalProps {
   open: boolean;
@@ -21,11 +22,10 @@ export const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({
   professionalId,
   professionalName,
 }) => {
-  const { submitReview } = useReviews(contractId, 'contract');
+  const { submitReview } = useReviewSystem();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (rating === 0) {
@@ -33,21 +33,22 @@ export const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({
       return;
     }
 
-    setSubmitting(true);
-    try {
-      await submitReview({
-        jobId: contractId,
-        revieweeId: professionalId,
-        rating,
-        title: `Review for ${professionalName}`,
-        comment: comment.trim(),
-      });
-      onClose();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to submit review');
-    } finally {
-      setSubmitting(false);
-    }
+    const ratings: CategoryRatings = {
+      timeliness: rating,
+      communication: rating,
+      value: rating,
+      quality: rating,
+      professionalism: rating,
+    };
+
+    submitReview.mutate({
+      contractId,
+      revieweeId: professionalId,
+      ratings,
+      title: `Review for ${professionalName}`,
+      comment: comment.trim(),
+    });
+    onClose();
   };
 
   const renderStars = () => {
@@ -119,10 +120,10 @@ export const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={submitting || rating === 0}
+              disabled={submitReview.isPending || rating === 0}
               className="flex-1"
             >
-              {submitting ? 'Submitting...' : 'Submit Review'}
+              {submitReview.isPending ? 'Submitting...' : 'Submit Review'}
             </Button>
           </div>
         </div>

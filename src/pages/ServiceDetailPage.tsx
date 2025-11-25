@@ -19,7 +19,7 @@ import { useQuoteBasket } from '@/hooks/useQuoteBasket';
 import { useServiceMaterials } from '@/hooks/useServiceMaterials';
 import { useServicePricingAddons } from '@/hooks/useServicePricingAddons';
 import { useServicePortfolio } from '@/hooks/useServicePortfolio';
-import { useProfessionalRatings } from '@/hooks/useReviews';
+import { useReviewSystem } from '@/hooks/useReviewSystem';
 import { RatingDisplay } from '@/components/reviews/RatingDisplay';
 import { logActivity } from '@/lib/logActivity';
 import { ArrowLeft, Shield, ChevronRight, Award, Clock, CheckCircle, Star } from 'lucide-react';
@@ -177,7 +177,7 @@ export default function ServiceDetailPage() {
     enabled: !!professionalId,
   });
 
-  const { data: professionalRating } = useProfessionalRatings(professionalId || null);
+  const { overallRating, totalReviews } = useReviewSystem(professionalId || undefined);
 
   // Get the first service item ID for fetching materials/addons/portfolio
   const firstServiceItemId = useMemo(() => serviceMenuItems[0]?.id, [serviceMenuItems]);
@@ -454,11 +454,11 @@ export default function ServiceDetailPage() {
           {/* Trust Indicators */}
           <CardContent className="pt-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              {professionalRating && (
+              {overallRating && (
                 <div className="flex flex-col items-center gap-1">
                   <RatingDisplay 
-                    rating={professionalRating.rating_avg} 
-                    count={professionalRating.reviews_count}
+                    rating={overallRating} 
+                    count={totalReviews}
                     size="lg"
                   />
                 </div>

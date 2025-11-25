@@ -69,8 +69,8 @@ export const useReviewSystem = (revieweeId?: string) => {
       const { data, error } = await supabase
         .from("reviews")
         .insert({
-          contract_id: contractId,
-          job_id: jobId,
+          ...(contractId && { contract_id: contractId }),
+          ...(jobId && { job_id: jobId }),
           reviewer_id: user.id,
           reviewee_id: revieweeId,
           timeliness_rating: ratings.timeliness,
@@ -82,7 +82,7 @@ export const useReviewSystem = (revieweeId?: string) => {
           comment,
           photos,
           is_verified: true,
-        })
+        } as any)
         .select()
         .single();
 

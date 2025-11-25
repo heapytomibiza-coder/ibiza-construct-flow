@@ -13,7 +13,7 @@ import {
   CheckCircle 
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { useEnhancedReviews } from "@/hooks/useEnhancedReviews";
+import { useReviewSystem } from "@/hooks/useReviewSystem";
 
 interface EnhancedReviewCardProps {
   review: any;
@@ -24,29 +24,22 @@ interface EnhancedReviewCardProps {
 export const EnhancedReviewCard = ({ review, canRespond, currentUserId }: EnhancedReviewCardProps) => {
   const [showResponseForm, setShowResponseForm] = useState(false);
   const [responseText, setResponseText] = useState("");
-  const { voteHelpful, respondToReview, flagReview } = useEnhancedReviews();
+  const { voteReview, respondToReview } = useReviewSystem();
 
-  const handleVote = (isHelpful: boolean) => {
-    voteHelpful.mutate({ reviewId: review.id, isHelpful });
+  const handleVote = (voteType: 'helpful' | 'not_helpful') => {
+    voteReview.mutate({ reviewId: review.id, voteType });
   };
 
   const handleRespond = async () => {
     if (!responseText.trim()) return;
 
-    await respondToReview.mutateAsync({
+    respondToReview.mutate({
       reviewId: review.id,
       responseText,
     });
 
     setResponseText("");
     setShowResponseForm(false);
-  };
-
-  const handleFlag = () => {
-    const reason = prompt("Please provide a reason for flagging this review:");
-    if (reason) {
-      flagReview.mutate({ reviewId: review.id, reason });
-    }
   };
 
   return (
@@ -174,7 +167,7 @@ export const EnhancedReviewCard = ({ review, canRespond, currentUserId }: Enhanc
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => handleVote(true)}
+              onClick={() => handleVote('helpful')}
               className="gap-2"
             >
               <ThumbsUp className="w-4 h-4" />
@@ -184,11 +177,11 @@ export const EnhancedReviewCard = ({ review, canRespond, currentUserId }: Enhanc
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => handleVote(false)}
+              onClick={() => handleVote('not_helpful')}
               className="gap-2"
             >
               <ThumbsDown className="w-4 h-4" />
-              ({review.unhelpful_count})
+              ({review.not_helpful_count})
             </Button>
 
             {canRespond && !review.response_text && !showResponseForm && (
@@ -200,18 +193,6 @@ export const EnhancedReviewCard = ({ review, canRespond, currentUserId }: Enhanc
               >
                 <MessageSquare className="w-4 h-4" />
                 Respond
-              </Button>
-            )}
-
-            {currentUserId !== review.reviewer_id && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleFlag}
-                className="gap-2 text-muted-foreground"
-              >
-                <Flag className="w-4 h-4" />
-                Flag
               </Button>
             )}
           </div>

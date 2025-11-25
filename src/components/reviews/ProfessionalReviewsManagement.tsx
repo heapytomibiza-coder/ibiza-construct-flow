@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ReviewCard } from './ReviewCard';
-import { useReviews } from '@/hooks/useReviews';
+import { useReviewSystem } from '@/hooks/useReviewSystem';
 import { Star, TrendingUp } from 'lucide-react';
 
 interface ProfessionalReviewsManagementProps {
@@ -11,7 +11,7 @@ interface ProfessionalReviewsManagementProps {
 export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManagementProps> = ({
   professionalId,
 }) => {
-  const { reviews, loading, stats, respondToReview } = useReviews(professionalId, 'professional');
+  const { reviews, isLoading: loading, overallRating, totalReviews, respondToReview } = useReviewSystem(professionalId);
 
   const pendingResponses = reviews.filter(r => !r.response_text);
 
@@ -32,7 +32,7 @@ export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManageme
         <Card>
           <CardContent className="pt-6 text-center">
             <Star className="w-8 h-8 mx-auto mb-2 fill-yellow-400 text-yellow-400" />
-            <div className="text-2xl font-bold">{stats?.average_rating?.toFixed(1) || 0}</div>
+            <div className="text-2xl font-bold">{overallRating?.toFixed(1) || 0}</div>
             <p className="text-xs text-muted-foreground">Average Rating</p>
           </CardContent>
         </Card>
@@ -40,7 +40,7 @@ export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManageme
         <Card>
           <CardContent className="pt-6 text-center">
             <TrendingUp className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-            <div className="text-2xl font-bold">{stats?.total_reviews || 0}</div>
+            <div className="text-2xl font-bold">{totalReviews || 0}</div>
             <p className="text-xs text-muted-foreground">Total Reviews</p>
           </CardContent>
         </Card>
@@ -55,7 +55,7 @@ export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManageme
         <Card>
           <CardContent className="pt-6 text-center">
             <div className="text-2xl font-bold">
-              {Math.round((reviews.filter(r => r.response_text).length / (stats?.total_reviews || 1)) * 100)}%
+              {Math.round((reviews?.filter(r => r.response_text).length || 0) / (totalReviews || 1) * 100)}%
             </div>
             <p className="text-xs text-muted-foreground">Response Rate</p>
           </CardContent>
@@ -74,7 +74,7 @@ export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManageme
             <ReviewCard
               key={review.id}
               review={review}
-              onRespond={respondToReview}
+              onRespond={(reviewId, responseText) => respondToReview.mutate({ reviewId, responseText })}
             />
               ))}
             </div>
@@ -95,11 +95,11 @@ export const ProfessionalReviewsManagement: React.FC<ProfessionalReviewsManageme
             </div>
           ) : (
             <div className="space-y-4">
-              {reviews.map((review) => (
+              {reviews?.map((review) => (
                 <ReviewCard
                   key={review.id}
                   review={review}
-                  onRespond={respondToReview}
+                  onRespond={(reviewId, responseText) => respondToReview.mutate({ reviewId, responseText })}
                 />
               ))}
             </div>
