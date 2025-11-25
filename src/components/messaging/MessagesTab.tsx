@@ -9,14 +9,14 @@ import { MessageSquare } from 'lucide-react';
 export const MessagesTab = () => {
   const { user } = useAuth();
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-  const { conversations, loading } = useConversationList(user?.id);
+  const { conversations, isLoading } = useConversationList(user?.id);
 
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
-  const otherUserId = selectedConversation?.participant_1_id === user?.id 
-    ? selectedConversation?.participant_2_id 
-    : selectedConversation?.participant_1_id;
+  const otherUserId = selectedConversation?.client_id === user?.id 
+    ? selectedConversation?.professional_id 
+    : selectedConversation?.client_id;
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>

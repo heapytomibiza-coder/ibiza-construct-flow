@@ -31,7 +31,7 @@ export const useMessages = (conversationId?: string) => {
 
   useEffect(() => {
     if (messagesData) {
-      setMessages(messagesData);
+      setMessages(messagesData as Message[]);
     }
   }, [messagesData]);
 

@@ -6,9 +6,10 @@ interface Message {
   id: string;
   conversation_id: string;
   sender_id: string;
-  recipient_id: string;
   content: string;
-  attachments?: any;
+  message_type: 'text' | 'file' | 'image' | 'quote';
+  file_url?: string | null;
+  file_name?: string | null;
   read_at?: string | null;
   created_at: string;
 }
@@ -69,26 +70,11 @@ export const useRealtimeMessages = (conversationId: string) => {
   const sendMessage = async (content: string, attachments: any[] = []) => {
     if (!user) return;
 
-    // Get conversation to find recipient
-    const { data: conv } = await supabase
-      .from("conversations")
-      .select("participant_1_id, participant_2_id")
-      .eq("id", conversationId)
-      .single();
-
-    if (!conv) return;
-
-    const recipientId =
-      conv.participant_1_id === user.id
-        ? conv.participant_2_id
-        : conv.participant_1_id;
-
     const { error } = await supabase.from("messages").insert({
       conversation_id: conversationId,
       sender_id: user.id,
-      recipient_id: recipientId,
       content,
-      attachments,
+      message_type: 'text',
     });
 
     if (error) throw error;
@@ -101,7 +87,7 @@ export const useRealtimeMessages = (conversationId: string) => {
       .from("messages")
       .update({ read_at: new Date().toISOString() })
       .eq("id", messageId)
-      .eq("recipient_id", user.id);
+      .neq("sender_id", user.id);
   };
 
   const setTyping = async (isTyping: boolean) => {

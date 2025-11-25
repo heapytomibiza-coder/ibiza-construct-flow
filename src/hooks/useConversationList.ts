@@ -69,7 +69,7 @@ export const useConversationList = (userId?: string) => {
         })
       );
 
-      setConversations(conversationsWithDetails);
+      setConversations(conversationsWithDetails as ConversationWithDetails[]);
       setTotalUnread(conversationsWithDetails.reduce((sum, conv) => sum + conv.unread_count, 0));
     };
 

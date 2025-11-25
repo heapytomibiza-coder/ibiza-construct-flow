@@ -1,4 +1,4 @@
-import { useConversations } from "@/hooks/useMessages";
+import { useConversationList } from "@/hooks/useConversationList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,7 +18,7 @@ export const ConversationList = ({
   onConversationSelect,
 }: ConversationListProps) => {
   const { user } = useAuth();
-  const { conversations, isLoading } = useConversations();
+  const { conversations, isLoading } = useConversationList(user?.id);
 
   // Fetch profiles for all conversation participants
   const { data: profiles } = useQuery({
@@ -28,8 +28,8 @@ export const ConversationList = ({
 
       const userIds = new Set<string>();
       conversations.forEach((conv) => {
-        userIds.add(conv.participant_1_id);
-        userIds.add(conv.participant_2_id);
+        userIds.add(conv.client_id);
+        userIds.add(conv.professional_id);
       });
 
       const { data, error } = await supabase
@@ -72,9 +72,9 @@ export const ConversationList = ({
       <div className="space-y-1 p-2">
         {conversations.map((conversation) => {
           const otherUserId =
-            conversation.participant_1_id === user?.id
-              ? conversation.participant_2_id
-              : conversation.participant_1_id;
+            conversation.client_id === user?.id
+              ? conversation.professional_id
+              : conversation.client_id;
           
           const otherUser = profiles?.[otherUserId];
           const isSelected = conversation.id === selectedConversationId;

@@ -15,7 +15,7 @@ interface ConversationsListProps {
 
 const ConversationsList: React.FC<ConversationsListProps> = ({ onConversationSelect }) => {
   const { user } = useAuth();
-  const { conversations, loading, totalUnread } = useConversationList(user?.id);
+  const { conversations, isLoading, totalUnread } = useConversationList(user?.id);
   const navigate = useNavigate();
 
   const handleConversationClick = (conversationId: string) => {
@@ -26,7 +26,7 @@ const ConversationsList: React.FC<ConversationsListProps> = ({ onConversationSel
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Card>
         <CardHeader>
@@ -63,9 +63,9 @@ const ConversationsList: React.FC<ConversationsListProps> = ({ onConversationSel
           ) : (
             <div className="space-y-2">
               {conversations.map((conversation) => {
-                const otherParticipantId = conversation.participant_1_id === user?.id 
-                  ? conversation.participant_2_id 
-                  : conversation.participant_1_id;
+                const otherParticipantId = conversation.client_id === user?.id 
+                  ? conversation.professional_id 
+                  : conversation.client_id;
                 const hasUnread = (conversation.unread_count || 0) > 0;
                 
                 return (

@@ -258,7 +258,7 @@ export default function ProfessionalProfile() {
       const { data: existing } = await supabase
         .from('conversations')
         .select('*')
-        .or(`and(participant_1_id.eq.${user.id},participant_2_id.eq.${professionalId}),and(participant_1_id.eq.${professionalId},participant_2_id.eq.${user.id})`)
+        .or(`and(client_id.eq.${user.id},professional_id.eq.${professionalId}),and(client_id.eq.${professionalId},professional_id.eq.${user.id})`)
         .maybeSingle();
 
       if (existing) {
@@ -267,8 +267,8 @@ export default function ProfessionalProfile() {
         const { data: newConv, error } = await supabase
           .from('conversations')
           .insert({
-            participant_1_id: user.id,
-            participant_2_id: professionalId!
+            client_id: user.id,
+            professional_id: professionalId!
           })
           .select()
           .single();
