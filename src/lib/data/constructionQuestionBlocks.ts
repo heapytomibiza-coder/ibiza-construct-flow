@@ -222,7 +222,7 @@ const questionBlocks: Record<string, WizardQuestion[]> = {
     {
       id: 'site_constraints',
       question: 'Any timing, noise, or access constraints?',
-      type: 'select',
+      type: 'multiselect',
       required: false,
       options: [
         'None – work can proceed normally',
