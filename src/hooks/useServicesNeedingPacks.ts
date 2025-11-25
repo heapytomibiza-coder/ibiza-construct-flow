@@ -7,8 +7,10 @@ interface ServiceNeedingPack {
   slug: string;
   subcategory_id: string;
   subcategory_name: string;
+  subcategory_slug: string;
   category_id: string;
   category_name: string;
+  category_slug: string;
 }
 
 interface GroupedBySubcategory {
@@ -38,10 +40,12 @@ export const useServicesNeedingPacks = () => {
           service_subcategories!inner (
             id,
             name,
+            slug,
             category_id,
             service_categories!inner (
               id,
-              name
+              name,
+              slug
             )
           )
         `)
@@ -68,8 +72,10 @@ export const useServicesNeedingPacks = () => {
           slug: micro.slug,
           subcategory_id: micro.service_subcategories.id,
           subcategory_name: micro.service_subcategories.name,
+          subcategory_slug: micro.service_subcategories.slug,
           category_id: micro.service_subcategories.service_categories.id,
           category_name: micro.service_subcategories.service_categories.name,
+          category_slug: micro.service_subcategories.service_categories.slug,
         })) || [];
 
       // Group by category → subcategory

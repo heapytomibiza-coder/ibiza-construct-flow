@@ -119,7 +119,8 @@ export default function QuestionPackGenerator() {
   };
 
   const handleBulkGenerate = async (
-    categoryName: string,
+    categorySlug: string,
+    subcategorySlug: string,
     subcategoryName: string,
     services: Array<{ id: string; name: string; slug: string }>
   ) => {
@@ -142,16 +143,16 @@ export default function QuestionPackGenerator() {
         // Generate question pack
         const { data, error } = await supabase.functions.invoke('generate-question-pack', {
           body: {
-            serviceType: service.name,
-            category: categoryName,
-            subcategory: subcategoryName,
+            category: categorySlug,
+            subcategory: subcategorySlug,
+            serviceName: service.name,
           }
         });
 
         if (error) throw error;
         
         // Auto-save as draft
-        await createQuestionPack(service.slug, data.questions, 'draft', 'ai');
+        await createQuestionPack(service.slug, data.questionPack, 'draft', 'ai');
         
         // Update status to saved
         setBulkStatuses(prev => ({ ...prev, [service.slug]: 'saved' }));
@@ -372,7 +373,15 @@ export default function QuestionPackGenerator() {
                                     variant="outline"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      handleBulkGenerate(categoryName, subcategoryName, subcategoryData.services);
+                                      const firstService = subcategoryData.services[0];
+                                      if (firstService) {
+                                        handleBulkGenerate(
+                                          firstService.category_slug,
+                                          firstService.subcategory_slug,
+                                          subcategoryName,
+                                          subcategoryData.services
+                                        );
+                                      }
                                     }}
                                     disabled={bulkGenerating}
                                     className="h-7 text-xs ml-2"
