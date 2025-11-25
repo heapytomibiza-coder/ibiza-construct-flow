@@ -16,6 +16,7 @@
  * - Pool & Spa - Construction: Concrete & Tiled Pools, New Pool Installation, Plunge & Small Pools, Pool Renovation & Refurbishment, Prefab & Fibreglass Pools
  * - Pool & Spa - Equipment: Filter Replacement, Pump Repair
  * - Pool & Spa - Maintenance: Chemical Balance, Pool Cleaning, Filter Cleaning & Replacement, One-off Deep Clean, Pool Cover Repair & Replacement, Pump Servicing, Regular Pool Cleaning, Skimmer & Drain Maintenance, Spring Opening & Winterizing
+ * - Pool & Spa - Spas: Hot Tub Installation, Hot Tub Repair, Jacuzzi Installation & Repair, Spa Cover Replacement, Spa Jets & Plumbing, Spa Servicing & Maintenance, Spa Water Treatment, Hot Tub Electrical Work
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -5664,6 +5665,723 @@ export const commercialOfficeQuestionPacks = [
           { value: 'standard-season', label: 'Around normal opening/closing time' },
           { value: 'late-season', label: 'Late in the season' },
           { value: 'date-flexible', label: 'Flexible on timing' }
+        ]
+      }
+    ]
+  },
+
+  // ==================== POOL & SPA - SPAS ====================
+
+  // Hot Tub Installation
+  {
+    microSlug: 'hot-tub-installation',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'tub_type',
+        question: 'What type of hot tub are you installing?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'portable-spa', label: 'Portable above-ground spa' },
+          { value: 'in-ground-spa', label: 'In-ground / built-in spa' },
+          { value: 'swim-spa', label: 'Swim spa' },
+          { value: 'inflatable', label: 'Inflatable spa' },
+          { value: 'not-purchased-yet', label: 'Not purchased yet – need advice' }
+        ]
+      },
+      {
+        id: 'location',
+        question: 'Where will the hot tub be located?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-terrace-garden', label: 'Outdoor terrace or garden' },
+          { value: 'roof-terrace', label: 'Roof terrace (structural check may be needed)' },
+          { value: 'indoor-room', label: 'Indoors (spa room, enclosure, etc.)' }
+        ]
+      },
+      {
+        id: 'base_prepared',
+        question: 'Do you already have a suitable base prepared?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'existing-concrete-slab', label: 'Yes – level concrete slab' },
+          { value: 'existing-tiles-or-decking', label: 'Yes – tiles or decking (unsure if strong enough)' },
+          { value: 'no-base-yet', label: 'No – base still needs to be prepared' },
+          { value: 'not-sure-need-advice', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How is access for delivering and positioning the hot tub?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'wide-straight-access', label: 'Wide, straight access from street' },
+          { value: 'narrow-or-steps', label: 'Narrow paths / steps / tight corners' },
+          { value: 'crane-likely', label: 'Crane likely required to lift into place' },
+          { value: 'not-sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'electrical_status',
+        question: 'Is the electrical supply for the hot tub already in place?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'dedicated-supply-ready', label: 'Yes – dedicated hot tub supply ready' },
+          { value: 'basic-outdoor-socket-only', label: 'Only a standard outdoor socket nearby' },
+          { value: 'no-supply-yet', label: 'No – electrical work still needed' },
+          { value: 'not-sure', label: 'Not sure – need an electrician to check' }
+        ]
+      },
+      {
+        id: 'cover_and_accessories',
+        question: 'Do you also need help with any of the following?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'steps-or-handrails', label: 'Steps or handrails' },
+          { value: 'cover-lifter', label: 'Cover lifter' },
+          { value: 'pergola-or-structure', label: 'Pergola / shelter / privacy screens' },
+          { value: 'chemical-starter-pack', label: 'Chemical starter setup and instructions' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the hot tub installation done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'within-2-weeks', label: 'Within 2 weeks' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: 'planning-only', label: 'Just planning / budgeting for now' }
+        ]
+      }
+    ]
+  },
+
+  // Hot Tub Repair
+  {
+    microSlug: 'hot-tub-repair',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'tub_type',
+        question: 'What type of hot tub do you have?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'portable-spa', label: 'Portable above-ground spa' },
+          { value: 'in-ground-spa', label: 'In-ground / built-in spa' },
+          { value: 'swim-spa', label: 'Swim spa' },
+          { value: 'inflatable', label: 'Inflatable spa' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'main_issues',
+        question: 'What issues are you experiencing?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'not-heating', label: 'Water not heating properly' },
+          { value: 'jets-not-working', label: 'Jets not working or weak' },
+          { value: 'pump-noise', label: 'Loud or unusual pump noise' },
+          { value: 'control-panel-errors', label: 'Error codes / control panel issues' },
+          { value: 'leaks', label: 'Leaks around the spa' },
+          { value: 'tripping-electrics', label: 'Spa trips electrics / breaker' }
+        ]
+      },
+      {
+        id: 'age',
+        question: 'Roughly how old is the hot tub?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-3-years', label: 'Under 3 years' },
+          { value: '3-7-years', label: '3–7 years' },
+          { value: 'over-7-years', label: 'Over 7 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'brand_known',
+        question: 'Do you know the brand or model?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes-can-provide', label: 'Yes – I can provide brand/model' },
+          { value: 'no-badge-or-label', label: 'No badge or label visible' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'recent_work',
+        question: 'Has any recent work or changes been made to the spa or electrics?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'new-electrics', label: 'New electrical work' },
+          { value: 'moved-or-relocated', label: 'Spa recently moved / relocated' },
+          { value: 'no-recent-changes', label: 'No recent changes – issue developed over time' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How is access to the spa cabinet and equipment?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-all-sides', label: 'Easy access to all sides' },
+          { value: 'one-side-only', label: 'Mainly one side accessible' },
+          { value: 'built-in-limited-access', label: 'Built-in with limited access panels' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How urgent is the repair?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'cannot-use-at-all', label: 'Cannot use at all – very urgent' },
+          { value: 'still-usable-but-issues', label: 'Still usable but with issues' },
+          { value: 'not-urgent', label: 'Not urgent – just want it checked' }
+        ]
+      }
+    ]
+  },
+
+  // Jacuzzi Installation and Repair
+  {
+    microSlug: 'jacuzzi-installation-repair',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'service_type',
+        question: 'Do you need installation, repair, or both?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'installation', label: 'New Jacuzzi installation' },
+          { value: 'repair', label: 'Repair of existing Jacuzzi' },
+          { value: 'both', label: 'Advice on replacing vs repairing' }
+        ]
+      },
+      {
+        id: 'jacuzzi_type',
+        question: 'What type of Jacuzzi system is it?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'built-in-bath-jets', label: 'Built-in bath with jets (indoor bathroom)' },
+          { value: 'outdoor-spa', label: 'Outdoor Jacuzzi spa' },
+          { value: 'hotel-or-commercial', label: 'Hotel / commercial Jacuzzi' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'issues_if_repair',
+        question: 'If repair, what issues are you having?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'jets-not-working', label: 'Jets not working or weak' },
+          { value: 'pump-noise', label: 'Loud pump or vibration' },
+          { value: 'leaks', label: 'Leaks around bath or pipework' },
+          { value: 'controls-or-timers', label: 'Controls / timer not working' },
+          { value: 'electrical-issues', label: 'Electrical trip / no power' }
+        ]
+      },
+      {
+        id: 'installation_location',
+        question: 'If installation, where will the Jacuzzi be located?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'indoor-bathroom', label: 'Indoor bathroom' },
+          { value: 'spa-room', label: 'Indoor spa / wellness room' },
+          { value: 'outdoor-terrace', label: 'Outdoor terrace / garden' }
+        ]
+      },
+      {
+        id: 'access_panels',
+        question: 'Is there good access to pumps and pipework?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'good-access-panels', label: 'Yes – access panels are available' },
+          { value: 'limited-access', label: 'Limited or awkward access' },
+          { value: 'no-access', label: 'No access currently (may need creating)' }
+        ]
+      },
+      {
+        id: 'age',
+        question: 'Roughly how old is the existing Jacuzzi system?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-5-years', label: 'Under 5 years' },
+          { value: '5-10-years', label: '5–10 years' },
+          { value: 'over-10-years', label: 'Over 10 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the work to be done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-2-weeks', label: 'Urgent – within 2 weeks' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'flexible', label: 'Flexible – no fixed deadline' }
+        ]
+      }
+    ]
+  },
+
+  // Spa Cover Replacement
+  {
+    microSlug: 'spa-cover-replacement',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'spa_type',
+        question: 'What type of spa or hot tub is the cover for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'portable-spa', label: 'Portable above-ground spa' },
+          { value: 'in-ground-spa', label: 'In-ground spa' },
+          { value: 'swim-spa', label: 'Swim spa' },
+          { value: 'inflatable', label: 'Inflatable spa' }
+        ]
+      },
+      {
+        id: 'service_type',
+        question: 'Do you need a direct replacement or an upgrade?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'like-for-like', label: 'Like-for-like replacement' },
+          { value: 'upgrade-insulation', label: 'Upgrade to better insulation / quality' },
+          { value: 'need-advice', label: 'Need advice on best option' }
+        ]
+      },
+      {
+        id: 'main_issues',
+        question: 'What issues do you have with the current cover?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'heavy-waterlogged', label: 'Very heavy / waterlogged' },
+          { value: 'torn-or-cracked', label: 'Torn or cracked vinyl' },
+          { value: 'broken-straps', label: 'Broken straps / clips' },
+          { value: 'poor-insulation', label: 'Poor heat retention' }
+        ]
+      },
+      {
+        id: 'shape',
+        question: 'What shape is the spa?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'square', label: 'Square' },
+          { value: 'rectangular', label: 'Rectangular' },
+          { value: 'round', label: 'Round' },
+          { value: 'other', label: 'Other / custom shape' }
+        ]
+      },
+      {
+        id: 'safety_priority',
+        question: 'Is safety and security a key priority for the new cover?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes-high-priority', label: 'Yes – child / pet safety is very important' },
+          { value: 'medium', label: 'Medium priority' },
+          { value: 'mainly-insulation', label: 'Mainly for insulation and keeping debris out' }
+        ]
+      },
+      {
+        id: 'extras',
+        question: 'Do you also need help with any of the following?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'cover-lifter', label: 'Cover lifter installation' },
+          { value: 'steps-or-handrail', label: 'Steps or handrail' },
+          { value: 'old-cover-disposal', label: 'Removal and disposal of old cover' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the new cover supplied and fitted?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'within-2-weeks', label: 'Within 2 weeks' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'flexible', label: 'Flexible – no fixed date' }
+        ]
+      }
+    ]
+  },
+
+  // Spa Jets and Plumbing
+  {
+    microSlug: 'spa-jets-plumbing',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'spa_type',
+        question: 'What type of spa do you have?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'portable-spa', label: 'Portable spa' },
+          { value: 'in-ground-spa', label: 'In-ground / built-in spa' },
+          { value: 'swim-spa', label: 'Swim spa' },
+          { value: 'bath-jets', label: 'Jacuzzi bath with jets' }
+        ]
+      },
+      {
+        id: 'jet_issues',
+        question: 'What problems are you having with jets or plumbing?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'jets-not-working', label: 'Some or all jets not working' },
+          { value: 'weak-pressure', label: 'Weak pressure from jets' },
+          { value: 'air-or-gurgling', label: 'Gurgling / air in system' },
+          { value: 'visible-leaks', label: 'Visible leaks under or around spa' },
+          { value: 'water-loss', label: 'Losing water – suspected plumbing leak' }
+        ]
+      },
+      {
+        id: 'spa_access',
+        question: 'How is access to pipework and equipment?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'good-all-sides', label: 'Good access to all sides' },
+          { value: 'one-side-only', label: 'Mainly one side accessible' },
+          { value: 'built-in-limited', label: 'Built-in with limited access hatches' }
+        ]
+      },
+      {
+        id: 'age',
+        question: 'Roughly how old is the spa and plumbing?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-5-years', label: 'Under 5 years' },
+          { value: '5-10-years', label: '5–10 years' },
+          { value: 'over-10-years', label: 'Over 10 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'work_scope',
+        question: 'What kind of help do you think you need?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'diagnostic-only', label: 'Diagnostic visit and advice' },
+          { value: 'jet-replacement', label: 'Jet body / fitting replacement' },
+          { value: 'pipe-repairs', label: 'Pipe or union repairs' },
+          { value: 're-plumbing-section', label: 'Re-plumbing part of the system' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How urgent is this work?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'spa-out-of-use', label: 'Spa out of use – very urgent' },
+          { value: 'still-usable', label: 'Still usable but not ideal' },
+          { value: 'non-urgent', label: 'Non-urgent / planning repairs' }
+        ]
+      }
+    ]
+  },
+
+  // Spa Servicing and Maintenance
+  {
+    microSlug: 'spa-servicing-maintenance',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'spa_type',
+        question: 'What type of spa or hot tub do you have?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'portable-spa', label: 'Portable spa' },
+          { value: 'in-ground-spa', label: 'In-ground spa' },
+          { value: 'swim-spa', label: 'Swim spa' }
+        ]
+      },
+      {
+        id: 'service_frequency',
+        question: 'What kind of servicing are you looking for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one-off-service', label: 'One-off service' },
+          { value: 'regular-monthly', label: 'Regular monthly service' },
+          { value: 'seasonal', label: 'Seasonal opening/closing service' }
+        ]
+      },
+      {
+        id: 'tasks_required',
+        question: 'Which tasks would you like included?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'drain-and-refill', label: 'Drain, clean and refill spa' },
+          { value: 'clean-shell-and-cover', label: 'Clean spa shell and cover' },
+          { value: 'filter-clean-or-replace', label: 'Clean or replace filters' },
+          { value: 'check-jets-and-pumps', label: 'Check jets, pumps and controls' },
+          { value: 'test-and-balance-water', label: 'Test and balance water chemistry' }
+        ]
+      },
+      {
+        id: 'usage_pattern',
+        question: 'How is the spa typically used?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'private-home', label: 'Private home use' },
+          { value: 'holiday-rental', label: 'Holiday rental / guests' },
+          { value: 'hotel-or-spa', label: 'Hotel / spa business' }
+        ]
+      },
+      {
+        id: 'chemicals_option',
+        question: 'How would you like to handle chemicals?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'pro-supplies', label: 'Professional supplies chemicals' },
+          { value: 'client-supplies', label: 'I supply the chemicals' },
+          { value: 'mixed', label: 'Mix of both' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How will the technician access the spa?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'owner-present', label: 'Owner / staff present' },
+          { value: 'keys-or-code', label: 'Keys / gate code / key safe' }
+        ]
+      },
+      {
+        id: 'start_date',
+        question: 'When would you like the first service visit?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: 'within-2-weeks', label: 'Within 2 weeks' },
+          { value: 'within-1-month', label: 'Within 1 month' }
+        ]
+      }
+    ]
+  },
+
+  // Spa Water Treatment
+  {
+    microSlug: 'spa-water-treatment',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'spa_type',
+        question: 'What type of spa or hot tub is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'portable-spa', label: 'Portable spa' },
+          { value: 'in-ground-spa', label: 'In-ground spa' },
+          { value: 'swim-spa', label: 'Swim spa' }
+        ]
+      },
+      {
+        id: 'water_issues',
+        question: 'What issues are you noticing with the spa water?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'cloudy', label: 'Cloudy water' },
+          { value: 'foaming', label: 'Foaming' },
+          { value: 'strong-smell', label: 'Strong chemical smell or irritation' },
+          { value: 'algae-or-biofilm', label: 'Algae or biofilm in pipes' },
+          { value: 'staining-or-scale', label: 'Staining or scale' }
+        ]
+      },
+      {
+        id: 'treatment_method',
+        question: 'How is the spa currently treated?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'chlorine', label: 'Chlorine' },
+          { value: 'bromine', label: 'Bromine' },
+          { value: 'salt-system', label: 'Salt / salt chlorinator' },
+          { value: 'alternative-system', label: 'Ozone / UV / other system' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'service_scope',
+        question: 'What help do you need with water treatment?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'one-off-recovery', label: 'One-off water recovery and balance' },
+          { value: 'pipework-flush', label: 'Pipework flush and disinfection' },
+          { value: 'setup-chemical-plan', label: 'Set up a clear chemical routine' },
+          { value: 'regular-testing', label: 'Regular testing and balancing visits' }
+        ]
+      },
+      {
+        id: 'testing',
+        question: 'How do you currently test the water?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'test-strips', label: 'Test strips' },
+          { value: 'test-kit', label: 'Liquid test kit' },
+          { value: 'shop-testing', label: 'Occasional shop / professional tests' },
+          { value: 'no-regular-testing', label: 'No regular testing' }
+        ]
+      },
+      {
+        id: 'cover_usage',
+        question: 'Is the spa normally covered when not in use?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'always-covered', label: 'Yes – almost always covered' },
+          { value: 'sometimes-covered', label: 'Sometimes covered' },
+          { value: 'rarely-covered', label: 'Rarely or never covered' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How urgent is the water treatment issue?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'cant-use-spa', label: 'Spa can\'t be used – urgent' },
+          { value: 'soon-1-week', label: 'Soon – within 1 week' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'planning-ongoing-service', label: 'Planning ongoing maintenance' }
+        ]
+      }
+    ]
+  },
+
+  // Hot Tub Electrical Work
+  {
+    microSlug: 'hot-tub-electrical-work',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'service_type',
+        question: 'What type of electrical work do you need for the hot tub?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'new-supply', label: 'New dedicated electrical supply' },
+          { value: 'upgrade-supply', label: 'Upgrade existing supply / breaker' },
+          { value: 'connect-and-commission', label: 'Connect and commission new spa' },
+          { value: 'fault-finding', label: 'Fault finding / repair (tripping, no power etc.)' }
+        ]
+      },
+      {
+        id: 'tub_type',
+        question: 'What type of hot tub is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: '13a-plug-and-play', label: 'Plug-and-play (standard plug)' },
+          { value: 'hard-wired-spa', label: 'Hard-wired spa (dedicated circuit)' },
+          { value: 'swim-spa', label: 'Swim spa' },
+          { value: 'in-ground-spa', label: 'In-ground spa' }
+        ]
+      },
+      {
+        id: 'electrical_panel_distance',
+        question: 'Roughly how far is the hot tub from the main electrical panel?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-10m', label: 'Under 10 metres' },
+          { value: '10-25m', label: '10–25 metres' },
+          { value: 'over-25m', label: 'Over 25 metres' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'existing-electrics',
+        question: 'What is currently in place near the hot tub location?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'no-electrics-nearby', label: 'No electrics nearby' },
+          { value: 'standard-outdoor-socket', label: 'Standard outdoor socket' },
+          { value: 'dedicated-cable-present', label: 'Dedicated cable already run to area' },
+          { value: 'old-spa-supply', label: 'Old spa / pool supply that may be reused' }
+        ]
+      },
+      {
+        id: 'property_type',
+        question: 'What type of property is this?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'private-villa', label: 'Private villa / house' },
+          { value: 'apartment', label: 'Apartment' },
+          { value: 'hotel-or-tourist', label: 'Hotel / tourist accommodation' }
+        ]
+      },
+      {
+        id: 'access_and_permits',
+        question: 'Is there anything that might affect electrical access or permissions?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'shared-building', label: 'Shared building / community rules' },
+          { value: 'limited-panel-access', label: 'Limited access to main electrical panel' },
+          { value: 'none', label: 'Nothing special – normal access' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How urgent is the electrical work?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'need-before-delivery', label: 'Need supply ready before spa delivery' },
+          { value: 'spa-already-on-site', label: 'Spa already on site – need connection soon' },
+          { value: 'fault-no-power', label: 'Fault – spa has no power / tripping' },
+          { value: 'planning', label: 'Planning stage only' }
         ]
       }
     ]
