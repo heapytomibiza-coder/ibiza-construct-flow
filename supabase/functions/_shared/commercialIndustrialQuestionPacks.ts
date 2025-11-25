@@ -479,9 +479,372 @@ const genericCommercialPacks: MicroservicePack[] = genericCommercialServices.map
   buildGenericCommercialPack(s.microSlug, s.name, s.subcategorySlug)
 );
 
+/**
+ * Detailed pack: Office partitions
+ */
+const officePartitionsPack: MicroservicePack = {
+  microSlug: "office-partitions",
+  subcategorySlug: "office-fit-out",
+  categorySlug: "commercial-industrial",
+  version: 1,
+  questions: [
+    {
+      id: "partition_type",
+      question: "What type of partitions do you need?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "solid_stud", label: "Solid stud partitions" },
+        { value: "glass", label: "Glass partitions" },
+        { value: "half_glazed", label: "Half-glazed partitions" },
+        { value: "acoustic", label: "Acoustic partitions" },
+        { value: "moveable", label: "Moveable/operable walls" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "project_scope",
+      question: "What best describes the scope?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "new_rooms", label: "Create new rooms" },
+        { value: "reconfigure", label: "Reconfigure existing layout" },
+        { value: "small_partitions", label: "Add a few small partitions" },
+        { value: "full_repartition", label: "Full office re-partition" },
+        { value: "unsure", label: "Unsure" }
+      ]
+    },
+    {
+      id: "area_size",
+      question: "Approximate office size affected?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "under_50", label: "Up to 50 m²" },
+        { value: "50_150", label: "50–150 m²" },
+        { value: "150_300", label: "150–300 m²" },
+        { value: "over_300", label: "300 m²+" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "ceiling_height",
+      question: "What is the approximate ceiling height?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "standard", label: "Standard (up to 2.6m)" },
+        { value: "higher", label: "Higher than normal" },
+        { value: "double", label: "Double height / atrium" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "finishes",
+      question: "What finishes are required on the partitions?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "tape_paint", label: "Tape, joint and paint" },
+        { value: "plaster_paint", label: "Plastered and painted" },
+        { value: "vinyl", label: "Vinyl wallcovering" },
+        { value: "exposed", label: "Exposed/industrial look" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "extras",
+      question: "Any additional requirements?",
+      type: "checkbox",
+      required: false,
+      options: [
+        { value: "acoustic", label: "Acoustic performance" },
+        { value: "fire_rated", label: "Fire-rated partitions" },
+        { value: "doors", label: "Integrated doors" },
+        { value: "glazed", label: "Glazed modules/vision panels" },
+        { value: "none", label: "None / basic only" }
+      ]
+    }
+  ]
+};
+
+/**
+ * Detailed pack: Office renovation
+ */
+const officeRenovationPack: MicroservicePack = {
+  microSlug: "office-renovation",
+  subcategorySlug: "office-fit-out",
+  categorySlug: "commercial-industrial",
+  version: 1,
+  questions: [
+    {
+      id: "renovation_scope",
+      question: "What is the main scope of the office renovation?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "cosmetic", label: "Cosmetic refresh (paint/flooring)" },
+        { value: "layout", label: "New layout and partitions" },
+        { value: "full_refit", label: "Full strip out and refit" },
+        { value: "compliance", label: "Compliance upgrades (fire/AC/electrical)" },
+        { value: "combination", label: "Combination of these" }
+      ]
+    },
+    {
+      id: "area_size",
+      question: "Approximate office size?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "under_100", label: "Up to 100 m²" },
+        { value: "100_250", label: "100–250 m²" },
+        { value: "250_500", label: "250–500 m²" },
+        { value: "500_1000", label: "500–1000 m²" },
+        { value: "over_1000", label: "1000 m²+" }
+      ]
+    },
+    {
+      id: "occupied",
+      question: "Will the office be occupied during works?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "fully", label: "Yes, fully occupied" },
+        { value: "partly", label: "Partly occupied" },
+        { value: "empty", label: "No, it will be empty" },
+        { value: "not_sure", label: "Not sure yet" }
+      ]
+    },
+    {
+      id: "work_elements",
+      question: "Which elements are required?",
+      type: "checkbox",
+      required: true,
+      options: [
+        { value: "painting", label: "Painting & decorating" },
+        { value: "flooring", label: "Flooring replacement" },
+        { value: "partitions", label: "Partitions/doors" },
+        { value: "ceilings", label: "Ceilings & lighting" },
+        { value: "electrical", label: "Electrical/data" },
+        { value: "hvac", label: "HVAC changes" }
+      ]
+    },
+    {
+      id: "fixtures",
+      question: "Do you need any new fixtures or furniture?",
+      type: "checkbox",
+      required: false,
+      options: [
+        { value: "reception", label: "Reception area" },
+        { value: "meeting", label: "Meeting rooms" },
+        { value: "kitchen", label: "Kitchen/tea point" },
+        { value: "workstations", label: "Workstations" },
+        { value: "none", label: "No, just building works" }
+      ]
+    },
+    {
+      id: "design_help",
+      question: "Do you already have drawings or a design?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "full", label: "Yes, full drawings" },
+        { value: "concept", label: "Concept only" },
+        { value: "need_help", label: "Need help with design" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    }
+  ]
+};
+
+/**
+ * Detailed pack: Retail display
+ */
+const retailDisplayPack: MicroservicePack = {
+  microSlug: "retail-display",
+  subcategorySlug: "retail-spaces",
+  categorySlug: "commercial-industrial",
+  version: 1,
+  questions: [
+    {
+      id: "display_type",
+      question: "What type of retail displays are needed?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "wall_shelving", label: "Wall shelving" },
+        { value: "gondolas", label: "Gondolas/freestanding units" },
+        { value: "window", label: "Window displays" },
+        { value: "pos", label: "Point-of-sale units" },
+        { value: "feature", label: "Feature/brand displays" },
+        { value: "mixed", label: "Mixed" }
+      ]
+    },
+    {
+      id: "project_stage",
+      question: "What stage are you at?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "new_store", label: "New store fit-out" },
+        { value: "refresh", label: "Store refresh" },
+        { value: "seasonal", label: "Seasonal changeover" },
+        { value: "campaign", label: "Single campaign/display" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "store_size",
+      question: "Approximate store size?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "boutique", label: "Small boutique" },
+        { value: "medium", label: "Medium shop" },
+        { value: "large", label: "Large store" },
+        { value: "department", label: "Department area within larger store" },
+        { value: "popup", label: "Pop-up space" }
+      ]
+    },
+    {
+      id: "supply_or_fit",
+      question: "Do you need supply and installation, or install only?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "supply_install", label: "Supply and install" },
+        { value: "install_only", label: "Install client-supplied units" },
+        { value: "mix", label: "Mix of both" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "fixing_type",
+      question: "How will displays be fixed?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "walls", label: "Into walls" },
+        { value: "floor", label: "Floor-mounted" },
+        { value: "ceiling", label: "Ceiling-hung" },
+        { value: "window", label: "Window-mounted" },
+        { value: "mixture", label: "Mixture / not sure" }
+      ]
+    },
+    {
+      id: "out_of_hours",
+      question: "Can work happen during trading hours?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "yes", label: "Yes, during opening hours" },
+        { value: "evenings", label: "Evenings/weekends only" },
+        { value: "overnight", label: "Overnight only" },
+        { value: "flexible", label: "Flexible" }
+      ]
+    }
+  ]
+};
+
+/**
+ * Detailed pack: Shop fitting
+ */
+const shopFittingPack: MicroservicePack = {
+  microSlug: "shop-fitting",
+  subcategorySlug: "retail-spaces",
+  categorySlug: "commercial-industrial",
+  version: 1,
+  questions: [
+    {
+      id: "fitout_type",
+      question: "What type of shop fitting project is this?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "new_fitout", label: "Full new fit-out" },
+        { value: "refurb", label: "Refurbishment of existing shop" },
+        { value: "rebrand", label: "Rebrand/layout change" },
+        { value: "popup", label: "Pop-up shop" },
+        { value: "kiosk", label: "Kiosk/stand" }
+      ]
+    },
+    {
+      id: "sector",
+      question: "What type of retail business?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "fashion", label: "Fashion/footwear" },
+        { value: "food", label: "Food & drink" },
+        { value: "health", label: "Health/beauty" },
+        { value: "electronics", label: "Electronics" },
+        { value: "convenience", label: "Convenience store" },
+        { value: "other", label: "Other" }
+      ]
+    },
+    {
+      id: "area_size",
+      question: "Approximate floor area?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "under_50", label: "Up to 50 m²" },
+        { value: "50_150", label: "50–150 m²" },
+        { value: "150_300", label: "150–300 m²" },
+        { value: "300_600", label: "300–600 m²" },
+        { value: "over_600", label: "600 m²+" }
+      ]
+    },
+    {
+      id: "work_required",
+      question: "What work is required?",
+      type: "checkbox",
+      required: true,
+      options: [
+        { value: "joinery", label: "Joinery & counters" },
+        { value: "shelving", label: "Shelving & displays" },
+        { value: "flooring", label: "Flooring" },
+        { value: "ceilings", label: "Ceilings & lighting" },
+        { value: "electrical", label: "Electrical/data" },
+        { value: "signage", label: "Signage/branding" }
+      ]
+    },
+    {
+      id: "trading_status",
+      question: "Will the shop be trading during works?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "closed", label: "Closed during works" },
+        { value: "partly", label: "Partly trading" },
+        { value: "fully", label: "Fully trading" },
+        { value: "not_decided", label: "Not decided yet" }
+      ]
+    },
+    {
+      id: "design_docs",
+      question: "Do you have plans or a design pack?",
+      type: "radio",
+      required: true,
+      options: [
+        { value: "full", label: "Yes, full design pack" },
+        { value: "basic", label: "Basic layout only" },
+        { value: "brand", label: "Brand guidelines only" },
+        { value: "need_support", label: "Need design support" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    }
+  ]
+};
+
 export const commercialIndustrialQuestionPacks: MicroservicePack[] = [
   officeFitOutsPack,
   retailSpacesPack,
   commercialProjectsPack,
+  officePartitionsPack,
+  officeRenovationPack,
+  retailDisplayPack,
+  shopFittingPack,
   ...genericCommercialPacks
 ];

@@ -520,11 +520,363 @@ export const genericPoolSpaPacks = genericPoolSpaServices.map(service =>
 );
 
 // ===================================
-// EXPORT ALL PACKS (3 detailed + 32 generic = 35 total)
+// DETAILED PACK 4: Pool chemical balancing
+// ===================================
+export const poolChemicalBalancingPack: MicroservicePackContent = {
+  slug: 'pool-chemical-balancing',
+  subcategorySlug: 'maintenance',
+  name: 'Pool chemical balancing',
+  questions: [
+    {
+      id: 'pool_type',
+      question: 'What type of pool do you have?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'chlorine', label: 'Chlorine' },
+        { value: 'saltwater', label: 'Saltwater' },
+        { value: 'mineral', label: 'Mineral system' },
+        { value: 'indoor', label: 'Indoor pool' },
+        { value: 'unsure', label: 'Unsure' }
+      ]
+    },
+    {
+      id: 'pool_size',
+      question: 'What size is the pool?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'small', label: 'Small (up to 20m³)' },
+        { value: 'medium', label: 'Medium (20–40m³)' },
+        { value: 'large', label: 'Large (40–80m³)' },
+        { value: 'very_large', label: 'Very large (80m³+)' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'current_issue',
+      question: 'What is the main issue with the water?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'cloudy', label: 'Cloudy water' },
+        { value: 'algae', label: 'Algae present' },
+        { value: 'chlorine_smell', label: 'Strong chlorine smell' },
+        { value: 'ph_imbalance', label: 'pH imbalance' },
+        { value: 'routine', label: 'Routine balancing' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'frequency',
+      question: 'Is this a one-off or ongoing service?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'one_time', label: 'One-time visit' },
+        { value: 'weekly', label: 'Weekly maintenance' },
+        { value: 'fortnightly', label: 'Fortnightly maintenance' },
+        { value: 'monthly', label: 'Monthly maintenance' }
+      ]
+    },
+    {
+      id: 'access',
+      question: 'How is access to the pool area?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'easy', label: 'Easy access' },
+        { value: 'gate', label: 'Gate access only' },
+        { value: 'limited', label: 'Limited access' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'chemicals',
+      question: 'Do you require chemicals to be supplied?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'supply', label: 'Yes, supply chemicals' },
+        { value: 'onsite', label: 'No, chemicals provided on-site' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    }
+  ]
+};
+
+// ===================================
+// DETAILED PACK 5: Filter replacement
+// ===================================
+export const filterReplacementPack: MicroservicePackContent = {
+  slug: 'filter-replacement',
+  subcategorySlug: 'maintenance',
+  name: 'Pool filter replacement',
+  questions: [
+    {
+      id: 'filter_type',
+      question: 'What type of filter system do you have?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'sand', label: 'Sand filter' },
+        { value: 'cartridge', label: 'Cartridge filter' },
+        { value: 'de', label: 'D.E. filter' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'filter_age',
+      question: 'How old is the current filter?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'under_2', label: 'Less than 2 years' },
+        { value: '2_5', label: '2–5 years' },
+        { value: '5_10', label: '5–10 years' },
+        { value: 'over_10', label: '10+ years' },
+        { value: 'unsure', label: 'Unsure' }
+      ]
+    },
+    {
+      id: 'water_issues',
+      question: 'Any issues with water clarity or pressure?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'cloudy', label: 'Cloudy water' },
+        { value: 'low_pressure', label: 'Low pressure' },
+        { value: 'high_pressure', label: 'High pressure' },
+        { value: 'leaks', label: 'Leaks' },
+        { value: 'routine', label: 'Just routine replacement' }
+      ]
+    },
+    {
+      id: 'supply',
+      question: 'Do you need the new filter supplied?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'yes', label: 'Yes, supply the filter' },
+        { value: 'no', label: 'No, I have it already' },
+        { value: 'unsure', label: 'Unsure' }
+      ]
+    },
+    {
+      id: 'pool_size',
+      question: 'What size is the pool?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'small', label: 'Small' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'large', label: 'Large' },
+        { value: 'very_large', label: 'Very large' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'access',
+      question: 'How is access to the pump/filter area?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'easy', label: 'Easy' },
+        { value: 'tight', label: 'Tight space' },
+        { value: 'indoor', label: 'Indoor plant room' },
+        { value: 'outdoor', label: 'Outdoor shed' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    }
+  ]
+};
+
+// ===================================
+// DETAILED PACK 6: Pool cleaning
+// ===================================
+export const poolCleaningPack: MicroservicePackContent = {
+  slug: 'pool-cleaning',
+  subcategorySlug: 'cleaning',
+  name: 'Pool cleaning',
+  questions: [
+    {
+      id: 'service_type',
+      question: 'What type of pool cleaning do you need?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'full_clean', label: 'Full clean' },
+        { value: 'surface', label: 'Surface clean' },
+        { value: 'vacuuming', label: 'Vacuuming' },
+        { value: 'algae', label: 'Algae treatment' },
+        { value: 'post_storm', label: 'Post-storm clean' },
+        { value: 'regular', label: 'Regular maintenance' }
+      ]
+    },
+    {
+      id: 'frequency',
+      question: 'Is this a one-off or regular service?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'one_time', label: 'One-time clean' },
+        { value: 'weekly', label: 'Weekly cleaning' },
+        { value: 'fortnightly', label: 'Fortnightly cleaning' },
+        { value: 'monthly', label: 'Monthly cleaning' }
+      ]
+    },
+    {
+      id: 'pool_type',
+      question: 'What type of pool is it?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'chlorine', label: 'Chlorine pool' },
+        { value: 'saltwater', label: 'Saltwater pool' },
+        { value: 'indoor', label: 'Indoor pool' },
+        { value: 'spa', label: 'Spa/Jacuzzi' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'pool_size',
+      question: 'What size is the pool?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'small', label: 'Small' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'large', label: 'Large' },
+        { value: 'very_large', label: 'Very large' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'debris',
+      question: 'Current condition of the pool?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'light', label: 'Light debris' },
+        { value: 'moderate', label: 'Moderate debris' },
+        { value: 'heavy', label: 'Heavy debris' },
+        { value: 'green', label: 'Green water' },
+        { value: 'unsure', label: 'Unsure' }
+      ]
+    },
+    {
+      id: 'equipment',
+      question: 'Is equipment available on-site?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'all', label: 'Yes, all equipment available' },
+        { value: 'some', label: 'Some equipment available' },
+        { value: 'none', label: 'No equipment' },
+        { value: 'unsure', label: 'Unsure' }
+      ]
+    }
+  ]
+};
+
+// ===================================
+// DETAILED PACK 7: Spa maintenance
+// ===================================
+export const spaMaintenancePack: MicroservicePackContent = {
+  slug: 'spa-maintenance',
+  subcategorySlug: 'spa-hot-tub',
+  name: 'Spa & hot tub maintenance',
+  questions: [
+    {
+      id: 'spa_type',
+      question: 'What type of spa/hot tub is it?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'inflatable', label: 'Inflatable' },
+        { value: 'portable', label: 'Portable plug-in' },
+        { value: 'hard_shell', label: 'Hard-shell spa' },
+        { value: 'built_in', label: 'Built-in spa' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'maintenance_type',
+      question: 'What service do you need?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'cleaning', label: 'Cleaning' },
+        { value: 'chemical', label: 'Chemical balancing' },
+        { value: 'filter', label: 'Filter replacement' },
+        { value: 'pump', label: 'Pump inspection' },
+        { value: 'full', label: 'Full maintenance' },
+        { value: 'unsure', label: 'Unsure' }
+      ]
+    },
+    {
+      id: 'spa_size',
+      question: 'What size is the spa?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: '2_3', label: '2–3 person' },
+        { value: '4_5', label: '4–5 person' },
+        { value: '6_plus', label: '6+ person' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    },
+    {
+      id: 'water_condition',
+      question: 'How is the water condition?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'clear', label: 'Clear' },
+        { value: 'cloudy', label: 'Cloudy' },
+        { value: 'foamy', label: 'Foamy' },
+        { value: 'green', label: 'Green' },
+        { value: 'empty', label: 'Empty spa' }
+      ]
+    },
+    {
+      id: 'frequency',
+      question: 'Is this a one-off or recurring maintenance?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'one_off', label: 'One-off' },
+        { value: 'weekly', label: 'Weekly' },
+        { value: 'fortnightly', label: 'Fortnightly' },
+        { value: 'monthly', label: 'Monthly' }
+      ]
+    },
+    {
+      id: 'access',
+      question: 'How is the access to the spa?',
+      type: 'radio',
+      required: true,
+      options: [
+        { value: 'easy', label: 'Easy' },
+        { value: 'steps', label: 'Steps required' },
+        { value: 'inside', label: 'Inside building' },
+        { value: 'outside', label: 'Outside area' },
+        { value: 'not_sure', label: 'Not sure' }
+      ]
+    }
+  ]
+};
+
+// ===================================
+// EXPORT ALL PACKS (7 detailed + 32 generic = 39 total)
 // ===================================
 export const poolSpaQuestionPacks: MicroservicePackContent[] = [
   newPoolInstallationPack,
   regularPoolCleaningPack,
   waterProblemSolvingPack,
+  poolChemicalBalancingPack,
+  filterReplacementPack,
+  poolCleaningPack,
+  spaMaintenancePack,
   ...genericPoolSpaPacks
 ];

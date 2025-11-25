@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
     const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
-    console.log(`[seed-pool-spa-questions] Starting to seed ${poolSpaQuestionPacks.length} question packs...`);
+    console.log(`[seed-pool-spa-questions] Starting to seed ${poolSpaQuestionPacks.length} question packs (39 total: 7 detailed + 32 generic)...`);
 
     let inserted = 0;
     let skipped = 0;
