@@ -1,5 +1,5 @@
 /**
- * Commercial, Office, Retail & Kitchen/Bathroom Question Packs
+ * Commercial, Office, Retail, Kitchen/Bathroom, Construction & Brickwork Question Packs
  * 
  * Covers:
  * - Commercial & Industrial: Planned Maintenance, Shopfront Repairs
@@ -11,6 +11,7 @@
  * - Kitchen Fitting & Renovation: Kitchen Fitting, Kitchen Refurbishment, New Kitchen Installation, Small Kitchen Updates
  * - Kitchen Worktops, Units & Storage: Island Installation, Unit Installation, Pantry/Utility Storage, Worktop Install/Replace
  * - Construction & Extensions: Adding New Rooms, Conservatories/Glass Rooms, Garage Conversions, Single/Two Floor Home Extensions, Terrace/Rooftop Extensions
+ * - Brickwork, Masonry & Concrete: Building/Repairing Walls, Concrete Bases/Paths/Floors, Garden/Boundary Walls
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -3219,5 +3220,339 @@ export const commercialOfficeQuestionPacks = [
         ]
       }
     ]
-  }
+  },
+
+  // ========================================
+  // BRICKWORK, MASONRY & CONCRETE
+  // ========================================
+
+  {
+    microSlug: 'building-or-repairing-walls',
+    categorySlug: 'brickwork-masonry-concrete',
+    version: 1,
+    questions: [
+      {
+        id: 'wall_scope',
+        question: 'Whether this is a new wall, repair, or alteration',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new-wall', label: 'New wall' },
+          { value: 'repair-damaged-areas', label: 'Repair damaged areas' },
+          { value: 'repointing-only', label: 'Repointing only' },
+          { value: 'altering-existing-wall', label: 'Altering existing wall' },
+        ],
+      },
+      {
+        id: 'wall_location_type',
+        question: 'Internal vs external and whether wall is structural',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'internal-partition', label: 'Internal partition' },
+          { value: 'internal-load-bearing', label: 'Internal load-bearing' },
+          { value: 'external-wall', label: 'External wall' },
+          { value: 'retaining-wall', label: 'Retaining wall' },
+          { value: 'boundary-wall', label: 'Boundary wall' },
+          { value: 'not-sure', label: 'Not sure' },
+        ],
+      },
+      {
+        id: 'wall_material',
+        question: 'Main wall material',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'brick', label: 'Brick' },
+          { value: 'concrete-block', label: 'Concrete block' },
+          { value: 'stone', label: 'Stone' },
+          { value: 'rendered-masonry', label: 'Rendered masonry' },
+          { value: 'other', label: 'Other' },
+        ],
+      },
+      {
+        id: 'approx_wall_size',
+        question: 'Approx length/height of wall area',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-up-to-3m', label: 'Small (up to 3m)' },
+          { value: 'medium-3-8m', label: 'Medium (3-8m)' },
+          { value: 'large-8m-plus', label: 'Large (8m+)' },
+          { value: 'multiple-areas', label: 'Multiple areas' },
+          { value: 'not-sure', label: 'Not sure' },
+        ],
+      },
+      {
+        id: 'damage_type',
+        question: 'If repair, what type of issues are present',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'cracks', label: 'Cracks' },
+          { value: 'loose-or-missing-bricks', label: 'Loose or missing bricks' },
+          { value: 'blown-or-missing-mortar', label: 'Blown or missing mortar' },
+          { value: 'movement-or-bowing', label: 'Movement or bowing' },
+          { value: 'damp-or-water-ingress', label: 'Damp or water ingress' },
+          { value: 'general-cosmetic-repair', label: 'General cosmetic repair' },
+        ],
+      },
+      {
+        id: 'finish_required',
+        question: 'Finish the client wants on the wall',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'face-brick-exposed', label: 'Face brick (exposed)' },
+          { value: 'to-be-rendered', label: 'To be rendered' },
+          { value: 'to-be-plastered', label: 'To be plastered' },
+          { value: 'to-be-painted', label: 'To be painted' },
+          { value: 'no-finish-required', label: 'No finish required' },
+        ],
+      },
+      {
+        id: 'design_or_drawings',
+        question: 'Whether drawings or specs exist',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'no-drawings-needed-simple-wall', label: 'No drawings needed (simple wall)' },
+          { value: 'have-architect-or-engineer-drawings', label: 'Have architect/engineer drawings' },
+          { value: 'need-help-with-design', label: 'Need help with design' },
+        ],
+      },
+      {
+        id: 'access_constraints',
+        question: 'Access conditions around the wall area',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-access', label: 'Easy access' },
+          { value: 'limited-access-narrow', label: 'Limited access (narrow)' },
+          { value: 'upper-floor-or-scaffolding-likely', label: 'Upper floor or scaffolding likely' },
+          { value: 'shared-boundary-access-issues', label: 'Shared boundary access issues' },
+        ],
+      },
+    ],
+  },
+
+  {
+    microSlug: 'concrete-bases-paths-floors',
+    categorySlug: 'brickwork-masonry-concrete',
+    version: 1,
+    questions: [
+      {
+        id: 'concrete_job_type',
+        question: 'Type of concrete work required',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'shed-or-outbuilding-base', label: 'Shed or outbuilding base' },
+          { value: 'hot-tub-or-pool-plant-base', label: 'Hot tub or pool plant base' },
+          { value: 'path-or-patio-slab', label: 'Path or patio slab' },
+          { value: 'driveway-slab', label: 'Driveway slab' },
+          { value: 'internal-floor-slab', label: 'Internal floor slab' },
+          { value: 'garage-or-workshop-floor', label: 'Garage or workshop floor' },
+          { value: 'other', label: 'Other' },
+        ],
+      },
+      {
+        id: 'approx_area',
+        question: 'Approximate area of concrete work',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-up-to-10m2', label: 'Small (up to 10m²)' },
+          { value: 'medium-10-30m2', label: 'Medium (10-30m²)' },
+          { value: 'large-30-60m2', label: 'Large (30-60m²)' },
+          { value: 'very-large-60m2-plus', label: 'Very large (60m²+)' },
+          { value: 'not-sure', label: 'Not sure' },
+        ],
+      },
+      {
+        id: 'base_preparation',
+        question: 'Whether ground is prepared or needs excavation',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'clear-level-ground-already', label: 'Clear level ground already' },
+          { value: 'needs-digging-and-hardcore', label: 'Needs digging and hardcore' },
+          { value: 'removal-of-old-slab-required', label: 'Removal of old slab required' },
+          { value: 'not-sure-need-advice', label: 'Not sure, need advice' },
+        ],
+      },
+      {
+        id: 'thickness_and_strength',
+        question: 'Desired slab thickness / strength where known',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard-light-use', label: 'Standard light use' },
+          { value: 'heavy-duty-vehicles-or-machinery', label: 'Heavy duty (vehicles or machinery)' },
+          { value: 'to-match-engineer-spec', label: 'To match engineer spec' },
+          { value: 'not-sure', label: 'Not sure' },
+        ],
+      },
+      {
+        id: 'reinforcement_required',
+        question: 'Whether the slab needs reinforcement',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'no-reinforcement-needed', label: 'No reinforcement needed' },
+          { value: 'steel-mesh', label: 'Steel mesh' },
+          { value: 'rebar-cage-or-beams', label: 'Rebar cage or beams' },
+          { value: 'to-follow-engineer-spec', label: 'To follow engineer spec' },
+          { value: 'not-sure-need-advice', label: 'Not sure, need advice' },
+        ],
+      },
+      {
+        id: 'surface_finish',
+        question: 'Desired finish on the concrete surface',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'basic-trowel-finish', label: 'Basic trowel finish' },
+          { value: 'brushed-or-non-slip', label: 'Brushed or non-slip' },
+          { value: 'power-floated-smooth', label: 'Power floated (smooth)' },
+          { value: 'to-be-tiled-or-decked-later', label: 'To be tiled or decked later' },
+          { value: 'to-be-resin-or-other-finish', label: 'To be resin or other finish' },
+        ],
+      },
+      {
+        id: 'drainage_and_fall',
+        question: 'Drainage / falls required for external slabs',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'simple-fall-away-from-building', label: 'Simple fall away from building' },
+          { value: 'link-to-existing-drainage', label: 'Link to existing drainage' },
+          { value: 'new-drain-channel-or-gullies', label: 'New drain channel or gullies' },
+          { value: 'internal-area-no-drainage-needed', label: 'Internal area (no drainage needed)' },
+          { value: 'not-sure', label: 'Not sure' },
+        ],
+      },
+      {
+        id: 'access_for_concrete',
+        question: 'Access for barrow, pump or mixer',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'vehicle-access-next-to-area', label: 'Vehicle access next to area' },
+          { value: 'barrow-access-only', label: 'Barrow access only' },
+          { value: 'pump-likely-required', label: 'Pump likely required' },
+          { value: 'restricted-access-steps-or-tight-corners', label: 'Restricted access (steps or tight corners)' },
+        ],
+      },
+    ],
+  },
+
+  {
+    microSlug: 'garden-boundary-walls',
+    categorySlug: 'brickwork-masonry-concrete',
+    version: 1,
+    questions: [
+      {
+        id: 'wall_purpose',
+        question: 'Main purpose of the garden/boundary wall',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'privacy-screen', label: 'Privacy screen' },
+          { value: 'security-boundary', label: 'Security boundary' },
+          { value: 'decorative-feature', label: 'Decorative feature' },
+          { value: 'retaining-earth', label: 'Retaining earth' },
+          { value: 'acoustic-or-wind-break', label: 'Acoustic or wind break' },
+        ],
+      },
+      {
+        id: 'wall_scope',
+        question: 'Is this a new wall or work on an existing one',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new-wall', label: 'New wall' },
+          { value: 'extend-or-raise-existing', label: 'Extend or raise existing' },
+          { value: 'repair-or-rebuild-damaged', label: 'Repair or rebuild damaged' },
+          { value: 'full-replacement', label: 'Full replacement' },
+        ],
+      },
+      {
+        id: 'approx_length',
+        question: 'Approximate length of the wall',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up-to-5m', label: 'Up to 5m' },
+          { value: '5-15m', label: '5-15m' },
+          { value: '15-30m', label: '15-30m' },
+          { value: '30m-plus-or-multiple-sides', label: '30m+ or multiple sides' },
+          { value: 'not-sure', label: 'Not sure' },
+        ],
+      },
+      {
+        id: 'approx_height',
+        question: 'Approximate height of the wall',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'low-up-to-600mm', label: 'Low (up to 600mm)' },
+          { value: 'medium-600mm-to-1_2m', label: 'Medium (600mm to 1.2m)' },
+          { value: 'tall-1_2m-to-2m', label: 'Tall (1.2m to 2m)' },
+          { value: 'very-tall-over-2m', label: 'Very tall (over 2m)' },
+          { value: 'varies-along-boundary', label: 'Varies along boundary' },
+        ],
+      },
+      {
+        id: 'wall_material',
+        question: 'Preferred material for the boundary wall',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'brick', label: 'Brick' },
+          { value: 'concrete-block-rendered', label: 'Concrete block (rendered)' },
+          { value: 'natural-stone', label: 'Natural stone' },
+          { value: 'stone-faced-blockwork', label: 'Stone-faced blockwork' },
+          { value: 'other-masonry', label: 'Other masonry' },
+        ],
+      },
+      {
+        id: 'finish_and_style',
+        question: 'Finish/style required for the wall',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'exposed-brick-or-stone', label: 'Exposed brick or stone' },
+          { value: 'smooth-render', label: 'Smooth render' },
+          { value: 'textured-or-rustic-render', label: 'Textured or rustic render' },
+          { value: 'to-be-painted', label: 'To be painted' },
+          { value: 'to-match-existing-wall', label: 'To match existing wall' },
+        ],
+      },
+      {
+        id: 'ownership_and_boundaries',
+        question: 'Boundary ownership / neighbour agreement context',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'clearly-my-boundary', label: 'Clearly my boundary' },
+          { value: 'shared-boundary-with-neighbour', label: 'Shared boundary with neighbour' },
+          { value: 'unsure-who-owns-wall', label: 'Unsure who owns wall' },
+          { value: 'neighbour-already-agreed', label: 'Neighbour already agreed' },
+        ],
+      },
+      {
+        id: 'planning_or_height_limits',
+        question: 'Any planning / community / height constraints',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'within-standard-height-limits', label: 'Within standard height limits' },
+          { value: 'may-exceed-normal-height', label: 'May exceed normal height' },
+          { value: 'in-conservation-or-special-area', label: 'In conservation or special area' },
+          { value: 'not-sure-need-advice', label: 'Not sure, need advice' },
+        ],
+      },
+    ],
+  },
 ];
