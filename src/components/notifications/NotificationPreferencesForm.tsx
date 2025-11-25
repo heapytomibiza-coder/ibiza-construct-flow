@@ -11,15 +11,18 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Mail } from 'lucide-react';
 import { useNotificationPreferences } from '@/hooks/notifications';
 
 export function NotificationPreferencesForm() {
   const {
     preferences,
     loading,
+    emailDigestEnabled,
     updateChannel,
     updateCategory,
     updateQuietHours,
+    updateEmailDigest,
     resetToDefaults,
   } = useNotificationPreferences();
 
@@ -244,6 +247,39 @@ export function NotificationPreferencesForm() {
               </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="h-5 w-5" />
+            Email Digest
+          </CardTitle>
+          <CardDescription>
+            Receive a weekly summary of review activity instead of individual notifications
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="email-digest">Weekly Review Summary</Label>
+              <div className="text-sm text-muted-foreground">
+                Get a weekly email with new reviews, pending feedback, and activity highlights
+              </div>
+            </div>
+            <Switch
+              id="email-digest"
+              checked={emailDigestEnabled}
+              onCheckedChange={updateEmailDigest}
+            />
+          </div>
+          <div className="rounded-lg border border-border/50 bg-muted/50 p-4">
+            <p className="text-sm text-muted-foreground">
+              💡 <strong>Smart batching:</strong> If you have more than 5 pending review reminders, 
+              we'll automatically send them in your weekly digest instead of individual notifications.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
