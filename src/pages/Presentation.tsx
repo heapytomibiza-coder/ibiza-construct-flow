@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 // Import all slide components
 import { TitleSlide } from "@/components/presentation/slides/TitleSlide";
+import { HomepageSlide } from "@/components/presentation/slides/HomepageSlide";
 import { ProblemOwners } from "@/components/presentation/slides/ProblemOwners";
 import { ProblemProfessionals } from "@/components/presentation/slides/ProblemProfessionals";
 import { SolutionSlide } from "@/components/presentation/slides/SolutionSlide";
@@ -38,35 +39,36 @@ import { CallToActionSlide } from "@/components/presentation/slides/CallToAction
 
 const slides = [
   { id: 1, component: TitleSlide, section: "Opening" },
-  { id: 2, component: ProblemOwners, section: "Opening" },
-  { id: 3, component: ProblemProfessionals, section: "Opening" },
-  { id: 4, component: SolutionSlide, section: "Opening" },
-  { id: 5, component: HowItWorksSlide, section: "How It Works" },
-  { id: 6, component: ServiceCategoriesSlide, section: "How It Works" },
-  { id: 7, component: TrustSafetySlide, section: "How It Works" },
-  { id: 8, component: ClientDashboardSlide, section: "Client Journey" },
-  { id: 9, component: PostProjectSlide, section: "Client Journey" },
-  { id: 10, component: BrowseServicesSlide, section: "Client Journey" },
-  { id: 11, component: ProfessionalProfileSlide, section: "Client Journey" },
-  { id: 12, component: CommunicationSlide, section: "Client Journey" },
-  { id: 13, component: SafePaySlide, section: "Client Journey" },
-  { id: 14, component: ProDashboardSlide, section: "Professional Journey" },
-  { id: 15, component: FindLeadsSlide, section: "Professional Journey" },
-  { id: 16, component: SubmitQuoteSlide, section: "Professional Journey" },
-  { id: 17, component: ManageServicesSlide, section: "Professional Journey" },
-  { id: 18, component: PortfolioSlide, section: "Professional Journey" },
-  { id: 19, component: GetPaidSlide, section: "Professional Journey" },
-  { id: 20, component: AIMatchingSlide, section: "Unique Features" },
-  { id: 21, component: BilingualSlide, section: "Unique Features" },
-  { id: 22, component: MobileFirstSlide, section: "Unique Features" },
-  { id: 23, component: AnalyticsSlide, section: "Unique Features" },
-  { id: 24, component: MarketOpportunitySlide, section: "Market & Growth" },
-  { id: 25, component: CompetitiveAdvantagesSlide, section: "Market & Growth" },
-  { id: 26, component: TractionSlide, section: "Market & Growth" },
-  { id: 27, component: RevenueModelSlide, section: "Market & Growth" },
-  { id: 28, component: RoadmapSlide, section: "Future" },
-  { id: 29, component: WhyNowSlide, section: "Future" },
-  { id: 30, component: CallToActionSlide, section: "Future" },
+  { id: 2, component: HomepageSlide, section: "Opening" },
+  { id: 3, component: ProblemOwners, section: "Opening" },
+  { id: 4, component: ProblemProfessionals, section: "Opening" },
+  { id: 5, component: SolutionSlide, section: "Opening" },
+  { id: 6, component: HowItWorksSlide, section: "How It Works" },
+  { id: 7, component: ServiceCategoriesSlide, section: "How It Works" },
+  { id: 8, component: TrustSafetySlide, section: "How It Works" },
+  { id: 9, component: ClientDashboardSlide, section: "Client Journey" },
+  { id: 10, component: PostProjectSlide, section: "Client Journey" },
+  { id: 11, component: BrowseServicesSlide, section: "Client Journey" },
+  { id: 12, component: ProfessionalProfileSlide, section: "Client Journey" },
+  { id: 13, component: CommunicationSlide, section: "Client Journey" },
+  { id: 14, component: SafePaySlide, section: "Client Journey" },
+  { id: 15, component: ProDashboardSlide, section: "Professional Journey" },
+  { id: 16, component: FindLeadsSlide, section: "Professional Journey" },
+  { id: 17, component: SubmitQuoteSlide, section: "Professional Journey" },
+  { id: 18, component: ManageServicesSlide, section: "Professional Journey" },
+  { id: 19, component: PortfolioSlide, section: "Professional Journey" },
+  { id: 20, component: GetPaidSlide, section: "Professional Journey" },
+  { id: 21, component: AIMatchingSlide, section: "Unique Features" },
+  { id: 22, component: BilingualSlide, section: "Unique Features" },
+  { id: 23, component: MobileFirstSlide, section: "Unique Features" },
+  { id: 24, component: AnalyticsSlide, section: "Unique Features" },
+  { id: 25, component: MarketOpportunitySlide, section: "Market & Growth" },
+  { id: 26, component: CompetitiveAdvantagesSlide, section: "Market & Growth" },
+  { id: 27, component: TractionSlide, section: "Market & Growth" },
+  { id: 28, component: RevenueModelSlide, section: "Market & Growth" },
+  { id: 29, component: RoadmapSlide, section: "Future" },
+  { id: 30, component: WhyNowSlide, section: "Future" },
+  { id: 31, component: CallToActionSlide, section: "Future" },
 ];
 
 export default function Presentation() {
