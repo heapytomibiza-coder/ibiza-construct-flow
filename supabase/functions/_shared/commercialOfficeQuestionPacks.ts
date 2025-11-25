@@ -1,5 +1,5 @@
 /**
- * Commercial, Office, Retail, Kitchen/Bathroom, Construction, Brickwork & Pool Question Packs
+ * Commercial, Office, Retail, Kitchen/Bathroom, Construction, Brickwork, Pool & Painting/Decorating Question Packs
  * 
  * Covers:
  * - Commercial & Industrial: Planned Maintenance, Shopfront Repairs
@@ -18,6 +18,7 @@
  * - Pool & Spa - Maintenance: Chemical Balance, Pool Cleaning, Filter Cleaning & Replacement, One-off Deep Clean, Pool Cover Repair & Replacement, Pump Servicing, Regular Pool Cleaning, Skimmer & Drain Maintenance, Spring Opening & Winterizing
  * - Pool & Spa - Spas: Hot Tub Installation, Hot Tub Repair, Jacuzzi Installation & Repair, Spa Cover Replacement, Spa Jets & Plumbing, Spa Servicing & Maintenance, Spa Water Treatment, Hot Tub Electrical Work
  * - Pool & Spa - Water Treatment: Algae Removal & Prevention, Cloudy Water Treatment, Filtration System Installation, Filtration System Upgrades, Salt Chlorinator Systems, Water Chemistry Balancing
+ * - Painting & Decorating - Exterior: Anti-damp Treatment, Exterior House Repainting, Exterior Metal Railings, Exterior Wood Windows & Doors, Façade Repainting, Fence Painting, House Exterior
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -6781,6 +6782,557 @@ export const commercialOfficeQuestionPacks = [
           { value: 'cant-use-water', label: 'Very urgent – pool not safe to use' },
           { value: 'soon', label: 'Soon – within a week' },
           { value: 'routine', label: 'Routine check-up' }
+        ]
+      }
+    ]
+  },
+
+  // ==========================================
+  // PAINTING-DECORATING: Exterior Subcategory
+  // ==========================================
+  {
+    microSlug: 'anti-damp-exterior-treatment',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'exterior',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'house-detached', label: 'Detached house or villa' },
+          { value: 'house-semi-terraced', label: 'Semi-detached / terraced house' },
+          { value: 'apartment-building', label: 'Apartment building / block' },
+          { value: 'commercial', label: 'Commercial building' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'main-walls', label: 'Main exterior walls' },
+          { value: 'lower-walls-plinth', label: 'Lower walls / plinth areas' },
+          { value: 'chimneys', label: 'Chimneys' },
+          { value: 'parapets-terraces', label: 'Parapets and terrace walls' },
+          { value: 'other-areas', label: 'Other localised problem areas' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'flaking-paint', label: 'Flaking or blistering paint' },
+          { value: 'damp-patches', label: 'Damp patches on exterior' },
+          { value: 'damp-inside', label: 'Moisture showing inside the property' },
+          { value: 'cracks', label: 'Cracks where water is getting in' },
+          { value: 'mould-algae', label: 'Mould or algae on the walls' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'ground-floor-only', label: 'Ground floor only' },
+          { value: 'up-to-2-storeys', label: 'Up to 2 storeys' },
+          { value: '3-storeys-plus', label: '3 storeys or higher' },
+          { value: 'mixed', label: 'Mixed heights around the building' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-ladder', label: 'Easy ladder access around the property' },
+          { value: 'scaffolding-in-place', label: 'Scaffolding already in place' },
+          { value: 'boom-lift-possible', label: 'Space for cherry picker / boom lift' },
+          { value: 'no-access-yet', label: 'No access arranged yet' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'survey-and-diagnosis', label: 'Survey and diagnose damp issues' },
+          { value: 'crack-repair', label: 'Repair cracks and problem areas' },
+          { value: 'full-waterproof-coating', label: 'Apply full waterproof / anti-damp coating' },
+          { value: 'localised-treatment', label: 'Localised treatment only' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: 'flexible', label: 'Flexible on timing' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'exterior-house-repainting',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'exterior',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'detached', label: 'Detached house / villa' },
+          { value: 'semi-terraced', label: 'Semi-detached / terraced house' },
+          { value: 'townhouse', label: 'Townhouse / row house' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'single-storey', label: 'Single storey' },
+          { value: 'two-storey', label: 'Two storeys' },
+          { value: 'three-plus', label: 'Three storeys or more' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'render-walls', label: 'Render / stucco walls' },
+          { value: 'block-brick', label: 'Block / brick walls' },
+          { value: 'wood-cladding', label: 'Timber cladding' },
+          { value: 'eaves-soffits', label: 'Eaves, soffits and fascias' },
+          { value: 'other-elements', label: 'Other exterior elements' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'good-light-wear', label: 'Generally good – light wear' },
+          { value: 'peeling-flaking', label: 'Peeling or flaking in areas' },
+          { value: 'heavy-failures', label: 'Heavy failures – bare areas showing' },
+          { value: 'first-paint', label: 'Never painted before' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'basic-prep', label: 'Basic prep – light sanding and touch-ups' },
+          { value: 'standard-prep', label: 'Standard prep – fill cracks, scrape loose paint' },
+          { value: 'full-prep', label: 'Full prep – more extensive repairs and sealing' },
+          { value: 'need-advice', label: 'Need the professional to advise' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard-masonry', label: 'Standard masonry paint' },
+          { value: 'elastomeric', label: 'High performance / elastomeric coating' },
+          { value: 'eco-natural', label: 'Eco / natural paints' },
+          { value: 'no-preference', label: 'No preference – need advice' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'same-colour', label: 'Same or very similar colour' },
+          { value: 'new-colours-chosen', label: 'New colours already chosen' },
+          { value: 'need-colour-advice', label: 'Need help choosing colours' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap-weather-permitting', label: 'As soon as possible (weather permitting)' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: 'flexible', label: 'Flexible on dates' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'exterior-metal-railings',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'exterior',
+    version: 1,
+    questions: [
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'balcony-railings', label: 'Balcony railings' },
+          { value: 'stair-railings', label: 'Stair railings / handrails' },
+          { value: 'gates-fences', label: 'Gates and metal fences' },
+          { value: 'grilles-bars', label: 'Window bars / security grilles' },
+          { value: 'other-metalwork', label: 'Other exterior metalwork' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'mostly-sound', label: 'Mostly sound – light wear' },
+          { value: 'some-rust', label: 'Some rust and flaking paint' },
+          { value: 'heavily-rusted', label: 'Heavily rusted or bare metal in places' },
+          { value: 'unpainted', label: 'New / unpainted metal' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'ground-level', label: 'Ground level, easy access' },
+          { value: 'first-floor-balcony', label: 'First floor balcony / raised areas' },
+          { value: 'multi-storey', label: 'Higher levels / multi-storey' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'satin', label: 'Satin finish' },
+          { value: 'gloss', label: 'High gloss' },
+          { value: 'matt', label: 'Matt finish' },
+          { value: 'no-preference', label: 'No preference' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'black-or-dark', label: 'Black / dark tone' },
+          { value: 'white-or-light', label: 'White / light tone' },
+          { value: 'colour-match', label: 'Match existing colour' },
+          { value: 'need-advice', label: 'Need help choosing' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'light-prep', label: 'Light sand and repaint' },
+          { value: 'rust-treatment', label: 'Rust treatment and priming' },
+          { value: 'full-prep', label: 'Full preparation and protection system' },
+          { value: 'unsure', label: 'Unsure – need recommendation' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'soon', label: 'Soon – within a few weeks' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: 'flexible', label: 'Flexible' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'exterior-wood-windows-doors',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'exterior',
+    version: 1,
+    questions: [
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'window-frames', label: 'Exterior window frames' },
+          { value: 'shutters', label: 'Wooden shutters' },
+          { value: 'front-door', label: 'Front door' },
+          { value: 'patio-doors', label: 'Patio / balcony doors' },
+          { value: 'garage-doors', label: 'Garage doors' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'painted', label: 'Painted' },
+          { value: 'stained-varnished', label: 'Stain / varnish' },
+          { value: 'oiled', label: 'Oiled finish' },
+          { value: 'bare-or-weathered', label: 'Bare / heavily weathered' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'good-minor-wear', label: 'Good – minor wear' },
+          { value: 'peeling-flaking', label: 'Peeling, flaking or faded' },
+          { value: 'damaged-soft-areas', label: 'Some damage / soft or rotten areas' },
+          { value: 'unsure-needs-check', label: 'Unsure – need a professional to assess' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'opaque-paint', label: 'Opaque paint' },
+          { value: 'semi-transparent-stain', label: 'Semi-transparent stain' },
+          { value: 'clear-varnish', label: 'Clear varnish' },
+          { value: 'match-existing', label: 'Match existing finish' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'same-colour', label: 'Same colour as now' },
+          { value: 'new-colour', label: 'New colour chosen' },
+          { value: 'need-samples', label: 'Need samples and advice' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'ground-floor-only', label: 'Ground floor only' },
+          { value: 'mix-ground-first', label: 'Mix of ground and first floor' },
+          { value: 'higher-levels', label: 'Higher levels needing ladders / scaffolding' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: 'flexible', label: 'Flexible timing' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'facade-repainting-render',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'exterior',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'house', label: 'House / villa' },
+          { value: 'apartment-block', label: 'Apartment block' },
+          { value: 'commercial-building', label: 'Commercial building' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard-cement', label: 'Standard cement render' },
+          { value: 'monocapa', label: 'Monocapa / monocouche' },
+          { value: 'insulated-render', label: 'Insulated render system' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'sound-minor-cracks', label: 'Mostly sound – minor hairline cracks' },
+          { value: 'cracking-flaking', label: 'Cracking and flaking in places' },
+          { value: 'significant-damage', label: 'Significant damage or hollow areas' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'cleaning-only', label: 'Cleaning and light prep only' },
+          { value: 'fill-hairline-cracks', label: 'Fill hairline cracks' },
+          { value: 'repair-damaged-areas', label: 'Repair damaged / hollow sections' },
+          { value: 'anti-damp-treatment', label: 'Anti-damp treatment before painting' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'single-elevation', label: 'One side / elevation only' },
+          { value: 'two-or-three-sides', label: 'Two or three sides' },
+          { value: 'entire-building', label: 'Entire building' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'ground-ladder', label: 'Ground / ladder access' },
+          { value: 'scaffolding-ready', label: 'Scaffolding already in place' },
+          { value: 'mechanical-access-needed', label: 'Likely need lift / scaffolding arranged' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap-weather-permitting', label: 'As soon as possible (weather permitting)' },
+          { value: 'off-season', label: 'Prefer off-season / quieter period' },
+          { value: 'flexible', label: 'Flexible' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'fence-painting',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'exterior',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'timber-panels', label: 'Timber panels' },
+          { value: 'timber-post-rail', label: 'Timber post and rail' },
+          { value: 'metal', label: 'Metal fence' },
+          { value: 'mixed', label: 'Mixed materials' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up-to-20m', label: 'Up to 20m' },
+          { value: '20-50m', label: '20–50m' },
+          { value: '50-100m', label: '50–100m' },
+          { value: 'over-100m', label: 'Over 100m' },
+          { value: 'not-sure', label: 'Not sure – need estimate on site' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'bare-untreated', label: 'Bare timber / untreated' },
+          { value: 'stain', label: 'Wood stain or oil' },
+          { value: 'paint', label: 'Painted finish' },
+          { value: 'mixed-or-unknown', label: 'Mixed / not sure' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'good-minor-wear', label: 'Good – minor wear only' },
+          { value: 'weathered', label: 'Weathered but sound' },
+          { value: 'damaged-panels', label: 'Some damaged / rotten panels' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'stain-or-oil', label: 'Stain / oil to show wood grain' },
+          { value: 'solid-colour', label: 'Solid colour paint' },
+          { value: 'match-existing', label: 'Match existing colour' },
+          { value: 'need-advice', label: 'Need advice' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'one-side-only', label: 'Only one side accessible' },
+          { value: 'both-sides', label: 'Both sides accessible' },
+          { value: 'mixed', label: 'Mixed – some sections only one side' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'soon', label: 'Soon – within a few weeks' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: 'flexible', label: 'Flexible' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'house-exterior',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'exterior',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'detached', label: 'Detached house / villa' },
+          { value: 'semi-terraced', label: 'Semi-detached / terraced house' },
+          { value: 'townhouse', label: 'Townhouse / row house' },
+          { value: 'small-building', label: 'Small apartment / commercial building' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'walls', label: 'Exterior walls' },
+          { value: 'woodwork', label: 'Woodwork (doors, windows, shutters)' },
+          { value: 'metalwork', label: 'Metalwork (railings, gates, grilles)' },
+          { value: 'fascias-eaves', label: 'Fascias, eaves and soffits' },
+          { value: 'other', label: 'Other exterior elements' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'light-wear', label: 'Light wear – mainly refresh' },
+          { value: 'mixed-condition', label: 'Mixed – some areas peeling / flaking' },
+          { value: 'poor-condition', label: 'Poor – heavy peeling, bare areas' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'basic', label: 'Basic – light sanding and spot repairs' },
+          { value: 'standard', label: 'Standard – fill cracks, treat problem areas' },
+          { value: 'high', label: 'High – more detailed repair and protection' },
+          { value: 'unsure', label: 'Not sure – need recommendation' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'keep-similar', label: 'Keep a similar colour scheme' },
+          { value: 'change-colours', label: 'Change colours completely' },
+          { value: 'need-help', label: 'Need help choosing colours' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'good-access-all-sides', label: 'Good access all around' },
+          { value: 'tight-on-one-side', label: 'Tight access on one side' },
+          { value: 'needs-scaffolding', label: 'Likely needs scaffolding / lift' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: 'flexible', label: 'Flexible on start date' }
         ]
       }
     ]
