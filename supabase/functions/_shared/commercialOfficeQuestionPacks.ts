@@ -14,6 +14,8 @@
  * - Brickwork, Masonry & Concrete: Building/Repairing Walls, Concrete Bases/Paths/Floors, Garden/Boundary Walls
  * - Pool & Spa - Heating: Electric Pool Heaters, Energy Efficiency Upgrades, Gas Pool Heaters, Heat Pump Installation, Pool Blankets & Covers, Pool Heating Repairs, Solar Pool Heating
  * - Pool & Spa - Construction: Concrete & Tiled Pools, New Pool Installation, Plunge & Small Pools, Pool Renovation & Refurbishment, Prefab & Fibreglass Pools
+ * - Pool & Spa - Equipment: Filter Replacement, Pump Repair
+ * - Pool & Spa - Maintenance: Chemical Balance, Pool Cleaning, Filter Cleaning & Replacement, One-off Deep Clean, Pool Cover Repair & Replacement, Pump Servicing, Regular Pool Cleaning, Skimmer & Drain Maintenance, Spring Opening & Winterizing
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -4642,6 +4644,1026 @@ export const commercialOfficeQuestionPacks = [
           { value: '1-3-months', label: 'Within 1–3 months' },
           { value: '3-6-months', label: 'In 3–6 months' },
           { value: 'planning', label: 'Just planning/budgeting' }
+        ]
+      }
+    ]
+  },
+
+  // ==================== POOL & SPA - EQUIPMENT ====================
+
+  // Filter Replacement
+  {
+    microSlug: 'filter-replacement',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'system_type',
+        question: 'What type of pool or spa is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'plunge-pool', label: 'Plunge / small pool' }
+        ]
+      },
+      {
+        id: 'filter_type',
+        question: 'What type of filter do you currently have?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'sand-filter', label: 'Sand filter' },
+          { value: 'glass-media-filter', label: 'Glass media filter' },
+          { value: 'cartridge-filter', label: 'Cartridge filter' },
+          { value: 'diatomaceous-earth', label: 'DE (diatomaceous earth) filter' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'job_scope',
+        question: 'What do you need help with?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'replace-like-for-like', label: 'Replace existing filter like-for-like' },
+          { value: 'upgrade-filter-type', label: 'Upgrade to a better / newer filter type' },
+          { value: 'relocate-filter', label: 'Relocate filter within plant area' },
+          { value: 'pipework-changes', label: 'Adjust or replace pipework around the filter' }
+        ]
+      },
+      {
+        id: 'reason_for_replacement',
+        question: 'Why are you replacing the filter?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'poor-filtration', label: 'Water not staying clear / poor filtration' },
+          { value: 'cracked-or-damaged', label: 'Filter body cracked or leaking' },
+          { value: 'old-and-worn-out', label: 'Old unit near end of life' },
+          { value: 'system-upgrade', label: 'General system upgrade' }
+        ]
+      },
+      {
+        id: 'plant_access',
+        question: 'How easy is access to the filter / plant room?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-access', label: 'Easy access, good working space' },
+          { value: 'narrow-or-low', label: 'Narrow / low ceiling or restricted space' },
+          { value: 'very-restricted', label: 'Very restricted – tight space' }
+        ]
+      },
+      {
+        id: 'system_age',
+        question: 'Roughly how old is the existing filtration system?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-5-years', label: 'Under 5 years' },
+          { value: '5-10-years', label: '5–10 years' },
+          { value: 'over-10-years', label: 'Over 10 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How soon do you need the filter replacement?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'system-down-urgent', label: 'System down – urgent' },
+          { value: 'within-1-week', label: 'Within 1 week' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'planning-only', label: 'Just planning / comparing quotes' }
+        ]
+      }
+    ]
+  },
+
+  // Pump Repair
+  {
+    microSlug: 'pump-repair',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'system_type',
+        question: 'What is the pump connected to?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'swimming-pool', label: 'Swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'pool-and-spa', label: 'Combined pool and spa system' },
+          { value: 'water-feature', label: 'Water feature / fountain' }
+        ]
+      },
+      {
+        id: 'main_issue',
+        question: 'What issues are you experiencing with the pump?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'not-starting', label: 'Pump will not start' },
+          { value: 'tripping-electrics', label: 'Trips electrics / breaker' },
+          { value: 'low-flow', label: 'Very low flow / poor circulation' },
+          { value: 'noisy', label: 'Unusual noise from pump' },
+          { value: 'leaking', label: 'Leaks around pump or seals' },
+          { value: 'overheating', label: 'Pump overheating / very hot' }
+        ]
+      },
+      {
+        id: 'pump_age',
+        question: 'Roughly how old is the pump?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-3-years', label: 'Under 3 years' },
+          { value: '3-7-years', label: '3–7 years' },
+          { value: 'over-7-years', label: 'Over 7 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'pump_type',
+        question: 'Do you know what type of pump you have?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'single-speed', label: 'Standard single-speed pump' },
+          { value: 'variable-speed', label: 'Variable-speed / inverter pump' },
+          { value: 'booster-or-feature-pump', label: 'Booster / feature pump' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'recent_changes',
+        question: 'Has anything changed recently in the system?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'new-filter', label: 'New filter fitted' },
+          { value: 'pipework-changed', label: 'Pipework or valves modified' },
+          { value: 'electrics-work', label: 'Recent electrical work' },
+          { value: 'no-changes', label: 'No changes – issue developed over time' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How easy is access to the pump for repair or replacement?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-access', label: 'Easy access, good working space' },
+          { value: 'tight-access', label: 'Tight / awkward access' },
+          { value: 'below-ground-pit', label: 'Below-ground pit or chamber' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How urgent is the pump repair?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'system-down-urgent', label: 'System not running – very urgent' },
+          { value: 'soon-1-week', label: 'Soon – within 1 week' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'investigation-only', label: 'Investigation / quote only' }
+        ]
+      }
+    ]
+  },
+
+  // ==================== POOL & SPA - MAINTENANCE ====================
+
+  // Chemical Balance
+  {
+    microSlug: 'chemical-balance',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'system_type',
+        question: 'What type of pool or spa is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'plunge-pool', label: 'Plunge / small pool' }
+        ]
+      },
+      {
+        id: 'water_issue',
+        question: 'What issues are you noticing with the water?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'cloudy', label: 'Cloudy water' },
+          { value: 'green-algae', label: 'Green or algae growth' },
+          { value: 'strong-chlorine-smell', label: 'Strong chlorine smell / eye irritation' },
+          { value: 'staining-or-scale', label: 'Staining or scale build-up' },
+          { value: 'low-or-no-chlorine', label: 'Low or zero chlorine' },
+          { value: 'other', label: 'Other or unsure' }
+        ]
+      },
+      {
+        id: 'treatment_type',
+        question: 'How is the water currently treated?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'manual-chlorine', label: 'Manual chlorine dosing' },
+          { value: 'salt-chlorinator', label: 'Salt chlorinator system' },
+          { value: 'bromine', label: 'Bromine' },
+          { value: 'mineral-or-ozone', label: 'Mineral / ozone / alternative system' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'testing',
+        question: 'Do you regularly test the water?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'test-strips', label: 'Yes – with test strips' },
+          { value: 'test-kit', label: 'Yes – with a liquid test kit' },
+          { value: 'shop-testing', label: 'Occasionally – shop or professional testing' },
+          { value: 'no-testing', label: 'No – rarely or never' }
+        ]
+      },
+      {
+        id: 'service_scope',
+        question: 'What kind of help do you need?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'one-off-balance', label: 'One-off visit to balance the water' },
+          { value: 'shock-and-recover', label: 'Shock treatment and recovery from algae or heavy use' },
+          { value: 'set-up-chemical-plan', label: 'Set up a dosing schedule and product plan' },
+          { value: 'ongoing-checks', label: 'Regular testing and balancing service' }
+        ]
+      },
+      {
+        id: 'pool_coverage',
+        question: 'Is the pool normally covered when not in use?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'no-cover', label: 'No cover' },
+          { value: 'thermal-blanket', label: 'Thermal blanket / bubble cover' },
+          { value: 'automatic-cover', label: 'Automatic or slatted cover' },
+          { value: 'winter-cover', label: 'Winter debris cover' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How urgent is the chemical balance issue?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-cant-use-pool', label: 'Urgent – pool can\'t be used' },
+          { value: 'soon-1-week', label: 'Soon – within 1 week' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'planning-ongoing-service', label: 'Planning regular ongoing service' }
+        ]
+      }
+    ]
+  },
+
+  // Pool Cleaning
+  {
+    microSlug: 'pool-cleaning',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'system_type',
+        question: 'What type of pool needs cleaning?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'plunge-pool', label: 'Plunge / small pool' }
+        ]
+      },
+      {
+        id: 'service_frequency',
+        question: 'Are you looking for a one-off clean or regular service?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one-off', label: 'One-off clean' },
+          { value: 'weekly', label: 'Weekly cleaning' },
+          { value: 'fortnightly', label: 'Every 2 weeks' },
+          { value: 'monthly', label: 'Monthly cleaning' },
+          { value: 'holiday-only', label: 'Only when the property is occupied / holiday lets' }
+        ]
+      },
+      {
+        id: 'current_condition',
+        question: 'What is the current condition of the pool?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'clean-needs-maintenance', label: 'Fairly clean – just needs regular maintenance' },
+          { value: 'some-debris', label: 'Some leaves and surface debris' },
+          { value: 'dirty-floor-walls', label: 'Dirty floor and walls, needs vacuum and brush' },
+          { value: 'very-dirty-or-green', label: 'Very dirty / green pool recovery' }
+        ]
+      },
+      {
+        id: 'tasks_required',
+        question: 'Which tasks would you like included?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'skim-and-net', label: 'Skim surface and remove debris' },
+          { value: 'vacuum-and-brush', label: 'Vacuum floor and brush walls' },
+          { value: 'clean-baskets', label: 'Clean skimmer and pump baskets' },
+          { value: 'backwash-filter', label: 'Backwash and rinse filter' },
+          { value: 'check-chemicals', label: 'Test and adjust chemical levels' }
+        ]
+      },
+      {
+        id: 'equipment_on_site',
+        question: 'What cleaning equipment do you already have on site?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'manual-vacuum', label: 'Manual vacuum and hose' },
+          { value: 'robot-cleaner', label: 'Robotic cleaner' },
+          { value: 'nets-and-brushes', label: 'Nets and brushes' },
+          { value: 'none', label: 'None / very little equipment' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How is access to the pool area?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-direct-access', label: 'Easy, direct access' },
+          { value: 'stairs-or-slopes', label: 'Access via stairs or slopes' },
+          { value: 'gated-or-restricted', label: 'Gated / restricted access (keys needed)' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the first cleaning visit?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-3-days', label: 'Urgent – within 3 days' },
+          { value: 'within-1-week', label: 'Within 1 week' },
+          { value: 'within-2-weeks', label: 'Within 2 weeks' },
+          { value: 'date-flexible', label: 'Flexible – no fixed date' }
+        ]
+      }
+    ]
+  },
+
+  // Filter Cleaning and Replacement
+  {
+    microSlug: 'filter-cleaning-replacement',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'system_type',
+        question: 'What type of pool or spa is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'plunge-pool', label: 'Plunge / small pool' }
+        ]
+      },
+      {
+        id: 'filter_type',
+        question: 'What type of filter do you have?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'sand-filter', label: 'Sand filter' },
+          { value: 'glass-media', label: 'Glass media filter' },
+          { value: 'cartridge-filter', label: 'Cartridge filter' },
+          { value: 'de-filter', label: 'DE (diatomaceous earth) filter' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'service_scope',
+        question: 'What do you need help with?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'deep-clean', label: 'Deep clean / backwash and rinse' },
+          { value: 'media-change', label: 'Change sand / glass media' },
+          { value: 'cartridge-replacement', label: 'Replace filter cartridges' },
+          { value: 'inspection-and-service', label: 'Inspect and service filter and valves' }
+        ]
+      },
+      {
+        id: 'current_issue',
+        question: 'Are you having any problems with filtration right now?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'poor-flow', label: 'Poor flow / low pressure' },
+          { value: 'high-pressure', label: 'Very high pressure reading' },
+          { value: 'dirty-water', label: 'Water stays dirty / cloudy' },
+          { value: 'leaks', label: 'Leaks around filter or multi-port valve' },
+          { value: 'no-issues', label: 'No major issues – routine maintenance' }
+        ]
+      },
+      {
+        id: 'system_age',
+        question: 'Roughly how old is the filter unit?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-5-years', label: 'Under 5 years' },
+          { value: '5-10-years', label: '5–10 years' },
+          { value: 'over-10-years', label: 'Over 10 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How is access to the filter / plant area?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-access', label: 'Easy access, good working space' },
+          { value: 'tight-or-low', label: 'Tight or low-height space' },
+          { value: 'below-ground-pit', label: 'Below-ground pit / chamber' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How soon do you need this work done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-system-affected', label: 'Urgent – filtration not working properly' },
+          { value: 'within-1-week', label: 'Within 1 week' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'routine-planned', label: 'Routine / planned maintenance' }
+        ]
+      }
+    ]
+  },
+
+  // One-off Deep Clean
+  {
+    microSlug: 'one-off-deep-clean',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool or spa needs a deep clean?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'plunge-pool', label: 'Plunge / small pool' }
+        ]
+      },
+      {
+        id: 'current_condition',
+        question: 'What best describes the current condition?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'normal-dirty', label: 'Normal dirt and debris' },
+          { value: 'lots-of-debris', label: 'Heavy leaves / debris build-up' },
+          { value: 'green-algae', label: 'Green with algae' },
+          { value: 'very-neglected', label: 'Very neglected – hasn\'t been cleaned for a long time' }
+        ]
+      },
+      {
+        id: 'deep_clean_scope',
+        question: 'What would you like included in the deep clean?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'drain-and-clean', label: 'Fully drain and clean pool shell' },
+          { value: 'vacuum-and-brush', label: 'Vacuum floor and brush walls' },
+          { value: 'tile-line-clean', label: 'Tile line and scale cleaning' },
+          { value: 'cover-clean', label: 'Clean pool cover' },
+          { value: 'equipment-check', label: 'Basic check of pump and filter' }
+        ]
+      },
+      {
+        id: 'water_status',
+        question: 'Is the pool currently full of water?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'full', label: 'Yes – full of water' },
+          { value: 'partially-drained', label: 'Partially drained' },
+          { value: 'empty', label: 'Empty' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How is access to the pool area for equipment and hoses?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-direct', label: 'Easy, direct garden access' },
+          { value: 'via-steps', label: 'Access via steps or narrow paths' },
+          { value: 'restricted', label: 'Restricted / gated access' }
+        ]
+      },
+      {
+        id: 'chemicals_included',
+        question: 'Do you want chemicals included as part of the service?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'include-chemicals', label: 'Yes – include chemicals' },
+          { value: 'i-provide-chemicals', label: 'No – I will provide chemicals' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the deep clean carried out?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-3-days', label: 'Urgent – within 3 days' },
+          { value: 'within-1-week', label: 'Within 1 week' },
+          { value: 'within-2-weeks', label: 'Within 2 weeks' },
+          { value: 'flexible', label: 'Flexible – no fixed date' }
+        ]
+      }
+    ]
+  },
+
+  // Pool Cover Repair and Replacement
+  {
+    microSlug: 'pool-cover-repair-replacement',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'cover_type',
+        question: 'What type of pool cover do you have?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'thermal-blanket', label: 'Thermal blanket / bubble cover' },
+          { value: 'automatic-slatted', label: 'Automatic / slatted cover' },
+          { value: 'safety-cover', label: 'Safety cover' },
+          { value: 'winter-cover', label: 'Winter debris cover' },
+          { value: 'other-or-unknown', label: 'Other / not sure' }
+        ]
+      },
+      {
+        id: 'service_type',
+        question: 'Do you need repair, replacement, or both?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'repair-only', label: 'Repair existing cover' },
+          { value: 'replace-cover', label: 'Replace with a new cover' },
+          { value: 'advise-best-option', label: 'Need advice on repair vs replacement' }
+        ]
+      },
+      {
+        id: 'cover_issues',
+        question: 'What issues are you experiencing with the cover?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'tears-or-holes', label: 'Tears, holes or broken slats' },
+          { value: 'mechanism-problem', label: 'Automatic mechanism not working properly' },
+          { value: 'stiff-or-heavy', label: 'Cover is very stiff / heavy to move' },
+          { value: 'unsafe-or-worn', label: 'Cover is old / unsafe' }
+        ]
+      },
+      {
+        id: 'reel_or_system',
+        question: 'Do you have a reel or cover system already installed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'manual-reel', label: 'Manual reel' },
+          { value: 'automatic-system', label: 'Automatic motorised system' },
+          { value: 'no-system', label: 'No reel or system' }
+        ]
+      },
+      {
+        id: 'pool_shape',
+        question: 'What shape is the pool?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'rectangular', label: 'Rectangular' },
+          { value: 'round-oval', label: 'Round / oval' },
+          { value: 'freeform', label: 'Freeform / irregular' }
+        ]
+      },
+      {
+        id: 'safety_priority',
+        question: 'Is child and pet safety a key priority?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes-high-priority', label: 'Yes – high priority' },
+          { value: 'moderate', label: 'Moderately important' },
+          { value: 'no-mainly-heat-clean', label: 'No – mainly for heat retention / cleanliness' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the cover work done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-2-weeks', label: 'Urgent – within 2 weeks' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'before-winter', label: 'Before winter' },
+          { value: 'before-summer', label: 'Before summer' }
+        ]
+      }
+    ]
+  },
+
+  // Pump Servicing
+  {
+    microSlug: 'pump-servicing',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'system_type',
+        question: 'What is the pump connected to?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'swimming-pool', label: 'Swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'pool-and-spa', label: 'Combined pool and spa' },
+          { value: 'water-feature', label: 'Water feature / fountain' }
+        ]
+      },
+      {
+        id: 'service_reason',
+        question: 'Why are you requesting pump servicing?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'routine-service', label: 'Routine annual service' },
+          { value: 'noisy', label: 'Pump is noisy' },
+          { value: 'reduced-flow', label: 'Flow seems reduced' },
+          { value: 'overheating', label: 'Pump overheating' },
+          { value: 'small-leaks', label: 'Small leaks around pump or unions' }
+        ]
+      },
+      {
+        id: 'pump_age',
+        question: 'Roughly how old is the pump?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-3-years', label: 'Under 3 years' },
+          { value: '3-7-years', label: '3–7 years' },
+          { value: 'over-7-years', label: 'Over 7 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'pump_type',
+        question: 'Do you know what type of pump you have?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'single-speed', label: 'Single-speed pump' },
+          { value: 'variable-speed', label: 'Variable-speed / inverter pump' },
+          { value: 'booster-pump', label: 'Booster / feature pump' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'service_scope',
+        question: 'What would you like included in the service?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'inspection-and-clean', label: 'Inspect, clean strainer and impeller' },
+          { value: 'seal-check-replacement', label: 'Check / replace seals if needed' },
+          { value: 'check-electrics', label: 'Check electrics and connections' },
+          { value: 'performance-test', label: 'Performance and pressure test' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How is access to the pump area?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-access', label: 'Easy access, good space' },
+          { value: 'tight-access', label: 'Tight or awkward access' },
+          { value: 'below-ground-pit', label: 'Below-ground pit or chamber' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How soon do you need the service?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-1-week', label: 'Urgent – within 1 week' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'routine-next-2-months', label: 'Routine – within 2 months' }
+        ]
+      }
+    ]
+  },
+
+  // Regular Pool Cleaning
+  {
+    microSlug: 'regular-pool-cleaning',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool needs regular cleaning?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'plunge-pool', label: 'Plunge / small pool' }
+        ]
+      },
+      {
+        id: 'use_pattern',
+        question: 'How is the pool mainly used?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'private-family', label: 'Private family use' },
+          { value: 'holiday-rental', label: 'Holiday rental / guests' },
+          { value: 'hotel-or-community', label: 'Hotel / community pool' }
+        ]
+      },
+      {
+        id: 'service_frequency',
+        question: 'How often would you like cleaning visits?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'once-weekly', label: 'Once per week' },
+          { value: 'twice-weekly', label: 'Twice per week (peak season)' },
+          { value: 'fortnightly', label: 'Every 2 weeks' },
+          { value: 'custom', label: 'Custom schedule (discuss with pro)' }
+        ]
+      },
+      {
+        id: 'included_tasks',
+        question: 'Which tasks should be included in regular visits?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'skim-and-net', label: 'Skim and net the surface' },
+          { value: 'vacuum-and-brush', label: 'Vacuum floor and brush walls' },
+          { value: 'clean-baskets', label: 'Clean skimmer and pump baskets' },
+          { value: 'backwash-filter', label: 'Backwash and rinse filter' },
+          { value: 'test-and-dose-chemicals', label: 'Test and adjust chemicals' }
+        ]
+      },
+      {
+        id: 'chemicals_option',
+        question: 'How should chemicals be handled?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'pro-supplies-chemicals', label: 'Professional supplies chemicals' },
+          { value: 'client-supplies-chemicals', label: 'I supply the chemicals' },
+          { value: 'mixed', label: 'Mix of both (depending on product)' }
+        ]
+      },
+      {
+        id: 'access_and_keys',
+        question: 'How will cleaners access the pool area?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'owner-present', label: 'Owner / staff present for visits' },
+          { value: 'keys-or-code', label: 'Keys or gate code provided' },
+          { value: 'key-safe', label: 'Key safe on site' }
+        ]
+      },
+      {
+        id: 'start_date',
+        question: 'When would you like regular cleaning to start?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'start-immediately', label: 'Start immediately' },
+          { value: 'start-next-week', label: 'Start from next week' },
+          { value: 'start-next-month', label: 'Start from next month' },
+          { value: 'before-season', label: 'Start before the next season' }
+        ]
+      }
+    ]
+  },
+
+  // Skimmer and Drain Maintenance
+  {
+    microSlug: 'skimmer-drain-maintenance',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'system_type',
+        question: 'What type of pool is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        id: 'components',
+        question: 'Which components need attention?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'skimmers', label: 'Skimmers' },
+          { value: 'main-drain', label: 'Main drain' },
+          { value: 'overflow-channel', label: 'Overflow channel / gutter' },
+          { value: 'balance-tank', label: 'Balance tank' }
+        ]
+      },
+      {
+        id: 'issues',
+        question: 'What issues are you experiencing?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'poor-suction', label: 'Poor suction from skimmer or drain' },
+          { value: 'blockages', label: 'Blockages or reduced flow' },
+          { value: 'air-in-system', label: 'Air in system / bubbles at returns' },
+          { value: 'broken-covers-or-baskets', label: 'Broken covers or baskets' },
+          { value: 'leaks', label: 'Suspected leaks in skimmer or drain' }
+        ]
+      },
+      {
+        id: 'drain_and_safety',
+        question: 'Are you concerned about drain safety or compliance?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes-safety-check', label: 'Yes – need safety check / upgrades' },
+          { value: 'no-just-maintenance', label: 'No – just maintenance and cleaning' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'system_age',
+        question: 'How old is the pool and circulation system?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-10-years', label: 'Under 10 years' },
+          { value: '10-20-years', label: '10–20 years' },
+          { value: 'over-20-years', label: 'Over 20 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'access',
+        question: 'How is access to skimmers, drains and balance tank?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'good-access', label: 'Good, easy access' },
+          { value: 'limited-access', label: 'Limited / awkward access' },
+          { value: 'under-decking-or-tiles', label: 'Under decking / tiles or hidden' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How urgent is this maintenance?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-system-not-working', label: 'Urgent – system not working properly' },
+          { value: 'soon-1-2-weeks', label: 'Soon – within 1–2 weeks' },
+          { value: 'routine', label: 'Routine maintenance' }
+        ]
+      }
+    ]
+  },
+
+  // Spring Opening and Winterizing
+  {
+    microSlug: 'spring-opening-winterizing',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'service_type',
+        question: 'Do you need spring opening, winterizing, or both?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'spring-opening', label: 'Spring opening / start-up' },
+          { value: 'winterizing', label: 'Winterizing / closing the pool' },
+          { value: 'both', label: 'Both opening and closing services' }
+        ]
+      },
+      {
+        id: 'pool_type',
+        question: 'What type of pool or spa is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        id: 'cover_status',
+        question: 'Do you already have a pool cover installed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'thermal-blanket', label: 'Thermal blanket / bubble cover' },
+          { value: 'winter-cover', label: 'Winter debris cover' },
+          { value: 'automatic-cover', label: 'Automatic cover' },
+          { value: 'no-cover', label: 'No cover currently' }
+        ]
+      },
+      {
+        id: 'tasks_required',
+        question: 'Which tasks would you like included?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'remove-or-fit-cover', label: 'Remove or fit pool cover' },
+          { value: 'clean-and-balance-water', label: 'Clean and balance water' },
+          { value: 'system-startup-shutdown', label: 'Start up / shut down pump and filtration' },
+          { value: 'blow-out-lines', label: 'Blow out / protect pipework (where applicable)' },
+          { value: 'equipment-check', label: 'Check equipment and report issues' }
+        ]
+      },
+      {
+        id: 'chemical_handling',
+        question: 'How should chemicals be handled for this service?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'pro-supply-chemicals', label: 'Professional supplies all chemicals' },
+          { value: 'client-supply-chemicals', label: 'I will supply the chemicals' },
+          { value: 'mix-depending-on-products', label: 'Mix of both, depending on product' }
+        ]
+      },
+      {
+        id: 'previous_issues',
+        question: 'Have you had any issues in previous seasons?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'algae-after-winter', label: 'Algae or dirty water after winter' },
+          { value: 'frozen-or-damaged-pipes', label: 'Frozen / damaged pipes or equipment' },
+          { value: 'cover-damage', label: 'Cover damage over winter' },
+          { value: 'no-major-issues', label: 'No major issues previously' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'Roughly when do you want this service done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'early-season', label: 'Early in the season' },
+          { value: 'standard-season', label: 'Around normal opening/closing time' },
+          { value: 'late-season', label: 'Late in the season' },
+          { value: 'date-flexible', label: 'Flexible on timing' }
         ]
       }
     ]
