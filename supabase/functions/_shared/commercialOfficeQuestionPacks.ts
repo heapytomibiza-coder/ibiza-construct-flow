@@ -1,5 +1,5 @@
 /**
- * Commercial, Office, Retail, Kitchen/Bathroom, Construction, Brickwork & Pool Heating Question Packs
+ * Commercial, Office, Retail, Kitchen/Bathroom, Construction, Brickwork & Pool Question Packs
  * 
  * Covers:
  * - Commercial & Industrial: Planned Maintenance, Shopfront Repairs
@@ -12,7 +12,8 @@
  * - Kitchen Worktops, Units & Storage: Island Installation, Unit Installation, Pantry/Utility Storage, Worktop Install/Replace
  * - Construction & Extensions: Adding New Rooms, Conservatories/Glass Rooms, Garage Conversions, Single/Two Floor Home Extensions, Terrace/Rooftop Extensions
  * - Brickwork, Masonry & Concrete: Building/Repairing Walls, Concrete Bases/Paths/Floors, Garden/Boundary Walls
- * - Pool & Spa Heating: Electric Pool Heaters, Energy Efficiency Upgrades, Gas Pool Heaters, Heat Pump Installation, Pool Blankets & Covers, Pool Heating Repairs, Solar Pool Heating
+ * - Pool & Spa - Heating: Electric Pool Heaters, Energy Efficiency Upgrades, Gas Pool Heaters, Heat Pump Installation, Pool Blankets & Covers, Pool Heating Repairs, Solar Pool Heating
+ * - Pool & Spa - Construction: Concrete & Tiled Pools, New Pool Installation, Plunge & Small Pools, Pool Renovation & Refurbishment, Prefab & Fibreglass Pools
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -4211,6 +4212,436 @@ export const commercialOfficeQuestionPacks = [
           { value: 'within-2-months', label: 'Within the next 2 months' },
           { value: 'flexible', label: 'Flexible – no fixed deadline' },
           { value: 'early-planning', label: 'Early planning stage only' }
+        ]
+      }
+    ]
+  },
+
+  // ============================================================
+  // POOL & SPA - CONSTRUCTION (5 packs)
+  // ============================================================
+
+  // Concrete and tiled pools
+  {
+    microSlug: 'concrete-tiled-pools',
+    subcategorySlug: 'construction',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_shape',
+        question: 'What shape will the pool be?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'rectangular', label: 'Rectangular' },
+          { value: 'square', label: 'Square' },
+          { value: 'kidney-freeform', label: 'Kidney / freeform' },
+          { value: 'custom-shape', label: 'Custom design' }
+        ]
+      },
+      {
+        id: 'dimensions',
+        question: 'What is the approximate size of the pool?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-4-6m', label: 'Small (4–6 metres)' },
+          { value: 'medium-6-10m', label: 'Medium (6–10 metres)' },
+          { value: 'large-10-15m', label: 'Large (10–15 metres)' },
+          { value: 'very-large-15m-plus', label: 'Very large (15m+)' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'finish_type',
+        question: 'What type of finish do you prefer?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'tiles', label: 'Tiles' },
+          { value: 'mosaic', label: 'Mosaic tile finish' },
+          { value: 'microcement', label: 'Microcement / polished render' },
+          { value: 'other', label: 'Other / open to suggestion' }
+        ]
+      },
+      {
+        id: 'pool_features',
+        question: 'Would you like any special features?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'infinity-edge', label: 'Infinity edge' },
+          { value: 'beach-entry', label: 'Beach entry' },
+          { value: 'steps-or-benches', label: 'Integrated steps or benches' },
+          { value: 'lighting', label: 'Underwater lighting' },
+          { value: 'waterfall', label: 'Waterfall or feature wall' },
+          { value: 'spa-integration', label: 'Built-in spa or hot tub' }
+        ]
+      },
+      {
+        id: 'site_conditions',
+        question: 'What best describes your site conditions?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'flat-easy-access', label: 'Flat site with easy access' },
+          { value: 'sloped-or-uneven', label: 'Sloped or uneven terrain' },
+          { value: 'tight-access', label: 'Tight access for machinery' },
+          { value: 'not-sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'design_stage',
+        question: 'What stage are you at in the design process?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'ideas-stage', label: 'Just exploring ideas' },
+          { value: 'concept-ready', label: 'Have a rough idea / sketches' },
+          { value: 'full-plans-ready', label: 'Architect plans / technical drawings ready' }
+        ]
+      },
+      {
+        id: 'timeline',
+        question: 'When would you like to begin construction?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: '3-6-months', label: 'In 3–6 months' },
+          { value: 'planning-stage', label: 'Just planning for now' }
+        ]
+      }
+    ]
+  },
+
+  // New pool installation
+  {
+    microSlug: 'new-pool-installation',
+    subcategorySlug: 'construction',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool are you looking to install?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'concrete-tiled', label: 'Concrete & tiled pool' },
+          { value: 'prefab-fibreglass', label: 'Prefab / fibreglass pool' },
+          { value: 'liner-pool', label: 'Liner pool' },
+          { value: 'plunge', label: 'Plunge / compact pool' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'pool_size',
+        question: 'What approximate size of pool would you like?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small', label: 'Small (4–6m)' },
+          { value: 'medium', label: 'Medium (6–10m)' },
+          { value: 'large', label: 'Large (10–15m)' },
+          { value: 'very-large', label: 'Very large (15m+)' },
+          { value: 'not-sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'location',
+        question: 'Where will the pool be installed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'private-garden', label: 'Private garden' },
+          { value: 'villa-or-urbanisation', label: 'Villa / urbanisation' },
+          { value: 'roof-terrace', label: 'Roof terrace (structural check needed)' },
+          { value: 'indoor', label: 'Indoors' }
+        ]
+      },
+      {
+        id: 'features',
+        question: 'Would you like any special features?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'steps-bench', label: 'Built-in steps or bench' },
+          { value: 'lighting', label: 'Underwater lighting' },
+          { value: 'heating', label: 'Heating system' },
+          { value: 'automation', label: 'Automatic dosing / automation' },
+          { value: 'waterfall', label: 'Waterfall or feature wall' }
+        ]
+      },
+      {
+        id: 'design_status',
+        question: 'Do you already have design plans?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'no-plans', label: 'No plans – need full design' },
+          { value: 'concept', label: 'Concept sketches' },
+          { value: 'architect-drawings', label: 'Architect / engineer drawings ready' }
+        ]
+      },
+      {
+        id: 'timeline',
+        question: 'When would you like to begin the installation?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: '3-6-months', label: '3–6 months' },
+          { value: 'planning-stage', label: 'Just planning / budgeting' }
+        ]
+      }
+    ]
+  },
+
+  // Plunge and small pools
+  {
+    microSlug: 'plunge-small-pools',
+    subcategorySlug: 'construction',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_style',
+        question: 'What style of plunge pool are you interested in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'prefab-fibreglass', label: 'Prefab / fibreglass unit' },
+          { value: 'concrete-custom', label: 'Concrete custom-built' },
+          { value: 'above-ground', label: 'Above-ground plunge pool' },
+          { value: 'cold-plunge', label: 'Cold plunge / ice bath style' }
+        ]
+      },
+      {
+        id: 'size',
+        question: 'What size plunge pool are you looking for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-2-3m', label: 'Small (2–3m)' },
+          { value: 'medium-3-4m', label: 'Medium (3–4m)' },
+          { value: 'large-4m-plus', label: 'Large (4m+)' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'installation_location',
+        question: 'Where will the plunge pool be installed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'garden', label: 'Garden' },
+          { value: 'patio-terrace', label: 'Patio / terrace' },
+          { value: 'roof', label: 'Roof terrace (structural inspection required)' },
+          { value: 'indoor', label: 'Indoors' }
+        ]
+      },
+      {
+        id: 'features',
+        question: 'Would you like any special features?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'heating', label: 'Heating system' },
+          { value: 'cooling-chiller', label: 'Cooling chiller' },
+          { value: 'lighting', label: 'LED lighting' },
+          { value: 'jets', label: 'Jets / hydromassage' }
+        ]
+      },
+      {
+        id: 'design_stage',
+        question: 'What stage of planning are you at?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'exploring', label: 'Exploring options' },
+          { value: 'have-ideas', label: 'Have some ideas' },
+          { value: 'ready-to-build', label: 'Ready to build / install' }
+        ]
+      },
+      {
+        id: 'timeline',
+        question: 'When would you like installation to start?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: '3-6-months', label: 'In 3–6 months' },
+          { value: 'planning', label: 'Just planning for now' }
+        ]
+      }
+    ]
+  },
+
+  // Pool renovation and refurbishment
+  {
+    microSlug: 'pool-renovation-refurbishment',
+    subcategorySlug: 'construction',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool needs renovation?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'concrete-tiled', label: 'Concrete & tiled pool' },
+          { value: 'fibreglass', label: 'Fibreglass pool' },
+          { value: 'liner-pool', label: 'Liner pool' },
+          { value: 'plunge', label: 'Plunge pool' }
+        ]
+      },
+      {
+        id: 'renovation_needs',
+        question: 'What areas need renovation or repair?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'leaks', label: 'Leak detection & repair' },
+          { value: 'tile-replacement', label: 'Tile replacement or re-grouting' },
+          { value: 'surface-refinish', label: 'Resurfacing or microcement' },
+          { value: 'cracks', label: 'Structural cracks' },
+          { value: 'equipment-upgrade', label: 'Pump / filter / electrical upgrades' },
+          { value: 'lighting-repair', label: 'Lighting upgrade or repair' }
+        ]
+      },
+      {
+        id: 'condition_level',
+        question: 'How would you describe the current condition of the pool?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'fair', label: 'Fair – minor wear' },
+          { value: 'poor', label: 'Poor – visible damage' },
+          { value: 'very-poor', label: 'Very poor – major work needed' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'features',
+        question: 'Would you like to add any upgrades?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'new-steps', label: 'New steps or bench' },
+          { value: 'infinity-edge', label: 'Add an infinity edge' },
+          { value: 'automation', label: 'Automation / salt chlorination' },
+          { value: 'heating', label: 'Add or upgrade heating system' },
+          { value: 'lighting', label: 'LED lighting' }
+        ]
+      },
+      {
+        id: 'design_stage',
+        question: 'Do you have renovation plans or drawings?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'no', label: 'No plans yet' },
+          { value: 'basic-idea', label: 'Have a rough idea' },
+          { value: 'full-drawings', label: 'Full drawings / specifications ready' }
+        ]
+      },
+      {
+        id: 'timeline',
+        question: 'When would you like the renovation to start?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-2-months', label: 'Within 1–2 months' },
+          { value: 'before-season', label: 'Before the next pool season' },
+          { value: 'planning', label: 'Just planning / budgeting' }
+        ]
+      }
+    ]
+  },
+
+  // Prefab and fibreglass pools
+  {
+    microSlug: 'prefab-fibreglass-pools',
+    subcategorySlug: 'construction',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_size',
+        question: 'What size pool are you considering?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-4-6m', label: 'Small 4–6m' },
+          { value: 'medium-6-9m', label: 'Medium 6–9m' },
+          { value: 'large-9-12m', label: 'Large 9–12m' },
+          { value: 'very-large-12m-plus', label: 'Very large 12m+' },
+          { value: 'not-sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'shape',
+        question: 'Which shape do you prefer?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'rectangular', label: 'Rectangular' },
+          { value: 'round-oval', label: 'Round / oval' },
+          { value: 'freeform', label: 'Freeform / organic shape' }
+        ]
+      },
+      {
+        id: 'site_conditions',
+        question: 'What best describes your site conditions?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'flat-easy-access', label: 'Flat site with easy crane access' },
+          { value: 'tight-access', label: 'Tight access – crane may be required' },
+          { value: 'sloped', label: 'Sloped terrain' },
+          { value: 'not-sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'features',
+        question: 'Would you like additional options?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'lighting', label: 'LED lighting' },
+          { value: 'salt-system', label: 'Salt chlorination' },
+          { value: 'heat-pump', label: 'Heat pump installation' },
+          { value: 'automation', label: 'Automation / dosing system' }
+        ]
+      },
+      {
+        id: 'design_stage',
+        question: 'Do you have pool plans?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'no-plans', label: 'No plans yet' },
+          { value: 'basic-idea', label: 'Have ideas, need guidance' },
+          { value: 'ready', label: 'Full plans ready' }
+        ]
+      },
+      {
+        id: 'timeline',
+        question: 'When would you like installation to begin?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-3-months', label: 'Within 1–3 months' },
+          { value: '3-6-months', label: 'In 3–6 months' },
+          { value: 'planning', label: 'Just planning/budgeting' }
         ]
       }
     ]
