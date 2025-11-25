@@ -91,9 +91,10 @@ export function BulkActionSheet({
 
       // Log to admin audit
       await supabase.rpc('log_admin_action', {
-        p_action: `bulk_${selectedAction}`,
-        p_entity_type: entityType,
-        p_changes: {
+        p_action_type: `bulk_${selectedAction}`,
+        p_target_type: entityType,
+        p_target_id: selectedIds[0],
+        p_action_data: {
           count: selectedIds.length,
           ids: selectedIds,
           reason: reason

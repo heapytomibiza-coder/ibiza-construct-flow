@@ -57,10 +57,10 @@ export function useImpersonation() {
 
       // Log the impersonation start (no localStorage needed - session managed server-side)
       await supabase.rpc("log_admin_action", {
-        p_action: "impersonation_started",
-        p_entity_type: "user",
-        p_entity_id: targetUserId,
-        p_changes: {
+        p_action_type: "impersonation_started",
+        p_target_type: "user",
+        p_target_id: targetUserId,
+        p_action_data: {
           impersonation_session_id: sessionData.id,
           reason,
           expires_at: sessionData.expires_at,
@@ -99,10 +99,10 @@ export function useImpersonation() {
 
       // Log the impersonation end
       await supabase.rpc("log_admin_action", {
-        p_action: "impersonation_ended",
-        p_entity_type: "impersonation_session",
-        p_entity_id: activeSession.id,
-        p_changes: {
+        p_action_type: "impersonation_ended",
+        p_target_type: "impersonation_session",
+        p_target_id: activeSession.id,
+        p_action_data: {
           ended_at: new Date().toISOString(),
         },
       });

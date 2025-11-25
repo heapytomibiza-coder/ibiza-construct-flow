@@ -2,21 +2,30 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface PlatformMetric {
+  id: string;
   metric_date: string;
-  metric_hour: number | null;
+  metric_type: string;
   total_users: number;
-  active_users: number;
   new_users: number;
-  total_bookings: number;
-  completed_bookings: number;
-  cancelled_bookings: number;
+  active_users: number;
+  professional_users: number;
+  client_users: number;
+  total_jobs: number;
+  new_jobs: number;
+  completed_jobs: number;
+  cancelled_jobs: number;
+  avg_job_value: number;
   total_revenue: number;
-  average_booking_value: number;
+  platform_fees: number;
+  escrow_balance: number;
   total_messages: number;
   total_reviews: number;
-  average_rating: number;
-  disputes_opened: number;
-  disputes_resolved: number;
+  avg_rating: number;
+  active_disputes: number;
+  response_time_ms: number | null;
+  error_rate: number | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export const usePlatformMetrics = (startDate: Date, endDate: Date) => {

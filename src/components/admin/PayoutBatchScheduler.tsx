@@ -93,10 +93,10 @@ export function PayoutBatchScheduler() {
 
       // Log action
       await supabase.rpc("log_admin_action", {
-        p_action: "payout_batch_created",
-        p_entity_type: "payout_batch",
-        p_entity_id: (data as any).id,
-        p_changes: payload,
+        p_action_type: "payout_batch_created",
+        p_target_type: "payout_batch",
+        p_target_id: (data as any).id,
+        p_action_data: payload,
       });
 
       return data;
@@ -136,10 +136,10 @@ export function PayoutBatchScheduler() {
       if (error) throw error;
 
       await supabase.rpc("log_admin_action", {
-        p_action: "payout_batch_approved",
-        p_entity_type: "payout_batch",
-        p_entity_id: batchId,
-        p_changes: { approved_by: user.data.user?.id },
+        p_action_type: "payout_batch_approved",
+        p_target_type: "payout_batch",
+        p_target_id: batchId,
+        p_action_data: { approved_by: user.data.user?.id },
       });
     },
     onSuccess: () => {
