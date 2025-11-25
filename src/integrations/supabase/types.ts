@@ -2419,7 +2419,13 @@ export type Database = {
           file_type: string
           file_url: string
           id: string
+          metadata: Json | null
+          timestamp_claimed: string | null
           uploaded_by: string
+          uploaded_by_role: string | null
+          verified: boolean | null
+          verified_at: string | null
+          verified_by: string | null
         }
         Insert: {
           created_at?: string
@@ -2432,7 +2438,13 @@ export type Database = {
           file_type: string
           file_url: string
           id?: string
+          metadata?: Json | null
+          timestamp_claimed?: string | null
           uploaded_by: string
+          uploaded_by_role?: string | null
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Update: {
           created_at?: string
@@ -2445,7 +2457,13 @@ export type Database = {
           file_type?: string
           file_url?: string
           id?: string
+          metadata?: Json | null
+          timestamp_claimed?: string | null
           uploaded_by?: string
+          uploaded_by_role?: string | null
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: []
       }
@@ -2506,6 +2524,8 @@ export type Database = {
           appeal_deadline: string | null
           auto_execute_date: string | null
           awarded_to: string | null
+          client_response_at: string | null
+          client_status: string | null
           created_at: string | null
           details: string | null
           dispute_id: string
@@ -2516,9 +2536,15 @@ export type Database = {
           mediator_decision_reasoning: string | null
           party_client_agreed: boolean | null
           party_professional_agreed: boolean | null
+          professional_response_at: string | null
+          professional_status: string | null
+          proposed_by: string | null
+          proposed_by_user_id: string | null
           resolution_type: string
           status: string | null
           terms: Json | null
+          timeline_days: number | null
+          work_required: string | null
         }
         Insert: {
           agreement_finalized_at?: string | null
@@ -2526,6 +2552,8 @@ export type Database = {
           appeal_deadline?: string | null
           auto_execute_date?: string | null
           awarded_to?: string | null
+          client_response_at?: string | null
+          client_status?: string | null
           created_at?: string | null
           details?: string | null
           dispute_id: string
@@ -2536,9 +2564,15 @@ export type Database = {
           mediator_decision_reasoning?: string | null
           party_client_agreed?: boolean | null
           party_professional_agreed?: boolean | null
+          professional_response_at?: string | null
+          professional_status?: string | null
+          proposed_by?: string | null
+          proposed_by_user_id?: string | null
           resolution_type: string
           status?: string | null
           terms?: Json | null
+          timeline_days?: number | null
+          work_required?: string | null
         }
         Update: {
           agreement_finalized_at?: string | null
@@ -2546,6 +2580,8 @@ export type Database = {
           appeal_deadline?: string | null
           auto_execute_date?: string | null
           awarded_to?: string | null
+          client_response_at?: string | null
+          client_status?: string | null
           created_at?: string | null
           details?: string | null
           dispute_id?: string
@@ -2556,9 +2592,15 @@ export type Database = {
           mediator_decision_reasoning?: string | null
           party_client_agreed?: boolean | null
           party_professional_agreed?: boolean | null
+          professional_response_at?: string | null
+          professional_status?: string | null
+          proposed_by?: string | null
+          proposed_by_user_id?: string | null
           resolution_type?: string
           status?: string | null
           terms?: Json | null
+          timeline_days?: number | null
+          work_required?: string | null
         }
         Relationships: [
           {
@@ -2612,7 +2654,9 @@ export type Database = {
         Row: {
           amount_disputed: number | null
           auto_close_date: string | null
+          auto_escalation_count: number | null
           contract_id: string | null
+          cooling_off_period_end: string | null
           created_at: string
           created_by: string
           description: string
@@ -2623,21 +2667,29 @@ export type Database = {
           escalated_at: string | null
           escalation_level: number | null
           escalation_reasons: Json | null
+          escrow_amount: number | null
+          escrow_frozen: boolean | null
+          evidence_deadline: string | null
+          false_claim_flag: boolean | null
           id: string
           invoice_id: string | null
           job_id: string
           last_activity_at: string | null
+          mediation_started_at: string | null
           mediator_id: string | null
           mediator_notes: string | null
           pre_dispute_contact_attempted: boolean | null
           priority: string
           required_evidence_types: Json | null
           resolution_amount: number | null
+          resolution_deadline: string | null
           resolution_notes: string | null
           resolved_at: string | null
           resolved_by: string | null
           response_deadline: string | null
+          stage: number | null
           status: string
+          technical_validation_required: boolean | null
           title: string
           type: string
           updated_at: string
@@ -2646,7 +2698,9 @@ export type Database = {
         Insert: {
           amount_disputed?: number | null
           auto_close_date?: string | null
+          auto_escalation_count?: number | null
           contract_id?: string | null
+          cooling_off_period_end?: string | null
           created_at?: string
           created_by: string
           description: string
@@ -2657,21 +2711,29 @@ export type Database = {
           escalated_at?: string | null
           escalation_level?: number | null
           escalation_reasons?: Json | null
+          escrow_amount?: number | null
+          escrow_frozen?: boolean | null
+          evidence_deadline?: string | null
+          false_claim_flag?: boolean | null
           id?: string
           invoice_id?: string | null
           job_id: string
           last_activity_at?: string | null
+          mediation_started_at?: string | null
           mediator_id?: string | null
           mediator_notes?: string | null
           pre_dispute_contact_attempted?: boolean | null
           priority?: string
           required_evidence_types?: Json | null
           resolution_amount?: number | null
+          resolution_deadline?: string | null
           resolution_notes?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
           response_deadline?: string | null
+          stage?: number | null
           status?: string
+          technical_validation_required?: boolean | null
           title: string
           type: string
           updated_at?: string
@@ -2680,7 +2742,9 @@ export type Database = {
         Update: {
           amount_disputed?: number | null
           auto_close_date?: string | null
+          auto_escalation_count?: number | null
           contract_id?: string | null
+          cooling_off_period_end?: string | null
           created_at?: string
           created_by?: string
           description?: string
@@ -2691,21 +2755,29 @@ export type Database = {
           escalated_at?: string | null
           escalation_level?: number | null
           escalation_reasons?: Json | null
+          escrow_amount?: number | null
+          escrow_frozen?: boolean | null
+          evidence_deadline?: string | null
+          false_claim_flag?: boolean | null
           id?: string
           invoice_id?: string | null
           job_id?: string
           last_activity_at?: string | null
+          mediation_started_at?: string | null
           mediator_id?: string | null
           mediator_notes?: string | null
           pre_dispute_contact_attempted?: boolean | null
           priority?: string
           required_evidence_types?: Json | null
           resolution_amount?: number | null
+          resolution_deadline?: string | null
           resolution_notes?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
           response_deadline?: string | null
+          stage?: number | null
           status?: string
+          technical_validation_required?: boolean | null
           title?: string
           type?: string
           updated_at?: string
@@ -2841,6 +2913,116 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      early_warnings: {
+        Row: {
+          contract_id: string | null
+          description: string
+          detected_at: string
+          dismissed_by: string | null
+          id: string
+          job_id: string | null
+          metadata: Json | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          suggested_action: string | null
+          title: string
+          warning_type: string
+        }
+        Insert: {
+          contract_id?: string | null
+          description: string
+          detected_at?: string
+          dismissed_by?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          suggested_action?: string | null
+          title: string
+          warning_type: string
+        }
+        Update: {
+          contract_id?: string | null
+          description?: string
+          detected_at?: string
+          dismissed_by?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          suggested_action?: string | null
+          title?: string
+          warning_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "early_warnings_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "early_warnings_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      enforcement_logs: {
+        Row: {
+          action_details: string
+          action_type: string
+          amount_affected: number | null
+          created_at: string
+          deadline_set: string | null
+          dispute_id: string
+          id: string
+          metadata: Json | null
+          performed_by: string
+          performed_by_user_id: string | null
+        }
+        Insert: {
+          action_details: string
+          action_type: string
+          amount_affected?: number | null
+          created_at?: string
+          deadline_set?: string | null
+          dispute_id: string
+          id?: string
+          metadata?: Json | null
+          performed_by: string
+          performed_by_user_id?: string | null
+        }
+        Update: {
+          action_details?: string
+          action_type?: string
+          amount_affected?: number | null
+          created_at?: string
+          deadline_set?: string | null
+          dispute_id?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string
+          performed_by_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enforcement_logs_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       escrow_milestones: {
         Row: {
@@ -11053,6 +11235,7 @@ export type Database = {
         Args: { p_metric_date: string }
         Returns: undefined
       }
+      auto_escalate_disputes: { Args: never; Returns: Json }
       bulk_user_suspend: {
         Args: { reason: string; suspended_by: string; user_ids: string[] }
         Returns: undefined
@@ -11168,6 +11351,7 @@ export type Database = {
         }
         Returns: string
       }
+      detect_early_warnings: { Args: never; Returns: Json }
       detect_fraud_pattern: {
         Args: { p_pattern_type: string; p_severity: string; p_user_id: string }
         Returns: boolean
@@ -11176,10 +11360,7 @@ export type Database = {
         Args: { p_dispute_id: string }
         Returns: undefined
       }
-      execute_resolution: {
-        Args: { p_resolution_id: string }
-        Returns: undefined
-      }
+      execute_resolution: { Args: { p_resolution_id: string }; Returns: Json }
       generate_payment_receipt: {
         Args: { p_payment_id: string }
         Returns: Json
