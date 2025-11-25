@@ -6,11 +6,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
 import { useCategories, useSubcategories, useMicroCategories } from "@/hooks/useCategories";
+import { useServicesNeedingPacks } from "@/hooks/useServicesNeedingPacks";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Save, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, Sparkles, Save, CheckCircle2, AlertCircle, ChevronDown, Search } from "lucide-react";
 
 export default function QuestionPackGenerator() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
@@ -21,11 +24,14 @@ export default function QuestionPackGenerator() {
   const [generatedJson, setGeneratedJson] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   // Fetch taxonomy data
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: subcategories, isLoading: subcategoriesLoading } = useSubcategories(selectedCategoryId);
   const { data: microCategories, isLoading: microCategoriesLoading } = useMicroCategories(selectedSubcategoryId);
+  const { data: servicesNeeded, isLoading: servicesLoading } = useServicesNeedingPacks();
 
   // Get selected taxonomy details
   const selectedCategory = categories?.find(c => c.id === selectedCategoryId);
@@ -140,8 +146,36 @@ export default function QuestionPackGenerator() {
     }
   };
 
+  const handleServiceSelect = (service: any) => {
+    setSelectedCategoryId(service.category_id);
+    setSelectedSubcategoryId(service.subcategory_id);
+    setSelectedMicroId(service.id);
+    setCustomServiceName("");
+  };
+
+  const toggleCategory = (categoryName: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryName)) {
+      newExpanded.delete(categoryName);
+    } else {
+      newExpanded.add(categoryName);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  const filteredGroups = servicesNeeded?.grouped
+    ? Object.entries(servicesNeeded.grouped).filter(([categoryName, data]) => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+          categoryName.toLowerCase().includes(query) ||
+          data.services.some(s => s.name.toLowerCase().includes(query))
+        );
+      })
+    : [];
+
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="container mx-auto p-6 max-w-[1800px]">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">Question Pack Generator</h1>
         <p className="text-muted-foreground">
@@ -149,8 +183,80 @@ export default function QuestionPackGenerator() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        {/* Services Needing Packs Panel */}
+        <Card className="xl:col-span-3">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center justify-between">
+              <span>Needs Packs</span>
+              {servicesNeeded && (
+                <Badge variant="secondary">{servicesNeeded.totalCount}</Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              Click to auto-select
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search services..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+
+            <ScrollArea className="h-[calc(100vh-320px)]">
+              {servicesLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {filteredGroups.map(([categoryName, data]) => (
+                    <Collapsible
+                      key={categoryName}
+                      open={expandedCategories.has(categoryName)}
+                      onOpenChange={() => toggleCategory(categoryName)}
+                    >
+                      <CollapsibleTrigger className="flex items-center justify-between w-full p-2 rounded-md hover:bg-accent transition-colors">
+                        <div className="flex items-center gap-2">
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${
+                              expandedCategories.has(categoryName) ? 'rotate-0' : '-rotate-90'
+                            }`}
+                          />
+                          <span className="font-medium text-sm">{categoryName}</span>
+                        </div>
+                        <Badge variant="outline" className="ml-2">
+                          {data.services.length}
+                        </Badge>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="pl-6 pt-1 space-y-1">
+                        {data.services.map((service) => (
+                          <button
+                            key={service.id}
+                            onClick={() => handleServiceSelect(service)}
+                            className={`w-full text-left p-2 rounded-md text-sm hover:bg-accent transition-colors ${
+                              selectedMicroId === service.id ? 'bg-accent' : ''
+                            }`}
+                          >
+                            {service.name}
+                          </button>
+                        ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        {/* Service Details Form */}
+        <Card className="xl:col-span-4">
           <CardHeader>
             <CardTitle>Service Details</CardTitle>
             <CardDescription>
@@ -283,7 +389,8 @@ export default function QuestionPackGenerator() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* Generated JSON Panel */}
+        <Card className="xl:col-span-5">
           <CardHeader>
             <CardTitle>Generated JSON</CardTitle>
             <CardDescription>
