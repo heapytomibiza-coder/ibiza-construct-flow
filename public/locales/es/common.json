@@ -174,5 +174,11 @@
     "decline": "Rechazar",
     "autoCounter": "Generar Contraoferta",
     "generating": "Generando contraoferta..."
+  },
+  "common": {
+    "translate": "Traducir",
+    "translating": "Traduciendo...",
+    "showOriginal": "Mostrar original",
+    "translatedFrom": "Traducido del {{lang}}"
   }
 }
