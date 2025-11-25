@@ -2020,6 +2020,7 @@ export type Database = {
       contracts: {
         Row: {
           agreed_amount: number
+          auto_release_at: string | null
           client_id: string
           commission_amount: number | null
           commission_rate: number | null
@@ -2035,9 +2036,12 @@ export type Database = {
           tasker_id: string
           type: string
           updated_at: string
+          work_approved_at: string | null
+          work_submitted_at: string | null
         }
         Insert: {
           agreed_amount: number
+          auto_release_at?: string | null
           client_id: string
           commission_amount?: number | null
           commission_rate?: number | null
@@ -2053,9 +2057,12 @@ export type Database = {
           tasker_id: string
           type?: string
           updated_at?: string
+          work_approved_at?: string | null
+          work_submitted_at?: string | null
         }
         Update: {
           agreed_amount?: number
+          auto_release_at?: string | null
           client_id?: string
           commission_amount?: number | null
           commission_rate?: number | null
@@ -2071,6 +2078,8 @@ export type Database = {
           tasker_id?: string
           type?: string
           updated_at?: string
+          work_approved_at?: string | null
+          work_submitted_at?: string | null
         }
         Relationships: []
       }
@@ -5012,6 +5021,62 @@ export type Database = {
             columns: ["milestone_id"]
             isOneToOne: false
             referencedRelation: "escrow_milestones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      milestone_payments: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          contract_id: string
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          paid_at: string | null
+          percentage: number | null
+          status: string
+          stripe_payment_intent_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          contract_id: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          paid_at?: string | null
+          percentage?: number | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          contract_id?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          paid_at?: string | null
+          percentage?: number | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_payments_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
         ]
@@ -9862,6 +9927,62 @@ export type Database = {
           },
         ]
       }
+      simple_escrow_releases: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          contract_id: string
+          created_at: string
+          currency: string
+          error_message: string | null
+          id: string
+          release_reason: string
+          released_at: string | null
+          released_by: string
+          released_to: string
+          status: string
+          stripe_transfer_id: string | null
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          contract_id: string
+          created_at?: string
+          currency?: string
+          error_message?: string | null
+          id?: string
+          release_reason: string
+          released_at?: string | null
+          released_by: string
+          released_to: string
+          status?: string
+          stripe_transfer_id?: string | null
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          contract_id?: string
+          created_at?: string
+          currency?: string
+          error_message?: string | null
+          id?: string
+          release_reason?: string
+          released_at?: string | null
+          released_by?: string
+          released_to?: string
+          status?: string
+          stripe_transfer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simple_escrow_releases_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_settings: {
         Row: {
           id: string
@@ -11047,6 +11168,56 @@ export type Database = {
           webhook_url?: string
         }
         Relationships: []
+      }
+      work_submissions: {
+        Row: {
+          attachments: Json | null
+          contract_id: string
+          created_at: string
+          id: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submission_notes: string | null
+          submitted_by: string
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json | null
+          contract_id: string
+          created_at?: string
+          id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_notes?: string | null
+          submitted_by: string
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json | null
+          contract_id?: string
+          created_at?: string
+          id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_notes?: string | null
+          submitted_by?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_submissions_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workflow_automations: {
         Row: {
