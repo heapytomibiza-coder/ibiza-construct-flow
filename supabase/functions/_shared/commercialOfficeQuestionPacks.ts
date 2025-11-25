@@ -1,24 +1,6 @@
 /**
- * Commercial, Office, Retail, Kitchen/Bathroom, Construction, Brickwork, Pool & Painting/Decorating Question Packs
- * 
- * Covers:
- * - Commercial & Industrial: Planned Maintenance, Shopfront Repairs
- * - Office Fitouts: Office Partitions, Office Renovation
- * - Retail Spaces: Retail Display, Shop Fitting
- * - Wetrooms & Specialist Bathrooms: Accessible Bathrooms, Waterproofing, Walk-in Showers, Wetroom Installation
- * - Bathroom Fitting & Renovation: Bathroom Design, Refurbishment, Cloakroom/Ensuite, New Installation, Full Bathroom Fit, Wetroom Installation
- * - Kitchen Installation: Full Kitchen Fit, Worktop Installation
- * - Kitchen Fitting & Renovation: Kitchen Fitting, Kitchen Refurbishment, New Kitchen Installation, Small Kitchen Updates
- * - Kitchen Worktops, Units & Storage: Island Installation, Unit Installation, Pantry/Utility Storage, Worktop Install/Replace
- * - Construction & Extensions: Adding New Rooms, Conservatories/Glass Rooms, Garage Conversions, Single/Two Floor Home Extensions, Terrace/Rooftop Extensions
- * - Brickwork, Masonry & Concrete: Building/Repairing Walls, Concrete Bases/Paths/Floors, Garden/Boundary Walls
- * - Pool & Spa - Heating: Electric Pool Heaters, Energy Efficiency Upgrades, Gas Pool Heaters, Heat Pump Installation, Pool Blankets & Covers, Pool Heating Repairs, Solar Pool Heating
- * - Pool & Spa - Construction: Concrete & Tiled Pools, New Pool Installation, Plunge & Small Pools, Pool Renovation & Refurbishment, Prefab & Fibreglass Pools
- * - Pool & Spa - Equipment: Filter Replacement, Pump Repair
- * - Pool & Spa - Maintenance: Chemical Balance, Pool Cleaning, Filter Cleaning & Replacement, One-off Deep Clean, Pool Cover Repair & Replacement, Pump Servicing, Regular Pool Cleaning, Skimmer & Drain Maintenance, Spring Opening & Winterizing
- * - Pool & Spa - Spas: Hot Tub Installation, Hot Tub Repair, Jacuzzi Installation & Repair, Spa Cover Replacement, Spa Jets & Plumbing, Spa Servicing & Maintenance, Spa Water Treatment, Hot Tub Electrical Work
- * - Pool & Spa - Water Treatment: Algae Removal & Prevention, Cloudy Water Treatment, Filtration System Installation, Filtration System Upgrades, Salt Chlorinator Systems, Water Chemistry Balancing
- * - Painting & Decorating - Exterior: Anti-damp Treatment, Exterior House Repainting, Exterior Metal Railings, Exterior Wood Windows & Doors, Façade Repainting, Fence Painting, House Exterior
+ * Question packs for Commercial, Office, Retail, Kitchen, Bathroom, Storage, Extensions, Brickwork, Pool, Spa, Water Treatment, Painting/Decorating Exterior & Interior services
+ * Manually crafted and curated
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -7334,6 +7316,817 @@ export const commercialOfficeQuestionPacks = [
           { value: '1-3-months', label: 'Within 1–3 months' },
           { value: 'flexible', label: 'Flexible on start date' }
         ]
+      }
+    ]
+  },
+
+  // ============================================================
+  // PAINTING & DECORATING - INTERIOR
+  // ============================================================
+
+  {
+    microSlug: 'cabinet-painting',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'interior',
+    version: 1,
+    questions: [
+      {
+        id: 'cabinets_location',
+        question: 'Where are the cabinets you want painted?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'bathroom', label: 'Bathroom' },
+          { value: 'bedroom', label: 'Bedroom / wardrobes' },
+          { value: 'multiple_areas', label: 'Multiple areas' }
+        ]
+      },
+      {
+        id: 'cabinets_quantity',
+        question: 'Roughly how many cabinet doors and drawer fronts need painting?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small', label: 'Small set (up to 10 fronts)' },
+          { value: 'medium', label: 'Medium (10–20 fronts)' },
+          { value: 'large', label: 'Large (20–35 fronts)' },
+          { value: 'very_large', label: 'Very large (35+ fronts)' }
+        ]
+      },
+      {
+        id: 'current_cabinet_finish',
+        question: 'What is the current finish on the cabinets?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'unpainted_wood', label: 'Unpainted wood' },
+          { value: 'painted', label: 'Already painted' },
+          { value: 'laminate_mdf', label: 'Laminate / MDF' },
+          { value: 'high_gloss', label: 'High gloss' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'cabinet_condition',
+        question: 'What condition are the cabinets in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'good', label: 'Good, just changing colour' },
+          { value: 'minor_chips', label: 'Minor chips and wear' },
+          { value: 'heavy_wear', label: 'Heavy wear or peeling paint' },
+          { value: 'water_damage', label: 'Some water damage / swelling' }
+        ]
+      },
+      {
+        id: 'cabinet_finish_preference',
+        question: 'What type of paint finish do you prefer?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard_eggshell', label: 'Standard durable eggshell / satin' },
+          { value: 'high_gloss_finish', label: 'High gloss finish' },
+          { value: 'eco_low_odor', label: 'Eco / low-odour paints' },
+          { value: 'no_preference', label: 'No preference – follow professional advice' }
+        ]
+      },
+      {
+        id: 'hardware_changes',
+        question: 'Do you also need handles or hardware changed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'keep_existing', label: 'Keep existing hardware' },
+          { value: 'supply_own', label: 'I\'ll supply new handles' },
+          { value: 'supply_and_fit', label: 'I\'d like the professional to supply and fit' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'cabinet_timing',
+        question: 'When would you like the cabinet painting done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'As soon as possible' },
+          { value: 'two_weeks', label: 'Within the next 2 weeks' },
+          { value: 'month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible on dates' }
+        ]
+      },
+      {
+        id: 'cabinet_additional_info',
+        question: 'Anything else the professional should know about your cabinets?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'feature-wall-accent',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'interior',
+    version: 1,
+    questions: [
+      {
+        id: 'feature_space_type',
+        question: 'Where is the feature wall or accent area?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'living_room', label: 'Living room' },
+          { value: 'bedroom', label: 'Bedroom' },
+          { value: 'hallway', label: 'Hallway / entrance' },
+          { value: 'kitchen_dining', label: 'Kitchen / dining' },
+          { value: 'other_room', label: 'Other room' }
+        ]
+      },
+      {
+        id: 'feature_wall_size',
+        question: 'Roughly how big is the feature wall or area?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small', label: 'Small (up to 6 m²)' },
+          { value: 'medium', label: 'Medium (6–12 m²)' },
+          { value: 'large', label: 'Large (12–20 m²)' },
+          { value: 'very_large', label: 'Very large (20 m²+)' }
+        ]
+      },
+      {
+        id: 'feature_design_type',
+        question: 'What kind of feature or accent are you looking for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'solid_colour', label: 'Solid colour feature wall' },
+          { value: 'geometric_or_pattern', label: 'Geometric / pattern design' },
+          { value: 'texture_effect', label: 'Textured / special effect finish' },
+          { value: 'mural_or_art', label: 'Mural / artistic design' },
+          { value: 'not_sure', label: 'Not sure – need ideas' }
+        ]
+      },
+      {
+        id: 'existing_wall_condition',
+        question: 'What is the current condition of the wall?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'good', label: 'Good – ready to paint' },
+          { value: 'minor_defects', label: 'Minor cracks / small holes' },
+          { value: 'needs_repair', label: 'Visible damage – needs repair' },
+          { value: 'new_plaster', label: 'Newly plastered' }
+        ]
+      },
+      {
+        id: 'colour_palette',
+        question: 'Do you already have colours or a palette in mind?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'colours_chosen', label: 'Yes, colours are chosen' },
+          { value: 'need_help_matching', label: 'Rough idea – need help matching' },
+          { value: 'no_idea', label: 'No idea – want suggestions' }
+        ]
+      },
+      {
+        id: 'feature_paint_supplied',
+        question: 'Will you supply the paint and materials?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'client_supplies', label: 'I will supply paint and materials' },
+          { value: 'pro_supplies', label: 'I\'d like the professional to supply everything' },
+          { value: 'mixed', label: 'A mix (I have some items already)' }
+        ]
+      },
+      {
+        id: 'feature_timing',
+        question: 'When would you like the feature wall completed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'this_week', label: 'This week if possible' },
+          { value: 'two_weeks', label: 'Within the next 2 weeks' },
+          { value: 'month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible on timing' }
+        ]
+      },
+      {
+        id: 'feature_additional_info',
+        question: 'Describe any inspiration, references or ideas you already have.',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'furniture-upcycling',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'interior',
+    version: 1,
+    questions: [
+      {
+        id: 'furniture_types',
+        question: 'What type of furniture do you want to upcycle or paint?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'tables_desks', label: 'Tables / desks' },
+          { value: 'chairs_stools', label: 'Chairs / stools' },
+          { value: 'wardrobes_drawers', label: 'Wardrobes / drawers' },
+          { value: 'sideboards_cabinets', label: 'Sideboards / cabinets' },
+          { value: 'other_items', label: 'Other items' }
+        ]
+      },
+      {
+        id: 'furniture_quantity',
+        question: 'How many pieces of furniture are there in total?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_piece', label: '1 piece' },
+          { value: 'two_three', label: '2–3 pieces' },
+          { value: 'four_six', label: '4–6 pieces' },
+          { value: 'seven_plus', label: '7 or more pieces' }
+        ]
+      },
+      {
+        id: 'furniture_material',
+        question: 'What is the main material of the furniture?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'solid_wood', label: 'Solid wood' },
+          { value: 'veneer', label: 'Veneer / plywood' },
+          { value: 'laminate', label: 'Laminate' },
+          { value: 'mixed_materials', label: 'Mixed materials' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'furniture_finish_goal',
+        question: 'What style or finish are you aiming for?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'solid_colour', label: 'Solid colour repaint' },
+          { value: 'distressed_vintage', label: 'Distressed / vintage look' },
+          { value: 'stain_varnish', label: 'Wood stain and varnish' },
+          { value: 'special_effects', label: 'Special effects / artistic finish' },
+          { value: 'undecided', label: 'Undecided – open to ideas' }
+        ]
+      },
+      {
+        id: 'furniture_condition',
+        question: 'What condition is the furniture currently in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'good', label: 'Good condition, just changing look' },
+          { value: 'minor_wear', label: 'Minor scratches / wear' },
+          { value: 'damaged', label: 'Damaged – needs repairs' }
+        ]
+      },
+      {
+        id: 'work_location',
+        question: 'Where should the upcycling work take place?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'on_site', label: 'At my property' },
+          { value: 'workshop', label: 'Taken away to a workshop' },
+          { value: 'either', label: 'Either is fine' }
+        ]
+      },
+      {
+        id: 'furniture_timing',
+        question: 'When would you like the furniture project completed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent (within 1 week)' },
+          { value: 'two_three_weeks', label: 'Within 2–3 weeks' },
+          { value: 'month_plus', label: 'In the next month or so' },
+          { value: 'flexible', label: 'Flexible on timing' }
+        ]
+      },
+      {
+        id: 'furniture_additional_info',
+        question: 'Share any photos, inspiration or special requirements.',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'room-painting',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'interior',
+    version: 1,
+    questions: [
+      {
+        id: 'room_type',
+        question: 'What type of room needs painting?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'living_room', label: 'Living room' },
+          { value: 'bedroom', label: 'Bedroom' },
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'bathroom', label: 'Bathroom' },
+          { value: 'hallway', label: 'Hallway / corridor' },
+          { value: 'other', label: 'Other room' }
+        ]
+      },
+      {
+        id: 'room_size',
+        question: 'Roughly how big is the room?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small', label: 'Small (up to 10 m²)' },
+          { value: 'medium', label: 'Medium (10–20 m²)' },
+          { value: 'large', label: 'Large (20–30 m²)' },
+          { value: 'very_large', label: 'Very large (30 m²+)' }
+        ]
+      },
+      {
+        id: 'surfaces_to_paint',
+        question: 'Which surfaces need painting in this room?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'walls', label: 'Walls' },
+          { value: 'ceiling', label: 'Ceiling' },
+          { value: 'woodwork', label: 'Woodwork (doors, frames, skirting)' },
+          { value: 'radiators', label: 'Radiators / heaters' },
+          { value: 'built_in_units', label: 'Built-in units / wardrobes' }
+        ]
+      },
+      {
+        id: 'room_current_condition',
+        question: 'What is the current condition of the surfaces?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'good', label: 'Good – light preparation only' },
+          { value: 'minor_cracks', label: 'Minor cracks / small holes' },
+          { value: 'significant_defects', label: 'Significant cracks or flaking paint' },
+          { value: 'new_plaster', label: 'Newly plastered surfaces' }
+        ]
+      },
+      {
+        id: 'colour_status',
+        question: 'Do you already have paint colours chosen?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'colours_ready', label: 'Yes, colours are chosen' },
+          { value: 'need_advice', label: 'Rough idea – need help finalising' },
+          { value: 'no_idea', label: 'No, I\'d like suggestions' }
+        ]
+      },
+      {
+        id: 'paint_and_materials',
+        question: 'Who will provide the paint and materials?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'client_supplies', label: 'I will supply the paint' },
+          { value: 'pro_supplies', label: 'I\'d like the professional to supply everything' },
+          { value: 'mixed', label: 'A mix of both' }
+        ]
+      },
+      {
+        id: 'room_access',
+        question: 'Is there anything that might affect access or working conditions?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'furniture_present', label: 'Room is full of furniture' },
+          { value: 'high_ceiling', label: 'High ceilings (over 3 m)' },
+          { value: 'occupied_space', label: 'Room will be in use during works' },
+          { value: 'no_issues', label: 'No particular issues' }
+        ]
+      },
+      {
+        id: 'room_timing',
+        question: 'When would you like this room painted?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent (within 1 week)' },
+          { value: 'two_three_weeks', label: 'Within 2–3 weeks' },
+          { value: 'month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible on timing' }
+        ]
+      },
+      {
+        id: 'room_additional_info',
+        question: 'Anything else the professional should know about this room?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'full-flat-repaint',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'interior',
+    version: 1,
+    questions: [
+      {
+        id: 'property_size',
+        question: 'What size is the flat or apartment?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'studio_1bed', label: 'Studio or 1 bedroom' },
+          { value: 'two_bed', label: '2 bedrooms' },
+          { value: 'three_bed', label: '3 bedrooms' },
+          { value: 'four_plus_bed', label: '4+ bedrooms' }
+        ]
+      },
+      {
+        id: 'areas_to_include',
+        question: 'Which areas should be included in the repaint?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'living_areas', label: 'Living / dining areas' },
+          { value: 'bedrooms', label: 'Bedrooms' },
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'bathrooms', label: 'Bathrooms' },
+          { value: 'hallways', label: 'Hallways / corridors' },
+          { value: 'woodwork', label: 'Woodwork (doors, frames, skirting)' },
+          { value: 'ceilings', label: 'Ceilings' }
+        ]
+      },
+      {
+        id: 'flat_condition',
+        question: 'What best describes the condition of the existing paintwork?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'light_refresh', label: 'Generally good – light refresh' },
+          { value: 'wear_and_marks', label: 'Visible wear, marks and scuffs' },
+          { value: 'cracks_and_flaking', label: 'Cracks, flaking or peeling paint' },
+          { value: 'mixed_condition', label: 'Mixed – some rooms worse than others' }
+        ]
+      },
+      {
+        id: 'colour_change_scope',
+        question: 'Are you keeping similar colours or changing schemes completely?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'similar_colours', label: 'Similar colours, freshen up' },
+          { value: 'new_colours', label: 'New colours throughout' },
+          { value: 'mixed', label: 'Mix of both' },
+          { value: 'need_advice', label: 'Need advice on colours' }
+        ]
+      },
+      {
+        id: 'flat_occupied',
+        question: 'Will the flat be occupied during the works?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'occupied_full_time', label: 'Yes, occupied full-time' },
+          { value: 'partly_occupied', label: 'Partly occupied' },
+          { value: 'empty', label: 'No, the flat will be empty' }
+        ]
+      },
+      {
+        id: 'access_parking',
+        question: 'How is access and parking to the property?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy_access', label: 'Easy access and parking' },
+          { value: 'limited_parking', label: 'Limited parking / loading' },
+          { value: 'upper_floor_no_lift', label: 'Upper floor, no lift' },
+          { value: 'upper_floor_with_lift', label: 'Upper floor, with lift' }
+        ]
+      },
+      {
+        id: 'flat_timing',
+        question: 'When would you like the repaint to start?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'within_week', label: 'Within the next week' },
+          { value: 'two_three_weeks', label: 'Within 2–3 weeks' },
+          { value: 'next_month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible on dates' }
+        ]
+      },
+      {
+        id: 'flat_additional_info',
+        question: 'Share any floor plans, deadlines (e.g. move-in dates) or special details.',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'single-room-repaint',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'interior',
+    version: 1,
+    questions: [
+      {
+        id: 'single_room_type',
+        question: 'What type of room are you repainting?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'living_room', label: 'Living room' },
+          { value: 'bedroom', label: 'Bedroom' },
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'bathroom', label: 'Bathroom' },
+          { value: 'office', label: 'Home office / study' },
+          { value: 'other', label: 'Other' }
+        ]
+      },
+      {
+        id: 'single_room_size',
+        question: 'Roughly what size is the room?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small', label: 'Small (up to 10 m²)' },
+          { value: 'medium', label: 'Medium (10–20 m²)' },
+          { value: 'large', label: 'Large (20–30 m²)' },
+          { value: 'very_large', label: 'Very large (30 m²+)' }
+        ]
+      },
+      {
+        id: 'single_room_surfaces',
+        question: 'Which surfaces are included in this repaint?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'walls', label: 'Walls' },
+          { value: 'ceiling', label: 'Ceiling' },
+          { value: 'woodwork', label: 'Woodwork (doors, frames, skirting)' },
+          { value: 'radiator', label: 'Radiator / heater' }
+        ]
+      },
+      {
+        id: 'single_room_condition',
+        question: 'What condition are the surfaces currently in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'light_marks', label: 'Light marks and scuffs only' },
+          { value: 'minor_repairs', label: 'Needs minor filling and repairs' },
+          { value: 'major_repairs', label: 'Cracks, flaking or damaged areas' },
+          { value: 'new_plaster', label: 'New plaster that has not been painted' }
+        ]
+      },
+      {
+        id: 'single_room_colour_plan',
+        question: 'What are your plans for colours in this room?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'same_colour', label: 'Keep similar colour' },
+          { value: 'new_colour', label: 'Change to a new colour' },
+          { value: 'feature_wall', label: 'Include a feature wall' },
+          { value: 'need_advice', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'single_room_furniture',
+        question: 'What is the situation with furniture in the room?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'empty', label: 'Room will be empty' },
+          { value: 'some_furniture', label: 'Some furniture, can be moved around' },
+          { value: 'full_room', label: 'Full room – limited space to move items' }
+        ]
+      },
+      {
+        id: 'single_room_timing',
+        question: 'When would you like this repaint done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent (within a few days)' },
+          { value: 'two_weeks', label: 'Within the next 2 weeks' },
+          { value: 'month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible' }
+        ]
+      },
+      {
+        id: 'single_room_notes',
+        question: 'Any special details (e.g. mould, stains, pets, children\'s room)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'stairwell-hallway-painting',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'interior',
+    version: 1,
+    questions: [
+      {
+        id: 'hall_stair_type',
+        question: 'What areas are included in this job?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'entrance_hall', label: 'Entrance hall' },
+          { value: 'corridors', label: 'Corridors / landings' },
+          { value: 'stairs', label: 'Staircase walls' },
+          { value: 'balustrade', label: 'Balustrade / handrail' },
+          { value: 'doors_frames', label: 'Doors and frames off the hallway' }
+        ]
+      },
+      {
+        id: 'hall_stair_levels',
+        question: 'How many levels or floors does the stairwell/hallway cover?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'single_level', label: 'Single level' },
+          { value: 'two_levels', label: 'Two levels' },
+          { value: 'three_plus_levels', label: 'Three or more levels' }
+        ]
+      },
+      {
+        id: 'hall_stair_height',
+        question: 'Are there any particularly high or difficult-to-reach areas?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard_height', label: 'No, standard ceiling height' },
+          { value: 'double_height', label: 'Yes, double-height spaces' },
+          { value: 'awkward_access', label: 'Yes, awkward areas over stairs' }
+        ]
+      },
+      {
+        id: 'hall_stair_condition',
+        question: 'What condition are the existing surfaces in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'light_wear', label: 'Light wear and scuffs' },
+          { value: 'cracks_and_dents', label: 'Cracks and dents that need filling' },
+          { value: 'flaking_or_peeling', label: 'Flaking or peeling paint' },
+          { value: 'new_plaster', label: 'New surfaces, not painted yet' }
+        ]
+      },
+      {
+        id: 'hall_stair_surfaces',
+        question: 'Which surfaces should be included?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'walls', label: 'Walls' },
+          { value: 'ceilings', label: 'Ceilings' },
+          { value: 'woodwork', label: 'Woodwork (frames, skirting, handrails)' },
+          { value: 'radiators', label: 'Radiators' }
+        ]
+      },
+      {
+        id: 'hall_stair_traffic',
+        question: 'Is this a high-traffic area that needs extra-durable paint?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes_high_traffic', label: 'Yes, high-traffic area' },
+          { value: 'normal_use', label: 'Normal use' },
+          { value: 'low_use', label: 'Low use' }
+        ]
+      },
+      {
+        id: 'hall_stair_timing',
+        question: 'When would you like the stairwell/hallway painting done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent (within 1 week)' },
+          { value: 'two_three_weeks', label: 'Within 2–3 weeks' },
+          { value: 'next_month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible' }
+        ]
+      },
+      {
+        id: 'hall_stair_notes',
+        question: 'Any special access, safety or timing considerations?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'touch-up-minor-repairs',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'interior',
+    version: 1,
+    questions: [
+      {
+        id: 'touchup_areas',
+        question: 'Which areas need touch-ups or minor repairs?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'walls', label: 'Walls' },
+          { value: 'ceilings', label: 'Ceilings' },
+          { value: 'woodwork', label: 'Woodwork (doors, frames, skirting)' },
+          { value: 'radiators', label: 'Radiators / heaters' },
+          { value: 'other', label: 'Other painted surfaces' }
+        ]
+      },
+      {
+        id: 'touchup_defect_types',
+        question: 'What kind of defects need attention?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'scuffs_marks', label: 'Scuffs and surface marks' },
+          { value: 'small_holes', label: 'Small holes (e.g. picture hooks)' },
+          { value: 'hairline_cracks', label: 'Hairline cracks' },
+          { value: 'flaking_paint', label: 'Flaking or peeling paint' },
+          { value: 'stains', label: 'Stains (e.g. water marks)' }
+        ]
+      },
+      {
+        id: 'touchup_approx_areas',
+        question: 'Roughly how many areas or rooms are affected?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'single_room', label: 'One room / area' },
+          { value: 'two_three_rooms', label: 'Two or three rooms' },
+          { value: 'whole_property', label: 'Several rooms / whole property' }
+        ]
+      },
+      {
+        id: 'paint_available',
+        question: 'Do you already have matching paint available for touch-ups?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'yes_exact', label: 'Yes, exact paint is available' },
+          { value: 'yes_similar', label: 'Yes, similar paint is available' },
+          { value: 'no_paint', label: 'No, paint needs to be supplied' }
+        ]
+      },
+      {
+        id: 'touchup_finish_level',
+        question: 'What level of finish are you aiming for?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'quick_neat', label: 'Quick and neat improvement' },
+          { value: 'blend_in', label: 'Blended to match existing as best as possible' },
+          { value: 'like_new', label: 'As close to \'like new\' as possible' }
+        ]
+      },
+      {
+        id: 'touchup_access',
+        question: 'Is there anything that may affect access or working conditions?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'furniture_present', label: 'Rooms are full of furniture' },
+          { value: 'high_ceiling', label: 'Some high or awkward areas' },
+          { value: 'occupied', label: 'Property occupied during works' },
+          { value: 'no_issues', label: 'No particular access issues' }
+        ]
+      },
+      {
+        id: 'touchup_timing',
+        question: 'When do you need the touch-ups and repairs completed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent (next 2–3 days)' },
+          { value: 'week', label: 'Within 1 week' },
+          { value: 'two_three_weeks', label: 'Within 2–3 weeks' },
+          { value: 'flexible', label: 'Flexible' }
+        ]
+      },
+      {
+        id: 'touchup_notes',
+        question: 'Describe any key areas (e.g. stains from leaks, damage from tenants, etc.).',
+        type: 'text',
+        required: false
       }
     ]
   },
