@@ -106,19 +106,22 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
       {/* Close button - Top right corner */}
       <button
         onClick={handleSkip}
-        className="fixed top-4 right-4 z-[63] p-2 rounded-full bg-background/90 hover:bg-background shadow-lg transition-colors"
+        className="fixed top-4 right-4 z-[63] p-3 rounded-full bg-background/90 hover:bg-background shadow-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
         style={{ pointerEvents: 'auto' }}
         aria-label="Close tour"
       >
         <X className="h-5 w-5" />
       </button>
 
-      {/* Tour Card - Increased z-index to z-[62] */}
+      {/* Tour Card - Mobile responsive positioning */}
       <div
-        className="fixed z-[62] w-[300px] animate-in fade-in"
+        className="fixed z-[62] w-[300px] sm:w-[350px] animate-in fade-in max-w-[calc(100vw-2rem)]"
         style={{
-          top: `${position.top}px`,
-          left: `${position.left}px`,
+          top: window.innerWidth < 640 ? '50%' : `${position.top}px`,
+          left: window.innerWidth < 640 ? '50%' : `${position.left}px`,
+          transform: window.innerWidth < 640 ? 'translate(-50%, -50%)' : 'none',
+          maxHeight: '90vh',
+          overflowY: 'auto',
           pointerEvents: 'auto',
         }}
       >
@@ -155,10 +158,10 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
               {step.description}
             </p>
 
-            <div className="flex justify-between">
+            <div className="flex flex-col sm:flex-row justify-between gap-2">
               <Button
                 variant="outline"
-                size="sm"
+                className="min-h-[44px]"
                 onClick={handleBack}
                 disabled={currentStep === 0}
               >
@@ -166,17 +169,20 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
                 Back
               </Button>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-1 sm:flex-initial">
                 {currentStep < steps.length - 1 && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    className="min-h-[44px] flex-1 sm:flex-initial"
                     onClick={handleSkip}
                   >
                     Skip Tour
                   </Button>
                 )}
-                <Button size="sm" onClick={handleNext}>
+                <Button 
+                  className="min-h-[44px] flex-1 sm:flex-initial" 
+                  onClick={handleNext}
+                >
                   {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
@@ -195,7 +201,10 @@ export function useTour(tourKey: string, steps: TourStep[]) {
 
   useEffect(() => {
     const hasSeenTour = localStorage.getItem(`tour-${tourKey}`);
-    if (!hasSeenTour) {
+    const isMobile = window.innerWidth < 768;
+    
+    // Only auto-start on desktop
+    if (!hasSeenTour && !isMobile) {
       setShowTour(true);
     }
   }, [tourKey]);
