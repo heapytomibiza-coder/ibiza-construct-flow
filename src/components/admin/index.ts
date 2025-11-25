@@ -25,7 +25,7 @@ export { AdminDocumentReview } from './AdminDocumentReview';
 
 // Content Moderation
 export { ContentModerationPanel } from './ContentModerationPanel';
-export { ReviewModerationPanel } from './ReviewModerationPanel';
+// ReviewModerationPanel removed - new review system
 
 // Jobs & Services Management
 export { JobEditModal } from './JobEditModal';

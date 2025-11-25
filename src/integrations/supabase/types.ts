@@ -7951,13 +7951,6 @@ export type Database = {
             referencedRelation: "professional_service_items"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "quote_request_items_service_item_id_fkey"
-            columns: ["service_item_id"]
-            isOneToOne: false
-            referencedRelation: "searchable_services"
-            referencedColumns: ["service_item_id"]
-          },
         ]
       }
       quote_requests: {
@@ -8651,15 +8644,7 @@ export type Database = {
           review_id?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "review_helpful_votes_review_id_fkey"
-            columns: ["review_id"]
-            isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       review_helpfulness: {
         Row: {
@@ -8686,15 +8671,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "review_helpfulness_review_id_fkey"
-            columns: ["review_id"]
-            isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       review_media: {
         Row: {
@@ -8727,15 +8704,7 @@ export type Database = {
           id?: string
           review_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "review_media_review_id_fkey"
-            columns: ["review_id"]
-            isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       review_reports: {
         Row: {
@@ -8771,15 +8740,7 @@ export type Database = {
           reviewed_by?: string | null
           status?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "review_reports_review_id_fkey"
-            columns: ["review_id"]
-            isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       review_responses: {
         Row: {
@@ -8806,94 +8767,119 @@ export type Database = {
           review_id?: string
           updated_at?: string | null
         }
+        Relationships: []
+      }
+      review_votes: {
+        Row: {
+          created_at: string
+          id: string
+          review_id: string
+          vote_type: string
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          review_id: string
+          vote_type: string
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          review_id?: string
+          vote_type?: string
+          voter_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "review_responses_review_id_fkey"
+            foreignKeyName: "review_votes_review_id_fkey"
             columns: ["review_id"]
             isOneToOne: false
             referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
       reviews: {
         Row: {
-          category_ratings: Json | null
           comment: string | null
+          communication_rating: number
           contract_id: string | null
-          created_at: string | null
-          flag_reason: string | null
-          flagged_at: string | null
+          created_at: string
           helpful_count: number | null
           id: string
-          is_featured: boolean | null
           is_verified: boolean | null
-          job_id: string
-          metadata: Json | null
-          moderated_at: string | null
-          moderated_by: string | null
-          moderation_notes: string | null
-          moderation_status: string | null
-          rating: number
+          job_id: string | null
+          not_helpful_count: number | null
+          overall_rating: number
+          photos: string[] | null
+          professionalism_rating: number
+          quality_rating: number
           response_at: string | null
           response_text: string | null
           reviewee_id: string
           reviewer_id: string
+          status: string
+          timeliness_rating: number
           title: string | null
-          unhelpful_count: number | null
-          updated_at: string | null
+          updated_at: string
+          value_rating: number
         }
         Insert: {
-          category_ratings?: Json | null
           comment?: string | null
+          communication_rating: number
           contract_id?: string | null
-          created_at?: string | null
-          flag_reason?: string | null
-          flagged_at?: string | null
+          created_at?: string
           helpful_count?: number | null
           id?: string
-          is_featured?: boolean | null
           is_verified?: boolean | null
-          job_id: string
-          metadata?: Json | null
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_notes?: string | null
-          moderation_status?: string | null
-          rating: number
+          job_id?: string | null
+          not_helpful_count?: number | null
+          overall_rating: number
+          photos?: string[] | null
+          professionalism_rating: number
+          quality_rating: number
           response_at?: string | null
           response_text?: string | null
           reviewee_id: string
           reviewer_id: string
+          status?: string
+          timeliness_rating: number
           title?: string | null
-          unhelpful_count?: number | null
-          updated_at?: string | null
+          updated_at?: string
+          value_rating: number
         }
         Update: {
-          category_ratings?: Json | null
           comment?: string | null
+          communication_rating?: number
           contract_id?: string | null
-          created_at?: string | null
-          flag_reason?: string | null
-          flagged_at?: string | null
+          created_at?: string
           helpful_count?: number | null
           id?: string
-          is_featured?: boolean | null
           is_verified?: boolean | null
-          job_id?: string
-          metadata?: Json | null
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_notes?: string | null
-          moderation_status?: string | null
-          rating?: number
+          job_id?: string | null
+          not_helpful_count?: number | null
+          overall_rating?: number
+          photos?: string[] | null
+          professionalism_rating?: number
+          quality_rating?: number
           response_at?: string | null
           response_text?: string | null
           reviewee_id?: string
           reviewer_id?: string
+          status?: string
+          timeliness_rating?: number
           title?: string | null
-          unhelpful_count?: number | null
-          updated_at?: string | null
+          updated_at?: string
+          value_rating?: number
         }
         Relationships: [
           {
@@ -8908,6 +8894,20 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewee_id_fkey"
+            columns: ["reviewee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -9282,13 +9282,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "service_bookmarks_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "searchable_services"
-            referencedColumns: ["service_item_id"]
-          },
-          {
             foreignKeyName: "service_bookmarks_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -9386,13 +9379,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "professional_service_items"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "service_materials_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "searchable_services"
-            referencedColumns: ["service_item_id"]
           },
         ]
       }
@@ -9548,13 +9534,6 @@ export type Database = {
             referencedRelation: "professional_service_items"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "service_pricing_addons_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "searchable_services"
-            referencedColumns: ["service_item_id"]
-          },
         ]
       }
       service_questions: {
@@ -9668,13 +9647,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "professional_service_items"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "service_views_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "searchable_services"
-            referencedColumns: ["service_item_id"]
           },
           {
             foreignKeyName: "service_views_viewer_id_fkey"
@@ -11373,46 +11345,6 @@ export type Database = {
             foreignKeyName: "professional_profiles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      public_profile_ratings: {
-        Row: {
-          communication_avg: number | null
-          professional_id: string | null
-          quality_avg: number | null
-          rating_avg: number | null
-          reliability_avg: number | null
-          reviews_count: number | null
-        }
-        Relationships: []
-      }
-      searchable_services: {
-        Row: {
-          avatar_url: string | null
-          category: string | null
-          description: string | null
-          featured_image: string | null
-          location: string | null
-          micro: string | null
-          portfolio_images: string[] | null
-          price: number | null
-          pricing_type: string | null
-          professional_id: string | null
-          professional_name: string | null
-          rating_avg: number | null
-          reviews_count: number | null
-          service_item_id: string | null
-          service_name: string | null
-          subcategory: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "professional_service_items_professional_id_fkey"
-            columns: ["professional_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
