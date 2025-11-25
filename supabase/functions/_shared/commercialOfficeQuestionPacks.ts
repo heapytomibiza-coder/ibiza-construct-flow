@@ -1409,5 +1409,232 @@ export const commercialOfficeQuestionPacks = [
         ]
       }
     ]
+  },
+
+  // Kitchen & Bathroom - Full Bathroom Fit
+  {
+    microSlug: 'full-bathroom-fit',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'current_state',
+        type: 'radio',
+        question: 'What is the current state of your bathroom?',
+        options: [
+          { value: 'fully_fitted_replacing', label: 'Fully fitted – replacing everything' },
+          { value: 'partially_fitted', label: 'Partially fitted – some items staying' },
+          { value: 'stripped_out', label: 'Stripped out / empty room' },
+          { value: 'converting_room', label: 'Converting another room into a bathroom' }
+        ],
+        required: true
+      },
+      {
+        id: 'bathroom_type',
+        type: 'radio',
+        question: 'What type of bathroom is this?',
+        options: [
+          { value: 'main_family', label: 'Main family bathroom' },
+          { value: 'ensuite', label: 'Ensuite' },
+          { value: 'guest', label: 'Guest bathroom' },
+          { value: 'cloakroom', label: 'Cloakroom / WC' },
+          { value: 'accessible', label: 'Accessible bathroom' }
+        ],
+        required: true
+      },
+      {
+        id: 'fixtures',
+        type: 'checkbox',
+        question: 'Which fixtures do you want included?',
+        options: [
+          { value: 'bath', label: 'Bath' },
+          { value: 'walk_in_shower', label: 'Walk-in shower' },
+          { value: 'shower_over_bath', label: 'Shower over bath' },
+          { value: 'single_vanity', label: 'Single vanity' },
+          { value: 'double_vanity', label: 'Double vanity' },
+          { value: 'toilet', label: 'Toilet' },
+          { value: 'bidet', label: 'Bidet or bidet spray' },
+          { value: 'heated_towel_rail', label: 'Heated towel rail' }
+        ],
+        required: true
+      },
+      {
+        id: 'layout_changes',
+        type: 'radio',
+        question: 'Are you changing the layout?',
+        options: [
+          { value: 'full_new', label: 'Yes – full new layout' },
+          { value: 'small_changes', label: 'Yes – small changes' },
+          { value: 'keeping_layout', label: 'No – keeping layout' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ],
+        required: false
+      },
+      {
+        id: 'plumbing_changes',
+        type: 'radio',
+        question: 'Will plumbing need modifying?',
+        options: [
+          { value: 'repositioning_all', label: 'Repositioning all plumbing' },
+          { value: 'some_changes', label: 'Some plumbing changes' },
+          { value: 'minor_adjustments', label: 'Minor adjustments only' },
+          { value: 'no_changes', label: 'No plumbing changes' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'tiling_scope',
+        type: 'radio',
+        question: 'How much tiling is required?',
+        options: [
+          { value: 'shower_bath_only', label: 'Shower/bath area only' },
+          { value: 'half_height', label: 'Half-height walls' },
+          { value: 'full_height', label: 'Full-height tiling' },
+          { value: 'floor_only', label: 'Floor only' },
+          { value: 'entire_room', label: 'Entire room' },
+          { value: 'unsure', label: 'Unsure' }
+        ],
+        required: false
+      },
+      {
+        id: 'finishes_style',
+        type: 'radio',
+        question: 'What style and finish do you want?',
+        options: [
+          { value: 'modern', label: 'Modern' },
+          { value: 'minimal', label: 'Minimal' },
+          { value: 'luxury_hotel', label: 'Luxury hotel-style' },
+          { value: 'traditional', label: 'Traditional / classic' },
+          { value: 'installer_suggestions', label: 'Installer suggestions welcome' }
+        ],
+        required: false
+      },
+      {
+        id: 'special_features',
+        type: 'checkbox',
+        question: 'Any additional features?',
+        options: [
+          { value: 'underfloor_heating', label: 'Underfloor heating' },
+          { value: 'built_in_niches', label: 'Built-in niches' },
+          { value: 'led_lighting', label: 'LED lighting' },
+          { value: 'steam_shower', label: 'Steam shower' },
+          { value: 'smart_controls', label: 'Smart controls' },
+          { value: 'none', label: 'None' }
+        ],
+        required: false
+      }
+    ]
+  },
+
+  // Kitchen & Bathroom - Wetroom Installation (v2 - corrected)
+  {
+    microSlug: 'wetroom-installation-v2',
+    categorySlug: 'kitchen-bathroom',
+    version: 2,
+    questions: [
+      {
+        id: 'wetroom_type',
+        type: 'radio',
+        question: 'What type of wetroom are you planning?',
+        options: [
+          { value: 'full_wetroom', label: 'Full wetroom (whole floor waterproofed)' },
+          { value: 'partial_wetroom', label: 'Partial wetroom (shower zone only)' },
+          { value: 'luxury_wetroom', label: 'Luxury wetroom' },
+          { value: 'compact_wetroom', label: 'Compact wetroom' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: true
+      },
+      {
+        id: 'current_setup',
+        type: 'radio',
+        question: 'What is the current bathroom setup?',
+        options: [
+          { value: 'bath_only', label: 'Bath only' },
+          { value: 'existing_shower_tray', label: 'Existing shower tray' },
+          { value: 'shower_over_bath', label: 'Shower over bath' },
+          { value: 'empty', label: 'Empty / stripped back' },
+          { value: 'existing_wetroom', label: 'Existing wetroom needing rebuild' }
+        ],
+        required: true
+      },
+      {
+        id: 'drain_style',
+        type: 'radio',
+        question: 'Which drainage style do you prefer?',
+        options: [
+          { value: 'linear_channel', label: 'Linear channel drain' },
+          { value: 'square_drain', label: 'Square drain' },
+          { value: 'existing_drain', label: 'Use existing drain' },
+          { value: 'installer_recommendation', label: 'Installer recommendation' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'floor_type',
+        type: 'radio',
+        question: 'What is the floor structure?',
+        options: [
+          { value: 'timber_suspended', label: 'Timber / suspended' },
+          { value: 'concrete', label: 'Concrete floor' },
+          { value: 'apartment', label: 'Apartment floor' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'finish_type',
+        type: 'radio',
+        question: 'What finishes do you want?',
+        options: [
+          { value: 'large_tiles', label: 'Large tiles' },
+          { value: 'mosaic_tiles', label: 'Mosaic tiles' },
+          { value: 'microcement', label: 'Microcement' },
+          { value: 'vinyl_safety', label: 'Vinyl safety flooring' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'accessibility',
+        type: 'checkbox',
+        question: 'Do you need accessibility or safety features?',
+        options: [
+          { value: 'grab_rails', label: 'Grab rails' },
+          { value: 'non_slip', label: 'Non-slip flooring' },
+          { value: 'fold_down_seat', label: 'Fold-down seat' },
+          { value: 'wide_access', label: 'Wide access entrance' },
+          { value: 'none', label: 'No accessibility features' }
+        ],
+        required: false
+      },
+      {
+        id: 'tanking_scope',
+        type: 'radio',
+        question: 'How much waterproofing / tanking is needed?',
+        options: [
+          { value: 'full_room', label: 'Full room waterproofing' },
+          { value: 'shower_only', label: 'Shower area only' },
+          { value: 'already_waterproofed', label: 'Already waterproofed' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'extra_features',
+        type: 'checkbox',
+        question: 'Any additional features wanted?',
+        options: [
+          { value: 'underfloor_heating', label: 'Underfloor heating' },
+          { value: 'led_lighting', label: 'LED lighting' },
+          { value: 'built_in_niches', label: 'Built-in niches' },
+          { value: 'steam_function', label: 'Steam function' },
+          { value: 'none', label: 'None' }
+        ],
+        required: false
+      }
+    ]
   }
 ];
