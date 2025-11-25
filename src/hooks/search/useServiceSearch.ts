@@ -39,7 +39,7 @@ export function useServiceSearch(filters: SearchFilters) {
     queryKey: ['service-search', filters],
     queryFn: async () => {
       let query = supabase
-        .from('searchable_services')
+        .from('searchable_services' as any)
         .select('*');
 
       if (filters.term) {
@@ -64,7 +64,7 @@ export function useServiceSearch(filters: SearchFilters) {
       const { data, error } = await query.limit(50);
       
       if (error) throw error;
-      return (data || []) as SearchableService[];
+      return (data || []) as any as SearchableService[];
     },
   });
 }

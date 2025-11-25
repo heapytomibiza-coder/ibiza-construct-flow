@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReviewCard } from './ReviewCard';
-import { useReviews } from '@/hooks/useReviews';
+import { useReviewSystem } from '@/hooks/useReviewSystem';
 import { Star } from 'lucide-react';
 
 interface ReviewsSectionProps {
@@ -14,15 +14,15 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   professionalId,
   canRespond = false,
 }) => {
-  const { reviews, loading, stats, respondToReview } = useReviews(professionalId, 'professional');
+  const { reviews, isLoading: loading, overallRating, totalReviews, respondToReview } = useReviewSystem(professionalId);
   const [sortBy, setSortBy] = useState<'recent' | 'highest' | 'lowest'>('recent');
 
   const sortedReviews = [...(reviews || [])].sort((a, b) => {
     switch (sortBy) {
       case 'highest':
-        return b.rating - a.rating;
+        return b.overall_rating - a.overall_rating;
       case 'lowest':
-        return a.rating - b.rating;
+        return a.overall_rating - b.overall_rating;
       case 'recent':
       default:
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -71,13 +71,13 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         <CardContent>
           {/* Overall Rating */}
           <div className="text-center mb-6">
-            <div className="text-5xl font-bold mb-2">{stats?.average_rating?.toFixed(1) || 0}</div>
+            <div className="text-5xl font-bold mb-2">{overallRating?.toFixed(1) || 0}</div>
             <div className="flex items-center justify-center gap-1 mb-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
                   className={`w-5 h-5 ${
-                    star <= Math.round(stats?.average_rating || 0)
+                    star <= Math.round(overallRating || 0)
                       ? 'fill-yellow-400 text-yellow-400'
                       : 'text-gray-300'
                   }`}
@@ -85,19 +85,8 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
               ))}
             </div>
             <p className="text-sm text-muted-foreground">
-              Based on {stats?.total_reviews || 0} {stats?.total_reviews === 1 ? 'review' : 'reviews'}
+              Based on {totalReviews || 0} {totalReviews === 1 ? 'review' : 'reviews'}
             </p>
-          </div>
-
-          {/* Rating Distribution */}
-          <div className="space-y-2">
-            {[5, 4, 3, 2, 1].map((rating) =>
-              renderRatingBar(
-                rating,
-                stats?.rating_distribution?.[rating] || 0,
-                stats?.total_reviews || 0
-              )
-            )}
           </div>
         </CardContent>
       </Card>
@@ -131,7 +120,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
               <ReviewCard
                 key={review.id}
                 review={review}
-                onRespond={canRespond ? respondToReview : undefined}
+                onRespond={canRespond ? (reviewId, responseText) => respondToReview.mutate({ reviewId, responseText }) : undefined}
               />
               ))}
             </div>

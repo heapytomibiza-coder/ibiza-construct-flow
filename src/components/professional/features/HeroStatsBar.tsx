@@ -25,7 +25,7 @@ export function HeroStatsBar() {
 
       // Fetch unread messages count
       const messagesQuery = await supabase
-        .from('messages')
+        .from('messages' as any)
         .select('*', { count: 'exact', head: true })
         .eq('recipient_id', user.id)
         .is('read_at', null);

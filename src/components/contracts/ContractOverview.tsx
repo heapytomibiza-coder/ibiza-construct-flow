@@ -34,14 +34,12 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
   // Reviews
   const {
     reviews,
-    averageRating,
+    averageRatings,
+    overallRating,
     totalReviews,
-    ratingDistribution,
     submitReview,
-    isSubmitting,
     respondToReview,
-    isResponding,
-  } = useReviews(contract?.id, 'contract');
+  } = useReviewSystem(contract?.tasker_id);
 
   const handleStartConversation = () => {
     if (!contract || !user?.id) return;
@@ -263,29 +261,28 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
       {showReviewForm && canLeaveReview && (
         <ReviewForm
           revieweeName={professionalName}
-          onSubmit={(rating, comment) => {
-            submitReview({
+          onSubmit={(ratings, title, comment) => {
+            submitReview.mutate({
               jobId: contract.job_id,
               contractId: contract.id,
               revieweeId: contract?.tasker_id || '',
-              rating,
-              title: `Review for ${professionalName}`,
+              ratings,
+              title: title || `Review for ${professionalName}`,
               comment,
             });
             setShowReviewForm(false);
           }}
-          isSubmitting={isSubmitting}
+          isSubmitting={submitReview.isPending}
         />
       )}
 
       {totalReviews > 0 && (
         <ReviewsList
           reviews={reviews || []}
-          averageRating={averageRating}
+          averageRating={overallRating}
           totalReviews={totalReviews}
-          ratingDistribution={ratingDistribution}
-          onRespond={respondToReview}
-          isResponding={isResponding}
+          onRespond={(reviewId, responseText) => respondToReview.mutate({ reviewId, responseText })}
+          isResponding={respondToReview.isPending}
         />
       )}
 

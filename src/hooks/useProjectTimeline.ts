@@ -108,7 +108,7 @@ export function useProjectTimeline(projectId: string) {
         events.push({
           id: `review-${review.id}`,
           title: 'Review Posted',
-          description: `${review.rating}/5 stars - "${commentPreview}..."`,
+          description: `${review.overall_rating}/5 stars - "${commentPreview}..."`,
           date: review.created_at,
           status: 'completed',
           type: 'communication'
