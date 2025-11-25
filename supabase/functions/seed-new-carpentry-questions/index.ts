@@ -1,6 +1,6 @@
 /**
  * Seed New Carpentry Question Packs - Batch 1
- * Inserts 13 new carpentry question packs into the database
+ * Inserts 17 new carpentry question packs into the database
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
