@@ -1,5 +1,5 @@
 /**
- * New Carpentry Question Packs - Batch 1 (13 packs)
+ * New Carpentry Question Packs - Batch 1 (17 packs)
  * Format: Ready for seed-new-carpentry-questions function
  */
 
@@ -974,6 +974,328 @@ export const newCarpentryQuestionPacks = [
           { i18nKey: 'carpentry.outdoor-structures.pergola-installation.q6.options.concrete-slab', value: 'concrete-slab', order: 2 },
           { i18nKey: 'carpentry.outdoor-structures.pergola-installation.q6.options.soil-grass', value: 'soil-grass', order: 3 },
           { i18nKey: 'carpentry.outdoor-structures.pergola-installation.q6.options.mixed-unsure', value: 'mixed-unsure', order: 4 }
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'sliding-doors-installation',
+    subcategorySlug: 'doors',
+    categorySlug: 'carpentry',
+    questions: [
+      {
+        key: 'door_type',
+        type: 'single',
+        i18nKey: 'carpentry.doors.sliding-doors-installation.q1.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q1.options.patio-sliding', value: 'patio-sliding', order: 0 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q1.options.internal-sliding', value: 'internal-sliding', order: 1 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q1.options.pocket-sliding', value: 'pocket-sliding', order: 2 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q1.options.barn-style', value: 'barn-style', order: 3 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q1.options.not-sure', value: 'not-sure', order: 4 }
+        ]
+      },
+      {
+        key: 'installation_type',
+        type: 'single',
+        i18nKey: 'carpentry.doors.sliding-doors-installation.q2.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q2.options.replacing-old-sliding', value: 'replacing-old-sliding', order: 0 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q2.options.replacing-hinged', value: 'replacing-hinged', order: 1 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q2.options.new-opening-required', value: 'new-opening-required', order: 2 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q2.options.not-sure', value: 'not-sure', order: 3 }
+        ]
+      },
+      {
+        key: 'material',
+        type: 'single',
+        i18nKey: 'carpentry.doors.sliding-doors-installation.q3.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q3.options.timber', value: 'timber', order: 0 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q3.options.upvc', value: 'upvc', order: 1 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q3.options.aluminium', value: 'aluminium', order: 2 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q3.options.composite', value: 'composite', order: 3 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q3.options.glass-frameless', value: 'glass-frameless', order: 4 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q3.options.not-sure', value: 'not-sure', order: 5 }
+        ]
+      },
+      {
+        key: 'size',
+        type: 'single',
+        i18nKey: 'carpentry.doors.sliding-doors-installation.q4.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q4.options.standard-size', value: 'standard-size', order: 0 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q4.options.large-multi-panel', value: 'large-multi-panel', order: 1 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q4.options.oversized-custom', value: 'oversized-custom', order: 2 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q4.options.not-sure', value: 'not-sure', order: 3 }
+        ]
+      },
+      {
+        key: 'track_system',
+        type: 'single',
+        i18nKey: 'carpentry.doors.sliding-doors-installation.q5.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q5.options.surface-mounted', value: 'surface-mounted', order: 0 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q5.options.recessed-flush', value: 'recessed-flush', order: 1 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q5.options.ceiling-mounted', value: 'ceiling-mounted', order: 2 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q5.options.pocket-sliding-mechanism', value: 'pocket-sliding-mechanism', order: 3 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q5.options.not-sure', value: 'not-sure', order: 4 }
+        ]
+      },
+      {
+        key: 'extra_work',
+        type: 'multi',
+        i18nKey: 'carpentry.doors.sliding-doors-installation.q6.title',
+        required: false,
+        options: [
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q6.options.plastering', value: 'plastering', order: 0 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q6.options.painting', value: 'painting', order: 1 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q6.options.adjusting-opening', value: 'adjusting-opening', order: 2 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q6.options.electrical', value: 'electrical', order: 3 },
+          { i18nKey: 'carpentry.doors.sliding-doors-installation.q6.options.none', value: 'none', order: 4 }
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'window-frame-replacement',
+    subcategorySlug: 'windows',
+    categorySlug: 'carpentry',
+    questions: [
+      {
+        key: 'window_location',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-frame-replacement.q1.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q1.options.ground-floor', value: 'ground-floor', order: 0 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q1.options.upper-floor', value: 'upper-floor', order: 1 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q1.options.basement', value: 'basement', order: 2 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q1.options.multiple-levels', value: 'multiple-levels', order: 3 }
+        ]
+      },
+      {
+        key: 'window_count',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-frame-replacement.q2.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q2.options.1', value: '1', order: 0 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q2.options.2-4', value: '2-4', order: 1 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q2.options.5-8', value: '5-8', order: 2 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q2.options.9-plus', value: '9-plus', order: 3 }
+        ]
+      },
+      {
+        key: 'frame_material',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-frame-replacement.q3.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q3.options.timber', value: 'timber', order: 0 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q3.options.hardwood', value: 'hardwood', order: 1 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q3.options.upvc', value: 'upvc', order: 2 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q3.options.aluminium', value: 'aluminium', order: 3 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q3.options.match-existing', value: 'match-existing', order: 4 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q3.options.not-sure', value: 'not-sure', order: 5 }
+        ]
+      },
+      {
+        key: 'glazing_type',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-frame-replacement.q4.title',
+        required: false,
+        options: [
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q4.options.double-glazing', value: 'double-glazing', order: 0 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q4.options.triple-glazing', value: 'triple-glazing', order: 1 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q4.options.acoustic-glazing', value: 'acoustic-glazing', order: 2 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q4.options.match-existing', value: 'match-existing', order: 3 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q4.options.not-sure', value: 'not-sure', order: 4 }
+        ]
+      },
+      {
+        key: 'opening_type',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-frame-replacement.q5.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q5.options.casement', value: 'casement', order: 0 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q5.options.sliding', value: 'sliding', order: 1 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q5.options.tilt-turn', value: 'tilt-turn', order: 2 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q5.options.fixed', value: 'fixed', order: 3 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q5.options.bay-bow', value: 'bay-bow', order: 4 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q5.options.not-sure', value: 'not-sure', order: 5 }
+        ]
+      },
+      {
+        key: 'old_frame',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-frame-replacement.q6.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q6.options.yes-remove', value: 'yes-remove', order: 0 },
+          { i18nKey: 'carpentry.windows.window-frame-replacement.q6.options.no-removal', value: 'no-removal', order: 1 }
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'window-installation',
+    subcategorySlug: 'windows',
+    categorySlug: 'carpentry',
+    questions: [
+      {
+        key: 'installation_type',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-installation.q1.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-installation.q1.options.replacing-existing', value: 'replacing-existing', order: 0 },
+          { i18nKey: 'carpentry.windows.window-installation.q1.options.new-opening', value: 'new-opening', order: 1 },
+          { i18nKey: 'carpentry.windows.window-installation.q1.options.door-to-window', value: 'door-to-window', order: 2 },
+          { i18nKey: 'carpentry.windows.window-installation.q1.options.other-not-sure', value: 'other-not-sure', order: 3 }
+        ]
+      },
+      {
+        key: 'window_style',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-installation.q2.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-installation.q2.options.casement', value: 'casement', order: 0 },
+          { i18nKey: 'carpentry.windows.window-installation.q2.options.sliding', value: 'sliding', order: 1 },
+          { i18nKey: 'carpentry.windows.window-installation.q2.options.tilt-turn', value: 'tilt-turn', order: 2 },
+          { i18nKey: 'carpentry.windows.window-installation.q2.options.fixed', value: 'fixed', order: 3 },
+          { i18nKey: 'carpentry.windows.window-installation.q2.options.bay-bow', value: 'bay-bow', order: 4 },
+          { i18nKey: 'carpentry.windows.window-installation.q2.options.roof-window', value: 'roof-window', order: 5 },
+          { i18nKey: 'carpentry.windows.window-installation.q2.options.not-sure', value: 'not-sure', order: 6 }
+        ]
+      },
+      {
+        key: 'material',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-installation.q3.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-installation.q3.options.upvc', value: 'upvc', order: 0 },
+          { i18nKey: 'carpentry.windows.window-installation.q3.options.timber', value: 'timber', order: 1 },
+          { i18nKey: 'carpentry.windows.window-installation.q3.options.aluminium', value: 'aluminium', order: 2 },
+          { i18nKey: 'carpentry.windows.window-installation.q3.options.composite', value: 'composite', order: 3 },
+          { i18nKey: 'carpentry.windows.window-installation.q3.options.not-sure', value: 'not-sure', order: 4 }
+        ]
+      },
+      {
+        key: 'glazing',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-installation.q4.title',
+        required: false,
+        options: [
+          { i18nKey: 'carpentry.windows.window-installation.q4.options.standard-double', value: 'standard-double', order: 0 },
+          { i18nKey: 'carpentry.windows.window-installation.q4.options.triple-glazing', value: 'triple-glazing', order: 1 },
+          { i18nKey: 'carpentry.windows.window-installation.q4.options.acoustic-glazing', value: 'acoustic-glazing', order: 2 },
+          { i18nKey: 'carpentry.windows.window-installation.q4.options.solar-control', value: 'solar-control', order: 3 },
+          { i18nKey: 'carpentry.windows.window-installation.q4.options.not-sure', value: 'not-sure', order: 4 }
+        ]
+      },
+      {
+        key: 'count',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-installation.q5.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-installation.q5.options.1', value: '1', order: 0 },
+          { i18nKey: 'carpentry.windows.window-installation.q5.options.2-4', value: '2-4', order: 1 },
+          { i18nKey: 'carpentry.windows.window-installation.q5.options.5-8', value: '5-8', order: 2 },
+          { i18nKey: 'carpentry.windows.window-installation.q5.options.9-plus', value: '9-plus', order: 3 }
+        ]
+      },
+      {
+        key: 'extra_work',
+        type: 'multi',
+        i18nKey: 'carpentry.windows.window-installation.q6.title',
+        required: false,
+        options: [
+          { i18nKey: 'carpentry.windows.window-installation.q6.options.plastering', value: 'plastering', order: 0 },
+          { i18nKey: 'carpentry.windows.window-installation.q6.options.painting', value: 'painting', order: 1 },
+          { i18nKey: 'carpentry.windows.window-installation.q6.options.external-rendering', value: 'external-rendering', order: 2 },
+          { i18nKey: 'carpentry.windows.window-installation.q6.options.none', value: 'none', order: 3 }
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'window-repair',
+    subcategorySlug: 'windows',
+    categorySlug: 'carpentry',
+    questions: [
+      {
+        key: 'issue_type',
+        type: 'multi',
+        i18nKey: 'carpentry.windows.window-repair.q1.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-repair.q1.options.broken-glass', value: 'broken-glass', order: 0 },
+          { i18nKey: 'carpentry.windows.window-repair.q1.options.condensation', value: 'condensation', order: 1 },
+          { i18nKey: 'carpentry.windows.window-repair.q1.options.frame-damage', value: 'frame-damage', order: 2 },
+          { i18nKey: 'carpentry.windows.window-repair.q1.options.hardware-issue', value: 'hardware-issue', order: 3 },
+          { i18nKey: 'carpentry.windows.window-repair.q1.options.drafts-sealing', value: 'drafts-sealing', order: 4 },
+          { i18nKey: 'carpentry.windows.window-repair.q1.options.other', value: 'other', order: 5 }
+        ]
+      },
+      {
+        key: 'window_type',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-repair.q2.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-repair.q2.options.casement', value: 'casement', order: 0 },
+          { i18nKey: 'carpentry.windows.window-repair.q2.options.sliding', value: 'sliding', order: 1 },
+          { i18nKey: 'carpentry.windows.window-repair.q2.options.tilt-turn', value: 'tilt-turn', order: 2 },
+          { i18nKey: 'carpentry.windows.window-repair.q2.options.fixed', value: 'fixed', order: 3 },
+          { i18nKey: 'carpentry.windows.window-repair.q2.options.roof-window', value: 'roof-window', order: 4 },
+          { i18nKey: 'carpentry.windows.window-repair.q2.options.not-sure', value: 'not-sure', order: 5 }
+        ]
+      },
+      {
+        key: 'material',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-repair.q3.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-repair.q3.options.upvc', value: 'upvc', order: 0 },
+          { i18nKey: 'carpentry.windows.window-repair.q3.options.timber', value: 'timber', order: 1 },
+          { i18nKey: 'carpentry.windows.window-repair.q3.options.aluminium', value: 'aluminium', order: 2 },
+          { i18nKey: 'carpentry.windows.window-repair.q3.options.composite', value: 'composite', order: 3 },
+          { i18nKey: 'carpentry.windows.window-repair.q3.options.not-sure', value: 'not-sure', order: 4 }
+        ]
+      },
+      {
+        key: 'floor_level',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-repair.q4.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-repair.q4.options.ground-floor', value: 'ground-floor', order: 0 },
+          { i18nKey: 'carpentry.windows.window-repair.q4.options.first-floor', value: 'first-floor', order: 1 },
+          { i18nKey: 'carpentry.windows.window-repair.q4.options.second-floor-higher', value: 'second-floor-higher', order: 2 },
+          { i18nKey: 'carpentry.windows.window-repair.q4.options.multiple-floors', value: 'multiple-floors', order: 3 }
+        ]
+      },
+      {
+        key: 'urgency',
+        type: 'single',
+        i18nKey: 'carpentry.windows.window-repair.q5.title',
+        required: true,
+        options: [
+          { i18nKey: 'carpentry.windows.window-repair.q5.options.emergency', value: 'emergency', order: 0 },
+          { i18nKey: 'carpentry.windows.window-repair.q5.options.within-24-48h', value: 'within-24-48h', order: 1 },
+          { i18nKey: 'carpentry.windows.window-repair.q5.options.within-week', value: 'within-week', order: 2 },
+          { i18nKey: 'carpentry.windows.window-repair.q5.options.not-urgent', value: 'not-urgent', order: 3 }
         ]
       }
     ]
