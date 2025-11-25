@@ -9571,6 +9571,506 @@ export const commercialOfficeQuestionPacks = [
         required: false
       }
     ]
+  },
+  {
+    microSlug: 'floor-sanding-refinishing',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'floor_type',
+        question: 'What type of floor needs sanding or refinishing?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'solid_wood', label: 'Solid wood flooring' },
+          { value: 'engineered_wood', label: 'Engineered wood' },
+          { value: 'parquet', label: 'Parquet' },
+          { value: 'stairs', label: 'Stairs' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'floor_area_size',
+        question: 'Approximately what is the total floor area?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small_10', label: 'Up to 10 m²' },
+          { value: 'medium_10_25', label: '10–25 m²' },
+          { value: 'large_25_50', label: '25–50 m²' },
+          { value: 'very_large_50_plus', label: 'More than 50 m²' }
+        ]
+      },
+      {
+        id: 'floor_condition',
+        question: 'What condition is the floor currently in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'light_wear', label: 'Light wear and scratches' },
+          { value: 'deep_scratches', label: 'Deep scratches or dents' },
+          { value: 'uneven', label: 'Uneven or damaged areas' },
+          { value: 'paint_or_varnish_layers', label: 'Multiple layers of varnish/paint' }
+        ]
+      },
+      {
+        id: 'refinish_preference',
+        question: 'What type of finish do you prefer after sanding?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'matt_lacquer', label: 'Matt lacquer' },
+          { value: 'satin_lacquer', label: 'Satin lacquer' },
+          { value: 'gloss_lacquer', label: 'Gloss lacquer' },
+          { value: 'oil_finish', label: 'Oil finish' },
+          { value: 'not_sure', label: 'Not sure – need guidance' }
+        ]
+      },
+      {
+        id: 'repair_requirements',
+        question: 'Are any repairs needed before sanding?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'loose_boards', label: 'Loose or squeaky boards' },
+          { value: 'damaged_sections', label: 'Damaged sections requiring replacement' },
+          { value: 'gap_filling', label: 'Gap filling' },
+          { value: 'none', label: 'No repairs needed' }
+        ]
+      },
+      {
+        id: 'floor_obstacles',
+        question: 'Will the floor area be clear and ready for work?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'empty_room', label: 'Yes, the room will be empty' },
+          { value: 'some_furniture', label: 'Some furniture needs moving' },
+          { value: 'full_room', label: 'Room is full of furniture' }
+        ]
+      },
+      {
+        id: 'floor_sanding_notes',
+        question: 'Any special details (pets, allergies, colour matching, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'laminate-engineered-wood',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'laminate_floor_type',
+        question: 'What type of flooring do you want installed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'laminate', label: 'Laminate flooring' },
+          { value: 'engineered_wood', label: 'Engineered wood flooring' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'laminate_area_size',
+        question: 'What is the approximate floor area?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up_to_15', label: 'Up to 15 m²' },
+          { value: '15_to_30', label: '15–30 m²' },
+          { value: '30_to_60', label: '30–60 m²' },
+          { value: '60_plus', label: 'More than 60 m²' }
+        ]
+      },
+      {
+        id: 'subfloor_type',
+        question: 'What type of subfloor do you have?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'concrete', label: 'Concrete' },
+          { value: 'tile', label: 'Tiles' },
+          { value: 'wood_floor', label: 'Wooden floor' },
+          { value: 'mixed_or_unknown', label: 'Mixed or not sure' }
+        ]
+      },
+      {
+        id: 'subfloor_condition',
+        question: 'What is the condition of the existing subfloor?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'smooth_level', label: 'Smooth and level' },
+          { value: 'minor_uneven', label: 'Minor uneven sections' },
+          { value: 'needs_levelling', label: 'Needs levelling compound' }
+        ]
+      },
+      {
+        id: 'underlay_requirements',
+        question: 'Do you require underlay or insulation?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard_underlay', label: 'Standard underlay' },
+          { value: 'acoustic_underlay', label: 'Acoustic / sound insulation' },
+          { value: 'thermal_underlay', label: 'Thermal insulation' },
+          { value: 'not_sure', label: 'Not sure – need guidance' }
+        ]
+      },
+      {
+        id: 'finishing_details',
+        question: 'Do you need additional finishing work?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'skirting', label: 'New skirting boards' },
+          { value: 'beading', label: 'Beading (if keeping existing skirting)' },
+          { value: 'door_trimming', label: 'Trim doors to fit new floor height' },
+          { value: 'thresholds', label: 'Threshold strips' }
+        ]
+      },
+      {
+        id: 'laminate_notes',
+        question: 'Any special requests (herringbone pattern, pet-resistant, water-resistant)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'new-flooring-installation',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'new_floor_type',
+        question: 'What type of new flooring do you want installed?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'laminate', label: 'Laminate' },
+          { value: 'engineered_wood', label: 'Engineered wood' },
+          { value: 'solid_wood', label: 'Solid wood' },
+          { value: 'tiles', label: 'Tiles' },
+          { value: 'vinyl_lvt', label: 'Vinyl / LVT' },
+          { value: 'carpet', label: 'Carpet' }
+        ]
+      },
+      {
+        id: 'new_floor_area',
+        question: 'What is the approximate size of the floor area?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small_10_15', label: '10–15 m²' },
+          { value: 'medium_15_30', label: '15–30 m²' },
+          { value: 'large_30_60', label: '30–60 m²' },
+          { value: 'very_large_60_plus', label: 'More than 60 m²' }
+        ]
+      },
+      {
+        id: 'old_floor_removal',
+        question: 'Do you need the old flooring removed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'remove_existing', label: 'Yes, remove the existing floor' },
+          { value: 'install_on_top', label: 'No, install on top if possible' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'new_floor_subfloor_condition',
+        question: 'What is the condition of the subfloor?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'smooth', label: 'Smooth and level' },
+          { value: 'minor_issues', label: 'Minor cracks or uneven areas' },
+          { value: 'needs_levelling', label: 'Needs levelling compound' }
+        ]
+      },
+      {
+        id: 'new_floor_additional_work',
+        question: 'Do you require any additional work?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'skirting', label: 'Install new skirting' },
+          { value: 'door_trimming', label: 'Trim door heights' },
+          { value: 'insulation_layers', label: 'Add acoustic/thermal layers' }
+        ]
+      },
+      {
+        id: 'new_floor_special_features',
+        question: 'Any special installation preferences?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'herringbone', label: 'Herringbone pattern' },
+          { value: 'straight_plank', label: 'Straight plank layout' },
+          { value: 'tile_pattern', label: 'Tile pattern' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'new_floor_notes',
+        question: 'Any details about pets, spill areas, underfloor heating, etc.?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'solid-wood-flooring',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'solid_wood_species',
+        question: 'What type of solid wood flooring are you considering?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'oak', label: 'Oak' },
+          { value: 'walnut', label: 'Walnut' },
+          { value: 'pine', label: 'Pine / softwood' },
+          { value: 'exotic', label: 'Exotic hardwoods' },
+          { value: 'undecided', label: 'Undecided' }
+        ]
+      },
+      {
+        id: 'solid_wood_area',
+        question: 'Approximate total area for installation?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'under_20', label: 'Under 20 m²' },
+          { value: '20_40', label: '20–40 m²' },
+          { value: '40_70', label: '40–70 m²' },
+          { value: '70_plus', label: 'More than 70 m²' }
+        ]
+      },
+      {
+        id: 'solid_wood_subfloor',
+        question: 'What type of subfloor will the wood be installed on?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'concrete', label: 'Concrete' },
+          { value: 'timber_joists', label: 'Timber joists' },
+          { value: 'existing_wood', label: 'Existing wooden floor' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'solid_wood_laying_method',
+        question: 'Preferred installation method?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'glue_down', label: 'Glue-down' },
+          { value: 'nail_down', label: 'Nail-down' },
+          { value: 'float', label: 'Floating installation' },
+          { value: 'not_sure', label: 'Need advice' }
+        ]
+      },
+      {
+        id: 'solid_wood_pattern',
+        question: 'What installation pattern do you prefer?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'straight_plank', label: 'Straight plank' },
+          { value: 'herringbone', label: 'Herringbone' },
+          { value: 'chevron', label: 'Chevron' },
+          { value: 'random_length', label: 'Random-length boards' }
+        ]
+      },
+      {
+        id: 'solid_wood_finish',
+        question: 'What surface finish would you like?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'matt', label: 'Matt' },
+          { value: 'satin', label: 'Satin' },
+          { value: 'gloss', label: 'Gloss' },
+          { value: 'raw_look', label: 'Raw/unfinished look' }
+        ]
+      },
+      {
+        id: 'solid_wood_notes',
+        question: 'Any important details (pets, humidity issues, floor ventilation)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'tile-stone-flooring',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'tile_type',
+        question: 'What type of tiles or stone flooring do you want installed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'porcelain', label: 'Porcelain tiles' },
+          { value: 'ceramic', label: 'Ceramic tiles' },
+          { value: 'natural_stone', label: 'Natural stone (travertine, marble, etc.)' },
+          { value: 'terrazzo', label: 'Terrazzo' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'tile_area_size',
+        question: 'What is the approximate area to be tiled?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up_to_10', label: 'Up to 10 m²' },
+          { value: '10_to_25', label: '10–25 m²' },
+          { value: '25_to_50', label: '25–50 m²' },
+          { value: '50_plus', label: 'More than 50 m²' }
+        ]
+      },
+      {
+        id: 'tile_subfloor_condition',
+        question: 'What is the condition of the existing floor/subfloor?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'smooth_level', label: 'Smooth and level' },
+          { value: 'minor_cracks', label: 'Minor cracks or imperfections' },
+          { value: 'needs_levelling', label: 'Needs levelling compound' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'tile_layout',
+        question: 'Do you have a preferred tile layout?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'straight', label: 'Straight grid' },
+          { value: 'brick_bond', label: 'Brick bond' },
+          { value: 'diagonal', label: 'Diagonal' },
+          { value: 'herringbone', label: 'Herringbone' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'tile_features_needed',
+        question: 'Do you require any additional features?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'skirting', label: 'Tile skirting' },
+          { value: 'steps', label: 'Tile stair steps' },
+          { value: 'wetroom_system', label: 'Wetroom waterproofing' },
+          { value: 'underfloor_heating', label: 'Underfloor heating system' }
+        ]
+      },
+      {
+        id: 'tile_surface_challenges',
+        question: 'Are there any installation challenges?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'many_cuts', label: 'Many cuts / complicated shapes' },
+          { value: 'multiple_room_transitions', label: 'Multiple rooms with transitions' },
+          { value: 'uneven_rooms', label: 'Uneven room shapes' },
+          { value: 'none', label: 'No major challenges' }
+        ]
+      },
+      {
+        id: 'tile_notes',
+        question: 'Any special grout colour, tile pattern or sealing requirements?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'vinyl-lvt-flooring',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'vinyl_lvt_type',
+        question: 'What type of vinyl/LVT flooring do you want?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'click_fit', label: 'Click-fit LVT' },
+          { value: 'glue_down', label: 'Glue-down LVT' },
+          { value: 'sheet_vinyl', label: 'Sheet vinyl' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'vinyl_lvt_area_size',
+        question: 'What is the approximate area to be installed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up_to_15', label: 'Up to 15 m²' },
+          { value: '15_to_30', label: '15–30 m²' },
+          { value: '30_to_60', label: '30–60 m²' },
+          { value: '60_plus', label: 'More than 60 m²' }
+        ]
+      },
+      {
+        id: 'vinyl_subfloor_condition',
+        question: 'What is the condition of the existing subfloor?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'smooth', label: 'Smooth and level' },
+          { value: 'minor_issues', label: 'Minor imperfections' },
+          { value: 'needs_screed', label: 'Needs screed / levelling' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'vinyl_finish_preference',
+        question: 'What style or finish do you prefer?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'wood_effect', label: 'Wood effect' },
+          { value: 'stone_effect', label: 'Stone effect' },
+          { value: 'patterned', label: 'Patterned / decorative' },
+          { value: 'solid_colour', label: 'Solid colour' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'vinyl_extra_requirements',
+        question: 'Do you require any additional options?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'waterproof', label: 'Fully waterproof system' },
+          { value: 'anti_slip', label: 'Anti-slip finish' },
+          { value: 'acoustic_underlay', label: 'Acoustic underlay' },
+          { value: 'skirting_beading', label: 'Skirting/beading installation' }
+        ]
+      },
+      {
+        id: 'vinyl_notes',
+        question: 'Any important details (pets, heavy use, floor temperature, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
   }
 ];
 
