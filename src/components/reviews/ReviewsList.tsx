@@ -1,12 +1,15 @@
 import { ReviewCard } from './ReviewCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, TrendingUp } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { ReviewsSummaryCard } from './ReviewsSummaryCard';
+import type { ReviewWithDetails } from '@/types/review';
 
 interface ReviewsListProps {
-  reviews: any[];
+  reviews: ReviewWithDetails[];
   averageRating: number;
   totalReviews: number;
+  averageRatings?: any;
   ratingDistribution?: Record<number, number>;
   onRespond?: (reviewId: string, response: string) => void;
   isResponding?: boolean;
@@ -16,6 +19,7 @@ export const ReviewsList = ({
   reviews,
   averageRating,
   totalReviews,
+  averageRatings,
   ratingDistribution,
   onRespond,
   isResponding,
@@ -23,67 +27,37 @@ export const ReviewsList = ({
   if (!reviews || reviews.length === 0) {
     return (
       <Card>
-        <CardContent className="py-8 text-center">
+        <CardContent className="py-12 text-center">
           <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">No reviews yet</p>
+          <p className="text-lg font-semibold mb-2">No reviews yet</p>
+          <p className="text-sm text-muted-foreground">Be the first to leave a review!</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Rating Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            Rating Summary
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Average Rating */}
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="text-4xl font-bold">{averageRating.toFixed(1)}</span>
-                <Star className="w-8 h-8 fill-yellow-400 text-yellow-400" />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Based on {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
-              </p>
-            </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Reviews Summary - Left Side (1/3) */}
+      <div className="lg:col-span-1">
+        <ReviewsSummaryCard
+          overallRating={averageRating}
+          totalReviews={totalReviews}
+          averageRatings={averageRatings}
+          ratingDistribution={ratingDistribution}
+        />
+      </div>
 
-            {/* Rating Distribution */}
-            {ratingDistribution && (
-              <div className="space-y-2">
-                {[5, 4, 3, 2, 1].map((star) => {
-                  const count = ratingDistribution[star] || 0;
-                  const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
-                  return (
-                    <div key={star} className="flex items-center gap-2">
-                      <span className="text-sm w-12">{star} stars</span>
-                      <Progress value={percentage} className="flex-1" />
-                      <span className="text-sm text-muted-foreground w-8 text-right">
-                        {count}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Reviews List */}
-      <div className="space-y-4">
+      {/* Reviews List - Right Side (2/3) */}
+      <div className="lg:col-span-2 space-y-4">
+        <h3 className="text-xl font-semibold mb-4">All Reviews ({totalReviews})</h3>
         {reviews.map((review) => (
           <ReviewCard
             key={review.id}
             review={review}
             onRespond={onRespond}
             isResponding={isResponding}
+            showCategoryRatings={true}
           />
         ))}
       </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReviewCard } from './ReviewCard';
+import { ReviewsList } from './ReviewsList';
 import { useReviewSystem } from '@/hooks/useReviewSystem';
 import { Star } from 'lucide-react';
 
@@ -14,39 +15,14 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
   professionalId,
   canRespond = false,
 }) => {
-  const { reviews, isLoading: loading, overallRating, totalReviews, respondToReview } = useReviewSystem(professionalId);
-  const [sortBy, setSortBy] = useState<'recent' | 'highest' | 'lowest'>('recent');
-
-  const sortedReviews = [...(reviews || [])].sort((a, b) => {
-    switch (sortBy) {
-      case 'highest':
-        return b.overall_rating - a.overall_rating;
-      case 'lowest':
-        return a.overall_rating - b.overall_rating;
-      case 'recent':
-      default:
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    }
-  });
-
-  const renderRatingBar = (rating: number, count: number, total: number) => {
-    const percentage = total > 0 ? (count / total) * 100 : 0;
-    return (
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 w-12">
-          <span className="text-sm font-medium">{rating}</span>
-          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-        </div>
-        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-          <div
-            className="h-full bg-yellow-400 transition-all"
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
-        <span className="text-sm text-muted-foreground w-8">{count}</span>
-      </div>
-    );
-  };
+  const { 
+    reviews, 
+    isLoading: loading, 
+    overallRating, 
+    totalReviews, 
+    averageRatings,
+    respondToReview 
+  } = useReviewSystem(professionalId);
 
   if (loading) {
     return (
@@ -58,75 +34,22 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
     );
   }
 
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Rating Overview - Left Side */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Star className="w-5 h-5" />
-            Reviews & Ratings
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Overall Rating */}
-          <div className="text-center mb-6">
-            <div className="text-5xl font-bold mb-2">{overallRating?.toFixed(1) || 0}</div>
-            <div className="flex items-center justify-center gap-1 mb-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`w-5 h-5 ${
-                    star <= Math.round(overallRating || 0)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Based on {totalReviews || 0} {totalReviews === 1 ? 'review' : 'reviews'}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+  // Calculate rating distribution
+  const ratingDistribution = reviews?.reduce((acc, review) => {
+    const rating = Math.round(review.overall_rating);
+    acc[rating] = (acc[rating] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>) || {};
 
-      {/* Reviews List - Right Side with Scroll */}
-      <Card className="flex flex-col">
-        <CardHeader className="flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <CardTitle>All Reviews ({reviews?.length || 0})</CardTitle>
-            <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recent">Most Recent</SelectItem>
-                <SelectItem value="highest">Highest Rated</SelectItem>
-                <SelectItem value="lowest">Lowest Rated</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent className="overflow-y-auto max-h-[600px]">
-          {sortedReviews.length === 0 ? (
-            <div className="text-center py-8">
-              <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground">No reviews yet</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {sortedReviews.map((review) => (
-              <ReviewCard
-                key={review.id}
-                review={review}
-                onRespond={canRespond ? (reviewId, responseText) => respondToReview.mutate({ reviewId, responseText }) : undefined}
-              />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+  return (
+    <ReviewsList
+      reviews={reviews || []}
+      averageRating={overallRating || 0}
+      totalReviews={totalReviews}
+      averageRatings={averageRatings}
+      ratingDistribution={ratingDistribution}
+      onRespond={canRespond ? (reviewId, responseText) => respondToReview.mutate({ reviewId, responseText }) : undefined}
+      isResponding={respondToReview.isPending}
+    />
   );
 };
