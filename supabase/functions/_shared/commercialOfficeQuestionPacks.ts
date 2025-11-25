@@ -10484,6 +10484,379 @@ export const commercialOfficeQuestionPacks = [
         required: false
       }
     ]
+  },
+
+  // Windows - Floors, Doors & Windows
+  {
+    microSlug: 'double-glazing-upgrades',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'windows',
+    version: 1,
+    questions: [
+      {
+        id: 'dg_upgrade_type',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'replace_units', label: 'Replace existing glass units only' },
+          { value: 'replace_windows_full', label: 'Replace full window frames and glass' },
+          { value: 'upgrade_to_triple', label: 'Upgrade to triple glazing' },
+          { value: 'add_secondary_glazing', label: 'Add secondary glazing' }
+        ]
+      },
+      {
+        id: 'dg_property_area',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'living_areas', label: 'Living / dining areas' },
+          { value: 'bedrooms', label: 'Bedrooms' },
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'bathrooms', label: 'Bathrooms' },
+          { value: 'whole_property', label: 'Whole property' }
+        ]
+      },
+      {
+        id: 'dg_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_two', label: '1–2 windows' },
+          { value: 'three_five', label: '3–5 windows' },
+          { value: 'six_ten', label: '6–10 windows' },
+          { value: 'ten_plus', label: 'More than 10' }
+        ]
+      },
+      {
+        id: 'dg_frame_material',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'aluminium', label: 'Aluminium' },
+          { value: 'timber', label: 'Timber' },
+          { value: 'upvc', label: 'uPVC' },
+          { value: 'mixed', label: 'Mixed / different materials' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'dg_issues',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'condensation_inside', label: 'Condensation between the panes' },
+          { value: 'drafts', label: 'Cold drafts' },
+          { value: 'noise', label: 'Road or neighbour noise' },
+          { value: 'broken_seals', label: 'Broken or failed seals' },
+          { value: 'none', label: 'No issues, upgrading performance only' }
+        ]
+      },
+      {
+        id: 'dg_preference',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'thermal_efficiency', label: 'Thermal efficiency' },
+          { value: 'sound_reduction', label: 'Noise reduction' },
+          { value: 'security', label: 'Improved security' },
+          { value: 'cost_effective', label: 'Cost-effective solution' }
+        ]
+      },
+      {
+        id: 'dg_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'roof-windows-skylights',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'windows',
+    version: 1,
+    questions: [
+      {
+        id: 'rw_type',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_installation', label: 'New installation (create new opening)' },
+          { value: 'replacement', label: 'Replacement of existing roof windows' },
+          { value: 'upgrade_size', label: 'Enlarge or change size of opening' },
+          { value: 'repair', label: 'Repair leaks or hardware' }
+        ]
+      },
+      {
+        id: 'rw_location',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'loft_room', label: 'Loft/attic room' },
+          { value: 'hallway_stairwell', label: 'Hallway or stairwell' },
+          { value: 'bathroom', label: 'Bathroom' },
+          { value: 'living_area', label: 'Living or kitchen area' },
+          { value: 'flat_roof', label: 'Flat roof extension' }
+        ]
+      },
+      {
+        id: 'rw_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one', label: '1 window' },
+          { value: 'two_three', label: '2–3 windows' },
+          { value: 'four_plus', label: '4 or more' }
+        ]
+      },
+      {
+        id: 'rw_style',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'centre_pivot', label: 'Centre-pivot roof window' },
+          { value: 'top_hung', label: 'Top-hung roof window' },
+          { value: 'flat_roof_light', label: 'Flat rooflight' },
+          { value: 'sun_tunnel', label: 'Sun tunnel' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'rw_access_requirements',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'ventilation', label: 'Ventilation function' },
+          { value: 'electric_opening', label: 'Electric opening/remote' },
+          { value: 'solar_control_glass', label: 'Solar control glass' },
+          { value: 'blackout_blinds', label: 'Blackout blinds' },
+          { value: 'integrated_blinds', label: 'Integrated blinds' }
+        ]
+      },
+      {
+        id: 'rw_roof_type',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'pitched_tiled', label: 'Pitched tiled roof' },
+          { value: 'pitched_shingle', label: 'Pitched shingle roof' },
+          { value: 'flat_roof', label: 'Flat roof' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'rw_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'shutters-blinds-screens',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'windows',
+    version: 1,
+    questions: [
+      {
+        id: 'sbs_type',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'interior_blinds', label: 'Interior blinds' },
+          { value: 'roller_blinds', label: 'Roller blinds' },
+          { value: 'venetian_blinds', label: 'Venetian blinds' },
+          { value: 'blackout_blinds', label: 'Blackout blinds' },
+          { value: 'insect_screens', label: 'Insect screens' },
+          { value: 'exterior_shutters', label: 'Exterior shutters' }
+        ]
+      },
+      {
+        id: 'sbs_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_two', label: '1–2 openings' },
+          { value: 'three_five', label: '3–5 openings' },
+          { value: 'six_ten', label: '6–10 openings' },
+          { value: 'ten_plus', label: 'More than 10' }
+        ]
+      },
+      {
+        id: 'sbs_control_type',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'manual', label: 'Manual operation' },
+          { value: 'motorised', label: 'Motorised / remote control' },
+          { value: 'smart_control', label: 'Smart home integration' }
+        ]
+      },
+      {
+        id: 'sbs_mount_type',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'inside_recess', label: 'Inside the window recess' },
+          { value: 'outside_recess', label: 'Outside the recess' },
+          { value: 'surface_mount', label: 'Surface-mounted on the frame' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'sbs_environment',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'living_spaces', label: 'Living spaces' },
+          { value: 'bedrooms', label: 'Bedrooms' },
+          { value: 'bathrooms', label: 'Bathrooms (moisture-resistant)' },
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'balcony_terrace', label: 'Balcony/terrace access' }
+        ]
+      },
+      {
+        id: 'sbs_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'window-installation-replacement',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'windows',
+    version: 1,
+    questions: [
+      {
+        id: 'win_project_type',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_install', label: 'New installation (create opening)' },
+          { value: 'replace_existing', label: 'Replace existing windows' },
+          { value: 'enlarge_opening', label: 'Enlarge the current opening' }
+        ]
+      },
+      {
+        id: 'win_material',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'aluminium', label: 'Aluminium' },
+          { value: 'timber', label: 'Timber' },
+          { value: 'upvc', label: 'uPVC' },
+          { value: 'mixed', label: 'Mixed system' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'win_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_two', label: '1–2 windows' },
+          { value: 'three_five', label: '3–5 windows' },
+          { value: 'six_ten', label: '6–10 windows' },
+          { value: 'ten_plus', label: 'More than 10' }
+        ]
+      },
+      {
+        id: 'win_opening_style',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'top_hung', label: 'Top-hung' },
+          { value: 'side_hung', label: 'Side-hung / casement' },
+          { value: 'tilt_turn', label: 'Tilt-and-turn' },
+          { value: 'sliding', label: 'Sliding' },
+          { value: 'fixed', label: 'Fixed/picture window' }
+        ]
+      },
+      {
+        id: 'win_glazing',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'double_glazing', label: 'Double glazing' },
+          { value: 'triple_glazing', label: 'Triple glazing' },
+          { value: 'solar_control', label: 'Solar control glass' },
+          { value: 'safety_glass', label: 'Safety/laminated glass' }
+        ]
+      },
+      {
+        id: 'win_surrounds',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'interior_plastering', label: 'Interior plastering/finishing' },
+          { value: 'exterior_render', label: 'Exterior render adjustments' },
+          { value: 'cills_sills', label: 'Replace/install window cills' },
+          { value: 'none', label: 'No extra finishing needed' }
+        ]
+      },
+      {
+        id: 'win_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'window-repairs-adjustments',
+    categorySlug: 'floors-doors-windows',
+    subcategorySlug: 'windows',
+    version: 1,
+    questions: [
+      {
+        id: 'win_repair_type',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'sticking_or_jamming', label: 'Window sticking or jamming' },
+          { value: 'handle_lock_issue', label: 'Handle or lock not working' },
+          { value: 'hinge_issue', label: 'Hinge or mechanism issue' },
+          { value: 'seal_failure', label: 'Condensation between panes (seal failure)' },
+          { value: 'drafts', label: 'Cold drafts or poor sealing' },
+          { value: 'broken_glass', label: 'Broken/cracked glass' }
+        ]
+      },
+      {
+        id: 'win_frame_material',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'aluminium', label: 'Aluminium' },
+          { value: 'timber', label: 'Timber' },
+          { value: 'upvc', label: 'uPVC' },
+          { value: 'mixed', label: 'Mixed materials' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'win_repair_quantity',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one', label: '1 window' },
+          { value: 'two_three', label: '2–3 windows' },
+          { value: 'four_plus', label: '4 or more windows' }
+        ]
+      },
+      {
+        id: 'win_access',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy_access', label: 'Easy access (ground floor)' },
+          { value: 'ladder_required', label: 'Requires ladder (1st–2nd floor)' },
+          { value: 'scaffolding_likely', label: 'High access (may need scaffolding)' }
+        ]
+      },
+      {
+        id: 'win_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
   }
 ];
 
