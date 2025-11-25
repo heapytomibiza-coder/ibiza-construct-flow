@@ -9,3 +9,4 @@ export { SearchBar } from './SearchBar';
 export { FilterPanel } from './FilterPanel';
 export { SortDropdown } from './SortDropdown';
 export { SearchResults } from './SearchResults';
+export { AdvancedSearchPanel } from './AdvancedSearchPanel';
