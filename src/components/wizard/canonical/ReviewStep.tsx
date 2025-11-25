@@ -14,6 +14,14 @@ import constructionServicesData from '@/data/construction-services.json';
 import { renderPromptTemplate } from '@/lib/generators/promptRenderer';
 import { mapMicroIdToServiceId } from '@/lib/mappers/serviceIdMapper';
 
+// Utility to convert snake_case/kebab-case to human-readable text
+const humanizeKey = (key: string): string => {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
+};
+
 interface ReviewStepProps {
   jobData: {
     microName: string;
@@ -87,8 +95,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               { id: 'budget', label: 'Budget', value: logistics.budgetRange || 'Not set', editable: true, type: 'text' },
               ...Object.entries(answers).slice(0, 3).map(([key, value]) => ({
                 id: key,
-                label: key.replace(/_/g, ' '),
-                value: String(value),
+                label: humanizeKey(key),
+                value: Array.isArray(value) 
+                  ? value.map(v => humanizeKey(String(v))).join(', ')
+                  : humanizeKey(String(value)),
                 editable: true,
                 type: 'text' as const
               }))
@@ -126,10 +136,12 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               {Object.entries(answers).map(([key, value]) => (
                 <div key={key} className="flex justify-between py-2 border-b last:border-0">
                   <span className="text-sm font-medium text-charcoal capitalize">
-                    {key.replace(/_/g, ' ')}
+                    {humanizeKey(key)}
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    {Array.isArray(value) ? value.join(', ') : String(value)}
+                    {Array.isArray(value) 
+                      ? value.map(v => humanizeKey(String(v))).join(', ')
+                      : humanizeKey(String(value))}
                   </span>
                 </div>
               ))}
