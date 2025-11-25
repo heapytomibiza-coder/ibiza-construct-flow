@@ -8,3 +8,4 @@
 export { NotificationCenter } from './NotificationCenter';
 export { NotificationItem } from './NotificationItem';
 export { NotificationPreferencesForm } from './NotificationPreferencesForm';
+export { ReviewStatsWidget } from '../reviews/ReviewStatsWidget';

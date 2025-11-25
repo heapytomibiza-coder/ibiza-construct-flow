@@ -13,3 +13,4 @@ export { ReviewsList } from './ReviewsList';
 export { ReviewsSummaryCard } from './ReviewsSummaryCard';
 export { CategoryRatingsDisplay } from './CategoryRatingsDisplay';
 export { ReviewPhotoGallery } from './ReviewPhotoGallery';
+export { ReviewStatsWidget } from './ReviewStatsWidget';
