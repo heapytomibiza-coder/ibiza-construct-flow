@@ -13,6 +13,8 @@ import { ResolutionBuilder } from './ResolutionBuilder';
 import { DisputeAgreementFlow } from './DisputeAgreementFlow';
 import { CounterProposalList } from './CounterProposalList';
 import { EnforcementTracker } from './EnforcementTracker';
+import { MediationScheduler } from './MediationScheduler';
+import { EscalationIndicator } from './EscalationIndicator';
 import CaseAuditViewer from './CaseAuditViewer';
 import { QualityScoreBadge } from './QualityScoreBadge';
 import FeedbackPrompt from './FeedbackPrompt';
@@ -294,6 +296,13 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
         </div>
       </Card>
 
+      {/* Escalation Indicator */}
+      <EscalationIndicator
+        escalationLevel={dispute.auto_escalation_count || 0}
+        responseDeadline={dispute.response_deadline}
+        lastActivityAt={dispute.last_activity_at}
+      />
+
       {/* Communication Hub */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DisputeConversation
@@ -320,15 +329,16 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
 
       {/* Evidence & Resolution Tabs */}
       <Tabs defaultValue="evidence" className="space-y-4">
-        <TabsList>
+        <TabsList className="grid grid-cols-3 lg:grid-cols-7">
           <TabsTrigger value="evidence">Evidence</TabsTrigger>
           <TabsTrigger value="resolution">Resolution</TabsTrigger>
           {isAdmin && (
-            <TabsTrigger value="builder">Build Resolution</TabsTrigger>
+            <TabsTrigger value="builder">Build</TabsTrigger>
           )}
-          <TabsTrigger value="counter">Counter-Proposals</TabsTrigger>
+          <TabsTrigger value="counter">Proposals</TabsTrigger>
+          <TabsTrigger value="mediation">Mediation</TabsTrigger>
           <TabsTrigger value="enforcement">Enforcement</TabsTrigger>
-          <TabsTrigger value="audit">Audit Log</TabsTrigger>
+          <TabsTrigger value="audit">Audit</TabsTrigger>
         </TabsList>
 
         <TabsContent value="evidence">
@@ -364,6 +374,10 @@ export const DisputeDetailsView = ({ disputeId }: DisputeDetailsViewProps) => {
 
         <TabsContent value="counter">
           <CounterProposalList disputeId={disputeId} />
+        </TabsContent>
+
+        <TabsContent value="mediation">
+          <MediationScheduler disputeId={disputeId} />
         </TabsContent>
 
         <TabsContent value="enforcement">
