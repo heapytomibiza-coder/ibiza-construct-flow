@@ -7,3 +7,4 @@
 
 export { useNotifications } from './useNotifications';
 export { useNotificationPreferences } from './useNotificationPreferences';
+export { useWeeklyDigest } from './useWeeklyDigest';

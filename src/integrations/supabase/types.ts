@@ -5160,6 +5160,7 @@ export type Database = {
         Row: {
           channels: Json | null
           created_at: string | null
+          email_digest_enabled: boolean | null
           enabled: boolean | null
           frequency: string | null
           id: string
@@ -5177,6 +5178,7 @@ export type Database = {
         Insert: {
           channels?: Json | null
           created_at?: string | null
+          email_digest_enabled?: boolean | null
           enabled?: boolean | null
           frequency?: string | null
           id?: string
@@ -5194,6 +5196,7 @@ export type Database = {
         Update: {
           channels?: Json | null
           created_at?: string | null
+          email_digest_enabled?: boolean | null
           enabled?: boolean | null
           frequency?: string | null
           id?: string

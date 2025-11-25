@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { NotificationPreferences } from '@/lib/notifications/types';
 import { notificationManager } from '@/lib/notifications';
 
@@ -41,6 +42,7 @@ export function useNotificationPreferences() {
   const { user } = useAuth();
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
+  const [emailDigestEnabled, setEmailDigestEnabled] = useState(true);
 
   // Load preferences
   useEffect(() => {
@@ -62,6 +64,27 @@ export function useNotificationPreferences() {
     }
 
     setPreferences(prefs);
+    
+    // Load email digest preference from database
+    const loadEmailDigest = async () => {
+      const { data } = await supabase
+        .from('notification_preferences')
+        .select('email_digest_enabled')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (data) {
+        setEmailDigestEnabled(data.email_digest_enabled ?? true);
+      } else {
+        // Create default preference in database
+        await supabase.from('notification_preferences').upsert({
+          user_id: user.id,
+          email_digest_enabled: true,
+        });
+      }
+    };
+    
+    loadEmailDigest();
     setLoading(false);
   }, [user?.id]);
 
@@ -119,6 +142,25 @@ export function useNotificationPreferences() {
     [updatePreferences]
   );
 
+  // Update email digest preference
+  const updateEmailDigest = useCallback(
+    async (enabled: boolean) => {
+      if (!user?.id) return;
+
+      const { error } = await supabase
+        .from('notification_preferences')
+        .upsert({
+          user_id: user.id,
+          email_digest_enabled: enabled,
+        });
+
+      if (!error) {
+        setEmailDigestEnabled(enabled);
+      }
+    },
+    [user?.id]
+  );
+
   // Reset to defaults
   const resetToDefaults = useCallback(() => {
     if (!user?.id) return;
@@ -135,10 +177,12 @@ export function useNotificationPreferences() {
   return {
     preferences,
     loading,
+    emailDigestEnabled,
     updatePreferences,
     updateChannel,
     updateCategory,
     updateQuietHours,
+    updateEmailDigest,
     resetToDefaults,
   };
 }
