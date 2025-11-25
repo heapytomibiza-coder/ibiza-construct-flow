@@ -8,12 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useCategories, useSubcategories, useMicroCategories } from "@/hooks/useCategories";
 import { useServicesNeedingPacks } from "@/hooks/useServicesNeedingPacks";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Save, CheckCircle2, AlertCircle, ChevronDown, Search } from "lucide-react";
+import { Loader2, Sparkles, Save, CheckCircle2, AlertCircle, ChevronDown, Search, ChevronRight, Circle } from "lucide-react";
+import { createQuestionPack } from "@/lib/questionPacks/createPack";
 
 export default function QuestionPackGenerator() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
@@ -26,12 +28,18 @@ export default function QuestionPackGenerator() {
   const [isSaving, setIsSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [expandedSubcategories, setExpandedSubcategories] = useState<Set<string>>(new Set());
+  
+  // Bulk generation state
+  const [bulkGenerating, setBulkGenerating] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0, subcategoryName: "" });
+  const [bulkStatuses, setBulkStatuses] = useState<Record<string, 'pending' | 'generating' | 'saved' | 'error'>>({});
 
   // Fetch taxonomy data
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: subcategories, isLoading: subcategoriesLoading } = useSubcategories(selectedCategoryId);
   const { data: microCategories, isLoading: microCategoriesLoading } = useMicroCategories(selectedSubcategoryId);
-  const { data: servicesNeeded, isLoading: servicesLoading } = useServicesNeedingPacks();
+  const { data: servicesNeeded, isLoading: servicesLoading, refetch: refetchNeeds } = useServicesNeedingPacks();
 
   // Get selected taxonomy details
   const selectedCategory = categories?.find(c => c.id === selectedCategoryId);
@@ -110,6 +118,71 @@ export default function QuestionPackGenerator() {
     }
   };
 
+  const handleBulkGenerate = async (
+    categoryName: string,
+    subcategoryName: string,
+    services: Array<{ id: string; name: string; slug: string }>
+  ) => {
+    setBulkGenerating(true);
+    setBulkProgress({ current: 0, total: services.length, subcategoryName });
+    
+    const statuses: Record<string, 'pending' | 'generating' | 'saved' | 'error'> = {};
+    services.forEach(s => statuses[s.slug] = 'pending');
+    setBulkStatuses(statuses);
+
+    let successCount = 0;
+    
+    for (let i = 0; i < services.length; i++) {
+      const service = services[i];
+      
+      try {
+        // Update status to generating
+        setBulkStatuses(prev => ({ ...prev, [service.slug]: 'generating' }));
+        
+        // Generate question pack
+        const { data, error } = await supabase.functions.invoke('generate-question-pack', {
+          body: {
+            serviceType: service.name,
+            category: categoryName,
+            subcategory: subcategoryName,
+          }
+        });
+
+        if (error) throw error;
+        
+        // Auto-save as draft
+        await createQuestionPack(service.slug, data.questions, 'draft', 'ai');
+        
+        // Update status to saved
+        setBulkStatuses(prev => ({ ...prev, [service.slug]: 'saved' }));
+        successCount++;
+        
+        // Update progress
+        setBulkProgress({ current: i + 1, total: services.length, subcategoryName });
+        
+        // Small delay to avoid rate limits
+        if (i < services.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 800));
+        }
+      } catch (error: any) {
+        console.error(`Error generating pack for ${service.name}:`, error);
+        setBulkStatuses(prev => ({ ...prev, [service.slug]: 'error' }));
+        
+        // If rate limited, show message and stop
+        if (error.message?.includes('rate limit') || error.message?.includes('429')) {
+          toast.error(`Rate Limited: Generated ${successCount}/${services.length} packs. Please wait and try again.`);
+          break;
+        }
+      }
+    }
+
+    toast.success(`Bulk generation complete: ${successCount}/${services.length} packs generated.`);
+
+    // Refresh the needs list
+    refetchNeeds();
+    setBulkGenerating(false);
+  };
+
   const handleSave = async () => {
     if (!generatedJson) {
       toast.error("No question pack to save");
@@ -163,13 +236,25 @@ export default function QuestionPackGenerator() {
     setExpandedCategories(newExpanded);
   };
 
+  const toggleSubcategory = (key: string) => {
+    const newExpanded = new Set(expandedSubcategories);
+    if (newExpanded.has(key)) {
+      newExpanded.delete(key);
+    } else {
+      newExpanded.add(key);
+    }
+    setExpandedSubcategories(newExpanded);
+  };
+
   const filteredGroups = servicesNeeded?.grouped
     ? Object.entries(servicesNeeded.grouped).filter(([categoryName, data]) => {
         if (!searchQuery) return true;
         const query = searchQuery.toLowerCase();
         return (
           categoryName.toLowerCase().includes(query) ||
-          data.services.some(s => s.name.toLowerCase().includes(query))
+          Object.values(data.subcategories).some(sub =>
+            sub.services.some(s => s.name.toLowerCase().includes(query))
+          )
         );
       })
     : [];
@@ -208,6 +293,29 @@ export default function QuestionPackGenerator() {
               />
             </div>
 
+            {bulkGenerating && (
+              <div className="border rounded-lg p-4 space-y-3 bg-accent/50 mb-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium">Generating {bulkProgress.subcategoryName}</span>
+                  <span className="text-muted-foreground">{bulkProgress.current}/{bulkProgress.total}</span>
+                </div>
+                <Progress value={(bulkProgress.current / bulkProgress.total) * 100} />
+                <ScrollArea className="h-32">
+                  <div className="space-y-1">
+                    {Object.entries(bulkStatuses).map(([slug, status]) => (
+                      <div key={slug} className="flex items-center gap-2 text-xs">
+                        {status === 'saved' && <CheckCircle2 className="h-3 w-3 text-green-600 flex-shrink-0" />}
+                        {status === 'generating' && <Loader2 className="h-3 w-3 animate-spin flex-shrink-0" />}
+                        {status === 'pending' && <Circle className="h-3 w-3 text-muted-foreground flex-shrink-0" />}
+                        {status === 'error' && <AlertCircle className="h-3 w-3 text-red-600 flex-shrink-0" />}
+                        <span className="truncate">{slug}</span>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
+
             <ScrollArea className="h-[calc(100vh-320px)]">
               {servicesLoading ? (
                 <div className="flex items-center justify-center py-8">
@@ -215,40 +323,83 @@ export default function QuestionPackGenerator() {
                 </div>
               ) : (
                 <div className="space-y-1">
-                  {filteredGroups.map(([categoryName, data]) => (
-                    <Collapsible
-                      key={categoryName}
-                      open={expandedCategories.has(categoryName)}
-                      onOpenChange={() => toggleCategory(categoryName)}
-                    >
-                      <CollapsibleTrigger className="flex items-center justify-between w-full p-2 rounded-md hover:bg-accent transition-colors">
-                        <div className="flex items-center gap-2">
-                          <ChevronDown
-                            className={`h-4 w-4 transition-transform ${
-                              expandedCategories.has(categoryName) ? 'rotate-0' : '-rotate-90'
-                            }`}
-                          />
-                          <span className="font-medium text-sm">{categoryName}</span>
-                        </div>
-                        <Badge variant="outline" className="ml-2">
-                          {data.services.length}
-                        </Badge>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="pl-6 pt-1 space-y-1">
-                        {data.services.map((service) => (
-                          <button
-                            key={service.id}
-                            onClick={() => handleServiceSelect(service)}
-                            className={`w-full text-left p-2 rounded-md text-sm hover:bg-accent transition-colors ${
-                              selectedMicroId === service.id ? 'bg-accent' : ''
-                            }`}
-                          >
-                            {service.name}
-                          </button>
-                        ))}
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ))}
+                  {filteredGroups.map(([categoryName, data]) => {
+                    const totalServices = Object.values(data.subcategories).reduce((sum, sub) => sum + sub.services.length, 0);
+                    
+                    return (
+                      <Collapsible
+                        key={categoryName}
+                        open={expandedCategories.has(categoryName)}
+                        onOpenChange={() => toggleCategory(categoryName)}
+                      >
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-2 rounded-md hover:bg-accent transition-colors">
+                          <div className="flex items-center gap-2">
+                            <ChevronDown
+                              className={`h-4 w-4 transition-transform ${
+                                expandedCategories.has(categoryName) ? 'rotate-0' : '-rotate-90'
+                              }`}
+                            />
+                            <span className="font-medium text-sm">{categoryName}</span>
+                          </div>
+                          <Badge variant="outline" className="ml-2">
+                            {totalServices}
+                          </Badge>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pl-4 pt-1 space-y-1">
+                          {Object.entries(data.subcategories).map(([subcategoryName, subcategoryData]) => {
+                            const subKey = `${categoryName}-${subcategoryName}`;
+                            
+                            return (
+                              <Collapsible
+                                key={subKey}
+                                open={expandedSubcategories.has(subKey)}
+                                onOpenChange={() => toggleSubcategory(subKey)}
+                              >
+                                <div className="flex items-center justify-between p-2 rounded-md hover:bg-accent">
+                                  <CollapsibleTrigger className="flex items-center gap-2 flex-1 text-left">
+                                    {expandedSubcategories.has(subKey) ? (
+                                      <ChevronDown className="h-3 w-3" />
+                                    ) : (
+                                      <ChevronRight className="h-3 w-3" />
+                                    )}
+                                    <span className="text-sm font-medium">{subcategoryName}</span>
+                                    <Badge variant="secondary" className="text-xs h-5">
+                                      {subcategoryData.services.length}
+                                    </Badge>
+                                  </CollapsibleTrigger>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleBulkGenerate(categoryName, subcategoryName, subcategoryData.services);
+                                    }}
+                                    disabled={bulkGenerating}
+                                    className="h-7 text-xs ml-2"
+                                  >
+                                    {bulkGenerating ? <Loader2 className="h-3 w-3 animate-spin" /> : "Generate All"}
+                                  </Button>
+                                </div>
+                                <CollapsibleContent className="pl-8 pt-1 space-y-1">
+                                  {subcategoryData.services.map((service) => (
+                                    <button
+                                      key={service.id}
+                                      onClick={() => handleServiceSelect(service)}
+                                      className={`w-full text-left p-2 rounded-md text-sm hover:bg-accent transition-colors ${
+                                        selectedMicroId === service.id ? 'bg-accent' : ''
+                                      }`}
+                                    >
+                                      • {service.name}
+                                    </button>
+                                  ))}
+                                </CollapsibleContent>
+                              </Collapsible>
+                            );
+                          })}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    );
+                  })}
                 </div>
               )}
             </ScrollArea>
