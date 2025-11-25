@@ -38,10 +38,21 @@ serve(async (req) => {
       .from('notification_preferences')
       .select('*')
       .eq('user_id', user_id)
-      .eq('category', category)
+      .eq('notification_type', 'all')
       .single();
 
-    const shouldDeliver = preferences?.in_app_enabled !== false;
+    // Check granular review preferences
+    let shouldDeliver = preferences?.enabled !== false;
+    
+    if (event_type === 'review_received') {
+      shouldDeliver = preferences?.review_received_enabled !== false;
+    } else if (event_type === 'review_response') {
+      shouldDeliver = preferences?.review_response_enabled !== false;
+    } else if (event_type === 'review_helpful_vote') {
+      shouldDeliver = preferences?.review_helpful_enabled !== false;
+    } else if (event_type === 'review_reminder') {
+      shouldDeliver = preferences?.review_reminders_enabled !== false;
+    }
 
     if (!shouldDeliver) {
       return new Response(
