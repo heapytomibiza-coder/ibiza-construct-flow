@@ -2121,6 +2121,66 @@ export type Database = {
           },
         ]
       }
+      competitor_benchmarks: {
+        Row: {
+          benchmark_date: string
+          category_id: string
+          created_at: string | null
+          id: string
+          peer_avg_job_value: number | null
+          peer_avg_rating: number | null
+          peer_avg_response_time: number | null
+          peer_completion_rate: number | null
+          percentile: number | null
+          professional_id: string
+          professional_rank: number | null
+          total_professionals: number | null
+        }
+        Insert: {
+          benchmark_date: string
+          category_id: string
+          created_at?: string | null
+          id?: string
+          peer_avg_job_value?: number | null
+          peer_avg_rating?: number | null
+          peer_avg_response_time?: number | null
+          peer_completion_rate?: number | null
+          percentile?: number | null
+          professional_id: string
+          professional_rank?: number | null
+          total_professionals?: number | null
+        }
+        Update: {
+          benchmark_date?: string
+          category_id?: string
+          created_at?: string | null
+          id?: string
+          peer_avg_job_value?: number | null
+          peer_avg_rating?: number | null
+          peer_avg_response_time?: number | null
+          peer_completion_rate?: number | null
+          percentile?: number | null
+          professional_id?: string
+          professional_rank?: number | null
+          total_professionals?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitor_benchmarks_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competitor_benchmarks_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_frameworks: {
         Row: {
           created_at: string
@@ -7536,6 +7596,133 @@ export type Database = {
           },
         ]
       }
+      professional_insights: {
+        Row: {
+          action_items: Json | null
+          created_at: string | null
+          id: string
+          impact_score: number | null
+          insight_description: string | null
+          insight_title: string
+          insight_type: string
+          is_read: boolean | null
+          priority: string
+          professional_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          action_items?: Json | null
+          created_at?: string | null
+          id?: string
+          impact_score?: number | null
+          insight_description?: string | null
+          insight_title: string
+          insight_type: string
+          is_read?: boolean | null
+          priority: string
+          professional_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          action_items?: Json | null
+          created_at?: string | null
+          id?: string
+          impact_score?: number | null
+          insight_description?: string | null
+          insight_title?: string
+          insight_type?: string
+          is_read?: boolean | null
+          priority?: string
+          professional_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_insights_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_metrics: {
+        Row: {
+          avg_job_value: number | null
+          avg_response_time_hours: number | null
+          client_satisfaction: number | null
+          completion_rate: number | null
+          created_at: string | null
+          id: string
+          jobs_cancelled: number | null
+          jobs_completed: number | null
+          jobs_quoted: number | null
+          jobs_received: number | null
+          jobs_won: number | null
+          metric_date: string
+          pending_payments: number | null
+          professional_id: string
+          profile_views: number | null
+          quote_acceptance_rate: number | null
+          quote_requests: number | null
+          repeat_clients: number | null
+          revenue_earned: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_job_value?: number | null
+          avg_response_time_hours?: number | null
+          client_satisfaction?: number | null
+          completion_rate?: number | null
+          created_at?: string | null
+          id?: string
+          jobs_cancelled?: number | null
+          jobs_completed?: number | null
+          jobs_quoted?: number | null
+          jobs_received?: number | null
+          jobs_won?: number | null
+          metric_date: string
+          pending_payments?: number | null
+          professional_id: string
+          profile_views?: number | null
+          quote_acceptance_rate?: number | null
+          quote_requests?: number | null
+          repeat_clients?: number | null
+          revenue_earned?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_job_value?: number | null
+          avg_response_time_hours?: number | null
+          client_satisfaction?: number | null
+          completion_rate?: number | null
+          created_at?: string | null
+          id?: string
+          jobs_cancelled?: number | null
+          jobs_completed?: number | null
+          jobs_quoted?: number | null
+          jobs_received?: number | null
+          jobs_won?: number | null
+          metric_date?: string
+          pending_payments?: number | null
+          professional_id?: string
+          profile_views?: number | null
+          quote_acceptance_rate?: number | null
+          quote_requests?: number | null
+          repeat_clients?: number | null
+          revenue_earned?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_metrics_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professional_portfolio: {
         Row: {
           category: string | null
@@ -9388,42 +9575,44 @@ export type Database = {
       }
       revenue_forecasts: {
         Row: {
-          actual_revenue: number | null
           confidence_level: number | null
+          contributing_factors: Json | null
           created_at: string | null
+          forecast_date: string
           forecast_period: string
           id: string
-          model_version: string | null
-          period_end: string
-          period_start: string
-          predicted_revenue: number
-          variance: number | null
+          professional_id: string
+          projected_revenue: number
         }
         Insert: {
-          actual_revenue?: number | null
           confidence_level?: number | null
+          contributing_factors?: Json | null
           created_at?: string | null
+          forecast_date: string
           forecast_period: string
           id?: string
-          model_version?: string | null
-          period_end: string
-          period_start: string
-          predicted_revenue: number
-          variance?: number | null
+          professional_id: string
+          projected_revenue: number
         }
         Update: {
-          actual_revenue?: number | null
           confidence_level?: number | null
+          contributing_factors?: Json | null
           created_at?: string | null
+          forecast_date?: string
           forecast_period?: string
           id?: string
-          model_version?: string | null
-          period_end?: string
-          period_start?: string
-          predicted_revenue?: number
-          variance?: number | null
+          professional_id?: string
+          projected_revenue?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "revenue_forecasts_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       review_flags: {
         Row: {
@@ -12879,7 +13068,9 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
-      is_admin: { Args: never; Returns: boolean }
+      is_admin:
+        | { Args: never; Returns: boolean }
+        | { Args: { _user_id?: string }; Returns: boolean }
       is_admin_user: { Args: never; Returns: boolean }
       is_feature_on: { Args: { p_key: string }; Returns: boolean }
       log_activity: {
