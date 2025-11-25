@@ -1,8 +1,14 @@
 /**
- * Commercial, Office, Retail & Bathroom Question Packs
- * Covers: Planned Maintenance, Shopfront Repairs, Office Partitions, Office Renovation, 
- * Retail Display, Shop Fitting, Accessible Bathrooms, Waterproofing, Walk-in Showers,
- * Wetroom Installation, Bathroom Design, Bathroom Refurbishment, Cloakroom/Ensuite, New Bathroom Installation
+ * Commercial, Office, Retail & Kitchen/Bathroom Question Packs
+ * 
+ * Covers:
+ * - Commercial & Industrial: Planned Maintenance, Shopfront Repairs
+ * - Office Fitouts: Office Partitions, Office Renovation
+ * - Retail Spaces: Retail Display, Shop Fitting
+ * - Wetrooms & Specialist Bathrooms: Accessible Bathrooms, Waterproofing, Walk-in Showers, Wetroom Installation
+ * - Bathroom Fitting & Renovation: Bathroom Design, Refurbishment, Cloakroom/Ensuite, New Installation, Full Bathroom Fit, Wetroom Installation
+ * - Kitchen Installation: Full Kitchen Fit, Worktop Installation
+ * - Kitchen Fitting & Renovation: Kitchen Fitting, Kitchen Refurbishment, New Kitchen Installation, Small Kitchen Updates
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -539,7 +545,7 @@ export const commercialOfficeQuestionPacks = [
   // 7. Accessible and Mobility Bathrooms
   {
     microSlug: 'accessible-mobility-bathrooms',
-    categorySlug: 'wetrooms-specialist-bathrooms',
+    categorySlug: 'kitchen-bathroom',
     version: 1,
     questions: [
       {
@@ -643,7 +649,7 @@ export const commercialOfficeQuestionPacks = [
   // 8. Bathroom Waterproofing and Tanking
   {
     microSlug: 'bathroom-waterproofing-tanking',
-    categorySlug: 'wetrooms-specialist-bathrooms',
+    categorySlug: 'kitchen-bathroom',
     version: 1,
     questions: [
       {
@@ -745,7 +751,7 @@ export const commercialOfficeQuestionPacks = [
   // 9. Walk-in Shower Conversions
   {
     microSlug: 'walk-in-shower-conversions',
-    categorySlug: 'wetrooms-specialist-bathrooms',
+    categorySlug: 'kitchen-bathroom',
     version: 1,
     questions: [
       {
@@ -846,7 +852,7 @@ export const commercialOfficeQuestionPacks = [
   // 10. Wetroom Installation
   {
     microSlug: 'wetroom-installation',
-    categorySlug: 'wetrooms-specialist-bathrooms',
+    categorySlug: 'kitchen-bathroom',
     version: 1,
     questions: [
       {
@@ -957,7 +963,7 @@ export const commercialOfficeQuestionPacks = [
   // 11. Bathroom Design
   {
     microSlug: 'bathroom-design',
-    categorySlug: 'bathroom-fitting-renovation',
+    categorySlug: 'kitchen-bathroom',
     version: 1,
     questions: [
       {
@@ -1070,7 +1076,7 @@ export const commercialOfficeQuestionPacks = [
   // 12. Bathroom Refurbishment
   {
     microSlug: 'bathroom-refurbishment',
-    categorySlug: 'bathroom-fitting-renovation',
+    categorySlug: 'kitchen-bathroom',
     version: 1,
     questions: [
       {
@@ -1184,7 +1190,7 @@ export const commercialOfficeQuestionPacks = [
   // 13. Cloakroom and Ensuite Bathrooms
   {
     microSlug: 'cloakroom-ensuite-bathrooms',
-    categorySlug: 'bathroom-fitting-renovation',
+    categorySlug: 'kitchen-bathroom',
     version: 1,
     questions: [
       {
@@ -1298,7 +1304,7 @@ export const commercialOfficeQuestionPacks = [
   // 14. New Bathroom Installation
   {
     microSlug: 'new-bathroom-installation',
-    categorySlug: 'bathroom-fitting-renovation',
+    categorySlug: 'kitchen-bathroom',
     version: 1,
     questions: [
       {
@@ -1632,6 +1638,657 @@ export const commercialOfficeQuestionPacks = [
           { value: 'built_in_niches', label: 'Built-in niches' },
           { value: 'steam_function', label: 'Steam function' },
           { value: 'none', label: 'None' }
+        ],
+        required: false
+      }
+    ]
+  },
+
+  // Kitchen Installation - Full Kitchen Fit
+  {
+    microSlug: 'full-kitchen-fit',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'kitchen_state',
+        type: 'radio',
+        question: 'What is the current state of the kitchen?',
+        options: [
+          { value: 'old_kitchen_in_place', label: 'Old kitchen still in place' },
+          { value: 'partially_removed', label: 'Partially removed' },
+          { value: 'stripped_out', label: 'Completely stripped out' },
+          { value: 'new_room_extension', label: 'Brand new room / extension' }
+        ],
+        required: true
+      },
+      {
+        id: 'layout_type',
+        type: 'radio',
+        question: 'What layout will the new kitchen have?',
+        options: [
+          { value: 'straight_line', label: 'Straight line / single wall' },
+          { value: 'l_shaped', label: 'L-shaped' },
+          { value: 'u_shaped', label: 'U-shaped' },
+          { value: 'galley', label: 'Galley kitchen' },
+          { value: 'island', label: 'Island kitchen' },
+          { value: 'not_finalised', label: 'Not finalised yet' }
+        ],
+        required: true
+      },
+      {
+        id: 'units_required',
+        type: 'checkbox',
+        question: 'What type of kitchen units are being installed?',
+        options: [
+          { value: 'base_units', label: 'Base units' },
+          { value: 'wall_units', label: 'Wall units' },
+          { value: 'tall_units', label: 'Tall units' },
+          { value: 'pantry_units', label: 'Pantry units' },
+          { value: 'appliance_housings', label: 'Built-in appliance housings' },
+          { value: 'island', label: 'Kitchen island' }
+        ],
+        required: true
+      },
+      {
+        id: 'appliance_fitting',
+        type: 'checkbox',
+        question: 'Which appliances need fitting?',
+        options: [
+          { value: 'oven', label: 'Oven' },
+          { value: 'hob', label: 'Hob' },
+          { value: 'extractor', label: 'Extractor' },
+          { value: 'fridge_freezer', label: 'Integrated fridge/freezer' },
+          { value: 'dishwasher', label: 'Integrated dishwasher' },
+          { value: 'washing_machine', label: 'Washing machine' },
+          { value: 'microwave', label: 'Microwave housing' },
+          { value: 'wine_cooler', label: 'Wine cooler' }
+        ],
+        required: false
+      },
+      {
+        id: 'utilities_changes',
+        type: 'radio',
+        question: 'Will plumbing or electrics need modifications?',
+        options: [
+          { value: 'major_changes', label: 'Yes – major plumbing & electrical changes' },
+          { value: 'some_adjustments', label: 'Yes – some adjustments needed' },
+          { value: 'minor_only', label: 'Minor modifications only' },
+          { value: 'no_changes', label: 'No changes required' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'worktop_status',
+        type: 'radio',
+        question: 'What is the worktop situation?',
+        options: [
+          { value: 'included', label: 'New worktops included' },
+          { value: 'purchased', label: 'Worktops already purchased' },
+          { value: 'temporarily_old', label: 'Temporarily using old worktops' },
+          { value: 'need_advice', label: 'Unsure – need advice' }
+        ],
+        required: false
+      },
+      {
+        id: 'tiling_and_splashback',
+        type: 'radio',
+        question: 'What splashback or wall finish is required?',
+        options: [
+          { value: 'full_tiled', label: 'Full tiled splashback' },
+          { value: 'partial_tiles', label: 'Partial tiles' },
+          { value: 'acrylic_glass', label: 'Acrylic / glass splashback' },
+          { value: 'no_splashback', label: 'No splashback needed' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'additional_features',
+        type: 'checkbox',
+        question: 'Any additional features to include?',
+        options: [
+          { value: 'under_cabinet_lighting', label: 'Under-cabinet lighting' },
+          { value: 'plug_sockets', label: 'Plug socket installation' },
+          { value: 'island_electrics', label: 'Island electrics' },
+          { value: 'waste_disposal', label: 'Waste disposal unit' },
+          { value: 'boiling_tap', label: 'Boiling water tap' },
+          { value: 'none', label: 'None' }
+        ],
+        required: false
+      }
+    ]
+  },
+
+  // Kitchen Installation - Worktop Installation
+  {
+    microSlug: 'worktop-installation',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'worktop_material',
+        type: 'radio',
+        question: 'What type of worktop are you installing?',
+        options: [
+          { value: 'laminate', label: 'Laminate' },
+          { value: 'solid_wood', label: 'Solid wood' },
+          { value: 'quartz', label: 'Quartz' },
+          { value: 'granite', label: 'Granite' },
+          { value: 'marble', label: 'Marble' },
+          { value: 'compact_laminate', label: 'Compact laminate' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: true
+      },
+      {
+        id: 'worktop_length',
+        type: 'radio',
+        question: 'How much worktop length needs installing?',
+        options: [
+          { value: 'up_to_3m', label: 'Up to 3m' },
+          { value: '3m_to_6m', label: '3m to 6m' },
+          { value: '6m_to_9m', label: '6m to 9m' },
+          { value: '9m_plus', label: '9m+' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: true
+      },
+      {
+        id: 'existing_worktops',
+        type: 'radio',
+        question: 'Do existing worktops need removing?',
+        options: [
+          { value: 'yes_remove', label: 'Yes – remove old worktops' },
+          { value: 'no_new_only', label: 'No – new install only' },
+          { value: 'partially', label: 'Partially' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'cutouts_needed',
+        type: 'checkbox',
+        question: 'Which cutouts are needed in the worktop?',
+        options: [
+          { value: 'sink', label: 'Sink cutout' },
+          { value: 'hob', label: 'Hob cutout' },
+          { value: 'tap_hole', label: 'Tap hole' },
+          { value: 'pop_up_sockets', label: 'Pop-up socket holes' },
+          { value: 'none', label: 'None' }
+        ],
+        required: false
+      },
+      {
+        id: 'joint_type',
+        type: 'radio',
+        question: 'What type of joints are required?',
+        options: [
+          { value: 'standard_butt', label: 'Standard butt joints' },
+          { value: 'masons_mitre', label: "Mason's mitre joints" },
+          { value: 'factory_made', label: 'Factory-made joints' },
+          { value: 'seamless', label: 'Solid surface seamless joints' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'finish_edges',
+        type: 'checkbox',
+        question: 'Do you need edging or finishing work?',
+        options: [
+          { value: 'end_caps', label: 'End caps' },
+          { value: 'upstands', label: 'Upstands' },
+          { value: 'splashback', label: 'Splashback' },
+          { value: 'edge_polishing', label: 'Edge polishing' },
+          { value: 'no_edging', label: 'No additional edging' }
+        ],
+        required: false
+      },
+      {
+        id: 'support_requirements',
+        type: 'radio',
+        question: 'Will additional support be required?',
+        options: [
+          { value: 'brackets_needed', label: 'Support brackets needed' },
+          { value: 'island_support', label: 'Island support required' },
+          { value: 'no_support', label: 'No extra support needed' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'appliance_fitting',
+        type: 'checkbox',
+        question: 'Any appliances to be fitted alongside the worktop?',
+        options: [
+          { value: 'sink', label: 'Sink installation' },
+          { value: 'hob', label: 'Hob installation' },
+          { value: 'extractor', label: 'Extractor ducting' },
+          { value: 'appliance_connections', label: 'Washing machine or dishwasher connections' },
+          { value: 'none', label: 'No appliance connections' }
+        ],
+        required: false
+      }
+    ]
+  },
+
+  // Kitchen Fitting and Renovation - Kitchen fitting
+  {
+    microSlug: 'kitchen-fitting',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'kitchen_state',
+        type: 'radio',
+        question: 'What is the current state of the kitchen area?',
+        options: [
+          { value: 'old_installed', label: 'Old kitchen still installed' },
+          { value: 'partially_removed', label: 'Partially removed' },
+          { value: 'empty', label: 'Fully removed / empty space' },
+          { value: 'new_extension', label: 'New extension or newly built room' }
+        ],
+        required: true
+      },
+      {
+        id: 'unit_types',
+        type: 'checkbox',
+        question: 'Which kitchen units are being fitted?',
+        options: [
+          { value: 'base_units', label: 'Base units' },
+          { value: 'wall_units', label: 'Wall units' },
+          { value: 'tall_units', label: 'Tall units' },
+          { value: 'pantry_units', label: 'Pantry units' },
+          { value: 'island_units', label: 'Island units' },
+          { value: 'appliance_housings', label: 'Integrated appliance housings' }
+        ],
+        required: true
+      },
+      {
+        id: 'appliances',
+        type: 'checkbox',
+        question: 'Which appliances need installation?',
+        options: [
+          { value: 'oven', label: 'Oven' },
+          { value: 'hob', label: 'Hob' },
+          { value: 'extractor', label: 'Extractor' },
+          { value: 'fridge_freezer', label: 'Integrated fridge/freezer' },
+          { value: 'dishwasher', label: 'Integrated dishwasher' },
+          { value: 'washing_machine', label: 'Washing machine' },
+          { value: 'microwave', label: 'Microwave housing' }
+        ],
+        required: false
+      },
+      {
+        id: 'plumbing_electrics',
+        type: 'radio',
+        question: 'Will plumbing or electrics need adjusting?',
+        options: [
+          { value: 'major_adjustments', label: 'Major adjustments needed' },
+          { value: 'some_adjustments', label: 'Some adjustments needed' },
+          { value: 'minor_only', label: 'Minor adjustments only' },
+          { value: 'no_changes', label: 'No changes required' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'worktop_status',
+        type: 'radio',
+        question: 'Are worktops part of this fitting?',
+        options: [
+          { value: 'installing_new', label: 'Yes – installing new worktops' },
+          { value: 'already_fitted', label: 'Worktops already fitted' },
+          { value: 'separately', label: 'Worktops fitted separately' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'splashback',
+        type: 'radio',
+        question: 'Do you need a splashback installed?',
+        options: [
+          { value: 'tiled', label: 'Tiled splashback' },
+          { value: 'acrylic_glass', label: 'Acrylic or glass' },
+          { value: 'upstand', label: 'Matching worktop upstand' },
+          { value: 'no_splashback', label: 'No splashback' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ],
+        required: false
+      },
+      {
+        id: 'additional_features',
+        type: 'checkbox',
+        question: 'Any extra features to include?',
+        options: [
+          { value: 'under_cabinet_lighting', label: 'Under-cabinet lighting' },
+          { value: 'plug_sockets', label: 'New plug sockets' },
+          { value: 'island_electrics', label: 'Island electrics' },
+          { value: 'boiling_tap', label: 'Boiling water tap' },
+          { value: 'waste_disposal', label: 'Waste disposal unit' },
+          { value: 'none', label: 'None' }
+        ],
+        required: false
+      }
+    ]
+  },
+
+  // Kitchen Fitting and Renovation - Kitchen refurbishment
+  {
+    microSlug: 'kitchen-refurbishment',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'refurb_level',
+        type: 'radio',
+        question: 'What level of refurbishment do you need?',
+        options: [
+          { value: 'light_refresh', label: 'Light refresh' },
+          { value: 'mid_level', label: 'Mid-level renovation' },
+          { value: 'full_strip_refit', label: 'Full strip-out & refit' },
+          { value: 'luxury_upgrade', label: 'Luxury upgrade' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ],
+        required: true
+      },
+      {
+        id: 'items_to_update',
+        type: 'checkbox',
+        question: 'Which elements do you want to update?',
+        options: [
+          { value: 'cabinet_fronts', label: 'Cabinet fronts / doors' },
+          { value: 'handles_hardware', label: 'Handles & hardware' },
+          { value: 'worktops', label: 'Worktops' },
+          { value: 'splashback', label: 'Splashback' },
+          { value: 'sink_tap', label: 'Sink & tap' },
+          { value: 'appliances', label: 'Appliances' },
+          { value: 'flooring', label: 'Flooring' },
+          { value: 'lighting', label: 'Lighting' }
+        ],
+        required: true
+      },
+      {
+        id: 'layout_change',
+        type: 'radio',
+        question: 'Are you planning any layout changes?',
+        options: [
+          { value: 'full_new_layout', label: 'Full new layout' },
+          { value: 'some_repositioning', label: 'Some repositioning' },
+          { value: 'keeping_existing', label: 'Keeping existing layout' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ],
+        required: false
+      },
+      {
+        id: 'cabinet_condition',
+        type: 'radio',
+        question: 'What is the condition of the existing cabinets?',
+        options: [
+          { value: 'good_reuse', label: 'Good – reuse carcasses' },
+          { value: 'mixed', label: 'Mixed condition' },
+          { value: 'poor_replace', label: 'Poor – replace carcasses' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'appliances_update',
+        type: 'checkbox',
+        question: 'Are appliances being replaced?',
+        options: [
+          { value: 'all', label: 'All appliances' },
+          { value: 'some', label: 'Some appliances' },
+          { value: 'keeping_current', label: 'Keeping current ones' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ],
+        required: false
+      },
+      {
+        id: 'finishes_preference',
+        type: 'radio',
+        question: 'Which style or finish are you aiming for?',
+        options: [
+          { value: 'modern', label: 'Modern' },
+          { value: 'minimal', label: 'Minimal' },
+          { value: 'traditional', label: 'Traditional' },
+          { value: 'industrial', label: 'Industrial' },
+          { value: 'scandinavian', label: 'Scandinavian' },
+          { value: 'installer_recommendations', label: 'Installer recommendations' }
+        ],
+        required: false
+      },
+      {
+        id: 'known_issues',
+        type: 'checkbox',
+        question: 'Are there any known issues?',
+        options: [
+          { value: 'water_damage', label: 'Water damage' },
+          { value: 'loose_units', label: 'Loose units' },
+          { value: 'poor_ventilation', label: 'Poor ventilation' },
+          { value: 'broken_appliances', label: 'Broken appliances' },
+          { value: 'old_utilities', label: 'Old electrics/plumbing' },
+          { value: 'no_issues', label: 'No known issues' }
+        ],
+        required: false
+      }
+    ]
+  },
+
+  // Kitchen Fitting and Renovation - New kitchen installation
+  {
+    microSlug: 'new-kitchen-installation',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'project_type',
+        type: 'radio',
+        question: 'What is the context for your new kitchen?',
+        options: [
+          { value: 'new_build', label: 'New build property' },
+          { value: 'extension', label: 'Extension' },
+          { value: 'loft_basement', label: 'Loft or basement conversion' },
+          { value: 'converting_room', label: 'Converting another room' },
+          { value: 'replacing_old', label: 'Replacing old kitchen entirely' }
+        ],
+        required: true
+      },
+      {
+        id: 'rough_stage',
+        type: 'radio',
+        question: 'What stage is the room currently at?',
+        options: [
+          { value: 'stud_walls', label: 'Stud walls only' },
+          { value: 'first_fix', label: 'First-fix plumbing & electrics' },
+          { value: 'second_fix', label: 'Second-fix ready' },
+          { value: 'fully_prepared', label: 'Fully prepared and ready to install' }
+        ],
+        required: true
+      },
+      {
+        id: 'layout_plan',
+        type: 'radio',
+        question: 'What layout will the new kitchen have?',
+        options: [
+          { value: 'straight_line', label: 'Straight line' },
+          { value: 'l_shaped', label: 'L-shaped' },
+          { value: 'u_shaped', label: 'U-shaped' },
+          { value: 'galley', label: 'Galley' },
+          { value: 'island', label: 'Island kitchen' },
+          { value: 'not_finalised', label: 'Not finalised' }
+        ],
+        required: false
+      },
+      {
+        id: 'unit_types',
+        type: 'checkbox',
+        question: 'What units need installing?',
+        options: [
+          { value: 'base_units', label: 'Base units' },
+          { value: 'wall_units', label: 'Wall units' },
+          { value: 'tall_units', label: 'Tall units' },
+          { value: 'pantry_larder', label: 'Pantry or larder units' },
+          { value: 'island_units', label: 'Island units' },
+          { value: 'appliance_housings', label: 'Integrated appliance housings' }
+        ],
+        required: true
+      },
+      {
+        id: 'appliances',
+        type: 'checkbox',
+        question: 'Which appliances will be installed?',
+        options: [
+          { value: 'oven', label: 'Oven' },
+          { value: 'hob', label: 'Hob' },
+          { value: 'extractor', label: 'Extractor' },
+          { value: 'fridge_freezer', label: 'Fridge/freezer' },
+          { value: 'dishwasher', label: 'Dishwasher' },
+          { value: 'washing_machine', label: 'Washing machine' },
+          { value: 'wine_cooler', label: 'Wine cooler' },
+          { value: 'microwave', label: 'Microwave/combination oven' }
+        ],
+        required: false
+      },
+      {
+        id: 'utility_changes',
+        type: 'radio',
+        question: 'Will plumbing/electrical work be required?',
+        options: [
+          { value: 'major_changes', label: 'Yes – major changes' },
+          { value: 'some_adjustments', label: 'Yes – some adjustments' },
+          { value: 'minor_only', label: 'Minor changes only' },
+          { value: 'no_changes', label: 'No changes needed' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'worktops_needed',
+        type: 'radio',
+        question: 'Do you need new worktops installed?',
+        options: [
+          { value: 'supplied_by_me', label: 'Yes – supplied by me' },
+          { value: 'supply_install', label: 'Yes – need supply & installation' },
+          { value: 'in_place', label: 'Worktops already in place' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'features',
+        type: 'checkbox',
+        question: 'Any special features to include?',
+        options: [
+          { value: 'under_cabinet_lighting', label: 'Under-cabinet lighting' },
+          { value: 'boiling_tap', label: 'Boiling water tap' },
+          { value: 'island_electrics', label: 'Island electrics' },
+          { value: 'pull_out_storage', label: 'Pull-out storage' },
+          { value: 'smart_features', label: 'Smart kitchen features' },
+          { value: 'none', label: 'None' }
+        ],
+        required: false
+      }
+    ]
+  },
+
+  // Kitchen Fitting and Renovation - Small kitchen updates
+  {
+    microSlug: 'small-kitchen-updates',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'update_level',
+        type: 'radio',
+        question: 'What type of small update do you need?',
+        options: [
+          { value: 'cabinet_doors', label: 'Replace cabinet doors' },
+          { value: 'handles_hardware', label: 'Replace handles and hardware' },
+          { value: 'sink_tap', label: 'Replace sink & tap' },
+          { value: 'worktops', label: 'Replace worktops' },
+          { value: 'splashback', label: 'Update splashback' },
+          { value: 'minor_repairs', label: 'Minor repairs and adjustments' }
+        ],
+        required: true
+      },
+      {
+        id: 'units_condition',
+        type: 'radio',
+        question: 'What is the condition of the existing kitchen units?',
+        options: [
+          { value: 'good', label: 'Good – only cosmetic changes needed' },
+          { value: 'mixed', label: 'Mixed condition' },
+          { value: 'poor', label: 'Poor – may need replacements soon' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'appliance_updates',
+        type: 'checkbox',
+        question: 'Do any appliances need updating?',
+        options: [
+          { value: 'oven', label: 'Oven' },
+          { value: 'hob', label: 'Hob' },
+          { value: 'extractor', label: 'Extractor' },
+          { value: 'fridge_freezer', label: 'Fridge/freezer' },
+          { value: 'dishwasher', label: 'Dishwasher' },
+          { value: 'washing_machine', label: 'Washing machine' },
+          { value: 'none', label: 'None' }
+        ],
+        required: false
+      },
+      {
+        id: 'worktop_change',
+        type: 'radio',
+        question: 'Are you planning to replace worktops?',
+        options: [
+          { value: 'yes_new', label: 'Yes – new worktops required' },
+          { value: 'possibly', label: 'Possibly – need advice' },
+          { value: 'no_keeping', label: 'No – keeping current worktops' }
+        ],
+        required: false
+      },
+      {
+        id: 'splashback_change',
+        type: 'radio',
+        question: 'Do you want a new splashback?',
+        options: [
+          { value: 'tiled', label: 'Tiled splashback' },
+          { value: 'glass_acrylic', label: 'Glass or acrylic' },
+          { value: 'upstand', label: 'Matching worktop upstand' },
+          { value: 'no_change', label: 'No splashback change' },
+          { value: 'not_sure', label: 'Not sure' }
+        ],
+        required: false
+      },
+      {
+        id: 'lighting_changes',
+        type: 'checkbox',
+        question: 'Any lighting updates?',
+        options: [
+          { value: 'under_cabinet', label: 'Under-cabinet lighting' },
+          { value: 'ceiling_lights', label: 'New ceiling lights' },
+          { value: 'socket_relocations', label: 'Plug socket relocations' },
+          { value: 'no_changes', label: 'No lighting changes' }
+        ],
+        required: false
+      },
+      {
+        id: 'repair_items',
+        type: 'checkbox',
+        question: 'Do you need any repairs?',
+        options: [
+          { value: 'damaged_units', label: 'Damaged units' },
+          { value: 'loose_hinges', label: 'Loose doors or hinges' },
+          { value: 'water_damage', label: 'Water damage' },
+          { value: 'failed_sealant', label: 'Failed sealant' },
+          { value: 'worn_flooring', label: 'Worn flooring' },
+          { value: 'no_repairs', label: 'No repairs needed' }
         ],
         required: false
       }
