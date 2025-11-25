@@ -49,22 +49,22 @@ export const EditableReviewChips = ({
         </p>
       </div>
 
-      <div className="space-y-4" role="list" aria-labelledby="review-heading">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="list" aria-labelledby="review-heading">
         {chips.map((chip) => (
           <div
             key={chip.id}
             className={cn(
-              "flex items-center justify-between p-4 rounded-xl border-2 transition-all min-h-[44px]",
+              "flex flex-col p-6 rounded-2xl border-2 transition-all shadow-sm",
               editingChipId === chip.id
-                ? "border-primary bg-primary/5"
-                : "border-border bg-card hover:border-primary/50"
+                ? "border-primary bg-primary/5 shadow-md"
+                : "border-border bg-card hover:border-primary/30 hover:shadow-md"
             )}
             role="listitem"
           >
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-2">
               <label 
                 htmlFor={`chip-${chip.id}`}
-                className="text-xs font-medium text-muted-foreground uppercase tracking-wide"
+                className="text-sm font-semibold text-muted-foreground uppercase tracking-wide"
               >
                 {chip.label}
               </label>
@@ -78,7 +78,7 @@ export const EditableReviewChips = ({
                   onCancel={handleCancel}
                 />
               ) : (
-                <p className="text-base font-medium" id={`chip-${chip.id}`} role="status">
+                <p className="text-lg font-semibold" id={`chip-${chip.id}`} role="status">
                   {chip.value}
                 </p>
               )}
@@ -87,12 +87,13 @@ export const EditableReviewChips = ({
             {chip.editable && editingChipId !== chip.id && (
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 onClick={() => handleEditClick(chip.id)}
-                className="shrink-0 ml-3 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="self-start mt-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label={`Edit ${chip.label}`}
               >
-                <Pencil className="w-4 h-4" aria-hidden="true" />
+                <Pencil className="w-4 h-4 mr-2" aria-hidden="true" />
+                Edit
               </Button>
             )}
           </div>
