@@ -10863,7 +10863,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'garden-redesign-landscaping',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'design',
+    subcategorySlug: 'garden-design-landscaping',
     version: 1,
     questions: [
       {
@@ -10946,7 +10946,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'garden-steps-and-levels',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'design',
+    subcategorySlug: 'garden-design-landscaping',
     version: 1,
     questions: [
       {
@@ -11026,7 +11026,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'gravel-paths-dry-gardens',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'design',
+    subcategorySlug: 'garden-design-landscaping',
     version: 1,
     questions: [
       {
@@ -11104,7 +11104,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'new-lawn-turf-installation',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'design',
+    subcategorySlug: 'garden-design-landscaping',
     version: 1,
     questions: [
       {
@@ -11181,7 +11181,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'retaining-walls-and-borders',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'design',
+    subcategorySlug: 'garden-design-landscaping',
     version: 1,
     questions: [
       {
@@ -11263,7 +11263,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'holiday-garden-checks',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'maintenance',
+    subcategorySlug: 'garden-maintenance',
     version: 1,
     questions: [
       {
@@ -11330,7 +11330,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'one-off-garden-cleanup',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'maintenance',
+    subcategorySlug: 'garden-maintenance',
     version: 1,
     questions: [
       {
@@ -11408,7 +11408,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'regular-garden-maintenance',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'maintenance',
+    subcategorySlug: 'garden-maintenance',
     version: 1,
     questions: [
       { id: 'maintenance_frequency', question: 'How often would you like maintenance visits?', type: 'radio', required: true, options: [{ value: 'weekly', label: 'Weekly' }, { value: 'biweekly', label: 'Every 2 weeks' }, { value: 'monthly', label: 'Monthly' }, { value: 'one_off', label: 'Just a one-off tidy' }] },
@@ -11422,7 +11422,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'seasonal-pruning-preparation',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'maintenance',
+    subcategorySlug: 'garden-maintenance',
     version: 1,
     questions: [
       { id: 'seasonal_pruning_scope', question: 'What needs seasonal pruning or preparation?', type: 'checkbox', required: true, options: [{ value: 'hedges', label: 'Hedges' }, { value: 'shrubs', label: 'Shrubs' }, { value: 'fruit_trees', label: 'Fruit trees' }, { value: 'ornamental_trees', label: 'Ornamental trees' }, { value: 'climbers', label: 'Climbers and vines' }] },
@@ -11435,7 +11435,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'irrigation-check-and-setup',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'irrigation',
+    subcategorySlug: 'irrigation-systems',
     version: 1,
     questions: [
       { id: 'irrigation_system_type', question: 'What type of irrigation system do you have?', type: 'radio', required: true, options: [{ value: 'drip', label: 'Drip irrigation' }, { value: 'sprinklers', label: 'Sprinkler heads' }, { value: 'mixed', label: 'Mixed system' }, { value: 'not_sure', label: 'Not sure' }] },
@@ -11448,7 +11448,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'irrigation-repairs-leaks',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'irrigation',
+    subcategorySlug: 'irrigation-systems',
     version: 1,
     questions: [
       { id: 'irrigation_problem', question: 'What problem are you experiencing?', type: 'checkbox', required: true, options: [{ value: 'broken_pipes', label: 'Broken pipes or hoses' }, { value: 'leaking_joints', label: 'Leaking joints or connectors' }, { value: 'zone_not_working', label: 'One or more zones not working' }, { value: 'low_pressure', label: 'Low water pressure' }, { value: 'sprinkler_damage', label: 'Sprinkler head damage' }] },
@@ -11460,7 +11460,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'irrigation-system-installation',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'irrigation',
+    subcategorySlug: 'irrigation-systems',
     version: 1,
     questions: [
       { id: 'irrigation_install_scope', question: 'What kind of system do you want installed?', type: 'radio', required: true, options: [{ value: 'drip_system', label: 'Drip system' }, { value: 'sprinkler_system', label: 'Sprinkler system' }, { value: 'mixed_system', label: 'Mixed system' }] },
@@ -11473,7 +11473,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'fertilization',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'lawn',
+    subcategorySlug: 'lawn-care',
     version: 1,
     questions: [
       { id: 'fert_area_type', question: 'Which areas need fertilisation?', type: 'checkbox', required: true, options: [{ value: 'lawns', label: 'Lawns' }, { value: 'flower_beds', label: 'Flower beds' }, { value: 'trees_shrubs', label: 'Trees & shrubs' }, { value: 'pots', label: 'Pots / planters' }] },
@@ -11485,7 +11485,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'lawn-mowing',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'lawn',
+    subcategorySlug: 'lawn-care',
     version: 1,
     questions: [
       { id: 'mowing_area', question: 'Approximately how large is the lawn area?', type: 'radio', required: true, options: [{ value: 'small', label: 'Small (up to 50 m²)' }, { value: 'medium', label: 'Medium (50–150 m²)' }, { value: 'large', label: 'Large (150–300 m²)' }, { value: 'very_large', label: 'Very large (300 m²+)' }] },
@@ -11497,7 +11497,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'artificial-grass-installation',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'lawn',
+    subcategorySlug: 'lawn-care-turfing',
     version: 1,
     questions: [
       { id: 'ag_area_size', question: 'What is the approximate area for artificial grass?', type: 'radio', required: true, options: [{ value: 'small', label: 'Up to 20 m²' }, { value: 'medium', label: '20–50 m²' }, { value: 'large', label: '50–100 m²' }, { value: 'very_large', label: '100 m²+' }] },
@@ -11510,7 +11510,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'lawn-repair-overseeding',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'lawn',
+    subcategorySlug: 'lawn-care-turfing',
     version: 1,
     questions: [
       { id: 'repair_problem', question: 'What issues are you experiencing with your lawn?', type: 'checkbox', required: true, options: [{ value: 'bare_patches', label: 'Bare patches' }, { value: 'weeds', label: 'Excessive weeds' }, { value: 'thinning_lawn', label: 'Thinning lawn' }, { value: 'poor_drainage', label: 'Poor drainage' }, { value: 'yellowing', label: 'Yellowing or poor colour' }] },
@@ -11520,47 +11520,9 @@ export const commercialOfficeQuestionPacks = [
   },
 
   {
-    microSlug: 'garden-lighting',
+    microSlug: 'hedge-cutting-shaping',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'outdoor',
-    version: 1,
-    questions: [
-      { id: 'lighting_type', question: 'What type of garden lighting are you interested in?', type: 'checkbox', required: true, options: [{ value: 'path_lights', label: 'Pathway lights' }, { value: 'uplights', label: 'Uplighting for trees/features' }, { value: 'wall_lights', label: 'Wall-mounted lights' }, { value: 'string_lights', label: 'String/festoon lighting' }, { value: 'spotlights', label: 'Spotlights' }] },
-      { id: 'lighting_power', question: 'How should the lighting be powered?', type: 'radio', required: false, options: [{ value: 'mains', label: 'Mains-powered' }, { value: 'solar', label: 'Solar-powered' }, { value: 'low_voltage', label: 'Low-voltage system' }] },
-      { id: 'lighting_notes', question: 'Any access limitations or desired effects (mood lighting, security, etc.)?', type: 'textarea', required: false }
-    ]
-  },
-
-  {
-    microSlug: 'patio-terrace-construction',
-    categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'outdoor',
-    version: 1,
-    questions: [
-      { id: 'patio_material', question: 'What material would you like for the patio/terrace?', type: 'radio', required: true, options: [{ value: 'tile', label: 'Outdoor tiles' }, { value: 'stone', label: 'Natural stone' }, { value: 'concrete', label: 'Concrete / microcement' }, { value: 'composite', label: 'Composite decking' }] },
-      { id: 'patio_area_size', question: 'Approximate area size:', type: 'radio', required: true, options: [{ value: 'small', label: 'Up to 10 m²' }, { value: 'medium', label: '10–25 m²' }, { value: 'large', label: '25–50 m²' }, { value: 'very_large', label: '50 m²+' }] },
-      { id: 'patio_existing_surface', question: 'What is currently on the ground?', type: 'radio', required: false, options: [{ value: 'soil', label: 'Soil' }, { value: 'old_tiles', label: 'Old tiles/paving' }, { value: 'concrete', label: 'Concrete base' }] },
-      { id: 'patio_notes', question: 'Any details (drainage, steps, shading, furniture layout)?', type: 'textarea', required: false }
-    ]
-  },
-
-  {
-    microSlug: 'pergola-gazebo-shade',
-    categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'outdoor',
-    version: 1,
-    questions: [
-      { id: 'shade_type', question: 'What type of structure do you want?', type: 'radio', required: true, options: [{ value: 'pergola', label: 'Pergola' }, { value: 'gazebo', label: 'Gazebo' }, { value: 'sail_shade', label: 'Shade sail' }] },
-      { id: 'shade_material', question: 'Preferred material:', type: 'radio', required: false, options: [{ value: 'wood', label: 'Wood' }, { value: 'aluminium', label: 'Aluminium' }, { value: 'steel', label: 'Steel' }] },
-      { id: 'shade_area', question: 'Approximate covered area needed:', type: 'radio', required: false, options: [{ value: 'small', label: 'Up to 10 m²' }, { value: 'medium', label: '10–20 m²' }, { value: 'large', label: '20 m²+' }] },
-      { id: 'shade_notes', question: 'Any specific preferences (retractable roof, privacy screens, lighting)?', type: 'textarea', required: false }
-    ]
-  },
-
-  {
-    microSlug: 'hedge-trimming-shaping',
-    categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'trees',
+    subcategorySlug: 'tree-hedge-care',
     version: 1,
     questions: [
       { id: 'hedge_length', question: 'Approximate total length of hedges to trim:', type: 'radio', required: true, options: [{ value: 'up_to_10m', label: 'Up to 10m' }, { value: '10_30m', label: '10–30m' }, { value: '30_60m', label: '30–60m' }, { value: '60m_plus', label: 'Over 60m' }] },
@@ -11571,9 +11533,9 @@ export const commercialOfficeQuestionPacks = [
   },
 
   {
-    microSlug: 'tree-pruning-removal',
+    microSlug: 'tree-pruning-reduction',
     categorySlug: 'gardening-landscaping',
-    subcategorySlug: 'trees',
+    subcategorySlug: 'tree-hedge-care',
     version: 1,
     questions: [
       { id: 'tree_service_type', question: 'What tree service do you need?', type: 'radio', required: true, options: [{ value: 'pruning', label: 'Tree pruning' }, { value: 'crown_reduction', label: 'Crown reduction' }, { value: 'removal', label: 'Tree removal' }, { value: 'stump_removal', label: 'Stump removal only' }] },
@@ -11587,7 +11549,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'deck-construction',
     categorySlug: 'carpentry',
-    subcategorySlug: 'decking',
+    subcategorySlug: 'decking-outdoor',
     version: 1,
     questions: [
       { id: 'deck_location', question: 'Where will the deck be built?', type: 'radio', required: true, options: [{ value: 'ground_level_garden', label: 'Ground-level garden deck' }, { value: 'raised_terrace', label: 'Raised terrace / over structure' }, { value: 'rooftop', label: 'Rooftop deck' }, { value: 'balcony_extension', label: 'Balcony / extension of existing area' }] },
@@ -11603,7 +11565,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'deck-repair',
     categorySlug: 'carpentry',
-    subcategorySlug: 'decking',
+    subcategorySlug: 'decking-outdoor',
     version: 1,
     questions: [
       { id: 'deck_repair_issue', question: 'What are the main problems with the current deck?', type: 'checkbox', required: true, options: [{ value: 'rotting_boards', label: 'Rotting or damaged boards' }, { value: 'loose_boards', label: 'Loose or moving boards' }, { value: 'unstable_frame', label: 'Unstable frame/substructure' }, { value: 'rusted_fixings', label: 'Rusted or failing fixings' }, { value: 'colour_fading', label: 'Colour fading or surface wear' }] },
@@ -11618,7 +11580,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'deck-replacement',
     categorySlug: 'carpentry',
-    subcategorySlug: 'decking',
+    subcategorySlug: 'decking-outdoor',
     version: 1,
     questions: [
       { id: 'deck_replacement_reason', question: 'Why are you replacing the existing deck?', type: 'checkbox', required: true, options: [{ value: 'structural_damage', label: 'Structural damage or rot' }, { value: 'outdated_look', label: 'Outdated look' }, { value: 'layout_change', label: 'Change of layout or size' }, { value: 'material_upgrade', label: 'Upgrade to different material' }] },
@@ -11633,7 +11595,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'deck-staining-sealing',
     categorySlug: 'carpentry',
-    subcategorySlug: 'decking',
+    subcategorySlug: 'decking-outdoor',
     version: 1,
     questions: [
       { id: 'deck_treatment_type', question: 'What treatment does your deck need?', type: 'checkbox', required: true, options: [{ value: 'clean_only', label: 'Deep clean only' }, { value: 'stain_or_oil', label: 'Staining or oiling' }, { value: 'protective_seal', label: 'Protective seal/varnish' }, { value: 'strip_old_finish', label: 'Strip old finish and re-treat' }] },
@@ -11647,7 +11609,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'fence-installation',
     categorySlug: 'carpentry',
-    subcategorySlug: 'decking',
+    subcategorySlug: 'decking-outdoor',
     version: 1,
     questions: [
       { id: 'fence_purpose', question: 'What is the main purpose of the fence?', type: 'checkbox', required: true, options: [{ value: 'privacy', label: 'Privacy' }, { value: 'security', label: 'Security' }, { value: 'boundary_marking', label: 'Marking boundaries' }, { value: 'pet_containment', label: 'Keeping pets in/out' }, { value: 'decorative', label: 'Decorative feature' }] },
@@ -11663,7 +11625,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'gazebo-construction',
     categorySlug: 'carpentry',
-    subcategorySlug: 'decking',
+    subcategorySlug: 'decking-outdoor',
     version: 1,
     questions: [
       { id: 'gazebo_type', question: 'What type of gazebo are you looking for?', type: 'radio', required: true, options: [{ value: 'open_sided', label: 'Open-sided gazebo' }, { value: 'partially_enclosed', label: 'Partially enclosed' }, { value: 'fully_enclosed', label: 'Fully enclosed structure' }] },
@@ -11678,7 +11640,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'outdoor-furniture-assembly',
     categorySlug: 'carpentry',
-    subcategorySlug: 'decking',
+    subcategorySlug: 'decking-outdoor',
     version: 1,
     questions: [
       { id: 'furniture_items', question: 'What type of outdoor furniture needs assembly?', type: 'checkbox', required: true, options: [{ value: 'tables_chairs', label: 'Tables and chairs' }, { value: 'sofas_loungers', label: 'Outdoor sofas/loungers' }, { value: 'daybeds', label: 'Daybeds/cabanas' }, { value: 'storage_boxes', label: 'Storage boxes/benches' }, { value: 'other_items', label: 'Other outdoor furniture' }] },
@@ -11692,7 +11654,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'pergola-installation',
     categorySlug: 'carpentry',
-    subcategorySlug: 'decking',
+    subcategorySlug: 'decking-outdoor',
     version: 1,
     questions: [
       { id: 'pergola_scope', question: 'Do you need a new pergola supplied and installed or just installation?', type: 'radio', required: true, options: [{ value: 'supply_and_install', label: 'Supply and install a new pergola' }, { value: 'install_client_supplied', label: 'Install a pergola I already have' }] },
@@ -11707,7 +11669,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'door-frame-replacement',
     categorySlug: 'carpentry',
-    subcategorySlug: 'doors',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'door_frame_location', question: 'Where are the door frames that need replacing?', type: 'checkbox', required: true, options: [{ value: 'internal', label: 'Internal doors' }, { value: 'external', label: 'External doors' }, { value: 'both', label: 'Both internal and external' }] },
@@ -11721,7 +11683,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'door-hanging',
     categorySlug: 'carpentry',
-    subcategorySlug: 'doors',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'door_hanging_scope', question: 'What do you need help with?', type: 'radio', required: true, options: [{ value: 'hang_new_doors_existing_frames', label: 'Hang new doors in existing frames' }, { value: 'adjust_existing_doors', label: 'Adjust/re-hang existing doors' }, { value: 'mixed_new_and_existing', label: 'Mix of new and existing doors' }] },
@@ -11735,7 +11697,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'door-installation',
     categorySlug: 'carpentry',
-    subcategorySlug: 'doors',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'door_install_type', question: 'What type of door installation do you need?', type: 'radio', required: true, options: [{ value: 'internal', label: 'Internal door(s)' }, { value: 'external', label: 'External door(s)' }, { value: 'both', label: 'Both internal and external' }] },
@@ -11749,7 +11711,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'door-repair',
     categorySlug: 'carpentry',
-    subcategorySlug: 'doors',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'door_repair_issue', question: 'What problems are you having with the door(s)?', type: 'checkbox', required: true, options: [{ value: 'sticking', label: 'Door sticks or drags' }, { value: 'won_t_close', label: 'Door won\'t close or latch' }, { value: 'frame_damage', label: 'Frame or casing is damaged' }, { value: 'hinge_loose', label: 'Loose or damaged hinges' }, { value: 'surface_damage', label: 'Surface damage to the door' }] },
@@ -11762,7 +11724,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'french-doors-installation',
     categorySlug: 'carpentry',
-    subcategorySlug: 'doors',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'french_doors_location', question: 'Where will the French doors be installed?', type: 'radio', required: true, options: [{ value: 'garden_terrace_access', label: 'Garden/terrace access' }, { value: 'balcony_access', label: 'Balcony access' }, { value: 'internal_divider', label: 'Internal room divider' }] },
@@ -11776,7 +11738,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'sliding-doors-installation',
     categorySlug: 'carpentry',
-    subcategorySlug: 'doors',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'sliding_doors_location', question: 'Where will the sliding doors be installed?', type: 'radio', required: true, options: [{ value: 'internal_room_divider', label: 'Internal room divider' }, { value: 'wardrobe_or_storage', label: 'Wardrobe/storage' }, { value: 'patio_balcony', label: 'Patio/balcony access' }] },
@@ -11789,7 +11751,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'window-frame-replacement',
     categorySlug: 'carpentry',
-    subcategorySlug: 'windows',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'window_frame_type', question: 'What type of window frames need replacing?', type: 'checkbox', required: true, options: [{ value: 'standard_windows', label: 'Standard windows' }, { value: 'bay_or_corner', label: 'Bay or corner windows' }, { value: 'roof_windows', label: 'Roof windows' }] },
@@ -11803,7 +11765,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'window-installation',
     categorySlug: 'carpentry',
-    subcategorySlug: 'windows',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'window_install_scope', question: 'What kind of window installation do you need?', type: 'radio', required: true, options: [{ value: 'new_opening', label: 'New window opening' }, { value: 'replace_existing', label: 'Replace existing window' }, { value: 'enlarge_opening', label: 'Enlarge/alter opening' }] },
@@ -11816,7 +11778,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'window-repair',
     categorySlug: 'carpentry',
-    subcategorySlug: 'windows',
+    subcategorySlug: 'doors-windows',
     version: 1,
     questions: [
       { id: 'window_repair_issue', question: 'What issues do you have with your windows?', type: 'checkbox', required: true, options: [{ value: 'stuck_windows', label: 'Windows stuck or hard to open' }, { value: 'drafts', label: 'Drafts around frames' }, { value: 'rot_damage', label: 'Rot or damage to frame/sashes' }, { value: 'hardware_failure', label: 'Handles/hinges/locks not working' }, { value: 'broken_beads_putty', label: 'Broken beading/putty' }] },
@@ -11829,7 +11791,7 @@ export const commercialOfficeQuestionPacks = [
   {
     microSlug: 'cabinet-installation',
     categorySlug: 'carpentry',
-    subcategorySlug: 'joinery',
+    subcategorySlug: 'general-joinery',
     version: 1,
     questions: [
       { id: 'cabinet_type', question: 'What type of cabinets are being installed?', type: 'checkbox', required: true, options: [{ value: 'kitchen_units', label: 'Kitchen units' }, { value: 'bathroom_units', label: 'Bathroom units' }, { value: 'built_in_wardrobes', label: 'Built-in wardrobes' }, { value: 'storage_cupboards', label: 'Storage cupboards/shelving' }, { value: 'media_units', label: 'Media/TV units' }] },
