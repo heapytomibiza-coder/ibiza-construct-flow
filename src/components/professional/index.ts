@@ -10,6 +10,10 @@ export { VerificationStatusCard } from './VerificationStatusCard';
 // Enhanced Dashboard Visualizations (Phase 6)
 export { MetricCard, EarningsChart, JobsPipeline } from './dashboard';
 
+// Phase 11: Professional Tools & Insights
+export { ProfessionalDashboard } from './ProfessionalDashboard';
+export * from './insights';
+
 // Job & Quote Management
 export { ProfessionalJobQuotesSection } from './ProfessionalJobQuotesSection';
 

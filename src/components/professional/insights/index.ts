@@ -5,3 +5,5 @@
 
 export { InsightsPanel } from './InsightsPanel';
 export { PerformanceMetrics } from './PerformanceMetrics';
+export { RevenueForecastPanel } from './RevenueForecastPanel';
+export { CompetitorBenchmarkPanel } from './CompetitorBenchmarkPanel';

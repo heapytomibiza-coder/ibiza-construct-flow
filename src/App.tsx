@@ -120,6 +120,7 @@ const ProfessionalPortfolioPage = lazyWithRetry(() => import("./pages/Profession
 const ProfessionalAvailabilityPage = lazyWithRetry(() => import("./pages/ProfessionalAvailabilityPage"));
 const ProfessionalCalendarPage = lazyWithRetry(() => import("./pages/ProfessionalCalendarPage"));
 const ProfessionalEarningsPage = lazyWithRetry(() => import("./pages/ProfessionalEarningsPage"));
+const ProfessionalInsightsPage = lazyWithRetry(() => import("./pages/ProfessionalInsightsPage"));
 const ServiceSetupWizard = lazyWithRetry(() => import("./pages/ServiceSetupWizard"));
 const ProfessionalPayoutSetup = lazyWithRetry(() => import("./pages/ProfessionalPayoutSetup"));
 const CreateService = lazyWithRetry(() => import("./pages/CreateService"));
@@ -384,6 +385,7 @@ function AppContent() {
                     <Route path="/availability" element={<ProfessionalAvailabilityPage />} />
                     <Route path="/calendar" element={<ProfessionalCalendarPage />} />
                     <Route path="/earnings" element={<ProfessionalEarningsPage />} />
+                    <Route path="/professional/insights" element={<ProfessionalInsightsPage />} />
                     
                     {/* Payments Page */}
                     <Route path="/payments" element={
