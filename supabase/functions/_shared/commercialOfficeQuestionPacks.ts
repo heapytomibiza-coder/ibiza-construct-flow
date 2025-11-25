@@ -8130,4 +8130,802 @@ export const commercialOfficeQuestionPacks = [
       }
     ]
   },
+
+  // ============================================================
+  // PAINTING & DECORATING - SPECIALIST
+  // ============================================================
+
+  {
+    microSlug: 'ceiling-texturing',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'specialist',
+    version: 1,
+    questions: [
+      {
+        id: 'ceiling_area_size',
+        question: 'Roughly how large is the ceiling area to be textured?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small_room', label: 'Small room (up to 10 m²)' },
+          { value: 'medium_room', label: 'Medium room (10–20 m²)' },
+          { value: 'large_room', label: 'Large room (20–35 m²)' },
+          { value: 'multiple_rooms', label: 'Multiple rooms / whole property' }
+        ]
+      },
+      {
+        id: 'ceiling_height',
+        question: 'What is the approximate ceiling height?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'standard', label: 'Standard (up to 2.7 m)' },
+          { value: 'high', label: 'High (2.7–3.5 m)' },
+          { value: 'very_high', label: 'Very high (over 3.5 m)' }
+        ]
+      },
+      {
+        id: 'ceiling_current_finish',
+        question: 'What is the current ceiling finish?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'smooth_painted', label: 'Smooth painted ceiling' },
+          { value: 'old_texture', label: 'Old textured finish' },
+          { value: 'bare_plaster', label: 'Bare plaster / boards' },
+          { value: 'stained_or_damaged', label: 'Stained or damaged areas' }
+        ]
+      },
+      {
+        id: 'texture_style',
+        question: 'What type of texture are you interested in?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'light_subtle', label: 'Light, subtle texture' },
+          { value: 'medium_texture', label: 'Medium texture' },
+          { value: 'heavy_texture', label: 'Heavy / strong texture' },
+          { value: 'unsure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'old_texture_removal',
+        question: 'Do you need any existing textured ceiling removed or skimmed first?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'no_existing_texture', label: 'No, it\'s already smooth' },
+          { value: 'cover_existing', label: 'No, just texture over existing' },
+          { value: 'remove_existing', label: 'Yes, remove / skim old texture first' },
+          { value: 'not_sure', label: 'Not sure – need professional opinion' }
+        ]
+      },
+      {
+        id: 'ceiling_access',
+        question: 'Is access to the ceiling straightforward?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'clear_room', label: 'Room can be cleared' },
+          { value: 'furniture_present', label: 'Furniture will remain in place' },
+          { value: 'limited_space', label: 'Limited space for ladders / platforms' },
+          { value: 'staircase_area', label: 'Ceiling over stairs / difficult access' }
+        ]
+      },
+      {
+        id: 'ceiling_texturing_timing',
+        question: 'When would you like the ceiling texturing done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'As soon as possible' },
+          { value: 'two_weeks', label: 'Within the next 2 weeks' },
+          { value: 'month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible on timing' }
+        ]
+      },
+      {
+        id: 'ceiling_texturing_notes',
+        question: 'Any special details (e.g. cracks, previous leaks, decorative features)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'decorative-faux-finishes',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'specialist',
+    version: 1,
+    questions: [
+      {
+        id: 'faux_area_type',
+        question: 'Where do you want the decorative or faux finish applied?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'feature_wall', label: 'Feature wall' },
+          { value: 'full_room', label: 'Full room' },
+          { value: 'multiple_rooms', label: 'Multiple rooms' },
+          { value: 'ceilings', label: 'Ceilings' },
+          { value: 'furniture', label: 'Furniture or built-in units' }
+        ]
+      },
+      {
+        id: 'faux_area_size',
+        question: 'Roughly how large is the total area to be finished?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up_to_10', label: 'Up to 10 m²' },
+          { value: '10_to_25', label: '10–25 m²' },
+          { value: '25_to_50', label: '25–50 m²' },
+          { value: '50_plus', label: 'More than 50 m²' }
+        ]
+      },
+      {
+        id: 'faux_finish_type',
+        question: 'Which type of decorative finish are you interested in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'marble_effect', label: 'Marble / stone effect' },
+          { value: 'metallic_effect', label: 'Metallic / pearlescent finish' },
+          { value: 'concrete_effect', label: 'Concrete / industrial effect' },
+          { value: 'aged_distressed', label: 'Aged / distressed look' },
+          { value: 'other_or_unsure', label: 'Other / not sure, need ideas' }
+        ]
+      },
+      {
+        id: 'faux_reference_material',
+        question: 'Do you have reference images or a specific style in mind?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'have_photos', label: 'Yes, I have photos or links' },
+          { value: 'rough_idea', label: 'Rough idea, need help refining' },
+          { value: 'no_idea', label: 'No, I\'d like creative suggestions' }
+        ]
+      },
+      {
+        id: 'faux_surface_condition',
+        question: 'What condition are the existing surfaces in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'smooth_good', label: 'Smooth and in good condition' },
+          { value: 'minor_defects', label: 'Minor cracks / small repairs needed' },
+          { value: 'damaged', label: 'Damaged – needs more preparation' },
+          { value: 'new_plaster', label: 'New plaster, not yet painted' }
+        ]
+      },
+      {
+        id: 'faux_gloss_level',
+        question: 'What kind of sheen or finish do you prefer?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'matt', label: 'Matt / very low sheen' },
+          { value: 'satin', label: 'Soft sheen / satin' },
+          { value: 'high_gloss', label: 'High gloss / polished look' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'faux_timing',
+        question: 'When would you like the decorative finish completed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'specific_deadline', label: 'By a specific date (event, opening, etc.)' },
+          { value: 'two_weeks', label: 'Within the next 2 weeks' },
+          { value: 'month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Timing is flexible' }
+        ]
+      },
+      {
+        id: 'faux_notes',
+        question: 'Share any themes, colours or inspirations the professional should know about.',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'epoxy-garage-floor',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'specialist',
+    version: 1,
+    questions: [
+      {
+        id: 'floor_area_type',
+        question: 'Where is the floor you want coated?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'single_garage', label: 'Single garage' },
+          { value: 'double_garage', label: 'Double garage' },
+          { value: 'multi_bay_garage', label: 'Multi-bay / larger garage' },
+          { value: 'indoor_floor', label: 'Indoor room or utility space' },
+          { value: 'commercial', label: 'Workshop / commercial space' }
+        ]
+      },
+      {
+        id: 'floor_area_size',
+        question: 'Approximate size of the floor area?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up_to_20', label: 'Up to 20 m²' },
+          { value: '20_to_40', label: '20–40 m²' },
+          { value: '40_to_80', label: '40–80 m²' },
+          { value: '80_plus', label: 'More than 80 m²' }
+        ]
+      },
+      {
+        id: 'existing_floor_material',
+        question: 'What is the existing floor surface made of?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'concrete_good', label: 'Concrete in good condition' },
+          { value: 'concrete_worn', label: 'Concrete with oil stains / wear' },
+          { value: 'painted_floor', label: 'Previously painted floor' },
+          { value: 'tiles', label: 'Tiles' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'floor_damage_level',
+        question: 'What best describes the current condition of the floor?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'mostly_smooth', label: 'Mostly smooth, minor marks' },
+          { value: 'cracks_and_pits', label: 'Cracks / small pits that need repair' },
+          { value: 'heavy_damage', label: 'Heavily damaged or uneven' }
+        ]
+      },
+      {
+        id: 'coating_type_preference',
+        question: 'What type of coating are you considering?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'basic_epoxy', label: 'Standard epoxy coating' },
+          { value: 'high_build_epoxy', label: 'High-build / industrial epoxy' },
+          { value: 'decorative_flakes', label: 'Decorative flake or quartz finish' },
+          { value: 'not_sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'usage_type',
+        question: 'How will this floor mainly be used?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'car_parking', label: 'Parking vehicles' },
+          { value: 'workshop', label: 'Workshop / tools' },
+          { value: 'storage', label: 'Storage area' },
+          { value: 'living_space', label: 'Living / hobby space' },
+          { value: 'heavy_industrial', label: 'Heavy commercial or industrial use' }
+        ]
+      },
+      {
+        id: 'floor_timing',
+        question: 'When would you like the floor coating done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'within_two_weeks', label: 'Within the next 2 weeks' },
+          { value: 'within_month', label: 'Within the next month' },
+          { value: 'after_month', label: 'In more than a month' },
+          { value: 'flexible', label: 'Flexible' }
+        ]
+      },
+      {
+        id: 'floor_notes',
+        question: 'Any details about oil spills, moisture issues or vehicle type (e.g. bikes, vans)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'limewash-natural-paint',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'specialist',
+    version: 1,
+    questions: [
+      {
+        id: 'limewash_area_type',
+        question: 'Where do you want limewash or natural paints applied?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'interior_walls', label: 'Interior walls' },
+          { value: 'interior_ceilings', label: 'Interior ceilings' },
+          { value: 'exterior_walls', label: 'Exterior walls / façades' },
+          { value: 'feature_areas', label: 'Feature walls / specific areas' }
+        ]
+      },
+      {
+        id: 'substrate_type',
+        question: 'What are the walls currently made or finished from?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'plaster', label: 'Plaster' },
+          { value: 'stone_or_brick', label: 'Stone or brick' },
+          { value: 'render', label: 'Cement or lime render' },
+          { value: 'drywall', label: 'Plasterboard / drywall' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'existing_paint_type',
+        question: 'Is there existing paint or coating on the surface?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'bare_surface', label: 'No, it\'s bare' },
+          { value: 'breathable_paint', label: 'Yes, breathable / mineral paint' },
+          { value: 'standard_emulsion', label: 'Yes, standard emulsion / acrylic' },
+          { value: 'glossy_or_sealed', label: 'Yes, glossy or sealed paint' }
+        ]
+      },
+      {
+        id: 'limewash_style',
+        question: 'What kind of limewash or natural finish do you want?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'soft_mottled', label: 'Soft, mottled limewash look' },
+          { value: 'solid_colour', label: 'More solid, even coverage' },
+          { value: 'textured', label: 'Slightly textured, rustic finish' },
+          { value: 'not_sure', label: 'Not sure – need guidance' }
+        ]
+      },
+      {
+        id: 'eco_priority',
+        question: 'How important are eco and low-VOC materials for this project?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'top_priority', label: 'Top priority – fully natural products' },
+          { value: 'prefer_eco', label: 'Prefer eco where possible' },
+          { value: 'no_strong_preference', label: 'No strong preference' }
+        ]
+      },
+      {
+        id: 'damp_issues',
+        question: 'Are there any known damp or breathability issues in these walls?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'no_issues', label: 'No, no damp issues' },
+          { value: 'some_damp', label: 'Yes, some damp / condensation' },
+          { value: 'serious_damp', label: 'Yes, serious damp problems' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'limewash_timing',
+        question: 'When would you like the limewash or natural painting done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'soon', label: 'Soon (within 2 weeks)' },
+          { value: 'within_month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible, no fixed deadline' }
+        ]
+      },
+      {
+        id: 'limewash_notes',
+        question: 'Any architectural features (arches, thick walls, old finca, etc.) or special requests?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'microcement-polished',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'specialist',
+    version: 1,
+    questions: [
+      {
+        id: 'microcement_area_type',
+        question: 'Where do you want microcement or polished coating applied?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'floors', label: 'Floors' },
+          { value: 'walls', label: 'Walls' },
+          { value: 'bathroom', label: 'Bathroom / shower area' },
+          { value: 'worktops', label: 'Worktops / counters' },
+          { value: 'stairs', label: 'Stairs' }
+        ]
+      },
+      {
+        id: 'microcement_area_size',
+        question: 'Approximate total area to be finished with microcement?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up_to_10', label: 'Up to 10 m²' },
+          { value: '10_to_25', label: '10–25 m²' },
+          { value: '25_to_50', label: '25–50 m²' },
+          { value: '50_plus', label: 'More than 50 m²' }
+        ]
+      },
+      {
+        id: 'existing_surface_microcement',
+        question: 'What is the existing surface like where microcement will be applied?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'tiles', label: 'Tiles' },
+          { value: 'concrete', label: 'Concrete / screed' },
+          { value: 'plasterboard', label: 'Plaster / plasterboard' },
+          { value: 'existing_microcement', label: 'Existing microcement / similar finish' },
+          { value: 'mixed_or_unsure', label: 'Mixed surfaces / not sure' }
+        ]
+      },
+      {
+        id: 'wet_area_involved',
+        question: 'Will any of these areas be exposed to regular water (showers, outdoors, etc.)?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'yes_shower', label: 'Yes, in a shower / wet room' },
+          { value: 'yes_outdoor', label: 'Yes, outdoor / semi-outdoor area' },
+          { value: 'no_dry_area', label: 'No, only dry interior areas' }
+        ]
+      },
+      {
+        id: 'microcement_style',
+        question: 'What look or style are you aiming for?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'minimal_concrete', label: 'Minimal, concrete look' },
+          { value: 'warm_tonal', label: 'Warm, soft-toned finish' },
+          { value: 'high_polish', label: 'High polish, reflective finish' },
+          { value: 'rustic', label: 'Rustic / textured feel' },
+          { value: 'undecided', label: 'Not decided yet' }
+        ]
+      },
+      {
+        id: 'microcement_traffic_level',
+        question: 'What level of use or traffic will these surfaces have?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'light_domestic', label: 'Light domestic use' },
+          { value: 'busy_family', label: 'Busy family / pets' },
+          { value: 'commercial', label: 'Commercial / high-traffic use' }
+        ]
+      },
+      {
+        id: 'microcement_timing',
+        question: 'When do you want the microcement / polished finish completed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'within_month', label: 'Within the next month' },
+          { value: 'one_two_months', label: 'Within 1–2 months' },
+          { value: 'flexible', label: 'Flexible on timing' }
+        ]
+      },
+      {
+        id: 'microcement_notes',
+        question: 'Any important details (underfloor heating, existing cracks, design photos)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'spray-painting',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'specialist',
+    version: 1,
+    questions: [
+      {
+        id: 'spray_items_type',
+        question: 'What items or surfaces need spray painting?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'radiators', label: 'Radiators / heaters' },
+          { value: 'furniture', label: 'Furniture' },
+          { value: 'doors_frames', label: 'Doors / frames' },
+          { value: 'metalwork', label: 'Metalwork (railings, gates, etc.)' },
+          { value: 'other', label: 'Other items' }
+        ]
+      },
+      {
+        id: 'spray_quantity',
+        question: 'Roughly how many items or surfaces are there in total?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small_job', label: 'Small job (1–3 items)' },
+          { value: 'medium_job', label: 'Medium (4–8 items)' },
+          { value: 'large_job', label: 'Large (9–15 items)' },
+          { value: 'very_large_job', label: 'Very large (15+ items)' }
+        ]
+      },
+      {
+        id: 'spray_location',
+        question: 'Where should the spray painting work be done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'on_site', label: 'On site at my property' },
+          { value: 'off_site_workshop', label: 'Taken away to a workshop' },
+          { value: 'mixed', label: 'A mix of both' },
+          { value: 'not_sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'spray_surface_material',
+        question: 'What are the main materials to be sprayed?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'wood', label: 'Wood' },
+          { value: 'metal', label: 'Metal' },
+          { value: 'mdf', label: 'MDF / engineered board' },
+          { value: 'plastic', label: 'Plastic' },
+          { value: 'other', label: 'Other materials' }
+        ]
+      },
+      {
+        id: 'spray_finish_preference',
+        question: 'What type of finish do you want?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'matt', label: 'Matt' },
+          { value: 'satin', label: 'Satin / eggshell' },
+          { value: 'gloss', label: 'High gloss' },
+          { value: 'special', label: 'Special finish (metallic, textured, etc.)' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'old_finish_preparation',
+        question: 'What preparation is required before spraying?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'clean_new', label: 'New items, just light prep' },
+          { value: 'light_sanding', label: 'Existing finish, minor sanding' },
+          { value: 'heavy_prep', label: 'Old, chipped or flaky paint to be removed' },
+          { value: 'not_sure', label: 'Not sure – need assessment' }
+        ]
+      },
+      {
+        id: 'spray_timing',
+        question: 'When do you need the spray painting completed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent (within 1 week)' },
+          { value: 'two_three_weeks', label: 'Within 2–3 weeks' },
+          { value: 'within_month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible timing' }
+        ]
+      },
+      {
+        id: 'spray_notes',
+        question: 'Any special details (colour matching, brand preferences, heat-resistant paints)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'wallpaper-installation',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'specialist',
+    version: 1,
+    questions: [
+      {
+        id: 'wallpaper_area_scope',
+        question: 'What do you need wallpapered?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'single_feature_wall', label: 'Single feature wall' },
+          { value: 'one_room', label: 'One full room' },
+          { value: 'multiple_rooms', label: 'Multiple rooms / areas' },
+          { value: 'staircase_hall', label: 'Staircase / hall area' }
+        ]
+      },
+      {
+        id: 'wallpaper_type',
+        question: 'What type of wallpaper are you using or considering?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'standard_paper', label: 'Standard wallpaper' },
+          { value: 'vinyl', label: 'Vinyl / washable' },
+          { value: 'non_woven', label: 'Non-woven / paste-the-wall' },
+          { value: 'textured_or_fabric', label: 'Textured / fabric / special' },
+          { value: 'not_chosen', label: 'Not chosen yet' }
+        ]
+      },
+      {
+        id: 'wallpaper_supplied',
+        question: 'Have you already purchased the wallpaper?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'yes_supplied', label: 'Yes, I have all wallpaper ready' },
+          { value: 'partly_supplied', label: 'Yes, but not sure if it\'s enough' },
+          { value: 'no_need_supply', label: 'No, I\'d like the professional to supply' }
+        ]
+      },
+      {
+        id: 'wall_condition_for_paper',
+        question: 'What is the current condition of the walls?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'smooth_painted', label: 'Smooth and recently painted' },
+          { value: 'minor_defects', label: 'Minor imperfections / small repairs needed' },
+          { value: 'old_paper', label: 'Old wallpaper needs to be removed first' },
+          { value: 'rough_or_damaged', label: 'Rough / damaged, may need lining' }
+        ]
+      },
+      {
+        id: 'pattern_complexity',
+        question: 'What kind of pattern or design will be installed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'plain_or_subtle', label: 'Plain or subtle pattern' },
+          { value: 'medium_pattern', label: 'Patterned, not heavily matched' },
+          { value: 'complex_pattern', label: 'Strong pattern that needs precise matching' },
+          { value: 'mural_or_scene', label: 'Mural / scene-based wallpaper' }
+        ]
+      },
+      {
+        id: 'wallpaper_obstacles',
+        question: 'Are there any tricky areas or obstacles?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'many_sockets_switches', label: 'Lots of sockets / switches' },
+          { value: 'built_in_units', label: 'Built-in units / shelves' },
+          { value: 'windows_doors', label: 'Many windows or doors' },
+          { value: 'stairs_access', label: 'Over stairs or high access areas' },
+          { value: 'no_major_obstacles', label: 'No major obstacles' }
+        ]
+      },
+      {
+        id: 'wallpaper_timing',
+        question: 'When do you need the wallpaper installed?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'within_week', label: 'Within 1 week' },
+          { value: 'two_three_weeks', label: 'Within 2–3 weeks' },
+          { value: 'within_month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible on dates' }
+        ]
+      },
+      {
+        id: 'wallpaper_notes',
+        question: 'Any special instructions (brand, pattern repeat, murals, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+
+  {
+    microSlug: 'wallpaper-removal-install',
+    categorySlug: 'painting-decorating',
+    subcategorySlug: 'specialist',
+    version: 1,
+    questions: [
+      {
+        id: 'wallpaper_job_scope',
+        question: 'What do you need help with?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'remove_only', label: 'Remove old wallpaper only' },
+          { value: 'remove_and_paint', label: 'Remove wallpaper and repaint walls' },
+          { value: 'remove_and_new_paper', label: 'Remove wallpaper and install new wallpaper' }
+        ]
+      },
+      {
+        id: 'rooms_with_wallpaper',
+        question: 'How many rooms or areas have wallpaper to remove?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'single_room', label: 'One room / feature wall' },
+          { value: 'two_rooms', label: 'Two rooms' },
+          { value: 'three_four_rooms', label: 'Three–four rooms' },
+          { value: 'whole_property', label: 'Most of the property' }
+        ]
+      },
+      {
+        id: 'wallpaper_age_type',
+        question: 'Do you know the type or age of the existing wallpaper?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'modern_paper', label: 'Modern wallpaper (last 10 years)' },
+          { value: 'older_paper', label: 'Older wallpaper (10+ years)' },
+          { value: 'multiple_layers', label: 'Several layers of wallpaper' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'wall_condition_after_removal',
+        question: 'Are you aware of any damage or issues behind the wallpaper?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'no_known_issues', label: 'No known issues' },
+          { value: 'some_damp_or_mould', label: 'Possible damp or mould' },
+          { value: 'cracks_or_patches', label: 'Cracks / previous patches' },
+          { value: 'not_sure', label: 'Not sure until paper is removed' }
+        ]
+      },
+      {
+        id: 'new_finish_choice',
+        question: 'What finish do you want after removal?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'smooth_painted_walls', label: 'Smooth painted walls' },
+          { value: 'new_wallpaper', label: 'New wallpaper' },
+          { value: 'undecided', label: 'Undecided – want options' }
+        ]
+      },
+      {
+        id: 'new_wallpaper_status',
+        question: 'If installing new wallpaper, have you chosen and purchased it?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes_have_paper', label: 'Yes, wallpaper is ready' },
+          { value: 'not_yet', label: 'Not yet, need advice' },
+          { value: 'not_installing_new', label: 'Not installing new wallpaper' }
+        ]
+      },
+      {
+        id: 'wallpaper_removal_timing',
+        question: 'When do you need the wallpaper removal and follow-up work done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent (within 1 week)' },
+          { value: 'two_three_weeks', label: 'Within 2–3 weeks' },
+          { value: 'within_month', label: 'Within the next month' },
+          { value: 'flexible', label: 'Flexible timing' }
+        ]
+      },
+      {
+        id: 'wallpaper_removal_notes',
+        question: 'Any special considerations (occupied property, children, pets, access, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
 ];
