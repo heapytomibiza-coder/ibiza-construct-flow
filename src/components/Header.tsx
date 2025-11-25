@@ -121,6 +121,9 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
             <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
               How It Works
             </Link>
+            <Link to="/presentation" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+              Presentation
+            </Link>
           </nav>
 
           {/* CTA Buttons / User Menu */}
@@ -254,6 +257,9 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
               </Link>
               <Link to="/how-it-works" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
                 How It Works
+              </Link>
+              <Link to="/presentation" className="text-body font-medium text-charcoal hover:text-copper transition-all duration-300">
+                Presentation
               </Link>
               <div className="flex flex-col space-y-3 pt-4">
                 <LanguageSwitcher />
