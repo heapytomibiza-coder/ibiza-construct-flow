@@ -2085,43 +2085,36 @@ export type Database = {
       }
       conversations: {
         Row: {
-          contract_id: string | null
-          created_at: string | null
+          client_id: string
+          created_at: string
           id: string
           job_id: string | null
           last_message_at: string | null
-          participant_1_id: string
-          participant_2_id: string
-          updated_at: string | null
+          professional_id: string
+          status: string
+          updated_at: string
         }
         Insert: {
-          contract_id?: string | null
-          created_at?: string | null
+          client_id: string
+          created_at?: string
           id?: string
           job_id?: string | null
           last_message_at?: string | null
-          participant_1_id: string
-          participant_2_id: string
-          updated_at?: string | null
+          professional_id: string
+          status?: string
+          updated_at?: string
         }
         Update: {
-          contract_id?: string | null
-          created_at?: string | null
+          client_id?: string
+          created_at?: string
           id?: string
           job_id?: string | null
           last_message_at?: string | null
-          participant_1_id?: string
-          participant_2_id?: string
-          updated_at?: string | null
+          professional_id?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "conversations_contract_id_fkey"
-            columns: ["contract_id"]
-            isOneToOne: false
-            referencedRelation: "contracts"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "conversations_job_id_fkey"
             columns: ["job_id"]
@@ -4813,37 +4806,43 @@ export type Database = {
       }
       messages: {
         Row: {
-          attachments: Json | null
           content: string
           conversation_id: string
-          created_at: string | null
+          created_at: string
+          file_name: string | null
+          file_url: string | null
           id: string
+          is_deleted: boolean | null
+          message_type: string
+          metadata: Json | null
           read_at: string | null
-          recipient_id: string
           sender_id: string
-          updated_at: string | null
         }
         Insert: {
-          attachments?: Json | null
           content: string
           conversation_id: string
-          created_at?: string | null
+          created_at?: string
+          file_name?: string | null
+          file_url?: string | null
           id?: string
+          is_deleted?: boolean | null
+          message_type?: string
+          metadata?: Json | null
           read_at?: string | null
-          recipient_id: string
           sender_id: string
-          updated_at?: string | null
         }
         Update: {
-          attachments?: Json | null
           content?: string
           conversation_id?: string
-          created_at?: string | null
+          created_at?: string
+          file_name?: string | null
+          file_url?: string | null
           id?: string
+          is_deleted?: boolean | null
+          message_type?: string
+          metadata?: Json | null
           read_at?: string | null
-          recipient_id?: string
           sender_id?: string
-          updated_at?: string | null
         }
         Relationships: [
           {
