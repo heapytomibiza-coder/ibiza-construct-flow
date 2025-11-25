@@ -10,6 +10,7 @@
  * - Kitchen Installation: Full Kitchen Fit, Worktop Installation
  * - Kitchen Fitting & Renovation: Kitchen Fitting, Kitchen Refurbishment, New Kitchen Installation, Small Kitchen Updates
  * - Kitchen Worktops, Units & Storage: Island Installation, Unit Installation, Pantry/Utility Storage, Worktop Install/Replace
+ * - Construction & Extensions: Adding New Rooms, Conservatories/Glass Rooms, Garage Conversions, Single/Two Floor Home Extensions, Terrace/Rooftop Extensions
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -2599,6 +2600,622 @@ export const commercialOfficeQuestionPacks = [
         options: [
           { value: 'yes', label: 'Yes' },
           { value: 'no', label: 'No' },
+        ]
+      }
+    ]
+  },
+
+  // Construction & Extensions packs
+  {
+    microSlug: 'adding-new-rooms',
+    categorySlug: 'construction-extensions',
+    version: 1,
+    questions: [
+      {
+        id: 'room_type',
+        question: 'What type of room(s) are you adding?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'bedroom', label: 'Bedroom' },
+          { value: 'bathroom', label: 'Bathroom' },
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'living-room', label: 'Living room' },
+          { value: 'office', label: 'Office' },
+          { value: 'utility-storage', label: 'Utility/Storage' },
+          { value: 'multiple-rooms', label: 'Multiple rooms' },
+        ]
+      },
+      {
+        id: 'extension_position',
+        question: 'Where will the new room be located?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'rear', label: 'Rear' },
+          { value: 'side', label: 'Side' },
+          { value: 'front', label: 'Front' },
+          { value: 'over-garage', label: 'Over garage' },
+          { value: 'loft', label: 'Loft' },
+          { value: 'basement', label: 'Basement' },
+        ]
+      },
+      {
+        id: 'storeys',
+        question: 'How many storeys in the extension?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'single-storey', label: 'Single storey' },
+          { value: 'double-storey', label: 'Double storey' },
+          { value: 'multi-level', label: 'Multi-level' },
+        ]
+      },
+      {
+        id: 'planning_status',
+        question: 'What is the planning status?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'not-started', label: 'Not started' },
+          { value: 'design-stage', label: 'Design stage' },
+          { value: 'planning-submitted', label: 'Planning submitted' },
+          { value: 'planning-approved', label: 'Planning approved' },
+          { value: 'permitted-development', label: 'Permitted development' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'services_required',
+        question: 'What services are needed?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'electrics', label: 'Electrics' },
+          { value: 'plumbing', label: 'Plumbing' },
+          { value: 'heating-cooling', label: 'Heating/Cooling' },
+          { value: 'underfloor-heating', label: 'Underfloor heating' },
+          { value: 'ventilation', label: 'Ventilation' },
+        ]
+      },
+      {
+        id: 'finish_level',
+        question: 'How complete do you want the project?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'shell-only', label: 'Shell only' },
+          { value: 'plastered-first-fix', label: 'Plastered & first-fix' },
+          { value: 'ready-to-decorate', label: 'Ready to decorate' },
+          { value: 'turnkey-all-finished', label: 'Turnkey - all finished' },
+        ]
+      },
+      {
+        id: 'property_type',
+        question: 'What type of property is it?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'apartment', label: 'Apartment' },
+          { value: 'terraced', label: 'Terraced' },
+          { value: 'semi-detached', label: 'Semi-detached' },
+          { value: 'detached', label: 'Detached' },
+          { value: 'rural-finca', label: 'Rural/Finca' },
+          { value: 'other', label: 'Other' },
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'conservatories-glass-rooms',
+    categorySlug: 'construction-extensions',
+    version: 1,
+    questions: [
+      {
+        id: 'structure_type',
+        question: 'What type of structure do you want?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'upvc-conservatory', label: 'uPVC conservatory' },
+          { value: 'aluminium-glass-room', label: 'Aluminium glass room' },
+          { value: 'orangerie', label: 'Orangerie' },
+          { value: 'replace-existing', label: 'Replace existing' },
+          { value: 'other', label: 'Other' },
+        ]
+      },
+      {
+        id: 'usage_type',
+        question: 'How will the space mainly be used?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'summer-room', label: 'Summer room' },
+          { value: 'year-round-living', label: 'Year-round living' },
+          { value: 'dining-room', label: 'Dining room' },
+          { value: 'kitchen-extension', label: 'Kitchen extension' },
+          { value: 'home-office', label: 'Home office' },
+        ]
+      },
+      {
+        id: 'approx_size',
+        question: 'Approximately what size?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-up-to-10m2', label: 'Small (up to 10m²)' },
+          { value: 'medium-10-20m2', label: 'Medium (10-20m²)' },
+          { value: 'large-20m2-plus', label: 'Large (20m²+)' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'base_foundations',
+        question: 'Is there an existing base?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new-base-needed', label: 'New base needed' },
+          { value: 'use-existing-base', label: 'Use existing base' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'roof_type',
+        question: 'What type of roof?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'glass', label: 'Glass' },
+          { value: 'polycarbonate', label: 'Polycarbonate' },
+          { value: 'solid-insulated', label: 'Solid insulated' },
+          { value: 'upgrade-existing', label: 'Upgrade existing' },
+        ]
+      },
+      {
+        id: 'glazing_performance',
+        question: 'What glazing performance level?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard-double', label: 'Standard double glazing' },
+          { value: 'solar-control', label: 'Solar control' },
+          { value: 'triple-glazed', label: 'Triple glazed' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'planning_status',
+        question: 'What is the planning status?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'within-permitted', label: 'Within permitted development' },
+          { value: 'need-advice', label: 'Need advice' },
+          { value: 'planning-submitted', label: 'Planning submitted' },
+          { value: 'planning-approved', label: 'Planning approved' },
+        ]
+      },
+      {
+        id: 'finish_level',
+        question: 'What scope of work is required?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'frames-and-roof-only', label: 'Frames and roof only' },
+          { value: 'including-flooring-electrics', label: 'Including flooring & electrics' },
+          { value: 'full-finished-room', label: 'Full finished room' },
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'garage-conversions',
+    categorySlug: 'construction-extensions',
+    version: 1,
+    questions: [
+      {
+        id: 'garage_type',
+        question: 'What type of garage?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'integral', label: 'Integral' },
+          { value: 'attached', label: 'Attached' },
+          { value: 'detached', label: 'Detached' },
+          { value: 'double-garage', label: 'Double garage' },
+        ]
+      },
+      {
+        id: 'intended_use',
+        question: 'What will the converted space be used for?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'bedroom', label: 'Bedroom' },
+          { value: 'home-office', label: 'Home office' },
+          { value: 'living-room', label: 'Living room' },
+          { value: 'annexe-studio', label: 'Annexe/Studio' },
+          { value: 'playroom', label: 'Playroom' },
+          { value: 'bathroom-ensuite', label: 'Bathroom/Ensuite' },
+          { value: 'utility-laundry', label: 'Utility/Laundry' },
+        ]
+      },
+      {
+        id: 'structural_changes',
+        question: 'What structural changes are needed?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'replace-garage-door-with-wall-windows', label: 'Replace garage door with wall/windows' },
+          { value: 'new-openings-into-house', label: 'New openings into house' },
+          { value: 'partition-walls', label: 'Partition walls' },
+          { value: 'floor-level-changes', label: 'Floor level changes' },
+          { value: 'none-minor-only', label: 'None/minor only' },
+        ]
+      },
+      {
+        id: 'insulation_level',
+        question: 'What insulation level is required?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'building-regs-compliant', label: 'Building regs compliant' },
+          { value: 'basic-upgrade', label: 'Basic upgrade' },
+          { value: 'not-sure-need-advice', label: 'Not sure - need advice' },
+        ]
+      },
+      {
+        id: 'services_required',
+        question: 'What services are required?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'electrics-lighting', label: 'Electrics & lighting' },
+          { value: 'additional-sockets-data', label: 'Additional sockets/data' },
+          { value: 'heating-radiators', label: 'Heating/Radiators' },
+          { value: 'underfloor-heating', label: 'Underfloor heating' },
+          { value: 'plumbing-bathroom-kitchenette', label: 'Plumbing (bathroom/kitchenette)' },
+        ]
+      },
+      {
+        id: 'planning_status',
+        question: 'What is the planning status?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'no-planning-needed-believed', label: 'No planning needed (believed)' },
+          { value: 'need-advice', label: 'Need advice' },
+          { value: 'planning-submitted', label: 'Planning submitted' },
+          { value: 'planning-approved', label: 'Planning approved' },
+        ]
+      },
+      {
+        id: 'parking_impact',
+        question: 'What happens to parking?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'driveway-still-available', label: 'Driveway still available' },
+          { value: 'street-parking-only', label: 'Street parking only' },
+          { value: 'other-parking-arrangements', label: 'Other parking arrangements' },
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'home-extensions-single-floor',
+    categorySlug: 'construction-extensions',
+    version: 1,
+    questions: [
+      {
+        id: 'extension_position',
+        question: 'Where will the extension be located?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'rear', label: 'Rear' },
+          { value: 'side', label: 'Side' },
+          { value: 'front', label: 'Front' },
+          { value: 'wrap-around', label: 'Wrap-around' },
+          { value: 'courtyard-infill', label: 'Courtyard infill' },
+        ]
+      },
+      {
+        id: 'approx_size',
+        question: 'Approximately what size?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-up-to-15m2', label: 'Small (up to 15m²)' },
+          { value: 'medium-15-30m2', label: 'Medium (15-30m²)' },
+          { value: 'large-30m2-plus', label: 'Large (30m²+)' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'room_use',
+        question: 'What will the space be used for?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'dining', label: 'Dining' },
+          { value: 'living', label: 'Living' },
+          { value: 'bedroom', label: 'Bedroom' },
+          { value: 'bathroom', label: 'Bathroom' },
+          { value: 'office', label: 'Office' },
+          { value: 'utility-storage', label: 'Utility/Storage' },
+        ]
+      },
+      {
+        id: 'roof_type',
+        question: 'What type of roof?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'flat', label: 'Flat' },
+          { value: 'pitched', label: 'Pitched' },
+          { value: 'hipped', label: 'Hipped' },
+          { value: 'part-flat-part-pitched', label: 'Part flat, part pitched' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'planning_status',
+        question: 'What is the planning status?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'not-started', label: 'Not started' },
+          { value: 'need-advice', label: 'Need advice' },
+          { value: 'plans-prepared-not-submitted', label: 'Plans prepared, not submitted' },
+          { value: 'planning-submitted', label: 'Planning submitted' },
+          { value: 'planning-approved', label: 'Planning approved' },
+          { value: 'believed-permitted-development', label: 'Believed permitted development' },
+        ]
+      },
+      {
+        id: 'finish_level',
+        question: 'How complete do you want the project?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'shell-only', label: 'Shell only' },
+          { value: 'plastered-first-fix', label: 'Plastered & first-fix' },
+          { value: 'ready-for-kitchen-bathroom', label: 'Ready for kitchen/bathroom' },
+          { value: 'turnkey-all-finishes', label: 'Turnkey - all finishes' },
+        ]
+      },
+      {
+        id: 'property_type',
+        question: 'What type of property is it?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'apartment', label: 'Apartment' },
+          { value: 'terraced', label: 'Terraced' },
+          { value: 'semi-detached', label: 'Semi-detached' },
+          { value: 'detached', label: 'Detached' },
+          { value: 'rural-finca', label: 'Rural/Finca' },
+          { value: 'other', label: 'Other' },
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'home-extensions-two-floors',
+    categorySlug: 'construction-extensions',
+    version: 1,
+    questions: [
+      {
+        id: 'extension_position',
+        question: 'Where will the two-storey extension be located?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'rear', label: 'Rear' },
+          { value: 'side', label: 'Side' },
+          { value: 'front', label: 'Front' },
+          { value: 'wrap-around', label: 'Wrap-around' },
+        ]
+      },
+      {
+        id: 'approx_size',
+        question: 'Approximately what footprint size?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-up-to-20m2', label: 'Small (up to 20m²)' },
+          { value: 'medium-20-35m2', label: 'Medium (20-35m²)' },
+          { value: 'large-35m2-plus', label: 'Large (35m²+)' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'ground_floor_use',
+        question: 'What will the ground floor be used for?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'kitchen', label: 'Kitchen' },
+          { value: 'dining', label: 'Dining' },
+          { value: 'living', label: 'Living' },
+          { value: 'utility-storage', label: 'Utility/Storage' },
+          { value: 'bathroom-wc', label: 'Bathroom/WC' },
+          { value: 'other', label: 'Other' },
+        ]
+      },
+      {
+        id: 'first_floor_use',
+        question: 'What will the upper floor be used for?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'bedroom', label: 'Bedroom' },
+          { value: 'ensuite-bathroom', label: 'Ensuite bathroom' },
+          { value: 'office', label: 'Office' },
+          { value: 'studio-living', label: 'Studio/Living' },
+          { value: 'storage', label: 'Storage' },
+          { value: 'other', label: 'Other' },
+        ]
+      },
+      {
+        id: 'planning_status',
+        question: 'What is the planning status?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'not-started', label: 'Not started' },
+          { value: 'need-advice', label: 'Need advice' },
+          { value: 'plans-prepared-not-submitted', label: 'Plans prepared, not submitted' },
+          { value: 'planning-submitted', label: 'Planning submitted' },
+          { value: 'planning-approved', label: 'Planning approved' },
+        ]
+      },
+      {
+        id: 'structural_complexity',
+        question: 'What is the structural complexity?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'simple-add-on', label: 'Simple add-on' },
+          { value: 'requires-steel-beams', label: 'Requires steel beams' },
+          { value: 'complex-structural-changes', label: 'Complex structural changes' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'finish_level',
+        question: 'How complete do you want both floors?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'structure-and-shell-only', label: 'Structure and shell only' },
+          { value: 'first-fix-and-plaster', label: 'First-fix and plaster' },
+          { value: 'ready-for-client-to-fit-kitchens-bathrooms', label: 'Ready for client to fit kitchens/bathrooms' },
+          { value: 'turnkey-all-finishes-complete', label: 'Turnkey - all finishes complete' },
+        ]
+      },
+      {
+        id: 'property_type',
+        question: 'What type of property is it?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'terraced', label: 'Terraced' },
+          { value: 'semi-detached', label: 'Semi-detached' },
+          { value: 'detached', label: 'Detached' },
+          { value: 'townhouse', label: 'Townhouse' },
+          { value: 'rural-finca', label: 'Rural/Finca' },
+          { value: 'other', label: 'Other' },
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'terrace-rooftop-extensions',
+    categorySlug: 'construction-extensions',
+    version: 1,
+    questions: [
+      {
+        id: 'existing_roof_or_terrace',
+        question: 'What currently exists on the roof/terrace?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'flat-roof-no-terrace', label: 'Flat roof, no terrace' },
+          { value: 'existing-terrace', label: 'Existing terrace' },
+          { value: 'partly-built-structure', label: 'Partly built structure' },
+          { value: 'other', label: 'Other' },
+        ]
+      },
+      {
+        id: 'structure_type',
+        question: 'What type of extension is planned?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'lightweight-room', label: 'Lightweight room' },
+          { value: 'full-masonry-extension', label: 'Full masonry extension' },
+          { value: 'pergola-covered-area', label: 'Pergola/Covered area' },
+          { value: 'glazed-room', label: 'Glazed room' },
+          { value: 'other', label: 'Other' },
+        ]
+      },
+      {
+        id: 'approx_size',
+        question: 'Approximately what size?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small-up-to-15m2', label: 'Small (up to 15m²)' },
+          { value: 'medium-15-30m2', label: 'Medium (15-30m²)' },
+          { value: 'large-30m2-plus', label: 'Large (30m²+)' },
+          { value: 'not-sure', label: 'Not sure' },
+        ]
+      },
+      {
+        id: 'intended_use',
+        question: 'How will the rooftop space be used?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'bedroom-suite', label: 'Bedroom suite' },
+          { value: 'living-lounge', label: 'Living/Lounge' },
+          { value: 'office-studio', label: 'Office/Studio' },
+          { value: 'outdoor-entertaining', label: 'Outdoor entertaining' },
+          { value: 'wellness-gym', label: 'Wellness/Gym' },
+          { value: 'other', label: 'Other' },
+        ]
+      },
+      {
+        id: 'access_type',
+        question: 'What is the access situation?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'internal-staircase-existing', label: 'Internal staircase (existing)' },
+          { value: 'internal-staircase-to-be-added', label: 'Internal staircase (to be added)' },
+          { value: 'external-staircase', label: 'External staircase' },
+          { value: 'ladder-or-hatch', label: 'Ladder or hatch' },
+          { value: 'not-planned-yet', label: 'Not planned yet' },
+        ]
+      },
+      {
+        id: 'structural_check_status',
+        question: 'Has a structural engineer checked load capacity?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'engineer-checked-approved', label: 'Engineer checked & approved' },
+          { value: 'engineer-engaged-awaiting-report', label: 'Engineer engaged, awaiting report' },
+          { value: 'not-checked-yet', label: 'Not checked yet' },
+          { value: 'not-sure-if-needed', label: 'Not sure if needed' },
+        ]
+      },
+      {
+        id: 'planning_status',
+        question: 'What is the planning status?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'not-started', label: 'Not started' },
+          { value: 'need-advice', label: 'Need advice' },
+          { value: 'planning-or-licence-submitted', label: 'Planning/licence submitted' },
+          { value: 'planning-or-licence-approved', label: 'Planning/licence approved' },
+          { value: 'community-approval-required', label: 'Community approval required' },
+        ]
+      },
+      {
+        id: 'finish_level',
+        question: 'What scope of work is required?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'structure-and-waterproofing-only', label: 'Structure and waterproofing only' },
+          { value: 'structure-plus-first-fix', label: 'Structure plus first-fix' },
+          { value: 'turnkey-finished-space', label: 'Turnkey finished space' },
         ]
       }
     ]
