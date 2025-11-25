@@ -21,7 +21,7 @@ export const MessageThread = ({
   recipientAvatar,
 }: MessageThreadProps) => {
   const { user } = useAuth();
-  const { messages, isLoading, sendMessage, isSending } = useMessages(conversationId);
+  const { messages, isLoading, sendMessage } = useMessages(conversationId);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -34,12 +34,10 @@ export const MessageThread = ({
   }, [messages]);
 
   const handleSend = async () => {
-    if (!newMessage.trim() || isSending) return;
+    if (!newMessage.trim() || sendMessage.isPending) return;
 
-    sendMessage(
+    sendMessage.mutate(
       {
-        conversationId,
-        recipientId,
         content: newMessage.trim(),
       },
       {
@@ -134,15 +132,15 @@ export const MessageThread = ({
             placeholder="Type a message..."
             className="resize-none"
             rows={2}
-            disabled={isSending}
+            disabled={sendMessage.isPending}
           />
           <Button
             onClick={handleSend}
-            disabled={!newMessage.trim() || isSending}
+            disabled={!newMessage.trim() || sendMessage.isPending}
             size="icon"
             className="self-end"
           >
-            {isSending ? (
+            {sendMessage.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Send className="h-4 w-4" />

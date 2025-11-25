@@ -11,9 +11,9 @@ export const ConversationPage = () => {
   const { conversationId } = useParams<{ conversationId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { conversations, loading } = useConversationList(user?.id);
+  const { conversations, isLoading } = useConversationList(user?.id);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="h-screen bg-sand flex items-center justify-center">
         <div className="text-center">
@@ -25,9 +25,9 @@ export const ConversationPage = () => {
   }
 
   const conversation = conversations.find(c => c.id === conversationId);
-  const otherUserId = conversation?.participant_1_id === user?.id 
-    ? conversation?.participant_2_id 
-    : conversation?.participant_1_id;
+  const otherUserId = conversation?.client_id === user?.id 
+    ? conversation?.professional_id 
+    : conversation?.client_id;
   const [otherUserProfile, setOtherUserProfile] = useState<{ id: string; name: string } | undefined>();
 
   useEffect(() => {

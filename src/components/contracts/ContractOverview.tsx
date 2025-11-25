@@ -14,7 +14,7 @@ import { MilestonesList } from './MilestonesList';
 import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { ReviewsList } from '@/components/reviews/ReviewsList';
 import { useAuth } from '@/hooks/useAuth';
-import { useConversations } from '@/hooks/useMessages';
+import { useMessages } from '@/hooks/useMessages';
 import { useNavigate } from 'react-router-dom';
 
 interface ContractOverviewProps {
@@ -28,7 +28,7 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
   const [showSplitDialog, setShowSplitDialog] = useState(false);
   const [showFundDialog, setShowFundDialog] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const { createConversation, isCreating } = useConversations();
+  const { getOrCreateConversation } = useMessages();
   const navigate = useNavigate();
 
   // Reviews
@@ -46,17 +46,18 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
   const handleStartConversation = () => {
     if (!contract || !user?.id) return;
     
-    const otherUserId = user.id === contract.client_id ? contract.tasker_id : contract.client_id;
+    const professionalId = contract.tasker_id;
+    const clientId = contract.client_id;
     
-    createConversation(
+    getOrCreateConversation.mutate(
       {
-        otherUserId,
+        clientId,
+        professionalId,
         jobId: contract.job_id,
-        contractId: contract.id,
       },
       {
-        onSuccess: () => {
-          navigate('/messages');
+        onSuccess: (conversation) => {
+          navigate(`/messages?conversation=${conversation.id}`);
         },
       }
     );
@@ -215,7 +216,7 @@ export function ContractOverview({ jobId, onFundEscrow }: ContractOverviewProps)
             <Button
               variant="outline"
               onClick={handleStartConversation}
-              disabled={isCreating}
+              disabled={getOrCreateConversation.isPending}
               className={needsFunding && isClient ? "" : "flex-1"}
             >
               <MessageCircle className="h-4 w-4 mr-2" />

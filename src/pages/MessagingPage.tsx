@@ -44,7 +44,7 @@ export default function MessagingPage() {
             avatar_url
           )
         `)
-        .or(`participant_1_id.eq.${user.id},participant_2_id.eq.${user.id}`)
+        .or(`client_id.eq.${user.id},professional_id.eq.${user.id}`)
         .order('last_message_at', { ascending: false });
 
       if (error) throw error;
@@ -81,7 +81,7 @@ export default function MessagingPage() {
           .from('messages')
           .update({ read_at: new Date().toISOString() })
           .eq('conversation_id', selectedConversation)
-          .eq('recipient_id', user?.id)
+          .neq('sender_id', user?.id)
           .is('read_at', null);
       }
 
@@ -122,16 +122,10 @@ export default function MessagingPage() {
     const conversation = conversations?.find(c => c.id === selectedConversation);
     if (!conversation) return;
 
-    const recipientId =
-      conversation.participant_1_id === user.id
-        ? conversation.participant_2_id
-        : conversation.participant_1_id;
-
     try {
       const { error } = await supabase.from('messages').insert({
         conversation_id: selectedConversation,
         sender_id: user.id,
-        recipient_id: recipientId,
         content: messageText,
       });
 
@@ -145,10 +139,7 @@ export default function MessagingPage() {
   };
 
   const getOtherParticipant = (conversation: any) => {
-    const p1 = Array.isArray(conversation.participant1) ? conversation.participant1[0] : conversation.participant1;
-    const p2 = Array.isArray(conversation.participant2) ? conversation.participant2[0] : conversation.participant2;
-    
-    return conversation.participant_1_id === user?.id ? p2 : p1;
+    return conversation.other_user;
   };
 
   return (

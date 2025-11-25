@@ -168,19 +168,16 @@ export const MessagingPanel: React.FC<MessagingPanelProps> = ({
                   }`}
                 >
                   <p className="text-sm">{message.content}</p>
-                  {message.attachments?.length > 0 && (
+                  {message.file_url && (
                     <div className="mt-2 space-y-1">
-                      {message.attachments.map((att: any, idx: number) => (
-                        <a
-                          key={idx}
-                          href={att.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs underline block"
-                        >
-                          📎 {att.name}
-                        </a>
-                      ))}
+                      <a
+                        href={message.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs underline block"
+                      >
+                        📎 {message.file_name || 'Attachment'}
+                      </a>
                     </div>
                   )}
                   <p className="text-xs opacity-70 mt-1">

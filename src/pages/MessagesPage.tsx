@@ -22,7 +22,7 @@ export const MessagesPage = () => {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(conversationParam);
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   
-  const { conversations, loading } = useConversationList(user?.id);
+  const { conversations, isLoading } = useConversationList(user?.id);
 
   // Update selected conversation when URL param changes
   useEffect(() => {
@@ -43,7 +43,7 @@ export const MessagesPage = () => {
         const { data: existing } = await supabase
           .from('conversations')
           .select('*')
-          .or(`and(participant_1_id.eq.${user.id},participant_2_id.eq.${professionalParam}),and(participant_1_id.eq.${professionalParam},participant_2_id.eq.${user.id})`)
+          .or(`and(client_id.eq.${user.id},professional_id.eq.${professionalParam}),and(client_id.eq.${professionalParam},professional_id.eq.${user.id})`)
           .maybeSingle();
 
         if (existing) {
@@ -55,8 +55,8 @@ export const MessagesPage = () => {
           const { data: newConv, error } = await supabase
             .from('conversations')
             .insert({
-              participant_1_id: user.id,
-              participant_2_id: professionalParam
+              client_id: user.id,
+              professional_id: professionalParam
             })
             .select()
             .single();
@@ -85,9 +85,9 @@ export const MessagesPage = () => {
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
   
   // Get other participant info
-  const otherUserId = selectedConversation?.participant_1_id === user?.id 
-    ? selectedConversation?.participant_2_id 
-    : selectedConversation?.participant_1_id;
+  const otherUserId = selectedConversation?.client_id === user?.id 
+    ? selectedConversation?.professional_id 
+    : selectedConversation?.client_id;
   const [otherUserProfile, setOtherUserProfile] = useState<{ id: string; name: string } | undefined>();
 
   useEffect(() => {
@@ -121,7 +121,7 @@ export const MessagesPage = () => {
     }
   };
 
-  if (loading || isCreatingConversation) {
+  if (isLoading || isCreatingConversation) {
     return (
       <div className="min-h-screen bg-sand pt-20 pb-20">
         <div className="container mx-auto px-4 py-8">
