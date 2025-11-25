@@ -10857,6 +10857,552 @@ export const commercialOfficeQuestionPacks = [
         required: false
       }
     ]
+  },
+
+  // Gardening & Landscaping - Design
+  {
+    microSlug: 'garden-redesign-landscaping',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'design',
+    version: 1,
+    questions: [
+      {
+        id: 'garden_current_state',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'bare_or_new_build', label: 'Bare / new build garden' },
+          { value: 'tired_but_usable', label: 'Tired but generally usable' },
+          { value: 'overgrown', label: 'Overgrown and needs a reset' },
+          { value: 'partially_renovated', label: 'Partially renovated already' }
+        ]
+      },
+      {
+        id: 'garden_size',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small_courtyard', label: 'Small courtyard / patio' },
+          { value: 'small_garden', label: 'Small garden (up to 100 m²)' },
+          { value: 'medium_garden', label: 'Medium garden (100–300 m²)' },
+          { value: 'large_garden', label: 'Large garden (300 m²+)' }
+        ]
+      },
+      {
+        id: 'garden_uses',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'relaxing', label: 'Relaxing and lounging' },
+          { value: 'dining_entertaining', label: 'Outdoor dining and entertaining' },
+          { value: 'play_space', label: 'Play area for children' },
+          { value: 'low_maintenance', label: 'Low-maintenance space' },
+          { value: 'growing_plants', label: 'Growing plants/vegetables' }
+        ]
+      },
+      {
+        id: 'garden_style',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'mediterranean_dry', label: 'Mediterranean / dry garden' },
+          { value: 'modern_minimal', label: 'Modern and minimal' },
+          { value: 'lush_green', label: 'Lush and green' },
+          { value: 'natural_wild', label: 'Natural / wild / ecological' },
+          { value: 'no_preference', label: 'No strong preference' }
+        ]
+      },
+      {
+        id: 'garden_features',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'seating_areas', label: 'Seating / chill-out areas' },
+          { value: 'paths_steps', label: 'Paths and steps' },
+          { value: 'planting_beds', label: 'Planting beds / borders' },
+          { value: 'lawn_or_turf', label: 'Lawn or artificial grass' },
+          { value: 'water_feature', label: 'Water feature' },
+          { value: 'outdoor_kitchen_bbq', label: 'Outdoor kitchen / BBQ' }
+        ]
+      },
+      {
+        id: 'garden_access',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'direct_street_access', label: 'Direct access from street/drive' },
+          { value: 'narrow_side_access', label: 'Narrow side access only' },
+          { value: 'through_house_only', label: 'Through house only' },
+          { value: 'steep_or_difficult', label: 'Steep or difficult access' }
+        ]
+      },
+      {
+        id: 'garden_redesign_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'garden-steps-and-levels',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'design',
+    version: 1,
+    questions: [
+      {
+        id: 'levels_project_type',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_terracing', label: 'Create new terraces/levels' },
+          { value: 'add_steps', label: 'Add or rebuild garden steps' },
+          { value: 'stabilise_slopes', label: 'Stabilise slopes / banks' },
+          { value: 'improve_access', label: 'Improve access between levels' }
+        ]
+      },
+      {
+        id: 'levels_slope',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'gentle_slope', label: 'Gentle slope' },
+          { value: 'moderate_slope', label: 'Moderate slope' },
+          { value: 'steep_slope', label: 'Steep slope' },
+          { value: 'mixed_levels', label: 'Mixed levels across the garden' }
+        ]
+      },
+      {
+        id: 'levels_materials_preference',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'natural_stone', label: 'Natural stone' },
+          { value: 'rendered_walls', label: 'Rendered masonry walls' },
+          { value: 'timber_sleepers', label: 'Timber sleepers' },
+          { value: 'concrete_blocks', label: 'Concrete blocks' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'steps_usage',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'daily_access', label: 'Daily access routes' },
+          { value: 'occasional_access', label: 'Occasional access only' },
+          { value: 'seating_or_viewing', label: 'As seating or viewing spots' },
+          { value: 'equipment_access', label: 'Access for garden equipment' }
+        ]
+      },
+      {
+        id: 'levels_safety_needs',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'handrails', label: 'Handrails for steps' },
+          { value: 'non_slip_surfaces', label: 'Non-slip surfaces' },
+          { value: 'wide_steps', label: 'Wider steps for easier use' },
+          { value: 'child_friendly', label: 'Child-friendly design' }
+        ]
+      },
+      {
+        id: 'levels_existing_issues',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'erosion', label: 'Erosion or soil movement' },
+          { value: 'loose_or_cracked', label: 'Loose or cracked old steps/walls' },
+          { value: 'water_runoff', label: 'Water run-off problems' },
+          { value: 'none_known', label: 'No known issues' }
+        ]
+      },
+      {
+        id: 'levels_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'gravel-paths-dry-gardens',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'design',
+    version: 1,
+    questions: [
+      {
+        id: 'dry_garden_scope',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'new_gravel_paths', label: 'Create new gravel paths' },
+          { value: 'refresh_existing_paths', label: 'Refresh or widen existing paths' },
+          { value: 'dry_garden_beds', label: 'Create gravel/dry planting areas' },
+          { value: 'drive_or_parking', label: 'Gravel drive or parking area' }
+        ]
+      },
+      {
+        id: 'dry_garden_area_size',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small_up_to_30', label: 'Small (up to 30 m²)' },
+          { value: 'medium_30_80', label: 'Medium (30–80 m²)' },
+          { value: 'large_80_150', label: 'Large (80–150 m²)' },
+          { value: 'very_large_150_plus', label: 'Very large (150 m²+)' }
+        ]
+      },
+      {
+        id: 'dry_garden_base',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'bare_soil', label: 'Bare soil' },
+          { value: 'old_gravel', label: 'Old gravel already there' },
+          { value: 'concrete_or_hard', label: 'Concrete / hard surface' },
+          { value: 'mixed', label: 'Mixed surfaces' }
+        ]
+      },
+      {
+        id: 'dry_garden_weed_control',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'very_important', label: 'Very important – minimal weeds' },
+          { value: 'moderately_important', label: 'Moderately important' },
+          { value: 'not_critical', label: 'Not critical' }
+        ]
+      },
+      {
+        id: 'dry_garden_planting',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes_mixed_planting', label: 'Yes, mixed planting with gravel' },
+          { value: 'sparse_structural', label: 'Sparse, structural plants only' },
+          { value: 'no_planting', label: 'No, just gravel/hard surface' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'dry_garden_edge_detail',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'metal_edging', label: 'Metal edging' },
+          { value: 'stone_or_block_edging', label: 'Stone/block edging' },
+          { value: 'timber_edging', label: 'Timber edging' },
+          { value: 'no_edging', label: 'No edging needed' }
+        ]
+      },
+      {
+        id: 'dry_garden_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'new-lawn-turf-installation',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'design',
+    version: 1,
+    questions: [
+      {
+        id: 'lawn_type',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_lawn_from_scratch', label: 'New lawn from scratch' },
+          { value: 'replace_old_lawn', label: 'Remove and replace an old lawn' },
+          { value: 'extend_existing_lawn', label: 'Extend existing lawn area' }
+        ]
+      },
+      {
+        id: 'lawn_area_size',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small_up_to_40', label: 'Up to 40 m²' },
+          { value: 'medium_40_100', label: '40–100 m²' },
+          { value: 'large_100_250', label: '100–250 m²' },
+          { value: 'very_large_250_plus', label: 'More than 250 m²' }
+        ]
+      },
+      {
+        id: 'lawn_preparation_needed',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'remove_old_turf', label: 'Remove old turf' },
+          { value: 'weed_clearance', label: 'Weed clearance' },
+          { value: 'soil_import_or_level', label: 'Import/top up soil and level' },
+          { value: 'unsure_pro_advice', label: 'Not sure – need professional advice' }
+        ]
+      },
+      {
+        id: 'lawn_use',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'ornamental_only', label: 'Ornamental only' },
+          { value: 'family_play', label: 'Family play area' },
+          { value: 'pets', label: 'Pets will use the lawn' },
+          { value: 'high_foot_traffic', label: 'High foot traffic (events, etc.)' }
+        ]
+      },
+      {
+        id: 'lawn_water_supply',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'hose_point_nearby', label: 'Yes, hose point near the lawn' },
+          { value: 'basic_tap_far', label: 'Tap available but a bit far' },
+          { value: 'no_easy_supply', label: 'No easy water supply' }
+        ]
+      },
+      {
+        id: 'lawn_preferences',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'hardwearing', label: 'Hard-wearing and tough' },
+          { value: 'fine_finish', label: 'Fine ornamental finish' },
+          { value: 'drought_tolerant', label: 'More drought-tolerant mix' },
+          { value: 'no_strong_preference', label: 'No strong preference' }
+        ]
+      },
+      {
+        id: 'lawn_install_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'retaining-walls-and-borders',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'design',
+    version: 1,
+    questions: [
+      {
+        id: 'retaining_scope',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'retaining_walls', label: 'Retaining walls' },
+          { value: 'raised_planting_beds', label: 'Raised planting beds' },
+          { value: 'edging_borders', label: 'Edging and garden borders' },
+          { value: 'replace_old_structures', label: 'Replace old or failing structures' }
+        ]
+      },
+      {
+        id: 'retaining_height',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'up_to_40cm', label: 'Up to 40 cm high' },
+          { value: '40_80cm', label: '40–80 cm high' },
+          { value: '80_150cm', label: '80–150 cm high' },
+          { value: 'over_150cm', label: 'Over 150 cm high' }
+        ]
+      },
+      {
+        id: 'retaining_length',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'up_to_5m', label: 'Up to 5 m' },
+          { value: '5_15m', label: '5–15 m' },
+          { value: '15_30m', label: '15–30 m' },
+          { value: '30m_plus', label: 'More than 30 m' }
+        ]
+      },
+      {
+        id: 'retaining_material_preference',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'natural_stone', label: 'Natural stone' },
+          { value: 'rendered_block', label: 'Rendered blockwork' },
+          { value: 'timber_sleepers', label: 'Timber sleepers' },
+          { value: 'gabion', label: 'Gabion baskets' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'retaining_function',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'support_slopes', label: 'Support/retain soil on a slope' },
+          { value: 'create_seating', label: 'Create seating edges' },
+          { value: 'define_spaces', label: 'Define garden zones' },
+          { value: 'planters_only', label: 'Planters only, no heavy retaining' }
+        ]
+      },
+      {
+        id: 'retaining_existing_issues',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'cracking_or_movement', label: 'Cracking or movement in existing walls' },
+          { value: 'drainage_problems', label: 'Poor drainage or water pressure' },
+          { value: 'subsidence', label: 'Signs of subsidence' },
+          { value: 'no_issues', label: 'No known issues' }
+        ]
+      },
+      {
+        id: 'retaining_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+
+  // Gardening & Landscaping - Maintenance
+  {
+    microSlug: 'holiday-garden-checks',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'maintenance',
+    version: 1,
+    questions: [
+      {
+        id: 'holiday_property_type',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'primary_home', label: 'Primary home' },
+          { value: 'holiday_home', label: 'Holiday home' },
+          { value: 'rental_villa', label: 'Rental villa/property' }
+        ]
+      },
+      {
+        id: 'holiday_garden_elements',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'lawns', label: 'Lawns' },
+          { value: 'beds_borders', label: 'Beds and borders' },
+          { value: 'pots_terrace', label: 'Pots and containers on terraces' },
+          { value: 'vegetable_garden', label: 'Vegetable garden' },
+          { value: 'house_plants', label: 'House plants' }
+        ]
+      },
+      {
+        id: 'holiday_irrigation_status',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'full_automatic', label: 'Yes, full automatic system' },
+          { value: 'partial_system', label: 'Partial system (some areas manual)' },
+          { value: 'no_system', label: 'No, everything is watered manually' }
+        ]
+      },
+      {
+        id: 'holiday_key_tasks',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'visual_garden_check', label: 'Visual check for plant health' },
+          { value: 'clear_leaves_debris', label: 'Clear leaves and debris' },
+          { value: 'basic_pool_skimming', label: 'Basic pool/garden water feature check' },
+          { value: 'security_check', label: 'Basic visual security/outdoor check' }
+        ]
+      },
+      {
+        id: 'holiday_access_arrangements',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'keyholder', label: 'Keyholder lives nearby' },
+          { value: 'lockbox', label: 'Key safe / lockbox' },
+          { value: 'staff_on_site', label: 'Staff on site' },
+          { value: 'meet_for_first_visit', label: 'Meet in person for first visit' }
+        ]
+      },
+      {
+        id: 'holiday_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'one-off-garden-cleanup',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'maintenance',
+    version: 1,
+    questions: [
+      {
+        id: 'cleanup_garden_state',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'lightly_overgrown', label: 'Lightly overgrown' },
+          { value: 'moderately_overgrown', label: 'Moderately overgrown' },
+          { value: 'jungle', label: 'Very overgrown / jungle' },
+          { value: 'neglected_long_term', label: 'Neglected for a long time' }
+        ]
+      },
+      {
+        id: 'cleanup_tasks',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'grass_and_weeds', label: 'Overgrown grass and weeds' },
+          { value: 'shrubs_pruning', label: 'Shrub and hedge pruning' },
+          { value: 'tree_branches', label: 'Low tree branches / self-seeded trees' },
+          { value: 'brambles_ivies', label: 'Brambles, ivy and climbers' },
+          { value: 'debris_rubbish', label: 'Garden debris and rubbish removal' }
+        ]
+      },
+      {
+        id: 'cleanup_garden_size',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small_up_to_50', label: 'Up to 50 m²' },
+          { value: 'medium_50_150', label: '50–150 m²' },
+          { value: 'large_150_300', label: '150–300 m²' },
+          { value: 'very_large_300_plus', label: 'More than 300 m²' }
+        ]
+      },
+      {
+        id: 'cleanup_disposal',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'pro_dispose', label: 'Professional to remove all waste' },
+          { value: 'use_property_bins', label: 'Use existing property bins/compost' },
+          { value: 'mix_of_both', label: 'Mix of both' }
+        ]
+      },
+      {
+        id: 'cleanup_access',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy_vehicle_access', label: 'Easy access for vehicle/trailer' },
+          { value: 'narrow_pedestrian_only', label: 'Narrow, pedestrian access only' },
+          { value: 'through_building', label: 'Through building/house only' }
+        ]
+      },
+      {
+        id: 'cleanup_followup',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes_plan', label: 'Yes, a simple maintenance plan' },
+          { value: 'yes_quote_regular', label: 'Yes, and a quote for regular visits' },
+          { value: 'no_one_off_only', label: 'No, just a one-off clean' }
+        ]
+      },
+      {
+        id: 'cleanup_notes',
+        type: 'textarea',
+        required: false
+      }
+    ]
   }
 ];
 
