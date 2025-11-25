@@ -1,5 +1,5 @@
 /**
- * Question packs for Commercial, Office, Retail, Kitchen, Bathroom, Storage, Extensions, Brickwork, Pool, Spa, Water Treatment, Painting/Decorating Exterior & Interior services
+ * Question packs for Commercial, Office, Retail, Kitchen, Bathroom, Storage, Extensions, Brickwork, Pool, Spa, Water Treatment, Painting/Decorating Exterior, Interior & Specialist, Floors/Doors/Windows services
  * Manually crafted and curated
  */
 
@@ -8928,4 +8928,649 @@ export const commercialOfficeQuestionPacks = [
       }
     ]
   },
+
+  // ===== FLOORS, DOORS & WINDOWS =====
+  {
+    microSlug: 'exterior-doors',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'ext_door_project_type',
+        question: 'What type of exterior door project is this?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_opening', label: 'New opening in a wall' },
+          { value: 'replace_existing', label: 'Replace an existing exterior door' },
+          { value: 'additional_door', label: 'Add an extra exterior door' }
+        ]
+      },
+      {
+        id: 'ext_door_locations',
+        question: 'Where will the exterior doors be installed?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'front_entrance', label: 'Front entrance' },
+          { value: 'back_entrance', label: 'Back door / garden access' },
+          { value: 'side_entrance', label: 'Side entrance' },
+          { value: 'terrace_balcony', label: 'Terrace / balcony access' }
+        ]
+      },
+      {
+        id: 'ext_door_quantity',
+        question: 'How many exterior doors are involved?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one', label: '1 door' },
+          { value: 'two', label: '2 doors' },
+          { value: 'three_four', label: '3–4 doors' },
+          { value: 'five_plus', label: '5 or more doors' }
+        ]
+      },
+      {
+        id: 'ext_door_style',
+        question: 'What style of exterior door are you considering?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'single_leaf', label: 'Single door' },
+          { value: 'double_leaf', label: 'Double door (French style)' },
+          { value: 'with_glass', label: 'Door with glass panels' },
+          { value: 'solid', label: 'Solid door (no glass)' }
+        ]
+      },
+      {
+        id: 'ext_door_material_preference',
+        question: 'What material do you prefer for the exterior doors?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'timber', label: 'Timber / wood' },
+          { value: 'aluminium', label: 'Aluminium' },
+          { value: 'upvc', label: 'uPVC' },
+          { value: 'steel', label: 'Steel / reinforced' },
+          { value: 'no_preference', label: 'No strong preference' }
+        ]
+      },
+      {
+        id: 'ext_door_security_level',
+        question: 'What level of security is important for these doors?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard', label: 'Standard residential security' },
+          { value: 'high_security', label: 'High-security, reinforced door' },
+          { value: 'sound_insulation', label: 'Good sound and thermal insulation' }
+        ]
+      },
+      {
+        id: 'ext_door_existing_frame',
+        question: 'Will the existing door frames be reused or replaced?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'keep_frame', label: 'Keep existing frames if possible' },
+          { value: 'replace_frame', label: 'Replace frames with new' },
+          { value: 'not_sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'ext_door_notes',
+        question: 'Any special requirements (e.g. step-free access, specific locks, design style)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'interior-doors',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'int_door_scope',
+        question: 'What do you need for your interior doors?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_doors_only', label: 'Install new doors on existing frames' },
+          { value: 'doors_and_frames', label: 'New doors and new frames' },
+          { value: 'adjust_or_rehang', label: 'Adjust, trim or rehang existing doors' }
+        ]
+      },
+      {
+        id: 'int_door_quantity',
+        question: 'How many interior doors are involved?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'one_two', label: '1–2 doors' },
+          { value: 'three_five', label: '3–5 doors' },
+          { value: 'six_ten', label: '6–10 doors' },
+          { value: 'ten_plus', label: 'More than 10 doors' }
+        ]
+      },
+      {
+        id: 'int_door_locations',
+        question: 'Where in the property are these doors?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'bedrooms', label: 'Bedrooms' },
+          { value: 'bathrooms', label: 'Bathrooms' },
+          { value: 'living_areas', label: 'Living / dining areas' },
+          { value: 'corridors', label: 'Corridors / hallways' },
+          { value: 'closets_storage', label: 'Closets / storage rooms' }
+        ]
+      },
+      {
+        id: 'int_door_style',
+        question: 'What style of interior doors do you prefer?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'flush_plain', label: 'Flush / plain doors' },
+          { value: 'panelled', label: 'Panelled doors' },
+          { value: 'glass_panel_doors', label: 'Doors with glass panels' },
+          { value: 'sliding_pocket', label: 'Sliding / pocket doors' },
+          { value: 'not_sure', label: 'Not sure yet' }
+        ]
+      },
+      {
+        id: 'int_door_material',
+        question: 'What material are you considering for the doors?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'solid_wood', label: 'Solid wood' },
+          { value: 'engineered_wood', label: 'Engineered / semi-solid' },
+          { value: 'hollow_core', label: 'Hollow-core / lightweight' },
+          { value: 'glass_metal', label: 'Glass and metal combination' },
+          { value: 'open_to_advice', label: 'Open to professional advice' }
+        ]
+      },
+      {
+        id: 'int_door_hardware',
+        question: 'Do you also need handles, locks or other hardware supplied and fitted?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'reuse_existing', label: 'Reuse existing hardware' },
+          { value: 'client_supplies_new', label: 'I will supply new hardware' },
+          { value: 'pro_supply_and_fit', label: "I'd like the professional to supply and fit" }
+        ]
+      },
+      {
+        id: 'int_door_frame_condition',
+        question: 'What condition are the existing frames and openings in?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'good_condition', label: 'Good condition, no repairs needed' },
+          { value: 'minor_repairs', label: 'Minor repairs / filling needed' },
+          { value: 'needs_replacement', label: 'Some frames need replacing' },
+          { value: 'not_sure', label: 'Not sure – need assessment' }
+        ]
+      },
+      {
+        id: 'int_door_notes',
+        question: 'Any special requirements (soundproofing, soft-close, child safety, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'bifold-large-sliding-doors',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'large_door_type',
+        question: 'What type of system are you interested in?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'bifold', label: 'Bifold doors' },
+          { value: 'sliding', label: 'Sliding doors' },
+          { value: 'lift_slide', label: 'Lift-and-slide doors' },
+          { value: 'unsure', label: 'Not sure – open to advice' }
+        ]
+      },
+      {
+        id: 'large_door_opening_status',
+        question: 'Is this for an existing opening or a new structural opening?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'existing_opening', label: 'Use an existing opening' },
+          { value: 'enlarge_opening', label: 'Enlarge an existing opening' },
+          { value: 'new_opening', label: 'Create a new opening in a wall' }
+        ]
+      },
+      {
+        id: 'large_door_opening_width',
+        question: 'What is the approximate width of the opening?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'up_to_2_5m', label: 'Up to 2.5 m wide' },
+          { value: '2_5_to_4m', label: '2.5–4 m wide' },
+          { value: '4_to_6m', label: '4–6 m wide' },
+          { value: 'over_6m', label: 'More than 6 m wide' },
+          { value: 'unknown', label: 'Not sure of measurements' }
+        ]
+      },
+      {
+        id: 'large_door_access_type',
+        question: 'Where will these doors lead to?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'garden_terrace', label: 'Garden / terrace' },
+          { value: 'pool_area', label: 'Pool area' },
+          { value: 'balcony', label: 'Balcony' },
+          { value: 'patio', label: 'Patio / outdoor lounge' }
+        ]
+      },
+      {
+        id: 'large_door_material',
+        question: 'What material are you considering for the system?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'aluminium', label: 'Aluminium' },
+          { value: 'timber', label: 'Timber / wood' },
+          { value: 'upvc', label: 'uPVC' },
+          { value: 'mixed', label: 'Mixed / clad system' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'large_door_performance',
+        question: 'Which performance factors are most important to you?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'thermal_insulation', label: 'Thermal insulation (energy efficiency)' },
+          { value: 'sound_insulation', label: 'Sound reduction' },
+          { value: 'security', label: 'High security and locking' },
+          { value: 'low_threshold', label: 'Low threshold / step-free access' }
+        ]
+      },
+      {
+        id: 'large_door_existing_flooring',
+        question: 'What type of flooring meets the door area inside and outside?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'interior_tiles', label: 'Interior tiles' },
+          { value: 'wood_floor', label: 'Wood / laminate flooring' },
+          { value: 'polished_concrete', label: 'Polished concrete' },
+          { value: 'exterior_tiles', label: 'Exterior tiles / terrace' },
+          { value: 'other_surface', label: 'Other surfaces' }
+        ]
+      },
+      {
+        id: 'large_door_notes',
+        question: 'Any structural details (beams, lintels) or design ideas the professional should know?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'front-door-installation',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'front_door_scope',
+        question: 'What do you need for your front door?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_door_existing_frame', label: 'New door in existing frame' },
+          { value: 'new_door_and_frame', label: 'New door and frame' },
+          { value: 'relocate_entrance', label: 'Change or relocate the entrance position' }
+        ]
+      },
+      {
+        id: 'front_door_size_known',
+        question: 'Do you know the approximate size of the current opening?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard_size', label: 'Standard size door' },
+          { value: 'wider_or_taller', label: 'Wider / taller than standard' },
+          { value: 'double_door', label: 'Double front door' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'front_door_style',
+        question: 'What style of front door are you looking for?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'modern_minimal', label: 'Modern / minimal' },
+          { value: 'traditional', label: 'Traditional / classic' },
+          { value: 'rustic', label: 'Rustic / finca style' },
+          { value: 'glass_panels', label: 'With glass for light' },
+          { value: 'solid_secure', label: 'Solid, highly secure door' }
+        ]
+      },
+      {
+        id: 'front_door_material',
+        question: 'Preferred material for the front door?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'timber', label: 'Timber / wood' },
+          { value: 'aluminium', label: 'Aluminium' },
+          { value: 'steel_security', label: 'Steel / security door' },
+          { value: 'composite', label: 'Composite' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'front_door_security_features',
+        question: 'Which security features are important to you?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'multi_point_lock', label: 'Multi-point locking system' },
+          { value: 'security_cylinder', label: 'High-security cylinder / key system' },
+          { value: 'spyhole_viewer', label: 'Spyhole / viewer' },
+          { value: 'digital_lock', label: 'Digital / keyless entry' }
+        ]
+      },
+      {
+        id: 'front_door_surrounds',
+        question: 'Do you also need work around the entrance area?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'side_panels', label: 'Side glass panels' },
+          { value: 'top_light', label: 'Top light / transom window' },
+          { value: 'render_or_cladding', label: 'Render or cladding around door' },
+          { value: 'steps_or_ramp', label: 'Steps or access ramp' },
+          { value: 'no_extra_work', label: 'No extra work needed' }
+        ]
+      },
+      {
+        id: 'front_door_notes',
+        question: 'Any special requests (colour, branding, security grade, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'garage-doors',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'garage_door_job_type',
+        question: 'What type of garage door work do you need?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new_install', label: 'New garage door installation' },
+          { value: 'replacement', label: 'Replacement of existing door' },
+          { value: 'repair_service', label: 'Repair or service of existing door' }
+        ]
+      },
+      {
+        id: 'garage_door_style',
+        question: 'What style of garage door are you considering?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'up_and_over', label: 'Up-and-over' },
+          { value: 'sectional', label: 'Sectional' },
+          { value: 'roller', label: 'Roller door' },
+          { value: 'side_hinged', label: 'Side-hinged doors' },
+          { value: 'not_sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'garage_door_automation',
+        question: 'Do you want the garage door to be automated?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'manual', label: 'Manual operation' },
+          { value: 'automated_new', label: 'New electric motor / automatic' },
+          { value: 'upgrade_existing_motor', label: 'Upgrade or replace existing motor' }
+        ]
+      },
+      {
+        id: 'garage_opening_size',
+        question: 'What best describes the garage size?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'single_bay', label: 'Single-bay garage' },
+          { value: 'double_bay', label: 'Double-bay garage' },
+          { value: 'multi_bay', label: 'Multi-bay / larger opening' },
+          { value: 'not_sure', label: 'Not sure, needs measuring' }
+        ]
+      },
+      {
+        id: 'garage_security_insulation',
+        question: 'What are your priorities for the new or repaired door?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'basic_security', label: 'Basic security' },
+          { value: 'high_security', label: 'High security / anti-break-in' },
+          { value: 'insulated', label: 'Good insulation / temperature control' },
+          { value: 'quiet_operation', label: 'Quiet operation' }
+        ]
+      },
+      {
+        id: 'garage_existing_condition',
+        question: 'What is the condition of the existing frame and opening?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'good_condition', label: 'Good, no visible damage' },
+          { value: 'minor_repair', label: 'Minor repairs needed to frame / walls' },
+          { value: 'major_repair', label: 'Significant cracks / movement' },
+          { value: 'not_sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'garage_door_notes',
+        question: 'Any special requirements (remote controls, keypad, integration with gate, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'patio-balcony-doors',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'patio_door_project_type',
+        question: 'What kind of patio or balcony door project is this?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'replace_existing', label: 'Replace existing door set' },
+          { value: 'upgrade_single_to_double', label: 'Upgrade single door to wider opening' },
+          { value: 'new_opening', label: 'Create a new opening for patio doors' }
+        ]
+      },
+      {
+        id: 'patio_door_style',
+        question: 'Which style are you leaning towards?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'french_doors', label: 'French doors' },
+          { value: 'sliding_doors', label: 'Sliding doors' },
+          { value: 'tilt_and_slide', label: 'Tilt-and-slide' },
+          { value: 'single_with_side_light', label: 'Single door with side light' },
+          { value: 'no_preference', label: 'No preference yet' }
+        ]
+      },
+      {
+        id: 'patio_door_balcony_level',
+        question: 'Where are the doors located?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'ground_floor', label: 'Ground floor / garden' },
+          { value: 'upper_floor_balcony', label: 'Upper-floor balcony' },
+          { value: 'roof_terrace', label: 'Roof terrace access' }
+        ]
+      },
+      {
+        id: 'patio_door_material',
+        question: 'Preferred material for patio or balcony doors?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'aluminium', label: 'Aluminium' },
+          { value: 'timber', label: 'Timber / wood' },
+          { value: 'upvc', label: 'uPVC' },
+          { value: 'mixed', label: 'Mixed system' },
+          { value: 'no_preference', label: 'No preference' }
+        ]
+      },
+      {
+        id: 'patio_door_glazing',
+        question: 'What glazing and performance features are important?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'double_glazing', label: 'Double glazing' },
+          { value: 'triple_glazing', label: 'Triple glazing' },
+          { value: 'solar_control', label: 'Solar control / UV reduction' },
+          { value: 'safety_glass', label: 'Safety / laminated glass' }
+        ]
+      },
+      {
+        id: 'patio_door_threshold',
+        question: 'Do you need a low or flush threshold at the door?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard_step', label: 'Standard step is fine' },
+          { value: 'low_threshold', label: 'Low threshold for easier access' },
+          { value: 'fully_flush', label: 'Fully flush / wheelchair-friendly if possible' }
+        ]
+      },
+      {
+        id: 'patio_door_existing_condition',
+        question: 'What is the condition of the current door and surrounding area?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'works_but_tired', label: 'Works but looks tired' },
+          { value: 'drafts_or_leaks', label: 'Drafts, water leaks or sticking' },
+          { value: 'damaged_or_rotten', label: 'Damaged / rotten frames' },
+          { value: 'empty_opening', label: 'Just an opening, no door currently' }
+        ]
+      },
+      {
+        id: 'patio_door_notes',
+        question: 'Any special considerations (child safety, pets, insect screens, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  },
+  {
+    microSlug: 'security-reinforced-doors',
+    categorySlug: 'floors-doors-windows',
+    version: 1,
+    questions: [
+      {
+        id: 'sec_door_location',
+        question: 'Where will the security or reinforced door be installed?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'main_entrance', label: 'Main entrance' },
+          { value: 'secondary_entrance', label: 'Secondary / side entrance' },
+          { value: 'apartment_entrance', label: 'Apartment entrance door' },
+          { value: 'internal_secure_room', label: 'Internal secure room / storage' }
+        ]
+      },
+      {
+        id: 'sec_door_purpose',
+        question: 'What is the main purpose of the reinforced door?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'burglary_protection', label: 'Burglary protection' },
+          { value: 'safe_room', label: 'Safe room / panic room' },
+          { value: 'high_value_storage', label: 'High-value storage area' },
+          { value: 'noise_and_security', label: 'Noise reduction as well as security' }
+        ]
+      },
+      {
+        id: 'sec_door_certification',
+        question: 'Do you require a specific security rating or certification?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'standard_security', label: 'No, just strong and secure' },
+          { value: 'rated_security', label: 'Yes, rated security door (e.g. RC / certified)' },
+          { value: 'not_sure', label: 'Not sure, need guidance' }
+        ]
+      },
+      {
+        id: 'sec_door_appearance',
+        question: 'What kind of appearance should the door have?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'discreet_normal', label: 'Discreet, looks like a normal door' },
+          { value: 'clearly_reinforced', label: 'Clearly reinforced / robust look' },
+          { value: 'decorative', label: 'Decorative and secure' }
+        ]
+      },
+      {
+        id: 'sec_door_access_control',
+        question: 'How should the door be accessed or controlled?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'traditional_keys', label: 'Traditional key lock' },
+          { value: 'high_security_cylinder', label: 'High-security cylinder' },
+          { value: 'digital_keypad', label: 'Digital keypad / code' },
+          { value: 'biometric', label: 'Biometric (fingerprint etc.)' },
+          { value: 'intercom_video', label: 'Intercom / video entry integration' }
+        ]
+      },
+      {
+        id: 'sec_door_existing_opening',
+        question: 'Is there an existing door and frame in place?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'replace_existing', label: 'Yes, replace existing door and frame' },
+          { value: 'new_opening', label: 'No, this is a new opening' },
+          { value: 'frame_only', label: 'Frame exists but no suitable door' }
+        ]
+      },
+      {
+        id: 'sec_door_notes',
+        question: 'Any other important details (insurance requirements, alarm integration, etc.)?',
+        type: 'text',
+        required: false
+      }
+    ]
+  }
 ];
+
