@@ -66,6 +66,14 @@ export const useReviewSystem = (revieweeId?: string) => {
     }) => {
       if (!user?.id) throw new Error("Not authenticated");
 
+      const overallRating = (
+        ratings.timeliness +
+        ratings.communication +
+        ratings.value +
+        ratings.quality +
+        ratings.professionalism
+      ) / 5;
+
       const { data, error } = await supabase
         .from("reviews")
         .insert({
@@ -78,6 +86,7 @@ export const useReviewSystem = (revieweeId?: string) => {
           value_rating: ratings.value,
           quality_rating: ratings.quality,
           professionalism_rating: ratings.professionalism,
+          overall_rating: overallRating,
           title,
           comment,
           photos,
