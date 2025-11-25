@@ -53,10 +53,10 @@ export default function ReviewModeration() {
       }).eq('id', flagId);
 
       await supabase.rpc('log_admin_action', {
-        p_action: `review_moderation_${action}`,
-        p_entity_type: 'review',
-        p_entity_id: flag.review_id,
-        p_changes: { flag_id: flagId, action, notes }
+        p_action_type: `review_moderation_${action}`,
+        p_target_type: 'review',
+        p_target_id: flag.review_id,
+        p_action_data: { flag_id: flagId, action, notes }
       });
     },
     onSuccess: () => {

@@ -167,6 +167,96 @@ export type Database = {
           },
         ]
       }
+      admin_action_log: {
+        Row: {
+          action_data: Json | null
+          action_type: string
+          admin_id: string
+          created_at: string | null
+          error_message: string | null
+          id: string
+          ip_address: unknown
+          result: string | null
+          target_id: string
+          target_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          action_data?: Json | null
+          action_type: string
+          admin_id: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown
+          result?: string | null
+          target_id: string
+          target_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          action_data?: Json | null
+          action_type?: string
+          admin_id?: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown
+          result?: string | null
+          target_id?: string
+          target_type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      admin_activity_feed: {
+        Row: {
+          activity_type: string
+          created_at: string | null
+          description: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          is_read: boolean | null
+          metadata: Json | null
+          read_at: string | null
+          read_by: string | null
+          severity: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string | null
+          description?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          is_read?: boolean | null
+          metadata?: Json | null
+          read_at?: string | null
+          read_by?: string | null
+          severity?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string | null
+          description?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          is_read?: boolean | null
+          metadata?: Json | null
+          read_at?: string | null
+          read_by?: string | null
+          severity?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       admin_alerts: {
         Row: {
           alert_type: string
@@ -323,6 +413,36 @@ export type Database = {
           id?: string
           permission?: string
           scope?: string | null
+        }
+        Relationships: []
+      }
+      admin_roles: {
+        Row: {
+          created_at: string | null
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          permissions: Json | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          permissions?: Json | null
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          permissions?: Json | null
+          role?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1639,6 +1759,68 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      category_analytics: {
+        Row: {
+          active_professionals: number | null
+          analytics_date: string
+          avg_completion_time_days: number | null
+          avg_job_value: number | null
+          avg_rating: number | null
+          avg_response_time_hours: number | null
+          category_id: string
+          completed_jobs: number | null
+          created_at: string | null
+          dispute_rate: number | null
+          id: string
+          total_jobs: number | null
+          total_revenue: number | null
+          total_reviews: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_professionals?: number | null
+          analytics_date: string
+          avg_completion_time_days?: number | null
+          avg_job_value?: number | null
+          avg_rating?: number | null
+          avg_response_time_hours?: number | null
+          category_id: string
+          completed_jobs?: number | null
+          created_at?: string | null
+          dispute_rate?: number | null
+          id?: string
+          total_jobs?: number | null
+          total_revenue?: number | null
+          total_reviews?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_professionals?: number | null
+          analytics_date?: string
+          avg_completion_time_days?: number | null
+          avg_job_value?: number | null
+          avg_rating?: number | null
+          avg_response_time_hours?: number | null
+          category_id?: string
+          completed_jobs?: number | null
+          created_at?: string | null
+          dispute_rate?: number | null
+          id?: string
+          total_jobs?: number | null
+          total_revenue?: number | null
+          total_reviews?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_analytics_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       category_suggestions: {
         Row: {
@@ -6588,19 +6770,25 @@ export type Database = {
       }
       platform_metrics: {
         Row: {
+          active_disputes: number | null
           active_users: number | null
-          average_booking_value: number | null
-          average_rating: number | null
-          cancelled_bookings: number | null
-          completed_bookings: number | null
+          avg_job_value: number | null
+          avg_rating: number | null
+          cancelled_jobs: number | null
+          client_users: number | null
+          completed_jobs: number | null
           created_at: string | null
-          disputes_opened: number | null
-          disputes_resolved: number | null
+          error_rate: number | null
+          escrow_balance: number | null
           id: string
           metric_date: string
-          metric_hour: number | null
+          metric_type: string
+          new_jobs: number | null
           new_users: number | null
-          total_bookings: number | null
+          platform_fees: number | null
+          professional_users: number | null
+          response_time_ms: number | null
+          total_jobs: number | null
           total_messages: number | null
           total_revenue: number | null
           total_reviews: number | null
@@ -6608,19 +6796,25 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          active_disputes?: number | null
           active_users?: number | null
-          average_booking_value?: number | null
-          average_rating?: number | null
-          cancelled_bookings?: number | null
-          completed_bookings?: number | null
+          avg_job_value?: number | null
+          avg_rating?: number | null
+          cancelled_jobs?: number | null
+          client_users?: number | null
+          completed_jobs?: number | null
           created_at?: string | null
-          disputes_opened?: number | null
-          disputes_resolved?: number | null
+          error_rate?: number | null
+          escrow_balance?: number | null
           id?: string
           metric_date: string
-          metric_hour?: number | null
+          metric_type: string
+          new_jobs?: number | null
           new_users?: number | null
-          total_bookings?: number | null
+          platform_fees?: number | null
+          professional_users?: number | null
+          response_time_ms?: number | null
+          total_jobs?: number | null
           total_messages?: number | null
           total_revenue?: number | null
           total_reviews?: number | null
@@ -6628,19 +6822,25 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          active_disputes?: number | null
           active_users?: number | null
-          average_booking_value?: number | null
-          average_rating?: number | null
-          cancelled_bookings?: number | null
-          completed_bookings?: number | null
+          avg_job_value?: number | null
+          avg_rating?: number | null
+          cancelled_jobs?: number | null
+          client_users?: number | null
+          completed_jobs?: number | null
           created_at?: string | null
-          disputes_opened?: number | null
-          disputes_resolved?: number | null
+          error_rate?: number | null
+          escrow_balance?: number | null
           id?: string
           metric_date?: string
-          metric_hour?: number | null
+          metric_type?: string
+          new_jobs?: number | null
           new_users?: number | null
-          total_bookings?: number | null
+          platform_fees?: number | null
+          professional_users?: number | null
+          response_time_ms?: number | null
+          total_jobs?: number | null
           total_messages?: number | null
           total_revenue?: number | null
           total_reviews?: number | null
@@ -10902,6 +11102,57 @@ export type Database = {
         }
         Relationships: []
       }
+      system_health_log: {
+        Row: {
+          active_sessions: number | null
+          alerts: Json | null
+          api_response_time_ms: number | null
+          check_timestamp: string | null
+          db_connections: number | null
+          db_response_time_ms: number | null
+          db_storage_used_gb: number | null
+          error_count: number | null
+          id: string
+          requests_per_minute: number | null
+          status: string | null
+          storage_limit_gb: number | null
+          storage_used_gb: number | null
+          warning_count: number | null
+        }
+        Insert: {
+          active_sessions?: number | null
+          alerts?: Json | null
+          api_response_time_ms?: number | null
+          check_timestamp?: string | null
+          db_connections?: number | null
+          db_response_time_ms?: number | null
+          db_storage_used_gb?: number | null
+          error_count?: number | null
+          id?: string
+          requests_per_minute?: number | null
+          status?: string | null
+          storage_limit_gb?: number | null
+          storage_used_gb?: number | null
+          warning_count?: number | null
+        }
+        Update: {
+          active_sessions?: number | null
+          alerts?: Json | null
+          api_response_time_ms?: number | null
+          check_timestamp?: string | null
+          db_connections?: number | null
+          db_response_time_ms?: number | null
+          db_storage_used_gb?: number | null
+          error_count?: number | null
+          id?: string
+          requests_per_minute?: number | null
+          status?: string | null
+          storage_limit_gb?: number | null
+          storage_used_gb?: number | null
+          warning_count?: number | null
+        }
+        Relationships: []
+      }
       system_health_metrics: {
         Row: {
           error_rate: number | null
@@ -11227,6 +11478,75 @@ export type Database = {
           searches_performed?: number | null
           sessions_count?: number | null
           time_spent_seconds?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_analytics: {
+        Row: {
+          analytics_date: string
+          avg_job_value: number | null
+          cancellation_rate: number | null
+          completion_rate: number | null
+          created_at: string | null
+          dispute_count: number | null
+          id: string
+          jobs_completed: number | null
+          jobs_posted: number | null
+          last_active_at: string | null
+          login_count: number | null
+          messages_sent: number | null
+          response_time_minutes: number | null
+          reviews_given: number | null
+          reviews_received: number | null
+          session_duration_minutes: number | null
+          total_earned: number | null
+          total_spent: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          analytics_date: string
+          avg_job_value?: number | null
+          cancellation_rate?: number | null
+          completion_rate?: number | null
+          created_at?: string | null
+          dispute_count?: number | null
+          id?: string
+          jobs_completed?: number | null
+          jobs_posted?: number | null
+          last_active_at?: string | null
+          login_count?: number | null
+          messages_sent?: number | null
+          response_time_minutes?: number | null
+          reviews_given?: number | null
+          reviews_received?: number | null
+          session_duration_minutes?: number | null
+          total_earned?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          analytics_date?: string
+          avg_job_value?: number | null
+          cancellation_rate?: number | null
+          completion_rate?: number | null
+          created_at?: string | null
+          dispute_count?: number | null
+          id?: string
+          jobs_completed?: number | null
+          jobs_posted?: number | null
+          last_active_at?: string | null
+          login_count?: number | null
+          messages_sent?: number | null
+          response_time_minutes?: number | null
+          reviews_given?: number | null
+          reviews_received?: number | null
+          session_duration_minutes?: number | null
+          total_earned?: number | null
+          total_spent?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -12266,6 +12586,18 @@ export type Database = {
         }
         Returns: number
       }
+      create_admin_activity: {
+        Args: {
+          p_activity_type: string
+          p_description?: string
+          p_entity_id: string
+          p_entity_type: string
+          p_metadata?: Json
+          p_severity?: string
+          p_title: string
+        }
+        Returns: string
+      }
       create_booking_reminders: {
         Args: { p_booking_id: string; p_event_start: string; p_user_id: string }
         Returns: undefined
@@ -12547,6 +12879,7 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      is_admin: { Args: never; Returns: boolean }
       is_admin_user: { Args: never; Returns: boolean }
       is_feature_on: { Args: { p_key: string }; Returns: boolean }
       log_activity: {
@@ -12570,10 +12903,10 @@ export type Database = {
           }
         | {
             Args: {
-              p_action: string
-              p_changes?: Json
-              p_entity_id?: string
-              p_entity_type?: string
+              p_action_data?: Json
+              p_action_type: string
+              p_target_id: string
+              p_target_type: string
             }
             Returns: string
           }

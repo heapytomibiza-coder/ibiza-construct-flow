@@ -64,10 +64,10 @@ export function ReportExportCenter() {
 
       // Log admin action
       await supabase.rpc('log_admin_action', {
-        p_action: 'report_export',
-        p_entity_type: 'report',
-        p_entity_id: data.id,
-        p_changes: {
+        p_action_type: 'report_export',
+        p_target_type: 'report',
+        p_target_id: data.id,
+        p_action_data: {
           report_type: reportType,
           format: exportFormat,
           include_pii: includePII,

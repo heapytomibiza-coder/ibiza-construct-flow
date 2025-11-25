@@ -74,16 +74,16 @@ export function useAdminDashboard() {
 
   const logAdminAction = async (
     action: string,
-    entityType?: string,
-    entityId?: string,
-    changes?: Record<string, any>
+    targetType: string,
+    targetId: string,
+    actionData?: Record<string, any>
   ) => {
     try {
       const { error } = await supabase.rpc('log_admin_action', {
-        p_action: action,
-        p_entity_type: entityType,
-        p_entity_id: entityId,
-        p_changes: changes,
+        p_action_type: action,
+        p_target_type: targetType,
+        p_target_id: targetId,
+        p_action_data: actionData,
       });
 
       if (error) throw error;

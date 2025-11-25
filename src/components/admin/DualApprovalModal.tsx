@@ -51,10 +51,10 @@ export function DualApprovalModal({ open, onOpenChange, approvalRequest }: DualA
 
       // Log the admin action
       await supabase.rpc("log_admin_action", {
-        p_action: `dual_approval_${action}`,
-        p_entity_type: approvalRequest.entity_type,
-        p_entity_id: approvalRequest.entity_id,
-        p_changes: {
+        p_action_type: `dual_approval_${action}`,
+        p_target_type: approvalRequest.entity_type,
+        p_target_id: approvalRequest.entity_id,
+        p_action_data: {
           approval_id: approvalRequest.id,
           action_type: approvalRequest.action_type,
           notes: adminNotes,
