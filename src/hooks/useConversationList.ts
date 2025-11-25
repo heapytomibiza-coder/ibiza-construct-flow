@@ -1,23 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-
-export interface ConversationWithDetails {
-  id: string;
-  participant_1_id: string;
-  participant_2_id: string;
-  job_id?: string;
-  contract_id?: string;
-  last_message_at: string;
-  created_at: string;
-  last_message?: {
-    id: string;
-    content: string;
-    sender_id: string;
-    created_at: string;
-  };
-  unread_count?: number;
-}
+import type { ConversationWithDetails } from "@/types/messaging";
 
 export const useConversationList = (userId?: string) => {
   const [conversations, setConversations] = useState<ConversationWithDetails[]>([]);
@@ -31,7 +15,7 @@ export const useConversationList = (userId?: string) => {
       const { data, error } = await supabase
         .from("conversations")
         .select("*")
-        .or(`participant_1_id.eq.${userId},participant_2_id.eq.${userId}`)
+        .or(`client_id.eq.${userId},professional_id.eq.${userId}`)
         .order("last_message_at", { ascending: false });
 
       if (error) throw error;
@@ -50,80 +34,51 @@ export const useConversationList = (userId?: string) => {
 
       const conversationsWithDetails = await Promise.all(
         data.map(async (conv) => {
-          // Fetch last message
-          const { data: lastMsg } = await supabase
-            .from("messages")
-            .select("id, content, sender_id, created_at")
-            .eq("conversation_id", conv.id)
-            .order("created_at", { ascending: false })
-            .limit(1)
+          // Get other user info
+          const otherUserId = conv.client_id === userId ? conv.professional_id : conv.client_id;
+          
+          const { data: otherUser } = await supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url')
+            .eq('id', otherUserId)
             .single();
 
-          // Count unread messages
+          // Get last message
+          const { data: lastMessage } = await supabase
+            .from('messages')
+            .select('id, content, sender_id, created_at')
+            .eq('conversation_id', conv.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          // Get unread count
           const { count } = await supabase
-            .from("messages")
-            .select("*", { count: "exact", head: true })
-            .eq("conversation_id", conv.id)
-            .eq("recipient_id", userId)
-            .is("read_at", null);
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('conversation_id', conv.id)
+            .neq('sender_id', userId)
+            .is('read_at', null);
 
           return {
             ...conv,
-            last_message: lastMsg || undefined,
+            other_user: otherUser || undefined,
+            last_message: lastMessage || undefined,
             unread_count: count || 0,
           };
         })
       );
 
       setConversations(conversationsWithDetails);
-      setTotalUnread(
-        conversationsWithDetails.reduce((sum, c) => sum + (c.unread_count || 0), 0)
-      );
+      setTotalUnread(conversationsWithDetails.reduce((sum, conv) => sum + conv.unread_count, 0));
     };
 
     fetchConversationsWithMessages();
   }, [data, userId]);
 
-  // Real-time subscription
-  useEffect(() => {
-    if (!userId) return;
-
-    const channel = supabase
-      .channel("conversations-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "conversations",
-          filter: `participant_1_id=eq.${userId}`,
-        },
-        () => {
-          // Refetch when conversations change
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "conversations",
-          filter: `participant_2_id=eq.${userId}`,
-        },
-        () => {
-          // Refetch when conversations change
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId]);
-
   return {
     conversations,
-    loading: isLoading,
     totalUnread,
+    isLoading,
   };
 };
