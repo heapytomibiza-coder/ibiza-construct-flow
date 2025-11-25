@@ -10,6 +10,7 @@ import { useSafeArea } from '@/components/mobile/SafeAreaProvider';
 import { cn } from '@/lib/utils';
 import AuthModal from '@/components/auth/AuthModal';
 import HeaderRoleSwitcher from '@/components/header/HeaderRoleSwitcher';
+import { LanguageSwitcher } from '@/components/header/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 
 interface MobileOptimizedHeaderProps {
@@ -100,6 +101,8 @@ export const MobileOptimizedHeader = ({
                   <Bell className="w-4 h-4" />
                 </Button>
               )}
+
+              <LanguageSwitcher />
 
               <Button
                 variant="ghost"
