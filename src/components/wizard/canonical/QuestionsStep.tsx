@@ -282,6 +282,14 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     }
   };
 
+  // Utility to convert snake_case/kebab-case keys to human-readable text
+  const humanizeKey = (key: string): string => {
+    return key
+      .replace(/_/g, ' ')
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase());
+  };
+
   const transformPackToAIQuestions = (packContent: any): AIQuestion[] => {
     console.log('🔍 Transform pack content:', JSON.stringify(packContent, null, 2));
     const microDef = packContent;
@@ -295,8 +303,11 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     return microDef.questions.map((q: any, index: number) => {
       console.log(`🔍 Question ${index}:`, JSON.stringify(q, null, 2));
       
-      // Extract question text from various possible sources
-      const questionText = q.i18nKey || q.question || q.label || q.title || q.text || `Question ${index + 1}`;
+      // Extract question text - prioritize human-readable sources over i18n keys
+      const questionText = q.label || q.question || q.title || 
+        (q.key ? `${humanizeKey(q.key)}?` : null) ||
+        q.aiHint || 
+        `Question ${index + 1}`;
       const questionId = q.key || q.id || `q${index}`;
       
       console.log(`✅ Extracted: id="${questionId}", text="${questionText}"`);
@@ -307,7 +318,10 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         label: questionText,
         required: q.required ?? false,
         options: q.options?.map((opt: any) => {
-          const optLabel = opt.i18nKey || opt.label || opt.value || String(opt);
+          // Prioritize label, then humanized value, then fallback
+          const optLabel = opt.label || 
+            (opt.value ? humanizeKey(opt.value) : null) ||
+            String(opt);
           return {
             label: optLabel,
             value: opt.value || opt.i18nKey || optLabel
