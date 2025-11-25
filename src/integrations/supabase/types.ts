@@ -2021,12 +2021,16 @@ export type Database = {
         Row: {
           agreed_amount: number
           client_id: string
+          commission_amount: number | null
+          commission_rate: number | null
           created_at: string
           end_at: string | null
           escrow_hold_period: number | null
           escrow_status: string
           id: string
           job_id: string
+          platform_fee: number | null
+          platform_fee_amount: number | null
           start_at: string | null
           tasker_id: string
           type: string
@@ -2035,12 +2039,16 @@ export type Database = {
         Insert: {
           agreed_amount: number
           client_id: string
+          commission_amount?: number | null
+          commission_rate?: number | null
           created_at?: string
           end_at?: string | null
           escrow_hold_period?: number | null
           escrow_status?: string
           id?: string
           job_id: string
+          platform_fee?: number | null
+          platform_fee_amount?: number | null
           start_at?: string | null
           tasker_id: string
           type?: string
@@ -2049,12 +2057,16 @@ export type Database = {
         Update: {
           agreed_amount?: number
           client_id?: string
+          commission_amount?: number | null
+          commission_rate?: number | null
           created_at?: string
           end_at?: string | null
           escrow_hold_period?: number | null
           escrow_status?: string
           id?: string
           job_id?: string
+          platform_fee?: number | null
+          platform_fee_amount?: number | null
           start_at?: string | null
           tasker_id?: string
           type?: string
@@ -7350,6 +7362,54 @@ export type Database = {
           professional_id?: string
           stripe_account_id?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      professional_subscriptions: {
+        Row: {
+          amount: number
+          cancelled_at: string | null
+          created_at: string
+          currency: string
+          expires_at: string
+          id: string
+          professional_id: string
+          started_at: string
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_product_id: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          expires_at: string
+          id?: string
+          professional_id: string
+          started_at?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_product_id: string
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          expires_at?: string
+          id?: string
+          professional_id?: string
+          started_at?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_product_id?: string
+          tier?: string
+          updated_at?: string
         }
         Relationships: []
       }
