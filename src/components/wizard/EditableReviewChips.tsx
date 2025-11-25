@@ -18,15 +18,11 @@ interface ReviewChip {
 interface EditableReviewChipsProps {
   chips: ReviewChip[];
   onChipEdit: (chipId: string, newValue: string) => void;
-  onSubmit: () => void;
-  isSubmitting?: boolean;
 }
 
 export const EditableReviewChips = ({
   chips,
-  onChipEdit,
-  onSubmit,
-  isSubmitting
+  onChipEdit
 }: EditableReviewChipsProps) => {
   const { t } = useTranslation();
   const [editingChipId, setEditingChipId] = useState<string | null>(null);
@@ -101,28 +97,6 @@ export const EditableReviewChips = ({
             )}
           </div>
         ))}
-      </div>
-
-      <div className="pt-4">
-        <Button
-          onClick={onSubmit}
-          disabled={isSubmitting || editingChipId !== null}
-          className="w-full min-h-[44px] h-12 text-base font-semibold focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          aria-label="Submit job request"
-          aria-busy={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <span className="sr-only">Submitting your request...</span>
-              <span aria-hidden="true">Submitting...</span>
-            </>
-          ) : (
-            <>
-              <Check className="w-5 h-5 mr-2" aria-hidden="true" />
-              Submit Job Request
-            </>
-          )}
-        </Button>
       </div>
     </div>
   );

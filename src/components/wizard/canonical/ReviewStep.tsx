@@ -107,8 +107,6 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
               console.log('Edit requested:', chipId, newValue);
               // In a real implementation, this would update the wizard state
             }}
-            onSubmit={() => {}}
-            isSubmitting={loading}
           />
         </div>
 
