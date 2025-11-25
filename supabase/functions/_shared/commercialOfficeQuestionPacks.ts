@@ -1,5 +1,5 @@
 /**
- * Commercial, Office, Retail, Kitchen/Bathroom, Construction & Brickwork Question Packs
+ * Commercial, Office, Retail, Kitchen/Bathroom, Construction, Brickwork & Pool Heating Question Packs
  * 
  * Covers:
  * - Commercial & Industrial: Planned Maintenance, Shopfront Repairs
@@ -12,6 +12,7 @@
  * - Kitchen Worktops, Units & Storage: Island Installation, Unit Installation, Pantry/Utility Storage, Worktop Install/Replace
  * - Construction & Extensions: Adding New Rooms, Conservatories/Glass Rooms, Garage Conversions, Single/Two Floor Home Extensions, Terrace/Rooftop Extensions
  * - Brickwork, Masonry & Concrete: Building/Repairing Walls, Concrete Bases/Paths/Floors, Garden/Boundary Walls
+ * - Pool & Spa Heating: Electric Pool Heaters, Energy Efficiency Upgrades, Gas Pool Heaters, Heat Pump Installation, Pool Blankets & Covers, Pool Heating Repairs, Solar Pool Heating
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -3554,5 +3555,664 @@ export const commercialOfficeQuestionPacks = [
         ],
       },
     ],
+  },
+
+  // ============================================================
+  // POOL & SPA - HEATING (7 packs)
+  // ============================================================
+
+  // Electric pool heaters
+  {
+    microSlug: 'electric-pool-heaters',
+    subcategorySlug: 'heating',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'indoor', label: 'Indoor pool' },
+          { value: 'outdoor', label: 'Outdoor pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'plunge', label: 'Plunge / small pool' }
+        ]
+      },
+      {
+        id: 'pool_volume',
+        question: 'Roughly how big is the pool?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'under-20m3', label: 'Small – under 20 m³' },
+          { value: '20-50m3', label: 'Medium – 20–50 m³' },
+          { value: '50-80m3', label: 'Large – 50–80 m³' },
+          { value: 'over-80m3', label: 'Very large – over 80 m³' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'job_scope',
+        question: 'What do you need help with?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'new-install', label: 'New electric heater installation' },
+          { value: 'replace-existing', label: 'Replace an existing heater' },
+          { value: 'diagnose-problem', label: 'Diagnose a fault or poor performance' },
+          { value: 'relocate', label: 'Relocate / re-site an existing heater' }
+        ]
+      },
+      {
+        id: 'power_supply',
+        question: 'Do you already have a suitable electrical supply near the plant room?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'yes-dedicated-supply', label: 'Yes – dedicated pool heater supply already in place' },
+          { value: 'yes-but-may-need-upgrade', label: 'Yes – but it may need upgrading' },
+          { value: 'no-supply-yet', label: 'No – electrical supply needs to be installed' },
+          { value: 'not-sure', label: 'Not sure – need electrician to check' }
+        ]
+      },
+      {
+        id: 'plant_location',
+        question: 'Where is the plant / equipment located?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'indoor-plant-room', label: 'Indoor plant room' },
+          { value: 'outdoor-plant-room', label: 'Outdoor plant room / shed' },
+          { value: 'open-air-next-to-pool', label: 'Open-air, next to pool' }
+        ]
+      },
+      {
+        id: 'control_preference',
+        question: 'How would you like to control the heater?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'basic-on-off', label: 'Basic on/off and temperature control' },
+          { value: 'timer-and-schedules', label: 'Timer and heating schedules' },
+          { value: 'smartphone-app', label: 'Smartphone / smart home control if possible' },
+          { value: 'no-preference', label: 'No preference – open to advice' }
+        ]
+      },
+      {
+        id: 'existing_system_info',
+        question: 'Do you already have any pool heating system installed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'no-heating', label: 'No, there is no heating at the moment' },
+          { value: 'electric-heater', label: 'Yes – an existing electric heater' },
+          { value: 'heat-pump', label: 'Yes – a heat pump' },
+          { value: 'solar-or-other', label: 'Yes – solar or other system' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the work to be done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-1-week', label: 'Urgent – within 1 week' },
+          { value: 'soon-1-month', label: 'Soon – within 1 month' },
+          { value: 'flexible-3-months', label: 'Flexible – within the next 3 months' },
+          { value: 'planning-stage', label: 'Just planning / looking for quotes' }
+        ]
+      }
+    ]
+  },
+
+  // Energy efficiency upgrades
+  {
+    microSlug: 'energy-efficiency-upgrades',
+    subcategorySlug: 'heating',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool or spa do you want to improve?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'plunge-small-pool', label: 'Plunge / small pool' }
+        ]
+      },
+      {
+        id: 'current_heating',
+        question: 'How is the pool currently heated?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'no-heating', label: 'No heating at the moment' },
+          { value: 'electric-heater', label: 'Electric heater' },
+          { value: 'gas-heater', label: 'Gas boiler / heater' },
+          { value: 'heat-pump', label: 'Heat pump' },
+          { value: 'solar', label: 'Solar heating' },
+          { value: 'not-sure', label: 'Not sure / mixed system' }
+        ]
+      },
+      {
+        id: 'upgrade_goals',
+        question: 'What are your main goals for the upgrade?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'reduce-running-costs', label: 'Reduce running costs' },
+          { value: 'improve-heating-performance', label: 'Improve heating performance' },
+          { value: 'automate-and-optimise', label: 'Automate and optimise control' },
+          { value: 'environmental-impact', label: 'Lower environmental impact' }
+        ]
+      },
+      {
+        id: 'existing_efficiency_measures',
+        question: 'Which efficiency measures do you already use?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'thermal-cover', label: 'Thermal pool cover or blanket' },
+          { value: 'slatted-or-automatic-cover', label: 'Automatic / slatted cover' },
+          { value: 'timers-or-schedules', label: 'Timers / basic heating schedules' },
+          { value: 'smart-controls', label: 'Smartphone or smart home controls' },
+          { value: 'none', label: 'None of the above' }
+        ]
+      },
+      {
+        id: 'open_to_changes',
+        question: 'Are you open to changing the heating system type if it saves energy?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'yes-any-solution', label: 'Yes – open to any efficient solution' },
+          { value: 'yes-but-budget-limited', label: 'Yes – but budget is limited' },
+          { value: 'prefer-keeping-current-system', label: 'Prefer to keep current system and optimise it' }
+        ]
+      },
+      {
+        id: 'monthly_usage_pattern',
+        question: 'How often is the pool or spa used?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'year-round', label: 'Year-round' },
+          { value: 'seasonal-summer', label: 'Seasonal – mainly summer' },
+          { value: 'weekends-and-holidays', label: 'Mostly weekends / holidays' },
+          { value: 'occasional', label: 'Occasionally' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like to make these upgrades?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'before-next-season', label: 'Before the next pool season' },
+          { value: 'within-1-2-months', label: 'Within the next 1–2 months' },
+          { value: 'flexible', label: 'Flexible – no fixed deadline' },
+          { value: 'just-exploring', label: 'Just exploring options and budgets' }
+        ]
+      }
+    ]
+  },
+
+  // Gas pool heaters
+  {
+    microSlug: 'gas-pool-heaters',
+    subcategorySlug: 'heating',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        id: 'pool_size',
+        question: 'Roughly how big is the pool?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'under-20m3', label: 'Small – under 20 m³' },
+          { value: '20-50m3', label: 'Medium – 20–50 m³' },
+          { value: '50-80m3', label: 'Large – 50–80 m³' },
+          { value: 'over-80m3', label: 'Very large – over 80 m³' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'job_scope',
+        question: 'What do you need help with?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'new-install', label: 'New gas heater installation' },
+          { value: 'replace-existing', label: 'Replace an existing gas heater' },
+          { value: 'service-maintenance', label: 'Service and safety check' },
+          { value: 'fault-diagnosis', label: 'Diagnose a fault or error' }
+        ]
+      },
+      {
+        id: 'gas_supply',
+        question: 'What type of gas supply do you have available?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'mains-gas', label: 'Mains gas' },
+          { value: 'bottled-lpg', label: 'Bottled gas (LPG)' },
+          { value: 'tank-lpg', label: 'Buried or surface LPG tank' },
+          { value: 'no-gas-yet', label: 'No gas supply yet' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'flue_and_venting',
+        question: 'Do you already have a suitable flue or venting route?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'existing-flue-ok', label: 'Yes – existing flue / vent can be reused' },
+          { value: 'needs-new-flue', label: 'No – a new flue / vent is needed' },
+          { value: 'outdoor-unit-no-flue-needed', label: 'Heater will be outdoors – minimal flue required' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'access_to_plant_area',
+        question: 'How easy is access to the heater / plant area?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-vehicle-access', label: 'Easy vehicle and person access' },
+          { value: 'narrow-or-steps', label: 'Narrow paths or steps' },
+          { value: 'very-restricted', label: 'Very restricted – tight access' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When do you need this work done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-1-week', label: 'Urgent – within 1 week' },
+          { value: 'soon-1-month', label: 'Soon – within 1 month' },
+          { value: 'before-next-season', label: 'Before the next pool season' },
+          { value: 'planning-only', label: 'Just planning / budget quotes' }
+        ]
+      }
+    ]
+  },
+
+  // Heat pump installation
+  {
+    microSlug: 'heat-pump-installation',
+    subcategorySlug: 'heating',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_or_spa_type',
+        question: 'Is this for a pool, spa, or both?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'swimming-pool', label: 'Swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' },
+          { value: 'both', label: 'Both pool and spa' }
+        ]
+      },
+      {
+        id: 'pool_size',
+        question: 'Roughly how big is the pool?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'under-20m3', label: 'Small – under 20 m³' },
+          { value: '20-50m3', label: 'Medium – 20–50 m³' },
+          { value: '50-80m3', label: 'Large – 50–80 m³' },
+          { value: 'over-80m3', label: 'Very large – over 80 m³' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'job_scope',
+        question: 'What do you need help with?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'new-install', label: 'New heat pump installation' },
+          { value: 'replace-existing', label: 'Replace an existing heat pump' },
+          { value: 'add-second-unit', label: 'Add a second unit to existing system' }
+        ]
+      },
+      {
+        id: 'existing_heating',
+        question: 'What heating do you currently have?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'none', label: 'No heating at the moment' },
+          { value: 'electric-heater', label: 'Electric heater' },
+          { value: 'gas-heater', label: 'Gas heater' },
+          { value: 'existing-heat-pump', label: 'Existing heat pump' },
+          { value: 'other', label: 'Other / unsure' }
+        ]
+      },
+      {
+        id: 'power_and_location',
+        question: 'Do you already know where the heat pump can be positioned?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'yes-clear-space-near-plant', label: 'Yes – clear outdoor space near plant room' },
+          { value: 'yes-but-far-from-plant', label: 'Yes – but it is further away from plant room' },
+          { value: 'no-need-advice', label: 'No – need advice on best location' }
+        ]
+      },
+      {
+        id: 'noise_sensitivity',
+        question: 'Is noise from the heat pump a concern?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'no-neighbours-close', label: 'No – no close neighbours' },
+          { value: 'some-neighbours', label: 'Yes – some neighbours nearby' },
+          { value: 'very-sensitive', label: 'Yes – very noise sensitive area' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the heat pump work done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-2-weeks', label: 'Urgent – within 2 weeks' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'before-season', label: 'Before the next pool season' },
+          { value: 'planning-only', label: 'Just planning and comparing options' }
+        ]
+      }
+    ]
+  },
+
+  // Pool blankets and covers
+  {
+    microSlug: 'pool-blankets-covers',
+    subcategorySlug: 'heating',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool do you need a cover for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'in-ground', label: 'In-ground pool' },
+          { value: 'above-ground', label: 'Above-ground pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        id: 'pool_shape',
+        question: 'What shape is the pool?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'rectangular', label: 'Rectangular' },
+          { value: 'kidney-freeform', label: 'Kidney / freeform' },
+          { value: 'round-oval', label: 'Round / oval' },
+          { value: 'other-irregular', label: 'Other / very irregular shape' }
+        ]
+      },
+      {
+        id: 'job_scope',
+        question: 'What do you need help with?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'new-cover-supply-install', label: 'Supply and install a new cover' },
+          { value: 'replace-old-cover', label: 'Replace an old or damaged cover' },
+          { value: 'size-and-cut-to-fit', label: 'Measure, cut and fit a new blanket to existing reel' },
+          { value: 'advice-only', label: 'Advice on best type of cover' }
+        ]
+      },
+      {
+        id: 'cover_type_preference',
+        question: 'Do you have a preferred type of cover?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'thermal-blanket', label: 'Thermal blanket (bubble cover)' },
+          { value: 'automatic-slatted', label: 'Automatic / slatted cover' },
+          { value: 'safety-cover', label: 'Safety cover (for children / pets)' },
+          { value: 'winter-cover', label: 'Winter debris cover' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'existing_reel_or_system',
+        question: 'Do you already have a reel or cover system installed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'manual-reel', label: 'Yes – manual reel system' },
+          { value: 'automatic-system', label: 'Yes – automatic cover system' },
+          { value: 'no-system-yet', label: 'No – no system yet' }
+        ]
+      },
+      {
+        id: 'safety_priority',
+        question: 'Is child and pet safety a main priority?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes-main-priority', label: 'Yes – main priority' },
+          { value: 'some-importance', label: 'Somewhat important' },
+          { value: 'no-more-for-heat-and-cleanliness', label: 'No – mainly for heat retention and cleanliness' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When do you need the cover work done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent-2-weeks', label: 'Urgent – within 2 weeks' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'before-winter', label: 'Before the winter season' },
+          { value: 'before-summer', label: 'Before the summer season' }
+        ]
+      }
+    ]
+  },
+
+  // Pool heating repairs
+  {
+    microSlug: 'pool-heating-repairs',
+    subcategorySlug: 'heating',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'system_type',
+        question: 'What type of pool heating system do you have?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'electric-heater', label: 'Electric heater' },
+          { value: 'gas-heater', label: 'Gas heater' },
+          { value: 'heat-pump', label: 'Heat pump' },
+          { value: 'solar', label: 'Solar heating' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'issue_main_symptom',
+        question: 'What is the main issue you\'re experiencing?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'no-heating', label: 'System not heating at all' },
+          { value: 'poor-heating', label: 'Water heats very slowly or not enough' },
+          { value: 'error-codes', label: 'Error codes or warning lights' },
+          { value: 'leaks', label: 'Leaks around the heater or pipework' },
+          { value: 'unusual-noise', label: 'Unusual noise from the unit' },
+          { value: 'tripping-electrics', label: 'Tripping electrics / breakers' }
+        ]
+      },
+      {
+        id: 'system_age',
+        question: 'Roughly how old is the heating system?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-3-years', label: 'Under 3 years old' },
+          { value: '3-7-years', label: '3–7 years old' },
+          { value: 'over-7-years', label: 'Over 7 years old' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'recent_work_or_changes',
+        question: 'Has any recent work or change been done to the pool or electrics/gas?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes-recent-work', label: 'Yes – recent work was done' },
+          { value: 'no-changes', label: 'No – no changes' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        id: 'system_access',
+        question: 'How easy is access to the heater / plant area for repairs?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'easy-access', label: 'Easy access' },
+          { value: 'narrow-or-steps', label: 'Narrow access or steps' },
+          { value: 'very-restricted', label: 'Very restricted access' }
+        ]
+      },
+      {
+        id: 'urgency',
+        question: 'How urgent is the repair?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'system-down-urgent', label: 'System down – very urgent' },
+          { value: 'soon-within-1-week', label: 'Soon – within 1 week' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'not-urgent', label: 'Not urgent – just investigating' }
+        ]
+      }
+    ]
+  },
+
+  // Solar pool heating
+  {
+    microSlug: 'solar-pool-heating',
+    subcategorySlug: 'heating',
+    categorySlug: 'pool-spa',
+    version: 1,
+    questions: [
+      {
+        id: 'pool_type',
+        question: 'What type of pool is this for?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor swimming pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        id: 'pool_size',
+        question: 'Roughly how big is the pool?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'under-20m3', label: 'Small – under 20 m³' },
+          { value: '20-50m3', label: 'Medium – 20–50 m³' },
+          { value: '50-80m3', label: 'Large – 50–80 m³' },
+          { value: 'over-80m3', label: 'Very large – over 80 m³' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'job_scope',
+        question: 'What do you need help with?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'new-solar-install', label: 'New solar heating installation' },
+          { value: 'upgrade-existing-system', label: 'Upgrade or expand an existing solar system' },
+          { value: 'repair-existing-system', label: 'Repair an existing solar heating system' }
+        ]
+      },
+      {
+        id: 'panel_location',
+        question: 'Where could the solar panels be installed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'roof-house', label: 'On the house roof' },
+          { value: 'roof-garage-outbuilding', label: 'On a garage / outbuilding' },
+          { value: 'ground-mounted-frame', label: 'On a ground-mounted frame' },
+          { value: 'not-sure', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        id: 'sun_exposure',
+        question: 'How much direct sun does the proposed panel area get?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'all-day-sun', label: 'Sun for most of the day' },
+          { value: 'morning-or-afternoon', label: 'Mainly morning or afternoon sun' },
+          { value: 'partly-shaded', label: 'Partly shaded' },
+          { value: 'heavily-shaded', label: 'Heavily shaded' }
+        ]
+      },
+      {
+        id: 'integration_with_existing',
+        question: 'Do you want solar to work with an existing heater?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'solar-primary-backup-existing', label: 'Yes – solar as main heat, existing as backup' },
+          { value: 'solar-add-on', label: 'Yes – add solar to help reduce costs' },
+          { value: 'solar-only', label: 'No – solar only' }
+        ]
+      },
+      {
+        id: 'timing',
+        question: 'When would you like the solar work done?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'before-next-season', label: 'Before the next pool season' },
+          { value: 'within-2-months', label: 'Within the next 2 months' },
+          { value: 'flexible', label: 'Flexible – no fixed deadline' },
+          { value: 'early-planning', label: 'Early planning stage only' }
+        ]
+      }
+    ]
   },
 ];
