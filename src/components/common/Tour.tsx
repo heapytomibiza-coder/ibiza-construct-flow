@@ -76,12 +76,32 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
 
   return (
     <>
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-black/50 z-50" />
+      {/* Overlay - Non-blocking */}
+      <div 
+        className="fixed inset-0 bg-black/50 z-50" 
+        style={{ pointerEvents: 'none' }}
+        onClick={handleSkip}
+      />
+      
+      {/* Close button - Top right corner for easy mobile access */}
+      <button
+        onClick={handleSkip}
+        className="fixed top-4 right-4 z-[52] p-3 rounded-full bg-background/90 hover:bg-background shadow-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+        style={{ pointerEvents: 'auto' }}
+        aria-label="Close tour"
+      >
+        <X className="w-5 h-5" />
+      </button>
       
       {/* Tour Card */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full bg-background border-copper/20 shadow-xl">
+      <div 
+        className="fixed inset-0 z-[51] flex items-center justify-center p-4 sm:p-6"
+        style={{ pointerEvents: 'none' }}
+      >
+        <Card 
+          className="max-w-md w-full bg-background border-copper/20 shadow-xl max-h-[90vh] overflow-y-auto"
+          style={{ pointerEvents: 'auto' }}
+        >
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -118,10 +138,10 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
             </div>
             
             {/* Navigation */}
-            <div className="flex justify-between items-center pt-2">
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center pt-2 gap-2">
               <Button
                 variant="outline"
-                size="sm"
+                className="min-h-[44px]"
                 onClick={handlePrevious}
                 disabled={currentStep === 0}
               >
@@ -130,13 +150,16 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
               </Button>
               
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={handleSkip}>
+                <Button 
+                  variant="ghost" 
+                  className="min-h-[44px] flex-1 sm:flex-initial"
+                  onClick={handleSkip}
+                >
                   Skip Tour
                 </Button>
                 <Button
                   onClick={handleNext}
-                  size="sm"
-                  className="bg-gradient-hero hover:bg-copper text-white"
+                  className="bg-gradient-hero hover:bg-copper text-white min-h-[44px] flex-1 sm:flex-initial"
                 >
                   {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
                   {currentStep !== steps.length - 1 && (
@@ -158,8 +181,10 @@ export const useTour = (tourKey: string, steps: TourStep[]) => {
 
   useEffect(() => {
     const completed = localStorage.getItem(`tour_${tourKey}_completed`);
-    if (!completed) {
-      // Delay to ensure DOM is ready
+    const isMobile = window.innerWidth < 768;
+    
+    if (!completed && !isMobile) {
+      // Only auto-start on desktop - delay to ensure DOM is ready
       setTimeout(() => setIsActive(true), 1000);
     } else {
       setIsCompleted(true);
