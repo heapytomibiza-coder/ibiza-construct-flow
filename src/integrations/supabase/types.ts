@@ -1228,6 +1228,60 @@ export type Database = {
           },
         ]
       }
+      booking_conflicts: {
+        Row: {
+          booking_id: string
+          conflict_details: Json | null
+          conflict_type: string
+          conflicting_booking_id: string | null
+          detected_at: string | null
+          id: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string | null
+        }
+        Insert: {
+          booking_id: string
+          conflict_details?: Json | null
+          conflict_type: string
+          conflicting_booking_id?: string | null
+          detected_at?: string | null
+          id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+        }
+        Update: {
+          booking_id?: string
+          conflict_details?: Json | null
+          conflict_type?: string
+          conflicting_booking_id?: string | null
+          detected_at?: string | null
+          id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_conflicts_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_conflicts_conflicting_booking_id_fkey"
+            columns: ["conflicting_booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_reminders: {
         Row: {
           booking_id: string
@@ -1388,6 +1442,215 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      booking_templates: {
+        Row: {
+          created_at: string | null
+          default_duration: number
+          default_price: number | null
+          default_settings: Json | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          service_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          default_duration: number
+          default_price?: number | null
+          default_settings?: Json | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          service_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          default_duration?: number
+          default_price?: number | null
+          default_settings?: Json | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          service_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_templates_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_time_slots: {
+        Row: {
+          booked_count: number | null
+          booking_id: string | null
+          capacity: number | null
+          created_at: string | null
+          end_time: string
+          id: string
+          is_available: boolean | null
+          notes: string | null
+          price_override: number | null
+          professional_id: string
+          service_id: string | null
+          slot_date: string
+          start_time: string
+          updated_at: string | null
+        }
+        Insert: {
+          booked_count?: number | null
+          booking_id?: string | null
+          capacity?: number | null
+          created_at?: string | null
+          end_time: string
+          id?: string
+          is_available?: boolean | null
+          notes?: string | null
+          price_override?: number | null
+          professional_id: string
+          service_id?: string | null
+          slot_date: string
+          start_time: string
+          updated_at?: string | null
+        }
+        Update: {
+          booked_count?: number | null
+          booking_id?: string | null
+          capacity?: number | null
+          created_at?: string | null
+          end_time?: string
+          id?: string
+          is_available?: boolean | null
+          notes?: string | null
+          price_override?: number | null
+          professional_id?: string
+          service_id?: string | null
+          slot_date?: string
+          start_time?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_time_slots_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_time_slots_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_workflow_executions: {
+        Row: {
+          booking_id: string
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          execution_data: Json | null
+          execution_status: string | null
+          id: string
+          started_at: string | null
+          workflow_id: string
+        }
+        Insert: {
+          booking_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          execution_data?: Json | null
+          execution_status?: string | null
+          id?: string
+          started_at?: string | null
+          workflow_id: string
+        }
+        Update: {
+          booking_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          execution_data?: Json | null
+          execution_status?: string | null
+          id?: string
+          started_at?: string | null
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_workflow_executions_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_workflow_executions_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "booking_workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_workflows: {
+        Row: {
+          actions: Json
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          execution_order: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          actions: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          execution_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          trigger_config: Json
+          trigger_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          actions?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          execution_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       bookings: {
         Row: {
@@ -9323,6 +9586,53 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_bookings: {
+        Row: {
+          booking_id: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          max_occurrences: number | null
+          next_occurrence_date: string | null
+          occurrences_created: number | null
+          recurrence_config: Json
+          recurrence_pattern: string
+          updated_at: string | null
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_occurrences?: number | null
+          next_occurrence_date?: string | null
+          occurrences_created?: number | null
+          recurrence_config: Json
+          recurrence_pattern: string
+          updated_at?: string | null
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_occurrences?: number | null
+          next_occurrence_date?: string | null
+          occurrences_created?: number | null
+          recurrence_config?: Json
+          recurrence_pattern?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_bookings_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       redirect_analytics: {
         Row: {
           created_at: string
@@ -13084,6 +13394,14 @@ export type Database = {
         }
         Returns: string
       }
+      detect_booking_conflicts: {
+        Args: { p_booking_id: string }
+        Returns: {
+          conflict_type: string
+          conflicting_id: string
+          details: Json
+        }[]
+      }
       detect_early_warnings: { Args: never; Returns: Json }
       detect_fraud_pattern: {
         Args: { p_pattern_type: string; p_severity: string; p_user_id: string }
@@ -13093,6 +13411,10 @@ export type Database = {
         | { Args: { p_dispute_id: string; p_reason: string }; Returns: Json }
         | { Args: { p_dispute_id: string }; Returns: undefined }
       execute_resolution: { Args: { p_resolution_id: string }; Returns: Json }
+      generate_next_occurrence: {
+        Args: { p_recurring_booking_id: string }
+        Returns: string
+      }
       generate_payment_receipt: {
         Args: { p_payment_id: string }
         Returns: Json
