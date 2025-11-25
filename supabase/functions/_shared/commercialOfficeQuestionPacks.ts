@@ -9,6 +9,7 @@
  * - Bathroom Fitting & Renovation: Bathroom Design, Refurbishment, Cloakroom/Ensuite, New Installation, Full Bathroom Fit, Wetroom Installation
  * - Kitchen Installation: Full Kitchen Fit, Worktop Installation
  * - Kitchen Fitting & Renovation: Kitchen Fitting, Kitchen Refurbishment, New Kitchen Installation, Small Kitchen Updates
+ * - Kitchen Worktops, Units & Storage: Island Installation, Unit Installation, Pantry/Utility Storage, Worktop Install/Replace
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -2291,6 +2292,314 @@ export const commercialOfficeQuestionPacks = [
           { value: 'no_repairs', label: 'No repairs needed' }
         ],
         required: false
+      }
+    ]
+  },
+
+  // Kitchen Worktops, Units & Storage packs
+  {
+    microSlug: 'kitchen-island-installation',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'island_purpose',
+        question: 'What is the main purpose of the kitchen island?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'prep-space', label: 'Prep space' },
+          { value: 'seating', label: 'Seating' },
+          { value: 'cooking-hob', label: 'Cooking (hob)' },
+          { value: 'sink-plumbing', label: 'Sink/plumbing' },
+          { value: 'storage-only', label: 'Storage only' },
+        ]
+      },
+      {
+        id: 'island_size',
+        question: 'Approximately what size island do you need?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small', label: 'Small (up to 1.5m)' },
+          { value: 'medium', label: 'Medium (1.5m - 2.5m)' },
+          { value: 'large', label: 'Large (2.5m+)' },
+        ]
+      },
+      {
+        id: 'services_needed',
+        question: 'Which services will the island require?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'plumbing', label: 'Plumbing' },
+          { value: 'electrical', label: 'Electrical' },
+          { value: 'ventilation', label: 'Ventilation' },
+          { value: 'lighting', label: 'Lighting' },
+        ]
+      },
+      {
+        id: 'island_material',
+        question: 'What material will the island be made from?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'wood', label: 'Solid wood' },
+          { value: 'mdf', label: 'MDF' },
+          { value: 'plywood', label: 'Plywood' },
+          { value: 'pre-built', label: 'Pre-built unit' },
+        ]
+      },
+      {
+        id: 'worktop_type',
+        question: 'What type of worktop will be used?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'stone', label: 'Stone (granite/marble)' },
+          { value: 'quartz', label: 'Quartz' },
+          { value: 'laminate', label: 'Laminate' },
+          { value: 'wood', label: 'Solid wood' },
+        ]
+      },
+      {
+        id: 'old_island_removal',
+        question: 'Does an existing island need removing?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' },
+        ]
+      },
+      {
+        id: 'design_drawings',
+        question: 'Do you have design drawings or plans?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' },
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'kitchen-unit-installation',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'unit_type',
+        question: 'Which types of kitchen units are being installed?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'base', label: 'Base units' },
+          { value: 'wall', label: 'Wall units' },
+          { value: 'tall', label: 'Tall units' },
+          { value: 'corner', label: 'Corner units' },
+          { value: 'larder', label: 'Larder units' },
+        ]
+      },
+      {
+        id: 'number_of_units',
+        question: 'Approximately how many units?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: '1-4', label: '1-4 units' },
+          { value: '5-8', label: '5-8 units' },
+          { value: '9+', label: '9+ units' },
+        ]
+      },
+      {
+        id: 'flatpack_or_built',
+        question: 'Are the units flatpack or pre-built?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'flatpack', label: 'Flatpack (needs assembly)' },
+          { value: 'pre-built', label: 'Pre-built (ready to install)' },
+        ]
+      },
+      {
+        id: 'appliance_cabinet',
+        question: 'Do you need integrated appliance cabinets?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'oven-housing', label: 'Oven housing' },
+          { value: 'fridge-freezer', label: 'Fridge/freezer housing' },
+          { value: 'dishwasher', label: 'Dishwasher housing' },
+          { value: 'none', label: 'None' },
+        ]
+      },
+      {
+        id: 'existing_units_removal',
+        question: 'Do existing units need removing?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' },
+        ]
+      },
+      {
+        id: 'design_drawings',
+        question: 'Do you have layout plans or drawings?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' },
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'pantry-utility-storage',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'storage_type',
+        question: 'What kind of storage do you need?',
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'shelving', label: 'Shelving' },
+          { value: 'cupboards', label: 'Cupboards' },
+          { value: 'pullouts', label: 'Pull-out units' },
+          { value: 'laundry-space', label: 'Laundry space' },
+        ]
+      },
+      {
+        id: 'area_size',
+        question: 'What is the approximate size of the area?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'small', label: 'Small (under 2m²)' },
+          { value: 'medium', label: 'Medium (2m² - 4m²)' },
+          { value: 'large', label: 'Large (4m²+)' },
+        ]
+      },
+      {
+        id: 'material_preference',
+        question: 'What material would you prefer?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'mdf', label: 'MDF' },
+          { value: 'plywood', label: 'Plywood' },
+          { value: 'solid-wood', label: 'Solid wood' },
+        ]
+      },
+      {
+        id: 'appliance_integration',
+        question: 'Which appliances need space or housing?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'washer', label: 'Washing machine' },
+          { value: 'dryer', label: 'Dryer' },
+          { value: 'fridge', label: 'Fridge' },
+          { value: 'freezer', label: 'Freezer' },
+        ]
+      },
+      {
+        id: 'design_style',
+        question: 'What style are you aiming for?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'modern', label: 'Modern' },
+          { value: 'rustic', label: 'Rustic' },
+          { value: 'minimalist', label: 'Minimalist' },
+        ]
+      },
+      {
+        id: 'layout_plans',
+        question: 'Do you have layout plans?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' },
+        ]
+      }
+    ]
+  },
+  {
+    microSlug: 'worktop-install-replace',
+    categorySlug: 'kitchen-bathroom',
+    version: 1,
+    questions: [
+      {
+        id: 'worktop_material',
+        question: 'What material is the worktop?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'quartz', label: 'Quartz' },
+          { value: 'granite', label: 'Granite' },
+          { value: 'laminate', label: 'Laminate' },
+          { value: 'wood', label: 'Solid wood' },
+        ]
+      },
+      {
+        id: 'worktop_length',
+        question: 'Approximately how much worktop length?',
+        type: 'radio',
+        required: true,
+        options: [
+          { value: '0-3m', label: 'Up to 3m' },
+          { value: '3-6m', label: '3m - 6m' },
+          { value: '6m+', label: '6m+' },
+        ]
+      },
+      {
+        id: 'cutouts_needed',
+        question: 'Which cutouts are needed?',
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'sink', label: 'Sink' },
+          { value: 'hob', label: 'Hob' },
+          { value: 'taps', label: 'Tap holes' },
+        ]
+      },
+      {
+        id: 'edge_finish',
+        question: 'What edge finish do you want?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'square', label: 'Square edge' },
+          { value: 'rounded', label: 'Rounded edge' },
+          { value: 'beveled', label: 'Beveled edge' },
+        ]
+      },
+      {
+        id: 'existing_worktop_removal',
+        question: 'Does an existing worktop need removing?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' },
+        ]
+      },
+      {
+        id: 'splashback_requirement',
+        question: 'Do you need a splashback installed?',
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes', label: 'Yes' },
+          { value: 'no', label: 'No' },
+        ]
       }
     ]
   }
