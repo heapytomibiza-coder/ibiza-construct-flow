@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Send, Paperclip, Smile, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useSpamDetection } from '@/hooks/messaging/useSpamDetection';
+import { SafetyWarningBanner } from './SafetyWarningBanner';
 
 interface MessageInputProps {
   onSend: (content: string, attachments?: any[]) => Promise<void>;
@@ -22,6 +23,8 @@ export const MessageInput = ({
   const [attachments, setAttachments] = useState<any[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const { checkSpamContent } = useSpamDetection();
+  const spamCheck = checkSpamContent(content);
 
   useEffect(() => {
     // Adjust textarea height
@@ -51,6 +54,11 @@ export const MessageInput = ({
   const handleSend = async () => {
     if (!content.trim() && attachments.length === 0) return;
 
+    // Block sending if spam severity is 'block'
+    if (spamCheck.severity === 'block') {
+      return;
+    }
+
     try {
       setSending(true);
       await onSend(content, attachments);
@@ -71,6 +79,14 @@ export const MessageInput = ({
 
   return (
     <div className="space-y-2">
+      {/* Spam Warning */}
+      {spamCheck.hasSpam && (
+        <SafetyWarningBanner
+          matches={spamCheck.matches}
+          severity={spamCheck.severity!}
+        />
+      )}
+
       {attachments.length > 0 && (
         <div className="flex gap-2 flex-wrap">
           {attachments.map((file, index) => (

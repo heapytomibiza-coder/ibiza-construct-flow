@@ -4408,6 +4408,47 @@ export type Database = {
         }
         Relationships: []
       }
+      job_timeline_events: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          event_description: string | null
+          event_title: string
+          event_type: string
+          id: string
+          job_id: string
+          metadata: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          event_description?: string | null
+          event_title: string
+          event_type: string
+          id?: string
+          job_id: string
+          metadata?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          event_description?: string | null
+          event_title?: string
+          event_type?: string
+          id?: string
+          job_id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_timeline_events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_versions: {
         Row: {
           change_reason: string | null
@@ -10088,38 +10129,27 @@ export type Database = {
       }
       spam_keywords: {
         Row: {
+          category: string
           created_at: string | null
-          created_by: string | null
           id: string
-          is_active: boolean | null
           keyword: string
-          severity: string | null
+          severity: string
         }
         Insert: {
+          category: string
           created_at?: string | null
-          created_by?: string | null
           id?: string
-          is_active?: boolean | null
           keyword: string
-          severity?: string | null
+          severity: string
         }
         Update: {
+          category?: string
           created_at?: string | null
-          created_by?: string | null
           id?: string
-          is_active?: boolean | null
           keyword?: string
-          severity?: string | null
+          severity?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "spam_keywords_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       stripe_customers: {
         Row: {
