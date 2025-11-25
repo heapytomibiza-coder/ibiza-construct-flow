@@ -16,7 +16,8 @@ export const ProfessionalReviewsSection = ({
     overallRating, 
     totalReviews, 
     averageRatings,
-    respondToReview 
+    respondToReview,
+    voteReview 
   } = useReviewSystem(professionalId);
 
   if (isLoading) {
@@ -57,6 +58,7 @@ export const ProfessionalReviewsSection = ({
       averageRatings={averageRatings}
       ratingDistribution={ratingDistribution}
       onRespond={(reviewId, responseText) => respondToReview.mutate({ reviewId, responseText })}
+      onVote={(reviewId, voteType) => voteReview.mutate({ reviewId, voteType })}
       isResponding={respondToReview.isPending}
     />
   );
