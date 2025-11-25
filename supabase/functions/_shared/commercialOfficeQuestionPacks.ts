@@ -11403,6 +11403,185 @@ export const commercialOfficeQuestionPacks = [
         required: false
       }
     ]
+  },
+
+  {
+    microSlug: 'regular-garden-maintenance',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'maintenance',
+    version: 1,
+    questions: [
+      { id: 'maintenance_frequency', question: 'How often would you like maintenance visits?', type: 'radio', required: true, options: [{ value: 'weekly', label: 'Weekly' }, { value: 'biweekly', label: 'Every 2 weeks' }, { value: 'monthly', label: 'Monthly' }, { value: 'one_off', label: 'Just a one-off tidy' }] },
+      { id: 'maintenance_tasks', question: 'What should be included in the maintenance visits?', type: 'checkbox', required: true, options: [{ value: 'lawn_mowing', label: 'Lawn mowing / edging' }, { value: 'weeding', label: 'Weeding beds and borders' }, { value: 'light_pruning', label: 'Light pruning and trimming' }, { value: 'leaf_clearing', label: 'Leaf / debris removal' }, { value: 'watering', label: 'Watering plants/pots if needed' }] },
+      { id: 'maintenance_garden_size', question: 'Roughly how large is the garden?', type: 'radio', required: true, options: [{ value: 'small', label: 'Small (up to 100 m²)' }, { value: 'medium', label: 'Medium (100–300 m²)' }, { value: 'large', label: 'Large (300–600 m²)' }, { value: 'very_large', label: 'Very large (600 m²+)' }] },
+      { id: 'maintenance_planting_type', question: 'What types of plants or areas need regular attention?', type: 'checkbox', required: false, options: [{ value: 'lawns', label: 'Lawns' }, { value: 'shrubs_hedges', label: 'Shrubs / hedges' }, { value: 'flower_beds', label: 'Flower beds' }, { value: 'pots', label: 'Pots / planters / terraces' }, { value: 'trees', label: 'Small trees' }] },
+      { id: 'maintenance_notes', question: 'Any special instructions (pets, gates, delicate plants, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'seasonal-pruning-preparation',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'maintenance',
+    version: 1,
+    questions: [
+      { id: 'seasonal_pruning_scope', question: 'What needs seasonal pruning or preparation?', type: 'checkbox', required: true, options: [{ value: 'hedges', label: 'Hedges' }, { value: 'shrubs', label: 'Shrubs' }, { value: 'fruit_trees', label: 'Fruit trees' }, { value: 'ornamental_trees', label: 'Ornamental trees' }, { value: 'climbers', label: 'Climbers and vines' }] },
+      { id: 'seasonal_pruning_height', question: 'What is the approximate height of the shrubs/hedges/trees?', type: 'radio', required: true, options: [{ value: 'up_to_2m', label: 'Up to 2m' }, { value: '2_4m', label: '2–4m' }, { value: '4_6m', label: '4–6m (may require ladders)' }, { value: 'over_6m', label: 'Over 6m (tall tree work)' }] },
+      { id: 'seasonal_extra_tasks', question: 'Do you need additional seasonal tasks?', type: 'checkbox', required: false, options: [{ value: 'mulching', label: 'Mulching beds' }, { value: 'fertilising', label: 'Fertilising' }, { value: 'leaf_clearance', label: 'Leaf clearance' }, { value: 'plant_protection', label: 'Plant protection for winter' }] },
+      { id: 'seasonal_notes', question: 'Any specific plants or areas that need special care?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'irrigation-check-and-setup',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'irrigation',
+    version: 1,
+    questions: [
+      { id: 'irrigation_system_type', question: 'What type of irrigation system do you have?', type: 'radio', required: true, options: [{ value: 'drip', label: 'Drip irrigation' }, { value: 'sprinklers', label: 'Sprinkler heads' }, { value: 'mixed', label: 'Mixed system' }, { value: 'not_sure', label: 'Not sure' }] },
+      { id: 'irrigation_tasks_needed', question: 'What kind of help do you need?', type: 'checkbox', required: true, options: [{ value: 'system_check', label: 'Full system check' }, { value: 'programming', label: 'Controller programming' }, { value: 'leak_check', label: 'Check for leaks' }, { value: 'coverage_adjustment', label: 'Adjust watering coverage' }] },
+      { id: 'irrigation_zones', question: 'How many irrigation zones or sectors do you have?', type: 'radio', required: false, options: [{ value: 'one_two', label: '1–2' }, { value: 'three_five', label: '3–5' }, { value: 'six_plus', label: '6 or more' }] },
+      { id: 'irrigation_notes', question: 'Any issues or areas with poor coverage?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'irrigation-repairs-leaks',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'irrigation',
+    version: 1,
+    questions: [
+      { id: 'irrigation_problem', question: 'What problem are you experiencing?', type: 'checkbox', required: true, options: [{ value: 'broken_pipes', label: 'Broken pipes or hoses' }, { value: 'leaking_joints', label: 'Leaking joints or connectors' }, { value: 'zone_not_working', label: 'One or more zones not working' }, { value: 'low_pressure', label: 'Low water pressure' }, { value: 'sprinkler_damage', label: 'Sprinkler head damage' }] },
+      { id: 'irrigation_damage_area', question: 'Where is the issue located?', type: 'radio', required: false, options: [{ value: 'garden_beds', label: 'Garden beds' }, { value: 'lawns', label: 'Lawns' }, { value: 'pots_terraces', label: 'Terraces / pots' }, { value: 'main_line', label: 'Main line from water point' }] },
+      { id: 'irrigation_notes', question: 'Describe any visible damage or symptoms you have noticed.', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'irrigation-system-installation',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'irrigation',
+    version: 1,
+    questions: [
+      { id: 'irrigation_install_scope', question: 'What kind of system do you want installed?', type: 'radio', required: true, options: [{ value: 'drip_system', label: 'Drip system' }, { value: 'sprinkler_system', label: 'Sprinkler system' }, { value: 'mixed_system', label: 'Mixed system' }] },
+      { id: 'irrigation_install_areas', question: 'Which areas require irrigation?', type: 'checkbox', required: true, options: [{ value: 'lawns', label: 'Lawns' }, { value: 'beds', label: 'Beds & borders' }, { value: 'pots', label: 'Pots / terraces' }, { value: 'vegetable_patch', label: 'Vegetable garden' }] },
+      { id: 'irrigation_install_water_source', question: 'Where will the system take water from?', type: 'radio', required: false, options: [{ value: 'single_tap', label: 'Single tap' }, { value: 'multiple_taps', label: 'Multiple taps' }, { value: 'pump_tank', label: 'Tank with pump' }] },
+      { id: 'irrigation_install_notes', question: 'Any obstacles or restrictions (long drive, uneven terrain, no power nearby)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'fertilization',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'lawn',
+    version: 1,
+    questions: [
+      { id: 'fert_area_type', question: 'Which areas need fertilisation?', type: 'checkbox', required: true, options: [{ value: 'lawns', label: 'Lawns' }, { value: 'flower_beds', label: 'Flower beds' }, { value: 'trees_shrubs', label: 'Trees & shrubs' }, { value: 'pots', label: 'Pots / planters' }] },
+      { id: 'fert_preferences', question: 'Do you have fertiliser preferences?', type: 'radio', required: false, options: [{ value: 'organic', label: 'Organic products only' }, { value: 'chemical_ok', label: 'Chemical fertilisers are fine' }, { value: 'mixed', label: 'Mix of both' }] },
+      { id: 'fert_notes', question: 'Any plants with known sensitivity or special needs?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'lawn-mowing',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'lawn',
+    version: 1,
+    questions: [
+      { id: 'mowing_area', question: 'Approximately how large is the lawn area?', type: 'radio', required: true, options: [{ value: 'small', label: 'Small (up to 50 m²)' }, { value: 'medium', label: 'Medium (50–150 m²)' }, { value: 'large', label: 'Large (150–300 m²)' }, { value: 'very_large', label: 'Very large (300 m²+)' }] },
+      { id: 'mowing_frequency', question: 'How often do you want lawn mowing?', type: 'radio', required: false, options: [{ value: 'weekly', label: 'Weekly' }, { value: 'biweekly', label: 'Every 2 weeks' }, { value: 'monthly', label: 'Monthly' }, { value: 'one_off', label: 'One-off cut' }] },
+      { id: 'mowing_notes', question: 'Any special needs (strimming edges, steep slopes, obstacles)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'artificial-grass-installation',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'lawn',
+    version: 1,
+    questions: [
+      { id: 'ag_area_size', question: 'What is the approximate area for artificial grass?', type: 'radio', required: true, options: [{ value: 'small', label: 'Up to 20 m²' }, { value: 'medium', label: '20–50 m²' }, { value: 'large', label: '50–100 m²' }, { value: 'very_large', label: '100 m²+' }] },
+      { id: 'ag_existing_surface', question: 'What is the current surface?', type: 'radio', required: false, options: [{ value: 'soil', label: 'Soil' }, { value: 'old_grass', label: 'Old grass/turf' }, { value: 'gravel', label: 'Gravel' }, { value: 'tiles_concrete', label: 'Tiles or concrete' }] },
+      { id: 'ag_usage', question: 'How will the artificial grass be used?', type: 'checkbox', required: false, options: [{ value: 'kids', label: 'Children play area' }, { value: 'pets', label: 'Pets' }, { value: 'high_traffic', label: 'High foot traffic' }, { value: 'decorative', label: 'Decorative only' }] },
+      { id: 'ag_notes', question: 'Any specific requirements (shock pads, drainage, pile height)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'lawn-repair-overseeding',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'lawn',
+    version: 1,
+    questions: [
+      { id: 'repair_problem', question: 'What issues are you experiencing with your lawn?', type: 'checkbox', required: true, options: [{ value: 'bare_patches', label: 'Bare patches' }, { value: 'weeds', label: 'Excessive weeds' }, { value: 'thinning_lawn', label: 'Thinning lawn' }, { value: 'poor_drainage', label: 'Poor drainage' }, { value: 'yellowing', label: 'Yellowing or poor colour' }] },
+      { id: 'repair_area_size', question: 'Approximate area needing repair:', type: 'radio', required: true, options: [{ value: 'small', label: 'Up to 20 m²' }, { value: 'medium', label: '20–50 m²' }, { value: 'large', label: '50–100 m²' }, { value: 'very_large', label: '100 m²+' }] },
+      { id: 'repair_notes', question: 'Any details about watering, shade, pets, or foot traffic?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'garden-lighting',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'outdoor',
+    version: 1,
+    questions: [
+      { id: 'lighting_type', question: 'What type of garden lighting are you interested in?', type: 'checkbox', required: true, options: [{ value: 'path_lights', label: 'Pathway lights' }, { value: 'uplights', label: 'Uplighting for trees/features' }, { value: 'wall_lights', label: 'Wall-mounted lights' }, { value: 'string_lights', label: 'String/festoon lighting' }, { value: 'spotlights', label: 'Spotlights' }] },
+      { id: 'lighting_power', question: 'How should the lighting be powered?', type: 'radio', required: false, options: [{ value: 'mains', label: 'Mains-powered' }, { value: 'solar', label: 'Solar-powered' }, { value: 'low_voltage', label: 'Low-voltage system' }] },
+      { id: 'lighting_notes', question: 'Any access limitations or desired effects (mood lighting, security, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'patio-terrace-construction',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'outdoor',
+    version: 1,
+    questions: [
+      { id: 'patio_material', question: 'What material would you like for the patio/terrace?', type: 'radio', required: true, options: [{ value: 'tile', label: 'Outdoor tiles' }, { value: 'stone', label: 'Natural stone' }, { value: 'concrete', label: 'Concrete / microcement' }, { value: 'composite', label: 'Composite decking' }] },
+      { id: 'patio_area_size', question: 'Approximate area size:', type: 'radio', required: true, options: [{ value: 'small', label: 'Up to 10 m²' }, { value: 'medium', label: '10–25 m²' }, { value: 'large', label: '25–50 m²' }, { value: 'very_large', label: '50 m²+' }] },
+      { id: 'patio_existing_surface', question: 'What is currently on the ground?', type: 'radio', required: false, options: [{ value: 'soil', label: 'Soil' }, { value: 'old_tiles', label: 'Old tiles/paving' }, { value: 'concrete', label: 'Concrete base' }] },
+      { id: 'patio_notes', question: 'Any details (drainage, steps, shading, furniture layout)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'pergola-gazebo-shade',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'outdoor',
+    version: 1,
+    questions: [
+      { id: 'shade_type', question: 'What type of structure do you want?', type: 'radio', required: true, options: [{ value: 'pergola', label: 'Pergola' }, { value: 'gazebo', label: 'Gazebo' }, { value: 'sail_shade', label: 'Shade sail' }] },
+      { id: 'shade_material', question: 'Preferred material:', type: 'radio', required: false, options: [{ value: 'wood', label: 'Wood' }, { value: 'aluminium', label: 'Aluminium' }, { value: 'steel', label: 'Steel' }] },
+      { id: 'shade_area', question: 'Approximate covered area needed:', type: 'radio', required: false, options: [{ value: 'small', label: 'Up to 10 m²' }, { value: 'medium', label: '10–20 m²' }, { value: 'large', label: '20 m²+' }] },
+      { id: 'shade_notes', question: 'Any specific preferences (retractable roof, privacy screens, lighting)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'hedge-trimming-shaping',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'trees',
+    version: 1,
+    questions: [
+      { id: 'hedge_length', question: 'Approximate total length of hedges to trim:', type: 'radio', required: true, options: [{ value: 'up_to_10m', label: 'Up to 10m' }, { value: '10_30m', label: '10–30m' }, { value: '30_60m', label: '30–60m' }, { value: '60m_plus', label: 'Over 60m' }] },
+      { id: 'hedge_height', question: 'Approximate height of hedges:', type: 'radio', required: false, options: [{ value: 'up_to_1_5m', label: 'Up to 1.5m' }, { value: '1_5_3m', label: '1.5–3m' }, { value: '3m_plus', label: 'Over 3m (requires ladders)' }] },
+      { id: 'hedge_style', question: 'What style do you prefer?', type: 'radio', required: false, options: [{ value: 'straight_clean', label: 'Straight and clean finish' }, { value: 'natural_shape', label: 'Natural shape' }, { value: 'formal_topiary', label: 'Formal topiary shaping' }] },
+      { id: 'hedge_notes', question: 'Any concerns (access issues, birds nesting, height restrictions)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'tree-pruning-removal',
+    categorySlug: 'gardening-landscaping',
+    subcategorySlug: 'trees',
+    version: 1,
+    questions: [
+      { id: 'tree_service_type', question: 'What tree service do you need?', type: 'radio', required: true, options: [{ value: 'pruning', label: 'Tree pruning' }, { value: 'crown_reduction', label: 'Crown reduction' }, { value: 'removal', label: 'Tree removal' }, { value: 'stump_removal', label: 'Stump removal only' }] },
+      { id: 'tree_quantity', question: 'How many trees?', type: 'radio', required: true, options: [{ value: 'one', label: '1 tree' }, { value: 'two_three', label: '2–3 trees' }, { value: 'four_plus', label: '4 or more trees' }] },
+      { id: 'tree_height', question: 'Approximate height of the tree(s):', type: 'radio', required: false, options: [{ value: 'under_4m', label: 'Under 4m' }, { value: '4_8m', label: '4–8m' }, { value: '8_12m', label: '8–12m' }, { value: '12m_plus', label: '12m or taller' }] },
+      { id: 'tree_access', question: 'How accessible is the tree for equipment?', type: 'radio', required: false, options: [{ value: 'easy_access', label: 'Easy access' }, { value: 'limited_access', label: 'Limited access (narrow paths)' }, { value: 'difficult_access', label: 'Difficult access (through house, steep areas)' }] },
+      { id: 'tree_notes', question: 'Any hazards or concerns (power lines, buildings, protected species)?', type: 'textarea', required: false }
+    ]
   }
 ];
 
