@@ -11582,6 +11582,262 @@ export const commercialOfficeQuestionPacks = [
       { id: 'tree_access', question: 'How accessible is the tree for equipment?', type: 'radio', required: false, options: [{ value: 'easy_access', label: 'Easy access' }, { value: 'limited_access', label: 'Limited access (narrow paths)' }, { value: 'difficult_access', label: 'Difficult access (through house, steep areas)' }] },
       { id: 'tree_notes', question: 'Any hazards or concerns (power lines, buildings, protected species)?', type: 'textarea', required: false }
     ]
+  },
+
+  {
+    microSlug: 'deck-construction',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'decking',
+    version: 1,
+    questions: [
+      { id: 'deck_location', question: 'Where will the deck be built?', type: 'radio', required: true, options: [{ value: 'ground_level_garden', label: 'Ground-level garden deck' }, { value: 'raised_terrace', label: 'Raised terrace / over structure' }, { value: 'rooftop', label: 'Rooftop deck' }, { value: 'balcony_extension', label: 'Balcony / extension of existing area' }] },
+      { id: 'deck_approx_size', question: 'Roughly what size deck are you looking for?', type: 'radio', required: true, options: [{ value: 'small_up_to_10', label: 'Small (up to 10 m²)' }, { value: 'medium_10_20', label: 'Medium (10–20 m²)' }, { value: 'large_20_40', label: 'Large (20–40 m²)' }, { value: 'very_large_40_plus', label: 'Very large (40 m²+)' }] },
+      { id: 'deck_structure', question: 'What kind of structure/support will the deck sit on?', type: 'radio', required: false, options: [{ value: 'bare_ground', label: 'Bare ground / soil' }, { value: 'existing_slab', label: 'Existing concrete or slab' }, { value: 'over_pool_room', label: 'Over a room / pool / void' }, { value: 'not_sure', label: 'Not sure – need advice' }] },
+      { id: 'deck_material_preference', question: 'Do you have a preferred deck surface material?', type: 'radio', required: false, options: [{ value: 'softwood', label: 'Softwood decking' }, { value: 'hardwood', label: 'Hardwood decking' }, { value: 'composite', label: 'Composite decking' }, { value: 'no_preference', label: 'No preference, open to advice' }] },
+      { id: 'deck_usage', question: 'How will the deck mainly be used?', type: 'checkbox', required: false, options: [{ value: 'dining', label: 'Outdoor dining' }, { value: 'lounging', label: 'Lounging / chill-out' }, { value: 'hot_tub_pool', label: 'Hot tub / pool area' }, { value: 'high_foot_traffic', label: 'High foot traffic / events' }] },
+      { id: 'deck_features', question: 'Do you want to include any of these features?', type: 'checkbox', required: false, options: [{ value: 'steps', label: 'Steps' }, { value: 'built_in_seating', label: 'Built-in seating' }, { value: 'privacy_screens', label: 'Privacy screens' }, { value: 'planter_boxes', label: 'Integrated planter boxes' }, { value: 'lighting', label: 'Integrated lighting' }] },
+      { id: 'deck_notes', question: 'Any important details (wind exposure, sea air, existing drawings, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'deck-repair',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'decking',
+    version: 1,
+    questions: [
+      { id: 'deck_repair_issue', question: 'What are the main problems with the current deck?', type: 'checkbox', required: true, options: [{ value: 'rotting_boards', label: 'Rotting or damaged boards' }, { value: 'loose_boards', label: 'Loose or moving boards' }, { value: 'unstable_frame', label: 'Unstable frame/substructure' }, { value: 'rusted_fixings', label: 'Rusted or failing fixings' }, { value: 'colour_fading', label: 'Colour fading or surface wear' }] },
+      { id: 'deck_repair_area', question: 'Roughly how much of the deck is affected?', type: 'radio', required: true, options: [{ value: 'small_patches', label: 'Small patches / local areas' }, { value: 'up_to_half', label: 'Up to half of the deck' }, { value: 'most_of_deck', label: 'Most of the deck' }, { value: 'entire_deck', label: 'The entire deck needs review' }] },
+      { id: 'deck_repair_material', question: 'What is the existing deck surface material?', type: 'radio', required: false, options: [{ value: 'softwood', label: 'Softwood' }, { value: 'hardwood', label: 'Hardwood' }, { value: 'composite', label: 'Composite' }, { value: 'not_sure', label: 'Not sure' }] },
+      { id: 'deck_repair_access', question: 'Is there easy access under or around the deck for repairs?', type: 'radio', required: false, options: [{ value: 'open_access', label: 'Yes, open access underneath' }, { value: 'limited_access', label: 'Limited access' }, { value: 'no_access', label: 'No access under the deck' }] },
+      { id: 'deck_repair_finish', question: 'Are you planning to change the deck appearance as part of the repair?', type: 'radio', required: false, options: [{ value: 'keep_same_look', label: 'Keep the same appearance' }, { value: 'upgrade_material', label: 'Upgrade to better materials' }, { value: 'full_redesign', label: 'Open to a full redesign' }] },
+      { id: 'deck_repair_notes', question: 'Any safety concerns (loose rails, trip hazards, structural worries)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'deck-replacement',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'decking',
+    version: 1,
+    questions: [
+      { id: 'deck_replacement_reason', question: 'Why are you replacing the existing deck?', type: 'checkbox', required: true, options: [{ value: 'structural_damage', label: 'Structural damage or rot' }, { value: 'outdated_look', label: 'Outdated look' }, { value: 'layout_change', label: 'Change of layout or size' }, { value: 'material_upgrade', label: 'Upgrade to different material' }] },
+      { id: 'old_deck_removal', question: 'Do you need the old deck removed and disposed of?', type: 'radio', required: true, options: [{ value: 'yes_full_removal', label: 'Yes, remove and dispose of everything' }, { value: 'partial_removal', label: 'Partial removal, keep some structure' }, { value: 'no_removal', label: 'No, removal already handled' }] },
+      { id: 'deck_replacement_size_change', question: 'Will the new deck be a different size or shape?', type: 'radio', required: false, options: [{ value: 'same_size', label: 'Same size and footprint' }, { value: 'slightly_larger', label: 'Slightly larger' }, { value: 'much_larger', label: 'Much larger' }, { value: 'different_shape', label: 'Different shape/layout' }] },
+      { id: 'deck_replacement_material', question: 'Preferred material for the new deck surface:', type: 'radio', required: false, options: [{ value: 'softwood', label: 'Softwood decking' }, { value: 'hardwood', label: 'Hardwood decking' }, { value: 'composite', label: 'Composite decking' }, { value: 'open_to_advice', label: 'Open to professional advice' }] },
+      { id: 'deck_replacement_features', question: 'Do you want to add or change any features on the new deck?', type: 'checkbox', required: false, options: [{ value: 'rails_balustrades', label: 'Rails / balustrades' }, { value: 'steps', label: 'Steps' }, { value: 'pergola', label: 'Pergola or overhead structure' }, { value: 'seating_storage', label: 'Built-in seating or storage' }] },
+      { id: 'deck_replacement_notes', question: 'Any important considerations (pool edges, boundaries, existing services)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'deck-staining-sealing',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'decking',
+    version: 1,
+    questions: [
+      { id: 'deck_treatment_type', question: 'What treatment does your deck need?', type: 'checkbox', required: true, options: [{ value: 'clean_only', label: 'Deep clean only' }, { value: 'stain_or_oil', label: 'Staining or oiling' }, { value: 'protective_seal', label: 'Protective seal/varnish' }, { value: 'strip_old_finish', label: 'Strip old finish and re-treat' }] },
+      { id: 'deck_condition', question: 'What condition is the deck surface currently in?', type: 'radio', required: true, options: [{ value: 'faded_only', label: 'Faded but sound' }, { value: 'patchy_finish', label: 'Patchy or flaking finish' }, { value: 'mould_mildew', label: 'Mould, mildew or greening' }, { value: 'surface_cracking', label: 'Cracking or splintering boards' }] },
+      { id: 'deck_approx_area', question: 'Approximate area to be treated:', type: 'radio', required: true, options: [{ value: 'small_up_to_15', label: 'Up to 15 m²' }, { value: 'medium_15_30', label: '15–30 m²' }, { value: 'large_30_60', label: '30–60 m²' }, { value: 'very_large_60_plus', label: 'More than 60 m²' }] },
+      { id: 'deck_finish_preference', question: 'Do you have a preferred finish look?', type: 'radio', required: false, options: [{ value: 'clear', label: 'Clear protective finish' }, { value: 'natural_tint', label: 'Natural tinted oil/stain' }, { value: 'dark_stain', label: 'Darker stain' }, { value: 'not_sure', label: 'Not sure, need advice' }] },
+      { id: 'deck_treatment_notes', question: 'Any special details (near pool, heavy use area, pets, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'fence-installation',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'decking',
+    version: 1,
+    questions: [
+      { id: 'fence_purpose', question: 'What is the main purpose of the fence?', type: 'checkbox', required: true, options: [{ value: 'privacy', label: 'Privacy' }, { value: 'security', label: 'Security' }, { value: 'boundary_marking', label: 'Marking boundaries' }, { value: 'pet_containment', label: 'Keeping pets in/out' }, { value: 'decorative', label: 'Decorative feature' }] },
+      { id: 'fence_length', question: 'Approximate total length of fencing required:', type: 'radio', required: true, options: [{ value: 'up_to_10m', label: 'Up to 10 m' }, { value: '10_30m', label: '10–30 m' }, { value: '30_60m', label: '30–60 m' }, { value: 'over_60m', label: 'Over 60 m' }] },
+      { id: 'fence_height', question: 'What approximate fence height do you want?', type: 'radio', required: false, options: [{ value: 'low_up_to_1m', label: 'Low (up to 1 m)' }, { value: 'standard_1_2m', label: 'Standard (1–1.5 m)' }, { value: 'high_1_8m_plus', label: 'High (1.8 m+)' }] },
+      { id: 'fence_material', question: 'Preferred fence material:', type: 'radio', required: false, options: [{ value: 'timber', label: 'Timber' }, { value: 'composite', label: 'Composite boards' }, { value: 'metal', label: 'Metal / mesh sections' }, { value: 'mixed', label: 'Combination of materials' }, { value: 'no_preference', label: 'No preference' }] },
+      { id: 'fence_ground_conditions', question: 'What are ground conditions like where the fence will go?', type: 'radio', required: false, options: [{ value: 'level_ground', label: 'Mostly level ground' }, { value: 'sloped_ground', label: 'Sloping/uneven ground' }, { value: 'rocky_or_hard', label: 'Rocky or very hard ground' }, { value: 'not_sure', label: 'Not sure' }] },
+      { id: 'fence_existing', question: 'Is there an existing fence that needs removing?', type: 'radio', required: false, options: [{ value: 'no_existing', label: 'No, new line of fence' }, { value: 'remove_existing', label: 'Yes, remove and dispose of old fence' }, { value: 'partial_replacement', label: 'Partial replacement only' }] },
+      { id: 'fence_notes', question: 'Any important details (shared boundaries, access issues, gates needed)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'gazebo-construction',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'decking',
+    version: 1,
+    questions: [
+      { id: 'gazebo_type', question: 'What type of gazebo are you looking for?', type: 'radio', required: true, options: [{ value: 'open_sided', label: 'Open-sided gazebo' }, { value: 'partially_enclosed', label: 'Partially enclosed' }, { value: 'fully_enclosed', label: 'Fully enclosed structure' }] },
+      { id: 'gazebo_base', question: 'Is there an existing base for the gazebo?', type: 'radio', required: false, options: [{ value: 'existing_slab', label: 'Yes, existing hardstanding/slab' }, { value: 'deck_or_terrace', label: 'Existing deck/terrace' }, { value: 'bare_ground', label: 'No, currently bare ground' }] },
+      { id: 'gazebo_size', question: 'Approximate gazebo size:', type: 'radio', required: false, options: [{ value: 'small_3x3', label: 'Small (up to 3×3 m)' }, { value: 'medium_3x4', label: 'Medium (around 3×4 m)' }, { value: 'large_4x5_plus', label: 'Large (4×5 m or bigger)' }] },
+      { id: 'gazebo_use', question: 'How will you mainly use the gazebo?', type: 'checkbox', required: false, options: [{ value: 'dining_area', label: 'Dining area' }, { value: 'chillout_lounge', label: 'Chill-out lounge' }, { value: 'outdoor_kitchen', label: 'Outdoor kitchen/bar' }, { value: 'hot_tub_cover', label: 'Cover for hot tub/pool area' }] },
+      { id: 'gazebo_material', question: 'Preferred structure material:', type: 'radio', required: false, options: [{ value: 'timber', label: 'Timber' }, { value: 'metal', label: 'Metal' }, { value: 'mixed', label: 'Mixed materials' }, { value: 'no_preference', label: 'No preference' }] },
+      { id: 'gazebo_notes', question: 'Any additional details (wind exposure, screens, lighting, curtains, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'outdoor-furniture-assembly',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'decking',
+    version: 1,
+    questions: [
+      { id: 'furniture_items', question: 'What type of outdoor furniture needs assembly?', type: 'checkbox', required: true, options: [{ value: 'tables_chairs', label: 'Tables and chairs' }, { value: 'sofas_loungers', label: 'Outdoor sofas/loungers' }, { value: 'daybeds', label: 'Daybeds/cabanas' }, { value: 'storage_boxes', label: 'Storage boxes/benches' }, { value: 'other_items', label: 'Other outdoor furniture' }] },
+      { id: 'furniture_quantity', question: 'Roughly how many pieces need assembly?', type: 'radio', required: true, options: [{ value: 'up_to_5', label: 'Up to 5 pieces' }, { value: '5_10', label: '5–10 pieces' }, { value: '10_20', label: '10–20 pieces' }, { value: '20_plus', label: 'More than 20 pieces' }] },
+      { id: 'furniture_condition', question: 'What is the status of the items to be assembled?', type: 'radio', required: false, options: [{ value: 'new_boxed', label: 'New, still boxed' }, { value: 'partially_assembled', label: 'Partially assembled already' }, { value: 'old_disassembled', label: 'Previously used, disassembled' }] },
+      { id: 'furniture_instructions', question: 'Do you have the original assembly instructions and fixings?', type: 'radio', required: false, options: [{ value: 'yes_all', label: 'Yes, all instructions and fixings' }, { value: 'some_missing', label: 'Some parts/instructions missing' }, { value: 'none_available', label: 'No instructions or fixings' }] },
+      { id: 'furniture_notes', question: 'Any extra info (brand names, heavy items, roof terraces, access issues)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'pergola-installation',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'decking',
+    version: 1,
+    questions: [
+      { id: 'pergola_scope', question: 'Do you need a new pergola supplied and installed or just installation?', type: 'radio', required: true, options: [{ value: 'supply_and_install', label: 'Supply and install a new pergola' }, { value: 'install_client_supplied', label: 'Install a pergola I already have' }] },
+      { id: 'pergola_location', question: 'Where will the pergola be installed?', type: 'checkbox', required: true, options: [{ value: 'over_deck', label: 'Over a deck' }, { value: 'over_terrace', label: 'Over a terrace/patio' }, { value: 'freestanding_garden', label: 'Freestanding in the garden' }, { value: 'attached_building', label: 'Attached to the house/building' }] },
+      { id: 'pergola_size', question: 'Approximate pergola size:', type: 'radio', required: false, options: [{ value: 'small_3x3', label: 'Up to 3×3 m' }, { value: 'medium_3x4', label: 'Around 3×4 m' }, { value: 'large_4x5_plus', label: '4×5 m or larger' }] },
+      { id: 'pergola_roof_type', question: 'What type of roof/shade do you want?', type: 'radio', required: false, options: [{ value: 'open_slats', label: 'Open slats only' }, { value: 'fixed_roof', label: 'Fixed roof (tiles/polycarbonate/etc.)' }, { value: 'retractable_canopy', label: 'Retractable canopy' }, { value: 'climbing_plants', label: 'For climbing plants' }] },
+      { id: 'pergola_material', question: 'Preferred pergola material:', type: 'radio', required: false, options: [{ value: 'timber', label: 'Timber' }, { value: 'aluminium', label: 'Aluminium' }, { value: 'steel', label: 'Steel' }, { value: 'mixed', label: 'Mixed materials' }] },
+      { id: 'pergola_notes', question: 'Any details (windy location, sea air, lighting, curtains, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'door-frame-replacement',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'doors',
+    version: 1,
+    questions: [
+      { id: 'door_frame_location', question: 'Where are the door frames that need replacing?', type: 'checkbox', required: true, options: [{ value: 'internal', label: 'Internal doors' }, { value: 'external', label: 'External doors' }, { value: 'both', label: 'Both internal and external' }] },
+      { id: 'door_frame_quantity', question: 'How many door frames need replacement?', type: 'radio', required: true, options: [{ value: 'one_two', label: '1–2 frames' }, { value: 'three_five', label: '3–5 frames' }, { value: 'six_ten', label: '6–10 frames' }, { value: 'ten_plus', label: 'More than 10 frames' }] },
+      { id: 'door_frame_condition', question: 'What is wrong with the existing frames?', type: 'checkbox', required: false, options: [{ value: 'rotten_damaged', label: 'Rotten or damaged wood' }, { value: 'twisted_out_square', label: 'Twisted/out of square' }, { value: 'old_design', label: 'Old design, changing for aesthetics' }, { value: 'impact_damage', label: 'Impact damage (kicked in, cracked, etc.)' }] },
+      { id: 'door_frame_material_preference', question: 'Preferred material for new frames:', type: 'radio', required: false, options: [{ value: 'softwood_painted', label: 'Softwood for painting' }, { value: 'hardwood', label: 'Hardwood for staining/varnish' }, { value: 'mdf_internals', label: 'MDF (internal only)' }, { value: 'match_existing', label: 'Match existing style/material' }] },
+      { id: 'door_frame_notes', question: 'Any special requirements (fire-rated frames, extra-thick walls, soundproofing)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'door-hanging',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'doors',
+    version: 1,
+    questions: [
+      { id: 'door_hanging_scope', question: 'What do you need help with?', type: 'radio', required: true, options: [{ value: 'hang_new_doors_existing_frames', label: 'Hang new doors in existing frames' }, { value: 'adjust_existing_doors', label: 'Adjust/re-hang existing doors' }, { value: 'mixed_new_and_existing', label: 'Mix of new and existing doors' }] },
+      { id: 'door_hanging_quantity', question: 'How many doors are involved?', type: 'radio', required: true, options: [{ value: 'one_two', label: '1–2 doors' }, { value: 'three_five', label: '3–5 doors' }, { value: 'six_ten', label: '6–10 doors' }, { value: 'ten_plus', label: 'More than 10 doors' }] },
+      { id: 'door_hanging_type', question: 'What type of doors are they?', type: 'checkbox', required: false, options: [{ value: 'standard_internal', label: 'Standard internal doors' }, { value: 'heavy_solid', label: 'Heavy solid doors' }, { value: 'glazed', label: 'Glazed doors' }, { value: 'fire_doors', label: 'Fire doors' }] },
+      { id: 'door_hanging_hardware', question: 'What is the situation with hinges and handles?', type: 'radio', required: false, options: [{ value: 'reuse_existing', label: 'Reuse existing hardware' }, { value: 'client_supplies_new', label: 'I will supply new hardware' }, { value: 'pro_supply_fit', label: 'Professional to supply and fit' }] },
+      { id: 'door_hanging_notes', question: 'Any challenges (uneven floors, tight clearances, special seals, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'door-installation',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'doors',
+    version: 1,
+    questions: [
+      { id: 'door_install_type', question: 'What type of door installation do you need?', type: 'radio', required: true, options: [{ value: 'internal', label: 'Internal door(s)' }, { value: 'external', label: 'External door(s)' }, { value: 'both', label: 'Both internal and external' }] },
+      { id: 'door_install_scope', question: 'What is included in the installation?', type: 'radio', required: true, options: [{ value: 'door_leaf_only', label: 'Door leaf only (frame in place)' }, { value: 'door_and_frame', label: 'Door and new frame' }, { value: 'new_opening', label: 'Create new opening and install door' }] },
+      { id: 'door_install_quantity', question: 'How many doors are to be installed?', type: 'radio', required: true, options: [{ value: 'one_two', label: '1–2 doors' }, { value: 'three_five', label: '3–5 doors' }, { value: 'six_ten', label: '6–10 doors' }, { value: 'ten_plus', label: 'More than 10 doors' }] },
+      { id: 'door_install_material', question: 'What type of doors are being installed?', type: 'radio', required: false, options: [{ value: 'hollow_core', label: 'Hollow-core/lightweight' }, { value: 'solid_wood', label: 'Solid wood' }, { value: 'engineered', label: 'Engineered/laminated' }, { value: 'metal_security', label: 'Metal/security doors' }] },
+      { id: 'door_install_notes', question: 'Any extra details (fire rating, acoustic rating, special locks, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'door-repair',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'doors',
+    version: 1,
+    questions: [
+      { id: 'door_repair_issue', question: 'What problems are you having with the door(s)?', type: 'checkbox', required: true, options: [{ value: 'sticking', label: 'Door sticks or drags' }, { value: 'won_t_close', label: 'Door won\'t close or latch' }, { value: 'frame_damage', label: 'Frame or casing is damaged' }, { value: 'hinge_loose', label: 'Loose or damaged hinges' }, { value: 'surface_damage', label: 'Surface damage to the door' }] },
+      { id: 'door_repair_location', question: 'Are these internal or external doors?', type: 'radio', required: false, options: [{ value: 'internal', label: 'Internal doors' }, { value: 'external', label: 'External doors' }, { value: 'both', label: 'A mix of both' }] },
+      { id: 'door_repair_quantity', question: 'How many doors need repair?', type: 'radio', required: true, options: [{ value: 'one', label: '1 door' }, { value: 'two_three', label: '2–3 doors' }, { value: 'four_plus', label: '4 or more doors' }] },
+      { id: 'door_repair_notes', question: 'Any extra details (water damage, previous repairs, security concerns)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'french-doors-installation',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'doors',
+    version: 1,
+    questions: [
+      { id: 'french_doors_location', question: 'Where will the French doors be installed?', type: 'radio', required: true, options: [{ value: 'garden_terrace_access', label: 'Garden/terrace access' }, { value: 'balcony_access', label: 'Balcony access' }, { value: 'internal_divider', label: 'Internal room divider' }] },
+      { id: 'french_doors_opening_status', question: 'Is there an existing opening?', type: 'radio', required: true, options: [{ value: 'use_existing', label: 'Use existing opening' }, { value: 'enlarge_opening', label: 'Enlarge an existing opening' }, { value: 'new_opening', label: 'Create a new opening' }] },
+      { id: 'french_doors_material', question: 'Preferred material for the French doors:', type: 'radio', required: false, options: [{ value: 'timber', label: 'Timber' }, { value: 'aluminium', label: 'Aluminium' }, { value: 'upvc', label: 'uPVC' }, { value: 'mixed', label: 'Mixed materials' }] },
+      { id: 'french_doors_glazing', question: 'Any glazing or performance preferences?', type: 'checkbox', required: false, options: [{ value: 'double_glazing', label: 'Double glazing' }, { value: 'solar_control', label: 'Solar control glass' }, { value: 'safety_glass', label: 'Safety/laminated glass' }] },
+      { id: 'french_doors_notes', question: 'Any special details (low threshold, security spec, shutters, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'sliding-doors-installation',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'doors',
+    version: 1,
+    questions: [
+      { id: 'sliding_doors_location', question: 'Where will the sliding doors be installed?', type: 'radio', required: true, options: [{ value: 'internal_room_divider', label: 'Internal room divider' }, { value: 'wardrobe_or_storage', label: 'Wardrobe/storage' }, { value: 'patio_balcony', label: 'Patio/balcony access' }] },
+      { id: 'sliding_doors_system_type', question: 'What kind of sliding system do you need?', type: 'radio', required: true, options: [{ value: 'top_hung', label: 'Top-hung track system' }, { value: 'bottom_rolling', label: 'Bottom-rolling track' }, { value: 'pocket_system', label: 'Into-wall pocket system' }, { value: 'wardrobe_tracks', label: 'Wardrobe track system' }] },
+      { id: 'sliding_doors_quantity', question: 'How many sliding door sets are there?', type: 'radio', required: true, options: [{ value: 'one', label: '1 set' }, { value: 'two_three', label: '2–3 sets' }, { value: 'four_plus', label: '4 or more sets' }] },
+      { id: 'sliding_doors_notes', question: 'Any important details (glass panels, soft-close, wall space, power, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'window-frame-replacement',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'windows',
+    version: 1,
+    questions: [
+      { id: 'window_frame_type', question: 'What type of window frames need replacing?', type: 'checkbox', required: true, options: [{ value: 'standard_windows', label: 'Standard windows' }, { value: 'bay_or_corner', label: 'Bay or corner windows' }, { value: 'roof_windows', label: 'Roof windows' }] },
+      { id: 'window_frame_material_existing', question: 'What material are the existing frames?', type: 'radio', required: false, options: [{ value: 'timber', label: 'Timber' }, { value: 'metal', label: 'Metal' }, { value: 'upvc', label: 'uPVC' }, { value: 'mixed', label: 'Mixed/unknown' }] },
+      { id: 'window_frame_quantity', question: 'How many window frames need replacement?', type: 'radio', required: true, options: [{ value: 'one_two', label: '1–2 windows' }, { value: 'three_five', label: '3–5 windows' }, { value: 'six_ten', label: '6–10 windows' }, { value: 'ten_plus', label: 'More than 10 windows' }] },
+      { id: 'window_frame_damage', question: 'What issues do the current frames have?', type: 'checkbox', required: false, options: [{ value: 'rot_or_decay', label: 'Rot or decay' }, { value: 'warping', label: 'Warping or movement' }, { value: 'paint_or_finish_failure', label: 'Severely failing paint/finish' }, { value: 'structural_cracks', label: 'Cracks or structural damage' }] },
+      { id: 'window_frame_notes', question: 'Any extra notes (heritage restrictions, shutters, bars, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'window-installation',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'windows',
+    version: 1,
+    questions: [
+      { id: 'window_install_scope', question: 'What kind of window installation do you need?', type: 'radio', required: true, options: [{ value: 'new_opening', label: 'New window opening' }, { value: 'replace_existing', label: 'Replace existing window' }, { value: 'enlarge_opening', label: 'Enlarge/alter opening' }] },
+      { id: 'window_install_material', question: 'Preferred window frame material:', type: 'radio', required: false, options: [{ value: 'timber', label: 'Timber' }, { value: 'aluminium', label: 'Aluminium' }, { value: 'upvc', label: 'uPVC' }, { value: 'no_preference', label: 'No preference' }] },
+      { id: 'window_install_quantity', question: 'How many windows are to be installed?', type: 'radio', required: true, options: [{ value: 'one_two', label: '1–2 windows' }, { value: 'three_five', label: '3–5 windows' }, { value: 'six_ten', label: '6–10 windows' }, { value: 'ten_plus', label: 'More than 10 windows' }] },
+      { id: 'window_install_notes', question: 'Any special requirements (acoustic glazing, security bars, shutters, etc.)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'window-repair',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'windows',
+    version: 1,
+    questions: [
+      { id: 'window_repair_issue', question: 'What issues do you have with your windows?', type: 'checkbox', required: true, options: [{ value: 'stuck_windows', label: 'Windows stuck or hard to open' }, { value: 'drafts', label: 'Drafts around frames' }, { value: 'rot_damage', label: 'Rot or damage to frame/sashes' }, { value: 'hardware_failure', label: 'Handles/hinges/locks not working' }, { value: 'broken_beads_putty', label: 'Broken beading/putty' }] },
+      { id: 'window_repair_material', question: 'What material are the affected windows?', type: 'radio', required: false, options: [{ value: 'timber', label: 'Timber' }, { value: 'metal', label: 'Metal' }, { value: 'upvc', label: 'uPVC' }, { value: 'mixed', label: 'Mixed/unsure' }] },
+      { id: 'window_repair_quantity', question: 'How many windows need repair?', type: 'radio', required: true, options: [{ value: 'one', label: '1 window' }, { value: 'two_three', label: '2–3 windows' }, { value: 'four_plus', label: '4 or more windows' }] },
+      { id: 'window_repair_notes', question: 'Any extra details (condensation, water ingress, external access issues)?', type: 'textarea', required: false }
+    ]
+  },
+
+  {
+    microSlug: 'cabinet-installation',
+    categorySlug: 'carpentry',
+    subcategorySlug: 'joinery',
+    version: 1,
+    questions: [
+      { id: 'cabinet_type', question: 'What type of cabinets are being installed?', type: 'checkbox', required: true, options: [{ value: 'kitchen_units', label: 'Kitchen units' }, { value: 'bathroom_units', label: 'Bathroom units' }, { value: 'built_in_wardrobes', label: 'Built-in wardrobes' }, { value: 'storage_cupboards', label: 'Storage cupboards/shelving' }, { value: 'media_units', label: 'Media/TV units' }] },
+      { id: 'cabinet_supply', question: 'Who is supplying the cabinets?', type: 'radio', required: true, options: [{ value: 'client_supplied_flatpack', label: 'Client-supplied flat-pack' }, { value: 'client_supplied_assembled', label: 'Client-supplied assembled units' }, { value: 'pro_to_supply', label: 'Professional to supply and install' }] },
+      { id: 'cabinet_quantity', question: 'Roughly how many units are there?', type: 'radio', required: true, options: [{ value: 'up_to_5', label: 'Up to 5 units' }, { value: '6_10', label: '6–10 units' }, { value: '11_20', label: '11–20 units' }, { value: '20_plus', label: 'More than 20 units' }] },
+      { id: 'cabinet_wall_type', question: 'What type of walls will the cabinets be fixed to?', type: 'radio', required: false, options: [{ value: 'solid_masonry', label: 'Solid masonry' }, { value: 'stud_plasterboard', label: 'Stud/plasterboard' }, { value: 'mixed', label: 'Mix of both' }, { value: 'not_sure', label: 'Not sure' }] },
+      { id: 'cabinet_notes', question: 'Any special requirements (integrated lighting, appliance housing, very heavy items)?', type: 'textarea', required: false }
+    ]
   }
 ];
 
