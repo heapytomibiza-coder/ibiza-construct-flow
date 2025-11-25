@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useContract } from '@/hooks/useContract';
-import { useReviews } from '@/hooks/useReviews';
+import { useReviewSystem } from '@/hooks/useReviewSystem';
 import { FileText, DollarSign, Calendar, User, CheckCircle, Clock, AlertCircle, MessageCircle, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
