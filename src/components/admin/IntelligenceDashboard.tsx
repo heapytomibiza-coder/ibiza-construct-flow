@@ -126,7 +126,7 @@ export function IntelligenceDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${forecasts?.[0]?.predicted_revenue?.toLocaleString() || 0}
+              ${forecasts?.[0]?.projected_revenue?.toLocaleString() || 0}
             </div>
             <p className="text-xs text-muted-foreground">
               Next period estimate
