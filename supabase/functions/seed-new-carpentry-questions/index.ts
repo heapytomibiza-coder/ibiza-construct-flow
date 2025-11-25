@@ -1,6 +1,6 @@
 /**
  * Seed New Question Packs - Batch 1
- * Inserts 27 question packs: Carpentry (17) + Floors/Doors/Windows (10)
+ * Inserts 40 question packs: Carpentry (17) + Floors/Doors/Windows (23)
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';

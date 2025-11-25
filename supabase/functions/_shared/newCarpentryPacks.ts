@@ -1,6 +1,6 @@
 /**
  * New Question Packs - Batch 1
- * Carpentry (17) + Floors, Doors & Windows (5) = 22 packs total
+ * Carpentry (17) + Floors, Doors & Windows (23) = 40 packs total
  * Format: Ready for seed function
  */
 
@@ -2079,6 +2079,640 @@ export const newCarpentryQuestionPacks = [
           { i18nKey: 'floors-doors-windows.doors.internal-door-fitting.q5.options.hardware-already-fitted', value: 'hardware-already-fitted', order: 4 }
         ]
       }
+    ]
+  },
+
+  // 28. internal-door-replacement
+  {
+    microSlug: 'internal-door-replacement',
+    subcategorySlug: 'doors',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q1.options.door-only', value: 'door-only', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q1.options.door-and-frame', value: 'door-and-frame', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q1.options.door-frame-and-architrave', value: 'door-frame-and-architrave', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q1.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q2.options.1-2', value: '1-2', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q2.options.3-5', value: '3-5', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q2.options.6-10', value: '6-10', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q2.options.10-plus', value: '10-plus', order: 3 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q3.options.flush', value: 'flush', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q3.options.panelled', value: 'panelled', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q3.options.glazed', value: 'glazed', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q3.options.modern', value: 'modern', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q3.options.traditional', value: 'traditional', order: 4 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q3.options.not-sure', value: 'not-sure', order: 5 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q4.options.hollow-core', value: 'hollow-core', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q4.options.solid-timber', value: 'solid-timber', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q4.options.mdf-engineered', value: 'mdf-engineered', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q4.options.glazed', value: 'glazed', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q4.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q5.options.good', value: 'good', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q5.options.minor-repairs-needed', value: 'minor-repairs-needed', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q5.options.need-full-replacement', value: 'need-full-replacement', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q5.options.mixture', value: 'mixture', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q5.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q6', type: 'single', i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q6', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q6.options.reuse-existing-hardware', value: 'reuse-existing-hardware', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q6.options.new-handles-latches', value: 'new-handles-latches', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q6.options.new-locks', value: 'new-locks', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q6.options.all-new-hardware', value: 'all-new-hardware', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.internal-door-replacement.q6.options.not-sure', value: 'not-sure', order: 4 }
+      ]}
+    ]
+  },
+
+  // 29. laminate-engineered-wood
+  {
+    microSlug: 'laminate-engineered-wood',
+    subcategorySlug: 'flooring',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q1.options.laminate', value: 'laminate', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q1.options.engineered-wood', value: 'engineered-wood', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q1.options.click-system', value: 'click-system', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q1.options.glue-down-engineered-wood', value: 'glue-down-engineered-wood', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q1.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q2.options.up-to-15m2', value: 'up-to-15m2', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q2.options.15-30m2', value: '15-30m2', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q2.options.30-50m2', value: '30-50m2', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q2.options.50m2-plus', value: '50m2-plus', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q2.options.multiple-rooms', value: 'multiple-rooms', order: 4 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q3.options.good-and-level', value: 'good-and-level', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q3.options.some-uneven-spots', value: 'some-uneven-spots', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q3.options.needs-levelling', value: 'needs-levelling', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q3.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q4.options.yes-remove-old-flooring', value: 'yes-remove-old-flooring', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q4.options.no-removal-needed', value: 'no-removal-needed', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q4.options.not-sure', value: 'not-sure', order: 2 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q5.options.yes-supply-and-install-underlay', value: 'yes-supply-and-install-underlay', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q5.options.no-already-supplied', value: 'no-already-supplied', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q5.options.need-advice', value: 'need-advice', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q5.options.unsure', value: 'unsure', order: 3 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q6.options.skirting-removal-refit', value: 'skirting-removal-refit', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q6.options.new-scotia-beading', value: 'new-scotia-beading', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q6.options.door-trimming', value: 'door-trimming', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.laminate-engineered-wood.q6.options.none', value: 'none', order: 3 }
+      ]}
+    ]
+  },
+
+  // 30. new-flooring-installation
+  {
+    microSlug: 'new-flooring-installation',
+    subcategorySlug: 'flooring',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q1.options.laminate', value: 'laminate', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q1.options.engineered-wood', value: 'engineered-wood', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q1.options.solid-wood', value: 'solid-wood', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q1.options.vinyl-lvt', value: 'vinyl-lvt', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q1.options.tile-stone', value: 'tile-stone', order: 4 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q1.options.carpet', value: 'carpet', order: 5 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q1.options.not-sure', value: 'not-sure', order: 6 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q2.options.up-to-15m2', value: 'up-to-15m2', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q2.options.15-30m2', value: '15-30m2', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q2.options.30-50m2', value: '30-50m2', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q2.options.50m2-plus', value: '50m2-plus', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q2.options.multiple-rooms', value: 'multiple-rooms', order: 4 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q3.options.concrete', value: 'concrete', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q3.options.timber-floorboards', value: 'timber-floorboards', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q3.options.chipboard', value: 'chipboard', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q3.options.mixed-unsure', value: 'mixed-unsure', order: 3 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q4.options.yes', value: 'yes', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q4.options.no', value: 'no', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q4.options.partially', value: 'partially', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q4.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q5.options.yes', value: 'yes', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q5.options.no', value: 'no', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q5.options.need-advice', value: 'need-advice', order: 2 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q6.options.skirting-boards', value: 'skirting-boards', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q6.options.beading', value: 'beading', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q6.options.door-trimming', value: 'door-trimming', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q6.options.floor-levelling', value: 'floor-levelling', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.new-flooring-installation.q6.options.none', value: 'none', order: 4 }
+      ]}
+    ]
+  },
+
+  // 31. patio-balcony-doors
+  {
+    microSlug: 'patio-balcony-doors',
+    subcategorySlug: 'doors',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q1.options.sliding-doors', value: 'sliding-doors', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q1.options.french-doors', value: 'french-doors', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q1.options.bifold-doors', value: 'bifold-doors', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q1.options.lift-and-slide', value: 'lift-and-slide', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q1.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q2.options.replacing-existing-doors', value: 'replacing-existing-doors', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q2.options.replacing-a-window', value: 'replacing-a-window', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q2.options.new-opening-required', value: 'new-opening-required', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q2.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q3.options.aluminium', value: 'aluminium', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q3.options.upvc', value: 'upvc', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q3.options.timber', value: 'timber', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q3.options.composite', value: 'composite', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q3.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q4.options.standard-double-glazing', value: 'standard-double-glazing', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q4.options.triple-glazing', value: 'triple-glazing', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q4.options.laminated-safety-glass', value: 'laminated-safety-glass', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q4.options.solar-control-glass', value: 'solar-control-glass', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q4.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q5.options.standard', value: 'standard', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q5.options.flush-low-threshold', value: 'flush-low-threshold', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q5.options.wheelchair-accessible', value: 'wheelchair-accessible', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q5.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q6.options.interior-plastering', value: 'interior-plastering', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q6.options.exterior-rendering', value: 'exterior-rendering', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q6.options.painting', value: 'painting', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.patio-balcony-doors.q6.options.none', value: 'none', order: 3 }
+      ]}
+    ]
+  },
+
+  // 32. roof-windows-skylights
+  {
+    microSlug: 'roof-windows-skylights',
+    subcategorySlug: 'windows',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q1.options.velux-rooflight', value: 'velux-rooflight', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q1.options.flat-roof-skylight', value: 'flat-roof-skylight', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q1.options.sun-tunnel', value: 'sun-tunnel', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q1.options.electric-opening-roof-window', value: 'electric-opening-roof-window', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q1.options.fixed-skylight', value: 'fixed-skylight', order: 4 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q1.options.not-sure', value: 'not-sure', order: 5 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q2.options.pitched-roof', value: 'pitched-roof', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q2.options.flat-roof', value: 'flat-roof', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q2.options.not-sure', value: 'not-sure', order: 2 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q3.options.small', value: 'small', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q3.options.medium', value: 'medium', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q3.options.large', value: 'large', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q3.options.multiple-windows', value: 'multiple-windows', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q3.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q4.options.replace-existing-roof-window', value: 'replace-existing-roof-window', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q4.options.install-new-window', value: 'install-new-window', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q4.options.convert-old-skylight-to-new-type', value: 'convert-old-skylight-to-new-type', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q4.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q5.options.easy-ladder-access', value: 'easy-ladder-access', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q5.options.medium-scaffolding-needed', value: 'medium-scaffolding-needed', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q5.options.difficult-special-access-required', value: 'difficult-special-access-required', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q5.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q6', type: 'single', i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q6', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q6.options.plasterboard-and-paint', value: 'plasterboard-and-paint', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q6.options.trimming-lining', value: 'trimming-lining', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q6.options.none', value: 'none', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.roof-windows-skylights.q6.options.not-sure', value: 'not-sure', order: 3 }
+      ]}
+    ]
+  },
+
+  // 33. security-reinforced-doors
+  {
+    microSlug: 'security-reinforced-doors',
+    subcategorySlug: 'doors',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q1.options.front-door', value: 'front-door', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q1.options.back-side-door', value: 'back-side-door', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q1.options.garage-entry', value: 'garage-entry', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q1.options.commercial-entrance', value: 'commercial-entrance', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q1.options.other', value: 'other', order: 4 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q2.options.high-security-steel-door', value: 'high-security-steel-door', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q2.options.reinforced-composite', value: 'reinforced-composite', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q2.options.anti-burglary-multi-point', value: 'anti-burglary-multi-point', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q2.options.fire-rated-reinforced-door', value: 'fire-rated-reinforced-door', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q2.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q3.options.replacing-existing-door', value: 'replacing-existing-door', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q3.options.new-opening-required', value: 'new-opening-required', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q3.options.replacing-window-with-door', value: 'replacing-window-with-door', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q3.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q4.options.yes-supplied', value: 'yes-supplied', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q4.options.no-need-supply', value: 'no-need-supply', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q4.options.partly-supplied', value: 'partly-supplied', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q4.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q5.options.yes', value: 'yes', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q5.options.no', value: 'no', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q5.options.not-sure', value: 'not-sure', order: 2 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q6.options.smart-lock', value: 'smart-lock', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q6.options.door-viewer', value: 'door-viewer', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q6.options.access-control-system', value: 'access-control-system', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q6.options.extra-bolts', value: 'extra-bolts', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.security-reinforced-doors.q6.options.none', value: 'none', order: 4 }
+      ]}
+    ]
+  },
+
+  // 34. shutters-blinds-screens
+  {
+    microSlug: 'shutters-blinds-screens',
+    subcategorySlug: 'windows',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q1.options.shutters', value: 'shutters', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q1.options.roller-blinds', value: 'roller-blinds', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q1.options.venetian-blinds', value: 'venetian-blinds', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q1.options.blackout-blinds', value: 'blackout-blinds', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q1.options.insect-screens', value: 'insect-screens', order: 4 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q1.options.multiple-types', value: 'multiple-types', order: 5 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q2.options.living-room', value: 'living-room', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q2.options.bedroom', value: 'bedroom', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q2.options.kitchen', value: 'kitchen', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q2.options.bathroom', value: 'bathroom', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q2.options.whole-property', value: 'whole-property', order: 4 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q2.options.commercial-space', value: 'commercial-space', order: 5 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q3.options.1-2', value: '1-2', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q3.options.3-5', value: '3-5', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q3.options.6-10', value: '6-10', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q3.options.10-plus', value: '10-plus', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q3.options.whole-house', value: 'whole-house', order: 4 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q4.options.yes-ready-to-install', value: 'yes-ready-to-install', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q4.options.partly-supplied', value: 'partly-supplied', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q4.options.no-need-supply', value: 'no-need-supply', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q4.options.need-advice-first', value: 'need-advice-first', order: 3 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q5.options.inside-window-recess', value: 'inside-window-recess', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q5.options.outside-recess', value: 'outside-recess', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q5.options.ceiling-mounted', value: 'ceiling-mounted', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q5.options.surface-mounted', value: 'surface-mounted', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q5.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q6.options.remove-old-blinds', value: 'remove-old-blinds', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q6.options.repair-window-frame', value: 'repair-window-frame', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q6.options.install-child-safety-features', value: 'install-child-safety-features', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.shutters-blinds-screens.q6.options.none', value: 'none', order: 3 }
+      ]}
+    ]
+  },
+
+  // 35. sliding-pocket-doors
+  {
+    microSlug: 'sliding-pocket-doors',
+    subcategorySlug: 'doors',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q1.options.new-pocket-door-system', value: 'new-pocket-door-system', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q1.options.replace-existing-pocket-door', value: 'replace-existing-pocket-door', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q1.options.convert-swing-door-to-pocket', value: 'convert-swing-door-to-pocket', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q1.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q2.options.single-door', value: 'single-door', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q2.options.double-pocket-doors', value: 'double-pocket-doors', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q2.options.soft-close-system', value: 'soft-close-system', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q2.options.glass-pocket-door', value: 'glass-pocket-door', order: 3 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q2.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q3.options.stud-wall-plasterboard', value: 'stud-wall-plasterboard', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q3.options.solid-wall-block-brick', value: 'solid-wall-block-brick', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q3.options.unsure', value: 'unsure', order: 2 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q4.options.timber', value: 'timber', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q4.options.glass', value: 'glass', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q4.options.composite', value: 'composite', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q4.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q5.options.yes-need-a-full-system', value: 'yes-need-a-full-system', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q5.options.reuse-existing-system', value: 'reuse-existing-system', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q5.options.not-sure', value: 'not-sure', order: 2 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q6.options.plastering', value: 'plastering', order: 0 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q6.options.painting', value: 'painting', order: 1 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q6.options.architrave-trim-fitting', value: 'architrave-trim-fitting', order: 2 },
+        { i18nKey: 'floors-doors-windows.doors.sliding-pocket-doors.q6.options.none', value: 'none', order: 3 }
+      ]}
+    ]
+  },
+
+  // 36. solid-wood-flooring
+  {
+    microSlug: 'solid-wood-flooring',
+    subcategorySlug: 'flooring',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q1.options.oak', value: 'oak', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q1.options.walnut', value: 'walnut', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q1.options.pine', value: 'pine', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q1.options.exotic-hardwood', value: 'exotic-hardwood', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q1.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q2.options.up-to-15m2', value: 'up-to-15m2', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q2.options.15-30m2', value: '15-30m2', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q2.options.30-50m2', value: '30-50m2', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q2.options.50m2-plus', value: '50m2-plus', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q2.options.multiple-rooms', value: 'multiple-rooms', order: 4 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q3.options.concrete', value: 'concrete', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q3.options.timber-floorboards', value: 'timber-floorboards', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q3.options.chipboard', value: 'chipboard', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q3.options.mixed-unsure', value: 'mixed-unsure', order: 3 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q4.options.glue-down', value: 'glue-down', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q4.options.secret-nail', value: 'secret-nail', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q4.options.floating-installation', value: 'floating-installation', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q4.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q5', type: 'multi', i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q5', required: false, options: [
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q5.options.remove-old-flooring', value: 'remove-old-flooring', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q5.options.level-subfloor', value: 'level-subfloor', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q5.options.install-underlay', value: 'install-underlay', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q5.options.remove-skirting', value: 'remove-skirting', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q5.options.none', value: 'none', order: 4 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q6.options.skirting-or-beading', value: 'skirting-or-beading', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q6.options.oil-varnish-finish', value: 'oil-varnish-finish', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q6.options.door-trimming', value: 'door-trimming', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.solid-wood-flooring.q6.options.none', value: 'none', order: 3 }
+      ]}
+    ]
+  },
+
+  // 37. tile-stone-flooring
+  {
+    microSlug: 'tile-stone-flooring',
+    subcategorySlug: 'flooring',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q1.options.ceramic', value: 'ceramic', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q1.options.porcelain', value: 'porcelain', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q1.options.marble', value: 'marble', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q1.options.granite', value: 'granite', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q1.options.travertine', value: 'travertine', order: 4 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q1.options.other-not-sure', value: 'other-not-sure', order: 5 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q2.options.up-to-10m2', value: 'up-to-10m2', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q2.options.10-20m2', value: '10-20m2', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q2.options.20-40m2', value: '20-40m2', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q2.options.40m2-plus', value: '40m2-plus', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q2.options.multiple-rooms', value: 'multiple-rooms', order: 4 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q3.options.concrete', value: 'concrete', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q3.options.timber-floorboards', value: 'timber-floorboards', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q3.options.chipboard', value: 'chipboard', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q3.options.underfloor-heating', value: 'underfloor-heating', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q3.options.mixed-unsure', value: 'mixed-unsure', order: 4 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q4.options.yes', value: 'yes', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q4.options.no', value: 'no', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q4.options.partially', value: 'partially', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q4.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q5.options.thin-lines', value: 'thin-lines', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q5.options.standard-width', value: 'standard-width', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q5.options.wide-grout-joints', value: 'wide-grout-joints', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q5.options.matching-grout-colour', value: 'matching-grout-colour', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q5.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q6.options.tile-skirting', value: 'tile-skirting', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q6.options.threshold-trims', value: 'threshold-trims', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q6.options.sealing-stone-tiles', value: 'sealing-stone-tiles', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.tile-stone-flooring.q6.options.none', value: 'none', order: 3 }
+      ]}
+    ]
+  },
+
+  // 38. vinyl-lvt-flooring
+  {
+    microSlug: 'vinyl-lvt-flooring',
+    subcategorySlug: 'flooring',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q1.options.sheet-vinyl', value: 'sheet-vinyl', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q1.options.lvt-click-system', value: 'lvt-click-system', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q1.options.lvt-glue-down', value: 'lvt-glue-down', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q1.options.luxury-vinyl-planks-tiles', value: 'luxury-vinyl-planks-tiles', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q1.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q2.options.up-to-10m2', value: 'up-to-10m2', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q2.options.10-20m2', value: '10-20m2', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q2.options.20-40m2', value: '20-40m2', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q2.options.40m2-plus', value: '40m2-plus', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q2.options.multiple-rooms', value: 'multiple-rooms', order: 4 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q3.options.kitchen', value: 'kitchen', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q3.options.bathroom', value: 'bathroom', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q3.options.hallway', value: 'hallway', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q3.options.living-areas', value: 'living-areas', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q3.options.bedrooms', value: 'bedrooms', order: 4 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q3.options.multiple-areas', value: 'multiple-areas', order: 5 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q4.options.good-and-level', value: 'good-and-level', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q4.options.minor-uneven-areas', value: 'minor-uneven-areas', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q4.options.needs-levelling-repair', value: 'needs-levelling-repair', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q4.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q5.options.yes-remove-old-flooring', value: 'yes-remove-old-flooring', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q5.options.no-new-floor-goes-on-top', value: 'no-new-floor-goes-on-top', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q5.options.some-areas-only', value: 'some-areas-only', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q5.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q6.options.install-underlay', value: 'install-underlay', order: 0 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q6.options.moisture-barrier', value: 'moisture-barrier', order: 1 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q6.options.skirting-beading', value: 'skirting-beading', order: 2 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q6.options.door-trimming', value: 'door-trimming', order: 3 },
+        { i18nKey: 'floors-doors-windows.flooring.vinyl-lvt-flooring.q6.options.none', value: 'none', order: 4 }
+      ]}
+    ]
+  },
+
+  // 39. window-installation-replacement
+  {
+    microSlug: 'window-installation-replacement',
+    subcategorySlug: 'windows',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q1.options.replace-existing-windows', value: 'replace-existing-windows', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q1.options.install-windows-in-new-openings', value: 'install-windows-in-new-openings', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q1.options.mix-of-replacement-and-new', value: 'mix-of-replacement-and-new', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q1.options.not-sure', value: 'not-sure', order: 3 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q2.options.casement', value: 'casement', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q2.options.sliding', value: 'sliding', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q2.options.tilt-and-turn', value: 'tilt-and-turn', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q2.options.fixed', value: 'fixed', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q2.options.bay-bow', value: 'bay-bow', order: 4 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q2.options.mixed-not-sure', value: 'mixed-not-sure', order: 5 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q3.options.upvc', value: 'upvc', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q3.options.aluminium', value: 'aluminium', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q3.options.timber', value: 'timber', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q3.options.composite', value: 'composite', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q3.options.match-existing', value: 'match-existing', order: 4 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q3.options.not-sure', value: 'not-sure', order: 5 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q4.options.standard-double-glazing', value: 'standard-double-glazing', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q4.options.triple-glazing', value: 'triple-glazing', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q4.options.acoustic-glazing', value: 'acoustic-glazing', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q4.options.solar-heat-control-glass', value: 'solar-heat-control-glass', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q4.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q5.options.1-2', value: '1-2', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q5.options.3-5', value: '3-5', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q5.options.6-10', value: '6-10', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q5.options.11-20', value: '11-20', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q5.options.20-plus', value: '20-plus', order: 4 }
+      ]},
+      { key: 'q6', type: 'multi', i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q6', required: false, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q6.options.internal-plastering', value: 'internal-plastering', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q6.options.external-rendering', value: 'external-rendering', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q6.options.painting-decoration', value: 'painting-decoration', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q6.options.making-good-only', value: 'making-good-only', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-installation-replacement.q6.options.no-extra-finishing', value: 'no-extra-finishing', order: 4 }
+      ]}
+    ]
+  },
+
+  // 40. window-repairs-adjustments
+  {
+    microSlug: 'window-repairs-adjustments',
+    subcategorySlug: 'windows',
+    categorySlug: 'floors-doors-windows',
+    questions: [
+      { key: 'q1', type: 'single', i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q1', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q1.options.draughts-poor-sealing', value: 'draughts-poor-sealing', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q1.options.handles-locks-not-working', value: 'handles-locks-not-working', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q1.options.hinges-opens-poorly', value: 'hinges-opens-poorly', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q1.options.condensation-between-panes', value: 'condensation-between-panes', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q1.options.cracked-broken-glass', value: 'cracked-broken-glass', order: 4 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q1.options.other', value: 'other', order: 5 }
+      ]},
+      { key: 'q2', type: 'single', i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q2', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q2.options.upvc', value: 'upvc', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q2.options.aluminium', value: 'aluminium', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q2.options.timber', value: 'timber', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q2.options.mixed-types', value: 'mixed-types', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q2.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q3', type: 'single', i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q3', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q3.options.casement', value: 'casement', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q3.options.sliding', value: 'sliding', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q3.options.tilt-and-turn', value: 'tilt-and-turn', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q3.options.fixed', value: 'fixed', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q3.options.roof-windows', value: 'roof-windows', order: 4 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q3.options.not-sure', value: 'not-sure', order: 5 }
+      ]},
+      { key: 'q4', type: 'single', i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q4', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q4.options.1', value: '1', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q4.options.2-4', value: '2-4', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q4.options.5-8', value: '5-8', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q4.options.9-15', value: '9-15', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q4.options.15-plus', value: '15-plus', order: 4 }
+      ]},
+      { key: 'q5', type: 'single', i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q5', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q5.options.ground-floor', value: 'ground-floor', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q5.options.upper-floors', value: 'upper-floors', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q5.options.mix-of-levels', value: 'mix-of-levels', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q5.options.hard-to-reach-areas', value: 'hard-to-reach-areas', order: 3 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q5.options.not-sure', value: 'not-sure', order: 4 }
+      ]},
+      { key: 'q6', type: 'single', i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q6', required: true, options: [
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q6.options.emergency-security-major-leak', value: 'emergency-security-major-leak', order: 0 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q6.options.within-48-hours', value: 'within-48-hours', order: 1 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q6.options.within-a-week', value: 'within-a-week', order: 2 },
+        { i18nKey: 'floors-doors-windows.windows.window-repairs-adjustments.q6.options.no-rush', value: 'no-rush', order: 3 }
+      ]}
     ]
   }
 ];
