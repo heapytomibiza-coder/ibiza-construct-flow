@@ -17,6 +17,7 @@
  * - Pool & Spa - Equipment: Filter Replacement, Pump Repair
  * - Pool & Spa - Maintenance: Chemical Balance, Pool Cleaning, Filter Cleaning & Replacement, One-off Deep Clean, Pool Cover Repair & Replacement, Pump Servicing, Regular Pool Cleaning, Skimmer & Drain Maintenance, Spring Opening & Winterizing
  * - Pool & Spa - Spas: Hot Tub Installation, Hot Tub Repair, Jacuzzi Installation & Repair, Spa Cover Replacement, Spa Jets & Plumbing, Spa Servicing & Maintenance, Spa Water Treatment, Hot Tub Electrical Work
+ * - Pool & Spa - Water Treatment: Algae Removal & Prevention, Cloudy Water Treatment, Filtration System Installation, Filtration System Upgrades, Salt Chlorinator Systems, Water Chemistry Balancing
  */
 
 export const commercialOfficeQuestionPacks = [
@@ -6382,6 +6383,404 @@ export const commercialOfficeQuestionPacks = [
           { value: 'spa-already-on-site', label: 'Spa already on site – need connection soon' },
           { value: 'fault-no-power', label: 'Fault – spa has no power / tripping' },
           { value: 'planning', label: 'Planning stage only' }
+        ]
+      }
+    ]
+  },
+
+  // ==========================================
+  // POOL-SPA: Water Treatment Subcategory
+  // ==========================================
+  {
+    microSlug: 'algae-removal-prevention',
+    categorySlug: 'pool-spa',
+    subcategorySlug: 'water-treatment',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor swimming pool' },
+          { value: 'indoor-pool', label: 'Indoor pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'green', label: 'Green algae' },
+          { value: 'yellow-mustard', label: 'Yellow / mustard algae' },
+          { value: 'black', label: 'Black algae' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'light', label: 'Light algae on walls or floor' },
+          { value: 'moderate', label: 'Moderate algae – water slightly green' },
+          { value: 'severe', label: 'Severe – water fully green or opaque' },
+          { value: 'extreme', label: 'Extreme – heavy buildup, not usable' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'running-normally', label: 'Yes – running normally' },
+          { value: 'limited-hours', label: 'Running limited hours' },
+          { value: 'not-running', label: 'Not running / broken' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'lack-of-chemicals', label: 'Low chlorine / sanitiser levels' },
+          { value: 'poor-filtration', label: 'Poor circulation or filtration' },
+          { value: 'hot-weather', label: 'Hot weather and heavy use' },
+          { value: 'cover-left-on', label: 'Cover left on for long periods' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'shock-treatment', label: 'Full shock treatment' },
+          { value: 'vacuum-and-clean', label: 'Vacuum and brush surfaces' },
+          { value: 'chemical-balance', label: 'Chemical testing and balancing' },
+          { value: 'ongoing-prevention', label: 'Set up ongoing prevention routine' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent – pool unsafe to use' },
+          { value: 'within-1-week', label: 'Within 1 week' },
+          { value: 'planning', label: 'Planning ahead' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'cloudy-discoloured-water-treatment',
+    categorySlug: 'pool-spa',
+    subcategorySlug: 'water-treatment',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'cloudy', label: 'Cloudy / milky water' },
+          { value: 'brown', label: 'Brown or rusty water' },
+          { value: 'greenish', label: 'Greenish water (early algae)' },
+          { value: 'white-scale', label: 'White scale or calcium flakes' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor pool' },
+          { value: 'indoor-pool', label: 'Indoor pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'heavy-rain', label: 'Heavy rain' },
+          { value: 'dust-or-sahara', label: 'Dust storm / Saharan dust' },
+          { value: 'pool-overflow', label: 'Pool overflowed' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'yes', label: 'Yes – running normally' },
+          { value: 'on-off', label: 'Intermittent / stopped for a while' },
+          { value: 'not-working', label: 'Not working properly' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'clarifier-floc', label: 'Clarifier / floc treatment' },
+          { value: 'chemical-balance', label: 'Chemical analysis and balance' },
+          { value: 'filter-clean', label: 'Filter clean / backwash' },
+          { value: 'shock-treatment', label: 'Shock treatment if needed' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'pool-unusable', label: 'Pool unusable – urgent' },
+          { value: 'soon', label: 'Soon – within a week' },
+          { value: 'planning', label: 'Planning ahead' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'filtration-system-installation',
+    categorySlug: 'pool-spa',
+    subcategorySlug: 'water-treatment',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new-install', label: 'New installation' },
+          { value: 'upgrade-existing', label: 'Upgrading existing system' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor pool' },
+          { value: 'indoor-pool', label: 'Indoor pool' },
+          { value: 'spa-or-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'sand-filter', label: 'Sand filter' },
+          { value: 'glass-media', label: 'Glass media filter' },
+          { value: 'cartridge-filter', label: 'Cartridge filter' },
+          { value: 'de-filter', label: 'DE diatomaceous earth filter' },
+          { value: 'need-advice', label: 'Not sure – need advice' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'filter-only', label: 'Filter only' },
+          { value: 'pump-and-filter', label: 'Pump and filter together' },
+          { value: 'need-assessment', label: 'Need professional assessment' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'ready', label: 'Yes – fully ready' },
+          { value: 'space-but-needs-adjustments', label: 'Space available but may need adjustments' },
+          { value: 'not-built-yet', label: 'Plant room not built yet' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: 'within-1-month', label: 'Within 1 month' },
+          { value: 'planning', label: 'Planning stage' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'filtration-system-upgrades',
+    categorySlug: 'pool-spa',
+    subcategorySlug: 'water-treatment',
+    version: 1,
+    questions: [
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'poor-clarity', label: 'Water clarity issues' },
+          { value: 'pump-struggles', label: 'Pump struggling to maintain flow' },
+          { value: 'high-energy-use', label: 'Reduce energy consumption' },
+          { value: 'old-equipment', label: 'Old or noisy equipment' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'sand', label: 'Sand filter' },
+          { value: 'cartridge', label: 'Cartridge filter' },
+          { value: 'glass-media', label: 'Glass media' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'convert-to-glass-media', label: 'Convert sand to glass media' },
+          { value: 'larger-filter', label: 'Install a larger filter' },
+          { value: 'multiport-valve-upgrade', label: 'Replace multiport valve' },
+          { value: 'complete-system-overhaul', label: 'Complete system overhaul' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'yes', label: 'Yes, evaluate pump also' },
+          { value: 'no', label: 'No, filter only' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'asap', label: 'As soon as possible' },
+          { value: '1-month', label: 'Within 1 month' },
+          { value: 'planning', label: 'Just planning costs' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'salt-chlorinator-systems',
+    categorySlug: 'pool-spa',
+    subcategorySlug: 'water-treatment',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'new-install', label: 'New installation' },
+          { value: 'upgrade-existing', label: 'Upgrade existing system' },
+          { value: 'repair', label: 'Repair a salt system' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor pool' },
+          { value: 'indoor-pool', label: 'Indoor pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'working', label: 'Still working but ageing' },
+          { value: 'weak-output', label: 'Weak chlorine output' },
+          { value: 'needs-cleaning', label: 'Calcium buildup / needs cleaning' },
+          { value: 'not-working', label: 'Not working at all' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'under-3', label: 'Under 3 years' },
+          { value: '3-7', label: '3–7 years' },
+          { value: 'over-7', label: 'Over 7 years' },
+          { value: 'not-sure', label: 'Not sure' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'self-cleaning', label: 'Self-cleaning cell' },
+          { value: 'wifi-control', label: 'WiFi / app control' },
+          { value: 'reverse-polarity', label: 'Reverse polarity (anti-scale)' },
+          { value: 'high-output', label: 'High output for large pools' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'urgent', label: 'Urgent – pool cannot stay untreated' },
+          { value: '1-month', label: 'Within 1 month' },
+          { value: 'planning', label: 'Planning stage' }
+        ]
+      }
+    ]
+  },
+
+  {
+    microSlug: 'water-chemistry-balancing',
+    categorySlug: 'pool-spa',
+    subcategorySlug: 'water-treatment',
+    version: 1,
+    questions: [
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'outdoor-pool', label: 'Outdoor pool' },
+          { value: 'indoor-pool', label: 'Indoor pool' },
+          { value: 'spa-hot-tub', label: 'Spa / hot tub' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: false,
+        options: [
+          { value: 'irritation', label: 'Skin or eye irritation' },
+          { value: 'strong-smell', label: 'Strong chlorine or chemical smell' },
+          { value: 'cloudy', label: 'Cloudy or dull water' },
+          { value: 'scale', label: 'Calcium scale' },
+          { value: 'rust-stains', label: 'Rust or metal stains' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: false,
+        options: [
+          { value: 'test-strips', label: 'Test strips' },
+          { value: 'liquid-kit', label: 'Liquid test kit' },
+          { value: 'digital-tester', label: 'Digital tester' },
+          { value: 'no-testing', label: 'No regular testing' }
+        ]
+      },
+      {
+        type: 'checkbox',
+        required: true,
+        options: [
+          { value: 'full-lab-test', label: 'Full lab-style analysis' },
+          { value: 'chemical-adjustments', label: 'Adjust pH, chlorine, alk, CYA, hardness etc.' },
+          { value: 'ongoing-maintenance', label: 'Regular chemistry visits' },
+          { value: 'education', label: 'Teach me how to maintain the chemistry myself' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'pro-supplies', label: 'Professional supplies chemicals' },
+          { value: 'client-supplies', label: 'I supply the chemicals' },
+          { value: 'mixed', label: 'Mix of both' }
+        ]
+      },
+      {
+        type: 'radio',
+        required: true,
+        options: [
+          { value: 'cant-use-water', label: 'Very urgent – pool not safe to use' },
+          { value: 'soon', label: 'Soon – within a week' },
+          { value: 'routine', label: 'Routine check-up' }
         ]
       }
     ]
