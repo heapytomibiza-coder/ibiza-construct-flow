@@ -125,6 +125,9 @@ const ServiceSetupWizard = lazyWithRetry(() => import("./pages/ServiceSetupWizar
 const ProfessionalPayoutSetup = lazyWithRetry(() => import("./pages/ProfessionalPayoutSetup"));
 const CreateService = lazyWithRetry(() => import("./pages/CreateService"));
 const ServiceMenuBuilder = lazyWithRetry(() => import("./pages/dashboard/professional/ServiceMenuBuilder"));
+const ContractDetail = lazyWithRetry(() => import("./pages/ContractDetail"));
+const JobDetail = lazyWithRetry(() => import("./pages/JobDetail"));
+const PaymentDashboard = lazyWithRetry(() => import("./pages/PaymentDashboard"));
 
 // Contract & Payment Pages
 const BookingPage = lazyWithRetry(() => import("./pages/BookingPage"));
@@ -242,6 +245,10 @@ function AppContent() {
                     
                     {/* Professional Profile Routes - Canonical */}
                     <Route path="/professionals/:id" element={<ProfessionalProfile />} />
+                    <Route path="/professionals/:professionalId/service/:serviceId" element={<ServiceDetailPage />} />
+                    <Route path="/contracts/:contractId" element={<ContractDetail />} />
+                    <Route path="/jobs/:jobId" element={<JobDetail />} />
+                    <Route path="/payments" element={<PaymentDashboard />} />
                     {/* Legacy redirect for /professional/:id */}
                     <Route path="/professional/:id" element={<Navigate to="/professionals/:id" replace />} />
                     
