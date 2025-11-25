@@ -1,26 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useCategories, useSubcategories, useMicroCategories } from "@/hooks/useCategories";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Save } from "lucide-react";
+import { Loader2, Sparkles, Save, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function QuestionPackGenerator() {
-  const [category, setCategory] = useState("");
-  const [subcategory, setSubcategory] = useState("");
-  const [serviceName, setServiceName] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>("");
+  const [selectedMicroId, setSelectedMicroId] = useState<string>("");
+  const [customServiceName, setCustomServiceName] = useState("");
   const [notes, setNotes] = useState("");
   const [generatedJson, setGeneratedJson] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Fetch taxonomy data
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: subcategories, isLoading: subcategoriesLoading } = useSubcategories(selectedCategoryId);
+  const { data: microCategories, isLoading: microCategoriesLoading } = useMicroCategories(selectedSubcategoryId);
+
+  // Get selected taxonomy details
+  const selectedCategory = categories?.find(c => c.id === selectedCategoryId);
+  const selectedSubcategory = subcategories?.find(s => s.id === selectedSubcategoryId);
+  const selectedMicro = microCategories?.find(m => m.id === selectedMicroId);
+
+  // Check for existing question pack
+  const { data: existingPack } = useQuery({
+    queryKey: ['existing-pack', selectedMicro?.slug],
+    queryFn: async () => {
+      if (!selectedMicro?.slug) return null;
+      
+      const { data, error } = await supabase
+        .from('question_packs')
+        .select('micro_slug, version, status')
+        .eq('micro_slug', selectedMicro.slug)
+        .order('version', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedMicro?.slug,
+  });
+
+  // Reset downstream selections when parent changes
+  useEffect(() => {
+    setSelectedSubcategoryId("");
+    setSelectedMicroId("");
+    setCustomServiceName("");
+  }, [selectedCategoryId]);
+
+  useEffect(() => {
+    setSelectedMicroId("");
+    setCustomServiceName("");
+  }, [selectedSubcategoryId]);
+
+  // Determine service name and slug to use
+  const isNewService = selectedMicroId === "new";
+  const serviceName = isNewService ? customServiceName : (selectedMicro?.name || "");
+  const category = selectedCategory?.slug || "";
+  const subcategory = selectedSubcategory?.slug || "";
+
   const handleGenerate = async () => {
     if (!category || !serviceName) {
-      toast.error("Please fill in at least category and service name");
+      toast.error("Please select a category and provide a service name");
+      return;
+    }
+
+    if (isNewService && !customServiceName.trim()) {
+      toast.error("Please enter a service name");
       return;
     }
 
@@ -70,9 +127,10 @@ export default function QuestionPackGenerator() {
 
       toast.success("Question pack saved to database!");
       setGeneratedJson("");
-      setCategory("");
-      setSubcategory("");
-      setServiceName("");
+      setSelectedCategoryId("");
+      setSelectedSubcategoryId("");
+      setSelectedMicroId("");
+      setCustomServiceName("");
       setNotes("");
     } catch (error) {
       console.error("Error saving question pack:", error);
@@ -102,33 +160,96 @@ export default function QuestionPackGenerator() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Input
-                id="category"
-                placeholder="e.g., hvac, kitchen-installation"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
+              <Select
+                value={selectedCategoryId}
+                onValueChange={setSelectedCategoryId}
+                disabled={categoriesLoading}
+              >
+                <SelectTrigger id="category">
+                  <SelectValue placeholder={categoriesLoading ? "Loading..." : "Select category"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories?.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="subcategory">Subcategory</Label>
-              <Input
-                id="subcategory"
-                placeholder="e.g., ac-installation-upgrades"
-                value={subcategory}
-                onChange={(e) => setSubcategory(e.target.value)}
-              />
-            </div>
+            {selectedCategoryId && (
+              <div className="space-y-2">
+                <Label htmlFor="subcategory">Subcategory</Label>
+                <Select
+                  value={selectedSubcategoryId}
+                  onValueChange={setSelectedSubcategoryId}
+                  disabled={subcategoriesLoading || !subcategories?.length}
+                >
+                  <SelectTrigger id="subcategory">
+                    <SelectValue placeholder={subcategoriesLoading ? "Loading..." : "Select subcategory (optional)"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subcategories?.map((sub) => (
+                      <SelectItem key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="serviceName">Service Name *</Label>
-              <Input
-                id="serviceName"
-                placeholder="e.g., Pool Heat Pump Installation"
-                value={serviceName}
-                onChange={(e) => setServiceName(e.target.value)}
-              />
-            </div>
+            {selectedSubcategoryId && (
+              <div className="space-y-2">
+                <Label htmlFor="service">Service *</Label>
+                <Select
+                  value={selectedMicroId}
+                  onValueChange={setSelectedMicroId}
+                  disabled={microCategoriesLoading}
+                >
+                  <SelectTrigger id="service">
+                    <SelectValue placeholder={microCategoriesLoading ? "Loading..." : "Select or create service"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">➕ Create New Service</SelectItem>
+                    {microCategories?.map((micro) => (
+                      <SelectItem key={micro.id} value={micro.id}>
+                        {micro.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {isNewService && (
+              <div className="space-y-2">
+                <Label htmlFor="serviceName">Service Name *</Label>
+                <Input
+                  id="serviceName"
+                  placeholder="e.g., Pool Heat Pump Installation"
+                  value={customServiceName}
+                  onChange={(e) => setCustomServiceName(e.target.value)}
+                />
+              </div>
+            )}
+
+            {existingPack && !isNewService && (
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-muted">
+                {existingPack.status === 'approved' ? (
+                  <>
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Pack exists (v{existingPack.version}, approved)</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm">Pack exists (v{existingPack.version}, {existingPack.status})</span>
+                  </>
+                )}
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="notes">Context / Notes</Label>
