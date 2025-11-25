@@ -71,6 +71,8 @@ const WebsiteSettings = lazyWithRetry(() => import("./pages/admin/WebsiteSetting
 const AdminVerificationsPage = lazyWithRetry(() => import("./pages/AdminVerificationsPage"));
 const DisputeAnalyticsPage = lazyWithRetry(() => import("./pages/admin/DisputeAnalyticsPage"));
 const AdminDisputeDetailPage = lazyWithRetry(() => import("./pages/admin/AdminDisputeDetailPage"));
+const DisputeCenterPage = lazyWithRetry(() => import("./pages/DisputeCenterPage"));
+const DisputeDetailPage = lazyWithRetry(() => import("./pages/DisputeDetailPage"));
 const AuditLog = lazyWithRetry(() => import("./pages/admin/AuditLog"));
 const AdminUsers = lazyWithRetry(() => import("./pages/admin/Users"));
 const AdminServices = lazyWithRetry(() => import("./pages/admin/Services"));
@@ -381,6 +383,18 @@ function AppContent() {
                     <Route path="/payments" element={
                       <RouteGuard>
                         <PaymentsPage />
+                      </RouteGuard>
+                    } />
+                    
+                    {/* Dispute Center Routes */}
+                    <Route path="/disputes" element={
+                      <RouteGuard>
+                        <DisputeCenterPage />
+                      </RouteGuard>
+                    } />
+                    <Route path="/disputes/:id" element={
+                      <RouteGuard>
+                        <DisputeDetailPage />
                       </RouteGuard>
                     } />
                     
