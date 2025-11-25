@@ -14,12 +14,13 @@ interface PaymentScheduleViewProps {
 
 interface ScheduledPayment {
   id: string;
-  installment_number: number;
+  payment_number: number;
   amount: number;
-  currency: string;
   due_date: string;
   paid_at: string | null;
   status: string;
+  failure_reason: string | null;
+  retry_count: number;
 }
 
 export function PaymentScheduleView({ scheduleId }: PaymentScheduleViewProps) {
@@ -42,7 +43,7 @@ export function PaymentScheduleView({ scheduleId }: PaymentScheduleViewProps) {
         .from('scheduled_payments')
         .select('*')
         .eq('schedule_id', scheduleId)
-        .order('installment_number');
+        .order('payment_number');
 
       if (paymentsError) throw paymentsError;
 
@@ -176,7 +177,7 @@ export function PaymentScheduleView({ scheduleId }: PaymentScheduleViewProps) {
                   {getStatusIcon(payment.status)}
                   <div>
                     <div className="font-medium">
-                      Installment #{payment.installment_number}
+                      Installment #{payment.payment_number}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Due: {format(new Date(payment.due_date), 'PPP')}
@@ -189,7 +190,7 @@ export function PaymentScheduleView({ scheduleId }: PaymentScheduleViewProps) {
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <div className="font-bold">
-                      {payment.currency === 'EUR' ? '€' : '$'}
+                      {schedule.currency === 'EUR' ? '€' : '$'}
                       {payment.amount}
                     </div>
                     {getStatusBadge(payment.status)}
@@ -199,7 +200,7 @@ export function PaymentScheduleView({ scheduleId }: PaymentScheduleViewProps) {
                       <InstallmentPaymentButton
                         paymentId={payment.id}
                         amount={Number(payment.amount)}
-                        currency={payment.currency}
+                        currency={schedule.currency}
                         onSuccess={fetchSchedule}
                       />
                     )}

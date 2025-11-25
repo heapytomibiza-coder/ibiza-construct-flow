@@ -6196,64 +6196,58 @@ export type Database = {
       }
       payment_analytics: {
         Row: {
-          average_transaction: number
-          created_at: string
+          analytics_date: string
+          avg_transaction_value: number | null
+          created_at: string | null
+          dispute_volume: number | null
+          disputed_payments: number | null
+          failed_payments: number | null
           id: string
           metadata: Json | null
-          payment_method_breakdown: Json | null
-          period_end: string
-          period_start: string
-          period_type: string
-          status_breakdown: Json | null
-          total_escrow: number
-          total_expenses: number
-          total_refunds: number
-          total_revenue: number
-          transaction_count: number
-          unique_clients: number
-          unique_professionals: number
-          updated_at: string
-          user_id: string
+          payment_methods: Json | null
+          refund_volume: number | null
+          refunded_payments: number | null
+          successful_payments: number | null
+          total_fees: number | null
+          total_transactions: number | null
+          total_volume: number | null
+          updated_at: string | null
         }
         Insert: {
-          average_transaction?: number
-          created_at?: string
+          analytics_date: string
+          avg_transaction_value?: number | null
+          created_at?: string | null
+          dispute_volume?: number | null
+          disputed_payments?: number | null
+          failed_payments?: number | null
           id?: string
           metadata?: Json | null
-          payment_method_breakdown?: Json | null
-          period_end: string
-          period_start: string
-          period_type: string
-          status_breakdown?: Json | null
-          total_escrow?: number
-          total_expenses?: number
-          total_refunds?: number
-          total_revenue?: number
-          transaction_count?: number
-          unique_clients?: number
-          unique_professionals?: number
-          updated_at?: string
-          user_id: string
+          payment_methods?: Json | null
+          refund_volume?: number | null
+          refunded_payments?: number | null
+          successful_payments?: number | null
+          total_fees?: number | null
+          total_transactions?: number | null
+          total_volume?: number | null
+          updated_at?: string | null
         }
         Update: {
-          average_transaction?: number
-          created_at?: string
+          analytics_date?: string
+          avg_transaction_value?: number | null
+          created_at?: string | null
+          dispute_volume?: number | null
+          disputed_payments?: number | null
+          failed_payments?: number | null
           id?: string
           metadata?: Json | null
-          payment_method_breakdown?: Json | null
-          period_end?: string
-          period_start?: string
-          period_type?: string
-          status_breakdown?: Json | null
-          total_escrow?: number
-          total_expenses?: number
-          total_refunds?: number
-          total_revenue?: number
-          transaction_count?: number
-          unique_clients?: number
-          unique_professionals?: number
-          updated_at?: string
-          user_id?: string
+          payment_methods?: Json | null
+          refund_volume?: number | null
+          refunded_payments?: number | null
+          successful_payments?: number | null
+          total_fees?: number | null
+          total_transactions?: number | null
+          total_volume?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -6311,50 +6305,143 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_disputes: {
+        Row: {
+          amount_disputed: number
+          created_at: string | null
+          deadline: string | null
+          dispute_type: string
+          disputed_by: string
+          evidence: Json | null
+          id: string
+          metadata: Json | null
+          payment_id: string
+          reason: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          stripe_dispute_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount_disputed: number
+          created_at?: string | null
+          deadline?: string | null
+          dispute_type: string
+          disputed_by: string
+          evidence?: Json | null
+          id?: string
+          metadata?: Json | null
+          payment_id: string
+          reason: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          stripe_dispute_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount_disputed?: number
+          created_at?: string | null
+          deadline?: string | null
+          dispute_type?: string
+          disputed_by?: string
+          evidence?: Json | null
+          id?: string
+          metadata?: Json | null
+          payment_id?: string
+          reason?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          stripe_dispute_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_disputes_disputed_by_fkey"
+            columns: ["disputed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_disputes_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_disputes_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_methods: {
         Row: {
-          billing_address: Json | null
+          billing_details: Json | null
           brand: string | null
-          created_at: string
-          expires_month: number | null
-          expires_year: number | null
+          created_at: string | null
+          exp_month: number | null
+          exp_year: number | null
           id: string
-          is_default: boolean
-          last_four: string | null
+          is_default: boolean | null
+          is_verified: boolean | null
+          last4: string | null
+          metadata: Json | null
           stripe_payment_method_id: string
           type: string
-          updated_at: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
-          billing_address?: Json | null
+          billing_details?: Json | null
           brand?: string | null
-          created_at?: string
-          expires_month?: number | null
-          expires_year?: number | null
+          created_at?: string | null
+          exp_month?: number | null
+          exp_year?: number | null
           id?: string
-          is_default?: boolean
-          last_four?: string | null
+          is_default?: boolean | null
+          is_verified?: boolean | null
+          last4?: string | null
+          metadata?: Json | null
           stripe_payment_method_id: string
-          type?: string
-          updated_at?: string
+          type: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
-          billing_address?: Json | null
+          billing_details?: Json | null
           brand?: string | null
-          created_at?: string
-          expires_month?: number | null
-          expires_year?: number | null
+          created_at?: string | null
+          exp_month?: number | null
+          exp_year?: number | null
           id?: string
-          is_default?: boolean
-          last_four?: string | null
+          is_default?: boolean | null
+          is_verified?: boolean | null
+          last4?: string | null
+          metadata?: Json | null
           stripe_payment_method_id?: string
           type?: string
-          updated_at?: string
+          updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "payment_methods_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_notifications: {
         Row: {
@@ -6497,6 +6584,79 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_refunds: {
+        Row: {
+          approved_by: string | null
+          created_at: string | null
+          id: string
+          initiated_by: string
+          metadata: Json | null
+          notes: string | null
+          payment_id: string
+          processed_at: string | null
+          refund_amount: number
+          refund_reason: string
+          refund_type: string
+          status: string
+          stripe_refund_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          initiated_by: string
+          metadata?: Json | null
+          notes?: string | null
+          payment_id: string
+          processed_at?: string | null
+          refund_amount: number
+          refund_reason: string
+          refund_type: string
+          status?: string
+          stripe_refund_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          initiated_by?: string
+          metadata?: Json | null
+          notes?: string | null
+          payment_id?: string
+          processed_at?: string | null
+          refund_amount?: number
+          refund_reason?: string
+          refund_type?: string
+          status?: string
+          stripe_refund_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_refunds_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_refunds_initiated_by_fkey"
+            columns: ["initiated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_refunds_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_reminders: {
         Row: {
           channel: string
@@ -6531,58 +6691,65 @@ export type Database = {
           status?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "payment_reminders_scheduled_payment_id_fkey"
-            columns: ["scheduled_payment_id"]
-            isOneToOne: false
-            referencedRelation: "scheduled_payments"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       payment_schedules: {
         Row: {
-          created_at: string
-          currency: string
-          frequency: string
+          amount_per_payment: number | null
+          created_at: string | null
+          currency: string | null
+          end_date: string | null
+          frequency: string | null
           id: string
-          installment_count: number
-          job_id: string
+          installment_count: number | null
+          is_active: boolean | null
+          job_id: string | null
           metadata: Json | null
           next_payment_date: string | null
-          status: string
+          payee_id: string
+          payer_id: string
+          schedule_type: string
+          start_date: string
           total_amount: number
-          updated_at: string
-          user_id: string
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
-          currency?: string
-          frequency: string
+          amount_per_payment?: number | null
+          created_at?: string | null
+          currency?: string | null
+          end_date?: string | null
+          frequency?: string | null
           id?: string
-          installment_count: number
-          job_id: string
+          installment_count?: number | null
+          is_active?: boolean | null
+          job_id?: string | null
           metadata?: Json | null
           next_payment_date?: string | null
-          status?: string
+          payee_id: string
+          payer_id: string
+          schedule_type: string
+          start_date: string
           total_amount: number
-          updated_at?: string
-          user_id: string
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
-          currency?: string
-          frequency?: string
+          amount_per_payment?: number | null
+          created_at?: string | null
+          currency?: string | null
+          end_date?: string | null
+          frequency?: string | null
           id?: string
-          installment_count?: number
-          job_id?: string
+          installment_count?: number | null
+          is_active?: boolean | null
+          job_id?: string | null
           metadata?: Json | null
           next_payment_date?: string | null
-          status?: string
+          payee_id?: string
+          payer_id?: string
+          schedule_type?: string
+          start_date?: string
           total_amount?: number
-          updated_at?: string
-          user_id?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -6590,6 +6757,20 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_schedules_payee_id_fkey"
+            columns: ["payee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_schedules_payer_id_fkey"
+            columns: ["payer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -6653,13 +6834,6 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payment_transactions_payment_method_id_fkey"
-            columns: ["payment_method_id"]
-            isOneToOne: false
-            referencedRelation: "payment_methods"
             referencedColumns: ["id"]
           },
         ]
@@ -10123,61 +10297,58 @@ export type Database = {
       scheduled_payments: {
         Row: {
           amount: number
-          created_at: string
-          currency: string
+          created_at: string | null
           due_date: string
           failure_reason: string | null
           id: string
-          installment_number: number
           metadata: Json | null
+          next_retry_at: string | null
           paid_at: string | null
-          payment_transaction_id: string | null
-          reminder_sent_at: string | null
+          payment_id: string | null
+          payment_number: number
+          retry_count: number | null
           schedule_id: string
           status: string
-          stripe_payment_intent_id: string | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           amount: number
-          created_at?: string
-          currency?: string
+          created_at?: string | null
           due_date: string
           failure_reason?: string | null
           id?: string
-          installment_number: number
           metadata?: Json | null
+          next_retry_at?: string | null
           paid_at?: string | null
-          payment_transaction_id?: string | null
-          reminder_sent_at?: string | null
+          payment_id?: string | null
+          payment_number: number
+          retry_count?: number | null
           schedule_id: string
           status?: string
-          stripe_payment_intent_id?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           amount?: number
-          created_at?: string
-          currency?: string
+          created_at?: string | null
           due_date?: string
           failure_reason?: string | null
           id?: string
-          installment_number?: number
           metadata?: Json | null
+          next_retry_at?: string | null
           paid_at?: string | null
-          payment_transaction_id?: string | null
-          reminder_sent_at?: string | null
+          payment_id?: string | null
+          payment_number?: number
+          retry_count?: number | null
           schedule_id?: string
           status?: string
-          stripe_payment_intent_id?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "scheduled_payments_payment_transaction_id_fkey"
-            columns: ["payment_transaction_id"]
+            foreignKeyName: "scheduled_payments_payment_id_fkey"
+            columns: ["payment_id"]
             isOneToOne: false
-            referencedRelation: "payment_transactions"
+            referencedRelation: "payments"
             referencedColumns: ["id"]
           },
           {
