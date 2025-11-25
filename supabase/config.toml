@@ -6,6 +6,9 @@ verify_jwt = false
 [functions.demo-seed-data]
 verify_jwt = false
 
+[functions.demo-seed-quotes-conversations]
+verify_jwt = false
+
 [functions.populate-taxonomy]
 verify_jwt = false
 
