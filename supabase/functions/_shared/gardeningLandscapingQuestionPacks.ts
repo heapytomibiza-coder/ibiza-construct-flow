@@ -429,6 +429,276 @@ const irrigationSystemPack: MicroservicePack = {
  * Remaining Gardening & Landscaping micro-services → generic pack
  * (adjust slugs/names to your actual taxonomy if needed)
  */
+/**
+ * Detailed pack: Garden & Lawn Fertilization
+ */
+const fertilizationPack: MicroservicePack = {
+  microSlug: "fertilization",
+  subcategorySlug: "lawn-care-turfing",
+  categorySlug: "gardening-landscaping",
+  version: 1,
+  questions: [
+    {
+      id: "area_type",
+      question: "Which areas need fertilizing?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "lawn", label: "Lawn" },
+        { value: "flower_beds", label: "Flower beds" },
+        { value: "trees_shrubs", label: "Trees/shrubs" },
+        { value: "vegetable_garden", label: "Vegetable garden" },
+        { value: "whole_garden", label: "Whole garden area" }
+      ]
+    },
+    {
+      id: "garden_size",
+      question: "What is the approximate size of the garden?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "small", label: "Small (up to 50m²)" },
+        { value: "medium", label: "Medium (50–150m²)" },
+        { value: "large", label: "Large (150–300m²)" },
+        { value: "very_large", label: "Very large (300m²+)" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "fertilizer_type",
+      question: "Do you have a preferred type of fertilizer?",
+      type: "select",
+      required: false,
+      options: [
+        { value: "organic", label: "Organic" },
+        { value: "chemical", label: "Chemical/standard" },
+        { value: "slow_release", label: "Slow-release" },
+        { value: "liquid", label: "Liquid feed" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "condition",
+      question: "What condition is the lawn/garden currently in?",
+      type: "select",
+      required: false,
+      options: [
+        { value: "healthy", label: "Healthy" },
+        { value: "patchy", label: "Patchy" },
+        { value: "dry_burned", label: "Dry/burned areas" },
+        { value: "weeds", label: "Weeds present" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "watering",
+      question: "Is irrigation or watering available?",
+      type: "select",
+      required: false,
+      options: [
+        { value: "sprinkler", label: "Sprinkler system" },
+        { value: "hose", label: "Hose access" },
+        { value: "cans", label: "Watering cans only" },
+        { value: "no_access", label: "No easy access" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "frequency",
+      question: "How often do you need fertilization services?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "one_time", label: "One-time treatment" },
+        { value: "monthly", label: "Monthly" },
+        { value: "seasonal", label: "Seasonal" },
+        { value: "custom", label: "Custom schedule" }
+      ]
+    }
+  ]
+};
+
+/**
+ * Detailed pack: Lawn Mowing
+ */
+const lawnMowingPack: MicroservicePack = {
+  microSlug: "lawn-mowing",
+  subcategorySlug: "lawn-care-turfing",
+  categorySlug: "gardening-landscaping",
+  version: 1,
+  questions: [
+    {
+      id: "lawn_size",
+      question: "What is the approximate size of the lawn?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "small", label: "Small (up to 50m²)" },
+        { value: "medium", label: "Medium (50–150m²)" },
+        { value: "large", label: "Large (150–300m²)" },
+        { value: "very_large", label: "Very large (300m²+)" },
+        { value: "multiple", label: "Multiple lawn areas" }
+      ]
+    },
+    {
+      id: "grass_length",
+      question: "What is the current grass length?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "short", label: "Short/regularly maintained" },
+        { value: "overgrown", label: "Overgrown" },
+        { value: "very_long", label: "Very long" },
+        { value: "mixed", label: "Mixed areas" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "obstacles",
+      question: "Are there obstacles in the lawn?",
+      type: "select",
+      required: false,
+      options: [
+        { value: "trees_shrubs", label: "Trees/shrubs" },
+        { value: "flower_beds", label: "Flower beds" },
+        { value: "furniture", label: "Garden furniture" },
+        { value: "slopes", label: "Slopes/uneven ground" },
+        { value: "clear", label: "Clear/open lawn" }
+      ]
+    },
+    {
+      id: "clippings",
+      question: "What should be done with the grass clippings?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "leave_mulch", label: "Leave on lawn (mulch)" },
+        { value: "collect_dispose", label: "Collect and dispose" },
+        { value: "collect_leave", label: "Collect but leave on site" },
+        { value: "no_preference", label: "No preference" }
+      ]
+    },
+    {
+      id: "frequency",
+      question: "How often do you need mowing?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "one_time", label: "One-time cut" },
+        { value: "weekly", label: "Weekly" },
+        { value: "fortnightly", label: "Fortnightly" },
+        { value: "monthly", label: "Monthly" },
+        { value: "custom", label: "Custom schedule" }
+      ]
+    },
+    {
+      id: "access",
+      question: "How is access to the garden?",
+      type: "select",
+      required: false,
+      options: [
+        { value: "easy", label: "Easy access" },
+        { value: "gate", label: "Side gate access" },
+        { value: "house", label: "Through the house" },
+        { value: "restricted", label: "Restricted/steps" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    }
+  ]
+};
+
+/**
+ * Detailed pack: Tree Trimming
+ */
+const treeTrimmingPack: MicroservicePack = {
+  microSlug: "tree-trimming",
+  subcategorySlug: "tree-hedge-care",
+  categorySlug: "gardening-landscaping",
+  version: 1,
+  questions: [
+    {
+      id: "tree_type",
+      question: "What type of trees need trimming?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "palm", label: "Palm trees" },
+        { value: "fruit", label: "Fruit trees" },
+        { value: "conifers", label: "Conifers" },
+        { value: "mature", label: "Large mature trees" },
+        { value: "multiple", label: "Multiple types" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "tree_height",
+      question: "What is the approximate height of the tree(s)?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "up_to_3m", label: "Up to 3m" },
+        { value: "3_5m", label: "3–5m" },
+        { value: "5_8m", label: "5–8m" },
+        { value: "8_12m", label: "8–12m" },
+        { value: "over_12m", label: "12m+" },
+        { value: "mixed", label: "Mixed heights" }
+      ]
+    },
+    {
+      id: "work_required",
+      question: "What type of trimming is needed?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "light_shaping", label: "Light shaping" },
+        { value: "crown_lift", label: "Crown lift" },
+        { value: "crown_reduction", label: "Crown reduction" },
+        { value: "deadwood", label: "Deadwood removal" },
+        { value: "heavy_prune", label: "Heavy trim/pruning" },
+        { value: "unsure", label: "Unsure" }
+      ]
+    },
+    {
+      id: "waste_disposal",
+      question: "Do you need waste removed?",
+      type: "select",
+      required: true,
+      options: [
+        { value: "remove_all", label: "Yes, remove all waste" },
+        { value: "leave_site", label: "Leave waste on site" },
+        { value: "chip_site", label: "Chipped on site" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "access",
+      question: "How is access to the tree(s)?",
+      type: "select",
+      required: false,
+      options: [
+        { value: "easy", label: "Easy access" },
+        { value: "narrow", label: "Narrow access" },
+        { value: "house", label: "Through house" },
+        { value: "sloped", label: "Sloped/uneven ground" },
+        { value: "not_sure", label: "Not sure" }
+      ]
+    },
+    {
+      id: "equipment",
+      question: "Is specialist equipment required?",
+      type: "select",
+      required: false,
+      options: [
+        { value: "ladder", label: "Ladder only" },
+        { value: "cherry_picker", label: "Cherry picker" },
+        { value: "climbing", label: "Climbing gear" },
+        { value: "chainsaw", label: "Chainsaw work" },
+        { value: "unsure", label: "Unsure" }
+      ]
+    }
+  ]
+};
+
 const genericGardeningServices: {
   microSlug: string;
   name: string;
@@ -469,5 +739,8 @@ export const gardeningLandscapingQuestionPacks: MicroservicePack[] = [
   regularGardenMaintenancePack,
   gardenRedesignLandscapingPack,
   irrigationSystemPack,
+  fertilizationPack,
+  lawnMowingPack,
+  treeTrimmingPack,
   ...genericGardeningPacks
 ];
