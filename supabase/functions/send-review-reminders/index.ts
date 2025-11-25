@@ -17,101 +17,159 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Find completed contracts from the last 7 days without reviews
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    let remindersSent = 0;
 
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    // Query for completed contracts from the last 14 days
+    const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-    const { data: completedContracts, error: contractsError } = await supabaseClient
+    const { data: contracts, error: contractsError } = await supabaseClient
       .from('contracts')
       .select(`
         id,
         client_id,
         tasker_id,
         job_id,
+        updated_at,
+        status,
         jobs!inner(title)
       `)
       .eq('status', 'completed')
-      .gte('updated_at', sevenDaysAgo.toISOString())
-      .lte('updated_at', threeDaysAgo.toISOString());
+      .gte('updated_at', fourteenDaysAgo)
+      .lte('updated_at', oneDayAgo)
+      .not('status', 'in', '(dispute,refunded)');
 
     if (contractsError) throw contractsError;
 
-    const reminders = [];
-
-    for (const contract of completedContracts || []) {
+    for (const contract of contracts || []) {
+      const { client_id, tasker_id, id: contract_id, updated_at } = contract;
       const jobTitle = (contract.jobs as any)?.title || 'this project';
-      
-      // Check if client has reviewed the professional
-      const { data: clientReview } = await supabaseClient
-        .from('reviews')
-        .select('id')
-        .eq('contract_id', contract.id)
-        .eq('reviewer_id', contract.client_id)
-        .eq('reviewee_id', contract.tasker_id)
-        .single();
 
-      if (!clientReview) {
-        // Send reminder to client
-        const { error: clientNotifError } = await supabaseClient
-          .from('activity_feed')
-          .insert({
-            user_id: contract.client_id,
-            event_type: 'review_reminder',
-            entity_type: 'contract',
-            entity_id: contract.id,
-            title: 'Review Your Professional',
-            description: `How was your experience with "${jobTitle}"? Your feedback helps others make informed decisions.`,
-            action_url: `/contracts/${contract.id}/review`,
-            priority: 'medium',
-            notification_type: 'review',
-          });
+      // Check both parties
+      const parties = [
+        { user_id: client_id, role: 'client' },
+        { user_id: tasker_id, role: 'professional' }
+      ];
 
-        if (!clientNotifError) {
-          reminders.push({ type: 'client', contractId: contract.id, userId: contract.client_id });
+      for (const party of parties) {
+        if (!party.user_id) continue;
+
+        // Check if user has dismissed reminders for this contract
+        const { data: dismissal } = await supabaseClient
+          .from('review_reminder_dismissals')
+          .select('*')
+          .eq('contract_id', contract_id)
+          .eq('user_id', party.user_id)
+          .single();
+
+        if (dismissal) {
+          if (dismissal.reason === 'not_interested' || dismissal.reason === 'already_reviewed') {
+            continue;
+          }
+          if (dismissal.snooze_until && new Date(dismissal.snooze_until) > new Date()) {
+            continue;
+          }
         }
-      }
 
-      // Check if professional has reviewed the client
-      const { data: professionalReview } = await supabaseClient
-        .from('reviews')
-        .select('id')
-        .eq('contract_id', contract.id)
-        .eq('reviewer_id', contract.tasker_id)
-        .eq('reviewee_id', contract.client_id)
-        .single();
+        // Check for existing review
+        const { data: existingReview } = await supabaseClient
+          .from('reviews')
+          .select('id')
+          .eq('contract_id', contract_id)
+          .eq('reviewer_id', party.user_id)
+          .single();
 
-      if (!professionalReview) {
-        // Send reminder to professional
-        const { error: proNotifError } = await supabaseClient
-          .from('activity_feed')
-          .insert({
-            user_id: contract.tasker_id,
-            event_type: 'review_reminder',
-            entity_type: 'contract',
-            entity_id: contract.id,
-            title: 'Review Your Client',
-            description: `Share your experience working with your client on "${jobTitle}".`,
-            action_url: `/contracts/${contract.id}/review`,
-            priority: 'medium',
-            notification_type: 'review',
-          });
+        if (existingReview) continue;
 
-        if (!proNotifError) {
-          reminders.push({ type: 'professional', contractId: contract.id, userId: contract.tasker_id });
+        // Check user's notification preferences
+        const { data: prefs } = await supabaseClient
+          .from('notification_preferences')
+          .select('review_reminders_enabled, review_reminders_frequency')
+          .eq('user_id', party.user_id)
+          .eq('notification_type', 'all')
+          .single();
+
+        if (prefs?.review_reminders_enabled === false || prefs?.review_reminders_frequency === 'off') {
+          continue;
         }
+
+        // Check existing reminder count
+        const { data: existingReminders } = await supabaseClient
+          .from('activity_feed')
+          .select('reminder_count')
+          .eq('user_id', party.user_id)
+          .eq('notification_type', 'review_reminder')
+          .eq('metadata->>contract_id', contract_id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        const reminderCount = existingReminders?.reminder_count || 0;
+        
+        // Max 3 reminders per contract
+        if (reminderCount >= 3) continue;
+
+        // Determine timing
+        const daysSinceCompletion = Math.floor((Date.now() - new Date(updated_at).getTime()) / (24 * 60 * 60 * 1000));
+        
+        // Send at 1, 7, and 14 days
+        const shouldSendReminder = 
+          (daysSinceCompletion >= 1 && reminderCount === 0) ||
+          (daysSinceCompletion >= 7 && reminderCount === 1) ||
+          (daysSinceCompletion >= 14 && reminderCount === 2);
+
+        if (!shouldSendReminder) continue;
+
+        // Reduced frequency: only 7 and 14 days
+        if (prefs?.review_reminders_frequency === 'reduced' && daysSinceCompletion < 7) {
+          continue;
+        }
+
+        // Count pending reminders for throttling
+        const { data: pendingReminders } = await supabaseClient
+          .from('activity_feed')
+          .select('id', { count: 'exact' })
+          .eq('user_id', party.user_id)
+          .eq('notification_type', 'review_reminder')
+          .is('read_at', null);
+
+        // If >5 pending, skip (batch into digest)
+        if (pendingReminders && pendingReminders.length > 5) {
+          continue;
+        }
+
+        // Send reminder
+        await supabaseClient.from('activity_feed').insert({
+          user_id: party.user_id,
+          event_type: 'review_reminder',
+          entity_type: 'contract',
+          entity_id: contract_id,
+          title: party.role === 'client' ? 'Review Your Professional' : 'Review Your Client',
+          description: party.role === 'client' 
+            ? `How was your experience with "${jobTitle}"? Your feedback helps others.`
+            : `Share your experience working with your client on "${jobTitle}".`,
+          action_url: `/contracts/${contract_id}/review`,
+          priority: 'normal',
+          notification_type: 'review_reminder',
+          reminder_count: reminderCount + 1,
+          metadata: { 
+            contract_id, 
+            reminder_type: party.role,
+            reminder_number: reminderCount + 1,
+            days_since_completion: daysSinceCompletion
+          }
+        });
+        
+        remindersSent++;
       }
     }
 
-    console.log(`Sent ${reminders.length} review reminders`);
+    console.log(`Sent ${remindersSent} review reminders`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        remindersSent: reminders.length,
-        reminders 
+        remindersSent
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

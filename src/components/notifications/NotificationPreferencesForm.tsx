@@ -124,6 +124,74 @@ export function NotificationPreferencesForm() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Review Notifications</CardTitle>
+          <CardDescription>
+            Fine-tune review-related notifications
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>New Review Received</Label>
+              <p className="text-sm text-muted-foreground">
+                Get notified when someone reviews your work
+              </p>
+            </div>
+            <Switch
+              checked={preferences.categories.system}
+              onCheckedChange={(checked) => updateCategory('system', checked)}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Reply to My Review</Label>
+              <p className="text-sm text-muted-foreground">
+                Get notified when someone responds to your review
+              </p>
+            </div>
+            <Switch
+              checked={preferences.categories.system}
+              onCheckedChange={(checked) => updateCategory('system', checked)}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Helpful Votes</Label>
+              <p className="text-sm text-muted-foreground">
+                Get notified when your review receives helpful votes
+              </p>
+            </div>
+            <Switch
+              checked={preferences.categories.reminder}
+              onCheckedChange={(checked) => updateCategory('reminder', checked)}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Review Reminders</Label>
+              <p className="text-sm text-muted-foreground">
+                Remind me to review completed contracts
+              </p>
+            </div>
+            <Switch
+              checked={preferences.categories.reminder}
+              onCheckedChange={(checked) => updateCategory('reminder', checked)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Quiet Hours</CardTitle>
           <CardDescription>
             Pause notifications during specific hours

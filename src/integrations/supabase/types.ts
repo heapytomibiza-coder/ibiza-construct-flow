@@ -110,6 +110,7 @@ export type Database = {
           notification_type: string | null
           priority: string | null
           read_at: string | null
+          reminder_count: number | null
           title: string
           user_id: string
         }
@@ -127,6 +128,7 @@ export type Database = {
           notification_type?: string | null
           priority?: string | null
           read_at?: string | null
+          reminder_count?: number | null
           title: string
           user_id: string
         }
@@ -144,6 +146,7 @@ export type Database = {
           notification_type?: string | null
           priority?: string | null
           read_at?: string | null
+          reminder_count?: number | null
           title?: string
           user_id?: string
         }
@@ -8703,6 +8706,36 @@ export type Database = {
           file_url?: string
           id?: string
           review_id?: string
+        }
+        Relationships: []
+      }
+      review_reminder_dismissals: {
+        Row: {
+          contract_id: string
+          created_at: string | null
+          dismissed_at: string | null
+          id: string
+          reason: string
+          snooze_until: string | null
+          user_id: string
+        }
+        Insert: {
+          contract_id: string
+          created_at?: string | null
+          dismissed_at?: string | null
+          id?: string
+          reason: string
+          snooze_until?: string | null
+          user_id: string
+        }
+        Update: {
+          contract_id?: string
+          created_at?: string | null
+          dismissed_at?: string | null
+          id?: string
+          reason?: string
+          snooze_until?: string | null
+          user_id?: string
         }
         Relationships: []
       }

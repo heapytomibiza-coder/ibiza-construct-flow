@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Star, MessageSquare, CheckCircle, ThumbsUp, ThumbsDown, ShieldCheck } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
 import { CategoryRatingsDisplay } from './CategoryRatingsDisplay';
@@ -75,10 +76,21 @@ export const ReviewCard = ({
                     {review.reviewer?.full_name || 'Anonymous'}
                   </p>
                   {review.is_verified && (
-                    <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" />
-                      Verified Purchase
-                    </Badge>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="secondary" className="text-xs flex items-center gap-1 cursor-help">
+                            <ShieldCheck className="w-3 h-3" />
+                            Verified Purchase
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs">
+                            Verified review from a completed contract. This review comes from a real transaction.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">
