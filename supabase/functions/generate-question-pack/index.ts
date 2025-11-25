@@ -96,7 +96,6 @@ Generate a question pack that a professional in this field would find useful for
           { role: "system", content: systemPrompt },
           { role: "user", content: `Generate a question pack for: ${serviceName}` }
         ],
-        temperature: 0.7,
       }),
     });
 
