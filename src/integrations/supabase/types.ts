@@ -5158,33 +5158,54 @@ export type Database = {
       }
       notification_preferences: {
         Row: {
-          created_at: string
-          email_notifications: boolean | null
+          channels: Json | null
+          created_at: string | null
+          enabled: boolean | null
+          frequency: string | null
           id: string
-          notification_types: Json | null
-          push_notifications: boolean | null
-          sms_notifications: boolean | null
-          updated_at: string
+          notification_type: string
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          review_helpful_enabled: boolean | null
+          review_received_enabled: boolean | null
+          review_reminders_enabled: boolean | null
+          review_reminders_frequency: string | null
+          review_response_enabled: boolean | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
-          created_at?: string
-          email_notifications?: boolean | null
+          channels?: Json | null
+          created_at?: string | null
+          enabled?: boolean | null
+          frequency?: string | null
           id?: string
-          notification_types?: Json | null
-          push_notifications?: boolean | null
-          sms_notifications?: boolean | null
-          updated_at?: string
+          notification_type?: string
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          review_helpful_enabled?: boolean | null
+          review_received_enabled?: boolean | null
+          review_reminders_enabled?: boolean | null
+          review_reminders_frequency?: string | null
+          review_response_enabled?: boolean | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
-          created_at?: string
-          email_notifications?: boolean | null
+          channels?: Json | null
+          created_at?: string | null
+          enabled?: boolean | null
+          frequency?: string | null
           id?: string
-          notification_types?: Json | null
-          push_notifications?: boolean | null
-          sms_notifications?: boolean | null
-          updated_at?: string
+          notification_type?: string
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          review_helpful_enabled?: boolean | null
+          review_received_enabled?: boolean | null
+          review_reminders_enabled?: boolean | null
+          review_reminders_frequency?: string | null
+          review_response_enabled?: boolean | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
