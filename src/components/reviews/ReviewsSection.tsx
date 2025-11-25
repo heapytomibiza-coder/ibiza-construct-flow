@@ -21,7 +21,8 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
     overallRating, 
     totalReviews, 
     averageRatings,
-    respondToReview 
+    respondToReview,
+    voteReview 
   } = useReviewSystem(professionalId);
 
   if (loading) {
@@ -49,6 +50,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
       averageRatings={averageRatings}
       ratingDistribution={ratingDistribution}
       onRespond={canRespond ? (reviewId, responseText) => respondToReview.mutate({ reviewId, responseText }) : undefined}
+      onVote={(reviewId, voteType) => voteReview.mutate({ reviewId, voteType })}
       isResponding={respondToReview.isPending}
     />
   );
