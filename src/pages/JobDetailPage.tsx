@@ -15,6 +15,8 @@ import { SubmitQuoteDialog } from '@/components/jobs/SubmitQuoteDialog';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { EscrowStatusBadge } from '@/components/payments/EscrowStatusBadge';
 import { usePaymentStatus } from '@/hooks/usePaymentStatus';
+import { useProjectTimeline } from '@/hooks/useProjectTimeline';
+import { ProjectTimeline } from '@/components/projects/ProjectTimeline';
 import { useState } from 'react';
 import { Loader2, MapPin, Calendar, DollarSign, User, FileText } from 'lucide-react';
 
@@ -91,6 +93,7 @@ export default function JobDetailPage() {
   const contract = job?.contracts?.[0];
   
   const { data: paymentStatus } = usePaymentStatus(jobId || null);
+  const { data: timelineEvents } = useProjectTimeline(jobId || '');
 
   if (isLoading) {
     return (
@@ -307,6 +310,11 @@ export default function JobDetailPage() {
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {/* Project Timeline */}
+          {timelineEvents && timelineEvents.length > 0 && (
+            <ProjectTimeline events={timelineEvents} />
           )}
         </div>
       </div>

@@ -174,5 +174,11 @@
     "decline": "Decline",
     "autoCounter": "Generate Counter Offer",
     "generating": "Generating counter offer..."
+  },
+  "common": {
+    "translate": "Translate",
+    "translating": "Translating...",
+    "showOriginal": "Show original",
+    "translatedFrom": "Translated from {{lang}}"
   }
 }
