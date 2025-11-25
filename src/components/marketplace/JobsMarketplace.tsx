@@ -394,7 +394,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
       )}
 
         {/* All Jobs Grid */}
-        <div className={`grid gap-6 ${viewMode === 'card' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+        <div className={`grid gap-6 ${viewMode === 'card' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
           {regularJobs.length > 0 ? (
             regularJobs.map((job) => (
               <div
