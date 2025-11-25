@@ -5162,6 +5162,81 @@ export type Database = {
           },
         ]
       }
+      notification_deliveries: {
+        Row: {
+          channel: string
+          clicked_at: string | null
+          created_at: string | null
+          delivered_at: string | null
+          error_message: string | null
+          escalated_from: string | null
+          failed_at: string | null
+          id: string
+          is_escalated: boolean | null
+          notification_id: string
+          opened_at: string | null
+          provider_id: string | null
+          provider_response: Json | null
+          sent_at: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          clicked_at?: string | null
+          created_at?: string | null
+          delivered_at?: string | null
+          error_message?: string | null
+          escalated_from?: string | null
+          failed_at?: string | null
+          id?: string
+          is_escalated?: boolean | null
+          notification_id: string
+          opened_at?: string | null
+          provider_id?: string | null
+          provider_response?: Json | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          clicked_at?: string | null
+          created_at?: string | null
+          delivered_at?: string | null
+          error_message?: string | null
+          escalated_from?: string | null
+          failed_at?: string | null
+          id?: string
+          is_escalated?: boolean | null
+          notification_id?: string
+          opened_at?: string | null
+          provider_id?: string | null
+          provider_response?: Json | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_deliveries_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "activity_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_deliveries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_digest_queue: {
         Row: {
           created_at: string | null
@@ -5197,15 +5272,71 @@ export type Database = {
           },
         ]
       }
+      notification_muting_rules: {
+        Row: {
+          created_at: string | null
+          end_date: string | null
+          entity_id: string | null
+          id: string
+          is_active: boolean | null
+          mute_type: string
+          muted_categories: string[] | null
+          muted_channels: string[] | null
+          reason: string | null
+          start_date: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date?: string | null
+          entity_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          mute_type: string
+          muted_categories?: string[] | null
+          muted_channels?: string[] | null
+          reason?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string | null
+          entity_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          mute_type?: string
+          muted_categories?: string[] | null
+          muted_channels?: string[] | null
+          reason?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_muting_rules_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           channels: Json | null
           created_at: string | null
           email_digest_enabled: boolean | null
           enabled: boolean | null
+          escalation_delay_minutes: number | null
           frequency: string | null
           id: string
           notification_type: string
+          push_enabled: boolean | null
+          quiet_hours_enabled: boolean | null
           quiet_hours_end: string | null
           quiet_hours_start: string | null
           review_helpful_enabled: boolean | null
@@ -5213,6 +5344,9 @@ export type Database = {
           review_reminders_enabled: boolean | null
           review_reminders_frequency: string | null
           review_response_enabled: boolean | null
+          smart_routing_enabled: boolean | null
+          sms_enabled: boolean | null
+          timezone: string | null
           updated_at: string | null
           user_id: string
         }
@@ -5221,9 +5355,12 @@ export type Database = {
           created_at?: string | null
           email_digest_enabled?: boolean | null
           enabled?: boolean | null
+          escalation_delay_minutes?: number | null
           frequency?: string | null
           id?: string
           notification_type?: string
+          push_enabled?: boolean | null
+          quiet_hours_enabled?: boolean | null
           quiet_hours_end?: string | null
           quiet_hours_start?: string | null
           review_helpful_enabled?: boolean | null
@@ -5231,6 +5368,9 @@ export type Database = {
           review_reminders_enabled?: boolean | null
           review_reminders_frequency?: string | null
           review_response_enabled?: boolean | null
+          smart_routing_enabled?: boolean | null
+          sms_enabled?: boolean | null
+          timezone?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -5239,9 +5379,12 @@ export type Database = {
           created_at?: string | null
           email_digest_enabled?: boolean | null
           enabled?: boolean | null
+          escalation_delay_minutes?: number | null
           frequency?: string | null
           id?: string
           notification_type?: string
+          push_enabled?: boolean | null
+          quiet_hours_enabled?: boolean | null
           quiet_hours_end?: string | null
           quiet_hours_start?: string | null
           review_helpful_enabled?: boolean | null
@@ -5249,6 +5392,9 @@ export type Database = {
           review_reminders_enabled?: boolean | null
           review_reminders_frequency?: string | null
           review_response_enabled?: boolean | null
+          smart_routing_enabled?: boolean | null
+          sms_enabled?: boolean | null
+          timezone?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -6503,6 +6649,57 @@ export type Database = {
           service_subcategory?: string
         }
         Relationships: []
+      }
+      priority_notifications: {
+        Row: {
+          bypass_muting_rules: boolean | null
+          bypass_quiet_hours: boolean | null
+          created_at: string | null
+          force_all_channels: boolean | null
+          id: string
+          notification_id: string
+          priority_level: string
+          reason: string | null
+          sent_by: string | null
+        }
+        Insert: {
+          bypass_muting_rules?: boolean | null
+          bypass_quiet_hours?: boolean | null
+          created_at?: string | null
+          force_all_channels?: boolean | null
+          id?: string
+          notification_id: string
+          priority_level?: string
+          reason?: string | null
+          sent_by?: string | null
+        }
+        Update: {
+          bypass_muting_rules?: boolean | null
+          bypass_quiet_hours?: boolean | null
+          created_at?: string | null
+          force_all_channels?: boolean | null
+          id?: string
+          notification_id?: string
+          priority_level?: string
+          reason?: string | null
+          sent_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "priority_notifications_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "activity_feed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "priority_notifications_sent_by_fkey"
+            columns: ["sent_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pro_badges: {
         Row: {
@@ -7871,6 +8068,59 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth_key: string
+          browser: string | null
+          created_at: string | null
+          device_type: string | null
+          endpoint: string
+          id: string
+          is_active: boolean | null
+          last_used_at: string | null
+          p256dh_key: string
+          updated_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth_key: string
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          endpoint: string
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          p256dh_key: string
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth_key?: string
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          endpoint?: string
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          p256dh_key?: string
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       query_performance_log: {
         Row: {
@@ -10960,6 +11210,56 @@ export type Database = {
         }
         Relationships: []
       }
+      user_phone_numbers: {
+        Row: {
+          country_code: string | null
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+          is_verified: boolean | null
+          phone_number: string
+          updated_at: string | null
+          user_id: string
+          verification_code: string | null
+          verification_sent_at: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          country_code?: string | null
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          is_verified?: boolean | null
+          phone_number: string
+          updated_at?: string | null
+          user_id: string
+          verification_code?: string | null
+          verification_sent_at?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          country_code?: string | null
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          is_verified?: boolean | null
+          phone_number?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_code?: string | null
+          verification_sent_at?: string | null
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_phone_numbers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_points: {
         Row: {
           created_at: string
@@ -12075,6 +12375,15 @@ export type Database = {
       }
       should_expose_feature: {
         Args: { p_flag_key: string; p_user_id: string }
+        Returns: boolean
+      }
+      should_send_notification: {
+        Args: {
+          p_category: string
+          p_channel: string
+          p_notification_id: string
+          p_user_id: string
+        }
         Returns: boolean
       }
       split_milestone_into_phases: {
