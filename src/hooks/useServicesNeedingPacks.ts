@@ -11,10 +11,15 @@ interface ServiceNeedingPack {
   category_name: string;
 }
 
-interface GroupedServices {
+interface GroupedBySubcategory {
   [categoryName: string]: {
     categoryId: string;
-    services: ServiceNeedingPack[];
+    subcategories: {
+      [subcategoryName: string]: {
+        subcategoryId: string;
+        services: ServiceNeedingPack[];
+      };
+    };
   };
 }
 
@@ -67,15 +72,23 @@ export const useServicesNeedingPacks = () => {
           category_name: micro.service_subcategories.service_categories.name,
         })) || [];
 
-      // Group by category
-      const grouped = servicesNeedingPacks.reduce<GroupedServices>((acc, service) => {
+      // Group by category → subcategory
+      const grouped = servicesNeedingPacks.reduce<GroupedBySubcategory>((acc, service) => {
         if (!acc[service.category_name]) {
           acc[service.category_name] = {
             categoryId: service.category_id,
+            subcategories: {},
+          };
+        }
+        
+        if (!acc[service.category_name].subcategories[service.subcategory_name]) {
+          acc[service.category_name].subcategories[service.subcategory_name] = {
+            subcategoryId: service.subcategory_id,
             services: [],
           };
         }
-        acc[service.category_name].services.push(service);
+        
+        acc[service.category_name].subcategories[service.subcategory_name].services.push(service);
         return acc;
       }, {});
 
