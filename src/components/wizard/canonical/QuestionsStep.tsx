@@ -179,7 +179,10 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
               required: q.required,
               options: q.options?.map(opt => ({ label: opt, value: opt })),
               placeholder: q.placeholder,
-              helpText: q.validation?.message
+              helpText: q.placeholder || q.validation?.message,
+              meta: {
+                hint: q.placeholder || q.validation?.message
+              }
             };
           });
 
@@ -548,58 +551,8 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                           <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
                             {(() => {
                               const q = currentQuestion as any;
-                              console.log('🔍 Full question object:', JSON.stringify(currentQuestion, null, 2));
-                              
-                              const possibleTextFields = [
-                                q?.question,
-                                currentQuestion?.label,
-                                q?.title,
-                                q?.text,
-                              ];
-                              
-                              let questionText = possibleTextFields.find(text => 
-                                text && typeof text === 'string' && text.trim() !== ''
-                              ) || '';
-                              
-                              if (!questionText && currentQuestion?.options && currentQuestion.options.length > 0) {
-                                const firstOpt = currentQuestion.options[0];
-                                const optValue = typeof firstOpt === 'string' ? firstOpt : (firstOpt as any)?.value || '';
-                                
-                                if (optValue.includes('bed')) {
-                                  questionText = 'How many bedrooms?';
-                                } else if (optValue.includes('room')) {
-                                  questionText = 'How many rooms?';
-                                } else if (optValue.includes('floor')) {
-                                  questionText = 'How many floors?';
-                                } else if (optValue.includes('bathroom')) {
-                                  questionText = 'How many bathrooms?';
-                                }
-                              }
-                              
-                              if (!questionText && currentQuestion?.id) {
-                                const id = currentQuestion.id;
-                                questionText = id
-                                  .replace(/_/g, ' ')
-                                  .replace(/([a-z])([A-Z])/g, '$1 $2')
-                                  .split(' ')
-                                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                  .join(' ') + '?';
-                              }
-                              
-                              if (!questionText) {
-                                questionText = `Question ${currentQuestionIndex + 1}`;
-                              }
-                              
-                              const isSelectionType = currentQuestion.type === 'radio' || 
-                                                      currentQuestion.type === 'select' ||
-                                                      currentQuestion.type === 'checkbox' ||
-                                                      currentQuestion.type === 'multiple-choice';
-                              
-                              if (isSelectionType && questionText.toLowerCase().includes('describe')) {
-                                questionText = questionText.replace(/describe/gi, 'select').replace(/Describe/g, 'Select');
-                              }
-                              
-                              console.log('✅ Final question text:', questionText);
+                              // Use label directly - it should have the full question text
+                              const questionText = currentQuestion.label || q?.question || `Question ${currentQuestionIndex + 1}`;
                               
                               if (questionText.startsWith('microservices.') || questionText.startsWith('questions.')) {
                                 return t(questionText);
@@ -612,19 +565,31 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                             <Badge variant="outline" className="text-xs">optional</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {(() => {
-                            if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
-                              return 'Select all that apply';
-                            } else if (currentQuestion.type === 'radio' || currentQuestion.type === 'select') {
-                              return 'Select one option';
-                            } else if (currentQuestion.type === 'yesno') {
-                              return 'Choose yes or no';
-                            } else {
-                              return 'Please provide your answer';
-                            }
-                          })()}
-                        </p>
+                        {/* Show helpful guidance text */}
+                        {(() => {
+                          const q = currentQuestion as any;
+                          const helpText = q?.helpText || q?.placeholder || q?.meta?.hint;
+                          
+                          if (helpText) {
+                            return (
+                              <p className="text-sm text-muted-foreground leading-relaxed">
+                                {helpText}
+                              </p>
+                            );
+                          }
+                          
+                          // Generic guidance based on question type
+                          if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
+                            return <p className="text-sm text-muted-foreground">Select all that apply</p>;
+                          } else if (currentQuestion.type === 'radio' || currentQuestion.type === 'select') {
+                            return <p className="text-sm text-muted-foreground">Choose the option that best describes your needs</p>;
+                          } else if (currentQuestion.type === 'yesno') {
+                            return <p className="text-sm text-muted-foreground">Choose yes or no</p>;
+                          } else if (currentQuestion.type === 'text' || currentQuestion.type === 'textarea') {
+                            return <p className="text-sm text-muted-foreground">Provide as much detail as you can to help us understand your needs</p>;
+                          }
+                          return null;
+                        })()}
                       </div>
 
                       {/* Question Input */}
