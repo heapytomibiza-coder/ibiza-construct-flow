@@ -42,7 +42,7 @@ export const StepProgressDots: React.FC<StepProgressDotsProps> = ({
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300",
                   isCompleted && "bg-primary text-primary-foreground",
-                  isCurrent && "bg-primary text-primary-foreground ring-4 ring-primary/20 animate-pulse",
+                  isCurrent && "bg-primary text-primary-foreground ring-2 ring-primary/30 scale-110",
                   isFuture && "bg-muted text-muted-foreground"
                 )}
               >
