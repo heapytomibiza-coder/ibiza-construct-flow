@@ -711,14 +711,14 @@ export const CanonicalJobWizard: React.FC = () => {
         </div>
 
         {/* Mobile Sticky CTA */}
-        {isMobile && currentStep < TOTAL_STEPS && (
+        {isMobile && (
           <div>
             <StickyMobileCTA
               primaryAction={{
                 label: currentStep === 7 ? 'Post Job' : 'Continue',
                 onClick: currentStep === 7 ? handleSubmit : handleNext,
-                disabled: !canProceed().can,
-                loading: loading
+                disabled: !canProceed().can || (currentStep === 7 && loading),
+                loading: currentStep === 7 && loading
               }}
               secondaryAction={currentStep > 1 ? {
                 label: 'Back',

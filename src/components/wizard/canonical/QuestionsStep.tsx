@@ -79,9 +79,12 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     }
   }, [currentQuestion]);
 
+  // Reset question index when questions array changes
   useEffect(() => {
-    loadQuestions();
-  }, [microSlugs.join(','), microNames.join(',')]);
+    if (questions.length > 0 && currentQuestionIndex >= questions.length) {
+      setCurrentQuestionIndex(questions.length - 1);
+    }
+  }, [questions.length, currentQuestionIndex]);
 
   const getFallbackQuestions = (): AIQuestion[] => {
     return [
@@ -443,7 +446,8 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         onNext();
       }
     } else {
-      setCurrentQuestionIndex(prev => prev + 1);
+      // Safety check: don't go beyond bounds
+      setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
     }
   };
 
