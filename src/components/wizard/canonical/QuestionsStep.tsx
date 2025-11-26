@@ -470,50 +470,47 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
   return (
     <>
-      <div className="max-w-3xl mx-auto px-4 md:px-6 space-y-4 pb-24 md:pb-8">
-        <div className="space-y-3">
-          <div className="flex items-center justify-end">
-            <Button
-              variant="outline"
-              onClick={() => setShowAISmartFill(true)}
-              size="sm"
-              className="gap-2"
-            >
-              <Sparkles className="w-4 h-4" />
-              AI Smart-Fill
-            </Button>
-          </div>
-
-        <div className="space-y-2">
+      <div className="max-w-3xl mx-auto px-4 md:px-6 h-full flex flex-col">
+        <div className="space-y-2 flex-shrink-0 pb-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl md:text-2xl font-bold">
-              {microNames[0] || t('wizard.steps.aiQuestions.title')}
-            </h1>
-            <span className="text-xs text-muted-foreground font-medium">
-              {currentQuestionIndex + 1} of {questions.length}
-            </span>
+            <div className="space-y-1">
+              <h1 className="text-lg md:text-xl font-bold">
+                {microNames[0] || t('wizard.steps.aiQuestions.title')}
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                Tell us about your project
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground font-medium">
+                {currentQuestionIndex + 1} of {questions.length}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setShowAISmartFill(true)}
+                size="sm"
+                className="gap-1"
+              >
+                <Sparkles className="w-3 h-3" />
+                <span className="hidden sm:inline">Smart-Fill</span>
+              </Button>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Tell us about your project
-          </p>
-          <div className="pt-1">
-            <ProgressIndicator
-              currentStep={currentQuestionIndex + 1}
-              totalSteps={questions.length}
-            />
-          </div>
-        </div>
+          <ProgressIndicator
+            currentStep={currentQuestionIndex + 1}
+            totalSteps={questions.length}
+          />
         </div>
 
       {loading ? (
-        <div className="space-y-4">
-          <div className="flex flex-col items-center justify-center py-12">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center">
             <Loader2 className="w-8 h-8 animate-spin text-copper mb-4" />
             <p className="text-muted-foreground">Loading questions...</p>
           </div>
         </div>
       ) : (
-        <>
+        <div className="flex-1 overflow-auto">
           {/* Recent Presets */}
           {presets.length > 0 && currentQuestionIndex === 0 && (
             <PresetChips
@@ -533,11 +530,11 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-6"
+                className="space-y-3"
               >
                 {/* Question Card */}
-                <div className="bg-card rounded-2xl border border-border/50 p-8 md:p-10 shadow-sm">
-                  <div className="space-y-8">
+                <div className="bg-card rounded-2xl border border-border/50 p-4 md:p-6 shadow-sm">
+                  <div className="space-y-4">
                     {/* Question Number Badge */}
                     <div className="flex items-center gap-3">
                       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-base">
@@ -549,9 +546,9 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     </div>
 
                     {/* Question Text */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                        <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
                           {(() => {
                           const q = currentQuestion as any;
                           console.log('🔍 Full question object:', JSON.stringify(currentQuestion, null, 2));
@@ -626,7 +623,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                           <Badge variant="outline" className="text-xs">optional</Badge>
                         )}
                       </div>
-                      <p className="text-base text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         {(() => {
                           if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
                             return 'Select all that apply';
@@ -642,7 +639,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     </div>
 
                     {/* Question Input */}
-                    <div className="pt-4">
+                    <div className="pt-2">
                       <ConversationalQuestionInput
                         question={currentQuestion}
                         value={answers[currentQuestion.id]}
@@ -716,7 +713,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
               }}
             />
           )}
-        </>
+        </div>
       )}
 
       </div>

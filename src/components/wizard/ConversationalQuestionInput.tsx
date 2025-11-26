@@ -97,7 +97,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
           value={radioVal}
           onValueChange={(newValue) => onChange(newValue)}
           className={cn(
-            "grid gap-2",
+            "grid gap-1.5",
             normOptions.length <= 3 ? "grid-cols-2 sm:grid-cols-3" :
             normOptions.length <= 6 ? "grid-cols-2 sm:grid-cols-3" :
             "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
@@ -115,7 +115,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
             return (
               <div 
                 key={oid} 
-                className={`relative p-2.5 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
+                className={`relative p-2 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
                   isSelected 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
@@ -145,7 +145,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
       // Use tile-based selection instead of dropdown
       return (
         <div className={cn(
-          "grid gap-2",
+          "grid gap-1.5",
           normOptions.length <= 3 ? "grid-cols-2 sm:grid-cols-3" :
           normOptions.length <= 6 ? "grid-cols-2 sm:grid-cols-3" :
           "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
@@ -164,7 +164,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                 key={oid}
                 type="button"
                 onClick={() => onChange(opt.value)}
-                className={`text-left p-2.5 rounded-lg border-2 transition-all hover:shadow-md ${
+                className={`text-left p-2 rounded-lg border-2 transition-all hover:shadow-md ${
                   isSelected 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
@@ -191,7 +191,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
       const selected = Array.isArray(value) ? (value as string[]) : [];
       return (
         <div className={cn(
-          "grid gap-2",
+          "grid gap-1.5",
           normOptions.length <= 3 ? "grid-cols-2 sm:grid-cols-3" :
           normOptions.length <= 6 ? "grid-cols-2 sm:grid-cols-3" :
           "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
@@ -208,7 +208,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
             return (
               <div 
                 key={oid} 
-                className={`relative p-2.5 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
+                className={`relative p-2 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
                   checked 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'

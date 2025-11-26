@@ -670,9 +670,9 @@ export const CanonicalJobWizard: React.FC = () => {
         onStartFresh={handleStartFresh}
       />
 
-      <div id="job-wizard-root" className="min-h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 pb-24 md:pb-0">
+      <div id="job-wizard-root" className="h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 overflow-hidden flex flex-col">
         {/* Header with Progress */}
-        <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 sticky top-0 z-40 shadow-sm">
+        <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 z-40 shadow-sm flex-shrink-0">
           <div className="container mx-auto px-4 py-6">
             <Breadcrumbs 
               items={[
@@ -696,7 +696,7 @@ export const CanonicalJobWizard: React.FC = () => {
         </div>
 
         {/* Step Content with Animations */}
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-4 flex-1 overflow-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
