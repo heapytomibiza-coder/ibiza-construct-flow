@@ -101,28 +101,28 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="space-y-4">
-        <Button variant="ghost" onClick={onBack} size="sm" className="mb-2">
+    <div className="max-w-5xl mx-auto space-y-6">
+      <div className="flex items-center justify-between gap-4 pb-2">
+        <Button variant="ghost" onClick={onBack} size="sm" className="-ml-2">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
+      </div>
 
-        <div className="text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-            What type of {categoryName.toLowerCase()} job is it?
-          </h1>
-          <p className="text-sm text-muted-foreground mt-2">
-            Select an option
-          </p>
-        </div>
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+          What type of {categoryName.toLowerCase()} job is it?
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Select an option
+        </p>
       </div>
 
       {loading ? (
         <div className="space-y-3">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-28 bg-muted/30 animate-pulse rounded-xl" />
+              <div key={i} className="h-24 bg-muted/30 animate-pulse rounded-xl" />
             ))}
           </div>
         </div>
@@ -132,7 +132,7 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
           <Button onClick={onBack} className="mt-4">Go Back</Button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {subcategories.map((sub) => {
             const isSelected = selectedSubcategoryId === sub.id;
             const IconComponent = sub.icon_name ? getCategoryIcon(sub.icon_name) : null;
@@ -141,8 +141,8 @@ export const SubcategorySelector: React.FC<SubcategorySelectorProps> = ({
               <button
                 key={sub.id}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-2 p-6 rounded-xl border-2 transition-all",
-                  "hover:shadow-md active:scale-[0.98] bg-card min-h-[120px]",
+                  "flex flex-col items-center justify-center gap-2 p-5 rounded-xl border-2 transition-all",
+                  "hover:shadow-md active:scale-[0.98] bg-card min-h-[110px]",
                   isSelected 
                     ? "border-primary shadow-sm" 
                     : "border-border hover:border-primary/30"

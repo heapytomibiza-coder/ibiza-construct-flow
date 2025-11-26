@@ -100,7 +100,7 @@ export const CategorySelector = ({
 
   return (
     <div className={cn("max-w-5xl mx-auto", className)}>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {categories.map((category) => {
           const isSelected = selectedCategory === category.slug;
           const IconComponent = category.icon_name ? getCategoryIcon(category.icon_name) : null;
@@ -110,8 +110,8 @@ export const CategorySelector = ({
             <button
               key={category.id}
               className={cn(
-                "flex flex-col items-center justify-center gap-3 p-6 rounded-xl border-2 transition-all",
-                "hover:shadow-md active:scale-[0.98] bg-card",
+                "flex flex-col items-center justify-center gap-2.5 p-4 rounded-xl border-2 transition-all",
+                "hover:shadow-md active:scale-[0.98] bg-card min-h-[120px]",
                 isSelected
                   ? "border-primary shadow-sm"
                   : "border-border hover:border-primary/30"
@@ -126,9 +126,9 @@ export const CategorySelector = ({
             >
               {/* Icon */}
               {IconComponent && (
-                <div className="w-12 h-12 flex items-center justify-center">
+                <div className="w-10 h-10 flex items-center justify-center">
                   <IconComponent className={cn(
-                    "w-8 h-8",
+                    "w-7 h-7",
                     isSelected ? "text-primary" : "text-muted-foreground"
                   )} />
                 </div>
