@@ -510,198 +510,195 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           </div>
         </div>
       ) : (
-        <div className="flex-1 overflow-auto">
-          {/* Recent Presets */}
-          {presets.length > 0 && currentQuestionIndex === 0 && (
-            <PresetChips
-              presetType={primaryMicroSlug}
-              onSelectPreset={async (presetData) => {
-                onAnswersChange(presetData);
-              }}
-            />
-          )}
-
-          {/* Conversational Question Flow */}
-          <AnimatePresence mode="wait">
-            {currentQuestion && (
-              <motion.div
-                key={currentQuestion.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-3"
-              >
-                {/* Question Card */}
-                <div className="bg-card rounded-2xl border border-border/50 p-4 md:p-6 shadow-sm">
-                  <div className="space-y-4">
-                    {/* Question Number Badge */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-base">
-                        {currentQuestionIndex + 1}
-                      </div>
-                      <span className="text-sm text-muted-foreground font-medium">
-                        of {questions.length}
-                      </span>
-                    </div>
-
-                    {/* Question Text */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
-                          {(() => {
-                          const q = currentQuestion as any;
-                          console.log('🔍 Full question object:', JSON.stringify(currentQuestion, null, 2));
-                          
-                          // Try every possible property that might contain the question text
-                          const possibleTextFields = [
-                            q?.question,
-                            currentQuestion?.label,
-                            q?.title,
-                            q?.text,
-                          ];
-                          
-                          // Find the first non-empty text
-                          let questionText = possibleTextFields.find(text => 
-                            text && typeof text === 'string' && text.trim() !== ''
-                          ) || '';
-                          
-                          // If still empty, try to construct from options
-                          if (!questionText && currentQuestion?.options && currentQuestion.options.length > 0) {
-                            // Guess the question from the option values
-                            const firstOpt = currentQuestion.options[0];
-                            const optValue = typeof firstOpt === 'string' ? firstOpt : (firstOpt as any)?.value || '';
-                            
-                            if (optValue.includes('bed')) {
-                              questionText = 'How many bedrooms?';
-                            } else if (optValue.includes('room')) {
-                              questionText = 'How many rooms?';
-                            } else if (optValue.includes('floor')) {
-                              questionText = 'How many floors?';
-                            } else if (optValue.includes('bathroom')) {
-                              questionText = 'How many bathrooms?';
-                            }
-                          }
-                          
-                          // If STILL empty, use the ID to create a readable question
-                          if (!questionText && currentQuestion?.id) {
-                            const id = currentQuestion.id;
-                            questionText = id
-                              .replace(/_/g, ' ')
-                              .replace(/([a-z])([A-Z])/g, '$1 $2')
-                              .split(' ')
-                              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                              .join(' ') + '?';
-                          }
-                          
-                          // Last resort fallback
-                          if (!questionText) {
-                            questionText = `Question ${currentQuestionIndex + 1}`;
-                          }
-                          
-                          // Fix wording for selection-type questions
-                          const isSelectionType = currentQuestion.type === 'radio' || 
-                                                  currentQuestion.type === 'select' ||
-                                                  currentQuestion.type === 'checkbox' ||
-                                                  currentQuestion.type === 'multiple-choice';
-                          
-                          if (isSelectionType && questionText.toLowerCase().includes('describe')) {
-                            questionText = questionText.replace(/describe/gi, 'select').replace(/Describe/g, 'Select');
-                          }
-                          
-                          console.log('✅ Final question text:', questionText);
-                          
-                          // Check if it's an i18n key and translate it
-                          if (questionText.startsWith('microservices.') || questionText.startsWith('questions.')) {
-                            return t(questionText);
-                          }
-                          
-                          return questionText;
-                        })()}
-                        </h2>
-                        {!currentQuestion.required && (
-                          <Badge variant="outline" className="text-xs">optional</Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {(() => {
-                          if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
-                            return 'Select all that apply';
-                          } else if (currentQuestion.type === 'radio' || currentQuestion.type === 'select') {
-                            return 'Select one option';
-                          } else if (currentQuestion.type === 'yesno') {
-                            return 'Choose yes or no';
-                          } else {
-                            return 'Please provide your answer';
-                          }
-                        })()}
-                      </p>
-                    </div>
-
-                    {/* Question Input */}
-                    <div className="pt-2">
-                      <ConversationalQuestionInput
-                        question={currentQuestion}
-                        value={answers[currentQuestion.id]}
-                        onChange={(value) => handleAnswerChange(currentQuestion.id, value)}
-                      />
-                    </div>
-
-                    {/* Validation Feedback */}
-                    {isQuestionComplete(currentQuestion, answers[currentQuestion.id]) && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-2 text-sm font-medium text-green-600 bg-green-50 dark:bg-green-950/30 px-4 py-3 rounded-lg"
-                      >
-                        <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center">
-                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        <span>Got it! Ready to continue</span>
-                      </motion.div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Navigation Buttons */}
-                <div className="flex items-center justify-between gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={handlePreviousQuestion}
-                    className="gap-2"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    {isFirstQuestion ? 'Back' : 'Previous'}
-                  </Button>
-
-                  <div className="flex items-center gap-3">
-                    {/* Skip button for optional questions */}
-                    {!currentQuestion.required && (
-                      <Button
-                        variant="ghost"
-                        onClick={handleNextQuestion}
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        Skip
-                      </Button>
-                    )}
-
-                    <Button
-                      onClick={handleNextQuestion}
-                      className="gap-2 bg-gradient-hero text-white"
-                      size="lg"
-                    >
-                      {isLastQuestion ? 'Continue' : 'Next'}
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
+        <>
+          <div className="flex-1 overflow-auto">
+            {/* Recent Presets */}
+            {presets.length > 0 && currentQuestionIndex === 0 && (
+              <PresetChips
+                presetType={primaryMicroSlug}
+                onSelectPreset={async (presetData) => {
+                  onAnswersChange(presetData);
+                }}
+              />
             )}
-          </AnimatePresence>
-          
+
+            {/* Conversational Question Flow */}
+            <AnimatePresence mode="wait">
+              {currentQuestion && (
+                <motion.div
+                  key={currentQuestion.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-3 pb-4"
+                >
+                  {/* Question Card */}
+                  <div className="bg-card rounded-2xl border border-border/50 p-4 md:p-6 shadow-sm">
+                    <div className="space-y-4">
+                      {/* Question Number Badge */}
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-base">
+                          {currentQuestionIndex + 1}
+                        </div>
+                        <span className="text-sm text-muted-foreground font-medium">
+                          of {questions.length}
+                        </span>
+                      </div>
+
+                      {/* Question Text */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
+                            {(() => {
+                              const q = currentQuestion as any;
+                              console.log('🔍 Full question object:', JSON.stringify(currentQuestion, null, 2));
+                              
+                              const possibleTextFields = [
+                                q?.question,
+                                currentQuestion?.label,
+                                q?.title,
+                                q?.text,
+                              ];
+                              
+                              let questionText = possibleTextFields.find(text => 
+                                text && typeof text === 'string' && text.trim() !== ''
+                              ) || '';
+                              
+                              if (!questionText && currentQuestion?.options && currentQuestion.options.length > 0) {
+                                const firstOpt = currentQuestion.options[0];
+                                const optValue = typeof firstOpt === 'string' ? firstOpt : (firstOpt as any)?.value || '';
+                                
+                                if (optValue.includes('bed')) {
+                                  questionText = 'How many bedrooms?';
+                                } else if (optValue.includes('room')) {
+                                  questionText = 'How many rooms?';
+                                } else if (optValue.includes('floor')) {
+                                  questionText = 'How many floors?';
+                                } else if (optValue.includes('bathroom')) {
+                                  questionText = 'How many bathrooms?';
+                                }
+                              }
+                              
+                              if (!questionText && currentQuestion?.id) {
+                                const id = currentQuestion.id;
+                                questionText = id
+                                  .replace(/_/g, ' ')
+                                  .replace(/([a-z])([A-Z])/g, '$1 $2')
+                                  .split(' ')
+                                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                  .join(' ') + '?';
+                              }
+                              
+                              if (!questionText) {
+                                questionText = `Question ${currentQuestionIndex + 1}`;
+                              }
+                              
+                              const isSelectionType = currentQuestion.type === 'radio' || 
+                                                      currentQuestion.type === 'select' ||
+                                                      currentQuestion.type === 'checkbox' ||
+                                                      currentQuestion.type === 'multiple-choice';
+                              
+                              if (isSelectionType && questionText.toLowerCase().includes('describe')) {
+                                questionText = questionText.replace(/describe/gi, 'select').replace(/Describe/g, 'Select');
+                              }
+                              
+                              console.log('✅ Final question text:', questionText);
+                              
+                              if (questionText.startsWith('microservices.') || questionText.startsWith('questions.')) {
+                                return t(questionText);
+                              }
+                              
+                              return questionText;
+                            })()}
+                          </h2>
+                          {!currentQuestion.required && (
+                            <Badge variant="outline" className="text-xs">optional</Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {(() => {
+                            if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
+                              return 'Select all that apply';
+                            } else if (currentQuestion.type === 'radio' || currentQuestion.type === 'select') {
+                              return 'Select one option';
+                            } else if (currentQuestion.type === 'yesno') {
+                              return 'Choose yes or no';
+                            } else {
+                              return 'Please provide your answer';
+                            }
+                          })()}
+                        </p>
+                      </div>
+
+                      {/* Question Input */}
+                      <div className="pt-2">
+                        <ConversationalQuestionInput
+                          question={currentQuestion}
+                          value={answers[currentQuestion.id]}
+                          onChange={(value) => handleAnswerChange(currentQuestion.id, value)}
+                        />
+                      </div>
+
+                      {/* Validation Feedback */}
+                      {isQuestionComplete(currentQuestion, answers[currentQuestion.id]) && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex items-center gap-2 text-sm font-medium text-green-600 bg-green-50 dark:bg-green-950/30 px-4 py-3 rounded-lg"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <span>Got it! Ready to continue</span>
+                        </motion.div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation Buttons - Sticky at bottom */}
+          <div className="flex-shrink-0 pt-3 border-t border-border/50">
+            <div className="flex items-center justify-between gap-4">
+              <Button
+                variant="outline"
+                onClick={handlePreviousQuestion}
+                className="gap-2"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                {isFirstQuestion ? 'Back' : 'Previous'}
+              </Button>
+
+              <div className="flex items-center gap-3">
+                {/* Skip button for optional questions */}
+                {currentQuestion && !currentQuestion.required && (
+                  <Button
+                    variant="ghost"
+                    onClick={handleNextQuestion}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    Skip
+                  </Button>
+                )}
+
+                <Button
+                  onClick={handleNextQuestion}
+                  disabled={!canProceed}
+                  className="gap-2 bg-gradient-hero text-white"
+                  size="lg"
+                >
+                  {isLastQuestion ? 'Continue to Logistics' : 'Next'}
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
           {/* AI Smart-Fill Dialog */}
           {showAISmartFill && (
             <AISmartFill
@@ -713,7 +710,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
               }}
             />
           )}
-        </div>
+        </>
       )}
 
       </div>
