@@ -54,5 +54,11 @@ verify_jwt = false
 [functions.seed-commercial-office-questions]
 verify_jwt = false
 
+[functions.seed-new-carpentry-questions]
+verify_jwt = false
+
+[functions.seed-plumbing-questions]
+verify_jwt = false
+
 [functions.create-custom-demo]
 verify_jwt = false
