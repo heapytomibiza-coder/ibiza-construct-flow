@@ -9,16 +9,12 @@ export const ProgressIndicator = ({ currentStep, totalSteps }: ProgressIndicator
   const percentage = Math.min(100, Math.round((currentStep / totalSteps) * 100))
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        <span>Selections complete</span>
-        <span>{percentage}%</span>
-      </div>
-      <div className="h-2 overflow-hidden rounded-full bg-muted">
+    <div className="flex-1 max-w-md">
+      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
-          className="h-full rounded-full bg-indigo-500"
+          className="h-full rounded-full bg-primary"
         />
       </div>
     </div>

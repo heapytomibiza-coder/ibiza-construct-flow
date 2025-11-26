@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { useTranslation } from '@/hooks/i18n/useTranslation';
+import { cn } from '@/lib/utils';
 
 interface OptionLike {
   label?: string;
@@ -95,7 +96,13 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
         <RadioGroup
           value={radioVal}
           onValueChange={(newValue) => onChange(newValue)}
-          className="grid grid-cols-2 md:grid-cols-3 gap-3"
+          className={cn(
+            "grid gap-2.5",
+            normOptions.length <= 2 ? "grid-cols-1 sm:grid-cols-2" :
+            normOptions.length <= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" :
+            normOptions.length <= 6 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
+            "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+          )}
         >
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
@@ -138,7 +145,13 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
       const selVal = value == null ? '' : String(value);
       // Use tile-based selection instead of dropdown
       return (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className={cn(
+          "grid gap-2.5",
+          normOptions.length <= 2 ? "grid-cols-1 sm:grid-cols-2" :
+          normOptions.length <= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" :
+          normOptions.length <= 6 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
+          "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+        )}>
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
             const optLabel = opt.label.startsWith('microservices.') || opt.label.startsWith('questions.')
@@ -179,7 +192,13 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
     case 'checkbox': {
       const selected = Array.isArray(value) ? (value as string[]) : [];
       return (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className={cn(
+          "grid gap-2.5",
+          normOptions.length <= 2 ? "grid-cols-1 sm:grid-cols-2" :
+          normOptions.length <= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" :
+          normOptions.length <= 6 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
+          "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+        )}>
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
             const checked = selected.includes(opt.value);

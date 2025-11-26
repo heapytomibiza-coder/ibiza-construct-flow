@@ -167,20 +167,8 @@ export const MicroStep: React.FC<MicroStepProps> = ({
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <div className="flex items-center justify-between gap-4 pb-2">
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          size="sm"
-          className="-ml-2"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-      </div>
-
-      <div className="text-center space-y-2">
+    <div className="max-w-5xl mx-auto space-y-4">
+      <div className="text-center space-y-1">
         <h1 className="text-2xl md:text-3xl font-bold text-foreground">
           What tasks do you need completing?
         </h1>
@@ -190,13 +178,22 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="h-28 bg-muted/30 animate-pulse rounded-xl" />
+        <div className={cn(
+          "grid gap-3",
+          "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        )}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-24 bg-muted/30 animate-pulse rounded-xl" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className={cn(
+          "grid gap-3",
+          micros.length <= 2 ? "grid-cols-2" :
+          micros.length <= 4 ? "grid-cols-2 lg:grid-cols-4" :
+          micros.length <= 6 ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-6" :
+          "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        )}>
           {micros.map((micro) => {
             const isSelected = selectedMicroIds.includes(micro.id);
             const ServiceIcon = getServiceIcon(micro.micro);
@@ -222,47 +219,43 @@ export const MicroStep: React.FC<MicroStepProps> = ({
               <button
                 key={micro.id}
                 className={cn(
-                  "group relative flex flex-col gap-2.5 p-4 rounded-xl border-2 transition-all text-left h-full",
-                  "hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] bg-card",
+                  "group relative flex flex-col gap-2 p-3 rounded-xl border-2 transition-all text-left h-full",
+                  "hover:shadow-md active:scale-[0.98] bg-card",
                   isSelected 
                     ? "border-primary shadow-md ring-2 ring-primary/20" 
                     : "border-border hover:border-primary/50"
                 )}
                 onClick={handleClick}
               >
-                {/* Header with Icon and Checkbox */}
                 <div className="flex items-start justify-between gap-2">
                   <div className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-lg transition-colors flex-shrink-0",
+                    "flex items-center justify-center w-9 h-9 rounded-lg transition-colors flex-shrink-0",
                     isSelected 
                       ? "bg-primary/10 text-primary" 
                       : "bg-muted/50 text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary"
                   )}>
-                    <ServiceIcon className="w-5 h-5" />
+                    <ServiceIcon className="w-4 h-4" />
                   </div>
                   
                   <CheckCircle2 className={cn(
-                    "w-5 h-5 flex-shrink-0 transition-all",
+                    "w-4 h-4 flex-shrink-0 transition-all",
                     isSelected 
                       ? "text-primary scale-110" 
                       : "text-muted-foreground/20 group-hover:text-muted-foreground/40"
                   )} />
                 </div>
 
-                {/* Service Name */}
-                <div className="flex-1 min-h-[2rem]">
+                <div className="flex-1">
                   <h3 className={cn(
-                    "font-semibold text-sm leading-tight",
+                    "font-semibold text-sm leading-tight line-clamp-2",
                     isSelected ? "text-primary" : "text-foreground"
                   )}>
                     {micro.micro}
                   </h3>
                 </div>
 
-
-                {/* Description hint */}
                 {micro.description && (
-                  <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-muted-foreground line-clamp-2 leading-tight">
                     {micro.description}
                   </p>
                 )}
