@@ -7,20 +7,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useRole } from '@/lib/roleHelpers';
 import { Loader2 } from 'lucide-react';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 
 export default function NotificationSettings() {
   const { user, profile } = useAuth();
+  const { roles } = useRole();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   
+  const isProfessional = roles.includes('professional');
+  const isClient = roles.includes('client');
+  
   const [preferences, setPreferences] = useState({
+    // Professional preferences
     email_job_matches: true,
     email_offers: true,
     email_payments: true,
     email_announcements: true,
     email_marketing: false,
+    
+    // Client preferences
+    email_booking_updates: true,
+    email_quote_responses: true,
+    email_service_recommendations: true,
+    email_payment_reminders: true,
+    
     email_digest: 'instant',
   });
 
@@ -77,53 +90,125 @@ export default function NotificationSettings() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="job-matches">Job Matches</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Get notified when new jobs match your profile
-                  </p>
-                </div>
-                <Switch
-                  id="job-matches"
-                  checked={preferences.email_job_matches}
-                  onCheckedChange={(checked) =>
-                    setPreferences({ ...preferences, email_job_matches: checked })
-                  }
-                />
-              </div>
+              {isProfessional && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="job-matches">Job Matches</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Get notified when new jobs match your profile
+                      </p>
+                    </div>
+                    <Switch
+                      id="job-matches"
+                      checked={preferences.email_job_matches}
+                      onCheckedChange={(checked) =>
+                        setPreferences({ ...preferences, email_job_matches: checked })
+                      }
+                    />
+                  </div>
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="offers">Offers & Proposals</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Get notified about new offers and proposals
-                  </p>
-                </div>
-                <Switch
-                  id="offers"
-                  checked={preferences.email_offers}
-                  onCheckedChange={(checked) =>
-                    setPreferences({ ...preferences, email_offers: checked })
-                  }
-                />
-              </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="offers">Offers & Proposals</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Get notified about new offers and proposals
+                      </p>
+                    </div>
+                    <Switch
+                      id="offers"
+                      checked={preferences.email_offers}
+                      onCheckedChange={(checked) =>
+                        setPreferences({ ...preferences, email_offers: checked })
+                      }
+                    />
+                  </div>
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="payments">Payments</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Get notified about payment updates
-                  </p>
-                </div>
-                <Switch
-                  id="payments"
-                  checked={preferences.email_payments}
-                  onCheckedChange={(checked) =>
-                    setPreferences({ ...preferences, email_payments: checked })
-                  }
-                />
-              </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="payments">Payments</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Get notified about payment updates
+                      </p>
+                    </div>
+                    <Switch
+                      id="payments"
+                      checked={preferences.email_payments}
+                      onCheckedChange={(checked) =>
+                        setPreferences({ ...preferences, email_payments: checked })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              {isClient && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="booking-updates">Booking Updates</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Get notified about your booking status changes
+                      </p>
+                    </div>
+                    <Switch
+                      id="booking-updates"
+                      checked={preferences.email_booking_updates}
+                      onCheckedChange={(checked) =>
+                        setPreferences({ ...preferences, email_booking_updates: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="quote-responses">Quote Responses</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Get notified when professionals respond to your requests
+                      </p>
+                    </div>
+                    <Switch
+                      id="quote-responses"
+                      checked={preferences.email_quote_responses}
+                      onCheckedChange={(checked) =>
+                        setPreferences({ ...preferences, email_quote_responses: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="service-recommendations">Service Recommendations</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Get suggestions for services you might need
+                      </p>
+                    </div>
+                    <Switch
+                      id="service-recommendations"
+                      checked={preferences.email_service_recommendations}
+                      onCheckedChange={(checked) =>
+                        setPreferences({ ...preferences, email_service_recommendations: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="payment-reminders">Payment Reminders</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Get reminders about upcoming or overdue payments
+                      </p>
+                    </div>
+                    <Switch
+                      id="payment-reminders"
+                      checked={preferences.email_payment_reminders}
+                      onCheckedChange={(checked) =>
+                        setPreferences({ ...preferences, email_payment_reminders: checked })
+                      }
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
