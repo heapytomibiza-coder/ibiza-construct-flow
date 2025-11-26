@@ -3,10 +3,9 @@
  * 7-screen tap-first wizard per locked specification
  * DO NOT modify flow without governance approval
  */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
-import { Progress } from '@/components/ui/progress';
+import { useNavigate, useBlocker } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -14,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import constructionServicesData from '@/data/construction-services.json';
 import { mapMicroIdToServiceId } from '@/lib/mappers/serviceIdMapper';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -26,6 +26,18 @@ import { QuestionsStep } from './QuestionsStep';
 import { LogisticsStep } from './LogisticsStep';
 import { ExtrasStep } from './ExtrasStep';
 import { ReviewStep } from './ReviewStep';
+import { StepProgressDots } from './StepProgressDots';
+import { DraftRecoveryModal } from './DraftRecoveryModal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface WizardState {
   mainCategory: string;
@@ -75,6 +87,11 @@ export const CanonicalJobWizard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [skipQuestions, setSkipQuestions] = useState(false);
+  const [showDraftModal, setShowDraftModal] = useState(false);
+  const [draftAge, setDraftAge] = useState<Date | null>(null);
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const initialStateRef = useRef<string>('');
   
   const [wizardState, setWizardState] = useState<WizardState>({
     mainCategory: '',
@@ -97,7 +114,7 @@ export const CanonicalJobWizard: React.FC = () => {
   });
 
 
-  // Restore draft on mount (server + sessionStorage fallback)
+  // Restore draft on mount with modal prompt
   useEffect(() => {
     const restoreDraft = async () => {
       if (!user) return;
@@ -106,19 +123,18 @@ export const CanonicalJobWizard: React.FC = () => {
         // Try server first
         const { data } = await supabase
           .from('form_sessions')
-          .select('payload')
+          .select('payload, updated_at')
           .eq('user_id', user.id)
           .eq('form_type', 'job_post')
           .maybeSingle();
         
         if (data?.payload) {
-          setWizardState(prev => ({
-            ...prev,
-            ...(data.payload as unknown as WizardState),
-            // Ensure arrays exist even if missing from payload
-            microSlugs: (data.payload as any).microSlugs || [],
-            microUuids: (data.payload as any).microUuids || []
-          }));
+          // Show modal to ask user
+          setDraftAge(data.updated_at ? new Date(data.updated_at) : new Date());
+          setShowDraftModal(true);
+          
+          // Store draft for potential resume
+          sessionStorage.setItem('pendingDraft', JSON.stringify(data.payload));
           return;
         }
       } catch (err) {
@@ -129,13 +145,9 @@ export const CanonicalJobWizard: React.FC = () => {
       try {
         const saved = sessionStorage.getItem('wizardState');
         if (saved) {
-          const parsed = JSON.parse(saved);
-          setWizardState(prev => ({
-            ...prev,
-            ...parsed,
-            microSlugs: parsed.microSlugs || [],
-            microUuids: parsed.microUuids || []
-          }));
+          setDraftAge(new Date());
+          setShowDraftModal(true);
+          sessionStorage.setItem('pendingDraft', saved);
         }
       } catch (err) {
         console.error('Failed to restore session draft:', err);
@@ -145,34 +157,64 @@ export const CanonicalJobWizard: React.FC = () => {
     restoreDraft();
   }, [user]);
 
-  // Autosave draft (debounced)
+  // Track initial state for dirty detection
   useEffect(() => {
-    if (!user) return;
+    if (initialStateRef.current === '') {
+      initialStateRef.current = JSON.stringify(wizardState);
+    } else {
+      const currentState = JSON.stringify(wizardState);
+      setIsDirty(currentState !== initialStateRef.current);
+    }
+  }, [wizardState]);
+
+  // Autosave draft (debounced) with save indicator
+  useEffect(() => {
+    if (!user || !isDirty) return;
     
     const timer = setTimeout(async () => {
-      // Save to server
       try {
         await supabase
           .from('form_sessions')
           .upsert({
             user_id: user.id,
             form_type: 'job_post',
-            payload: wizardState as any
+            payload: wizardState as any,
+            updated_at: new Date().toISOString()
           });
-      } catch (err) {
-        console.error('Failed to autosave draft:', err);
-      }
-      
-      // Backup to sessionStorage
-      try {
+        
         sessionStorage.setItem('wizardState', JSON.stringify(wizardState));
       } catch (err) {
-        console.error('Failed to save session draft:', err);
+        console.error('Failed to autosave:', err);
       }
     }, 600);
 
     return () => clearTimeout(timer);
-  }, [wizardState, user]);
+  }, [wizardState, user, isDirty]);
+
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    if (!isDirty) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
+  // Block in-app navigation when dirty
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty && currentLocation.pathname !== nextLocation.pathname
+  );
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      setShowLeaveWarning(true);
+    }
+  }, [blocker.state]);
 
   // Auto-correct illegal states
   useEffect(() => {
@@ -187,7 +229,43 @@ export const CanonicalJobWizard: React.FC = () => {
     }
   }, [currentStep, wizardState.mainCategory, wizardState.subcategory, wizardState.microIds]);
 
-  const progress = (currentStep / TOTAL_STEPS) * 100;
+  const handleResumeDraft = () => {
+    try {
+      const draft = sessionStorage.getItem('pendingDraft');
+      if (draft) {
+        const parsed = JSON.parse(draft);
+        setWizardState(prev => ({
+          ...prev,
+          ...parsed,
+          microSlugs: parsed.microSlugs || [],
+          microUuids: parsed.microUuids || []
+        }));
+        initialStateRef.current = draft;
+        setIsDirty(false);
+      }
+      sessionStorage.removeItem('pendingDraft');
+    } catch (err) {
+      console.error('Failed to resume draft:', err);
+    }
+    setShowDraftModal(false);
+  };
+
+  const handleStartFresh = async () => {
+    try {
+      if (user) {
+        await supabase
+          .from('form_sessions')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('form_type', 'job_post');
+      }
+      sessionStorage.removeItem('pendingDraft');
+      sessionStorage.removeItem('wizardState');
+    } catch (err) {
+      console.error('Failed to clear draft:', err);
+    }
+    setShowDraftModal(false);
+  };
 
   // Stable navigation callbacks
   const handleNext = useCallback(() => {
@@ -606,59 +684,106 @@ export const CanonicalJobWizard: React.FC = () => {
   };
 
   return (
-    <div id="job-wizard-root" className="min-h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 pb-24 md:pb-0">
-      {/* Header with Progress */}
-      <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto px-4 py-6">
-          <Breadcrumbs 
-            items={[
-              { label: 'Dashboard', href: '/dashboard/client' },
-              { label: 'Post Job' }
-            ]}
-            className="mb-4"
-          />
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-sage-deep">Post a Job</h2>
-            <Badge variant="outline">
-              Step {currentStep} of {TOTAL_STEPS}
-            </Badge>
-          </div>
-          <Progress value={progress} className="h-2" />
-          <p className="text-sm text-muted-foreground mt-3" aria-live="polite">
-            {STEP_LABELS[currentStep - 1]}
-          </p>
-        </div>
-      </div>
+    <>
+      {/* Draft Recovery Modal */}
+      <DraftRecoveryModal
+        open={showDraftModal}
+        draftAge={draftAge}
+        onResume={handleResumeDraft}
+        onStartFresh={handleStartFresh}
+      />
 
-      {/* Step Content */}
-      <div className="container mx-auto px-4 py-8">
-        {renderStep()}
-      </div>
+      {/* Leave Warning Dialog */}
+      <AlertDialog open={showLeaveWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Leave Without Saving?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes that will be lost if you leave now.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowLeaveWarning(false)}>
+              Stay
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              setShowLeaveWarning(false);
+              setIsDirty(false);
+              if (blocker.state === 'blocked') {
+                blocker.proceed();
+              }
+            }}>
+              Leave Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-      {/* Mobile Sticky CTA */}
-      {isMobile && currentStep < TOTAL_STEPS && (
-        <div>
-          <StickyMobileCTA
-            primaryAction={{
-              label: currentStep === 7 ? 'Post Job' : 'Continue',
-              onClick: currentStep === 7 ? handleSubmit : handleNext,
-              disabled: !canProceed().can,
-              loading: loading
-            }}
-            secondaryAction={currentStep > 1 ? {
-              label: 'Back',
-              onClick: handleBack
-            } : undefined}
-          />
-          {!canProceed().can && canProceed().reason && (
-            <div className="fixed bottom-20 left-0 right-0 text-center">
-              <p className="text-sm text-sage-deep/70 bg-white/95 backdrop-blur-sm px-4 py-2 mx-4 rounded-lg border border-sage-muted/40 shadow-sm">
-                {canProceed().reason}
-              </p>
+      <div id="job-wizard-root" className="min-h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 pb-24 md:pb-0">
+        {/* Header with Progress */}
+        <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 sticky top-0 z-40 shadow-sm">
+          <div className="container mx-auto px-4 py-6">
+            <Breadcrumbs 
+              items={[
+                { label: 'Dashboard', href: '/dashboard/client' },
+                { label: 'Post Job' }
+              ]}
+              className="mb-4"
+            />
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold text-sage-deep">Post a Job</h2>
+              <Badge variant="outline">
+                Step {currentStep} of {TOTAL_STEPS}
+              </Badge>
             </div>
-          )}
+            <StepProgressDots
+              currentStep={currentStep}
+              totalSteps={TOTAL_STEPS}
+              stepLabels={STEP_LABELS}
+            />
+          </div>
         </div>
-      )}
-    </div>
+
+        {/* Step Content with Animations */}
+        <div className="container mx-auto px-4 py-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              {renderStep()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Mobile Sticky CTA */}
+        {isMobile && currentStep < TOTAL_STEPS && (
+          <div>
+            <StickyMobileCTA
+              primaryAction={{
+                label: currentStep === 7 ? 'Post Job' : 'Continue',
+                onClick: currentStep === 7 ? handleSubmit : handleNext,
+                disabled: !canProceed().can,
+                loading: loading
+              }}
+              secondaryAction={currentStep > 1 ? {
+                label: 'Back',
+                onClick: handleBack
+              } : undefined}
+            />
+            {!canProceed().can && canProceed().reason && (
+              <div className="fixed bottom-20 left-0 right-0 text-center">
+                <p className="text-sm text-sage-deep/70 bg-white/95 backdrop-blur-sm px-4 py-2 mx-4 rounded-lg border border-sage-muted/40 shadow-sm">
+                  {canProceed().reason}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
