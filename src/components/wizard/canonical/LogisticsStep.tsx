@@ -91,8 +91,12 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
   const handleStartDatePreset = (preset: string) => {
     console.log('LogisticsStep - Start date preset clicked:', preset);
-    handleUpdate('startDatePreset', preset);
-    handleUpdate('startDate', undefined);
+    // Combine both updates into a single state change to prevent freezing
+    onLogisticsChange({ 
+      ...logistics, 
+      startDatePreset: preset,
+      startDate: undefined 
+    });
   };
 
   const isComplete = logistics.location && 
@@ -195,8 +199,12 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   mode="single"
                   selected={logistics.startDate}
                   onSelect={(date) => {
-                    handleUpdate('startDate', date);
-                    handleUpdate('startDatePreset', '');
+                    // Combine both updates into single state change
+                    onLogisticsChange({
+                      ...logistics,
+                      startDate: date,
+                      startDatePreset: ''
+                    });
                     setStartDateOpen(false);
                   }}
                   disabled={(date) => date < new Date()}
