@@ -103,10 +103,21 @@ export const CanonicalJobWizard: React.FC = () => {
   });
 
 
-  // Restore draft on mount with modal prompt
+  // Restore draft on mount with modal prompt (only at start)
   useEffect(() => {
     const restoreDraft = async () => {
       if (!user) return;
+      
+      // Only show draft recovery if wizard is empty (at the very start)
+      const isWizardEmpty = !wizardState.mainCategory && 
+                           !wizardState.subcategory && 
+                           wizardState.microIds.length === 0;
+      
+      if (!isWizardEmpty) return; // Don't interrupt mid-flow
+      
+      // Check if we've already shown the modal this session
+      const hasSeenModal = sessionStorage.getItem('draftModalShown');
+      if (hasSeenModal) return;
       
       try {
         // Try server first
@@ -121,6 +132,7 @@ export const CanonicalJobWizard: React.FC = () => {
           // Show modal to ask user
           setDraftAge(data.updated_at ? new Date(data.updated_at) : new Date());
           setShowDraftModal(true);
+          sessionStorage.setItem('draftModalShown', 'true');
           
           // Store draft for potential resume
           sessionStorage.setItem('pendingDraft', JSON.stringify(data.payload));
@@ -136,6 +148,7 @@ export const CanonicalJobWizard: React.FC = () => {
         if (saved) {
           setDraftAge(new Date());
           setShowDraftModal(true);
+          sessionStorage.setItem('draftModalShown', 'true');
           sessionStorage.setItem('pendingDraft', saved);
         }
       } catch (err) {
@@ -144,7 +157,7 @@ export const CanonicalJobWizard: React.FC = () => {
     };
     
     restoreDraft();
-  }, [user]);
+  }, [user, wizardState.mainCategory, wizardState.subcategory, wizardState.microIds]);
 
   // Track initial state for dirty detection
   useEffect(() => {
