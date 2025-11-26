@@ -79,6 +79,11 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     }
   }, [currentQuestion]);
 
+  // Load questions when microSlugs or microNames change
+  useEffect(() => {
+    loadQuestions();
+  }, [microSlugs.join(','), microNames.join(',')]);
+
   // Reset question index when questions array changes
   useEffect(() => {
     if (questions.length > 0 && currentQuestionIndex >= questions.length) {
