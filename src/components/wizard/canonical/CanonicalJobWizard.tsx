@@ -673,17 +673,17 @@ export const CanonicalJobWizard: React.FC = () => {
       <div id="job-wizard-root" className="h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 overflow-hidden flex flex-col">
         {/* Header with Progress */}
         <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 z-40 shadow-sm flex-shrink-0">
-          <div className="container mx-auto px-4 py-6">
+          <div className="container mx-auto px-4 py-3">
             <Breadcrumbs 
               items={[
                 { label: 'Dashboard', href: '/dashboard/client' },
                 { label: 'Post Job' }
               ]}
-              className="mb-4"
+              className="mb-2"
             />
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-sage-deep">Post a Job</h2>
-              <Badge variant="outline">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-sage-deep">Post a Job</h2>
+              <Badge variant="outline" className="text-xs">
                 Step {currentStep} of {TOTAL_STEPS}
               </Badge>
             </div>
