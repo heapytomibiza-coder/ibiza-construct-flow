@@ -443,7 +443,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
   const handleNextQuestion = () => {
     if (isLastQuestion) {
-      // Check if all required questions are answered
+      // On last question, check if all required questions are answered before proceeding to next step
       const allAnswered = questions.every(q => 
         !q.required || isQuestionComplete(q, answers[q.id])
       );
@@ -451,7 +451,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         onNext();
       }
     } else {
-      // Safety check: don't go beyond bounds
+      // For navigation between questions, always allow (questions are optional to answer while navigating)
       setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
     }
   };
@@ -464,9 +464,10 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     }
   };
 
-  const canProceed = questions.every(q => 
+  // For the Continue button on last question: check if all required questions answered
+  const canContinueToNextStep = isLastQuestion && questions.every(q => 
     !q.required || isQuestionComplete(q, answers[q.id])
-  ) && !loading;
+  );
 
   return (
     <>
@@ -664,10 +665,10 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
           {/* Navigation Buttons - Sticky at bottom */}
           <div className="flex-shrink-0 pt-3 border-t border-border/50">
-            {!canProceed && isLastQuestion && (
+            {isLastQuestion && !canContinueToNextStep && (
               <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
                 <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
-                  Please answer all required questions to continue
+                  Please answer all required questions to continue to Logistics
                 </p>
               </div>
             )}
@@ -684,7 +685,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
               <div className="flex items-center gap-3">
                 {/* Skip button for optional questions */}
-                {currentQuestion && !currentQuestion.required && (
+                {currentQuestion && !currentQuestion.required && !isLastQuestion && (
                   <Button
                     variant="ghost"
                     onClick={handleNextQuestion}
@@ -696,7 +697,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
                 <Button
                   onClick={handleNextQuestion}
-                  disabled={!canProceed}
+                  disabled={isLastQuestion && !canContinueToNextStep}
                   className="gap-2 bg-gradient-hero text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   size="lg"
                 >
