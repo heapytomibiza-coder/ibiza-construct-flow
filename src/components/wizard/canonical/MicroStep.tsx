@@ -1,15 +1,31 @@
 /**
  * Step 3: Micro Category Selection (becomes Job Title)
- * Chip/list-based selection with icons
+ * Enhanced with icons, metadata, and improved visual design
  */
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Sparkles, TrendingUp, Clock, Wrench, Hammer, Package, Sofa, Tv, Bed, Armchair, Table, Lamp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+
+// Icon mapping for common micro-services
+const getServiceIcon = (serviceName: string) => {
+  const name = serviceName.toLowerCase();
+  
+  if (name.includes('table')) return Table;
+  if (name.includes('shelv') || name.includes('storage')) return Package;
+  if (name.includes('tv') || name.includes('media')) return Tv;
+  if (name.includes('bed') || name.includes('headboard')) return Bed;
+  if (name.includes('bench') || name.includes('seating')) return Armchair;
+  if (name.includes('sofa') || name.includes('couch')) return Sofa;
+  if (name.includes('light') || name.includes('lamp')) return Lamp;
+  
+  // Default icon
+  return Hammer;
+};
 
 interface MicroStepProps {
   mainCategory: string;
@@ -90,10 +106,17 @@ export const MicroStep: React.FC<MicroStepProps> = ({
           return;
         }
 
-        // Now get micro-categories for this subcategory
+        // Now get micro-categories for this subcategory with job counts
         const { data, error } = await supabase
           .from('service_micro_categories')
-          .select('id, name, slug, display_order')
+          .select(`
+            id, 
+            name, 
+            slug, 
+            display_order,
+            description,
+            jobs:jobs(count)
+          `)
           .eq('subcategory_id', subcategoryData.id)
           .eq('is_active', true)
           .order('display_order', { ascending: true });
@@ -109,12 +132,18 @@ export const MicroStep: React.FC<MicroStepProps> = ({
 
         if (!mounted) return;
 
-        // Map to expected format (id, slug, and micro fields)
-        const formattedData = (data || []).map(item => ({
-          id: item.id,
-          slug: item.slug || '',
-          micro: item.name
-        }));
+        // Map to expected format with metadata
+        const formattedData = (data || []).map(item => {
+          const jobCount = Array.isArray(item.jobs) ? item.jobs.length : 0;
+          return {
+            id: item.id,
+            slug: item.slug || '',
+            micro: item.name,
+            description: item.description,
+            jobCount,
+            isPopular: jobCount > 10
+          };
+        });
         
         setMicros(formattedData);
       } catch (error) {
@@ -167,15 +196,16 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="h-20 bg-muted/30 animate-pulse rounded-xl" />
+            <div key={i} className="h-32 bg-muted/30 animate-pulse rounded-xl" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {micros.map((micro) => {
             const isSelected = selectedMicroIds.includes(micro.id);
+            const ServiceIcon = getServiceIcon(micro.micro);
             
             const handleClick = () => {
               if (isSelected) {
@@ -198,21 +228,61 @@ export const MicroStep: React.FC<MicroStepProps> = ({
               <button
                 key={micro.id}
                 className={cn(
-                  "flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left",
-                  "hover:shadow-md active:scale-[0.98] bg-card",
+                  "group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left h-full",
+                  "hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] bg-card",
                   isSelected 
-                    ? "border-primary shadow-sm" 
-                    : "border-border hover:border-primary/30"
+                    ? "border-primary shadow-md ring-2 ring-primary/20" 
+                    : "border-border hover:border-primary/50"
                 )}
                 onClick={handleClick}
               >
-                <CheckCircle2 className={cn(
-                  "w-5 h-5 flex-shrink-0",
-                  isSelected ? "text-primary" : "text-muted-foreground/30"
-                )} />
-                <span className="text-sm font-medium leading-tight">
-                  {micro.micro}
-                </span>
+                {/* Header with Icon and Checkbox */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className={cn(
+                    "flex items-center justify-center w-12 h-12 rounded-lg transition-colors",
+                    isSelected 
+                      ? "bg-primary/10 text-primary" 
+                      : "bg-muted/50 text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary"
+                  )}>
+                    <ServiceIcon className="w-6 h-6" />
+                  </div>
+                  
+                  <CheckCircle2 className={cn(
+                    "w-6 h-6 flex-shrink-0 transition-all",
+                    isSelected 
+                      ? "text-primary scale-110" 
+                      : "text-muted-foreground/20 group-hover:text-muted-foreground/40"
+                  )} />
+                </div>
+
+                {/* Service Name */}
+                <div className="flex-1 min-h-[2.5rem] flex items-start">
+                  <h3 className={cn(
+                    "font-semibold text-sm leading-tight",
+                    isSelected ? "text-primary" : "text-foreground"
+                  )}>
+                    {micro.micro}
+                  </h3>
+                </div>
+
+                {/* Badges */}
+                {(micro.isPopular || micro.description) && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {micro.isPopular && (
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 bg-primary/10 text-primary border-0">
+                        <TrendingUp className="w-3 h-3 mr-1" />
+                        Popular
+                      </Badge>
+                    )}
+                  </div>
+                )}
+
+                {/* Description hint */}
+                {micro.description && (
+                  <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                    {micro.description}
+                  </p>
+                )}
               </button>
             );
           })}
