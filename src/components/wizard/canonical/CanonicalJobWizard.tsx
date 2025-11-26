@@ -5,7 +5,7 @@
  */
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { useNavigate, useBlocker } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -28,16 +28,6 @@ import { ExtrasStep } from './ExtrasStep';
 import { ReviewStep } from './ReviewStep';
 import { StepProgressDots } from './StepProgressDots';
 import { DraftRecoveryModal } from './DraftRecoveryModal';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 
 interface WizardState {
   mainCategory: string;
@@ -89,7 +79,6 @@ export const CanonicalJobWizard: React.FC = () => {
   const [skipQuestions, setSkipQuestions] = useState(false);
   const [showDraftModal, setShowDraftModal] = useState(false);
   const [draftAge, setDraftAge] = useState<Date | null>(null);
-  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const initialStateRef = useRef<string>('');
   
@@ -191,7 +180,7 @@ export const CanonicalJobWizard: React.FC = () => {
     return () => clearTimeout(timer);
   }, [wizardState, user, isDirty]);
 
-  // Warn before leaving with unsaved changes
+  // Warn before leaving page with unsaved changes
   useEffect(() => {
     if (!isDirty) return;
 
@@ -203,18 +192,6 @@ export const CanonicalJobWizard: React.FC = () => {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
-
-  // Block in-app navigation when dirty
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      isDirty && currentLocation.pathname !== nextLocation.pathname
-  );
-
-  useEffect(() => {
-    if (blocker.state === 'blocked') {
-      setShowLeaveWarning(true);
-    }
-  }, [blocker.state]);
 
   // Auto-correct illegal states
   useEffect(() => {
@@ -692,32 +669,6 @@ export const CanonicalJobWizard: React.FC = () => {
         onResume={handleResumeDraft}
         onStartFresh={handleStartFresh}
       />
-
-      {/* Leave Warning Dialog */}
-      <AlertDialog open={showLeaveWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Leave Without Saving?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have unsaved changes that will be lost if you leave now.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowLeaveWarning(false)}>
-              Stay
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              setShowLeaveWarning(false);
-              setIsDirty(false);
-              if (blocker.state === 'blocked') {
-                blocker.proceed();
-              }
-            }}>
-              Leave Anyway
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <div id="job-wizard-root" className="min-h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 pb-24 md:pb-0">
         {/* Header with Progress */}
