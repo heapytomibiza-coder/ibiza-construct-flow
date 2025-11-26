@@ -541,8 +541,9 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
                     {/* Question Text */}
                     <div className="space-y-3">
-                      <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
-                        {(() => {
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                          {(() => {
                           const q = currentQuestion as any;
                           console.log('🔍 Full question object:', JSON.stringify(currentQuestion, null, 2));
                           
@@ -611,7 +612,11 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                           
                           return questionText;
                         })()}
-                      </h2>
+                        </h2>
+                        {!currentQuestion.required && (
+                          <Badge variant="outline" className="text-xs">optional</Badge>
+                        )}
+                      </div>
                       <p className="text-base text-muted-foreground">
                         {(() => {
                           if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
@@ -665,14 +670,27 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     {isFirstQuestion ? 'Back' : 'Previous'}
                   </Button>
 
-                  <Button
-                    onClick={handleNextQuestion}
-                    className="gap-2 bg-gradient-hero text-white"
-                    size="lg"
-                  >
-                    {isLastQuestion ? 'Continue' : 'Next'}
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    {/* Skip button for optional questions */}
+                    {!currentQuestion.required && (
+                      <Button
+                        variant="ghost"
+                        onClick={handleNextQuestion}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        Skip
+                      </Button>
+                    )}
+
+                    <Button
+                      onClick={handleNextQuestion}
+                      className="gap-2 bg-gradient-hero text-white"
+                      size="lg"
+                    >
+                      {isLastQuestion ? 'Continue' : 'Next'}
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             )}
