@@ -664,6 +664,14 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
           {/* Navigation Buttons - Sticky at bottom */}
           <div className="flex-shrink-0 pt-3 border-t border-border/50">
+            {!canProceed && isLastQuestion && (
+              <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
+                  Please answer all required questions to continue
+                </p>
+              </div>
+            )}
+            
             <div className="flex items-center justify-between gap-4">
               <Button
                 variant="outline"
@@ -689,7 +697,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                 <Button
                   onClick={handleNextQuestion}
                   disabled={!canProceed}
-                  className="gap-2 bg-gradient-hero text-white"
+                  className="gap-2 bg-gradient-hero text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   size="lg"
                 >
                   {isLastQuestion ? 'Continue to Logistics' : 'Next'}
