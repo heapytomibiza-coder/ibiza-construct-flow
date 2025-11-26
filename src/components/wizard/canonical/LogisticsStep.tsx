@@ -80,6 +80,10 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
   onNext,
   onBack
 }) => {
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [completionDateOpen, setCompletionDateOpen] = useState(false);
+  const [consultationDateOpen, setConsultationDateOpen] = useState(false);
+
   const handleUpdate = (field: string, value: any) => {
     console.log('LogisticsStep - handleUpdate:', field, value);
     onLogisticsChange({ ...logistics, [field]: value });
@@ -175,7 +179,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           {/* Or specific date */}
           <div className="pt-2">
             <Label className="text-sm text-muted-foreground mb-2 block">Or choose a specific start date</Label>
-            <Popover>
+            <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
               <PopoverTrigger asChild>
                 <Button 
                   type="button"
@@ -193,6 +197,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   onSelect={(date) => {
                     handleUpdate('startDate', date);
                     handleUpdate('startDatePreset', '');
+                    setStartDateOpen(false);
                   }}
                   disabled={(date) => date < new Date()}
                   initialFocus
@@ -216,7 +221,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             This helps professionals understand your timeline expectations
           </p>
 
-          <Popover>
+          <Popover open={completionDateOpen} onOpenChange={setCompletionDateOpen}>
             <PopoverTrigger asChild>
               <Button 
                 type="button"
@@ -231,7 +236,10 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
               <Calendar
                 mode="single"
                 selected={logistics.completionDate}
-                onSelect={(date) => handleUpdate('completionDate', date)}
+                onSelect={(date) => {
+                  handleUpdate('completionDate', date);
+                  setCompletionDateOpen(false);
+                }}
                 disabled={(date) => {
                   const minDate = logistics.startDate || new Date();
                   return date < minDate;
@@ -289,7 +297,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           {/* Consultation Date & Time */}
           {logistics.consultationType && (
             <div className="space-y-3 pt-2 animate-fade-in">
-              <Popover>
+              <Popover open={consultationDateOpen} onOpenChange={setConsultationDateOpen}>
                 <PopoverTrigger asChild>
                   <Button 
                     type="button"
@@ -304,7 +312,10 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   <Calendar
                     mode="single"
                     selected={logistics.consultationDate}
-                    onSelect={(date) => handleUpdate('consultationDate', date)}
+                    onSelect={(date) => {
+                      handleUpdate('consultationDate', date);
+                      setConsultationDateOpen(false);
+                    }}
                     disabled={(date) => date < new Date()}
                     initialFocus
                     className="pointer-events-auto"
