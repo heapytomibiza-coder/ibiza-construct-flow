@@ -670,40 +670,33 @@ export const CanonicalJobWizard: React.FC = () => {
         onStartFresh={handleStartFresh}
       />
 
-      <div id="job-wizard-root" className="min-h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 pb-24 md:pb-0">
-        {/* Header with Progress */}
-        <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 sticky top-0 z-40 shadow-sm">
-          <div className="container mx-auto px-4 py-6">
-            <Breadcrumbs 
-              items={[
-                { label: 'Dashboard', href: '/dashboard/client' },
-                { label: 'Post Job' }
-              ]}
-              className="mb-4"
-            />
-            <div className="flex items-center justify-between mb-6">
+      <div id="job-wizard-root" className="h-screen flex flex-col bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30">
+        {/* Compact Header with Progress */}
+        <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 z-40 shadow-sm flex-shrink-0">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between gap-4">
               <h2 className="text-lg font-semibold text-sage-deep">Post a Job</h2>
-              <Badge variant="outline">
-                Step {currentStep} of {TOTAL_STEPS}
-              </Badge>
+              <div className="flex-1 max-w-md">
+                <StepProgressDots
+                  currentStep={currentStep}
+                  totalSteps={TOTAL_STEPS}
+                  stepLabels={STEP_LABELS}
+                />
+              </div>
             </div>
-            <StepProgressDots
-              currentStep={currentStep}
-              totalSteps={TOTAL_STEPS}
-              stepLabels={STEP_LABELS}
-            />
           </div>
         </div>
 
-        {/* Step Content with Animations */}
-        <div className="container mx-auto px-4 py-8">
+        {/* Step Content - Flex Container */}
+        <div className="container mx-auto px-4 flex-1 flex flex-col overflow-hidden py-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="flex-1 flex flex-col overflow-hidden"
             >
               {renderStep()}
             </motion.div>

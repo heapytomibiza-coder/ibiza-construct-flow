@@ -461,39 +461,21 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
   return (
     <>
-      <div className="max-w-3xl mx-auto px-4 md:px-6 space-y-4 pb-24 md:pb-8">
-        <div className="space-y-3">
-          <div className="flex items-center justify-end">
-            <Button
-              variant="outline"
-              onClick={() => setShowAISmartFill(true)}
-              size="sm"
-              className="gap-2"
-            >
-              <Sparkles className="w-4 h-4" />
-              AI Smart-Fill
-            </Button>
-          </div>
-
-        <div className="space-y-2">
+      <div className="flex-1 flex flex-col overflow-hidden px-4 md:px-6 max-w-3xl mx-auto w-full">
+        {/* Compact Header */}
+        <div className="flex-shrink-0 py-3 space-y-2">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl md:text-2xl font-bold">
+            <h1 className="text-base md:text-lg font-bold">
               {microNames[0] || t('wizard.steps.aiQuestions.title')}
             </h1>
             <span className="text-xs text-muted-foreground font-medium">
               {currentQuestionIndex + 1} of {questions.length}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Tell us about your project
-          </p>
-          <div className="pt-1">
-            <ProgressIndicator
-              currentStep={currentQuestionIndex + 1}
-              totalSteps={questions.length}
-            />
-          </div>
-        </div>
+          <ProgressIndicator
+            currentStep={currentQuestionIndex + 1}
+            totalSteps={questions.length}
+          />
         </div>
 
       {loading ? (
@@ -523,26 +505,26 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-6"
+                transition={{ duration: 0.2 }}
+                className="flex-1 flex flex-col overflow-hidden"
               >
-                {/* Question Card */}
-                <div className="bg-card rounded-2xl border border-border/50 p-8 md:p-10 shadow-sm">
-                  <div className="space-y-8">
+                {/* Question Card - Compact */}
+                <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm overflow-y-auto flex-1">
+                  <div className="space-y-4">
                     {/* Question Number Badge */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-base">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">
                         {currentQuestionIndex + 1}
                       </div>
-                      <span className="text-sm text-muted-foreground font-medium">
+                      <span className="text-xs text-muted-foreground font-medium">
                         of {questions.length}
                       </span>
                     </div>
 
                     {/* Question Text */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                        <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
                           {(() => {
                           const q = currentQuestion as any;
                           console.log('🔍 Full question object:', JSON.stringify(currentQuestion, null, 2));
@@ -617,7 +599,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                           <Badge variant="outline" className="text-xs">optional</Badge>
                         )}
                       </div>
-                      <p className="text-base text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         {(() => {
                           if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
                             return 'Select all that apply';
@@ -633,7 +615,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     </div>
 
                     {/* Question Input */}
-                    <div className="pt-4">
+                    <div className="pt-2">
                       <ConversationalQuestionInput
                         question={currentQuestion}
                         value={answers[currentQuestion.id]}
@@ -660,10 +642,11 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                 </div>
 
                 {/* Navigation Buttons */}
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex-shrink-0 flex items-center justify-between gap-4 pt-3">
                   <Button
                     variant="outline"
                     onClick={handlePreviousQuestion}
+                    size="sm"
                     className="gap-2"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -675,6 +658,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                     {!currentQuestion.required && (
                       <Button
                         variant="ghost"
+                        size="sm"
                         onClick={handleNextQuestion}
                         className="text-muted-foreground hover:text-foreground"
                       >
@@ -684,8 +668,8 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
                     <Button
                       onClick={handleNextQuestion}
+                      size="sm"
                       className="gap-2 bg-gradient-hero text-white"
-                      size="lg"
                     >
                       {isLastQuestion ? 'Continue' : 'Next'}
                       <ChevronRight className="w-4 h-4" />

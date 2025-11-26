@@ -97,11 +97,10 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
           value={radioVal}
           onValueChange={(newValue) => onChange(newValue)}
           className={cn(
-            "grid gap-2.5",
-            normOptions.length <= 2 ? "grid-cols-1 sm:grid-cols-2" :
-            normOptions.length <= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" :
-            normOptions.length <= 6 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
-            "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+            "grid gap-2",
+            normOptions.length <= 3 ? "grid-cols-2 sm:grid-cols-3" :
+            normOptions.length <= 6 ? "grid-cols-2 sm:grid-cols-3" :
+            "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
           )}
         >
           {normOptions.map((opt, index) => {
@@ -116,7 +115,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
             return (
               <div 
                 key={oid} 
-                className={`relative p-3.5 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
+                className={`relative p-2.5 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
                   isSelected 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
@@ -124,8 +123,8 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                 onClick={() => onChange(opt.value)}
               >
                 <RadioGroupItem value={opt.value} id={oid} className="sr-only" />
-                <Label htmlFor={oid} className="cursor-pointer space-y-1 block">
-                  <div className="text-base font-semibold leading-tight">
+                <Label htmlFor={oid} className="cursor-pointer space-y-0.5 block">
+                  <div className="text-sm font-semibold leading-tight">
                     {optLabel}
                   </div>
                   {optDescription && (
@@ -146,11 +145,10 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
       // Use tile-based selection instead of dropdown
       return (
         <div className={cn(
-          "grid gap-2.5",
-          normOptions.length <= 2 ? "grid-cols-1 sm:grid-cols-2" :
-          normOptions.length <= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" :
-          normOptions.length <= 6 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
-          "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+          "grid gap-2",
+          normOptions.length <= 3 ? "grid-cols-2 sm:grid-cols-3" :
+          normOptions.length <= 6 ? "grid-cols-2 sm:grid-cols-3" :
+          "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
         )}>
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
@@ -166,14 +164,14 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                 key={oid}
                 type="button"
                 onClick={() => onChange(opt.value)}
-                className={`text-left p-3.5 rounded-lg border-2 transition-all hover:shadow-md ${
+                className={`text-left p-2.5 rounded-lg border-2 transition-all hover:shadow-md ${
                   isSelected 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
                 }`}
               >
-                <div className="space-y-1">
-                  <div className="text-base font-semibold leading-tight">
+                <div className="space-y-0.5">
+                  <div className="text-sm font-semibold leading-tight">
                     {optLabel}
                   </div>
                   {optDescription && (
@@ -193,11 +191,10 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
       const selected = Array.isArray(value) ? (value as string[]) : [];
       return (
         <div className={cn(
-          "grid gap-2.5",
-          normOptions.length <= 2 ? "grid-cols-1 sm:grid-cols-2" :
-          normOptions.length <= 4 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" :
-          normOptions.length <= 6 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
-          "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+          "grid gap-2",
+          normOptions.length <= 3 ? "grid-cols-2 sm:grid-cols-3" :
+          normOptions.length <= 6 ? "grid-cols-2 sm:grid-cols-3" :
+          "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
         )}>
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
@@ -211,7 +208,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
             return (
               <div 
                 key={oid} 
-                className={`relative p-3.5 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
+                className={`relative p-2.5 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
                   checked 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
@@ -228,10 +225,10 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                     const next = c ? [...selected, opt.value] : selected.filter(v => v !== opt.value);
                     onChange(next);
                   }}
-                  className="absolute top-3 right-3"
+                  className="absolute top-2 right-2"
                 />
-                <Label htmlFor={oid} className="cursor-pointer space-y-1 block pr-8">
-                  <div className="text-base font-semibold leading-tight">
+                <Label htmlFor={oid} className="cursor-pointer space-y-0.5 block pr-7">
+                  <div className="text-sm font-semibold leading-tight">
                     {optLabel}
                   </div>
                   {optDescription && (
