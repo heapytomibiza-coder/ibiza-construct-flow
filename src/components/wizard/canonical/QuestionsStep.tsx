@@ -624,9 +624,6 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                           
                           return questionText;
                         })()}
-                        {currentQuestion.required && (
-                          <span className="text-destructive ml-2">*</span>
-                        )}
                       </h2>
                       <p className="text-base text-muted-foreground">
                         {(() => {
@@ -683,7 +680,6 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
                   <Button
                     onClick={handleNextQuestion}
-                    disabled={currentQuestion.required && !isQuestionComplete(currentQuestion, answers[currentQuestion.id])}
                     className="gap-2 bg-gradient-hero text-white"
                     size="lg"
                   >

@@ -166,7 +166,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               </span>
               <h3 className="text-lg font-semibold text-foreground">
                 {question}
-                {required && <span className="text-destructive ml-1">*</span>}
               </h3>
             </div>
             {helpText && (
