@@ -167,36 +167,36 @@ export const MicroStep: React.FC<MicroStepProps> = ({
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="space-y-4">
+    <div className="max-w-5xl mx-auto space-y-6">
+      <div className="flex items-center justify-between gap-4 pb-2">
         <Button
           variant="ghost"
           onClick={onBack}
           size="sm"
-          className="mb-2"
+          className="-ml-2"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
+      </div>
 
-        <div className="text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-            What tasks do you need completing?
-          </h1>
-          <p className="text-sm text-muted-foreground mt-2">
-            Select all that apply
-          </p>
-        </div>
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+          What tasks do you need completing?
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Select all that apply
+        </p>
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="h-32 bg-muted/30 animate-pulse rounded-xl" />
+            <div key={i} className="h-28 bg-muted/30 animate-pulse rounded-xl" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {micros.map((micro) => {
             const isSelected = selectedMicroIds.includes(micro.id);
             const ServiceIcon = getServiceIcon(micro.micro);
@@ -222,8 +222,8 @@ export const MicroStep: React.FC<MicroStepProps> = ({
               <button
                 key={micro.id}
                 className={cn(
-                  "group relative flex flex-col gap-3 p-5 rounded-xl border-2 transition-all text-left h-full",
-                  "hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] bg-card",
+                  "group relative flex flex-col gap-2.5 p-4 rounded-xl border-2 transition-all text-left h-full",
+                  "hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] bg-card",
                   isSelected 
                     ? "border-primary shadow-md ring-2 ring-primary/20" 
                     : "border-border hover:border-primary/50"
@@ -231,18 +231,18 @@ export const MicroStep: React.FC<MicroStepProps> = ({
                 onClick={handleClick}
               >
                 {/* Header with Icon and Checkbox */}
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-2">
                   <div className={cn(
-                    "flex items-center justify-center w-12 h-12 rounded-lg transition-colors",
+                    "flex items-center justify-center w-10 h-10 rounded-lg transition-colors flex-shrink-0",
                     isSelected 
                       ? "bg-primary/10 text-primary" 
                       : "bg-muted/50 text-muted-foreground group-hover:bg-primary/5 group-hover:text-primary"
                   )}>
-                    <ServiceIcon className="w-6 h-6" />
+                    <ServiceIcon className="w-5 h-5" />
                   </div>
                   
                   <CheckCircle2 className={cn(
-                    "w-6 h-6 flex-shrink-0 transition-all",
+                    "w-5 h-5 flex-shrink-0 transition-all",
                     isSelected 
                       ? "text-primary scale-110" 
                       : "text-muted-foreground/20 group-hover:text-muted-foreground/40"
@@ -250,7 +250,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
                 </div>
 
                 {/* Service Name */}
-                <div className="flex-1 min-h-[2.5rem] flex items-start">
+                <div className="flex-1 min-h-[2rem]">
                   <h3 className={cn(
                     "font-semibold text-sm leading-tight",
                     isSelected ? "text-primary" : "text-foreground"
@@ -273,7 +273,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
       )}
 
       {selectedMicroIds.length > 0 && !loading && (
-        <div className="flex justify-center pt-6">
+        <div className="flex justify-center pt-4">
           <Button
             size="lg"
             onClick={onNext}
