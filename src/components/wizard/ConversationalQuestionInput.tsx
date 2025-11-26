@@ -95,7 +95,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
         <RadioGroup
           value={radioVal}
           onValueChange={(newValue) => onChange(newValue)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-2 md:grid-cols-3 gap-3"
         >
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
@@ -109,7 +109,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
             return (
               <div 
                 key={oid} 
-                className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm hover:shadow-md ${
+                className={`relative p-3.5 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
                   isSelected 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
@@ -117,12 +117,12 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                 onClick={() => onChange(opt.value)}
               >
                 <RadioGroupItem value={opt.value} id={oid} className="sr-only" />
-                <Label htmlFor={oid} className="cursor-pointer space-y-1.5 block">
-                  <div className="text-lg font-semibold">
+                <Label htmlFor={oid} className="cursor-pointer space-y-1 block">
+                  <div className="text-base font-semibold leading-tight">
                     {optLabel}
                   </div>
                   {optDescription && (
-                    <div className="text-sm text-muted-foreground leading-relaxed">
+                    <div className="text-xs text-muted-foreground leading-snug">
                       {optDescription}
                     </div>
                   )}
@@ -138,7 +138,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
       const selVal = value == null ? '' : String(value);
       // Use tile-based selection instead of dropdown
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
             const optLabel = opt.label.startsWith('microservices.') || opt.label.startsWith('questions.')
@@ -153,18 +153,18 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                 key={oid}
                 type="button"
                 onClick={() => onChange(opt.value)}
-                className={`text-left p-5 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
+                className={`text-left p-3.5 rounded-lg border-2 transition-all hover:shadow-md ${
                   isSelected 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
                 }`}
               >
-                <div className="space-y-1.5">
-                  <div className="text-lg font-semibold">
+                <div className="space-y-1">
+                  <div className="text-base font-semibold leading-tight">
                     {optLabel}
                   </div>
                   {optDescription && (
-                    <div className="text-sm text-muted-foreground leading-relaxed">
+                    <div className="text-xs text-muted-foreground leading-snug">
                       {optDescription}
                     </div>
                   )}
@@ -179,7 +179,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
     case 'checkbox': {
       const selected = Array.isArray(value) ? (value as string[]) : [];
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {normOptions.map((opt, index) => {
             const oid = `${qid}-${index}`;
             const checked = selected.includes(opt.value);
@@ -192,7 +192,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
             return (
               <div 
                 key={oid} 
-                className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm hover:shadow-md ${
+                className={`relative p-3.5 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
                   checked 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
@@ -209,14 +209,14 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                     const next = c ? [...selected, opt.value] : selected.filter(v => v !== opt.value);
                     onChange(next);
                   }}
-                  className="absolute top-4 right-4"
+                  className="absolute top-3 right-3"
                 />
-                <Label htmlFor={oid} className="cursor-pointer space-y-1.5 block pr-10">
-                  <div className="text-lg font-semibold">
+                <Label htmlFor={oid} className="cursor-pointer space-y-1 block pr-8">
+                  <div className="text-base font-semibold leading-tight">
                     {optLabel}
                   </div>
                   {optDescription && (
-                    <div className="text-sm text-muted-foreground leading-relaxed">
+                    <div className="text-xs text-muted-foreground leading-snug">
                       {optDescription}
                     </div>
                   )}
@@ -316,7 +316,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
         <RadioGroup
           value={current}
           onValueChange={(v) => onChange(v === 'true')}
-          className="grid grid-cols-2 gap-4"
+          className="grid grid-cols-2 gap-3 max-w-md mx-auto"
         >
           {[
             { label: 'Yes', value: 'true' },
@@ -327,7 +327,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
             return (
               <div 
                 key={oid} 
-                className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm hover:shadow-md ${
+                className={`relative p-4 rounded-lg border-2 transition-all cursor-pointer hover:shadow-md ${
                   isSelected 
                     ? 'border-primary bg-primary/5 shadow-md' 
                     : 'border-border bg-card hover:border-primary/30'
@@ -335,7 +335,7 @@ export const ConversationalQuestionInput: React.FC<ConversationalQuestionInputPr
                 onClick={() => onChange(opt.value === 'true')}
               >
                 <RadioGroupItem value={opt.value} id={oid} className="sr-only" />
-                <Label htmlFor={oid} className="text-lg font-semibold cursor-pointer text-center block">
+                <Label htmlFor={oid} className="text-base font-semibold cursor-pointer text-center block">
                   {opt.label}
                 </Label>
               </div>
