@@ -106,7 +106,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
           return;
         }
 
-        // Now get micro-categories for this subcategory with job counts
+        // Now get micro-categories for this subcategory
         const { data, error } = await supabase
           .from('service_micro_categories')
           .select(`
@@ -114,8 +114,7 @@ export const MicroStep: React.FC<MicroStepProps> = ({
             name, 
             slug, 
             display_order,
-            description,
-            jobs:jobs(count)
+            description
           `)
           .eq('subcategory_id', subcategoryData.id)
           .eq('is_active', true)
@@ -132,18 +131,13 @@ export const MicroStep: React.FC<MicroStepProps> = ({
 
         if (!mounted) return;
 
-        // Map to expected format with metadata
-        const formattedData = (data || []).map(item => {
-          const jobCount = Array.isArray(item.jobs) ? item.jobs.length : 0;
-          return {
-            id: item.id,
-            slug: item.slug || '',
-            micro: item.name,
-            description: item.description,
-            jobCount,
-            isPopular: jobCount > 10
-          };
-        });
+        // Map to expected format
+        const formattedData = (data || []).map(item => ({
+          id: item.id,
+          slug: item.slug || '',
+          micro: item.name,
+          description: item.description
+        }));
         
         setMicros(formattedData);
       } catch (error) {
@@ -265,17 +259,6 @@ export const MicroStep: React.FC<MicroStepProps> = ({
                   </h3>
                 </div>
 
-                {/* Badges */}
-                {(micro.isPopular || micro.description) && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {micro.isPopular && (
-                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 bg-primary/10 text-primary border-0">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        Popular
-                      </Badge>
-                    )}
-                  </div>
-                )}
 
                 {/* Description hint */}
                 {micro.description && (
