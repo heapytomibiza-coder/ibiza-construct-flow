@@ -463,17 +463,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     <>
       <div className="max-w-3xl mx-auto px-4 md:px-6 space-y-4 pb-24 md:pb-8">
         <div className="space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <Button
-              variant="ghost"
-              onClick={onBack}
-              size="sm"
-              className="-ml-2"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            
+          <div className="flex items-center justify-end">
             <Button
               variant="outline"
               onClick={() => setShowAISmartFill(true)}
@@ -485,32 +475,25 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
             </Button>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex overflow-x-auto gap-2 pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:flex-wrap md:overflow-visible">
-              {microNames.map((name, idx) => (
-                <Badge key={idx} variant="outline" className="flex-shrink-0 text-xs">
-                  {name}
-                </Badge>
-              ))}
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-charcoal">
-              Tell us about your project
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl md:text-2xl font-bold">
+              {microNames[0] || t('wizard.steps.aiQuestions.title')}
             </h1>
-            <p className="text-sm md:text-base text-muted-foreground">
-              {microNames.length > 1 
-                ? 'Answer questions to help professionals understand your complete project scope'
-                : 'Answer a few quick questions to help professionals understand your needs'
-              }
-            </p>
-            {!loading && questions.length > 0 && (
-              <div className="pt-1">
-                <ProgressIndicator 
-                  currentStep={currentQuestionIndex + 1}
-                  totalSteps={questions.length}
-                />
-              </div>
-            )}
+            <span className="text-xs text-muted-foreground font-medium">
+              {currentQuestionIndex + 1} of {questions.length}
+            </span>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Tell us about your project
+          </p>
+          <div className="pt-1">
+            <ProgressIndicator
+              currentStep={currentQuestionIndex + 1}
+              totalSteps={questions.length}
+            />
+          </div>
+        </div>
         </div>
 
       {loading ? (
