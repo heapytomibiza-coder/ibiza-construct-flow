@@ -61,9 +61,26 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   const { markAsTouched, getValidationMessage, isQuestionComplete } = useQuestionValidation();
   const { t } = useTranslation();
 
-  const currentQuestion = questions[currentQuestionIndex];
+  // Helper function to check if a question should be shown based on conditional logic
+  const shouldShowQuestion = (question: AIQuestion): boolean => {
+    if (!question.meta?.show_if) return true;
+    
+    return question.meta.show_if.some((condition: any) => {
+      const relatedAnswer = answers[condition.question];
+      if (!relatedAnswer) return false;
+      
+      return condition.equals_any.includes(String(relatedAnswer));
+    });
+  };
+
+  // Filter questions to only show those that meet visibility conditions
+  const visibleQuestions = React.useMemo(() => {
+    return questions.filter(shouldShowQuestion);
+  }, [questions, answers]);
+
+  const currentQuestion = visibleQuestions[currentQuestionIndex];
   const isFirstQuestion = currentQuestionIndex === 0;
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const isLastQuestion = currentQuestionIndex === visibleQuestions.length - 1;
 
   // Debug: Log the current question to console
   useEffect(() => {
@@ -86,10 +103,10 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
   // Reset question index when questions array changes
   useEffect(() => {
-    if (questions.length > 0 && currentQuestionIndex >= questions.length) {
-      setCurrentQuestionIndex(questions.length - 1);
+    if (visibleQuestions.length > 0 && currentQuestionIndex >= visibleQuestions.length) {
+      setCurrentQuestionIndex(visibleQuestions.length - 1);
     }
-  }, [questions.length, currentQuestionIndex]);
+  }, [visibleQuestions.length, currentQuestionIndex]);
 
   const getFallbackQuestions = (): AIQuestion[] => {
     return [
@@ -432,7 +449,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     onAnswersChange({ ...answers, [questionId]: answer });
     
     // Auto-advance for single-choice questions
-    const question = questions.find(q => q.id === questionId);
+    const question = visibleQuestions.find(q => q.id === questionId);
     if (question && (question.type === 'radio' || question.type === 'select') && answer) {
       setTimeout(() => {
         handleNextQuestion();
@@ -450,7 +467,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       onNext();
     } else {
       // Navigate between questions freely
-      setCurrentQuestionIndex(prev => Math.min(prev + 1, questions.length - 1));
+      setCurrentQuestionIndex(prev => Math.min(prev + 1, visibleQuestions.length - 1));
     }
   };
 
@@ -463,7 +480,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
   };
 
   // Count answered questions for progress feedback only
-  const answeredCount = questions.filter(q => 
+  const answeredCount = visibleQuestions.filter(q => 
     answers[q.id] !== undefined && answers[q.id] !== '' && answers[q.id] !== null
   ).length;
 
@@ -482,7 +499,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-muted-foreground font-medium">
-                {currentQuestionIndex + 1} of {questions.length}
+                {currentQuestionIndex + 1} of {visibleQuestions.length}
               </span>
               <Button
                 variant="outline"
@@ -497,7 +514,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
           </div>
           <ProgressIndicator
             currentStep={currentQuestionIndex + 1}
-            totalSteps={questions.length}
+            totalSteps={visibleQuestions.length}
           />
         </div>
 
@@ -541,7 +558,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                           {currentQuestionIndex + 1}
                         </div>
                         <span className="text-sm text-muted-foreground font-medium">
-                          of {questions.length}
+                          of {visibleQuestions.length}
                         </span>
                       </div>
 
