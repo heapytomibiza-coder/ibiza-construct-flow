@@ -9,7 +9,7 @@ interface ReviewCTASectionProps {
   categoryColor?: string;
 }
 
-export const ReviewCTASection: React.FC<ReviewCTASectionProps> = React.memo(({
+export const ReviewCTASection: React.FC<ReviewCTASectionProps> = ({
   onSubmit,
   loading = false,
   categoryColor = '#D4A574'
@@ -91,4 +91,4 @@ export const ReviewCTASection: React.FC<ReviewCTASectionProps> = React.memo(({
       </p>
     </div>
   );
-});
+};
