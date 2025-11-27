@@ -608,6 +608,22 @@ export const CanonicalJobWizard: React.FC = () => {
         );
 
       case 7:
+        // Build questionsWithAnswers with full question context
+        const questionsWithAnswers = Object.entries(wizardState.answers || {}).map(([key, answer]) => {
+          const humanizedKey = key
+            .replace(/_/g, ' ')
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+          
+          return {
+            key,
+            question: humanizedKey,
+            answer,
+            type: 'text',
+            category: 'project-details'
+          };
+        });
+
         return (
           <div id="wizard-step-review">
             <ReviewStep
@@ -616,12 +632,20 @@ export const CanonicalJobWizard: React.FC = () => {
                 category: wizardState.mainCategory,
                 subcategory: wizardState.subcategory,
                 answers: wizardState.answers,
+                questionsWithAnswers,
                 logistics: wizardState.logistics,
                 extras: wizardState.extras
               }}
               onBack={handleBack}
               onSubmit={handleSubmit}
               loading={loading}
+              onEditSection={(sectionId) => {
+                console.log('Edit section:', sectionId);
+                // Navigate back to relevant step based on sectionId
+                if (sectionId === 'logistics') setCurrentStep(5);
+                else if (sectionId === 'questions') setCurrentStep(4);
+                else if (sectionId === 'basics') setCurrentStep(3);
+              }}
             />
           </div>
         );
