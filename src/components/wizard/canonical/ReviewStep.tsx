@@ -103,45 +103,43 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 md:px-6 pb-6 space-y-6">
-      {/* Back button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onBack}
-        className="gap-2 -ml-2"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back
-      </Button>
+    <div className="flex flex-col h-full">
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-6 space-y-6 pb-32">
+          {/* Back button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            className="gap-2 -ml-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
 
-      {/* Hero Section */}
-      <ReviewHeroSection
-        serviceName={jobData.microName || 'Your Service'}
-        category={jobData.category}
-        subcategory={jobData.subcategory}
-        location={location}
-        budget={budget}
-        timeline={timeline}
-        categoryColor={categoryColor}
-      />
+          {/* Hero Section */}
+          <ReviewHeroSection
+            serviceName={jobData.microName || 'Your Service'}
+            category={jobData.category}
+            subcategory={jobData.subcategory}
+            location={location}
+            budget={budget}
+            timeline={timeline}
+            categoryColor={categoryColor}
+          />
 
-      {/* Summary Cards */}
-      {summaryCards.length > 0 && (
-        <ReviewSummaryCards
-          cards={summaryCards}
-          onEdit={onEditSection}
-          categoryColor={categoryColor}
-        />
-      )}
+          {/* Summary Cards - Removed to reduce duplication */}
 
-      {/* Detailed Q&A List */}
-      <ReviewAnswersList
-        answers={questionsWithAnswers}
-        categoryColor={categoryColor}
-      />
+          {/* Detailed Q&A List - Now in compact two-column grid */}
+          <ReviewAnswersList
+            answers={questionsWithAnswers}
+            categoryColor={categoryColor}
+          />
+        </div>
+      </div>
 
-      {/* CTA Section */}
+      {/* Fixed CTA Section */}
       <ReviewCTASection
         onSubmit={onSubmit}
         loading={loading}
