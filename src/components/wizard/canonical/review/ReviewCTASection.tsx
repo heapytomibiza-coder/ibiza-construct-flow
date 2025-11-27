@@ -14,18 +14,6 @@ export const ReviewCTASection: React.FC<ReviewCTASectionProps> = ({
   loading = false,
   categoryColor = '#D4A574'
 }) => {
-  const [isPulsing, setIsPulsing] = React.useState(true);
-
-  // Pulse animation every 6 seconds
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setIsPulsing(false);
-      setTimeout(() => setIsPulsing(true), 100);
-    }, 6000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="sticky bottom-0 bg-background border-t border-sage-muted/20 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] p-4 md:p-6 space-y-4">
       {/* CTA Button */}
@@ -33,14 +21,7 @@ export const ReviewCTASection: React.FC<ReviewCTASectionProps> = ({
         onClick={onSubmit}
         disabled={loading}
         size="lg"
-        className={`
-          w-full h-14 text-base font-semibold
-          bg-gradient-to-r from-copper to-copper-dark
-          hover:from-copper-dark hover:to-copper
-          text-white shadow-lg hover:shadow-xl
-          transition-all duration-300
-          ${isPulsing && !loading ? 'animate-pulse' : ''}
-        `}
+        className="w-full h-14 text-base font-semibold bg-gradient-to-r from-copper to-copper-dark hover:from-copper-dark hover:to-copper text-white shadow-lg hover:shadow-xl transition-all duration-300"
         style={{
           background: loading 
             ? undefined 
