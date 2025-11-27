@@ -14,7 +14,7 @@ interface ReviewAnswersListProps {
   categoryColor?: string;
 }
 
-export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = React.memo(({
+export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = ({
   answers,
   categoryColor = '#D4A574'
 }) => {
@@ -99,4 +99,4 @@ export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = React.memo(({
       ))}
     </div>
   );
-});
+};
