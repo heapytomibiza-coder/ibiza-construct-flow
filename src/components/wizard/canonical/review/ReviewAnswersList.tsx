@@ -45,7 +45,7 @@ export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = ({
     try {
       const date = parseISO(dateString);
       if (isValid(date)) {
-        return format(date, 'MMM d, yyyy');
+        return format(date, 'd MMMM yyyy');
       }
     } catch {
       return dateString;
