@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
+import { format, parseISO, isValid } from 'date-fns';
 
 export interface QuestionAnswer {
   key: string;
@@ -18,8 +19,20 @@ export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = ({
   answers,
   categoryColor = '#D4A574'
 }) => {
+  // Remove duplicates by key
+  const uniqueAnswers = React.useMemo(() => {
+    const seen = new Set<string>();
+    return answers.filter(qa => {
+      if (seen.has(qa.key)) {
+        return false;
+      }
+      seen.add(qa.key);
+      return true;
+    });
+  }, [answers]);
+
   // Group answers by category
-  const groupedAnswers = answers.reduce((acc, qa) => {
+  const groupedAnswers = uniqueAnswers.reduce((acc, qa) => {
     const category = qa.category || 'general';
     if (!acc[category]) {
       acc[category] = [];
@@ -27,6 +40,18 @@ export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = ({
     acc[category].push(qa);
     return acc;
   }, {} as Record<string, QuestionAnswer[]>);
+
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = parseISO(dateString);
+      if (isValid(date)) {
+        return format(date, 'MMM d, yyyy');
+      }
+    } catch {
+      return dateString;
+    }
+    return dateString;
+  };
 
   const formatAnswer = (answer: any): string => {
     if (answer === null || answer === undefined || answer === '') {
@@ -45,8 +70,15 @@ export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = ({
       return JSON.stringify(answer);
     }
     
+    const answerStr = String(answer);
+    
+    // Check if it's an ISO date string
+    if (answerStr.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+      return formatDate(answerStr);
+    }
+    
     // Humanize snake_case values
-    return String(answer)
+    return answerStr
       .replace(/_/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase());
   };
