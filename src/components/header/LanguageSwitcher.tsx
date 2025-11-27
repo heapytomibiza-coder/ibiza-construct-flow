@@ -19,11 +19,12 @@ export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
 
   const changeLanguage = async (lng: SupportedLanguage) => {
-    console.log('Changing language to:', lng);
     try {
+      // Save to localStorage first (required for custom detector)
+      localStorage.setItem('i18nextLng', lng);
+      // Change the language
       await i18n.changeLanguage(lng);
-      console.log('Language changed successfully to:', i18n.language);
-      // Force a page refresh to ensure all components update
+      // Force reload to ensure all lazy-loaded translations update
       window.location.reload();
     } catch (error) {
       console.error('Failed to change language:', error);
