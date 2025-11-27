@@ -18,8 +18,16 @@ import { supportedLanguages, type SupportedLanguage } from '@/lib/i18n/config';
 export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
 
-  const changeLanguage = (lng: SupportedLanguage) => {
-    i18n.changeLanguage(lng);
+  const changeLanguage = async (lng: SupportedLanguage) => {
+    console.log('Changing language to:', lng);
+    try {
+      await i18n.changeLanguage(lng);
+      console.log('Language changed successfully to:', i18n.language);
+      // Force a page refresh to ensure all components update
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to change language:', error);
+    }
   };
 
   const currentLanguage = (i18n.language.split('-')[0] as SupportedLanguage) || 'en';
