@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Star, Lock, Loader2 } from 'lucide-react';
 
@@ -10,7 +9,7 @@ interface ReviewCTASectionProps {
   categoryColor?: string;
 }
 
-export const ReviewCTASection: React.FC<ReviewCTASectionProps> = ({
+export const ReviewCTASection: React.FC<ReviewCTASectionProps> = React.memo(({
   onSubmit,
   loading = false,
   categoryColor = '#D4A574'
@@ -28,7 +27,7 @@ export const ReviewCTASection: React.FC<ReviewCTASectionProps> = ({
   }, []);
 
   return (
-    <Card className="border-sage-muted/20 bg-gradient-to-br from-sage-light/10 to-background p-6 space-y-4">
+    <div className="sticky bottom-0 bg-background border-t border-sage-muted/20 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] p-4 md:p-6 space-y-4">
       {/* CTA Button */}
       <Button
         onClick={onSubmit}
@@ -90,6 +89,6 @@ export const ReviewCTASection: React.FC<ReviewCTASectionProps> = ({
         Your job will be visible to verified professionals in your area. 
         You'll receive quotes within 24-48 hours.
       </p>
-    </Card>
+    </div>
   );
-};
+});
