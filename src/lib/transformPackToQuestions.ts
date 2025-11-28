@@ -15,8 +15,16 @@ export interface AIQuestion {
 
 /**
  * Humanize a key by converting snake_case/kebab-case to readable text
+ * Special handling for common patterns like q1, q2 → Question 1, Question 2
  */
 function humanizeKey(key: string): string {
+  // Handle common question key patterns: q1, q2, etc. → Question 1, Question 2
+  if (/^q\d+$/i.test(key)) {
+    const num = key.slice(1);
+    return `Question ${num}`;
+  }
+  
+  // Standard humanization for other keys
   return key
     .replace(/[-_]/g, ' ')
     .replace(/\b\w/g, l => l.toUpperCase())
