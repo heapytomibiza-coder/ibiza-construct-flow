@@ -145,9 +145,9 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   }
 
   return (
-    <Card className={cn("group hover:shadow-xl transition-all duration-300 overflow-hidden", className)}>
+    <Card className={cn("group hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col", className)}>
       {/* Hero Image Section */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-56 overflow-hidden flex-shrink-0">
         <div 
           className="absolute inset-0 bg-cover bg-center transform group-hover:scale-105 transition-transform duration-300"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -169,10 +169,10 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             />
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2">
             {isNew && (
               <Badge className="backdrop-blur-md bg-background/90 border-2 border-background shadow-lg animate-pulse">
-                <Sparkles className="w-3 h-3 mr-1" />
+                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                 NEW
               </Badge>
             )}
@@ -196,31 +196,31 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
         )}
       </div>
 
-      <CardContent className="p-5">
+      <CardContent className="p-6 flex-1 flex flex-col">
         {/* Title */}
-        <h3 className="text-lg font-bold text-foreground mb-3 line-clamp-2 min-h-[3.5rem]">
+        <h3 className="text-xl font-bold text-foreground mb-4 line-clamp-2 leading-tight">
           {job.title}
         </h3>
 
         {/* Client Info */}
-        <div className="flex items-center gap-3 mb-4">
-          <Avatar className="w-10 h-10 ring-2 ring-background">
+        <div className="flex items-center gap-3 mb-5 pb-5 border-b">
+          <Avatar className="w-12 h-12 ring-2 ring-background">
             <AvatarImage src={job.client.avatar} alt={job.client.name} />
-            <AvatarFallback className="bg-gradient-hero text-white text-sm">
+            <AvatarFallback className="bg-gradient-hero text-white">
               {job.client.name.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm truncate">{job.client.name}</p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <p className="font-semibold text-base truncate">{job.client.name}</p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0.5">
               {job.client.rating && (
                 <div className="flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-yellow-500 text-yellow-500" />
-                  <span>{job.client.rating.toFixed(1)}</span>
+                  <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                  <span className="font-medium">{job.client.rating.toFixed(1)}</span>
                 </div>
               )}
               {job.client.jobs_completed && (
-                <span className="text-xs">• {job.client.jobs_completed} jobs</span>
+                <span>• {job.client.jobs_completed} jobs completed</span>
               )}
             </div>
           </div>
@@ -228,7 +228,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
         </div>
 
         {/* Description */}
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+        <p className="text-sm text-muted-foreground mb-5 line-clamp-3 leading-relaxed">
           {job.description}
         </p>
 
@@ -239,68 +239,67 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
           clientActivity={clientActivity as any}
           successProbability={successProbability}
           averageQuote={suggestedQuote}
-          className="mb-4"
+          className="mb-5"
         />
 
-        {/* Budget & Location Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-4 p-3 bg-gradient-to-br from-muted/50 to-muted/30 rounded-lg">
-          <div>
-            <p className="text-xs text-muted-foreground mb-1">Budget</p>
-            <p className="font-bold text-base text-primary truncate">
+        {/* Project Details Section */}
+        <div className="space-y-3 mb-5">
+          <div className="p-4 bg-gradient-to-br from-muted/50 to-muted/30 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Budget</span>
+              <JobMetadataBadges
+                startDate={job.answers?.logistics?.startDate || job.answers?.logistics?.preferredDate}
+                photoCount={photoCount}
+                answerCount={answerCount}
+                className="flex-wrap justify-end gap-1"
+              />
+            </div>
+            <p className="font-bold text-2xl text-primary">
               €{job.budget_value}
               {job.budget_type === 'hourly' && (
-                <span className="text-xs font-normal">/hr</span>
+                <span className="text-sm font-normal text-muted-foreground ml-1">/hour</span>
               )}
             </p>
           </div>
           
           {job.location && (
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground mb-1">Location</p>
-              <div className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="font-medium text-sm truncate">{job.location.area}</span>
+            <div className="p-4 bg-gradient-to-br from-muted/30 to-muted/20 rounded-lg">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide block mb-2">Location</span>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                <span className="font-semibold text-base">{job.location.area}</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Metadata Badges */}
-        <JobMetadataBadges
-          startDate={job.answers?.logistics?.startDate || job.answers?.logistics?.preferredDate}
-          location={job.location?.area}
-          photoCount={photoCount}
-          answerCount={answerCount}
-          className="mb-4"
-        />
-
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 pt-3 border-t">
+        <div className="flex items-center gap-2 pt-4 mt-auto border-t">
           <Button
             variant="ghost"
-            size="sm"
+            size="default"
             onClick={() => onSave?.(job.id)}
-            className="px-3"
+            className="px-4"
           >
             <Heart className="w-4 h-4" />
           </Button>
           
           <Button
             variant="ghost"
-            size="sm"
+            size="default"
             onClick={() => onMessage?.(job.id)}
-            className="px-3"
+            className="px-4"
           >
             <MessageSquare className="w-4 h-4" />
           </Button>
           
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={() => setShowDetailsModal(true)}
-            className="flex-1 text-sm px-3"
+            className="flex-1"
           >
-            Details
+            View Details
           </Button>
           
           <QuickApplyButton
@@ -308,7 +307,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             jobTitle={job.title}
             suggestedQuote={suggestedQuote}
             onSuccess={() => onSendOffer?.(job.id)}
-            className="flex-1 text-sm"
+            className="flex-1"
           />
         </div>
         
