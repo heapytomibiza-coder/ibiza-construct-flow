@@ -147,7 +147,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   return (
     <Card className={cn("group hover:shadow-xl transition-all duration-300 overflow-hidden", className)}>
       {/* Hero Image Section */}
-      <div className="relative h-40 overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center transform group-hover:scale-105 transition-transform duration-300"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -155,8 +155,8 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
         <div className={cn("absolute inset-0 bg-gradient-to-t", serviceVisuals.color, "opacity-60")} />
         
         {/* Floating badges on hero */}
-        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-          <div className="flex flex-col gap-1.5">
+        <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
+          <div className="flex flex-col gap-2">
             <ServiceCategoryBadge
               category={job.category}
               subcategory={job.subcategory}
@@ -169,16 +169,16 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             />
           </div>
           
-          <div className="flex gap-1.5">
+          <div className="flex gap-2">
             {isNew && (
-              <Badge className="backdrop-blur-md bg-background/90 border-2 border-background shadow-lg animate-pulse text-xs">
+              <Badge className="backdrop-blur-md bg-background/90 border-2 border-background shadow-lg animate-pulse">
                 <Sparkles className="w-3 h-3 mr-1" />
                 NEW
               </Badge>
             )}
             <Badge 
               variant={job.status === 'open' ? 'default' : 'secondary'}
-              className="backdrop-blur-md bg-background/90 border-2 border-background shadow-lg capitalize text-xs"
+              className="backdrop-blur-md bg-background/90 border-2 border-background shadow-lg capitalize"
             >
               {job.status}
             </Badge>
@@ -189,38 +189,38 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
         {photoCount > 0 && (
           <Badge 
             variant="secondary" 
-            className="absolute bottom-3 right-3 backdrop-blur-md bg-background/90 border-2 border-background shadow-lg text-xs"
+            className="absolute bottom-4 right-4 backdrop-blur-md bg-background/90 border-2 border-background shadow-lg"
           >
             📷 {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
           </Badge>
         )}
       </div>
 
-      <CardContent className="p-4">
+      <CardContent className="p-5">
         {/* Title */}
-        <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2 min-h-[2.5rem]">
+        <h3 className="text-lg font-bold text-foreground mb-3 line-clamp-2 min-h-[3.5rem]">
           {job.title}
         </h3>
 
         {/* Client Info */}
-        <div className="flex items-center gap-2 mb-2">
-          <Avatar className="w-8 h-8 ring-2 ring-background">
+        <div className="flex items-center gap-3 mb-4">
+          <Avatar className="w-10 h-10 ring-2 ring-background">
             <AvatarImage src={job.client.avatar} alt={job.client.name} />
-            <AvatarFallback className="bg-gradient-hero text-white text-xs">
+            <AvatarFallback className="bg-gradient-hero text-white text-sm">
               {job.client.name.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-xs truncate">{job.client.name}</p>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <p className="font-medium text-sm truncate">{job.client.name}</p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {job.client.rating && (
-                <div className="flex items-center gap-0.5">
-                  <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                <div className="flex items-center gap-1">
+                  <Star className="w-3.5 h-3.5 fill-yellow-500 text-yellow-500" />
                   <span>{job.client.rating.toFixed(1)}</span>
                 </div>
               )}
               {job.client.jobs_completed && (
-                <span className="text-[10px]">• {job.client.jobs_completed} jobs</span>
+                <span className="text-xs">• {job.client.jobs_completed} jobs</span>
               )}
             </div>
           </div>
@@ -228,7 +228,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
         </div>
 
         {/* Description */}
-        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
           {job.description}
         </p>
 
@@ -239,27 +239,27 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
           clientActivity={clientActivity as any}
           successProbability={successProbability}
           averageQuote={suggestedQuote}
-          className="mb-3"
+          className="mb-4"
         />
 
         {/* Budget & Location Grid */}
-        <div className="grid grid-cols-2 gap-2 mb-3 p-2.5 bg-gradient-to-br from-muted/50 to-muted/30 rounded-lg">
+        <div className="grid grid-cols-2 gap-3 mb-4 p-3 bg-gradient-to-br from-muted/50 to-muted/30 rounded-lg">
           <div>
-            <p className="text-[10px] text-muted-foreground mb-0.5">Budget</p>
-            <p className="font-bold text-sm text-primary truncate">
+            <p className="text-xs text-muted-foreground mb-1">Budget</p>
+            <p className="font-bold text-base text-primary truncate">
               €{job.budget_value}
               {job.budget_type === 'hourly' && (
-                <span className="text-[10px] font-normal">/hr</span>
+                <span className="text-xs font-normal">/hr</span>
               )}
             </p>
           </div>
           
           {job.location && (
             <div className="min-w-0">
-              <p className="text-[10px] text-muted-foreground mb-0.5">Location</p>
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                <span className="font-medium text-xs truncate">{job.location.area}</span>
+              <p className="text-xs text-muted-foreground mb-1">Location</p>
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="font-medium text-sm truncate">{job.location.area}</span>
               </div>
             </div>
           )}
@@ -271,16 +271,16 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
           location={job.location?.area}
           photoCount={photoCount}
           answerCount={answerCount}
-          className="mb-3"
+          className="mb-4"
         />
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-1.5 pt-2.5 border-t">
+        <div className="flex items-center gap-2 pt-3 border-t">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onSave?.(job.id)}
-            className="px-2"
+            className="px-3"
           >
             <Heart className="w-4 h-4" />
           </Button>
@@ -289,7 +289,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => onMessage?.(job.id)}
-            className="px-2"
+            className="px-3"
           >
             <MessageSquare className="w-4 h-4" />
           </Button>
@@ -298,7 +298,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setShowDetailsModal(true)}
-            className="flex-1 text-xs px-2"
+            className="flex-1 text-sm px-3"
           >
             Details
           </Button>
@@ -308,7 +308,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             jobTitle={job.title}
             suggestedQuote={suggestedQuote}
             onSuccess={() => onSendOffer?.(job.id)}
-            className="flex-1 text-xs"
+            className="flex-1 text-sm"
           />
         </div>
         
