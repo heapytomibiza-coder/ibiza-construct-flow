@@ -41,6 +41,7 @@ const navigationItems = [
       { id: 'disputes', label: 'Disputes', icon: AlertTriangle, path: '/admin/disputes', description: 'Resolution timeline' },
       { id: 'questions', label: 'Questions', icon: FileQuestion, path: '/admin/questions', description: 'Manage wizard questions' },
       { id: 'question-pack-audit', label: 'Pack Audit', icon: ClipboardCheck, path: '/admin/question-pack-audit', description: 'Audit all 328 packs' },
+      { id: 'question-pack-standardizer', label: 'Tone Standardizer', icon: Wrench, path: '/admin/question-pack-standardizer', description: 'Standardize pack tone' },
       { id: 'import-services', label: 'Import Services', icon: Upload, path: '/admin/import-services', description: 'Import from JSON' },
       { id: 'question-builder', label: 'Question Builder', icon: PlusCircle, path: '/admin/question-builder', description: 'Create custom packs' },
     ],
