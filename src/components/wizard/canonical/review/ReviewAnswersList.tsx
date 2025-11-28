@@ -45,10 +45,10 @@ export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = ({
     try {
       const date = parseISO(dateString);
       if (isValid(date)) {
-        return format(date, 'd MMMM yyyy');
+        return format(date, 'MMMM d, yyyy');
       }
-    } catch {
-      return dateString;
+    } catch (error) {
+      console.warn('Failed to parse date:', dateString, error);
     }
     return dateString;
   };
@@ -72,8 +72,8 @@ export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = ({
     
     const answerStr = String(answer);
     
-    // Check if it's an ISO date string
-    if (answerStr.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+    // Check if it's an ISO date string (handles full ISO 8601 format with timezone)
+    if (answerStr.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?/)) {
       return formatDate(answerStr);
     }
     
