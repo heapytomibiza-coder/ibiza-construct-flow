@@ -106,12 +106,16 @@ function standardizeQuestionText(rawQuestion: string): string {
  * Humanize and professionalize an option value
  */
 function standardizeOption(option: { i18nKey: string; value: string }): string {
-  // If i18nKey looks readable (no dots, starts with capital), use it
-  if (!option.i18nKey.includes('.') && /^[A-Z]/.test(option.i18nKey)) {
+  // If i18nKey exists and looks readable (no dots, starts with capital), use it
+  if (option.i18nKey && !option.i18nKey.includes('.') && /^[A-Z]/.test(option.i18nKey)) {
     return professionalizeWords(option.i18nKey);
   }
   
-  // Otherwise work with the value
+  // Otherwise work with the value (or return default if value is also missing)
+  if (!option.value) {
+    return 'Option';
+  }
+  
   let text = option.value
     .replace(/[-_]/g, ' ')
     .replace(/\b\w/g, l => l.toUpperCase())
