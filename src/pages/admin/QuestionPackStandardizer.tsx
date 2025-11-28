@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { Loader2, CheckCircle, AlertCircle, Play, Pause } from 'lucide-react';
+import { standardizeQuestions } from '@/lib/questionStandardizer';
 
 interface ProcessingStats {
   total: number;
@@ -47,27 +48,19 @@ export default function QuestionPackStandardizer() {
         return true;
       }
 
-      // Prepare questions for AI standardization
+      // Prepare questions for standardization
       const questionsToStandardize = questions.map((q: any) => ({
         key: q.key,
-        question: q.aiHint || q.i18nKey,
-        options: q.options?.map((opt: any) => opt.value || opt.i18nKey) || []
+        aiHint: q.aiHint || q.i18nKey,
+        options: q.options || []
       }));
 
-      // Call edge function to standardize
-      const { data: standardizedData, error: edgeError } = await supabase.functions.invoke(
-        'standardize-question-tone',
-        { body: { questions: questionsToStandardize } }
-      );
-
-      if (edgeError) throw edgeError;
-      if (!standardizedData?.standardizedQuestions) {
-        throw new Error('No standardized questions returned');
-      }
+      // Use client-side rule-based standardization (no AI/API keys needed)
+      const standardizedData = standardizeQuestions(questionsToStandardize);
 
       // Update pack with standardized questions
       const updatedQuestions = questions.map((q: any, index: number) => {
-        const standardized = standardizedData.standardizedQuestions[index];
+        const standardized = standardizedData[index];
         
         return {
           ...q,
@@ -130,8 +123,8 @@ export default function QuestionPackStandardizer() {
       setStats(prev => ({ ...prev, total: packs.length }));
       addLog(`Found ${packs.length} active approved packs to process`);
 
-      // Process packs in batches of 5 to avoid rate limits
-      const batchSize = 5;
+      // Process packs in batches of 20 (faster now - no API limits)
+      const batchSize = 20;
       for (let i = 0; i < packs.length; i += batchSize) {
         if (isPaused) {
           addLog('Process paused by user');
@@ -143,11 +136,7 @@ export default function QuestionPackStandardizer() {
 
         await Promise.all(batch.map(pack => standardizeSinglePack(pack)));
 
-        // Wait 2 seconds between batches to avoid rate limits
-        if (i + batchSize < packs.length) {
-          addLog('Waiting 2s before next batch...');
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
+        // No need to wait between batches (client-side processing)
       }
 
       if (!isPaused) {
@@ -181,7 +170,7 @@ export default function QuestionPackStandardizer() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Question Pack Tone Standardizer</h1>
         <p className="text-muted-foreground">
-          Automatically rewrite all 328 question packs in professional "hybrid" style using Lovable AI
+          Automatically rewrite all 328 question packs in professional "hybrid" style using smart pattern matching
         </p>
       </div>
 
