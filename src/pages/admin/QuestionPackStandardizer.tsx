@@ -77,11 +77,14 @@ export default function QuestionPackStandardizer() {
         questions: updatedQuestions
       };
 
-      // Update in database
-      const { error: updateError } = await supabase
-        .from('question_packs')
-        .update({ content: updatedContent })
-        .eq('pack_id', pack.pack_id);
+      // Update in database using admin function to bypass immutability
+      const { error: updateError } = await supabase.rpc(
+        'admin_update_question_pack_content',
+        {
+          p_pack_id: pack.pack_id,
+          p_content: updatedContent
+        }
+      );
 
       if (updateError) throw updateError;
 
