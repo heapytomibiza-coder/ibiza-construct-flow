@@ -201,10 +201,18 @@ const QuestionPackAudit = () => {
             Comprehensive validation of all {stats.total} question packs
           </p>
         </div>
-        <Button onClick={exportReport} variant="outline">
-          <Download className="w-4 h-4 mr-2" />
-          Export Issues Report
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => window.location.href = '/admin/question-pack-standardizer'}
+            variant="default"
+          >
+            Go to Tone Standardizer
+          </Button>
+          <Button onClick={exportReport} variant="outline">
+            <Download className="w-4 h-4 mr-2" />
+            Export Issues Report
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}

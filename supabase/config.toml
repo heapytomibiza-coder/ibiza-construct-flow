@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.create-custom-demo]
 verify_jwt = false
+
+[functions.standardize-question-tone]
+verify_jwt = true

@@ -13,6 +13,46 @@ export interface AIQuestion {
   options?: string[];
 }
 
+/**
+ * Humanize a key by converting snake_case/kebab-case to readable text
+ */
+function humanizeKey(key: string): string {
+  return key
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, l => l.toUpperCase())
+    .trim();
+}
+
+/**
+ * Get readable question text with smart fallback:
+ * 1. Try using aiHint (most descriptive)
+ * 2. Humanize the key as last resort
+ */
+function getQuestionText(q: QuestionDef): string {
+  // If aiHint exists, use it as the question
+  if (q.aiHint && q.aiHint.length > 0) {
+    return q.aiHint;
+  }
+  
+  // Otherwise humanize the key
+  return humanizeKey(q.key);
+}
+
+/**
+ * Get readable option text with smart fallback:
+ * 1. If i18nKey doesn't look like a key path, use it directly
+ * 2. Otherwise humanize the value
+ */
+function getOptionText(option: { i18nKey: string; value: string }): string {
+  // If i18nKey doesn't contain dots or looks readable, use it
+  if (!option.i18nKey.includes('.') || /^[A-Z]/.test(option.i18nKey)) {
+    return option.i18nKey;
+  }
+  
+  // Otherwise humanize the value
+  return humanizeKey(option.value);
+}
+
 export function transformPackToQuestions(questions: QuestionDef[]): AIQuestion[] {
   return questions.map((q, index) => {
     // Map question types
@@ -37,12 +77,15 @@ export function transformPackToQuestions(questions: QuestionDef[]): AIQuestion[]
         type = 'textarea';
     }
     
-    // Extract option labels
-    const options = q.options?.map(opt => opt.i18nKey) || [];
+    // Get readable question text using smart fallback
+    const questionText = getQuestionText(q);
+    
+    // Get readable option labels using smart fallback
+    const options = q.options?.map(opt => getOptionText(opt)) || [];
     
     return {
       id: q.key || `q${index + 1}`,
-      question: q.i18nKey,
+      question: questionText,
       type,
       required: q.required || false,
       ...(options.length > 0 && { options })
