@@ -131,7 +131,12 @@ function standardizeOption(option: { i18nKey: string; value: string }): string {
 /**
  * Generate a professional question from a key when no aiHint exists
  */
-function generateQuestionFromKey(key: string): string {
+function generateQuestionFromKey(key: string | undefined): string {
+  // Handle undefined or empty keys
+  if (!key || key.trim() === '') {
+    return 'Please provide details?';
+  }
+  
   // Handle q1, q2 patterns
   if (/^q\d+$/i.test(key)) {
     const num = key.slice(1);

@@ -13262,6 +13262,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_update_question_pack_content: {
+        Args: { p_content: Json; p_pack_id: string }
+        Returns: undefined
+      }
       aggregate_platform_metrics: {
         Args: { p_metric_date: string }
         Returns: undefined
