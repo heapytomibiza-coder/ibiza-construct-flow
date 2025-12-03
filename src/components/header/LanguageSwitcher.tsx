@@ -1,7 +1,7 @@
 /**
  * Language Switcher Component
  * Phase 16: Internationalization
- * Updated to support EN, ES, DE, FR
+ * Supports EN and ES
  */
 
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { supportedLanguages, type SupportedLanguage } from '@/lib/i18n/config';
+
+const supportedLanguages = {
+  en: { name: 'English', nativeName: 'English', flag: '🇬🇧' },
+  es: { name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
+} as const;
+
+type SupportedLanguage = keyof typeof supportedLanguages;
 
 export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
@@ -22,7 +28,9 @@ export const LanguageSwitcher = () => {
     i18n.changeLanguage(lng);
   };
 
-  const currentLanguage = (i18n.language.split('-')[0] as SupportedLanguage) || 'en';
+  // Get base language (e.g., 'en' from 'en-US')
+  const currentLanguage = (i18n.language?.split('-')[0] as SupportedLanguage) || 'en';
+  const langConfig = supportedLanguages[currentLanguage] || supportedLanguages.en;
 
   return (
     <DropdownMenu>
@@ -30,9 +38,9 @@ export const LanguageSwitcher = () => {
         <Button variant="ghost" size="sm" className="gap-2 relative">
           <Languages className="h-4 w-4" />
           <span className="hidden sm:inline">
-            {supportedLanguages[currentLanguage]?.flag} {supportedLanguages[currentLanguage]?.name}
+            {langConfig.flag} {langConfig.name}
           </span>
-          <span className="sm:hidden">{supportedLanguages[currentLanguage]?.flag}</span>
+          <span className="sm:hidden">{langConfig.flag}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

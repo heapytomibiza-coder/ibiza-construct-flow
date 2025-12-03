@@ -1,16 +1,14 @@
 import { ArrowRight, Star, Shield, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import heroImage from '@/assets/hero-construction.jpg';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('hero');
   const { value: stats } = useSiteSettings('hero', 'stats');
-  const { value: badge } = useSiteSettings('hero', 'badge');
-  const { value: title } = useSiteSettings('hero', 'title');
-  const { value: subtitle } = useSiteSettings('hero', 'subtitle');
-  const { value: description } = useSiteSettings('hero', 'description');
 
   const handlePostProject = () => {
     navigate('/post');
@@ -45,32 +43,32 @@ const Hero = () => {
                 <Star key={i} className="w-5 h-5 text-sage-muted-light fill-current" />
               ))}
             </div>
-            <span className="text-white/90 text-sm font-medium">{(badge as unknown as string) || '#1 Rated Network in Ibiza'}</span>
+            <span className="text-white/90 text-sm font-medium">{t('badge')}</span>
           </div>
 
           <h1 className="text-display text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            {(title as unknown as string) || 'Building the Island.'}<br />
-            {(subtitle as unknown as string) || 'Building Your Dreams.'}<br />
-            <span className="text-sage-muted-light">Ibiza's Premier Construction Network</span>
+            {t('title')}<br />
+            {t('subtitle')}<br />
+            <span className="text-sage-muted-light">{t('highlight')}</span>
           </h1>
 
           <p className="text-body text-xl md:text-2xl text-white/90 mb-8 max-w-2xl leading-relaxed">
-            {(description as unknown as string) || "Connect with Ibiza's most trusted construction professionals. From handyman jobs to luxury builds, our community installs quality across the island."}
+            {t('description')}
           </p>
 
           {/* Trust Indicators */}
           <div className="flex flex-wrap items-center gap-6 mb-8">
             <div className="flex items-center space-x-2">
               <Shield className="w-5 h-5 text-sage-muted-light" />
-              <span className="text-white/90 text-sm font-medium">SafePay Protected</span>
+              <span className="text-white/90 text-sm font-medium">{t('trustIndicators.safepay')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Clock className="w-5 h-5 text-sage-muted-light" />
-              <span className="text-white/90 text-sm font-medium">24h Response</span>
+              <span className="text-white/90 text-sm font-medium">{t('trustIndicators.response')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Star className="w-5 h-5 text-sage-muted-light" />
-              <span className="text-white/90 text-sm font-medium">Verified Pros Only</span>
+              <span className="text-white/90 text-sm font-medium">{t('trustIndicators.verified')}</span>
             </div>
           </div>
 
@@ -81,14 +79,14 @@ const Hero = () => {
               onClick={handlePostProject}
               className="btn-hero group"
             >
-              Post Your Project
+              {t('cta.postProject')}
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
             <button 
               onClick={handleBrowseServices}
               className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-lg font-semibold border border-white/20 hover:bg-white/20 transition-all duration-300"
             >
-              Browse Services
+              {t('cta.browseServices')}
             </button>
           </div>
 
@@ -96,15 +94,15 @@ const Hero = () => {
           <div className="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-white/20">
             <div>
               <div className="text-3xl font-bold text-white text-display">{stats?.pros || '500+'}</div>
-              <div className="text-white/70 text-sm">Verified Pros</div>
+              <div className="text-white/70 text-sm">{t('stats.pros')}</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-white text-display">{stats?.projects || '2,000+'}</div>
-              <div className="text-white/70 text-sm">Projects Done</div>
+              <div className="text-white/70 text-sm">{t('stats.projects')}</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-white text-display">{stats?.protected || '€20M+'}</div>
-              <div className="text-white/70 text-sm">Protected</div>
+              <div className="text-white/70 text-sm">{t('stats.protected')}</div>
             </div>
           </div>
         </div>
