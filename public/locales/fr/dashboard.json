@@ -1,0 +1,66 @@
+{
+  "loading": "Redirection vers votre tableau de bord...",
+  "error": "Erreur lors de la vérification du rôle utilisateur",
+  "tabs": {
+    "dashboard": "Tableau de bord",
+    "features": "Fonctionnalités",
+    "analytics": "Analytiques",
+    "insights": "Aperçus",
+    "ai": "IA",
+    "calendar": "Calendrier",
+    "messages": "Messages",
+    "contracts": "Contrats",
+    "payments": "Paiements"
+  },
+  "titles": {
+    "bookingManagement": "Gestion des réservations",
+    "contractManagement": "Gestion des contrats",
+    "myContracts": "Mes contrats",
+    "findProfessionals": "Trouver des professionnels",
+    "professionalVerifications": "Vérifications professionnelles",
+    "adminUtilities": "Outils d'administration",
+    "questionPackManagement": "Gestion des packs de questions"
+  },
+  "status": {
+    "loading": "Chargement...",
+    "saving": "Enregistrement...",
+    "processing": "Traitement...",
+    "submitting": "Envoi...",
+    "noResults": "Aucun résultat trouvé",
+    "notFound": "Non trouvé"
+  },
+  "actions": {
+    "viewAll": "Tout voir",
+    "seeMore": "Voir plus",
+    "learnMore": "En savoir plus",
+    "getStarted": "Commencer",
+    "apply": "Appliquer",
+    "browse": "Parcourir",
+    "refresh": "Actualiser"
+  },
+  "stats": {
+    "approvedThisWeek": "Approuvés cette semaine",
+    "pendingReview": "En attente de révision",
+    "totalProfessionals": "Total des professionnels",
+    "activeJobs": "Emplois actifs"
+  },
+  "empty": {
+    "noBookingRequests": "Pas encore de demandes de réservation",
+    "noContracts": "Aucun contrat trouvé",
+    "noProfessionals": "Aucun professionnel trouvé",
+    "noVerifications": "Aucune vérification trouvée"
+  },
+  "professional": {
+    "overview": "Aperçu",
+    "jobs": "Emplois",
+    "earnings": "Revenus",
+    "schedule": "Planning",
+    "reviews": "Avis"
+  },
+  "client": {
+    "myProjects": "Mes projets",
+    "findHelp": "Trouver de l'aide",
+    "savedPros": "Professionnels sauvegardés",
+    "bookings": "Réservations"
+  }
+}

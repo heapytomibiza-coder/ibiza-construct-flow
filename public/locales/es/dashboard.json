@@ -1,4 +1,66 @@
 {
   "loading": "Redirigiendo a tu panel de control...",
-  "error": "Error al verificar el rol del usuario"
+  "error": "Error al verificar el rol del usuario",
+  "tabs": {
+    "dashboard": "Panel",
+    "features": "Funciones",
+    "analytics": "Analíticas",
+    "insights": "Información",
+    "ai": "IA",
+    "calendar": "Calendario",
+    "messages": "Mensajes",
+    "contracts": "Contratos",
+    "payments": "Pagos"
+  },
+  "titles": {
+    "bookingManagement": "Gestión de Reservas",
+    "contractManagement": "Gestión de Contratos",
+    "myContracts": "Mis Contratos",
+    "findProfessionals": "Buscar Profesionales",
+    "professionalVerifications": "Verificaciones de Profesionales",
+    "adminUtilities": "Utilidades de Administrador",
+    "questionPackManagement": "Gestión de Paquetes de Preguntas"
+  },
+  "status": {
+    "loading": "Cargando...",
+    "saving": "Guardando...",
+    "processing": "Procesando...",
+    "submitting": "Enviando...",
+    "noResults": "No se encontraron resultados",
+    "notFound": "No encontrado"
+  },
+  "actions": {
+    "viewAll": "Ver todo",
+    "seeMore": "Ver más",
+    "learnMore": "Saber más",
+    "getStarted": "Comenzar",
+    "apply": "Aplicar",
+    "browse": "Explorar",
+    "refresh": "Actualizar"
+  },
+  "stats": {
+    "approvedThisWeek": "Aprobados Esta Semana",
+    "pendingReview": "Pendientes de Revisión",
+    "totalProfessionals": "Total de Profesionales",
+    "activeJobs": "Trabajos Activos"
+  },
+  "empty": {
+    "noBookingRequests": "Aún no hay solicitudes de reserva",
+    "noContracts": "No se encontraron contratos",
+    "noProfessionals": "No se encontraron profesionales",
+    "noVerifications": "No se encontraron verificaciones"
+  },
+  "professional": {
+    "overview": "Resumen",
+    "jobs": "Trabajos",
+    "earnings": "Ganancias",
+    "schedule": "Agenda",
+    "reviews": "Reseñas"
+  },
+  "client": {
+    "myProjects": "Mis Proyectos",
+    "findHelp": "Buscar Ayuda",
+    "savedPros": "Profesionales Guardados",
+    "bookings": "Reservas"
+  }
 }

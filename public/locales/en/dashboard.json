@@ -1,4 +1,66 @@
 {
   "loading": "Redirecting to your dashboard...",
-  "error": "Error checking user role"
+  "error": "Error checking user role",
+  "tabs": {
+    "dashboard": "Dashboard",
+    "features": "Features",
+    "analytics": "Analytics",
+    "insights": "Insights",
+    "ai": "AI",
+    "calendar": "Calendar",
+    "messages": "Messages",
+    "contracts": "Contracts",
+    "payments": "Payments"
+  },
+  "titles": {
+    "bookingManagement": "Booking Management",
+    "contractManagement": "Contract Management",
+    "myContracts": "My Contracts",
+    "findProfessionals": "Find Professionals",
+    "professionalVerifications": "Professional Verifications",
+    "adminUtilities": "Admin Utilities",
+    "questionPackManagement": "Question Pack Management"
+  },
+  "status": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "processing": "Processing...",
+    "submitting": "Submitting...",
+    "noResults": "No results found",
+    "notFound": "Not found"
+  },
+  "actions": {
+    "viewAll": "View all",
+    "seeMore": "See more",
+    "learnMore": "Learn more",
+    "getStarted": "Get started",
+    "apply": "Apply",
+    "browse": "Browse",
+    "refresh": "Refresh"
+  },
+  "stats": {
+    "approvedThisWeek": "Approved This Week",
+    "pendingReview": "Pending Review",
+    "totalProfessionals": "Total Professionals",
+    "activeJobs": "Active Jobs"
+  },
+  "empty": {
+    "noBookingRequests": "No booking requests yet",
+    "noContracts": "No contracts found",
+    "noProfessionals": "No professionals found",
+    "noVerifications": "No verifications found"
+  },
+  "professional": {
+    "overview": "Overview",
+    "jobs": "Jobs",
+    "earnings": "Earnings",
+    "schedule": "Schedule",
+    "reviews": "Reviews"
+  },
+  "client": {
+    "myProjects": "My Projects",
+    "findHelp": "Find Help",
+    "savedPros": "Saved Pros",
+    "bookings": "Bookings"
+  }
 }
