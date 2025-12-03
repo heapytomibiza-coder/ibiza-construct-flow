@@ -1,0 +1,41 @@
+{
+  "title": "So funktioniert es",
+  "subtitle": "Drei einfache Schritte, um sich mit Ibizas besten Baufachleuten zu verbinden",
+  "steps": {
+    "describe": {
+      "title": "Beschreiben Sie Ihr Projekt",
+      "description": "Teilen Sie uns mit, was Sie brauchen, mit unserem einfachen Assistenten. Laden Sie Fotos hoch, legen Sie Ihr Budget fest und geben Sie Ihren Zeitplan an.",
+      "details": [
+        "5-Minuten-Einrichtung",
+        "Foto-Uploads",
+        "Budget-Beratung",
+        "Zeitplanung"
+      ]
+    },
+    "match": {
+      "title": "Vergleichen & Auswählen",
+      "description": "Unsere KI verbindet Sie mit verifizierten Fachleuten. Vergleichen Sie Angebote, Bewertungen und Portfolios, um Ihr perfektes Match zu finden.",
+      "details": [
+        "KI-gestützte Vermittlung",
+        "Sofortige Angebote",
+        "Verifizierte Bewertungen",
+        "Portfolio-Präsentation"
+      ]
+    },
+    "work": {
+      "title": "Geschützt arbeiten",
+      "description": "Arbeiten Sie sicher mit SafePay-Escrow-Schutz. Verfolgen Sie den Fortschritt, kommunizieren Sie und zahlen Sie nur bei Zufriedenheit.",
+      "details": [
+        "SafePay-Schutz",
+        "Fortschrittsverfolgung",
+        "Direktnachrichten",
+        "Zufriedenheitsgarantie"
+      ]
+    }
+  },
+  "cta": {
+    "title": "Bereit, Ihr Projekt zu starten?",
+    "subtitle": "Schließen Sie sich Tausenden zufriedener Kunden an, die ihre perfekten Fachleute über CS Ibiza gefunden haben",
+    "button": "Jetzt Projekt veröffentlichen"
+  }
+}

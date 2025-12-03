@@ -1,0 +1,20 @@
+{
+  "home": "Accueil",
+  "services": "Services",
+  "discovery": "Découvrir",
+  "professionals": "Professionnels",
+  "howItWorks": "Comment ça marche",
+  "contact": "Contact",
+  "signIn": "Se connecter",
+  "signUp": "S'inscrire",
+  "signOut": "Se déconnecter",
+  "dashboard": "Tableau de bord",
+  "postProject": "Publier un projet",
+  "templates": "Modèles",
+  "profile": "Profil",
+  "settings": "Paramètres",
+  "jobBoard": "Offres d'emploi",
+  "jobs": "Travaux",
+  "contracts": "Contrats",
+  "payments": "Paiements"
+}

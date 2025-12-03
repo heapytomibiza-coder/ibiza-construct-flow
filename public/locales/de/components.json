@@ -1,0 +1,77 @@
+{
+  "services": {
+    "title": "Kein Auftrag zu klein,",
+    "titleHighlight": "Kein Traum zu groß",
+    "subtitle": "Von schnellen Reparaturen bis zu Luxusbauten im Millionenwert – unsere verifizierten Fachleute liefern Exzellenz in jeder Größenordnung. Ihre Ibiza-Immobilie verdient das Beste.",
+    "popular": "Beliebt",
+    "ctaButton": "Sofortangebot erhalten",
+    "ctaSubtext": "Kostenlose Schätzungen • Keine Verpflichtung • 24h Antwort"
+  },
+  "benefits": {
+    "fastTrustedHelp": {
+      "title": "Schnelle, vertrauenswürdige Hilfe",
+      "description": "Geprüfte Profis, genau wenn Sie sie brauchen"
+    },
+    "protectedPayments": {
+      "title": "Geschützte Zahlungen",
+      "description": "Escrow-Freigabe nur bei Zufriedenheit"
+    },
+    "clearPricing": {
+      "title": "Transparente Preise",
+      "description": "Menüs und Schätzungen im Voraus"
+    },
+    "localExperts": {
+      "title": "Lokale Experten",
+      "description": "Bewertet von Ibiza-Kunden wie Ihnen"
+    }
+  },
+  "expressMode": {
+    "badge": "Express-Modus",
+    "title": "Schnelle Reparatur heute?",
+    "subtitle": "Überspringen Sie die Fragen. Werden Sie sofort mit verfügbaren Fachleuten für häufige Aufgaben verbunden.",
+    "features": "⚡ Sofortige Vermittlung • 📱 SMS-Updates • 💯 Service am selben Tag"
+  },
+  "featuredServices": {
+    "title": "Empfohlene Dienste",
+    "subtitle": "Beginnen Sie mit unseren beliebtesten Diensten auf Ibiza. Von schnellen Reparaturen bis zu kompletten Renovierungen – wir haben vertrauenswürdige Fachleute bereit.",
+    "popular": "Beliebt",
+    "viewService": "Dienst ansehen",
+    "viewAllServices": "Alle Dienste ansehen"
+  },
+  "professionalNetwork": {
+    "title": "Ibizas vertrauenswürdigstes",
+    "titleHighlight": "Netzwerk",
+    "subtitle": "Wir wählen nur die besten Baufachleute aus, die unsere strengen Standards für Qualität, Zuverlässigkeit und Kundenservice erfüllen.",
+    "stats": {
+      "professionals": "Verifizierte Fachleute",
+      "projects": "Abgeschlossene Projekte",
+      "rating": "Durchschnittliche Bewertung",
+      "protection": "SafePay geschützt"
+    },
+    "benefits": {
+      "verified": {
+        "title": "Vollständig verifiziert",
+        "description": "Jeder Fachmann ist überprüft, lizenziert und versichert"
+      },
+      "excellence": {
+        "title": "Bewiesene Exzellenz",
+        "description": "Nur Fachleute mit herausragenden Erfahrungen treten unserem Netzwerk bei"
+      },
+      "rapid": {
+        "title": "Schnelle Reaktion",
+        "description": "Erhalten Sie Angebote innerhalb von 24 Stunden, Notdienste verfügbar"
+      }
+    },
+    "buttons": {
+      "findProfessionals": "Fachleute finden",
+      "joinNetwork": "Unserem Netzwerk beitreten"
+    },
+    "categoriesTitle": "Unsere Fachkategorien"
+  },
+  "testing": {
+    "title": "🧪 Test-Dashboard-Implementierung",
+    "professionalDashboard": "Professional Dashboard testen",
+    "adminDashboard": "Admin Dashboard testen",
+    "clientDashboard": "Kunden Dashboard testen"
+  }
+}

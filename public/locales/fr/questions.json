@@ -1,0 +1,7 @@
+{
+  "room-painting": {
+    "q1": { "title": "Quel type de pièce doit être peinte?" },
+    "q2": { "title": "Quelle est la taille de la pièce?" },
+    "q3": { "title": "Quelles surfaces doivent être peintes?" }
+  }
+}

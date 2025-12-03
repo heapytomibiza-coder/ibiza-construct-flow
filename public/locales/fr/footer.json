@@ -1,0 +1,15 @@
+{
+  "brand": {
+    "name": "CS Ibiza",
+    "tagline": "Réseau d'élite",
+    "description": "Constructive Solutions Ibiza vous connecte avec les professionnels de construction les plus fiables de l'île."
+  },
+  "sections": {
+    "services": { "title": "Services" },
+    "company": { "title": "Entreprise" },
+    "contact": { "title": "Contact" }
+  },
+  "legal": {
+    "copyright": "© 2024 Constructive Solutions Ibiza. Tous droits réservés."
+  }
+}

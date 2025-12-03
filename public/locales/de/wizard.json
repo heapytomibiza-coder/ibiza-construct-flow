@@ -1,0 +1,88 @@
+{
+  "steps": {
+    "category": {
+      "title": "Welche Art von Arbeit brauchen Sie?",
+      "subtitle": "Wählen Sie die Kategorie, die am besten zu Ihrem Projekt passt",
+      "search": "Nach einer Dienstleistung suchen...",
+      "professionalServices": "Professionelle Dienstleistungen",
+      "transportDeliveries": "Transport & Lieferungen",
+      "movingDeliveryServices": "Umzugs- und Lieferdienste",
+      "cantFind": "Können Sie nicht finden, wonach Sie suchen?",
+      "browseSpecialized": "Spezialisierte Kategorien durchsuchen"
+    },
+    "subcategory": {
+      "title": "Welchen spezifischen Dienst benötigen Sie?",
+      "category": "Kategorie:",
+      "specializedWork": "Spezialisierte Arbeit"
+    },
+    "microservice": {
+      "title": "Welche spezifische Aufgabe benötigen Sie?",
+      "back": "Zurück"
+    },
+    "aiQuestions": {
+      "title": "Erzählen Sie uns mehr",
+      "subtitle": "Beantworten Sie ein paar kurze Fragen"
+    },
+    "location": {
+      "title": "Standort & Timing",
+      "subtitle": "Wo und wann?"
+    },
+    "details": {
+      "title": "Erzählen Sie uns mehr über Ihre {{service}}",
+      "loading": "Bitte warten Sie, während wir Ihre maßgeschneiderten Fragen laden",
+      "jobDetails": "Auftragsdetails",
+      "jobTitle": "Auftragstitel",
+      "jobTitlePlaceholder": "z.B. Küchenfliesen ersetzen",
+      "continue": "Weiter",
+      "back": "Zurück"
+    },
+    "requirements": {
+      "continueToReview": "Weiter zur Überprüfung",
+      "back": "Zurück"
+    },
+    "review": {
+      "title": "Überprüfen Sie Ihre Stellenausschreibung",
+      "subtitle": "KI-gestützte Einblicke und finale Überprüfung",
+      "jobSummary": "Auftragszusammenfassung",
+      "service": "Dienst",
+      "description": "Beschreibung",
+      "budgetRange": "Budgetbereich",
+      "aiQuestionsAnswers": "KI-Fragen & Antworten",
+      "urgency": "Dringlichkeit",
+      "backToEdit": "Zurück zum Bearbeiten",
+      "postJob": "Auftrag veröffentlichen",
+      "posting": "Wird veröffentlicht..."
+    }
+  },
+  "navigation": {
+    "progressLabels": {
+      "category": "Kategorie",
+      "service": "Dienst",
+      "details": "Details",
+      "aiQuestions": "KI-Fragen",
+      "requirements": "Anforderungen",
+      "review": "Überprüfung"
+    },
+    "stepDescriptions": {
+      "chooseCategory": "Kategorie wählen",
+      "selectService": "Dienst auswählen",
+      "pickDetails": "Details wählen",
+      "aiQuestionsBasicInfo": "KI-Fragen & Grundinfo",
+      "answerRequirements": "Anforderungen beantworten",
+      "reviewPost": "Überprüfen & Veröffentlichen"
+    },
+    "stepCounter": "Schritt {{current}} von {{total}}: {{description}}"
+  },
+  "messages": {
+    "templateLoaded": "Vorlage erfolgreich geladen",
+    "resumedSession": "Ihre vorherige Sitzung wurde fortgesetzt",
+    "startingFresh": "Neu beginnen",
+    "jobPostedSuccess": "Auftrag erfolgreich veröffentlicht!",
+    "jobPostFailed": "Auftrag konnte nicht veröffentlicht werden",
+    "optimizationApplied": "Optimierungsvorschlag angewendet"
+  },
+  "errors": {
+    "title": "Fehler",
+    "goToDashboard": "Zum Dashboard"
+  }
+}
