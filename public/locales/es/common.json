@@ -1,5 +1,14 @@
 {
   "appName": "TM Direct Ibiza",
+  "services": "Servicios",
+  "professionals": "Profesionales",
+  "response24h": "Respuesta 24h",
+  "filters": "Filtros",
+  "clearFilters": "Limpiar Filtros",
+  "searchingFor": "Buscando",
+  "filtersApplied": "filtro(s) aplicado(s)",
+  "service": "Servicio",
+  "professional": "Profesional",
   "actions": {
     "save": "Guardar",
     "cancel": "Cancelar",

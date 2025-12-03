@@ -1,0 +1,85 @@
+{
+  "professionals": {
+    "hero": {
+      "title": "Finden Sie Vertrauenswürdige Fachleute in Ihrer Nähe",
+      "titleHighlight": "Vertrauenswürdige Fachleute",
+      "subtitle": "Verbinden Sie sich mit verifizierten lokalen Experten für alle Ihre Servicebedürfnisse. Qualitätsarbeit, wettbewerbsfähige Preise und zuverlässiger Service garantiert."
+    },
+    "stats": {
+      "verifiedProfessionals": "500+ Verifizierte Fachleute",
+      "completedProjects": "Abgeschlossene Projekte", 
+      "averageRating": "4.9 Durchschn. Bewertung",
+      "safePayProtection": "SafePay-Schutz"
+    },
+    "search": {
+      "title": "Finden Sie den Richtigen Fachmann",
+      "placeholder": "Nach Name, Fähigkeiten oder Dienstleistungen suchen...",
+      "specialization": "Spezialisierung",
+      "allSpecializations": "Alle Spezialisierungen",
+      "availability": "Verfügbarkeit",
+      "allAvailability": "Alle Verfügbarkeiten",
+      "available": "Verfügbar",
+      "busy": "Beschäftigt"
+    },
+    "results": {
+      "title": "Verfügbare Fachleute",
+      "found": "Fachleute gefunden",
+      "noResults": "Keine Fachleute gefunden, die Ihren Kriterien entsprechen.",
+      "clearFilters": "Filter Löschen"
+    }
+  },
+  "services": {
+    "hero": {
+      "title": "Professionelle Dienstleistungen auf Ibiza",
+      "titleHighlight": "Ibiza",
+      "subtitle": "Von schnellen Reparaturen bis hin zu kompletten Renovierungen – verbinden Sie sich mit verifizierten Fachleuten für alle Ihre Immobilienbedürfnisse"
+    },
+    "specializedCategories": {
+      "title": "Spezialisierte Kategorien",
+      "subtitle": "Professionelle und technische Dienstleistungen für komplexe Projekte, die spezialisiertes Fachwissen erfordern"
+    },
+    "results": {
+      "title": "Verfügbare Dienstleistungen",
+      "noResults": "Keine Dienstleistungen gefunden, die Ihren Kriterien entsprechen."
+    },
+    "packages": {
+      "title": "Wählen Sie Ihr Servicepaket",
+      "subtitle": "Wählen Sie das Paket, das Ihren Bedürfnissen am besten entspricht. Alle Pakete beinhalten professionellen Service und Qualitätsgarantie.",
+      "basic": {
+        "name": "Basis",
+        "description": "Wesentliche Reparaturen und Wartung"
+      },
+      "standard": {
+        "name": "Standard",
+        "description": "Umfassendes Servicepaket"
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Komplettlösung mit Extras"
+      }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Kontaktieren Sie Uns",
+      "subtitle": "Nehmen Sie Kontakt mit unserem Team auf – wir sind hier, um bei allen Fragen zu helfen"
+    },
+    "form": {
+      "title": "In Kontakt Treten",
+      "name": "Name",
+      "namePlaceholder": "Ihr Name",
+      "email": "E-Mail",
+      "emailPlaceholder": "ihre@email.com",
+      "message": "Nachricht",
+      "messagePlaceholder": "Wie können wir Ihnen helfen?",
+      "submit": "Nachricht Senden"
+    },
+    "info": {
+      "title": "Kontaktinformationen",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "location": "Standort",
+      "businessHours": "Geschäftszeiten"
+    }
+  }
+}

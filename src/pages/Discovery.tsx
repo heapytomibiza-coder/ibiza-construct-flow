@@ -162,28 +162,28 @@ const Discovery = () => {
             <div className="flex flex-wrap justify-center gap-6 mb-8">
               <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
                 <Shield className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">500+ Verified Pros</span>
+                <span className="text-sm font-medium">{t('pages:professionals.stats.verifiedProfessionals', '500+ Verified Pros')}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                <span className="text-sm font-medium">4.9 Avg Rating</span>
+                <span className="text-sm font-medium">{t('pages:professionals.stats.averageRating', '4.9 Avg Rating')}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
                 <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">24h Response</span>
+                <span className="text-sm font-medium">{t('common:response24h', '24h Response')}</span>
               </div>
             </div>
 
             <div className="text-center space-y-4 mb-6">
               <h1 className="text-4xl md:text-5xl font-bold">
                 <span className="bg-gradient-to-r from-primary via-primary-dark to-copper bg-clip-text text-transparent">
-                  {t('pages:services.hero.title', 'Find Your Perfect')}
+                  {t('pages:services.hero.title', 'Professional Services in Ibiza')}
                 </span>
                 <br />
-                <span className="text-foreground">{t('pages:services.hero.titleHighlight', 'Professional')}</span>
+                <span className="text-foreground">{t('pages:services.hero.titleHighlight', 'Ibiza')}</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                {t('pages:services.hero.subtitle', 'Browse premium services or explore verified professionals. Use filters to find exactly what you need for your project.')}
+                {t('pages:services.hero.subtitle', 'From quick fixes to complete renovations, connect with verified professionals for all your property needs')}
               </p>
             </div>
 
@@ -194,14 +194,14 @@ const Discovery = () => {
                 onClick={() => setViewMode('services')}
                 className="gap-2"
               >
-                🛠️ {t('services:title', 'Services')}
+                🛠️ {t('common:services', 'Services')}
               </Button>
               <Button
                 variant={viewMode === 'professionals' ? 'default' : 'outline'}
                 onClick={() => setViewMode('professionals')}
                 className="gap-2"
               >
-                👥 {t('pages:professionals.hero.titleHighlight', 'Professionals')}
+                👥 {t('common:professionals', 'Professionals')}
               </Button>
             </div>
 
@@ -214,8 +214,8 @@ const Discovery = () => {
                 showFilters={showFilters}
                 placeholder={
                   viewMode === 'services' 
-                    ? t('pages:professionals.search.placeholder', "Search services like 'plumbing', 'electrical'...")
-                    : t('pages:professionals.search.placeholder', "Search professionals like 'electrician', 'builder'...")
+                    ? t('pages:professionals.search.placeholder', "Search by name, skills, or services...")
+                    : t('pages:professionals.search.placeholder', "Search by name, skills, or services...")
                 }
               />
             </div>
@@ -227,7 +227,7 @@ const Discovery = () => {
           <SheetContent side="left" className="w-80 overflow-y-auto bg-background">
             <div className="py-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">{t('common:filter', 'Filters')}</h2>
+                <h2 className="text-lg font-semibold">{t('common:filters', 'Filters')}</h2>
                 <Button variant="ghost" size="sm" onClick={() => setShowFilters(false)}>
                   <X className="h-4 w-4" />
                 </Button>
@@ -259,7 +259,7 @@ const Discovery = () => {
                     <>
                       <span className="flex items-center gap-2">
                         <SlidersHorizontal className="h-4 w-4" />
-                        {t('common:filter', 'Filters')}
+                        {t('common:filters', 'Filters')}
                         {getActiveFilterCount() > 0 && (
                           <Badge variant="secondary" className="ml-2">
                             {getActiveFilterCount()}
@@ -296,14 +296,14 @@ const Discovery = () => {
                   <div>
                     <p className="text-lg font-semibold">
                       {viewMode === 'services' 
-                        ? `${services.length} ${services.length === 1 ? t('services:title', 'Service') : t('services:title', 'Services')}`
-                        : `${discoveredProfessionals.length} ${discoveredProfessionals.length === 1 ? 'Professional' : 'Professionals'}`
+                        ? `${services.length} ${services.length === 1 ? t('common:service', 'Service') : t('common:services', 'Services')}`
+                        : `${discoveredProfessionals.length} ${discoveredProfessionals.length === 1 ? t('common:professional', 'Professional') : t('common:professionals', 'Professionals')}`
                       }
                     </p>
                     {(searchTerm || getActiveFilterCount() > 0) && (
                       <p className="text-sm text-muted-foreground mt-1">
-                        {searchTerm && `${t('common:search', 'Searching for')} "${searchTerm}"`}
-                        {getActiveFilterCount() > 0 && ` • ${getActiveFilterCount()} ${t('common:filter', 'filter(s) applied')}`}
+                        {searchTerm && `${t('common:searchingFor', 'Searching for')} "${searchTerm}"`}
+                        {getActiveFilterCount() > 0 && ` • ${getActiveFilterCount()} ${t('common:filtersApplied', 'filter(s) applied')}`}
                       </p>
                     )}
                   </div>
@@ -320,7 +320,7 @@ const Discovery = () => {
                       })}
                     >
                       <X className="h-4 w-4 mr-2" />
-                      {t('pages:professionals.results.clearFilters', 'Clear Filters')}
+                      {t('common:clearFilters', 'Clear Filters')}
                     </Button>
                   )}
                 </div>
