@@ -1,0 +1,36 @@
+{
+  "hero": {
+    "title": "Finden Sie Ihren",
+    "professional": "Perfekten Fachmann",
+    "subtitle": "Durchsuchen Sie Premium-Dienste oder erkunden Sie verifizierte Fachleute. Verwenden Sie Filter, um genau das zu finden, was Sie für Ihr Projekt benötigen."
+  },
+  "stats": {
+    "verifiedPros": "Verifizierte Profis",
+    "avgRating": "Durchschn. Bewertung",
+    "response": "Antwort"
+  },
+  "tabs": {
+    "services": "Dienstleistungen",
+    "professionals": "Fachleute"
+  },
+  "search": {
+    "servicesPlaceholder": "Suchen Sie nach Dienstleistungen wie 'Sanitär', 'Elektrik'...",
+    "professionalsPlaceholder": "Suchen Sie nach Fachleuten wie 'Elektriker', 'Bauarbeiter'..."
+  },
+  "filters": {
+    "title": "Filter",
+    "clearFilters": "Filter löschen"
+  },
+  "results": {
+    "service": "Dienstleistung",
+    "services": "Dienstleistungen",
+    "professional": "Fachmann",
+    "professionals": "Fachleute",
+    "searchingFor": "Suche nach",
+    "filtersApplied": "Filter angewendet"
+  },
+  "empty": {
+    "noResults": "Keine Ergebnisse gefunden",
+    "tryAdjusting": "Versuchen Sie, Ihre Suche oder Filter anzupassen"
+  }
+}

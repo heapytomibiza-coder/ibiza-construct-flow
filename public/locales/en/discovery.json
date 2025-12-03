@@ -1,0 +1,36 @@
+{
+  "hero": {
+    "title": "Find Your Perfect",
+    "professional": "Professional",
+    "subtitle": "Browse premium services or explore verified professionals. Use filters to find exactly what you need for your project."
+  },
+  "stats": {
+    "verifiedPros": "Verified Pros",
+    "avgRating": "Avg Rating",
+    "response": "Response"
+  },
+  "tabs": {
+    "services": "Services",
+    "professionals": "Professionals"
+  },
+  "search": {
+    "servicesPlaceholder": "Search services like 'plumbing', 'electrical'...",
+    "professionalsPlaceholder": "Search professionals like 'electrician', 'builder'..."
+  },
+  "filters": {
+    "title": "Filters",
+    "clearFilters": "Clear Filters"
+  },
+  "results": {
+    "service": "Service",
+    "services": "Services",
+    "professional": "Professional",
+    "professionals": "Professionals",
+    "searchingFor": "Searching for",
+    "filtersApplied": "filter(s) applied"
+  },
+  "empty": {
+    "noResults": "No results found",
+    "tryAdjusting": "Try adjusting your search or filters"
+  }
+}

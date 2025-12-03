@@ -1,0 +1,36 @@
+{
+  "hero": {
+    "title": "Encuentra Tu",
+    "professional": "Profesional Perfecto",
+    "subtitle": "Explora servicios premium o profesionales verificados. Usa los filtros para encontrar exactamente lo que necesitas para tu proyecto."
+  },
+  "stats": {
+    "verifiedPros": "Profesionales Verificados",
+    "avgRating": "Calificación Promedio",
+    "response": "Respuesta"
+  },
+  "tabs": {
+    "services": "Servicios",
+    "professionals": "Profesionales"
+  },
+  "search": {
+    "servicesPlaceholder": "Buscar servicios como 'fontanería', 'electricidad'...",
+    "professionalsPlaceholder": "Buscar profesionales como 'electricista', 'constructor'..."
+  },
+  "filters": {
+    "title": "Filtros",
+    "clearFilters": "Limpiar Filtros"
+  },
+  "results": {
+    "service": "Servicio",
+    "services": "Servicios",
+    "professional": "Profesional",
+    "professionals": "Profesionales",
+    "searchingFor": "Buscando",
+    "filtersApplied": "filtro(s) aplicado(s)"
+  },
+  "empty": {
+    "noResults": "No se encontraron resultados",
+    "tryAdjusting": "Intenta ajustar tu búsqueda o filtros"
+  }
+}

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Image } from 'lucide-react';
+import { TranslationAuditPanel } from '@/components/admin/TranslationAuditPanel';
 
 const AdminUtils = () => {
   const [loading, setLoading] = useState(false);
@@ -43,6 +44,9 @@ const AdminUtils = () => {
       <h1 className="text-3xl font-bold mb-8">Admin Utilities</h1>
 
       <div className="grid gap-6">
+        {/* Translation Audit Panel */}
+        <TranslationAuditPanel />
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

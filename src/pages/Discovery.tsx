@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { UnifiedSearchBar } from '@/components/discovery/UnifiedSearchBar';
@@ -36,6 +37,7 @@ interface Filters {
 }
 
 const Discovery = () => {
+  const { t } = useTranslation(['discovery', 'common']);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { getCategories } = useServicesRegistry();
@@ -160,28 +162,28 @@ const Discovery = () => {
             <div className="flex flex-wrap justify-center gap-6 mb-8">
               <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
                 <Shield className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">500+ Verified Pros</span>
+                <span className="text-sm font-medium">500+ {t('discovery:stats.verifiedPros')}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                <span className="text-sm font-medium">4.9 Avg Rating</span>
+                <span className="text-sm font-medium">4.9 {t('discovery:stats.avgRating')}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full border border-primary/20">
                 <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">24h Response</span>
+                <span className="text-sm font-medium">24h {t('discovery:stats.response')}</span>
               </div>
             </div>
 
             <div className="text-center space-y-4 mb-6">
               <h1 className="text-4xl md:text-5xl font-bold">
                 <span className="bg-gradient-to-r from-primary via-primary-dark to-copper bg-clip-text text-transparent">
-                  Find Your Perfect
+                  {t('discovery:hero.title')}
                 </span>
                 <br />
-                <span className="text-foreground">Professional</span>
+                <span className="text-foreground">{t('discovery:hero.professional')}</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Browse premium services or explore verified professionals. Use filters to find exactly what you need for your project.
+                {t('discovery:hero.subtitle')}
               </p>
             </div>
 
@@ -192,14 +194,14 @@ const Discovery = () => {
                 onClick={() => setViewMode('services')}
                 className="gap-2"
               >
-                🛠️ Services
+                🛠️ {t('discovery:tabs.services')}
               </Button>
               <Button
                 variant={viewMode === 'professionals' ? 'default' : 'outline'}
                 onClick={() => setViewMode('professionals')}
                 className="gap-2"
               >
-                👥 Professionals
+                👥 {t('discovery:tabs.professionals')}
               </Button>
             </div>
 
@@ -212,8 +214,8 @@ const Discovery = () => {
                 showFilters={showFilters}
                 placeholder={
                   viewMode === 'services' 
-                    ? "Search services like 'plumbing', 'electrical'..."
-                    : "Search professionals like 'electrician', 'builder'..."
+                    ? t('discovery:search.servicesPlaceholder')
+                    : t('discovery:search.professionalsPlaceholder')
                 }
               />
             </div>
@@ -225,7 +227,7 @@ const Discovery = () => {
           <SheetContent side="left" className="w-80 overflow-y-auto bg-background">
             <div className="py-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Filters</h2>
+                <h2 className="text-lg font-semibold">{t('discovery:filters.title')}</h2>
                 <Button variant="ghost" size="sm" onClick={() => setShowFilters(false)}>
                   <X className="h-4 w-4" />
                 </Button>
@@ -257,7 +259,7 @@ const Discovery = () => {
                     <>
                       <span className="flex items-center gap-2">
                         <SlidersHorizontal className="h-4 w-4" />
-                        Filters
+                        {t('discovery:filters.title')}
                         {getActiveFilterCount() > 0 && (
                           <Badge variant="secondary" className="ml-2">
                             {getActiveFilterCount()}
@@ -294,14 +296,14 @@ const Discovery = () => {
                   <div>
                     <p className="text-lg font-semibold">
                       {viewMode === 'services' 
-                        ? `${services.length} ${services.length === 1 ? 'Service' : 'Services'}`
-                        : `${discoveredProfessionals.length} ${discoveredProfessionals.length === 1 ? 'Professional' : 'Professionals'}`
+                        ? `${services.length} ${services.length === 1 ? t('discovery:results.service') : t('discovery:results.services')}`
+                        : `${discoveredProfessionals.length} ${discoveredProfessionals.length === 1 ? t('discovery:results.professional') : t('discovery:results.professionals')}`
                       }
                     </p>
                     {(searchTerm || getActiveFilterCount() > 0) && (
                       <p className="text-sm text-muted-foreground mt-1">
-                        {searchTerm && `Searching for "${searchTerm}"`}
-                        {getActiveFilterCount() > 0 && ` • ${getActiveFilterCount()} filter${getActiveFilterCount() > 1 ? 's' : ''} applied`}
+                        {searchTerm && `${t('discovery:results.searchingFor')} "${searchTerm}"`}
+                        {getActiveFilterCount() > 0 && ` • ${getActiveFilterCount()} ${t('discovery:results.filtersApplied')}`}
                       </p>
                     )}
                   </div>
@@ -318,7 +320,7 @@ const Discovery = () => {
                       })}
                     >
                       <X className="h-4 w-4 mr-2" />
-                      Clear Filters
+                      {t('discovery:filters.clearFilters')}
                     </Button>
                   )}
                 </div>
