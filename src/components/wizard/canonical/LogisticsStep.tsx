@@ -163,21 +163,24 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           
           {/* Quick presets */}
           <div className="flex flex-wrap gap-2">
-            {START_DATE_PRESETS.map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => handleStartDatePreset(preset)}
-                className={cn(
-                  "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
-                  logistics.startDatePreset === preset 
-                    ? "bg-primary text-primary-foreground border-primary" 
-                    : "border-border hover:border-primary hover:bg-primary/5"
-                )}
-              >
-                {preset}
-              </button>
-            ))}
+            {START_DATE_PRESETS.map((preset) => {
+              const isSelected = logistics.startDatePreset === preset;
+              return (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => handleStartDatePreset(preset)}
+                  className={cn(
+                    "inline-flex items-center rounded-full border-2 px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
+                    isSelected 
+                      ? "bg-primary text-white border-primary ring-2 ring-primary/30" 
+                      : "bg-background border-border hover:border-primary hover:bg-primary/5"
+                  )}
+                >
+                  {preset}
+                </button>
+              );
+            })}
           </div>
 
           {/* Or specific date */}
@@ -334,21 +337,24 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
               <div>
                 <Label className="text-sm text-muted-foreground mb-2 block">Preferred time</Label>
                 <div className="flex flex-wrap gap-2">
-                  {CONSULTATION_TIMES.map((time) => (
-                    <button
-                      key={time}
-                      type="button"
-                      onClick={() => handleUpdate('consultationTime', time)}
-                      className={cn(
-                        "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
-                        logistics.consultationTime === time 
-                          ? "bg-primary text-primary-foreground border-primary" 
-                          : "border-border hover:border-primary hover:bg-primary/5"
-                      )}
-                    >
-                      {time}
-                    </button>
-                  ))}
+                  {CONSULTATION_TIMES.map((time) => {
+                    const isSelected = logistics.consultationTime === time;
+                    return (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => handleUpdate('consultationTime', time)}
+                        className={cn(
+                          "inline-flex items-center rounded-full border-2 px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
+                          isSelected 
+                            ? "bg-primary text-white border-primary ring-2 ring-primary/30" 
+                            : "bg-background border-border hover:border-primary hover:bg-primary/5"
+                        )}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -376,10 +382,10 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                       handleUpdate('accessDetails', updated);
                     }}
                     className={cn(
-                      "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
+                      "inline-flex items-center rounded-full border-2 px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
                       isSelected 
-                        ? "bg-primary text-primary-foreground border-primary" 
-                        : "border-border hover:border-primary hover:bg-primary/5"
+                        ? "bg-primary text-white border-primary ring-2 ring-primary/30" 
+                        : "bg-background border-border hover:border-primary hover:bg-primary/5"
                     )}
                   >
                     {option}
@@ -395,21 +401,24 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           <Label className="text-base font-medium text-foreground">Budget Range</Label>
           <p className="text-sm text-muted-foreground">Select a budget range or choose "Unsure" to get quotes first</p>
           <div className="flex flex-wrap gap-2">
-            {BUDGET_RANGES.map((range) => (
-              <button
-                key={range}
-                type="button"
-                onClick={() => handleUpdate('budgetRange', range)}
-                className={cn(
-                  "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
-                  logistics.budgetRange === range 
-                    ? "bg-primary text-primary-foreground border-primary" 
-                    : "border-border hover:border-primary hover:bg-primary/5"
-                )}
-              >
-                {range}
-              </button>
-            ))}
+            {BUDGET_RANGES.map((range) => {
+              const isSelected = logistics.budgetRange === range;
+              return (
+                <button
+                  key={range}
+                  type="button"
+                  onClick={() => handleUpdate('budgetRange', range)}
+                  className={cn(
+                    "inline-flex items-center rounded-full border-2 px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
+                    isSelected 
+                      ? "bg-primary text-white border-primary ring-2 ring-primary/30" 
+                      : "bg-background border-border hover:border-primary hover:bg-primary/5"
+                  )}
+                >
+                  {range}
+                </button>
+              );
+            })}
           </div>
         </Card>
       </div>
