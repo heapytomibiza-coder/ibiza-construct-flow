@@ -295,6 +295,23 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       .replace(/\b\w/g, c => c.toUpperCase());
   };
 
+  /**
+   * Clean up aiHint text for display:
+   * - Remove trailing ".?" patterns
+   * - Ensure proper question mark ending
+   * - Clean up grammar issues
+   */
+  const cleanQuestionText = (text: string): string => {
+    if (!text) return '';
+    // Remove trailing ".?" and replace with "?"
+    let cleaned = text.replace(/\.\?$/, '?').replace(/\?{2,}$/, '?');
+    // Ensure ends with question mark if it looks like a question
+    if (!cleaned.endsWith('?') && !cleaned.endsWith('.')) {
+      cleaned = cleaned + '?';
+    }
+    return cleaned.trim();
+  };
+
   const transformPackToAIQuestions = (packContent: any): AIQuestion[] => {
     const microDef = packContent;
     if (!microDef?.questions || !Array.isArray(microDef.questions)) {
@@ -302,19 +319,27 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     }
     
     return microDef.questions.map((q: any, index: number) => {
-      // Try i18n translation first if i18nKey exists
-      let questionText = q.label || q.question || q.title;
-      if (!questionText && q.i18nKey) {
-        const translated = t(`questions:${q.i18nKey}`, { defaultValue: '' });
-        if (translated && translated !== q.i18nKey) {
-          questionText = translated;
-        }
+      // Priority order for question text:
+      // 1. aiHint (contains the actual question text in most packs)
+      // 2. label/question/title (direct text)
+      // 3. Humanized key as fallback
+      let questionText = '';
+      
+      // First check aiHint - this is the PRIMARY source for question text
+      if (q.aiHint && q.aiHint.length > 5) {
+        questionText = cleanQuestionText(q.aiHint);
       }
+      
+      // Fallback to direct text fields
       if (!questionText) {
-        questionText = (q.key ? `${humanizeKey(q.key)}?` : null) ||
-          q.aiHint || 
-          `Question ${index + 1}`;
+        questionText = q.label || q.question || q.title || '';
       }
+      
+      // Final fallback: humanize the key
+      if (!questionText) {
+        questionText = q.key ? `${humanizeKey(q.key)}?` : `Question ${index + 1}`;
+      }
+      
       const questionId = q.key || q.id || `q${index}`;
       
       return {
@@ -323,17 +348,24 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         label: questionText,
         required: q.required ?? false,
         options: q.options?.map((opt: any) => {
-          // Try i18n for option labels
+          // Priority for option labels:
+          // 1. opt.label (direct text)
+          // 2. opt.i18nKey (often contains readable text like "Interior", "Exterior")
+          // 3. Humanize the value
           let optLabel = opt.label;
+          
           if (!optLabel && opt.i18nKey) {
-            const translatedOpt = t(`questions:${opt.i18nKey}`, { defaultValue: '' });
-            if (translatedOpt && translatedOpt !== opt.i18nKey) {
-              optLabel = translatedOpt;
+            // i18nKey often contains the readable label directly (e.g., "Interior", "Exterior")
+            // Only use it if it's not a path-like key
+            if (!opt.i18nKey.includes('.')) {
+              optLabel = opt.i18nKey;
             }
           }
+          
           if (!optLabel) {
-            optLabel = (opt.value ? humanizeKey(opt.value) : null) || String(opt);
+            optLabel = opt.value ? humanizeKey(opt.value) : String(opt);
           }
+          
           return {
             label: optLabel,
             value: opt.value || opt.i18nKey || optLabel,

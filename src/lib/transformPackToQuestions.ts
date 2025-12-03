@@ -32,28 +32,49 @@ function humanizeKey(key: string): string {
 }
 
 /**
+ * Clean up question text for display:
+ * - Remove trailing ".?" patterns
+ * - Ensure proper question mark ending
+ */
+function cleanQuestionText(text: string): string {
+  if (!text) return '';
+  // Remove trailing ".?" and replace with "?"
+  let cleaned = text.replace(/\.\?$/, '?').replace(/\?{2,}$/, '?');
+  // Ensure ends with question mark if it looks like a question
+  if (!cleaned.endsWith('?') && !cleaned.endsWith('.')) {
+    cleaned = cleaned + '?';
+  }
+  return cleaned.trim();
+}
+
+/**
  * Get readable question text with smart fallback:
- * 1. Try using aiHint (most descriptive)
+ * 1. aiHint (PRIMARY - contains the actual question text)
  * 2. Humanize the key as last resort
  */
 function getQuestionText(q: QuestionDef): string {
-  // If aiHint exists, use it as the question
-  if (q.aiHint && q.aiHint.length > 0) {
-    return q.aiHint;
+  // aiHint is the PRIMARY source for question text
+  if (q.aiHint && q.aiHint.length > 5) {
+    return cleanQuestionText(q.aiHint);
   }
   
   // Otherwise humanize the key
-  return humanizeKey(q.key);
+  return humanizeKey(q.key) + '?';
 }
 
 /**
  * Get readable option text with smart fallback:
- * 1. If i18nKey doesn't look like a key path, use it directly
+ * 1. If i18nKey doesn't look like a key path, use it directly (e.g., "Interior", "Exterior")
  * 2. Otherwise humanize the value
  */
 function getOptionText(option: { i18nKey: string; value: string }): string {
-  // If i18nKey doesn't contain dots or looks readable, use it
-  if (!option.i18nKey.includes('.') || /^[A-Z]/.test(option.i18nKey)) {
+  // If i18nKey doesn't contain dots, it's already readable (e.g., "Interior", "Exterior")
+  if (option.i18nKey && !option.i18nKey.includes('.')) {
+    return option.i18nKey;
+  }
+  
+  // If starts with capital letter, it's likely readable
+  if (option.i18nKey && /^[A-Z]/.test(option.i18nKey)) {
     return option.i18nKey;
   }
   
@@ -85,7 +106,7 @@ export function transformPackToQuestions(questions: QuestionDef[]): AIQuestion[]
         type = 'textarea';
     }
     
-    // Get readable question text using smart fallback
+    // Get readable question text using smart fallback (aiHint is PRIMARY)
     const questionText = getQuestionText(q);
     
     // Get readable option labels using smart fallback
