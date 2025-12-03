@@ -62,6 +62,13 @@
   "radius": "{{radius}}km radius",
   "verifiedPros": "Verified Pros",
   "avgRating": "Avg Rating",
+  "allCategories": "All Categories",
+  "mainServices": "Main Services",
+  "specialistServices": "Specialist Services",
+  "category": "Category",
+  "location": "Location",
+  "enterCityOrArea": "Enter city or area",
+  "budget": "Budget",
   "categories": {
     "carpentry": "Carpentry",
     "electrical": "Electrical",
@@ -86,7 +93,13 @@
     "gardeningLandscaping": "Gardening & Landscaping",
     "poolSpa": "Pool & Spa",
     "architectsDesign": "Architects & Design",
-    "paintingDecorating": "Painting & Decorating"
+    "paintingDecorating": "Painting & Decorating",
+    "transportLogistics": "Transport & Logistics",
+    "kitchenBathroom": "Kitchen & Bathroom",
+    "floorsDoorsWindows": "Floors, Doors & Windows",
+    "commercialIndustrial": "Commercial & Industrial",
+    "legalRegulatory": "Legal & Regulatory",
+    "handymanGeneral": "Handyman & General Services"
   },
   "pricing": {
     "perSquareMeter": "Price per square meter",

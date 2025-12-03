@@ -33,7 +33,9 @@ interface DiscoveryServiceCardProps {
     professional_id: string;
     service_id: string;
     name: string;
+    name_es?: string | null;
     description: string | null;
+    description_es?: string | null;
     base_price: number;
     pricing_type: 'fixed' | 'per_hour' | 'per_unit' | 'per_square_meter' | 'per_project' | 'range' | 'quote_required';
     unit_type: string;
@@ -52,9 +54,14 @@ interface DiscoveryServiceCardProps {
 }
 
 export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCardProps) => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
+  const isSpanish = i18n.language?.startsWith('es');
+  
+  // Get localized content
+  const localizedName = isSpanish && item.name_es ? item.name_es : item.name;
+  const localizedDescription = isSpanish && item.description_es ? item.description_es : item.description;
 
   // Map database categories to translation keys
   const getCategoryDisplayName = (): string => {
@@ -311,7 +318,7 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
       <div className="p-3 flex flex-col flex-grow">
         {/* Service Name - Fixed 2 Lines */}
         <h3 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition-colors min-h-[3rem]">
-          {item.name}
+          {localizedName}
         </h3>
 
         {/* Professional & Quick Stats - Compact Single Row */}
@@ -345,9 +352,9 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
         </div>
 
         {/* Description - Optional, 2 Lines Max */}
-        {item.description && (
+        {localizedDescription && (
           <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-            {item.description}
+            {localizedDescription}
           </p>
         )}
 

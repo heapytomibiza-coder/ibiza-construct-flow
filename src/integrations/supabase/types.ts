@@ -5753,9 +5753,11 @@ export type Database = {
           category: string | null
           created_at: string | null
           description: string | null
+          description_es: string | null
           id: string
           matchers: string[] | null
           name: string
+          name_es: string | null
           slug: string
           trade: string | null
           updated_at: string | null
@@ -5764,9 +5766,11 @@ export type Database = {
           category?: string | null
           created_at?: string | null
           description?: string | null
+          description_es?: string | null
           id?: string
           matchers?: string[] | null
           name: string
+          name_es?: string | null
           slug: string
           trade?: string | null
           updated_at?: string | null
@@ -5775,9 +5779,11 @@ export type Database = {
           category?: string | null
           created_at?: string | null
           description?: string | null
+          description_es?: string | null
           id?: string
           matchers?: string[] | null
           name?: string
+          name_es?: string | null
           slug?: string
           trade?: string | null
           updated_at?: string | null
@@ -8576,21 +8582,25 @@ export type Database = {
           category: string
           created_at: string
           description: string | null
+          description_es: string | null
           difficulty_level: string | null
           display_order: number | null
           estimated_duration_minutes: number | null
           featured_image: string | null
           gallery_images: Json | null
           group_name: string | null
+          group_name_es: string | null
           id: string
           image_alt_text: string | null
           is_active: boolean | null
           is_featured: boolean | null
           long_description: string | null
+          long_description_es: string | null
           max_quantity: number | null
           micro: string | null
           min_quantity: number | null
           name: string
+          name_es: string | null
           portfolio_images: string[] | null
           pricing_type: string
           primary_image_url: string | null
@@ -8611,21 +8621,25 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          description_es?: string | null
           difficulty_level?: string | null
           display_order?: number | null
           estimated_duration_minutes?: number | null
           featured_image?: string | null
           gallery_images?: Json | null
           group_name?: string | null
+          group_name_es?: string | null
           id?: string
           image_alt_text?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
           long_description?: string | null
+          long_description_es?: string | null
           max_quantity?: number | null
           micro?: string | null
           min_quantity?: number | null
           name: string
+          name_es?: string | null
           portfolio_images?: string[] | null
           pricing_type?: string
           primary_image_url?: string | null
@@ -8646,21 +8660,25 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          description_es?: string | null
           difficulty_level?: string | null
           display_order?: number | null
           estimated_duration_minutes?: number | null
           featured_image?: string | null
           gallery_images?: Json | null
           group_name?: string | null
+          group_name_es?: string | null
           id?: string
           image_alt_text?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
           long_description?: string | null
+          long_description_es?: string | null
           max_quantity?: number | null
           micro?: string | null
           min_quantity?: number | null
           name?: string
+          name_es?: string | null
           portfolio_images?: string[] | null
           pricing_type?: string
           primary_image_url?: string | null
@@ -11005,6 +11023,7 @@ export type Database = {
           category_group: string | null
           created_at: string | null
           description: string | null
+          description_es: string | null
           display_order: number | null
           examples: string[] | null
           icon_emoji: string | null
@@ -11014,6 +11033,7 @@ export type Database = {
           is_featured: boolean | null
           metadata: Json | null
           name: string
+          name_es: string | null
           slug: string
           updated_at: string | null
         }
@@ -11021,6 +11041,7 @@ export type Database = {
           category_group?: string | null
           created_at?: string | null
           description?: string | null
+          description_es?: string | null
           display_order?: number | null
           examples?: string[] | null
           icon_emoji?: string | null
@@ -11030,6 +11051,7 @@ export type Database = {
           is_featured?: boolean | null
           metadata?: Json | null
           name: string
+          name_es?: string | null
           slug: string
           updated_at?: string | null
         }
@@ -11037,6 +11059,7 @@ export type Database = {
           category_group?: string | null
           created_at?: string | null
           description?: string | null
+          description_es?: string | null
           display_order?: number | null
           examples?: string[] | null
           icon_emoji?: string | null
@@ -11046,6 +11069,7 @@ export type Database = {
           is_featured?: boolean | null
           metadata?: Json | null
           name?: string
+          name_es?: string | null
           slug?: string
           updated_at?: string | null
         }
@@ -11283,12 +11307,14 @@ export type Database = {
           category_id: string
           created_at: string | null
           description: string | null
+          description_es: string | null
           display_order: number | null
           icon_emoji: string | null
           icon_name: string | null
           id: string
           is_active: boolean | null
           name: string
+          name_es: string | null
           slug: string
           updated_at: string | null
         }
@@ -11296,12 +11322,14 @@ export type Database = {
           category_id: string
           created_at?: string | null
           description?: string | null
+          description_es?: string | null
           display_order?: number | null
           icon_emoji?: string | null
           icon_name?: string | null
           id?: string
           is_active?: boolean | null
           name: string
+          name_es?: string | null
           slug: string
           updated_at?: string | null
         }
@@ -11309,12 +11337,14 @@ export type Database = {
           category_id?: string
           created_at?: string | null
           description?: string | null
+          description_es?: string | null
           display_order?: number | null
           icon_emoji?: string | null
           icon_name?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
+          name_es?: string | null
           slug?: string
           updated_at?: string | null
         }

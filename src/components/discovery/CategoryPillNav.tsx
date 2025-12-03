@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface CategoryPillNavProps {
   selectedCategory: string | null;
@@ -12,6 +13,7 @@ interface CategoryPillNavProps {
 interface ServiceCategory {
   id: string;
   name: string;
+  name_es: string | null;
   slug: string;
   icon_emoji: string;
   category_group: string;
@@ -22,13 +24,16 @@ export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
   selectedCategory,
   onSelectCategory,
 }) => {
+  const { t, i18n } = useTranslation('common');
+  const isSpanish = i18n.language?.startsWith('es');
+
   // Fetch categories from database
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ['service-categories-nav'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('service_categories')
-        .select('id, name, slug, icon_emoji, category_group, is_featured')
+        .select('id, name, name_es, slug, icon_emoji, category_group, is_featured')
         .eq('is_active', true)
         .order('display_order');
       
@@ -36,6 +41,11 @@ export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
       return (data || []) as ServiceCategory[];
     }
   });
+
+  // Get localized category name
+  const getLocalizedName = (category: ServiceCategory) => {
+    return isSpanish && category.name_es ? category.name_es : category.name;
+  };
 
   // Group categories
   const mainServices = categories.filter(c => 
@@ -63,7 +73,7 @@ export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
         onClick={() => onSelectCategory(isSelected ? null : category.name)}
       >
         <span className="text-base mr-1.5">{category.icon_emoji}</span>
-        {category.name}
+        {getLocalizedName(category)}
       </Badge>
     );
   };
@@ -95,7 +105,7 @@ export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
           )}
           onClick={() => onSelectCategory(null)}
         >
-          All Categories
+          {t('allCategories', 'All Categories')}
         </Badge>
       </div>
 
@@ -103,7 +113,7 @@ export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
       {mainServices.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Main Services
+            {t('mainServices', 'Main Services')}
           </h3>
           <div className="flex flex-wrap gap-2">
             {mainServices.map(renderCategoryPill)}
@@ -115,7 +125,7 @@ export const CategoryPillNav: React.FC<CategoryPillNavProps> = ({
       {specialistServices.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Specialist Services
+            {t('specialistServices', 'Specialist Services')}
           </h3>
           <div className="flex flex-wrap gap-2">
             {specialistServices.map(renderCategoryPill)}

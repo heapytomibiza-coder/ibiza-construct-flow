@@ -62,6 +62,13 @@
   "radius": "{{radius}}km de radio",
   "verifiedPros": "Profesionales Verificados",
   "avgRating": "Valoración Media",
+  "allCategories": "Todas las Categorías",
+  "mainServices": "Servicios Principales",
+  "specialistServices": "Servicios Especializados",
+  "category": "Categoría",
+  "location": "Ubicación",
+  "enterCityOrArea": "Introduce ciudad o área",
+  "budget": "Presupuesto",
   "categories": {
     "carpentry": "Carpintería",
     "electrical": "Electricidad",
@@ -86,7 +93,13 @@
     "gardeningLandscaping": "Jardinería y Paisajismo",
     "poolSpa": "Piscina y Spa",
     "architectsDesign": "Arquitectos y Diseño",
-    "paintingDecorating": "Pintura y Decoración"
+    "paintingDecorating": "Pintura y Decoración",
+    "transportLogistics": "Transporte y Logística",
+    "kitchenBathroom": "Cocina y Baño",
+    "floorsDoorsWindows": "Suelos, Puertas y Ventanas",
+    "commercialIndustrial": "Comercial e Industrial",
+    "legalRegulatory": "Legal y Normativo",
+    "handymanGeneral": "Manitas y Servicios Generales"
   },
   "pricing": {
     "perSquareMeter": "Precio por metro cuadrado",
