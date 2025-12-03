@@ -1,75 +1,78 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-http-backend';
 import { supabase } from '@/integrations/supabase/client';
 
-// Custom language detector that prioritizes Ibiza location
-const IbizaLanguageDetector = {
-  type: 'languageDetector' as const,
-  async: true,
-  detect: async (callback: (lng: string) => void) => {
-    // Check localStorage first
-    const storedLang = localStorage.getItem('i18nextLng');
-    if (storedLang) {
-      callback(storedLang);
-      return;
-    }
+// Import all translations directly (bundled for reliability)
+import enCommon from '../../public/locales/en/common.json';
+import enPages from '../../public/locales/en/pages.json';
+import enNavigation from '../../public/locales/en/navigation.json';
+import enServices from '../../public/locales/en/services.json';
+import enAuth from '../../public/locales/en/auth.json';
+import enDashboard from '../../public/locales/en/dashboard.json';
+import enHero from '../../public/locales/en/hero.json';
+import enComponents from '../../public/locales/en/components.json';
+import enHowItWorks from '../../public/locales/en/howItWorks.json';
+import enFooter from '../../public/locales/en/footer.json';
+import enWizard from '../../public/locales/en/wizard.json';
+import enAdmin from '../../public/locales/en/admin.json';
+import enQuestions from '../../public/locales/en/questions.json';
+import enDiscovery from '../../public/locales/en/discovery.json';
+import enHome from '../../public/locales/en/home.json';
 
-    // Try to detect Ibiza location through various means
-    try {
-      // Check timezone
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (timezone === 'Europe/Madrid' || timezone === 'Atlantic/Canary') {
-        callback('es');
-        return;
-      }
+import esCommon from '../../public/locales/es/common.json';
+import esPages from '../../public/locales/es/pages.json';
+import esNavigation from '../../public/locales/es/navigation.json';
+import esServices from '../../public/locales/es/services.json';
+import esAuth from '../../public/locales/es/auth.json';
+import esDashboard from '../../public/locales/es/dashboard.json';
+import esHero from '../../public/locales/es/hero.json';
+import esComponents from '../../public/locales/es/components.json';
+import esHowItWorks from '../../public/locales/es/howItWorks.json';
+import esFooter from '../../public/locales/es/footer.json';
+import esWizard from '../../public/locales/es/wizard.json';
+import esAdmin from '../../public/locales/es/admin.json';
+import esQuestions from '../../public/locales/es/questions.json';
+import esDiscovery from '../../public/locales/es/discovery.json';
+import esHome from '../../public/locales/es/home.json';
 
-      // Check geolocation if available (with permission)
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            // Ibiza coordinates: ~38.9°N, 1.4°E
-            // Check if within Balearic Islands region
-            if (latitude > 38.5 && latitude < 40 && longitude > 1 && longitude < 4) {
-              callback('es');
-              localStorage.setItem('i18nextLng', 'es');
-            } else {
-              callback('en');
-            }
-          },
-          () => {
-            // Geolocation failed, fallback to browser language
-            const browserLang = navigator.language.split('-')[0];
-            callback(browserLang === 'es' ? 'es' : 'en');
-          },
-          { timeout: 5000 }
-        );
-        return;
-      }
-    } catch (error) {
-      console.log('Location detection failed, using default');
-    }
+import deCommon from '../../public/locales/de/common.json';
+import dePages from '../../public/locales/de/pages.json';
+import deNavigation from '../../public/locales/de/navigation.json';
+import deServices from '../../public/locales/de/services.json';
+import deAuth from '../../public/locales/de/auth.json';
+import deDashboard from '../../public/locales/de/dashboard.json';
+import deHero from '../../public/locales/de/hero.json';
+import deComponents from '../../public/locales/de/components.json';
+import deHowItWorks from '../../public/locales/de/howItWorks.json';
+import deFooter from '../../public/locales/de/footer.json';
+import deWizard from '../../public/locales/de/wizard.json';
+import deAdmin from '../../public/locales/de/admin.json';
+import deQuestions from '../../public/locales/de/questions.json';
+import deDiscovery from '../../public/locales/de/discovery.json';
+import deHome from '../../public/locales/de/home.json';
 
-    // Fallback to browser language
-    const browserLang = navigator.language.split('-')[0];
-    callback(['es', 'de', 'fr'].includes(browserLang) ? browserLang : 'en');
-  },
-  init: () => {},
-  cacheUserLanguage: (lng: string) => {
-    localStorage.setItem('i18nextLng', lng);
-    // Save to user profile if authenticated
-    saveLanguageToProfile(lng);
-  },
-};
+import frCommon from '../../public/locales/fr/common.json';
+import frPages from '../../public/locales/fr/pages.json';
+import frNavigation from '../../public/locales/fr/navigation.json';
+import frServices from '../../public/locales/fr/services.json';
+import frAuth from '../../public/locales/fr/auth.json';
+import frDashboard from '../../public/locales/fr/dashboard.json';
+import frHero from '../../public/locales/fr/hero.json';
+import frComponents from '../../public/locales/fr/components.json';
+import frHowItWorks from '../../public/locales/fr/howItWorks.json';
+import frFooter from '../../public/locales/fr/footer.json';
+import frWizard from '../../public/locales/fr/wizard.json';
+import frAdmin from '../../public/locales/fr/admin.json';
+import frQuestions from '../../public/locales/fr/questions.json';
+import frDiscovery from '../../public/locales/fr/discovery.json';
+import frHome from '../../public/locales/fr/home.json';
 
 // Save language preference to user profile
 const saveLanguageToProfile = async (language: string) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // Get current preferences first
       const { data: profile } = await supabase
         .from('profiles')
         .select('preferences')
@@ -91,12 +94,78 @@ const saveLanguageToProfile = async (language: string) => {
 };
 
 i18n
-  .use(Backend)
-  .use(IbizaLanguageDetector as any)
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    resources: {
+      en: {
+        common: enCommon,
+        pages: enPages,
+        navigation: enNavigation,
+        services: enServices,
+        auth: enAuth,
+        dashboard: enDashboard,
+        hero: enHero,
+        components: enComponents,
+        howItWorks: enHowItWorks,
+        footer: enFooter,
+        wizard: enWizard,
+        admin: enAdmin,
+        questions: enQuestions,
+        discovery: enDiscovery,
+        home: enHome,
+      },
+      es: {
+        common: esCommon,
+        pages: esPages,
+        navigation: esNavigation,
+        services: esServices,
+        auth: esAuth,
+        dashboard: esDashboard,
+        hero: esHero,
+        components: esComponents,
+        howItWorks: esHowItWorks,
+        footer: esFooter,
+        wizard: esWizard,
+        admin: esAdmin,
+        questions: esQuestions,
+        discovery: esDiscovery,
+        home: esHome,
+      },
+      de: {
+        common: deCommon,
+        pages: dePages,
+        navigation: deNavigation,
+        services: deServices,
+        auth: deAuth,
+        dashboard: deDashboard,
+        hero: deHero,
+        components: deComponents,
+        howItWorks: deHowItWorks,
+        footer: deFooter,
+        wizard: deWizard,
+        admin: deAdmin,
+        questions: deQuestions,
+        discovery: deDiscovery,
+        home: deHome,
+      },
+      fr: {
+        common: frCommon,
+        pages: frPages,
+        navigation: frNavigation,
+        services: frServices,
+        auth: frAuth,
+        dashboard: frDashboard,
+        hero: frHero,
+        components: frComponents,
+        howItWorks: frHowItWorks,
+        footer: frFooter,
+        wizard: frWizard,
+        admin: frAdmin,
+        questions: frQuestions,
+        discovery: frDiscovery,
+        home: frHome,
+      },
     },
     fallbackLng: 'en',
     supportedLngs: ['en', 'es', 'de', 'fr'],
@@ -106,19 +175,27 @@ i18n
       escapeValue: false 
     },
     detection: {
-      order: ['querystring', 'localStorage', 'navigator'],
+      order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
-      lookupQuerystring: 'lang',
+      lookupLocalStorage: 'i18nextLng',
     },
     react: { 
-      useSuspense: false 
+      useSuspense: false,
+      bindI18n: 'languageChanged',
+      bindI18nStore: 'added removed',
     },
   });
+
+// Update cache and document when language changes
+i18n.on('languageChanged', (lng) => {
+  localStorage.setItem('i18nextLng', lng);
+  document.documentElement.lang = lng;
+  saveLanguageToProfile(lng);
+});
 
 // Load user's language preference from profile on app start
 supabase.auth.onAuthStateChange((event, session) => {
   if (session?.user) {
-    // Defer profile fetch to prevent blocking critical auth flow
     setTimeout(async () => {
       try {
         const { data: profile } = await supabase

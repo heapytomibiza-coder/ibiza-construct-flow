@@ -1,0 +1,11 @@
+{
+  "steps": {
+    "category": { "title": "De quel type de travail avez-vous besoin?" },
+    "subcategory": { "title": "Quel service spécifique?" },
+    "details": { "title": "Détails du travail", "continue": "Continuer", "back": "Retour" },
+    "review": { "title": "Vérifiez votre annonce", "postJob": "Publier" }
+  },
+  "navigation": {
+    "progressLabels": { "category": "Catégorie", "service": "Service", "details": "Détails", "review": "Vérification" }
+  }
+}

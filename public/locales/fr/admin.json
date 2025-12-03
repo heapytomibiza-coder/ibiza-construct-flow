@@ -1,0 +1,9 @@
+{
+  "serviceCatalogue": {
+    "title": "Catalogue de services",
+    "addService": "Ajouter un service",
+    "tabs": { "allServices": "Tous les services", "categories": "Catégories" }
+  },
+  "testRunner": { "title": "Exécuteur de tests" },
+  "featureFlags": { "title": "Gestionnaire de fonctionnalités" }
+}

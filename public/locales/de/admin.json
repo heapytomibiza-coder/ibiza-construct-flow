@@ -1,0 +1,57 @@
+{
+  "serviceCatalogue": {
+    "title": "Dienstkatalog",
+    "subtitle": "Dienstleistungsangebote und Preise verwalten",
+    "addService": "Dienst hinzufügen",
+    "stats": {
+      "totalServices": "Dienste gesamt",
+      "active": "Aktiv",
+      "totalBookings": "Buchungen gesamt",
+      "avgRating": "Durchschn. Bewertung",
+      "totalRevenue": "Umsatz gesamt",
+      "topCategory": "Top-Kategorie"
+    },
+    "tabs": {
+      "allServices": "Alle Dienste",
+      "categories": "Kategorien",
+      "pricingAnalysis": "Preisanalyse",
+      "performance": "Leistung"
+    },
+    "search": "Dienste suchen...",
+    "allCategories": "Alle Kategorien",
+    "versions": {
+      "title": "Dienstversionen",
+      "version": "Version",
+      "published": "Veröffentlicht",
+      "approved": "Genehmigt",
+      "draft": "Entwurf",
+      "approve": "Genehmigen",
+      "publish": "Veröffentlichen",
+      "created": "Erstellt",
+      "viewJson": "JSON anzeigen"
+    },
+    "messages": {
+      "approveSuccess": "Fragen erfolgreich genehmigt",
+      "approveFailed": "Genehmigung fehlgeschlagen",
+      "publishSuccess": "Version erfolgreich veröffentlicht",
+      "publishFailed": "Veröffentlichung fehlgeschlagen",
+      "loadFailed": "Dienstdaten konnten nicht geladen werden"
+    }
+  },
+  "testRunner": {
+    "title": "System-Testläufer",
+    "runTests": "Testplan ausführen",
+    "running": "Umfassende Tests werden ausgeführt...",
+    "testOutput": "Testausgabe",
+    "testResults": "Testergebnisse",
+    "i18nTests": "i18n + KI Tests"
+  },
+  "featureFlags": {
+    "title": "Feature-Flags-Manager",
+    "active": "Aktiv",
+    "loading": "Feature-Flags werden geladen...",
+    "enableSuccess": "Feature aktiviert",
+    "disableSuccess": "Feature deaktiviert",
+    "updateFailed": "Feature-Flag konnte nicht aktualisiert werden"
+  }
+}

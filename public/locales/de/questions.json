@@ -1,0 +1,25 @@
+{
+  "room-painting": {
+    "q1": {
+      "title": "Welche Art von Raum muss gestrichen werden?"
+    },
+    "q2": {
+      "title": "Wie groß ist der Raum?"
+    },
+    "q3": {
+      "title": "Welche Oberflächen müssen gestrichen werden?"
+    },
+    "q4": {
+      "title": "In welchem Zustand sind die Oberflächen?"
+    },
+    "q5": {
+      "title": "Haben Sie bereits Farben ausgewählt?"
+    },
+    "q6": {
+      "title": "Wer liefert die Farbe?"
+    },
+    "q7": {
+      "title": "Gibt es Zugangsprobleme?"
+    }
+  }
+}

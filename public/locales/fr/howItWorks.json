@@ -1,0 +1,13 @@
+{
+  "title": "Comment ça marche",
+  "subtitle": "Trois étapes simples pour vous connecter avec les meilleurs professionnels d'Ibiza",
+  "steps": {
+    "describe": { "title": "Décrivez votre projet" },
+    "match": { "title": "Comparez et choisissez" },
+    "work": { "title": "Travaillez en toute sécurité" }
+  },
+  "cta": {
+    "title": "Prêt à commencer?",
+    "button": "Publier votre projet"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "services": {
+    "title": "Aucun travail trop petit,",
+    "titleHighlight": "Aucun rêve trop grand",
+    "popular": "Populaire",
+    "ctaButton": "Obtenir un devis"
+  },
+  "benefits": {
+    "fastTrustedHelp": { "title": "Aide rapide et fiable" },
+    "protectedPayments": { "title": "Paiements protégés" },
+    "clearPricing": { "title": "Prix transparents" },
+    "localExperts": { "title": "Experts locaux" }
+  },
+  "featuredServices": {
+    "title": "Services populaires",
+    "viewAllServices": "Voir tous les services"
+  }
+}
