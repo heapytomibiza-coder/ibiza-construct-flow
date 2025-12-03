@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "title": "CS Ibiza - Professional Construction & Renovation Services in Ibiza",
+    "description": "Connect with verified construction professionals in Ibiza. Get instant quotes for renovations, repairs, and building projects. Trusted by homeowners and businesses."
+  },
+  "professionalRegistration": {
+    "title": "Professional Registration",
+    "step1": "Step 1: Registration",
+    "step1Desc": "Sign up as a professional",
+    "step2": "Step 2: Verification",
+    "step2Desc": "Upload documents",
+    "step3": "Step 3: Services",
+    "step3Desc": "Configure your offerings"
+  }
+}

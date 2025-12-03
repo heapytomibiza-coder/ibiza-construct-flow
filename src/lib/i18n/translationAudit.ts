@@ -89,7 +89,7 @@ export function getTranslationAuditReport(): {
   const namespaces = [
     'common', 'navigation', 'services', 'auth', 'dashboard', 
     'hero', 'components', 'howItWorks', 'footer', 'pages', 
-    'wizard', 'admin', 'questions'
+    'wizard', 'admin', 'questions', 'discovery', 'home'
   ];
 
   const results = namespaces.map(ns => {
