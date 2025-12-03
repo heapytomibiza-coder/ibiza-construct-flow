@@ -87,7 +87,24 @@ export const ReviewAnswersList: React.FC<ReviewAnswersListProps> = ({
       return 'photo'; // Signal to render as image
     }
     
+    // Handle Date objects BEFORE general object check
+    if (answer instanceof Date) {
+      if (isValid(answer)) {
+        return format(answer, 'MMMM d, yyyy');
+      }
+      return String(answer);
+    }
+    
+    // Handle other objects (but not Dates)
     if (typeof answer === 'object') {
+      // Try to detect if it's a date-like object
+      if (answer.toISOString) {
+        try {
+          return format(new Date(answer), 'MMMM d, yyyy');
+        } catch {
+          return JSON.stringify(answer);
+        }
+      }
       return JSON.stringify(answer);
     }
     
