@@ -56,53 +56,53 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
 
-  // Map database categories to display-friendly names
+  // Map database categories to translation keys
   const getCategoryDisplayName = (): string => {
     const categoryLower = item.category?.toLowerCase() || '';
     
-    const categoryNameMap: Record<string, string> = {
-      'carpentry': 'Carpentry',
-      'carpentry-woodwork': 'Carpentry',
-      'electricity-lighting': 'Electrical',
-      'electrical': 'Electrical',
-      'plumbing': 'Plumbing',
-      'security-systems': 'Security',
-      'domotics-sonorisation': 'Smart Home',
-      'metalwork': 'Metalwork',
-      'labor': 'General Labor',
-      'masonry': 'Masonry',
-      'proveedores': 'Suppliers',
-      'building': 'Construction',
-      'construction': 'Construction',
-      'air-conditioning': 'HVAC',
-      'hvac': 'HVAC',
-      'painting': 'Painting',
-      'landscaping': 'Landscaping',
-      'flooring': 'Flooring',
-      'cleaning': 'Cleaning',
-      'pool': 'Pool Services',
-      'handyman': 'Handyman',
-      'architecture': 'Architecture',
-      'property': 'Property',
-      'bathroom': 'Bathroom',
+    const categoryKeyMap: Record<string, string> = {
+      'carpentry': 'carpentry',
+      'carpentry-woodwork': 'carpentry',
+      'electricity-lighting': 'electrical',
+      'electrical': 'electrical',
+      'plumbing': 'plumbing',
+      'security-systems': 'security',
+      'domotics-sonorisation': 'smartHome',
+      'metalwork': 'metalwork',
+      'labor': 'generalLabor',
+      'masonry': 'masonry',
+      'proveedores': 'suppliers',
+      'building': 'construction',
+      'construction': 'construction',
+      'air-conditioning': 'hvac',
+      'hvac': 'hvac',
+      'painting': 'painting',
+      'landscaping': 'landscaping',
+      'flooring': 'flooring',
+      'cleaning': 'cleaning',
+      'pool': 'poolServices',
+      'handyman': 'handyman',
+      'architecture': 'architecture',
+      'property': 'property',
+      'bathroom': 'bathroom',
     };
 
     // Try exact match first
-    if (categoryNameMap[categoryLower]) {
-      return categoryNameMap[categoryLower];
+    if (categoryKeyMap[categoryLower]) {
+      return t(`categories.${categoryKeyMap[categoryLower]}`);
     }
 
     // Try partial match
-    for (const [key, displayName] of Object.entries(categoryNameMap)) {
+    for (const [key, translationKey] of Object.entries(categoryKeyMap)) {
       if (categoryLower.includes(key) || key.includes(categoryLower)) {
-        return displayName;
+        return t(`categories.${translationKey}`);
       }
     }
     
     // Fallback to original category with capitalization
     return item.category?.split('-').map(word => 
       word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ') || 'Service';
+    ).join(' ') || t('service');
   };
 
   const formatPrice = () => {
@@ -130,18 +130,18 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
   };
 
   const getPricingExplanation = () => {
-    if (item.pricing_type === 'per_square_meter') return 'Price per square meter';
+    if (item.pricing_type === 'per_square_meter') return t('pricing.perSquareMeter');
     if (item.pricing_type === 'per_unit') {
-      if (item.unit_type === 'set') return 'Price per complete set';
-      if (item.unit_type === 'sqm') return 'Price per square meter';
-      return 'Price per unit';
+      if (item.unit_type === 'set') return t('pricing.perSet');
+      if (item.unit_type === 'sqm') return t('pricing.perSquareMeter');
+      return t('pricing.perUnit');
     }
-    if (item.pricing_type === 'per_project') return 'Total project price';
-    if (item.pricing_type === 'fixed') return 'Fixed price';
-    if (item.pricing_type === 'per_hour') return 'Hourly rate';
-    if (item.pricing_type === 'range') return 'Starting from this price';
-    if (item.pricing_type === 'quote_required' || item.base_price <= 0) return 'Custom quote required';
-    return 'Contact for pricing';
+    if (item.pricing_type === 'per_project') return t('pricing.perProject');
+    if (item.pricing_type === 'fixed') return t('pricing.fixed');
+    if (item.pricing_type === 'per_hour') return t('pricing.perHour');
+    if (item.pricing_type === 'range') return t('pricing.startingFrom');
+    if (item.pricing_type === 'quote_required' || item.base_price <= 0) return t('pricing.quoteRequired');
+    return t('pricing.contactForPricing');
   };
 
   const getCategoryImage = (): string | null => {
