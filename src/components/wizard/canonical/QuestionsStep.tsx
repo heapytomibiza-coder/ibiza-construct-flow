@@ -292,10 +292,19 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     }
     
     return microDef.questions.map((q: any, index: number) => {
-      const questionText = q.label || q.question || q.title || 
-        (q.key ? `${humanizeKey(q.key)}?` : null) ||
-        q.aiHint || 
-        `Question ${index + 1}`;
+      // Try i18n translation first if i18nKey exists
+      let questionText = q.label || q.question || q.title;
+      if (!questionText && q.i18nKey) {
+        const translated = t(`questions:${q.i18nKey}`, { defaultValue: '' });
+        if (translated && translated !== q.i18nKey) {
+          questionText = translated;
+        }
+      }
+      if (!questionText) {
+        questionText = (q.key ? `${humanizeKey(q.key)}?` : null) ||
+          q.aiHint || 
+          `Question ${index + 1}`;
+      }
       const questionId = q.key || q.id || `q${index}`;
       
       return {
@@ -304,9 +313,17 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         label: questionText,
         required: q.required ?? false,
         options: q.options?.map((opt: any) => {
-          const optLabel = opt.label || 
-            (opt.value ? humanizeKey(opt.value) : null) ||
-            String(opt);
+          // Try i18n for option labels
+          let optLabel = opt.label;
+          if (!optLabel && opt.i18nKey) {
+            const translatedOpt = t(`questions:${opt.i18nKey}`, { defaultValue: '' });
+            if (translatedOpt && translatedOpt !== opt.i18nKey) {
+              optLabel = translatedOpt;
+            }
+          }
+          if (!optLabel) {
+            optLabel = (opt.value ? humanizeKey(opt.value) : null) || String(opt);
+          }
           return {
             label: optLabel,
             value: opt.value || opt.i18nKey || optLabel,

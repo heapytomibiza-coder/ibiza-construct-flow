@@ -100,7 +100,7 @@ i18n
     },
     fallbackLng: 'en',
     supportedLngs: ['en', 'es', 'de', 'fr'],
-    ns: ['common', 'navigation', 'services', 'auth', 'dashboard', 'hero', 'components', 'howItWorks', 'footer', 'pages', 'wizard', 'admin'],
+    ns: ['common', 'navigation', 'services', 'auth', 'dashboard', 'hero', 'components', 'howItWorks', 'footer', 'pages', 'wizard', 'admin', 'questions'],
     defaultNS: 'common',
     interpolation: { 
       escapeValue: false 
