@@ -115,15 +115,14 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
     // Handle actual database values
     if (item.pricing_type === 'per_square_meter') return '/m²';
     if (item.pricing_type === 'per_unit') {
-      // Use unit_type for context
       if (item.unit_type === 'sqm') return '/m²';
-      if (item.unit_type === 'set') return '/set';
-      if (item.unit_type === 'item') return '/unit';
-      return '/unit';
+      if (item.unit_type === 'set') return `/${t('units.set')}`;
+      if (item.unit_type === 'item') return `/${t('units.unit')}`;
+      return `/${t('units.unit')}`;
     }
-    if (item.pricing_type === 'per_project') return '/project';
+    if (item.pricing_type === 'per_project') return `/${t('units.project')}`;
     if (item.pricing_type === 'fixed') return '';
-    if (item.pricing_type === 'per_hour') return '/hour';
+    if (item.pricing_type === 'per_hour') return `/${t('units.hour')}`;
     if (item.pricing_type === 'range') return '+';
     if (item.pricing_type === 'quote_required' || item.base_price <= 0) return '+';
     return '';
