@@ -1,4 +1,9 @@
 {
+  "quickLinks": "Enlaces Rápidos",
+  "help": "Ayuda",
+  "start": "Inicio",
+  "complete": "completado",
+  "services": "servicios",
   "appName": "TM Direct Ibiza",
   "services": "Servicios",
   "professionals": "Profesionales",

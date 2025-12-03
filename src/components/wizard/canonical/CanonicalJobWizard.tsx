@@ -17,7 +17,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { WizardHeader } from './WizardHeader';
 
 import { CategorySelector } from '@/components/wizard/db-powered/CategorySelector';
 import { SubcategorySelector } from '@/components/wizard/db-powered/SubcategorySelector';
@@ -26,7 +26,6 @@ import { QuestionsStep } from './QuestionsStep';
 import { LogisticsStep } from './LogisticsStep';
 import { ExtrasStep } from './ExtrasStep';
 import { ReviewStep } from './ReviewStep';
-import { StepProgressDots } from './StepProgressDots';
 import { DraftRecoveryModal } from './DraftRecoveryModal';
 
 interface WizardState {
@@ -697,6 +696,23 @@ export const CanonicalJobWizard: React.FC = () => {
     }
   };
 
+  // Helper to check if user can navigate to a step
+  const canNavigateToStep = useCallback((step: number): boolean => {
+    if (step >= currentStep) return false; // Can't jump forward
+    if (step < 1) return false;
+    
+    // Can always go back to completed steps
+    return step < currentStep;
+  }, [currentStep]);
+
+  // Handler for clicking on step pills
+  const handleStepNavigation = useCallback((step: number) => {
+    if (canNavigateToStep(step)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setCurrentStep(step);
+    }
+  }, [canNavigateToStep]);
+
   return (
     <>
       {/* Draft Recovery Modal */}
@@ -708,28 +724,20 @@ export const CanonicalJobWizard: React.FC = () => {
       />
 
       <div id="job-wizard-root" className="h-screen bg-gradient-to-b from-sage-muted-light via-background to-sage-muted/30 overflow-hidden flex flex-col">
-        {/* Header with Progress */}
-        <div className="bg-white/90 backdrop-blur-md border-b border-sage-muted/40 z-40 shadow-sm flex-shrink-0">
-          <div className="container mx-auto px-4 py-3">
-            <Breadcrumbs 
-              items={[
-                { label: 'Dashboard', href: '/dashboard/client' },
-                { label: 'Post Job' }
-              ]}
-              className="mb-2"
-            />
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-semibold text-sage-deep">Post a Job</h2>
-              <Badge variant="outline" className="text-xs">
-                Step {currentStep} of {TOTAL_STEPS}
-              </Badge>
-            </div>
-            <StepProgressDots
-              currentStep={currentStep}
-              totalSteps={TOTAL_STEPS}
-              stepLabels={STEP_LABELS}
-            />
-          </div>
+        {/* Enhanced Header with Navigation */}
+        <div className="flex-shrink-0">
+          <WizardHeader
+            currentStep={currentStep}
+            totalSteps={TOTAL_STEPS}
+            stepLabels={STEP_LABELS}
+            onStepClick={handleStepNavigation}
+            canNavigateToStep={canNavigateToStep}
+            wizardState={{
+              mainCategory: wizardState.mainCategory,
+              subcategory: wizardState.subcategory,
+              microNames: wizardState.microNames
+            }}
+          />
         </div>
 
         {/* Step Content with Animations */}

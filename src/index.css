@@ -450,6 +450,15 @@ All colors MUST be HSL. Premium construction platform aesthetic.
 }
 
 @layer utilities {
+  /* Hide scrollbar but keep scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Mobile-first utility classes for safe areas */
   .safe-top {
     padding-top: var(--safe-area-inset-top);
