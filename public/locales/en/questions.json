@@ -1,0 +1,31 @@
+{
+  "room-painting": {
+    "q1": {
+      "title": "What type of room needs painting?"
+    },
+    "q2": {
+      "title": "What size is the room?"
+    },
+    "q3": {
+      "title": "What surfaces need painting?"
+    },
+    "q4": {
+      "title": "What condition are the surfaces in?"
+    },
+    "q5": {
+      "title": "Have you chosen colours yet?"
+    },
+    "q6": {
+      "title": "Who will supply the paint?"
+    },
+    "q7": {
+      "title": "Are there any access issues?"
+    },
+    "q8": {
+      "title": "When do you need this completed?"
+    },
+    "q9": {
+      "title": "Any additional details?"
+    }
+  }
+}
