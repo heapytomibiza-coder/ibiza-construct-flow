@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -8,22 +9,23 @@ interface PopularServicesSectionProps {
 }
 
 export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: PopularServicesSectionProps) => {
+  const { t } = useTranslation('common');
   const [isExpanded, setIsExpanded] = useState(false);
 
   const servicesSuggestions = [
-    { emoji: '🚰', label: 'Sink Repair', term: 'sink repair' },
-    { emoji: '🔌', label: 'Outlet Installation', term: 'outlet installation' },
-    { emoji: '🎨', label: 'Room Painting', term: 'room painting' },
-    { emoji: '🚪', label: 'Door Hanging', term: 'door hanging' },
-    { emoji: '🪵', label: 'Fence Building', term: 'fence building' },
+    { emoji: '🚰', labelKey: 'suggestions.sinkRepair', term: 'sink repair' },
+    { emoji: '🔌', labelKey: 'suggestions.outletInstallation', term: 'outlet installation' },
+    { emoji: '🎨', labelKey: 'suggestions.roomPainting', term: 'room painting' },
+    { emoji: '🚪', labelKey: 'suggestions.doorHanging', term: 'door hanging' },
+    { emoji: '🪵', labelKey: 'suggestions.fenceBuilding', term: 'fence building' },
   ];
 
   const professionalsSuggestions = [
-    { emoji: '⚡', label: 'Electrician', term: 'electrician' },
-    { emoji: '🔧', label: 'Plumber', term: 'plumber' },
-    { emoji: '🪚', label: 'Carpenter', term: 'carpenter' },
-    { emoji: '🎨', label: 'Painter', term: 'painter' },
-    { emoji: '🌿', label: 'Landscaper', term: 'landscaper' },
+    { emoji: '⚡', labelKey: 'suggestions.electrician', term: 'electrician' },
+    { emoji: '🔧', labelKey: 'suggestions.plumber', term: 'plumber' },
+    { emoji: '🪚', labelKey: 'suggestions.carpenter', term: 'carpenter' },
+    { emoji: '🎨', labelKey: 'suggestions.painter', term: 'painter' },
+    { emoji: '🌿', labelKey: 'suggestions.landscaper', term: 'landscaper' },
   ];
 
   const suggestions = viewMode === 'services' ? servicesSuggestions : professionalsSuggestions;
@@ -38,7 +40,7 @@ export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: Popular
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary" />
           <span className="font-semibold text-sm">
-            {viewMode === 'services' ? 'Popular Services' : 'Popular Trades'}
+            {viewMode === 'services' ? t('popularServices') : t('popularTrades')}
           </span>
         </div>
         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -49,8 +51,8 @@ export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: Popular
         <Sparkles className="h-5 w-5 text-primary" />
         <h3 className="font-semibold">
           {viewMode === 'services' 
-            ? 'Popular Services'
-            : 'Popular Trades'}
+            ? t('popularServices')
+            : t('popularTrades')}
         </h3>
       </div>
 
@@ -58,8 +60,8 @@ export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: Popular
       <div className={`${isExpanded ? 'block' : 'hidden'} lg:block px-4 pb-4 lg:px-6 lg:pb-6`}>
         <p className="text-xs sm:text-sm text-muted-foreground mb-3 hidden lg:block">
           {viewMode === 'services' 
-            ? 'Browse our most requested specific services'
-            : 'Find professionals by their main trade or specialty'}
+            ? t('browsePopularServices')
+            : t('browsePopularTrades')}
         </p>
         
         {/* Mobile: Horizontal Scroll */}
@@ -73,7 +75,7 @@ export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: Popular
               className="flex-shrink-0 snap-start bg-background/80 backdrop-blur"
             >
               <span className="mr-1.5">{item.emoji}</span>
-              {item.label}
+              {t(item.labelKey)}
             </Button>
           ))}
         </div>
@@ -88,7 +90,7 @@ export const PopularServicesSection = ({ viewMode, onSelectSuggestion }: Popular
               onClick={() => onSelectSuggestion(item.term)}
             >
               <span className="mr-1.5">{item.emoji}</span>
-              {item.label}
+              {t(item.labelKey)}
             </Button>
           ))}
         </div>
