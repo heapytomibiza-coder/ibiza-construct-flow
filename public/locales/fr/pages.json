@@ -1,0 +1,85 @@
+{
+  "professionals": {
+    "hero": {
+      "title": "Trouvez des Professionnels de Confiance Près de Chez Vous",
+      "titleHighlight": "Professionnels de Confiance",
+      "subtitle": "Connectez-vous avec des experts locaux vérifiés pour tous vos besoins de services. Travail de qualité, prix compétitifs et service fiable garanti."
+    },
+    "stats": {
+      "verifiedProfessionals": "500+ Pros Vérifiés",
+      "completedProjects": "Projets Terminés", 
+      "averageRating": "4.9 Note Moyenne",
+      "safePayProtection": "Protection SafePay"
+    },
+    "search": {
+      "title": "Trouvez le Bon Professionnel",
+      "placeholder": "Rechercher par nom, compétences ou services...",
+      "specialization": "Spécialisation",
+      "allSpecializations": "Toutes les Spécialisations",
+      "availability": "Disponibilité",
+      "allAvailability": "Toutes les Disponibilités",
+      "available": "Disponible",
+      "busy": "Occupé"
+    },
+    "results": {
+      "title": "Professionnels Disponibles",
+      "found": "professionnels trouvés",
+      "noResults": "Aucun professionnel trouvé correspondant à vos critères.",
+      "clearFilters": "Effacer les Filtres"
+    }
+  },
+  "services": {
+    "hero": {
+      "title": "Services Professionnels à Ibiza",
+      "titleHighlight": "Ibiza",
+      "subtitle": "Des petites réparations aux rénovations complètes, connectez-vous avec des professionnels vérifiés pour tous vos besoins immobiliers"
+    },
+    "specializedCategories": {
+      "title": "Catégories Spécialisées",
+      "subtitle": "Services professionnels et techniques pour des projets complexes nécessitant une expertise spécialisée"
+    },
+    "results": {
+      "title": "Services Disponibles",
+      "noResults": "Aucun service trouvé correspondant à vos critères."
+    },
+    "packages": {
+      "title": "Choisissez Votre Forfait Service",
+      "subtitle": "Sélectionnez le forfait qui correspond le mieux à vos besoins. Tous les forfaits incluent un service professionnel et une garantie de qualité.",
+      "basic": {
+        "name": "Basique",
+        "description": "Réparations essentielles et maintenance"
+      },
+      "standard": {
+        "name": "Standard",
+        "description": "Forfait service complet"
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Solution complète avec extras"
+      }
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Contactez-Nous",
+      "subtitle": "Prenez contact avec notre équipe - nous sommes là pour vous aider avec toutes vos questions"
+    },
+    "form": {
+      "title": "Nous Contacter",
+      "name": "Nom",
+      "namePlaceholder": "Votre nom",
+      "email": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "message": "Message",
+      "messagePlaceholder": "Comment pouvons-nous vous aider?",
+      "submit": "Envoyer le Message"
+    },
+    "info": {
+      "title": "Informations de Contact",
+      "email": "Email",
+      "phone": "Téléphone",
+      "location": "Localisation",
+      "businessHours": "Heures d'Ouverture"
+    }
+  }
+}
