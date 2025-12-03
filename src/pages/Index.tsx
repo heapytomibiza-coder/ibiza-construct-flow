@@ -19,7 +19,7 @@ import { useTour } from '@/components/tours/InteractiveTour';
 import { homepageTourSteps } from '@/config/tours';
 
 const Index = () => {
-  const { t } = useTranslation(['common', 'navigation']);
+  const { t } = useTranslation(['common', 'navigation', 'home']);
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
   const featuredCarouselEnabled = useFeature('enable_featured_services_carousel');
@@ -69,27 +69,27 @@ const Index = () => {
         {/* Quick Access - Professional Onboarding Pages */}
         <section className="container py-12 bg-muted/30">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-center">{t('common:professionalRegistration', 'Professional Registration')}</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center">{t('home:professionalRegistration.title')}</h2>
             <div className="grid gap-4 md:grid-cols-3">
               <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
                 <Link to="/onboarding/professional">
                   <UserPlus className="w-8 h-8 text-primary" />
-                  <span className="font-semibold">{t('common:step1Registration', 'Step 1: Registration')}</span>
-                  <span className="text-xs text-muted-foreground">{t('common:signUpAsProfessional', 'Sign up as a professional')}</span>
+                  <span className="font-semibold">{t('home:professionalRegistration.step1')}</span>
+                  <span className="text-xs text-muted-foreground">{t('home:professionalRegistration.step1Desc')}</span>
                 </Link>
               </Button>
               <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
                 <Link to="/professional/verification">
                   <Shield className="w-8 h-8 text-primary" />
-                  <span className="font-semibold">{t('common:step2Verification', 'Step 2: Verification')}</span>
-                  <span className="text-xs text-muted-foreground">{t('common:uploadDocuments', 'Upload documents')}</span>
+                  <span className="font-semibold">{t('home:professionalRegistration.step2')}</span>
+                  <span className="text-xs text-muted-foreground">{t('home:professionalRegistration.step2Desc')}</span>
                 </Link>
               </Button>
               <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
                 <Link to="/professional/service-setup">
                   <Settings className="w-8 h-8 text-primary" />
-                  <span className="font-semibold">{t('common:step3Services', 'Step 3: Services')}</span>
-                  <span className="text-xs text-muted-foreground">{t('common:configureOfferings', 'Configure your offerings')}</span>
+                  <span className="font-semibold">{t('home:professionalRegistration.step3')}</span>
+                  <span className="text-xs text-muted-foreground">{t('home:professionalRegistration.step3Desc')}</span>
                 </Link>
               </Button>
             </div>
