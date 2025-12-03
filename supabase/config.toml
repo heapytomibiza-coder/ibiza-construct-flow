@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.standardize-question-tone]
 verify_jwt = true
+
+[functions.audit-question-packs]
+verify_jwt = false
