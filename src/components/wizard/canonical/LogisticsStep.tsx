@@ -114,7 +114,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
         <div>
           <Badge variant="outline" className="mb-4">{microName}</Badge>
-          <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
             Location & Timeline
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
@@ -126,7 +126,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
       <div className="space-y-6">
         {/* Location */}
         <Card className="p-6 space-y-3">
-          <Label className="text-base font-medium text-charcoal flex items-center gap-2">
+          <Label className="text-base font-medium text-foreground flex items-center gap-2">
             <MapPin className="w-4 h-4" />
             Location in Ibiza
           </Label>
@@ -155,8 +155,8 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         {/* 1. Job Start Date */}
         <Card className="p-6 space-y-4">
           <div className="flex items-center gap-2">
-            <PlayCircle className="w-5 h-5 text-copper" />
-            <Label className="text-base font-medium text-charcoal">
+            <PlayCircle className="w-5 h-5 text-primary" />
+            <Label className="text-base font-medium text-foreground">
               When do you want this work to begin?
             </Label>
           </div>
@@ -171,8 +171,8 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                 className={cn(
                   "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
                   logistics.startDatePreset === preset 
-                    ? "bg-copper text-white border-copper" 
-                    : "border-gray-300 hover:border-copper hover:bg-copper/5"
+                    ? "bg-primary text-primary-foreground border-primary" 
+                    : "border-border hover:border-primary hover:bg-primary/5"
                 )}
               >
                 {preset}
@@ -219,8 +219,8 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         {/* 2. Ideal Completion Date (Optional) */}
         <Card className="p-6 space-y-4">
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-copper" />
-            <Label className="text-base font-medium text-charcoal">
+            <CheckCircle className="w-5 h-5 text-primary" />
+            <Label className="text-base font-medium text-foreground">
               When would you like this completed?
             </Label>
             <Badge variant="secondary" className="ml-2">Optional</Badge>
@@ -261,7 +261,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
         {/* 3. Consultation Booking */}
         <Card className="p-6 space-y-4">
-          <Label className="text-base font-medium text-charcoal">
+          <Label className="text-base font-medium text-foreground">
             Book a consultation
           </Label>
           <p className="text-sm text-muted-foreground">
@@ -273,31 +273,31 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             <Card
               className={cn(
                 "p-4 cursor-pointer transition-all hover:shadow-md text-center",
-                logistics.consultationType === 'site_visit' && "ring-2 ring-copper bg-copper/5"
+                logistics.consultationType === 'site_visit' && "ring-2 ring-primary bg-primary/5"
               )}
               onClick={() => handleUpdate('consultationType', 'site_visit')}
             >
-              <Home className="w-6 h-6 mx-auto mb-2 text-copper" />
+              <Home className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-sm font-medium">Site Visit</p>
             </Card>
             <Card
               className={cn(
                 "p-4 cursor-pointer transition-all hover:shadow-md text-center",
-                logistics.consultationType === 'phone_call' && "ring-2 ring-copper bg-copper/5"
+                logistics.consultationType === 'phone_call' && "ring-2 ring-primary bg-primary/5"
               )}
               onClick={() => handleUpdate('consultationType', 'phone_call')}
             >
-              <Phone className="w-6 h-6 mx-auto mb-2 text-copper" />
+              <Phone className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-sm font-medium">Phone Call</p>
             </Card>
             <Card
               className={cn(
                 "p-4 cursor-pointer transition-all hover:shadow-md text-center",
-                logistics.consultationType === 'video_call' && "ring-2 ring-copper bg-copper/5"
+                logistics.consultationType === 'video_call' && "ring-2 ring-primary bg-primary/5"
               )}
               onClick={() => handleUpdate('consultationType', 'video_call')}
             >
-              <Video className="w-6 h-6 mx-auto mb-2 text-copper" />
+              <Video className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-sm font-medium">Video Call</p>
             </Card>
           </div>
@@ -342,8 +342,8 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                       className={cn(
                         "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
                         logistics.consultationTime === time 
-                          ? "bg-copper text-white border-copper" 
-                          : "border-gray-300 hover:border-copper hover:bg-copper/5"
+                          ? "bg-primary text-primary-foreground border-primary" 
+                          : "border-border hover:border-primary hover:bg-primary/5"
                       )}
                     >
                       {time}
@@ -357,7 +357,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
         {/* Contact & Access */}
         <Card className="p-6 space-y-4">
-          <Label className="text-base font-medium text-charcoal">Site Access</Label>
+          <Label className="text-base font-medium text-foreground">Site Access</Label>
           
           <div>
             <Label className="text-sm text-muted-foreground mb-2 block">Access & Parking</Label>
@@ -378,8 +378,8 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                     className={cn(
                       "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
                       isSelected 
-                        ? "bg-copper text-white border-copper" 
-                        : "border-gray-300 hover:border-copper hover:bg-copper/5"
+                        ? "bg-primary text-primary-foreground border-primary" 
+                        : "border-border hover:border-primary hover:bg-primary/5"
                     )}
                   >
                     {option}
@@ -392,7 +392,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
         {/* Budget Range */}
         <Card className="p-6 space-y-3">
-          <Label className="text-base font-medium text-charcoal">Budget Range</Label>
+          <Label className="text-base font-medium text-foreground">Budget Range</Label>
           <p className="text-sm text-muted-foreground">Select a budget range or choose "Unsure" to get quotes first</p>
           <div className="flex flex-wrap gap-2">
             {BUDGET_RANGES.map((range) => (
@@ -403,8 +403,8 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                 className={cn(
                   "inline-flex items-center rounded-full border px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
                   logistics.budgetRange === range 
-                    ? "bg-copper text-white border-copper" 
-                    : "border-gray-300 hover:border-copper hover:bg-copper/5"
+                    ? "bg-primary text-primary-foreground border-primary" 
+                    : "border-border hover:border-primary hover:bg-primary/5"
                 )}
               >
                 {range}
