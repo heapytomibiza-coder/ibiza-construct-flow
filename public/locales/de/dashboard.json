@@ -1,0 +1,66 @@
+{
+  "loading": "Weiterleitung zu deinem Dashboard...",
+  "error": "Fehler beim Überprüfen der Benutzerrolle",
+  "tabs": {
+    "dashboard": "Dashboard",
+    "features": "Funktionen",
+    "analytics": "Analysen",
+    "insights": "Einblicke",
+    "ai": "KI",
+    "calendar": "Kalender",
+    "messages": "Nachrichten",
+    "contracts": "Verträge",
+    "payments": "Zahlungen"
+  },
+  "titles": {
+    "bookingManagement": "Buchungsverwaltung",
+    "contractManagement": "Vertragsverwaltung",
+    "myContracts": "Meine Verträge",
+    "findProfessionals": "Fachleute finden",
+    "professionalVerifications": "Professionelle Verifizierungen",
+    "adminUtilities": "Admin-Werkzeuge",
+    "questionPackManagement": "Fragenpaketverwaltung"
+  },
+  "status": {
+    "loading": "Wird geladen...",
+    "saving": "Wird gespeichert...",
+    "processing": "Wird verarbeitet...",
+    "submitting": "Wird gesendet...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "notFound": "Nicht gefunden"
+  },
+  "actions": {
+    "viewAll": "Alle anzeigen",
+    "seeMore": "Mehr sehen",
+    "learnMore": "Mehr erfahren",
+    "getStarted": "Loslegen",
+    "apply": "Anwenden",
+    "browse": "Durchsuchen",
+    "refresh": "Aktualisieren"
+  },
+  "stats": {
+    "approvedThisWeek": "Diese Woche genehmigt",
+    "pendingReview": "Ausstehende Überprüfung",
+    "totalProfessionals": "Gesamtzahl Fachleute",
+    "activeJobs": "Aktive Aufträge"
+  },
+  "empty": {
+    "noBookingRequests": "Noch keine Buchungsanfragen",
+    "noContracts": "Keine Verträge gefunden",
+    "noProfessionals": "Keine Fachleute gefunden",
+    "noVerifications": "Keine Verifizierungen gefunden"
+  },
+  "professional": {
+    "overview": "Übersicht",
+    "jobs": "Aufträge",
+    "earnings": "Einnahmen",
+    "schedule": "Terminplan",
+    "reviews": "Bewertungen"
+  },
+  "client": {
+    "myProjects": "Meine Projekte",
+    "findHelp": "Hilfe finden",
+    "savedPros": "Gespeicherte Fachleute",
+    "bookings": "Buchungen"
+  }
+}
