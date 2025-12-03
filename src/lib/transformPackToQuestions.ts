@@ -50,12 +50,18 @@ function cleanQuestionText(text: string): string {
 /**
  * Get readable question text with smart fallback:
  * 1. aiHint (PRIMARY - contains the actual question text)
- * 2. Humanize the key as last resort
+ * 2. question field (older packs use this directly)
+ * 3. Humanize the key as last resort
  */
 function getQuestionText(q: QuestionDef): string {
   // aiHint is the PRIMARY source for question text
   if (q.aiHint && q.aiHint.length > 5) {
     return cleanQuestionText(q.aiHint);
+  }
+  
+  // Fallback to question field (older packs use this)
+  if ((q as any).question && (q as any).question.length > 5) {
+    return cleanQuestionText((q as any).question);
   }
   
   // Otherwise humanize the key
