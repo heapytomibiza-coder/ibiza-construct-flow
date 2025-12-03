@@ -1,24 +1,19 @@
 /**
  * Step 4: Micro-Specific Questions
  * Clean one-question-at-a-time layout with 2-column tile selection
+ * All questions are selection-based (tap-to-select) - no typing required
  */
 import React, { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Loader2, Sparkles, ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Loader2, Sparkles, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { ConversationalQuestionInput } from '@/components/wizard/ConversationalQuestionInput';
 import { AIQuestion } from '@/hooks/useAIQuestions';
-import { PresetChips } from '@/components/wizard/PresetChips';
 import { AISmartFill } from '@/components/wizard/AISmartFill';
 import { useJobPresets } from '@/hooks/useJobPresets';
-import { StickyMobileCTA } from '@/components/mobile/StickyMobileCTA';
 import { useIsMobile } from '@/hooks/use-mobile';
 import constructionServicesData from '@/data/construction-services.json';
 import { transformServiceToQuestions } from '@/lib/transformers/blockToQuestion';
 import { mapMicroIdToServiceId } from '@/lib/mappers/serviceIdMapper';
-import { extractReadableText } from '@/lib/questionUtils';
 import { useQuestionValidation } from '@/hooks/useQuestionValidation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
@@ -73,9 +68,13 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
     });
   };
 
-  // Filter questions to only show those that meet visibility conditions
+  // Filter questions to only show selection-based ones that meet visibility conditions
+  // Text/textarea questions are filtered out - users should only tap, not type
   const visibleQuestions = React.useMemo(() => {
-    return questions.filter(shouldShowQuestion);
+    const selectionTypes = ['radio', 'select', 'checkbox', 'yesno'];
+    return questions
+      .filter(q => selectionTypes.includes(q.type)) // Only selection-based
+      .filter(shouldShowQuestion);
   }, [questions, answers]);
 
   const currentQuestion = visibleQuestions[currentQuestionIndex];
@@ -567,14 +566,21 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                       </div>
                     )}
 
-                    {/* Text/Textarea/Number Input */}
-                    {(currentQuestion.type === 'text' || currentQuestion.type === 'textarea' || currentQuestion.type === 'number' || currentQuestion.type === 'scale') && (
-                      <ConversationalQuestionInput
-                        question={currentQuestion}
-                        value={answers[currentQuestion.id]}
-                        onChange={(value) => handleAnswerChange(currentQuestion.id, value)}
-                      />
-                    )}
+                  </div>
+                )}
+
+                {/* Final "Anything else?" on last question only */}
+                {isLastQuestion && (
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
+                      Anything else we should know? (optional)
+                    </label>
+                    <textarea
+                      value={answers['additional_notes'] || ''}
+                      onChange={(e) => handleAnswerChange('additional_notes', e.target.value)}
+                      placeholder="Add any special requirements, preferences, or details..."
+                      className="w-full min-h-[80px] px-3 py-2 text-sm bg-background border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    />
                   </div>
                 )}
               </motion.div>
