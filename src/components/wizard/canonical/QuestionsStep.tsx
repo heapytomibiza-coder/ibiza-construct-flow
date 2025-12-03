@@ -486,7 +486,7 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
   return (
     <>
-      <div className="max-w-3xl mx-auto px-4 md:px-6 h-full flex flex-col">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 h-full flex flex-col">
         <div className="space-y-2 flex-shrink-0 pb-3">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
@@ -494,12 +494,12 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
                 {microNames[0] || t('wizard.steps.aiQuestions.title')}
               </h1>
               <p className="text-xs text-muted-foreground">
-                Tell us about your project
+                Tap to select your preferences
               </p>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-muted-foreground font-medium">
-                {currentQuestionIndex + 1} of {visibleQuestions.length}
+                {answeredCount} of {visibleQuestions.length} answered
               </span>
               <Button
                 variant="outline"
@@ -512,10 +512,6 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
               </Button>
             </div>
           </div>
-          <ProgressIndicator
-            currentStep={currentQuestionIndex + 1}
-            totalSteps={visibleQuestions.length}
-          />
         </div>
 
       {loading ? (
@@ -527,161 +523,169 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
         </div>
       ) : (
         <>
-          <div className="flex-1 overflow-auto">
-            {/* Recent Presets */}
-            {presets.length > 0 && currentQuestionIndex === 0 && (
-              <PresetChips
-                presetType={primaryMicroSlug}
-                onSelectPreset={async (presetData) => {
-                  onAnswersChange(presetData);
-                }}
-              />
-            )}
-
-            {/* Conversational Question Flow */}
-            <AnimatePresence mode="wait">
-              {currentQuestion && (
-                <motion.div
-                  key={currentQuestion.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-3 pb-4"
-                >
-                  {/* Question Card */}
-                  <div className="bg-card rounded-2xl border border-border/50 p-4 md:p-6 shadow-sm">
-                    <div className="space-y-4">
-                      {/* Question Number Badge */}
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-base">
-                          {currentQuestionIndex + 1}
+          <div className="flex-1 overflow-auto pb-4">
+            {/* All Questions as Compact Tiles */}
+            <div className="space-y-4">
+              {visibleQuestions.map((question, index) => {
+                const q = question as any;
+                const questionText = question.label || q?.question || `Question ${index + 1}`;
+                const displayText = questionText.startsWith('microservices.') || questionText.startsWith('questions.')
+                  ? t(questionText)
+                  : questionText;
+                
+                return (
+                  <div 
+                    key={question.id}
+                    className="bg-card rounded-xl border border-border/50 p-4 shadow-sm"
+                  >
+                    <div className="space-y-3">
+                      {/* Question Header */}
+                      <div className="flex items-start gap-2">
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary font-semibold text-xs flex-shrink-0">
+                          {index + 1}
                         </div>
-                        <span className="text-sm text-muted-foreground font-medium">
-                          of {visibleQuestions.length}
-                        </span>
-                      </div>
-
-                      {/* Question Text */}
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <h2 className="text-lg md:text-xl font-bold text-foreground leading-tight">
-                            {(() => {
-                              const q = currentQuestion as any;
-                              // Use label directly - it should have the full question text
-                              const questionText = currentQuestion.label || q?.question || `Question ${currentQuestionIndex + 1}`;
-                              
-                              if (questionText.startsWith('microservices.') || questionText.startsWith('questions.')) {
-                                return t(questionText);
-                              }
-                              
-                              return questionText;
-                            })()}
-                          </h2>
-                          {!currentQuestion.required && (
-                            <Badge variant="outline" className="text-xs">optional</Badge>
-                          )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-semibold text-foreground leading-tight">
+                            {displayText}
+                          </h3>
                         </div>
-                        {/* Show helpful guidance text */}
-                        {(() => {
-                          const q = currentQuestion as any;
-                          const helpText = q?.helpText || q?.placeholder || q?.meta?.hint;
-                          
-                          if (helpText) {
-                            return (
-                              <p className="text-sm text-muted-foreground leading-relaxed">
-                                {helpText}
-                              </p>
-                            );
-                          }
-                          
-                          // Generic guidance based on question type
-                          if (currentQuestion.type === 'checkbox' || currentQuestion.type === 'multiple-choice') {
-                            return <p className="text-sm text-muted-foreground">Select all that apply</p>;
-                          } else if (currentQuestion.type === 'radio' || currentQuestion.type === 'select') {
-                            return <p className="text-sm text-muted-foreground">Choose the option that best describes your needs</p>;
-                          } else if (currentQuestion.type === 'yesno') {
-                            return <p className="text-sm text-muted-foreground">Choose yes or no</p>;
-                          } else if (currentQuestion.type === 'text' || currentQuestion.type === 'textarea') {
-                            return <p className="text-sm text-muted-foreground">Provide as much detail as you can to help us understand your needs</p>;
-                          }
-                          return null;
-                        })()}
+                        {!question.required && (
+                          <Badge variant="outline" className="text-[10px] flex-shrink-0">optional</Badge>
+                        )}
                       </div>
 
-                      {/* Question Input */}
-                      <div className="pt-2">
-                        <ConversationalQuestionInput
-                          question={currentQuestion}
-                          value={answers[currentQuestion.id]}
-                          onChange={(value) => handleAnswerChange(currentQuestion.id, value)}
-                        />
-                      </div>
-
-                      {/* Validation Feedback */}
-                      {isQuestionComplete(currentQuestion, answers[currentQuestion.id]) && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="flex items-center gap-2 text-sm font-medium text-green-600 bg-green-50 dark:bg-green-950/30 px-4 py-3 rounded-lg"
-                        >
-                          <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center">
-                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
+                      {/* Compact Options Grid */}
+                      <div className="pl-8">
+                        {(question.type === 'radio' || question.type === 'select') && question.options && (
+                          <div className="flex flex-wrap gap-2">
+                            {question.options.map((option) => {
+                              const optValue = typeof option === 'string' ? option : option.value;
+                              const optLabel = typeof option === 'string' ? option : option.label;
+                              return (
+                                <button
+                                  key={optValue}
+                                  type="button"
+                                  onClick={() => handleAnswerChange(question.id, optValue)}
+                                  className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
+                                    answers[question.id] === optValue
+                                      ? 'bg-primary text-primary-foreground border-primary'
+                                      : 'bg-background border-border hover:border-primary/50 hover:bg-primary/5'
+                                  }`}
+                                >
+                                  {optLabel}
+                                </button>
+                              );
+                            })}
                           </div>
-                          <span>Got it! Ready to continue</span>
-                        </motion.div>
-                      )}
+                        )}
+
+                        {question.type === 'checkbox' && question.options && (
+                          <div className="flex flex-wrap gap-2">
+                            {question.options.map((option) => {
+                              const optValue = typeof option === 'string' ? option : option.value;
+                              const optLabel = typeof option === 'string' ? option : option.label;
+                              const currentValue = Array.isArray(answers[question.id]) ? answers[question.id] : [];
+                              const isSelected = currentValue.includes(optValue);
+                              return (
+                                <button
+                                  key={optValue}
+                                  type="button"
+                                  onClick={() => {
+                                    const newValue = isSelected
+                                      ? currentValue.filter((v: string) => v !== optValue)
+                                      : [...currentValue, optValue];
+                                    handleAnswerChange(question.id, newValue);
+                                  }}
+                                  className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
+                                    isSelected
+                                      ? 'bg-primary text-primary-foreground border-primary'
+                                      : 'bg-background border-border hover:border-primary/50 hover:bg-primary/5'
+                                  }`}
+                                >
+                                  {optLabel}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {question.type === 'yesno' && (
+                          <div className="flex gap-2">
+                            {['Yes', 'No'].map((opt) => (
+                              <button
+                                key={opt}
+                                type="button"
+                                onClick={() => handleAnswerChange(question.id, opt.toLowerCase())}
+                                className={`px-4 py-1.5 text-xs font-medium rounded-full border transition-all ${
+                                  answers[question.id] === opt.toLowerCase()
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'bg-background border-border hover:border-primary/50 hover:bg-primary/5'
+                                }`}
+                              >
+                                {opt}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {(question.type === 'text' || question.type === 'textarea' || question.type === 'number' || question.type === 'scale') && (
+                          <ConversationalQuestionInput
+                            question={question}
+                            value={answers[question.id]}
+                            onChange={(value) => handleAnswerChange(question.id, value)}
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                );
+              })}
+
+              {/* Anything Else Field */}
+              <div className="bg-card rounded-xl border border-border/50 p-4 shadow-sm">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-muted-foreground font-semibold text-xs flex-shrink-0">
+                      +
+                    </div>
+                    <h3 className="text-sm font-semibold text-foreground leading-tight">
+                      Anything else we should know?
+                    </h3>
+                    <Badge variant="outline" className="text-[10px] flex-shrink-0">optional</Badge>
+                  </div>
+                  <div className="pl-8">
+                    <textarea
+                      value={answers['additional_notes'] || ''}
+                      onChange={(e) => handleAnswerChange('additional_notes', e.target.value)}
+                      placeholder="Add any special requirements, preferences, or details..."
+                      className="w-full min-h-[80px] px-3 py-2 text-sm bg-background border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Navigation Buttons - Sticky at bottom */}
+          {/* Navigation Buttons */}
           <div className="flex-shrink-0 pt-3 border-t border-border/50">
-            {/* Optional progress feedback - not blocking */}
-            {isLastQuestion && answeredCount < questions.length && (
-              <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
-                  You've answered {answeredCount} of {questions.length} questions. You can continue or go back to answer more.
-                </p>
-              </div>
-            )}
-            
             <div className="flex items-center justify-between gap-4">
               <Button
                 variant="outline"
-                onClick={handlePreviousQuestion}
+                onClick={onBack}
                 className="gap-2"
               >
                 <ChevronLeft className="w-4 h-4" />
-                {isFirstQuestion ? 'Back' : 'Previous'}
+                Back
               </Button>
 
-              <div className="flex items-center gap-3">
-                {/* Skip button for all questions */}
-                {!isLastQuestion && (
-                  <Button
-                    variant="ghost"
-                    onClick={handleNextQuestion}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    Skip
-                  </Button>
-                )}
-
-                <Button
-                  onClick={handleNextQuestion}
-                  className="gap-2 bg-gradient-hero text-white"
-                  size="lg"
-                >
-                  {isLastQuestion ? 'Continue to Logistics' : 'Next'}
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
+              <Button
+                onClick={onNext}
+                className="gap-2 bg-gradient-hero text-white"
+                size="lg"
+              >
+                Continue to Logistics
+                <ChevronRight className="w-4 h-4" />
+              </Button>
             </div>
           </div>
 
@@ -700,8 +704,6 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
       )}
 
       </div>
-
-      {/* Mobile Sticky CTA - Hidden, navigation is in the card */}
     </>
   );
 };
