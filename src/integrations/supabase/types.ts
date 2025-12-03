@@ -13255,6 +13255,16 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_remove_logistics_questions: {
+        Args: never
+        Returns: {
+          questions_after: number
+          questions_before: number
+          removed_count: number
+          updated_micro_slug: string
+          updated_pack_id: string
+        }[]
+      }
       admin_revoke_role: {
         Args: {
           p_role: Database["public"]["Enums"]["app_role"]
