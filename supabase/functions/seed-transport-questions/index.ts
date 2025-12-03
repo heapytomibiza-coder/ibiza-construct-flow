@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 import { json } from "../_shared/json.ts";
-import { transportQuestionPacks, type QuestionDef } from "../_shared/transportQuestionPacks.ts";
+import { transportQuestionPacks, type MicroservicePack, type QuestionDef } from "../_shared/transportQuestionPacks.ts";
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -15,7 +15,7 @@ Deno.serve(async (req: Request) => {
 
     console.log(`🚚 Seeding ${transportQuestionPacks.length} transport question packs...`);
     
-    const results = { created: [], failed: [], skipped: [] } as any;
+    const results = { created: [] as any[], failed: [] as any[], skipped: [] as any[] };
 
     for (const pack of transportQuestionPacks) {
       try {
@@ -46,13 +46,14 @@ Deno.serve(async (req: Request) => {
           slug: pack.microSlug,
           i18nPrefix: pack.microSlug.replace(/-/g, '.'),
           questions: pack.questions.map((q: QuestionDef, idx: number) => ({
-            key: `q${idx + 1}`,
+            key: q.id || `q${idx + 1}`,
             type: mapQuestionType(q.type),
-            i18nKey: `${pack.microSlug.replace(/-/g, '.')}.q${idx + 1}.title`,
+            i18nKey: `${pack.microSlug.replace(/-/g, '.')}.${q.id || `q${idx + 1}`}.title`,
+            aiHint: q.question,
             required: q.required || false,
             ...(q.options && {
-              options: q.options.map((opt: any, optIdx: number) => ({
-                i18nKey: `${pack.microSlug.replace(/-/g, '.')}.q${idx + 1}.options.${opt.value}`,
+              options: q.options.map((opt, optIdx: number) => ({
+                i18nKey: opt.label,
                 value: opt.value,
                 order: optIdx
               }))
@@ -126,7 +127,8 @@ function mapQuestionType(type: string): string {
     'textarea': 'text',
     'select': 'single',
     'radio': 'single',
-    'checkbox': 'multi'
+    'checkbox': 'multi',
+    'file': 'file'
   };
   return typeMap[type] || 'text';
 }
