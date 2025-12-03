@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ export const UnifiedSearchBar = ({
   showFilters,
   placeholder
 }: UnifiedSearchBarProps) => {
+  const { t } = useTranslation('common');
   
   return (
     <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6">
@@ -25,7 +27,7 @@ export const UnifiedSearchBar = ({
         <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
         <Input
           type="text"
-          placeholder={placeholder || 'Search services or professionals...'}
+          placeholder={placeholder || t('searchServicesPlaceholder')}
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10 sm:pl-12 pr-10 h-12 sm:h-14 text-sm sm:text-lg bg-card border-border focus:border-primary focus:ring-2 focus:ring-primary/20 focus:shadow-lg rounded-xl transition-all"
@@ -34,7 +36,7 @@ export const UnifiedSearchBar = ({
           <button
             onClick={() => onSearchChange('')}
             className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Clear search"
+            aria-label={t('clearFilters')}
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
@@ -46,7 +48,7 @@ export const UnifiedSearchBar = ({
         className="h-12 sm:h-14 px-4 sm:px-6 rounded-xl shadow-sm"
       >
         <Filter className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
-        <span className="hidden sm:inline">Filters</span>
+        <span className="hidden sm:inline">{t('filters')}</span>
       </Button>
     </div>
   );

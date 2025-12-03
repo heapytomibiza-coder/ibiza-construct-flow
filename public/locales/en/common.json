@@ -4,11 +4,60 @@
   "professionals": "Professionals",
   "response24h": "24h Response",
   "filters": "Filters",
+  "clearAll": "Clear All",
   "clearFilters": "Clear Filters",
   "searchingFor": "Searching for",
   "filtersApplied": "filter(s) applied",
   "service": "Service",
   "professional": "Professional",
+  "loading": "Loading...",
+  "loadingCategories": "Loading categories...",
+  "noCategories": "No categories available",
+  "noSubcategories": "No subcategories available",
+  "browseByCategory": "Browse by Category",
+  "priceRange": "Price Range",
+  "availability": "Availability",
+  "availableNow": "Available now",
+  "thisWeek": "This week",
+  "thisMonth": "This month",
+  "emergency": "Emergency",
+  "professionalQuality": "Professional Quality",
+  "verifiedOnly": "Verified Professionals Only",
+  "minimumRating": "Minimum Rating",
+  "browseServices": "Browse Services",
+  "browseProfessionals": "Browse Professionals",
+  "noResultsFound": "No Results Found",
+  "noResultsFor": "We couldn't find any {{type}} matching",
+  "clearFiltersSearch": "Clear Filters & Search",
+  "searchServicesPlaceholder": "Search services or professionals...",
+  "searchDescription": "Use the search bar above or select a category to discover services",
+  "searchDescriptionPros": "Use the search bar above to find professionals by trade, name, or specialty",
+  "quickView": "Quick View",
+  "viewDetails": "View Details",
+  "details": "Details",
+  "contact": "Contact",
+  "verified": "Verified",
+  "from": "From",
+  "popularServices": "Popular Services",
+  "popularTrades": "Popular Trades",
+  "browsePopularServices": "Browse our most requested specific services",
+  "browsePopularTrades": "Find professionals by their main trade or specialty",
+  "requestQuote": "Request Quote",
+  "topServices": "Top Services",
+  "jobs": "Jobs",
+  "rating": "Rating",
+  "years": "Years",
+  "available": "Available",
+  "busy": "Busy",
+  "unknown": "Unknown",
+  "budgetFriendly": "Budget-friendly",
+  "premium": "Premium",
+  "standardRates": "Standard rates",
+  "response": "response",
+  "ibizaArea": "Ibiza area",
+  "radius": "{{radius}}km radius",
+  "verifiedPros": "Verified Pros",
+  "avgRating": "Avg Rating",
   "actions": {
     "save": "Save",
     "cancel": "Cancel",
@@ -48,146 +97,16 @@
     "deleted": "Successfully deleted",
     "updated": "Successfully updated"
   },
-  "quickReplies": {
-    "available": "I'm available",
-    "busy": "I'm busy right now",
-    "canStartTomorrow": "I can start tomorrow",
-    "needMoreInfo": "I need more information",
-    "quoteReady": "Your quote is ready",
-    "onMyWay": "I'm on my way",
-    "running15": "Running 15 minutes late",
-    "completed": "Job completed",
-    "reviewPhotos": "Please review photos",
-    "needApproval": "Need your approval to proceed"
-  },
-  "commandPalette": {
-    "placeholder": "Type a command or search...",
-    "commands": {
-      "quote": "/quote - Send a price quote",
-      "availability": "/availability - Update your availability",
-      "schedule": "/schedule - Propose meeting time",
-      "invoice": "/invoice - Send an invoice",
-      "photo": "/photo - Share photos",
-      "location": "/location - Share location"
-    }
-  },
-  "visualPickers": {
-    "materials": {
-      "label": "Select Material",
-      "options": {
-        "wood": "Wood",
-        "metal": "Metal",
-        "glass": "Glass",
-        "stone": "Stone",
-        "concrete": "Concrete",
-        "ceramic": "Ceramic"
-      }
-    },
-    "finishes": {
-      "label": "Select Finish",
-      "options": {
-        "matte": "Matte",
-        "glossy": "Glossy",
-        "satin": "Satin",
-        "polished": "Polished",
-        "brushed": "Brushed",
-        "textured": "Textured"
-      }
-    }
-  },
-  "quantities": {
-    "squareMeters": "m²",
-    "linearMeters": "linear m",
-    "pieces": "pieces",
-    "hours": "hours",
-    "days": "days"
-  },
-  "ratings": {
-    "poor": "Poor",
-    "fair": "Fair",
-    "good": "Good",
-    "great": "Great",
-    "excellent": "Excellent"
-  },
-  "presets": {
-    "recent": "Recent Selections",
-    "usePreset": "Use this preset",
-    "fromPreviousJob": "From previous job"
-  },
-  "decline": {
-    "reasons": {
-      "tooExpensive": "Price is too high",
-      "timeline": "Timeline doesn't work",
-      "foundAnother": "Found another professional",
-      "changedMind": "Changed my mind",
-      "needMoreTime": "Need more time to decide"
-    }
-  },
-  "camera": {
-    "capture": "Take Photo",
-    "retake": "Retake",
-    "processing": "Processing image...",
-    "extractingText": "Extracting text...",
-    "textExtracted": "Text extracted successfully",
-    "error": "Failed to process image"
-  },
-  "aiGeneration": {
-    "generating": "Generating with AI...",
-    "generated": "Generated successfully",
-    "useGenerated": "Use generated content",
-    "regenerate": "Regenerate",
-    "error": "Failed to generate content"
-  },
-  "search": {
-    "global": "Search everything...",
-    "noResults": "No results found",
-    "searching": "Searching...",
-    "hint": "Press Cmd+K to search"
-  },
-  "escrow": {
-    "held": "Held in Escrow",
-    "released": "Released",
-    "pending": "Pending Release",
-    "timeline": "Escrow Timeline",
-    "release": "Release Funds",
-    "dispute": "File Dispute"
-  },
-  "dispute": {
-    "file": "File Dispute",
-    "reason": "Dispute Reason",
-    "description": "Describe the issue",
-    "submit": "Submit Dispute",
-    "cancel": "Cancel Dispute"
-  },
-  "timeSlots": {
-    "suggested": "Suggested Times",
-    "earliest": "Earliest overlap",
-    "noOverlap": "No overlapping availability",
-    "selectTime": "Select a time slot"
-  },
-  "applicants": {
-    "new": "New",
-    "shortlisted": "Shortlisted",
-    "invited": "Invited",
-    "rejected": "Rejected",
-    "bulkActions": "Bulk Actions",
-    "moveToShortlist": "Move to Shortlist",
-    "sendInvite": "Send Invite",
-    "reject": "Reject"
-  },
-  "offers": {
-    "expires": "Expires",
-    "extend": "Extend",
-    "counter": "Counter Offer",
-    "accept": "Accept",
-    "decline": "Decline",
-    "autoCounter": "Generate Counter Offer",
-    "generating": "Generating counter offer..."
-  },
-  "common": {
-    "translate": "Translate",
-    "translating": "Translating...",
-    "showOriginal": "Show original",
-    "translatedFrom": "Translated from {{lang}}"
+  "suggestions": {
+    "sinkRepair": "Sink Repair",
+    "outletInstallation": "Outlet Installation",
+    "roomPainting": "Room Painting",
+    "doorHanging": "Door Hanging",
+    "fenceBuilding": "Fence Building",
+    "electrician": "Electrician",
+    "plumber": "Plumber",
+    "carpenter": "Carpenter",
+    "painter": "Painter",
+    "landscaper": "Landscaper"
   }
 }

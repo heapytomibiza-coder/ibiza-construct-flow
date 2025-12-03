@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +52,7 @@ interface DiscoveryServiceCardProps {
 }
 
 export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCardProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -247,13 +249,13 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
         {isHovered && (
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10 flex items-center justify-center">
             <div className="text-white text-center space-y-2 p-4">
-              <p className="text-sm font-medium">Quick View</p>
+              <p className="text-sm font-medium">{t('quickView')}</p>
               <div className="flex gap-2">
                 <Button size="sm" variant="secondary" onClick={handleViewDetails} className="h-7 text-xs">
-                  View Details
+                  {t('viewDetails')}
                 </Button>
                 <Button size="sm" onClick={handleContactNow} className="h-7 text-xs">
-                  Contact
+                  {t('contact')}
                 </Button>
               </div>
             </div>
@@ -291,7 +293,7 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
           <div className="absolute top-2 right-2 z-20">
             <Badge className="bg-green-600/90 backdrop-blur-sm text-xs font-semibold px-2 py-0.5 flex items-center gap-1">
               <Shield className="w-3 h-3" />
-              Verified
+              {t('verified')}
             </Badge>
           </div>
         )}
@@ -300,7 +302,7 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
         {!isHovered && (
           <div className="absolute bottom-2 left-2 z-20">
             <Badge className="bg-primary/90 backdrop-blur-sm text-white font-bold px-3 py-1">
-              From {formatPrice()}
+              {t('from')} {formatPrice()}
             </Badge>
           </div>
         )}
@@ -377,7 +379,7 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
             variant="outline"
           >
             <Info className="h-3 w-3 mr-1" />
-            Details
+            {t('details')}
           </Button>
           <Button
             onClick={handleContactNow}
@@ -385,7 +387,7 @@ export const DiscoveryServiceCard = ({ item, onViewDetails }: DiscoveryServiceCa
             className="flex-1 h-8 text-xs"
           >
             <MessageSquare className="h-3 w-3 mr-1" />
-            Contact
+            {t('contact')}
           </Button>
         </div>
       </div>

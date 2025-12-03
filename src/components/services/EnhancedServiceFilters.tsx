@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +40,7 @@ const CategoryWithSubcategories: React.FC<{
   selectedSubcategory: string | null;
   onSubcategoryChange: (subcategorySlug: string) => void;
 }> = ({ categoryId, categoryName, categoryIcon, isExpanded, onToggle, selectedSubcategory, onSubcategoryChange }) => {
+  const { t } = useTranslation('common');
   const { data: subcategories = [], isLoading } = useSubcategories(categoryId);
   const Icon = categoryIcon ? getCategoryIcon(categoryIcon) : null;
 
@@ -52,7 +54,7 @@ const CategoryWithSubcategories: React.FC<{
       
       <CollapsibleContent className="ml-8 space-y-2 py-2 border-l-2 border-border pl-4">
         {isLoading ? (
-          <div className="text-xs text-muted-foreground py-2">Loading...</div>
+          <div className="text-xs text-muted-foreground py-2">{t('loading')}</div>
         ) : subcategories.length > 0 ? (
           subcategories.map((subcategory) => (
             <div key={subcategory.id} className="flex items-center gap-2">
@@ -70,7 +72,7 @@ const CategoryWithSubcategories: React.FC<{
             </div>
           ))
         ) : (
-          <div className="text-xs text-muted-foreground py-2">No subcategories available</div>
+          <div className="text-xs text-muted-foreground py-2">{t('noSubcategories')}</div>
         )}
       </CollapsibleContent>
     </Collapsible>
@@ -83,11 +85,20 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
   categories,
   visible
 }) => {
+  const { t } = useTranslation('common');
   const [searchParams, setSearchParams] = useSearchParams();
   const [localFilters, setLocalFilters] = useState(filters);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const { data: allCategories = [], isLoading: categoriesLoading } = useCategories();
+
+  // Availability options with translations
+  const availabilityOptions = [
+    { key: 'availableNow', value: 'Available now' },
+    { key: 'thisWeek', value: 'This week' },
+    { key: 'thisMonth', value: 'This month' },
+    { key: 'emergency', value: 'Emergency' },
+  ];
 
   // Load filters from URL on mount
   useEffect(() => {
@@ -200,7 +211,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Filter className="w-5 h-5" />
-              Filters
+              {t('filters')}
               {getActiveFilterCount() > 0 && (
                 <Badge variant="secondary" className="ml-2">
                   {getActiveFilterCount()}
@@ -210,7 +221,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
             {getActiveFilterCount() > 0 && (
               <Button variant="ghost" size="sm" onClick={clearAllFilters}>
                 <X className="w-4 h-4 mr-2" />
-                Clear All
+                {t('clearAll')}
               </Button>
             )}
           </div>
@@ -221,7 +232,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Browse by Category</CardTitle>
+            <CardTitle className="text-base">{t('browseByCategory')}</CardTitle>
             {localFilters.selectedTaxonomy && (
               <Button variant="ghost" size="sm" onClick={clearTaxonomy}>
                 <X className="w-4 h-4" />
@@ -231,7 +242,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
         </CardHeader>
         <CardContent className="space-y-1">
           {categoriesLoading ? (
-            <div className="text-sm text-muted-foreground py-4 text-center">Loading categories...</div>
+            <div className="text-sm text-muted-foreground py-4 text-center">{t('loadingCategories')}</div>
           ) : allCategories.length > 0 ? (
             <div className="space-y-1">
               {allCategories.map((category) => (
@@ -257,7 +268,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
               ))}
             </div>
           ) : (
-            <div className="text-sm text-muted-foreground py-4 text-center">No categories available</div>
+            <div className="text-sm text-muted-foreground py-4 text-center">{t('noCategories')}</div>
           )}
         </CardContent>
       </Card>
@@ -265,7 +276,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
       {/* Price Range */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Price Range</CardTitle>
+          <CardTitle className="text-base">{t('priceRange')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="px-2">
@@ -291,21 +302,21 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
       {/* Availability */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Availability</CardTitle>
+          <CardTitle className="text-base">{t('availability')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {['Available now', 'This week', 'This month', 'Emergency'].map((option) => (
-            <div key={option} className="flex items-center space-x-2">
+          {availabilityOptions.map((option) => (
+            <div key={option.value} className="flex items-center space-x-2">
               <Checkbox
-                id={`availability-${option}`}
-                checked={localFilters.availability.includes(option)}
-                onCheckedChange={() => toggleAvailability(option)}
+                id={`availability-${option.value}`}
+                checked={localFilters.availability.includes(option.value)}
+                onCheckedChange={() => toggleAvailability(option.value)}
               />
               <label
-                htmlFor={`availability-${option}`}
+                htmlFor={`availability-${option.value}`}
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
               >
-                {option}
+                {t(option.key)}
               </label>
             </div>
           ))}
@@ -317,7 +328,7 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <ShieldCheck className="w-4 h-4" />
-            Professional Quality
+            {t('professionalQuality')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -333,14 +344,14 @@ const EnhancedServiceFilters: React.FC<FilterProps> = ({
               htmlFor="verified-only"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
-              Verified Professionals Only
+              {t('verifiedOnly')}
             </label>
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-2">
               <Star className="w-4 h-4" />
-              Minimum Rating
+              {t('minimumRating')}
             </label>
             <div className="grid grid-cols-5 gap-2">
               {[1, 2, 3, 4, 5].map((rating) => (

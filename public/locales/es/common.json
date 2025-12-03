@@ -4,11 +4,60 @@
   "professionals": "Profesionales",
   "response24h": "Respuesta 24h",
   "filters": "Filtros",
+  "clearAll": "Limpiar Todo",
   "clearFilters": "Limpiar Filtros",
   "searchingFor": "Buscando",
   "filtersApplied": "filtro(s) aplicado(s)",
   "service": "Servicio",
   "professional": "Profesional",
+  "loading": "Cargando...",
+  "loadingCategories": "Cargando categorías...",
+  "noCategories": "No hay categorías disponibles",
+  "noSubcategories": "No hay subcategorías disponibles",
+  "browseByCategory": "Explorar por Categoría",
+  "priceRange": "Rango de Precio",
+  "availability": "Disponibilidad",
+  "availableNow": "Disponible ahora",
+  "thisWeek": "Esta semana",
+  "thisMonth": "Este mes",
+  "emergency": "Emergencia",
+  "professionalQuality": "Calidad Profesional",
+  "verifiedOnly": "Solo Profesionales Verificados",
+  "minimumRating": "Valoración Mínima",
+  "browseServices": "Explorar Servicios",
+  "browseProfessionals": "Explorar Profesionales",
+  "noResultsFound": "No se Encontraron Resultados",
+  "noResultsFor": "No pudimos encontrar {{type}} que coincidan con",
+  "clearFiltersSearch": "Limpiar Filtros y Búsqueda",
+  "searchServicesPlaceholder": "Buscar servicios o profesionales...",
+  "searchDescription": "Usa la barra de búsqueda o selecciona una categoría para descubrir servicios",
+  "searchDescriptionPros": "Usa la barra de búsqueda para encontrar profesionales por oficio, nombre o especialidad",
+  "quickView": "Vista Rápida",
+  "viewDetails": "Ver Detalles",
+  "details": "Detalles",
+  "contact": "Contactar",
+  "verified": "Verificado",
+  "from": "Desde",
+  "popularServices": "Servicios Populares",
+  "popularTrades": "Oficios Populares",
+  "browsePopularServices": "Explora nuestros servicios más solicitados",
+  "browsePopularTrades": "Encuentra profesionales por su oficio principal o especialidad",
+  "requestQuote": "Solicitar Presupuesto",
+  "topServices": "Servicios Principales",
+  "jobs": "Trabajos",
+  "rating": "Valoración",
+  "years": "Años",
+  "available": "Disponible",
+  "busy": "Ocupado",
+  "unknown": "Desconocido",
+  "budgetFriendly": "Económico",
+  "premium": "Premium",
+  "standardRates": "Tarifas estándar",
+  "response": "respuesta",
+  "ibizaArea": "Área de Ibiza",
+  "radius": "{{radius}}km de radio",
+  "verifiedPros": "Profesionales Verificados",
+  "avgRating": "Valoración Media",
   "actions": {
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -48,146 +97,16 @@
     "deleted": "Eliminado exitosamente",
     "updated": "Actualizado exitosamente"
   },
-  "quickReplies": {
-    "available": "Estoy disponible",
-    "busy": "Estoy ocupado ahora",
-    "canStartTomorrow": "Puedo empezar mañana",
-    "needMoreInfo": "Necesito más información",
-    "quoteReady": "Tu presupuesto está listo",
-    "onMyWay": "Estoy en camino",
-    "running15": "Llegaré 15 minutos tarde",
-    "completed": "Trabajo completado",
-    "reviewPhotos": "Por favor revisa las fotos",
-    "needApproval": "Necesito tu aprobación para continuar"
-  },
-  "commandPalette": {
-    "placeholder": "Escribe un comando o busca...",
-    "commands": {
-      "quote": "/quote - Enviar presupuesto",
-      "availability": "/availability - Actualizar disponibilidad",
-      "schedule": "/schedule - Proponer horario de reunión",
-      "invoice": "/invoice - Enviar factura",
-      "photo": "/photo - Compartir fotos",
-      "location": "/location - Compartir ubicación"
-    }
-  },
-  "visualPickers": {
-    "materials": {
-      "label": "Seleccionar Material",
-      "options": {
-        "wood": "Madera",
-        "metal": "Metal",
-        "glass": "Vidrio",
-        "stone": "Piedra",
-        "concrete": "Hormigón",
-        "ceramic": "Cerámica"
-      }
-    },
-    "finishes": {
-      "label": "Seleccionar Acabado",
-      "options": {
-        "matte": "Mate",
-        "glossy": "Brillante",
-        "satin": "Satinado",
-        "polished": "Pulido",
-        "brushed": "Cepillado",
-        "textured": "Texturizado"
-      }
-    }
-  },
-  "quantities": {
-    "squareMeters": "m²",
-    "linearMeters": "m lineales",
-    "pieces": "piezas",
-    "hours": "horas",
-    "days": "días"
-  },
-  "ratings": {
-    "poor": "Malo",
-    "fair": "Regular",
-    "good": "Bueno",
-    "great": "Muy Bueno",
-    "excellent": "Excelente"
-  },
-  "presets": {
-    "recent": "Selecciones Recientes",
-    "usePreset": "Usar esta configuración",
-    "fromPreviousJob": "De trabajo anterior"
-  },
-  "decline": {
-    "reasons": {
-      "tooExpensive": "El precio es muy alto",
-      "timeline": "El calendario no funciona",
-      "foundAnother": "Encontré otro profesional",
-      "changedMind": "Cambié de opinión",
-      "needMoreTime": "Necesito más tiempo para decidir"
-    }
-  },
-  "camera": {
-    "capture": "Tomar Foto",
-    "retake": "Repetir",
-    "processing": "Procesando imagen...",
-    "extractingText": "Extrayendo texto...",
-    "textExtracted": "Texto extraído exitosamente",
-    "error": "Error al procesar imagen"
-  },
-  "aiGeneration": {
-    "generating": "Generando con IA...",
-    "generated": "Generado exitosamente",
-    "useGenerated": "Usar contenido generado",
-    "regenerate": "Regenerar",
-    "error": "Error al generar contenido"
-  },
-  "search": {
-    "global": "Buscar todo...",
-    "noResults": "No se encontraron resultados",
-    "searching": "Buscando...",
-    "hint": "Presiona Cmd+K para buscar"
-  },
-  "escrow": {
-    "held": "Retenido en Garantía",
-    "released": "Liberado",
-    "pending": "Pendiente de Liberación",
-    "timeline": "Línea de Tiempo de Garantía",
-    "release": "Liberar Fondos",
-    "dispute": "Presentar Disputa"
-  },
-  "dispute": {
-    "file": "Presentar Disputa",
-    "reason": "Motivo de Disputa",
-    "description": "Describe el problema",
-    "submit": "Enviar Disputa",
-    "cancel": "Cancelar Disputa"
-  },
-  "timeSlots": {
-    "suggested": "Horarios Sugeridos",
-    "earliest": "Coincidencia más temprana",
-    "noOverlap": "Sin disponibilidad coincidente",
-    "selectTime": "Selecciona un horario"
-  },
-  "applicants": {
-    "new": "Nuevos",
-    "shortlisted": "Preseleccionados",
-    "invited": "Invitados",
-    "rejected": "Rechazados",
-    "bulkActions": "Acciones Masivas",
-    "moveToShortlist": "Mover a Preselección",
-    "sendInvite": "Enviar Invitación",
-    "reject": "Rechazar"
-  },
-  "offers": {
-    "expires": "Expira",
-    "extend": "Extender",
-    "counter": "Contraoferta",
-    "accept": "Aceptar",
-    "decline": "Rechazar",
-    "autoCounter": "Generar Contraoferta",
-    "generating": "Generando contraoferta..."
-  },
-  "common": {
-    "translate": "Traducir",
-    "translating": "Traduciendo...",
-    "showOriginal": "Mostrar original",
-    "translatedFrom": "Traducido del {{lang}}"
+  "suggestions": {
+    "sinkRepair": "Reparación de Fregadero",
+    "outletInstallation": "Instalación de Enchufe",
+    "roomPainting": "Pintura de Habitación",
+    "doorHanging": "Instalación de Puerta",
+    "fenceBuilding": "Construcción de Cerca",
+    "electrician": "Electricista",
+    "plumber": "Fontanero",
+    "carpenter": "Carpintero",
+    "painter": "Pintor",
+    "landscaper": "Paisajista"
   }
 }

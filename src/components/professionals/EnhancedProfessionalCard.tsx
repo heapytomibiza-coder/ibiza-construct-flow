@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +39,7 @@ interface ProfessionalCardProps {
 }
 
 const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professional }) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
@@ -57,17 +59,17 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
 
   const getPriceBandDisplay = (band: string) => {
     switch (band) {
-      case 'budget': return { text: 'Budget-friendly', color: 'bg-green-100 text-green-800' };
-      case 'premium': return { text: 'Premium', color: 'bg-purple-100 text-purple-800' };
-      default: return { text: 'Standard rates', color: 'bg-blue-100 text-blue-800' };
+      case 'budget': return { text: t('budgetFriendly'), color: 'bg-green-100 text-green-800' };
+      case 'premium': return { text: t('premium'), color: 'bg-purple-100 text-purple-800' };
+      default: return { text: t('standardRates'), color: 'bg-blue-100 text-blue-800' };
     }
   };
 
   const getAvailabilityDisplay = (status: string) => {
     switch (status) {
-      case 'available': return { text: 'Available', color: 'bg-green-100 text-green-800' };
-      case 'busy': return { text: 'Busy', color: 'bg-yellow-100 text-yellow-800' };
-      default: return { text: 'Unknown', color: 'bg-gray-100 text-gray-800' };
+      case 'available': return { text: t('available'), color: 'bg-green-100 text-green-800' };
+      case 'busy': return { text: t('busy'), color: 'bg-yellow-100 text-yellow-800' };
+      default: return { text: t('unknown'), color: 'bg-gray-100 text-gray-800' };
     }
   };
 
@@ -110,7 +112,7 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
                 {professional.full_name}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {professional.specializations?.[0] || 'Professional'}
+                {professional.specializations?.[0] || t('professional')}
               </p>
             </div>
             
@@ -127,7 +129,7 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
                   />
                 ))}
                 <span className="text-sm text-muted-foreground ml-2">
-                  {(professional.rating || (professional as any).stats?.average_rating || 4.8).toFixed(1)} ({professional.total_jobs_completed || (professional as any).stats?.jobs_completed || 0} jobs)
+                  {(professional.rating || (professional as any).stats?.average_rating || 4.8).toFixed(1)} ({professional.total_jobs_completed || (professional as any).stats?.jobs_completed || 0} {t('jobs').toLowerCase()})
                 </span>
               </div>
             </div>
@@ -143,7 +145,7 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
               </Badge>
               {professional.response_time_hours && (
                 <Badge variant="outline">
-                  {professional.response_time_hours}h response
+                  {professional.response_time_hours}h {t('response')}
                 </Badge>
               )}
             </div>
@@ -159,7 +161,7 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
 
         {/* Service Categories Pricing */}
         <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-          <div className="text-xs font-medium text-muted-foreground mb-2">Top Services</div>
+          <div className="text-xs font-medium text-muted-foreground mb-2">{t('topServices')}</div>
           <div className="space-y-1">
             {professional.specializations?.slice(0, 3).map((spec, index) => (
               <div key={index} className="flex items-center justify-between text-sm">
@@ -175,17 +177,17 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
           <div className="text-center p-2 bg-muted/30 rounded">
             <Briefcase className="w-4 h-4 mx-auto mb-1 text-primary" />
             <div className="text-sm font-bold">{professional.total_jobs_completed || 0}</div>
-            <div className="text-xs text-muted-foreground">Jobs</div>
+            <div className="text-xs text-muted-foreground">{t('jobs')}</div>
           </div>
           <div className="text-center p-2 bg-muted/30 rounded">
             <Star className="w-4 h-4 mx-auto mb-1 text-yellow-500" />
             <div className="text-sm font-bold">{(professional.rating || 4.8).toFixed(1)}</div>
-            <div className="text-xs text-muted-foreground">Rating</div>
+            <div className="text-xs text-muted-foreground">{t('rating')}</div>
           </div>
           <div className="text-center p-2 bg-muted/30 rounded">
             <Award className="w-4 h-4 mx-auto mb-1 text-primary" />
             <div className="text-sm font-bold">5+</div>
-            <div className="text-xs text-muted-foreground">Years</div>
+            <div className="text-xs text-muted-foreground">{t('years')}</div>
           </div>
         </div>
 
@@ -195,8 +197,8 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
             <MapPin className="w-4 h-4" />
             <span>
               {professional.coverage_area.radius ? 
-                `${professional.coverage_area.radius}km radius` : 
-                'Ibiza area'
+                t('radius', { radius: professional.coverage_area.radius }) : 
+                t('ibizaArea')
               }
             </span>
           </div>
@@ -216,7 +218,7 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
           >
             <a href={`/professionals/${professional.user_id}`}>
               <FileText className="w-4 h-4 mr-2" />
-              View Details
+              {t('viewDetails')}
             </a>
           </Button>
           <Button 
@@ -225,7 +227,7 @@ const EnhancedProfessionalCard: React.FC<ProfessionalCardProps> = ({ professiona
             onClick={handleRequestQuote}
           >
             <FileText className="w-4 h-4 mr-2" />
-            Request Quote
+            {t('requestQuote')}
           </Button>
         </div>
       </CardContent>
