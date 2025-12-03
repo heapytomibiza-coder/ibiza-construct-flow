@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, CalendarIcon, MapPin, PlayCircle, CheckCircle, Phone, Video, Home } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface LogisticsStepProps {
   microName: string;
@@ -35,26 +35,11 @@ interface LogisticsStepProps {
   onBack: () => void;
 }
 
-const START_DATE_PRESETS = ['Start ASAP', 'This Week', 'Next Week', 'Within 2 Weeks', 'Within a Month', 'Flexible'];
-const CONSULTATION_TIMES = ['Morning (8-12)', 'Afternoon (12-17)', 'Evening (17-20)', 'Flexible'];
-const BUDGET_RANGES = ['€0-500', '€500-1,000', '€1,000-2,500', '€2,500-5,000', '€5,000+', 'Unsure'];
-const ACCESS_OPTIONS = [
-  'Street level parking',
-  'Underground parking',
-  'No parking nearby',
-  'Elevator available',
-  'Stairs only',
-  'Gated community',
-  'Code/keys needed',
-  'Building reception',
-  'Easy access',
-  'Limited access'
-];
 const IBIZA_LOCATIONS = [
   'Ibiza Town (Eivissa)',
   'San Antonio (Sant Antoni)',
   'Santa Eulalia (Santa Eulària)',
-  'Playa d\'en Bossa',
+  "Playa d'en Bossa",
   'Talamanca',
   'Figueretas',
   'San José (Sant Josep)',
@@ -80,21 +65,58 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
   onNext,
   onBack
 }) => {
+  const { t } = useTranslation('wizard');
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [completionDateOpen, setCompletionDateOpen] = useState(false);
   const [consultationDateOpen, setConsultationDateOpen] = useState(false);
 
+  // Translated presets with their storage values
+  const START_DATE_PRESETS = [
+    { key: 'startAsap', value: 'Start ASAP' },
+    { key: 'thisWeek', value: 'This Week' },
+    { key: 'nextWeek', value: 'Next Week' },
+    { key: 'within2Weeks', value: 'Within 2 Weeks' },
+    { key: 'withinMonth', value: 'Within a Month' },
+    { key: 'flexible', value: 'Flexible' }
+  ];
+
+  const CONSULTATION_TIMES = [
+    { key: 'morning', value: 'Morning (8-12)' },
+    { key: 'afternoon', value: 'Afternoon (12-17)' },
+    { key: 'evening', value: 'Evening (17-20)' },
+    { key: 'flexible', value: 'Flexible' }
+  ];
+
+  const BUDGET_RANGES = [
+    { key: '0-500', value: '€0-500' },
+    { key: '500-1000', value: '€500-1,000' },
+    { key: '1000-2500', value: '€1,000-2,500' },
+    { key: '2500-5000', value: '€2,500-5,000' },
+    { key: '5000+', value: '€5,000+' },
+    { key: 'unsure', value: 'Unsure' }
+  ];
+
+  const ACCESS_OPTIONS = [
+    { key: 'streetParking', value: 'Street level parking' },
+    { key: 'undergroundParking', value: 'Underground parking' },
+    { key: 'noParking', value: 'No parking nearby' },
+    { key: 'elevator', value: 'Elevator available' },
+    { key: 'stairsOnly', value: 'Stairs only' },
+    { key: 'gatedCommunity', value: 'Gated community' },
+    { key: 'codeKeys', value: 'Code/keys needed' },
+    { key: 'reception', value: 'Building reception' },
+    { key: 'easyAccess', value: 'Easy access' },
+    { key: 'limitedAccess', value: 'Limited access' }
+  ];
+
   const handleUpdate = (field: string, value: any) => {
-    console.log('LogisticsStep - handleUpdate:', field, value);
     onLogisticsChange({ ...logistics, [field]: value });
   };
 
-  const handleStartDatePreset = (preset: string) => {
-    console.log('LogisticsStep - Start date preset clicked:', preset);
-    // Combine both updates into a single state change to prevent freezing
+  const handleStartDatePreset = (value: string) => {
     onLogisticsChange({ 
       ...logistics, 
-      startDatePreset: preset,
+      startDatePreset: value,
       startDate: undefined 
     });
   };
@@ -109,16 +131,16 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
       <div className="space-y-4">
         <Button variant="ghost" onClick={onBack} className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          {t('common.back')}
         </Button>
 
         <div>
           <Badge variant="outline" className="mb-4">{microName}</Badge>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-            Location & Timeline
+            {t('steps.logistics.title')}
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
-            Let's plan the details of your project
+            {t('steps.logistics.subtitle')}
           </p>
         </div>
       </div>
@@ -128,11 +150,11 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         <Card className="p-6 space-y-3">
           <Label className="text-base font-medium text-foreground flex items-center gap-2">
             <MapPin className="w-4 h-4" />
-            Location in Ibiza
+            {t('steps.logistics.locationLabel')}
           </Label>
           <Select value={logistics.location || ''} onValueChange={(value) => handleUpdate('location', value)}>
             <SelectTrigger className="w-full bg-background">
-              <SelectValue placeholder="Select your location in Ibiza..." />
+              <SelectValue placeholder={t('steps.logistics.locationPlaceholder')} />
             </SelectTrigger>
             <SelectContent className="bg-background border shadow-lg max-h-[300px] z-50">
               {IBIZA_LOCATIONS.map((location) => (
@@ -146,7 +168,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
             <Input
               value={logistics.customLocation || ''}
               onChange={(e) => handleUpdate('customLocation', e.target.value)}
-              placeholder="Enter specific address..."
+              placeholder={t('steps.logistics.customLocationPlaceholder')}
               className="mt-2"
             />
           )}
@@ -157,19 +179,19 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           <div className="flex items-center gap-2">
             <PlayCircle className="w-5 h-5 text-primary" />
             <Label className="text-base font-medium text-foreground">
-              When do you want this work to begin?
+              {t('steps.logistics.startDateTitle')}
             </Label>
           </div>
           
           {/* Quick presets */}
           <div className="flex flex-wrap gap-2">
             {START_DATE_PRESETS.map((preset) => {
-              const isSelected = logistics.startDatePreset === preset;
+              const isSelected = logistics.startDatePreset === preset.value;
               return (
                 <button
-                  key={preset}
+                  key={preset.key}
                   type="button"
-                  onClick={() => handleStartDatePreset(preset)}
+                  onClick={() => handleStartDatePreset(preset.value)}
                   className={cn(
                     "inline-flex items-center rounded-full border-2 px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
                     isSelected 
@@ -177,7 +199,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                       : "bg-background border-border hover:border-primary hover:bg-primary/5"
                   )}
                 >
-                  {preset}
+                  {t(`presets.${preset.key}`)}
                 </button>
               );
             })}
@@ -185,7 +207,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
           {/* Or specific date */}
           <div className="pt-2">
-            <Label className="text-sm text-muted-foreground mb-2 block">Or choose a specific start date</Label>
+            <Label className="text-sm text-muted-foreground mb-2 block">{t('steps.logistics.startDateSpecific')}</Label>
             <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
               <PopoverTrigger asChild>
                 <Button 
@@ -194,7 +216,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   className="w-full justify-start text-left"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {logistics.startDate ? format(logistics.startDate, 'PPP') : 'Pick a start date'}
+                  {logistics.startDate ? format(logistics.startDate, 'PPP') : t('steps.logistics.pickStartDate')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 z-50" align="start">
@@ -202,7 +224,6 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                   mode="single"
                   selected={logistics.startDate}
                   onSelect={(date) => {
-                    // Combine both updates into single state change
                     onLogisticsChange({
                       ...logistics,
                       startDate: date,
@@ -224,12 +245,12 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           <div className="flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-primary" />
             <Label className="text-base font-medium text-foreground">
-              When would you like this completed?
+              {t('steps.logistics.completionTitle')}
             </Label>
-            <Badge variant="secondary" className="ml-2">Optional</Badge>
+            <Badge variant="secondary" className="ml-2">{t('common.optional')}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            This helps professionals understand your timeline expectations
+            {t('steps.logistics.completionHelp')}
           </p>
 
           <Popover open={completionDateOpen} onOpenChange={setCompletionDateOpen}>
@@ -240,7 +261,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                 className="w-full justify-start text-left"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {logistics.completionDate ? format(logistics.completionDate, 'PPP') : 'Pick ideal completion date'}
+                {logistics.completionDate ? format(logistics.completionDate, 'PPP') : t('steps.logistics.pickCompletionDate')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 z-50" align="start">
@@ -265,10 +286,10 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
         {/* 3. Consultation Booking */}
         <Card className="p-6 space-y-4">
           <Label className="text-base font-medium text-foreground">
-            Book a consultation
+            {t('steps.logistics.consultationTitle')}
           </Label>
           <p className="text-sm text-muted-foreground">
-            Schedule a site visit or call to discuss your project
+            {t('steps.logistics.consultationHelp')}
           </p>
 
           {/* Consultation Type */}
@@ -281,7 +302,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
               onClick={() => handleUpdate('consultationType', 'site_visit')}
             >
               <Home className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <p className="text-sm font-medium">Site Visit</p>
+              <p className="text-sm font-medium">{t('steps.logistics.siteVisit')}</p>
             </Card>
             <Card
               className={cn(
@@ -291,7 +312,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
               onClick={() => handleUpdate('consultationType', 'phone_call')}
             >
               <Phone className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <p className="text-sm font-medium">Phone Call</p>
+              <p className="text-sm font-medium">{t('steps.logistics.phoneCall')}</p>
             </Card>
             <Card
               className={cn(
@@ -301,7 +322,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
               onClick={() => handleUpdate('consultationType', 'video_call')}
             >
               <Video className="w-6 h-6 mx-auto mb-2 text-primary" />
-              <p className="text-sm font-medium">Video Call</p>
+              <p className="text-sm font-medium">{t('steps.logistics.videoCall')}</p>
             </Card>
           </div>
 
@@ -316,7 +337,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                     className="w-full justify-start text-left"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {logistics.consultationDate ? format(logistics.consultationDate, 'PPP') : 'Pick consultation date'}
+                    {logistics.consultationDate ? format(logistics.consultationDate, 'PPP') : t('steps.logistics.pickConsultationDate')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 z-50" align="start">
@@ -335,15 +356,15 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
               </Popover>
 
               <div>
-                <Label className="text-sm text-muted-foreground mb-2 block">Preferred time</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">{t('steps.logistics.preferredTime')}</Label>
                 <div className="flex flex-wrap gap-2">
                   {CONSULTATION_TIMES.map((time) => {
-                    const isSelected = logistics.consultationTime === time;
+                    const isSelected = logistics.consultationTime === time.value;
                     return (
                       <button
-                        key={time}
+                        key={time.key}
                         type="button"
-                        onClick={() => handleUpdate('consultationTime', time)}
+                        onClick={() => handleUpdate('consultationTime', time.value)}
                         className={cn(
                           "inline-flex items-center rounded-full border-2 px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
                           isSelected 
@@ -351,7 +372,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                             : "bg-background border-border hover:border-primary hover:bg-primary/5"
                         )}
                       >
-                        {time}
+                        {t(`times.${time.key}`)}
                       </button>
                     );
                   })}
@@ -363,22 +384,22 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
         {/* Contact & Access */}
         <Card className="p-6 space-y-4">
-          <Label className="text-base font-medium text-foreground">Site Access</Label>
+          <Label className="text-base font-medium text-foreground">{t('steps.logistics.siteAccess')}</Label>
           
           <div>
-            <Label className="text-sm text-muted-foreground mb-2 block">Access & Parking</Label>
+            <Label className="text-sm text-muted-foreground mb-2 block">{t('steps.logistics.accessParking')}</Label>
             <div className="flex flex-wrap gap-2">
               {ACCESS_OPTIONS.map((option) => {
-                const isSelected = logistics.accessDetails?.includes(option);
+                const isSelected = logistics.accessDetails?.includes(option.value);
                 return (
                   <button
-                    key={option}
+                    key={option.key}
                     type="button"
                     onClick={() => {
                       const current = logistics.accessDetails || [];
                       const updated = isSelected
-                        ? current.filter((item) => item !== option)
-                        : [...current, option];
+                        ? current.filter((item) => item !== option.value)
+                        : [...current, option.value];
                       handleUpdate('accessDetails', updated);
                     }}
                     className={cn(
@@ -388,7 +409,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                         : "bg-background border-border hover:border-primary hover:bg-primary/5"
                     )}
                   >
-                    {option}
+                    {t(`accessOptions.${option.key}`)}
                   </button>
                 );
               })}
@@ -398,16 +419,16 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
 
         {/* Budget Range */}
         <Card className="p-6 space-y-3">
-          <Label className="text-base font-medium text-foreground">Budget Range</Label>
-          <p className="text-sm text-muted-foreground">Select a budget range or choose "Unsure" to get quotes first</p>
+          <Label className="text-base font-medium text-foreground">{t('steps.logistics.budgetTitle')}</Label>
+          <p className="text-sm text-muted-foreground">{t('steps.logistics.budgetHelp')}</p>
           <div className="flex flex-wrap gap-2">
             {BUDGET_RANGES.map((range) => {
-              const isSelected = logistics.budgetRange === range;
+              const isSelected = logistics.budgetRange === range.value;
               return (
                 <button
-                  key={range}
+                  key={range.key}
                   type="button"
-                  onClick={() => handleUpdate('budgetRange', range)}
+                  onClick={() => handleUpdate('budgetRange', range.value)}
                   className={cn(
                     "inline-flex items-center rounded-full border-2 px-4 py-2 text-xs font-semibold transition-all hover:scale-105 cursor-pointer",
                     isSelected 
@@ -415,7 +436,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
                       : "bg-background border-border hover:border-primary hover:bg-primary/5"
                   )}
                 >
-                  {range}
+                  {t(`budgetRanges.${range.key}`)}
                 </button>
               );
             })}
@@ -430,7 +451,7 @@ export const LogisticsStep: React.FC<LogisticsStepProps> = ({
           disabled={!isComplete}
           className="bg-gradient-hero text-white px-8"
         >
-          Continue
+          {t('common.continue')}
         </Button>
       </div>
     </div>

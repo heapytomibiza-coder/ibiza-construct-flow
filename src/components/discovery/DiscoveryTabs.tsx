@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wrench, Users, Grid3X3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export type DiscoveryMode = 'services' | 'professionals' | 'both';
 
@@ -12,6 +13,7 @@ interface DiscoveryTabsProps {
 }
 
 export const DiscoveryTabs = ({ activeMode, onModeChange, className }: DiscoveryTabsProps) => {
+  const { t } = useTranslation('wizard');
 
   return (
     <div className={cn("sticky top-16 z-30 bg-background/95 backdrop-blur-md py-3 -mx-4 px-4 sm:mx-0 sm:px-0 sm:static sm:bg-transparent sm:backdrop-blur-none border-b sm:border-0", className)}>
@@ -24,10 +26,10 @@ export const DiscoveryTabs = ({ activeMode, onModeChange, className }: Discovery
             >
               <div className="flex items-center gap-2">
                 <Wrench className="w-4 h-4" />
-                <span className="font-semibold text-sm">Services</span>
+                <span className="font-semibold text-sm">{t('discovery.services')}</span>
               </div>
               <span className="text-[10px] text-muted-foreground data-[state=active]:text-primary-foreground/80 font-normal hidden sm:block">
-                Specific jobs
+                {t('discovery.servicesSubtitle')}
               </span>
             </TabsTrigger>
             <TabsTrigger 
@@ -36,10 +38,10 @@ export const DiscoveryTabs = ({ activeMode, onModeChange, className }: Discovery
             >
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
-                <span className="font-semibold text-sm">Pros</span>
+                <span className="font-semibold text-sm">{t('discovery.professionals')}</span>
               </div>
               <span className="text-[10px] text-muted-foreground data-[state=active]:text-primary-foreground/80 font-normal hidden sm:block">
-                By trade
+                {t('discovery.professionalsSubtitle')}
               </span>
             </TabsTrigger>
           </TabsList>

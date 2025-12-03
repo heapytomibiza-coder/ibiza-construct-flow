@@ -45,7 +45,6 @@
       "subtitle": "Información potenciada por IA y revisión final",
       "jobSummary": "Resumen del Trabajo",
       "service": "Servicio",
-      "title": "Título",
       "description": "Descripción",
       "budgetRange": "Rango de Presupuesto",
       "aiQuestionsAnswers": "Preguntas y Respuestas de IA",
@@ -53,7 +52,119 @@
       "backToEdit": "Atrás para Editar",
       "postJob": "Publicar Trabajo",
       "posting": "Publicando..."
+    },
+    "logistics": {
+      "title": "Ubicación y Cronograma",
+      "subtitle": "Planifiquemos los detalles de tu proyecto",
+      "locationLabel": "Ubicación en Ibiza",
+      "locationPlaceholder": "Selecciona tu ubicación en Ibiza...",
+      "customLocationPlaceholder": "Ingresa la dirección específica...",
+      "startDateTitle": "¿Cuándo quieres que comience este trabajo?",
+      "startDateSpecific": "O elige una fecha de inicio específica",
+      "pickStartDate": "Elegir fecha de inicio",
+      "completionTitle": "¿Cuándo te gustaría que esté terminado?",
+      "completionHelp": "Esto ayuda a los profesionales a entender tus expectativas de tiempo",
+      "pickCompletionDate": "Elegir fecha de finalización ideal",
+      "consultationTitle": "Reservar una consulta",
+      "consultationHelp": "Programa una visita al sitio o una llamada para discutir tu proyecto",
+      "siteVisit": "Visita al Sitio",
+      "phoneCall": "Llamada Telefónica",
+      "videoCall": "Videollamada",
+      "pickConsultationDate": "Elegir fecha de consulta",
+      "preferredTime": "Hora preferida",
+      "siteAccess": "Acceso al Sitio",
+      "accessParking": "Acceso y Estacionamiento",
+      "budgetTitle": "Rango de Presupuesto",
+      "budgetHelp": "Selecciona un rango de presupuesto o elige \"No estoy seguro\" para obtener cotizaciones primero"
+    },
+    "extras": {
+      "title": "Agregar Fotos y Notas",
+      "subtitle": "Opcional pero ayuda a los profesionales a entender mejor tu proyecto",
+      "photosTitle": "Fotos del Proyecto",
+      "photosHelp": "Sube fotos del área de trabajo, condiciones existentes o imágenes de referencia",
+      "photoCount": "{{count}} fotos",
+      "takePhoto": "Tomar Foto",
+      "upload": "Subir",
+      "uploading": "Subiendo...",
+      "quickNotes": "Notas Rápidas",
+      "quickNotesHelp": "Toca para agregar requisitos comunes a tus notas",
+      "additionalNotes": "Notas Adicionales",
+      "notesPlaceholder": "Cualquier otro detalle que los profesionales deban saber...",
+      "permitsTitle": "Permisos y Cumplimiento",
+      "permitsHelp": "¿Hay permisos, reglas de HOA o requisitos de cumplimiento para este trabajo?",
+      "noPermits": "No, no lo creo",
+      "yesPermits": "Sí, podemos discutirlo",
+      "continueReview": "Continuar a Revisión"
+    },
+    "questions": {
+      "title": "Detalles del Servicio",
+      "aiEnhanced": "Mejorado por IA – los detalles de tu trabajo se optimizarán automáticamente",
+      "questionsAnswered": "Pregunta {{current}} de {{total}}"
     }
+  },
+  "presets": {
+    "startAsap": "Comenzar Cuanto Antes",
+    "thisWeek": "Esta Semana",
+    "nextWeek": "Próxima Semana",
+    "within2Weeks": "En 2 Semanas",
+    "withinMonth": "En un Mes",
+    "flexible": "Flexible"
+  },
+  "times": {
+    "morning": "Mañana (8-12)",
+    "afternoon": "Tarde (12-17)",
+    "evening": "Noche (17-20)",
+    "flexible": "Flexible"
+  },
+  "budgetRanges": {
+    "0-500": "€0-500",
+    "500-1000": "€500-1.000",
+    "1000-2500": "€1.000-2.500",
+    "2500-5000": "€2.500-5.000",
+    "5000+": "€5.000+",
+    "unsure": "No estoy seguro"
+  },
+  "accessOptions": {
+    "streetParking": "Estacionamiento en la calle",
+    "undergroundParking": "Estacionamiento subterráneo",
+    "noParking": "Sin estacionamiento cercano",
+    "elevator": "Ascensor disponible",
+    "stairsOnly": "Solo escaleras",
+    "gatedCommunity": "Comunidad cerrada",
+    "codeKeys": "Código/llaves necesarios",
+    "reception": "Recepción del edificio",
+    "easyAccess": "Fácil acceso",
+    "limitedAccess": "Acceso limitado"
+  },
+  "commonNotes": {
+    "ecoFriendly": "Materiales ecológicos preferidos",
+    "minDisruption": "Mínima interrupción necesaria",
+    "largerRenovation": "Parte de una renovación mayor",
+    "matchStyle": "Coincidir con el estilo existente",
+    "historicBuilding": "Edificio histórico",
+    "completionCertificate": "Necesito certificado de finalización"
+  },
+  "fallback": {
+    "scopeLabel": "¿Cuál es el alcance del trabajo?",
+    "scopeSmall": "Trabajo pequeño - Arreglo rápido o reparación menor",
+    "scopeMedium": "Proyecto mediano - Unos días de trabajo",
+    "scopeLarge": "Proyecto grande - Trabajo extenso durante semanas",
+    "urgencyLabel": "¿Qué tan urgente es esto?",
+    "urgencyEmergency": "Emergencia - Necesita atención inmediata",
+    "urgencyUrgent": "Urgente - Dentro de esta semana",
+    "urgencyNormal": "Normal - Dentro de unas semanas",
+    "urgencyFlexible": "Flexible - Sin prisa, cuando esté disponible"
+  },
+  "category": {
+    "failedLoad": "Error al cargar categorías",
+    "tryAgain": "Por favor intenta de nuevo o contacta soporte",
+    "noCategories": "No hay categorías disponibles"
+  },
+  "discovery": {
+    "services": "Servicios",
+    "servicesSubtitle": "Trabajos específicos",
+    "professionals": "Pros",
+    "professionalsSubtitle": "Por oficio"
   },
   "navigation": {
     "progressLabels": {
@@ -85,5 +196,13 @@
   "errors": {
     "title": "Error",
     "goToDashboard": "Ir al Panel"
+  },
+  "common": {
+    "back": "Atrás",
+    "continue": "Continuar",
+    "skip": "Omitir",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "optional": "Opcional"
   }
 }

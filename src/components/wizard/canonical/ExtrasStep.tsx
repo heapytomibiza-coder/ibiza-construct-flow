@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Upload, X, Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { InlineCameraCapture } from '@/components/camera/InlineCameraCapture';
+import { useTranslation } from 'react-i18next';
 
 interface ExtrasStepProps {
   microName: string;
@@ -23,14 +24,14 @@ interface ExtrasStepProps {
   onBack: () => void;
 }
 
-const COMMON_NOTES = [
-  'Eco-friendly materials preferred',
-  'Minimum disruption needed',
-  'Part of larger renovation',
-  'Matching existing style',
-  'Historic building',
-  'Need completion certificate'
-];
+const COMMON_NOTE_KEYS = [
+  'ecoFriendly',
+  'minDisruption',
+  'largerRenovation',
+  'matchStyle',
+  'historicBuilding',
+  'completionCertificate'
+] as const;
 
 export const ExtrasStep: React.FC<ExtrasStepProps> = ({
   microName,
@@ -39,6 +40,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
   onNext,
   onBack
 }) => {
+  const { t } = useTranslation('wizard');
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
 
@@ -51,7 +53,6 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
     
     setUploadingPhoto(true);
     try {
-      // Mock upload for now - in production would upload to storage
       const newPhotos = [...extras.photos];
       for (let i = 0; i < files.length; i++) {
         const reader = new FileReader();
@@ -75,12 +76,13 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
     handleUpdate('photos', newPhotos);
   };
 
-  const toggleNoteChip = (note: string) => {
+  const toggleNoteChip = (noteKey: string) => {
+    const noteText = t(`commonNotes.${noteKey}`);
     const currentNotes = extras.notes || '';
-    if (currentNotes.includes(note)) {
-      handleUpdate('notes', currentNotes.replace(note + '. ', '').replace(note, ''));
+    if (currentNotes.includes(noteText)) {
+      handleUpdate('notes', currentNotes.replace(noteText + '. ', '').replace(noteText, ''));
     } else {
-      handleUpdate('notes', currentNotes ? `${currentNotes}. ${note}` : note);
+      handleUpdate('notes', currentNotes ? `${currentNotes}. ${noteText}` : noteText);
     }
   };
 
@@ -89,16 +91,16 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
       <div className="space-y-4">
         <Button variant="ghost" onClick={onBack} className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          {t('common.back')}
         </Button>
 
         <div>
           <Badge variant="outline" className="mb-4">{microName}</Badge>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-            Add Photos & Notes
+            {t('steps.extras.title')}
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
-            Optional but helps professionals understand your project better
+            {t('steps.extras.subtitle')}
           </p>
         </div>
       </div>
@@ -108,12 +110,12 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
         <Card className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-foreground">Project Photos</h3>
+              <h3 className="font-semibold text-foreground">{t('steps.extras.photosTitle')}</h3>
               <p className="text-sm text-muted-foreground">
-                Upload photos of the work area, existing conditions, or reference images
+                {t('steps.extras.photosHelp')}
               </p>
             </div>
-            <Badge variant="outline">{extras.photos.length} photos</Badge>
+            <Badge variant="outline">{t('steps.extras.photoCount', { count: extras.photos.length })}</Badge>
           </div>
 
           {/* Photo grid */}
@@ -146,7 +148,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
                 onClick={() => setShowCamera(true)}
               >
                 <Camera className="w-8 h-8 text-muted-foreground" />
-                <span className="text-sm font-medium">Take Photo</span>
+                <span className="text-sm font-medium">{t('steps.extras.takePhoto')}</span>
               </Button>
               
               <label className={cn(
@@ -157,7 +159,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
               )}>
                 <Upload className="w-8 h-8 text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground">
-                  {uploadingPhoto ? 'Uploading...' : 'Upload'}
+                  {uploadingPhoto ? t('steps.extras.uploading') : t('steps.extras.upload')}
                 </span>
                 <input
                   type="file"
@@ -178,7 +180,6 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
                   const newPhotos = [...extras.photos, e.target?.result as string];
                   handleUpdate('photos', newPhotos);
                   
-                  // If OCR detected text, add to notes
                   if (data?.text) {
                     const currentNotes = extras.notes || '';
                     const ocrNote = `\n\nFrom photo: ${data.text}`;
@@ -197,26 +198,27 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
         {/* Common Notes Chips */}
         <Card className="p-6 space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground">Quick Notes</h3>
+            <h3 className="font-semibold text-foreground">{t('steps.extras.quickNotes')}</h3>
             <p className="text-sm text-muted-foreground">
-              Tap to add common requirements to your notes
+              {t('steps.extras.quickNotesHelp')}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {COMMON_NOTES.map((note) => {
-              const isSelected = extras.notes?.includes(note);
+            {COMMON_NOTE_KEYS.map((noteKey) => {
+              const noteText = t(`commonNotes.${noteKey}`);
+              const isSelected = extras.notes?.includes(noteText);
               return (
                 <Badge
-                  key={note}
+                  key={noteKey}
                   variant={isSelected ? "default" : "outline"}
                   className={cn(
                     "cursor-pointer px-4 py-2 transition-all",
                     isSelected ? "bg-primary text-white border-primary" : "hover:border-primary"
                   )}
-                  onClick={() => toggleNoteChip(note)}
+                  onClick={() => toggleNoteChip(noteKey)}
                 >
-                  {note}
+                  {noteText}
                 </Badge>
               );
             })}
@@ -225,20 +227,20 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
 
         {/* Additional Notes */}
         <Card className="p-6 space-y-3">
-          <h3 className="font-semibold text-foreground">Additional Notes</h3>
+          <h3 className="font-semibold text-foreground">{t('steps.extras.additionalNotes')}</h3>
           <Textarea
             value={extras.notes || ''}
             onChange={(e) => handleUpdate('notes', e.target.value)}
-            placeholder="Any other details professionals should know..."
+            placeholder={t('steps.extras.notesPlaceholder')}
             rows={4}
           />
         </Card>
 
         {/* Permits/Compliance */}
         <Card className="p-6 space-y-3">
-          <h3 className="font-semibold text-foreground">Permits & Compliance</h3>
+          <h3 className="font-semibold text-foreground">{t('steps.extras.permitsTitle')}</h3>
           <p className="text-sm text-muted-foreground">
-            Are there any permits, HOA rules, or compliance requirements for this work?
+            {t('steps.extras.permitsHelp')}
           </p>
           <div className="flex gap-3">
             <Badge
@@ -249,7 +251,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
               )}
               onClick={() => handleUpdate('permitsConcern', false)}
             >
-              No, I don't think so
+              {t('steps.extras.noPermits')}
             </Badge>
             <Badge
               variant={extras.permitsConcern === true ? "default" : "outline"}
@@ -259,7 +261,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
               )}
               onClick={() => handleUpdate('permitsConcern', true)}
             >
-              Yes, we can discuss
+              {t('steps.extras.yesPermits')}
             </Badge>
           </div>
         </Card>
@@ -271,7 +273,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
           onClick={onNext}
           className="bg-gradient-hero text-white px-8"
         >
-          Continue to Review
+          {t('steps.extras.continueReview')}
         </Button>
       </div>
     </div>
