@@ -226,7 +226,17 @@ export const QuestionsStep: React.FC<QuestionsStepProps> = ({
 
       if (!packError && pack?.content) {
         console.log('✅ Loaded questions from database pack');
-        const transformedQuestions = transformPackToAIQuestions(pack.content);
+        let transformedQuestions = transformPackToAIQuestions(pack.content);
+        
+        // Filter out logistics questions that are covered in Step 5
+        const logisticsIds = ['job_location', 'location', 'start_time', 'start_date', 
+                              'preferred_date', 'project_assets', 'budget', 'budget_range',
+                              'timeline', 'completion_date', 'access', 'access_details', 
+                              'consultation', 'consultation_type', 'urgency', 'q8', 'q9',
+                              'description', 'additional_notes', 'notes', 'when_needed',
+                              'occupied', 'property_access', 'start_date_preference'];
+        transformedQuestions = transformedQuestions.filter(q => !logisticsIds.includes(q.id));
+        
         if (transformedQuestions.length > 0) {
           setQuestions(transformedQuestions);
           setPackSource('pack');
