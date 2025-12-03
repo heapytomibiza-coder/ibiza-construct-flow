@@ -45,7 +45,6 @@
       "subtitle": "AI-powered insights and final review",
       "jobSummary": "Job Summary",
       "service": "Service",
-      "title": "Title",
       "description": "Description",
       "budgetRange": "Budget Range",
       "aiQuestionsAnswers": "AI Questions & Answers",
@@ -53,7 +52,119 @@
       "backToEdit": "Back to Edit",
       "postJob": "Post Job",
       "posting": "Posting..."
+    },
+    "logistics": {
+      "title": "Location & Timeline",
+      "subtitle": "Let's plan the details of your project",
+      "locationLabel": "Location in Ibiza",
+      "locationPlaceholder": "Select your location in Ibiza...",
+      "customLocationPlaceholder": "Enter specific address...",
+      "startDateTitle": "When do you want this work to begin?",
+      "startDateSpecific": "Or choose a specific start date",
+      "pickStartDate": "Pick a start date",
+      "completionTitle": "When would you like this completed?",
+      "completionHelp": "This helps professionals understand your timeline expectations",
+      "pickCompletionDate": "Pick ideal completion date",
+      "consultationTitle": "Book a consultation",
+      "consultationHelp": "Schedule a site visit or call to discuss your project",
+      "siteVisit": "Site Visit",
+      "phoneCall": "Phone Call",
+      "videoCall": "Video Call",
+      "pickConsultationDate": "Pick consultation date",
+      "preferredTime": "Preferred time",
+      "siteAccess": "Site Access",
+      "accessParking": "Access & Parking",
+      "budgetTitle": "Budget Range",
+      "budgetHelp": "Select a budget range or choose \"Unsure\" to get quotes first"
+    },
+    "extras": {
+      "title": "Add Photos & Notes",
+      "subtitle": "Optional but helps professionals understand your project better",
+      "photosTitle": "Project Photos",
+      "photosHelp": "Upload photos of the work area, existing conditions, or reference images",
+      "photoCount": "{{count}} photos",
+      "takePhoto": "Take Photo",
+      "upload": "Upload",
+      "uploading": "Uploading...",
+      "quickNotes": "Quick Notes",
+      "quickNotesHelp": "Tap to add common requirements to your notes",
+      "additionalNotes": "Additional Notes",
+      "notesPlaceholder": "Any other details professionals should know...",
+      "permitsTitle": "Permits & Compliance",
+      "permitsHelp": "Are there any permits, HOA rules, or compliance requirements for this work?",
+      "noPermits": "No, I don't think so",
+      "yesPermits": "Yes, we can discuss",
+      "continueReview": "Continue to Review"
+    },
+    "questions": {
+      "title": "Service Details",
+      "aiEnhanced": "Enhanced by AI – your job details will be optimized automatically",
+      "questionsAnswered": "Question {{current}} of {{total}}"
     }
+  },
+  "presets": {
+    "startAsap": "Start ASAP",
+    "thisWeek": "This Week",
+    "nextWeek": "Next Week",
+    "within2Weeks": "Within 2 Weeks",
+    "withinMonth": "Within a Month",
+    "flexible": "Flexible"
+  },
+  "times": {
+    "morning": "Morning (8-12)",
+    "afternoon": "Afternoon (12-17)",
+    "evening": "Evening (17-20)",
+    "flexible": "Flexible"
+  },
+  "budgetRanges": {
+    "0-500": "€0-500",
+    "500-1000": "€500-1,000",
+    "1000-2500": "€1,000-2,500",
+    "2500-5000": "€2,500-5,000",
+    "5000+": "€5,000+",
+    "unsure": "Unsure"
+  },
+  "accessOptions": {
+    "streetParking": "Street level parking",
+    "undergroundParking": "Underground parking",
+    "noParking": "No parking nearby",
+    "elevator": "Elevator available",
+    "stairsOnly": "Stairs only",
+    "gatedCommunity": "Gated community",
+    "codeKeys": "Code/keys needed",
+    "reception": "Building reception",
+    "easyAccess": "Easy access",
+    "limitedAccess": "Limited access"
+  },
+  "commonNotes": {
+    "ecoFriendly": "Eco-friendly materials preferred",
+    "minDisruption": "Minimum disruption needed",
+    "largerRenovation": "Part of larger renovation",
+    "matchStyle": "Matching existing style",
+    "historicBuilding": "Historic building",
+    "completionCertificate": "Need completion certificate"
+  },
+  "fallback": {
+    "scopeLabel": "What is the scope of work?",
+    "scopeSmall": "Small job - Quick fix or minor repair",
+    "scopeMedium": "Medium project - A few days of work",
+    "scopeLarge": "Large project - Extensive work over weeks",
+    "urgencyLabel": "How urgent is this?",
+    "urgencyEmergency": "Emergency - Needs immediate attention",
+    "urgencyUrgent": "Urgent - Within this week",
+    "urgencyNormal": "Normal - Within a few weeks",
+    "urgencyFlexible": "Flexible - No rush, whenever available"
+  },
+  "category": {
+    "failedLoad": "Failed to load categories",
+    "tryAgain": "Please try again or contact support",
+    "noCategories": "No categories available"
+  },
+  "discovery": {
+    "services": "Services",
+    "servicesSubtitle": "Specific jobs",
+    "professionals": "Pros",
+    "professionalsSubtitle": "By trade"
   },
   "navigation": {
     "progressLabels": {
@@ -85,5 +196,13 @@
   "errors": {
     "title": "Error",
     "goToDashboard": "Go to Dashboard"
+  },
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "skip": "Skip",
+    "next": "Next",
+    "submit": "Submit",
+    "optional": "Optional"
   }
 }

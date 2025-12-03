@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getCategoryIcon } from '@/lib/categoryIcons';
+import { useTranslation } from 'react-i18next';
 
 interface Category {
   id: string;
@@ -35,6 +36,7 @@ export const CategorySelector = ({
   className,
   onNext
 }: CategorySelectorProps) => {
+  const { t } = useTranslation('wizard');
   const { data: categories = [], isLoading, error } = useQuery<Category[]>({
     queryKey: ['service-categories', filterGroups],
     queryFn: async () => {
@@ -82,9 +84,9 @@ export const CategorySelector = ({
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-destructive">Failed to load categories</p>
+        <p className="text-destructive">{t('category.failedLoad')}</p>
         <p className="text-sm text-muted-foreground mt-2">
-          Please try again or contact support
+          {t('category.tryAgain')}
         </p>
       </div>
     );
@@ -93,7 +95,7 @@ export const CategorySelector = ({
   if (categories.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">No categories available</p>
+        <p className="text-muted-foreground">{t('category.noCategories')}</p>
       </div>
     );
   }
