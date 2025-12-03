@@ -14,8 +14,15 @@ serve(async (req) => {
     const { image } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
+    console.log('LOVABLE_API_KEY present:', !!LOVABLE_API_KEY);
+    console.log('Image size:', image?.length || 0);
+
     if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+      console.error('LOVABLE_API_KEY not configured');
+      return new Response(JSON.stringify({ error: 'AI service not configured. Please ensure Lovable AI is enabled for this project.' }), {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Call Lovable AI with vision capabilities
@@ -47,8 +54,43 @@ serve(async (req) => {
       }),
     });
 
+    console.log('AI API response status:', response.status);
+
+    // Handle specific error codes
+    if (response.status === 401) {
+      console.error('AI API authentication failed - API key may be invalid');
+      return new Response(JSON.stringify({ 
+        error: 'AI service authentication failed. Please try again later or contact support.' 
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (response.status === 429) {
+      console.error('AI API rate limit exceeded');
+      return new Response(JSON.stringify({ 
+        error: 'Rate limit exceeded. Please try again in a few moments.' 
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (response.status === 402) {
+      console.error('AI API payment required');
+      return new Response(JSON.stringify({ 
+        error: 'AI credits exhausted. Please add credits to continue using this feature.' 
+      }), {
+        status: 402,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     if (!response.ok) {
-      throw new Error(`AI API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('AI API error:', response.status, errorText);
+      throw new Error(`AI service error: ${response.status}`);
     }
 
     const data = await response.json();
