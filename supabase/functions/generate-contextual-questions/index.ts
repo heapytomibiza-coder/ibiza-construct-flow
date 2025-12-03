@@ -39,34 +39,36 @@ serve(async (req) => {
 
 A client has selected ${servicesContext} under the category "${category}" > "${subcategory}".
 
-Generate 8-12 highly specific, contextual questions that will help professionals understand the COMPLETE scope of this project. Your questions should:
+Generate 6-10 highly specific, contextual questions that will help professionals understand the COMPLETE scope of this project. 
 
-1. **Address the combination of services** - Ask questions that consider how these services work together or affect each other
-2. **Uncover project scope** - Understand the full picture, not just individual services
-3. **Identify dependencies** - Ask about timing, sequencing, and coordination between different trades
-4. **Be Ibiza-specific** - Consider local regulations, climate challenges (salt air, humidity), and property types common in Ibiza
-5. **Get technical details** - Ask specific questions that professionals need for accurate quotes
+IMPORTANT: This is a mobile-first wizard designed for EASE OF USE. Questions should be QUICK TO ANSWER with minimal typing.
+
+Your questions MUST:
+1. **Use ONLY selection-based question types** - radio or checkbox ONLY. NO text or textarea questions.
+2. **Provide comprehensive options** - Give 3-6 clear options that cover most scenarios
+3. **Include "Other" or "Not sure" options** - Always give users an escape option
+4. **Be Ibiza-specific** - Consider local climate (salt air, humidity), property types, and regulations
+5. **Get technical details** - Ask specific questions professionals need for accurate quotes
 6. **Understand existing conditions** - Property age, current state, access constraints
-7. **Clarify expectations** - Quality standards, timeline flexibility, budget awareness
 
 Question types to use:
-- "radio": For yes/no or exclusive single choices
-- "checkbox": For multiple selections (2-5 options)
-- "textarea": For detailed descriptions
-- "text": For short text inputs
+- "radio": For single-choice questions (3-6 options)
+- "checkbox": For multiple selections (3-6 options)
+
+NEVER use "text" or "textarea" types - users should only need to tap options, not type.
 
 Return ONLY a valid JSON array with this structure:
 [
   {
     "id": "descriptive_id",
-    "type": "radio|checkbox|textarea|text",
+    "type": "radio|checkbox",
     "label": "Clear, specific question",
     "required": true|false,
-    "options": ["option1", "option2"] // only for radio/checkbox types
+    "options": ["Option 1", "Option 2", "Option 3", "Not sure / Other"]
   }
 ]
 
-Focus on questions that give professionals a complete, clear picture of the project scope and requirements.`;
+Focus on questions that give professionals a complete, clear picture through easy tap-based selections.`;
 
     console.log("Generating contextual questions for:", microNames);
 
@@ -81,7 +83,7 @@ Focus on questions that give professionals a complete, clear picture of the proj
         messages: [
           {
             role: "system",
-            content: "You are an expert building services consultant in Ibiza. Generate contextual, technical questions that help professionals understand complete project scope. Always return valid JSON arrays."
+            content: "You are an expert building services consultant in Ibiza. Generate contextual, technical questions that help professionals understand complete project scope. ONLY use radio or checkbox question types - NO text/textarea. Always return valid JSON arrays."
           },
           {
             role: "user",
@@ -124,14 +126,28 @@ Focus on questions that give professionals a complete, clear picture of the proj
     // Extract JSON from response (AI might wrap it in markdown code blocks)
     const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
     const jsonString = jsonMatch ? jsonMatch[0] : aiResponse;
-    const questions = JSON.parse(jsonString);
+    let questions = JSON.parse(jsonString);
 
     // Validate structure
     if (!Array.isArray(questions) || questions.length === 0) {
       throw new Error("Invalid questions format from AI");
     }
 
-    console.log(`Generated ${questions.length} contextual questions`);
+    // Filter out any text/textarea questions that AI might have generated anyway
+    questions = questions.filter((q: any) => 
+      q.type === 'radio' || q.type === 'checkbox'
+    );
+
+    // Ensure all questions have options
+    questions = questions.filter((q: any) => 
+      Array.isArray(q.options) && q.options.length >= 2
+    );
+
+    if (questions.length === 0) {
+      throw new Error("No valid selection-based questions generated");
+    }
+
+    console.log(`Generated ${questions.length} contextual questions (selection-based only)`);
 
     return new Response(JSON.stringify({ 
       questions,
@@ -143,33 +159,35 @@ Focus on questions that give professionals a complete, clear picture of the proj
   } catch (error) {
     console.error("Error generating contextual questions:", error);
     
-    // Return fallback questions
+    // Return fallback questions - ALL selection-based, NO typing required
     const fallbackQuestions = [
-      {
-        id: 'project_description',
-        type: 'textarea',
-        label: 'Please describe your project in detail',
-        required: true
-      },
       {
         id: 'property_type',
         type: 'radio',
         label: 'What type of property is this for?',
         required: true,
-        options: ['House', 'Apartment', 'Villa', 'Commercial', 'Other']
+        options: ['House', 'Apartment', 'Villa', 'Commercial property', 'Other']
+      },
+      {
+        id: 'project_scope',
+        type: 'radio',
+        label: 'How would you describe the size of this project?',
+        required: true,
+        options: ['Small / minor repair', 'Medium / single room or area', 'Large / multiple areas', 'Full property / major project']
+      },
+      {
+        id: 'current_condition',
+        type: 'radio',
+        label: 'What is the current condition of the area?',
+        required: true,
+        options: ['New / empty space', 'Good condition, minor updates needed', 'Needs moderate work', 'Poor condition, major work required', 'Not sure']
       },
       {
         id: 'timeline',
         type: 'radio',
         label: 'When do you need this completed?',
         required: true,
-        options: ['ASAP', 'Within 1 week', 'Within 1 month', 'Flexible']
-      },
-      {
-        id: 'existing_conditions',
-        type: 'textarea',
-        label: 'Describe any existing conditions or issues we should know about',
-        required: false
+        options: ['ASAP / Emergency', 'Within 2 weeks', 'Within 1 month', 'Within 3 months', 'Flexible timing']
       },
       {
         id: 'budget_awareness',
@@ -177,6 +195,13 @@ Focus on questions that give professionals a complete, clear picture of the proj
         label: 'Do you have a budget range in mind?',
         required: false,
         options: ['Under €1,000', '€1,000-€5,000', '€5,000-€15,000', 'Over €15,000', 'Need quote first']
+      },
+      {
+        id: 'access_constraints',
+        type: 'radio',
+        label: 'Are there any access constraints for the work?',
+        required: false,
+        options: ['Easy access, no issues', 'Limited parking nearby', 'Narrow entrance or stairs', 'Restricted hours / noise rules', 'Not sure']
       }
     ];
 
