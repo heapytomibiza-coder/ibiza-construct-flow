@@ -750,6 +750,13 @@ export const CanonicalJobWizard: React.FC = () => {
         {/* Mobile Sticky CTA */}
         {isMobile && (
           <div>
+            {!canProceed().can && canProceed().reason && (
+              <div className="bg-white/95 backdrop-blur-sm border-t border-sage-muted/40 px-4 py-2 text-center">
+                <p className="text-sm text-muted-foreground">
+                  {canProceed().reason}
+                </p>
+              </div>
+            )}
             <StickyMobileCTA
               primaryAction={{
                 label: currentStep === 7 ? 'Post Job' : 'Continue',
@@ -762,13 +769,6 @@ export const CanonicalJobWizard: React.FC = () => {
                 onClick: handleBack
               } : undefined}
             />
-            {!canProceed().can && canProceed().reason && (
-              <div className="fixed bottom-20 left-0 right-0 text-center">
-                <p className="text-sm text-sage-deep/70 bg-white/95 backdrop-blur-sm px-4 py-2 mx-4 rounded-lg border border-sage-muted/40 shadow-sm">
-                  {canProceed().reason}
-                </p>
-              </div>
-            )}
           </div>
         )}
       </div>
