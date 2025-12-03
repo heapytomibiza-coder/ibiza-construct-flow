@@ -94,7 +94,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
 
         <div>
           <Badge variant="outline" className="mb-4">{microName}</Badge>
-          <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
             Add Photos & Notes
           </h1>
           <p className="text-lg text-muted-foreground mt-2">
@@ -108,7 +108,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
         <Card className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-charcoal">Project Photos</h3>
+              <h3 className="font-semibold text-foreground">Project Photos</h3>
               <p className="text-sm text-muted-foreground">
                 Upload photos of the work area, existing conditions, or reference images
               </p>
@@ -142,7 +142,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
-                className="h-24 flex-col gap-2 border-2 border-dashed hover:border-copper hover:bg-copper/5"
+                className="h-24 flex-col gap-2 border-2 border-dashed hover:border-primary hover:bg-primary/5"
                 onClick={() => setShowCamera(true)}
               >
                 <Camera className="w-8 h-8 text-muted-foreground" />
@@ -152,11 +152,11 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
               <label className={cn(
                 "h-24 border-2 border-dashed border-muted-foreground/30 rounded-lg",
                 "flex flex-col items-center justify-center cursor-pointer gap-2",
-                "hover:border-copper hover:bg-copper/5 transition-all",
+                "hover:border-primary hover:bg-primary/5 transition-all",
                 uploadingPhoto && "opacity-50 pointer-events-none"
               )}>
                 <Upload className="w-8 h-8 text-muted-foreground" />
-                <span className="text-sm font-medium text-charcoal">
+                <span className="text-sm font-medium text-foreground">
                   {uploadingPhoto ? 'Uploading...' : 'Upload'}
                 </span>
                 <input
@@ -197,32 +197,35 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
         {/* Common Notes Chips */}
         <Card className="p-6 space-y-4">
           <div>
-            <h3 className="font-semibold text-charcoal">Quick Notes</h3>
+            <h3 className="font-semibold text-foreground">Quick Notes</h3>
             <p className="text-sm text-muted-foreground">
               Tap to add common requirements to your notes
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {COMMON_NOTES.map((note) => (
-              <Badge
-                key={note}
-                variant={extras.notes?.includes(note) ? "default" : "outline"}
-                className={cn(
-                  "cursor-pointer px-4 py-2 transition-all",
-                  extras.notes?.includes(note) ? "bg-copper text-white" : "hover:border-copper"
-                )}
-                onClick={() => toggleNoteChip(note)}
-              >
-                {note}
-              </Badge>
-            ))}
+            {COMMON_NOTES.map((note) => {
+              const isSelected = extras.notes?.includes(note);
+              return (
+                <Badge
+                  key={note}
+                  variant={isSelected ? "default" : "outline"}
+                  className={cn(
+                    "cursor-pointer px-4 py-2 transition-all",
+                    isSelected ? "bg-primary text-white border-primary" : "hover:border-primary"
+                  )}
+                  onClick={() => toggleNoteChip(note)}
+                >
+                  {note}
+                </Badge>
+              );
+            })}
           </div>
         </Card>
 
         {/* Additional Notes */}
         <Card className="p-6 space-y-3">
-          <h3 className="font-semibold text-charcoal">Additional Notes</h3>
+          <h3 className="font-semibold text-foreground">Additional Notes</h3>
           <Textarea
             value={extras.notes || ''}
             onChange={(e) => handleUpdate('notes', e.target.value)}
@@ -233,7 +236,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
 
         {/* Permits/Compliance */}
         <Card className="p-6 space-y-3">
-          <h3 className="font-semibold text-charcoal">Permits & Compliance</h3>
+          <h3 className="font-semibold text-foreground">Permits & Compliance</h3>
           <p className="text-sm text-muted-foreground">
             Are there any permits, HOA rules, or compliance requirements for this work?
           </p>
@@ -242,7 +245,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
               variant={extras.permitsConcern === false ? "default" : "outline"}
               className={cn(
                 "cursor-pointer px-6 py-2 transition-all",
-                extras.permitsConcern === false ? "bg-copper text-white" : "hover:border-copper"
+                extras.permitsConcern === false ? "bg-primary text-white border-primary" : "hover:border-primary"
               )}
               onClick={() => handleUpdate('permitsConcern', false)}
             >
@@ -252,7 +255,7 @@ export const ExtrasStep: React.FC<ExtrasStepProps> = ({
               variant={extras.permitsConcern === true ? "default" : "outline"}
               className={cn(
                 "cursor-pointer px-6 py-2 transition-all",
-                extras.permitsConcern === true ? "bg-copper text-white" : "hover:border-copper"
+                extras.permitsConcern === true ? "bg-primary text-white border-primary" : "hover:border-primary"
               )}
               onClick={() => handleUpdate('permitsConcern', true)}
             >
