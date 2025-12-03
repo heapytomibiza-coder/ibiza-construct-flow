@@ -99,6 +99,12 @@
     "quoteRequired": "Presupuesto personalizado",
     "contactForPricing": "Contactar para precio"
   },
+  "units": {
+    "set": "set",
+    "unit": "unidad",
+    "project": "proyecto",
+    "hour": "hora"
+  },
   "actions": {
     "save": "Guardar",
     "cancel": "Cancelar",

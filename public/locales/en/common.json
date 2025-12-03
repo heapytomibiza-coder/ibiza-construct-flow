@@ -99,6 +99,12 @@
     "quoteRequired": "Custom quote required",
     "contactForPricing": "Contact for pricing"
   },
+  "units": {
+    "set": "set",
+    "unit": "unit",
+    "project": "project",
+    "hour": "hour"
+  },
   "actions": {
     "save": "Save",
     "cancel": "Cancel",
