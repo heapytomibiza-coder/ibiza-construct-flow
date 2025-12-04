@@ -1,4 +1,4 @@
-// Force rebuild - cache invalidation v2
+// Force rebuild - cache invalidation v3 - Constructive Solutions Ibiza
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
