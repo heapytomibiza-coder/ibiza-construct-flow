@@ -3,11 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateRequestBody, commonSchemas } from '../_shared/inputValidation.ts';
 import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { checkRateLimitDb, createRateLimitResponse, getClientIdentifier, createServiceClient, corsHeaders, handleCors } from '../_shared/securityMiddleware.ts';
 
 const matchRequestSchema = z.object({
   jobId: commonSchemas.uuid.optional(),
@@ -20,18 +16,18 @@ const matchRequestSchema = z.object({
 });
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabase = createServiceClient();
 
-    // TODO: Add rate limiting once authenticated endpoints are implemented
-    // Rate limiting requires userId, but this is currently a public endpoint
+    // Rate limiting - AI_STANDARD (20/hr)
+    const clientId = getClientIdentifier(req);
+    const rateLimit = await checkRateLimitDb(supabase, clientId, 'ai-professional-matcher', 'AI_STANDARD');
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(rateLimit.retryAfter);
+    }
 
     const { jobId, microId, location, budget, urgency, description, limit } = await validateRequestBody(req, matchRequestSchema);
 
@@ -122,7 +118,7 @@ serve(async (req) => {
       // Budget compatibility
       if (budget && prof.hourly_rate) {
         const hourlyRate = prof.hourly_rate;
-        if (hourlyRate <= budget * 1.2) { // Within 20% of budget
+        if (hourlyRate <= budget * 1.2) {
           score += 10;
         }
       }
@@ -132,7 +128,7 @@ serve(async (req) => {
         score += 5;
       }
 
-      // Review count bonus (shows experience)
+      // Review count bonus
       if (stats && (stats as any).total_reviews) {
         const reviews = (stats as any).total_reviews;
         if (reviews > 50) score += 5;

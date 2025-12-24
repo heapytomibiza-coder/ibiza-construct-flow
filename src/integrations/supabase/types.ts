@@ -6700,6 +6700,39 @@ export type Database = {
           },
         ]
       }
+      payment_idempotency_keys: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          currency: string | null
+          expires_at: string | null
+          idempotency_key: string
+          job_id: string | null
+          stripe_payment_intent_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          expires_at?: string | null
+          idempotency_key: string
+          job_id?: string | null
+          stripe_payment_intent_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          expires_at?: string | null
+          idempotency_key?: string
+          job_id?: string | null
+          stripe_payment_intent_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           billing_details: Json | null
@@ -11817,6 +11850,27 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_processed_events: {
+        Row: {
+          event_id: string
+          event_type: string
+          processed_at: string | null
+          result: Json | null
+        }
+        Insert: {
+          event_id: string
+          event_type: string
+          processed_at?: string | null
+          result?: Json | null
+        }
+        Update: {
+          event_id?: string
+          event_type?: string
+          processed_at?: string | null
+          result?: Json | null
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           assigned_to: string | null
@@ -13387,6 +13441,16 @@ export type Database = {
           milestone_id: string
         }[]
       }
+      check_payment_idempotency: {
+        Args: {
+          p_amount: number
+          p_currency?: string
+          p_job_id: string
+          p_key: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       check_rate_limit: { Args: { p_user_id: string }; Returns: Json }
       check_spam_content: { Args: { p_content: string }; Returns: Json }
       check_user_blocked: {
@@ -13394,6 +13458,7 @@ export type Database = {
         Returns: boolean
       }
       cleanup_expired_typing_indicators: { Args: never; Returns: number }
+      cleanup_rate_limit_records: { Args: never; Returns: undefined }
       convert_currency: {
         Args: {
           p_amount: number
