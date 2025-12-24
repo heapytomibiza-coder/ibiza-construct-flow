@@ -1,28 +1,46 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const releaseEscrowSchema = z.object({
+  milestoneId: z.string().uuid('Invalid milestone ID'),
+  notes: z.string().max(1000).optional(),
+  partial: z.boolean().optional().default(false),
+  amount: z.number().positive().max(1000000).optional(),
+});
 
 const logStep = (step: string, details?: any) => {
   console.log(`[RELEASE-ESCROW] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const requestId = generateRequestId();
 
   try {
-    logStep("Function started");
+    logStep("Function started", { requestId });
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
+
+    const serviceClient = createServiceClient();
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
@@ -35,8 +53,16 @@ serve(async (req) => {
     if (!user) throw new Error("User not authenticated");
     logStep("User authenticated", { userId: user.id });
 
-    const { milestoneId, notes, partial, amount: partialAmount } = await req.json();
-    if (!milestoneId) throw new Error("Milestone ID is required");
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'release-escrow', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId, retryAfter: rl.retryAfter });
+      return createRateLimitResponse(rl);
+    }
+
+    // Validate input
+    const { milestoneId, notes, partial, amount: partialAmount } = await validateRequestBody(req, releaseEscrowSchema);
 
     // Get milestone with contract details
     const { data: milestone, error: milestoneError } = await supabaseClient
@@ -101,7 +127,7 @@ serve(async (req) => {
     let stripeTransferId = null;
     try {
       const transfer = await stripe.transfers.create({
-        amount: Math.round(releaseAmount * 100), // Convert to cents
+        amount: Math.round(releaseAmount * 100),
         currency: 'usd',
         destination: stripeAccount.stripe_account_id,
         description: `Payment for milestone: ${milestone.title}${partial ? ' (Partial)' : ''}`,
@@ -110,6 +136,7 @@ serve(async (req) => {
           contract_id: milestone.contract_id,
           professional_id: contract.tasker_id,
           partial: partial ? 'true' : 'false',
+          request_id: requestId,
         },
       });
 
@@ -124,7 +151,7 @@ serve(async (req) => {
         status: 'succeeded',
         professional_account_id: stripeAccount.id,
         completed_at: new Date().toISOString(),
-        metadata: { notes, partial },
+        metadata: { notes, partial, requestId },
       });
     } catch (stripeError: any) {
       logStep('Stripe transfer failed', { error: stripeError.message });
@@ -136,7 +163,7 @@ serve(async (req) => {
         status: 'failed',
         failure_reason: stripeError.message,
         professional_account_id: stripeAccount.id,
-        metadata: { notes, partial },
+        metadata: { notes, partial, requestId },
       });
 
       throw new Error(`Payment transfer failed: ${stripeError.message}`);
@@ -183,6 +210,7 @@ serve(async (req) => {
           stripe_transfer_id: stripeTransferId,
           notes,
           partial,
+          requestId,
         },
       });
 
@@ -207,6 +235,7 @@ serve(async (req) => {
         message: partial ? 'Partial payment released successfully' : 'Escrow released successfully',
         amount: releaseAmount,
         transferId: stripeTransferId,
+        requestId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -214,11 +243,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    logError('release-escrow', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

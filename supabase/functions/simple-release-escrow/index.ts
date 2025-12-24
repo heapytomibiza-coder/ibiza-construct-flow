@@ -1,15 +1,28 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.84.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const simpleReleaseSchema = z.object({
+  contractId: z.string().uuid('Invalid contract ID'),
+});
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const requestId = generateRequestId();
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -24,8 +37,15 @@ serve(async (req) => {
     const user = data.user;
     if (!user) throw new Error("Not authenticated");
 
-    const { contractId } = await req.json();
-    if (!contractId) throw new Error("Contract ID required");
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(supabaseClient, clientId, 'simple-release-escrow', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      return createRateLimitResponse(rl);
+    }
+
+    // Validate input
+    const { contractId } = await validateRequestBody(req, simpleReleaseSchema);
 
     // Get contract details
     const { data: contract, error: contractError } = await supabaseClient
@@ -99,6 +119,7 @@ serve(async (req) => {
           commission_amount: commissionAmount,
           platform_fee_amount: platformFeeAmount,
           original_amount: agreedAmount,
+          request_id: requestId,
         },
       });
 
@@ -123,16 +144,13 @@ serve(async (req) => {
       professionalAmount,
       commissionAmount,
       platformFeeAmount,
+      requestId,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error("Error releasing escrow:", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    logError('simple-release-escrow', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

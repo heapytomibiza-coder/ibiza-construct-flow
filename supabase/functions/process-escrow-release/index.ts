@@ -1,16 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.84.0";
+import Stripe from 'https://esm.sh/stripe@18.5.0';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import {
+  handleCors,
+  corsHeaders,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const processReleaseSchema = z.object({
+  milestone_id: z.string().uuid('Invalid milestone ID'),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const requestId = generateRequestId();
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -31,7 +43,15 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { milestone_id } = await req.json();
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(supabase, clientId, 'process-escrow-release', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      return createRateLimitResponse(rl);
+    }
+
+    // Validate input
+    const { milestone_id } = await validateRequestBody(req, processReleaseSchema);
 
     // Get milestone details
     const { data: milestone, error: milestoneError } = await supabase
@@ -63,8 +83,11 @@ serve(async (req) => {
     const transfer = await stripe.transfers.create({
       amount: milestone.amount,
       currency: 'eur',
-      destination: milestone.contract.professional_id, // This should be the Stripe Connect account ID
+      destination: milestone.contract.professional_id,
       transfer_group: milestone.contract.stripe_payment_intent_id,
+      metadata: {
+        request_id: requestId,
+      },
     });
 
     // Record the release
@@ -93,20 +116,14 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        transfer_id: transfer.id 
+        transfer_id: transfer.id,
+        requestId,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error processing escrow release:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { 
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
+    logError('process-escrow-release', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });
