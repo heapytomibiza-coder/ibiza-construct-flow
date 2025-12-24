@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DemoModeButtonProps {
   onStartHomeTour: () => void;
@@ -24,6 +25,12 @@ export function DemoModeButton({
 }: DemoModeButtonProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+
+  // Hide tour mode on mobile devices
+  if (isMobile) {
+    return null;
+  }
 
   const handleQuickLaunch = useCallback(() => {
     const path = location.pathname;

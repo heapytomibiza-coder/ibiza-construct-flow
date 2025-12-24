@@ -13452,8 +13452,8 @@ export type Database = {
         Returns: boolean
       }
       escalation_reasons_updater:
-        | { Args: { p_dispute_id: string; p_reason: string }; Returns: Json }
         | { Args: { p_dispute_id: string }; Returns: undefined }
+        | { Args: { p_dispute_id: string; p_reason: string }; Returns: Json }
       execute_resolution: { Args: { p_resolution_id: string }; Returns: Json }
       generate_next_occurrence: {
         Args: { p_recurring_booking_id: string }
@@ -13497,11 +13497,11 @@ export type Database = {
       }
       get_cached_kpi: { Args: { p_cache_key: string }; Returns: Json }
       get_dashboard_kpis:
+        | { Args: never; Returns: Json }
         | {
             Args: { p_end_date?: string; p_start_date?: string }
             Returns: Json
           }
-        | { Args: never; Returns: Json }
       get_exchange_rate: {
         Args: { p_from_currency: string; p_to_currency: string }
         Returns: number
