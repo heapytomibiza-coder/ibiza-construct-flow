@@ -69,7 +69,8 @@ export const logBundleMetrics = () => {
 
 // Bundle size analyzer component (development only)
 export const BundleAnalyzer = () => {
-  if (process.env.NODE_ENV !== 'development') return null;
+  // Use Vite's import.meta.env.DEV for correct production detection
+  if (!import.meta.env.DEV) return null;
   
   const getMemoryUsage = () => {
     // @ts-ignore - performance.memory is not in all browsers
