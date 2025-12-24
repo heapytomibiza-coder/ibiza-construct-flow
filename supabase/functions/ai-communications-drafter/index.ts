@@ -1,31 +1,42 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const communicationsSchema = z.object({
+  communicationType: z.string().trim().min(1).max(100),
+  context: z.record(z.any()),
+  recipientType: z.string().max(100).optional(),
+  tone: z.string().max(50).optional(),
+  keyPoints: z.array(z.string().max(500)).max(10).optional(),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { communicationType, context, recipientType, tone, keyPoints } = await req.json();
-
-    if (!communicationType || !context) {
-      return new Response(JSON.stringify({ error: "Communication type and context are required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const supabase = createServiceClient();
+    
+    // Rate limiting
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'ai-communications-drafter', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
     }
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { communicationType, context, recipientType, tone, keyPoints } = await validateRequestBody(req, communicationsSchema);
 
     // Get AI prompt template
     const { data: promptData } = await supabase
@@ -165,11 +176,8 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (error: any) {
-    console.error("Error in AI communications drafter:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  } catch (error) {
+    logError('ai-communications-drafter', error);
+    return createErrorResponse(error);
   }
 });

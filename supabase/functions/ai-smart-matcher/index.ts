@@ -1,21 +1,27 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-interface MatchingRequest {
-  job_id: string;
-  max_matches?: number;
-  filters?: {
-    max_distance?: number;
-    min_rating?: number;
-    availability_required?: boolean;
-  };
-}
+const matchRequestSchema = z.object({
+  job_id: z.string().uuid(),
+  max_matches: z.number().int().min(1).max(50).optional().default(10),
+  filters: z.object({
+    max_distance: z.number().positive().optional(),
+    min_rating: z.number().min(0).max(5).optional(),
+    availability_required: z.boolean().optional(),
+  }).optional().default({}),
+});
 
 interface Professional {
   id: string;
@@ -40,17 +46,29 @@ interface Job {
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const supabaseClient = createServiceClient();
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-    );
+    // Rate limiting - AI matching is resource intensive
+    const authHeader = req.headers.get('Authorization');
+    let userId: string | undefined;
+    
+    if (authHeader) {
+      const { data } = await supabaseClient.auth.getUser(authHeader.replace('Bearer ', ''));
+      userId = data.user?.id;
+    }
+    
+    const clientId = getClientIdentifier(req, userId);
+    const rateLimitResult = await checkRateLimitDb(supabaseClient, clientId, 'ai-smart-matcher', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
+    }
 
-    const { job_id, max_matches = 10, filters = {} }: MatchingRequest = await req.json();
+    const { job_id, max_matches, filters } = await validateRequestBody(req, matchRequestSchema);
 
     // Fetch job details
     const { data: job, error: jobError } = await supabaseClient
@@ -121,16 +139,9 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error: any) {
-    console.error('Error in ai-smart-matcher:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      matches: [],
-      recommendations: []
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  } catch (error) {
+    logError('ai-smart-matcher', error);
+    return createErrorResponse(error);
   }
 });
 

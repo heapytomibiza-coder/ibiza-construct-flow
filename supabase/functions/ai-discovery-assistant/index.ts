@@ -1,36 +1,50 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface RequestBody {
-  message: string;
-  context?: {
-    searchTerm?: string;
-    location?: string;
-    userLocation?: any;
-    isAuthenticated?: boolean;
-    previousMessages?: Array<{type: string, content: string}>;
-  };
-}
+const discoverySchema = z.object({
+  message: z.string().trim().min(1).max(2000),
+  context: z.object({
+    searchTerm: z.string().max(500).optional(),
+    location: z.string().max(200).optional(),
+    userLocation: z.any().optional(),
+    isAuthenticated: z.boolean().optional(),
+    previousMessages: z.array(z.object({
+      type: z.string(),
+      content: z.string().max(5000),
+    })).max(10).optional(),
+  }).optional().default({}),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { message, context = {} }: RequestBody = await req.json()
-
-    if (!message) {
-      return new Response(
-        JSON.stringify({ error: 'Message is required' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      )
+    const supabase = createServiceClient();
+    
+    // Rate limiting - use IP for anonymous users
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'ai-discovery-assistant', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
     }
+
+    const { message, context } = await validateRequestBody(req, discoverySchema);
+
+    // Ensure context has default values
+    const ctx = context || {};
 
     // Create system prompt for discovery assistant
     const systemPrompt = `You are an AI Discovery Assistant for CS Ibiza Elite Network, a premium marketplace connecting clients with professional service providers in Ibiza, Spain.
@@ -38,9 +52,9 @@ serve(async (req) => {
 ROLE: Help users discover and book the perfect services and professionals for their needs in Ibiza.
 
 CONTEXT:
-- Current search: ${context.searchTerm || 'None'}
-- User location: ${context.location || 'Unknown'}
-- Authentication: ${context.isAuthenticated ? 'Logged in' : 'Not logged in'}
+- Current search: ${ctx.searchTerm || 'None'}
+- User location: ${ctx.location || 'Unknown'}
+- Authentication: ${ctx.isAuthenticated ? 'Logged in' : 'Not logged in'}
 
 AVAILABLE SERVICES:
 - Home & Cleaning: House cleaning, deep cleaning, post-party cleanup, carpet cleaning, window cleaning
@@ -83,10 +97,10 @@ Remember: You're helping people find trusted professionals in beautiful Ibiza. B
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          ...context.previousMessages?.slice(-2).map(msg => ({
+          ...(ctx.previousMessages?.slice(-2).map(msg => ({
             role: msg.type === 'user' ? 'user' : 'assistant',
             content: msg.content
-          })) || [],
+          })) || []),
           { role: 'user', content: message }
         ],
         max_tokens: 1000,
@@ -120,10 +134,9 @@ Remember: You're helping people find trusted professionals in beautiful Ibiza. B
     )
 
   } catch (error) {
-    console.error('AI Discovery Assistant Error:', error)
+    logError('ai-discovery-assistant', error);
     return new Response(
       JSON.stringify({ 
-        error: 'Internal server error',
         response: "I'm sorry, I'm having trouble right now. Please try asking again in a moment.",
         suggestions: ['Try a different question', 'Browse services manually', 'Contact support']
       }),

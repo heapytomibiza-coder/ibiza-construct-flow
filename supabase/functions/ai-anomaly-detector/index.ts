@@ -1,6 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
 interface Anomaly {
   type: string;
@@ -35,23 +46,30 @@ interface JobLifecycleEvent {
   [key: string]: any;
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const anomalyDetectorSchema = z.object({
+  analysisType: z.enum(['pricing', 'job_flow', 'professional_behavior', 'system_performance']).optional(),
+  timeframe: z.enum(['24h', '7d', '72h']).optional().default('72h'),
+  entityType: z.string().max(100).optional(),
+  thresholds: z.record(z.any()).optional(),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { analysisType, timeframe, entityType, thresholds } = await req.json();
+    const supabase = createServiceClient();
+    
+    // Rate limiting
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'ai-anomaly-detector', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
+    }
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { analysisType, timeframe: tf, entityType, thresholds } = await validateRequestBody(req, anomalyDetectorSchema);
+    const timeframe = tf || '72h';
 
     const startTime = Date.now();
     const anomalies: Anomaly[] = [];
@@ -125,12 +143,8 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error("Error in AI anomaly detector:", error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    logError('ai-anomaly-detector', error);
+    return createErrorResponse(error);
   }
 });
 

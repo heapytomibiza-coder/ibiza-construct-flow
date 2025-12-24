@@ -1,21 +1,29 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const recommendationSchema = z.object({
+  userId: z.string().uuid(),
+  jobId: z.string().uuid().optional(),
+  recommendationType: z.enum(['professional_match', 'service_suggestions']),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
+    const supabase = createServiceClient();
 
     const { data: { user } } = await supabase.auth.getUser(
       req.headers.get('Authorization')?.replace('Bearer ', '') ?? ''
@@ -25,7 +33,14 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { userId, jobId, recommendationType } = await req.json();
+    // Rate limiting - AI recommendations are resource intensive
+    const rateLimitResult = await checkRateLimitDb(supabase, user.id, 'ai-recommendation-engine', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
+    }
+
+    const { userId, jobId, recommendationType } = await validateRequestBody(req, recommendationSchema);
 
     console.log(`Generating ${recommendationType} recommendations for user: ${userId}`);
 
@@ -173,14 +188,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error generating recommendations:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    logError('ai-recommendation-engine', error);
+    return createErrorResponse(error);
   }
 });
