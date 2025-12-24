@@ -1,30 +1,40 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const riskAnalyzerSchema = z.object({
+  jobId: z.string().uuid(),
+  jobDetails: z.record(z.any()),
+  professionalProfile: z.record(z.any()).optional(),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { jobId, jobDetails, professionalProfile } = await req.json();
-
-    if (!jobId || !jobDetails) {
-      throw new Error('Job ID and details are required');
+    const supabase = createServiceClient();
+    
+    // Rate limiting
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'ai-risk-analyzer', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
     }
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    console.log('Analyzing risks for job:', jobId);
+    const { jobId, jobDetails, professionalProfile } = await validateRequestBody(req, riskAnalyzerSchema);
 
     // Analyze various risk factors
     const riskFlags = [];
@@ -113,15 +123,9 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Error in AI risk analyzer:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      }
-    );
+  } catch (error) {
+    logError('ai-risk-analyzer', error);
+    return createErrorResponse(error);
   }
 });
 

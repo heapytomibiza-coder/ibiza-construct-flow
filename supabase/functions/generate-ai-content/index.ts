@@ -1,16 +1,27 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  corsHeaders,
+  handleCors,
+  createAuthenticatedClient,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const contentSchema = z.object({
+  contentType: z.enum(['job_description', 'profile_bio', 'review_response', 'message']),
+  input: z.record(z.any()),
+  entityId: z.string().uuid().optional(),
+});
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -18,20 +29,19 @@ serve(async (req) => {
       throw new Error("Missing authorization header");
     }
 
-    const { contentType, input, entityId } = await req.json();
-
-    if (!contentType || !input) {
-      throw new Error("contentType and input are required");
-    }
-
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
+    const supabase = createAuthenticatedClient(authHeader);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
+
+    // Rate limiting
+    const serviceSupabase = createServiceClient();
+    const rateLimitResult = await checkRateLimitDb(serviceSupabase, user.id, 'generate-ai-content', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
+    }
+
+    const { contentType, input, entityId } = await validateRequestBody(req, contentSchema);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -116,13 +126,9 @@ Write a clear, concise message.`;
     const aiData = await aiResponse.json();
     const generatedContent = aiData.choices[0].message.content;
 
-    // Store generated content
-    const serviceSupabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const serviceSupabaseForInsert = createServiceClient();
 
-    const { data: contentRecord, error: insertError } = await serviceSupabase
+    const { data: contentRecord, error: insertError } = await serviceSupabaseForInsert
       .from("ai_generated_content")
       .insert({
         user_id: user.id,
@@ -149,14 +155,7 @@ Write a clear, concise message.`;
       }
     );
   } catch (error) {
-    console.error("Error in generate-ai-content:", error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    logError('generate-ai-content', error);
+    return createErrorResponse(error);
   }
 });
