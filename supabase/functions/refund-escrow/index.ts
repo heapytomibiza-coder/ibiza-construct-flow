@@ -10,19 +10,34 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { serverClient } from "../_shared/client.ts";
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const refundEscrowSchema = z.object({
+  milestoneId: z.string().uuid('Invalid milestone ID'),
+  reason: z.string().min(10, 'Reason must be at least 10 characters').max(1000),
+  amount: z.number().positive().max(1000000).optional(),
+});
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
+  const requestId = generateRequestId();
   const supabase = serverClient(req);
+  const serviceClient = createServiceClient();
   
   try {
     // Authenticate user
@@ -31,12 +46,15 @@ serve(async (req) => {
       throw new Error("Unauthorized");
     }
 
-    // Parse request
-    const { milestoneId, reason, amount } = await req.json();
-
-    if (!milestoneId || !reason || reason.length < 10) {
-      throw new Error("Invalid request: milestoneId and detailed reason required");
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'refund-escrow', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      return createRateLimitResponse(rl);
     }
+
+    // Validate request body
+    const { milestoneId, reason, amount } = await validateRequestBody(req, refundEscrowSchema);
 
     // Fetch milestone + escrow payment
     const { data: milestone, error: milestoneError } = await supabase
@@ -96,13 +114,14 @@ serve(async (req) => {
     // Create Stripe refund
     const refund = await stripe.refunds.create({
       payment_intent: milestone.escrow_payment.stripe_payment_intent_id,
-      amount: Math.round(refundAmount * 100), // Convert to cents
+      amount: Math.round(refundAmount * 100),
       reason: 'requested_by_customer',
       metadata: {
         milestone_id: milestoneId,
         job_id: milestone.contract.job_id,
         refund_reason: reason,
         initiated_by: user.id,
+        request_id: requestId,
       },
     });
 
@@ -130,6 +149,7 @@ serve(async (req) => {
           stripe_refund_id: refund.id,
           reason: reason,
           milestone_id: milestoneId,
+          request_id: requestId,
         },
       })
       .select()
@@ -147,10 +167,11 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        refundId: refundRecord.id,
+        refundId: refundRecord?.id,
         stripeRefundId: refund.id,
         amount: refundAmount,
         status: 'refunded',
+        requestId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -159,16 +180,7 @@ serve(async (req) => {
     );
 
   } catch (error: any) {
-    console.error('Refund escrow error:', error);
-    return new Response(
-      JSON.stringify({ 
-        success: false,
-        error: error.message || 'Failed to process refund'
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    logError('refund-escrow', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

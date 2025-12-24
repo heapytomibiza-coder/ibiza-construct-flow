@@ -1,14 +1,19 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { validateRequestBody } from '../_shared/inputValidation.ts';
-import { mapError } from '../_shared/errorMapping.ts';
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
 const paymentIntentSchema = z.object({
   amount: z.number().positive().max(999999),
@@ -22,17 +27,20 @@ const logStep = (step: string, details?: any) => {
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const requestId = generateRequestId();
 
   try {
-    logStep("Function started");
+    logStep("Function started", { requestId });
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
+
+    const serviceClient = createServiceClient();
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
@@ -45,6 +53,15 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'create-payment-intent', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId });
+      return createRateLimitResponse(rl);
+    }
+
+    // Validate input
     const { amount, currency, jobId, metadata } = await validateRequestBody(req, paymentIntentSchema);
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -66,12 +83,13 @@ serve(async (req) => {
 
     // Create payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
+      amount: Math.round(amount * 100),
       currency: (currency || 'USD').toLowerCase(),
       customer: customerId,
       metadata: {
         userId: user.id,
         jobId: jobId || "",
+        request_id: requestId,
         ...metadata,
       },
       automatic_payment_methods: {
@@ -95,7 +113,7 @@ serve(async (req) => {
         currency: currency,
         status: "pending",
         job_id: jobId,
-        metadata: metadata || {},
+        metadata: { ...metadata, request_id: requestId },
       });
 
     if (dbError) {
@@ -106,6 +124,7 @@ serve(async (req) => {
       JSON.stringify({
         clientSecret: paymentIntent.client_secret,
         paymentIntentId: paymentIntent.id,
+        requestId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -113,10 +132,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    logStep("ERROR", { message: error instanceof Error ? error.message : String(error) });
-    return new Response(JSON.stringify({ error: mapError(error) }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    logError('create-payment-intent', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

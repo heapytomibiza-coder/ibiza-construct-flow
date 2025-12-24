@@ -1,22 +1,38 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const processPaymentSchema = z.object({
+  contractId: z.string().uuid('Invalid contract ID'),
+  amount: z.number().positive().max(1000000),
+});
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const requestId = generateRequestId();
 
   try {
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
+
+    const serviceClient = createServiceClient();
 
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
@@ -27,11 +43,15 @@ serve(async (req) => {
       throw new Error("User not authenticated");
     }
 
-    const { contractId, amount } = await req.json();
-
-    if (!contractId || !amount) {
-      throw new Error("Missing required parameters");
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'process-payment', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      return createRateLimitResponse(rl);
     }
+
+    // Validate input
+    const { contractId, amount } = await validateRequestBody(req, processPaymentSchema);
 
     // Get contract details
     const { data: contract, error: contractError } = await supabaseClient
@@ -60,7 +80,7 @@ serve(async (req) => {
 
     // Calculate total with service fee
     const serviceFee = amount * 0.05;
-    const totalAmount = Math.round((amount + serviceFee) * 100); // Convert to cents
+    const totalAmount = Math.round((amount + serviceFee) * 100);
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
@@ -86,6 +106,7 @@ serve(async (req) => {
         contractId,
         userId: user.id,
         type: 'escrow_funding',
+        request_id: requestId,
       },
     });
 
@@ -97,21 +118,15 @@ serve(async (req) => {
       status: 'pending',
       transaction_id: session.id,
       payment_method: 'stripe',
-      metadata: { contractId, sessionId: session.id },
+      metadata: { contractId, sessionId: session.id, request_id: requestId },
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ url: session.url, requestId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error('Payment processing error:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Payment processing failed" }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    logError('process-payment', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

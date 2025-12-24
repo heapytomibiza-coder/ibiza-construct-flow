@@ -1,25 +1,31 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
 const logStep = (step: string, data?: any) => {
   console.log(`[CREATE-CONNECT-ACCOUNT] ${step}`, data ? JSON.stringify(data) : "");
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const requestId = generateRequestId();
 
   try {
-    logStep("Function started");
+    logStep("Function started", { requestId });
 
-    // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
@@ -29,6 +35,8 @@ serve(async (req) => {
         },
       }
     );
+
+    const serviceClient = createServiceClient();
 
     // Get authenticated user
     const {
@@ -41,6 +49,14 @@ serve(async (req) => {
     }
 
     logStep("User authenticated", { userId: user.id, email: user.email });
+
+    // Rate limiting - PAYMENT_STANDARD (10 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'create-connect-account', 'PAYMENT_STANDARD');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId });
+      return createRateLimitResponse(rl);
+    }
 
     // Check if user already has a payout account
     const { data: existingAccount } = await supabaseClient
@@ -56,6 +72,7 @@ serve(async (req) => {
           accountId: existingAccount.stripe_account_id,
           status: "existing",
           onboardingComplete: existingAccount.details_submitted,
+          requestId,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -74,6 +91,10 @@ serve(async (req) => {
         transfers: { requested: true },
       },
       business_type: "individual",
+      metadata: {
+        user_id: user.id,
+        request_id: requestId,
+      },
     });
 
     logStep("Stripe account created", { accountId: account.id });
@@ -113,6 +134,7 @@ serve(async (req) => {
         accountId: account.id,
         onboardingUrl: accountLink.url,
         status: "created",
+        requestId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -120,14 +142,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    logStep("Error", error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    logError('create-connect-account', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

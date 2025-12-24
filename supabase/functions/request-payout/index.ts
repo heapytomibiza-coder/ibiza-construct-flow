@@ -1,31 +1,38 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const requestPayoutSchema = z.object({
+  amount: z.number().positive().max(1000000),
+  currency: z.string().length(3).optional().default("USD"),
+});
 
 const logStep = (step: string, data?: any) => {
   console.log(`[REQUEST-PAYOUT] ${step}`, data ? JSON.stringify(data) : "");
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const requestId = generateRequestId();
 
   try {
-    logStep("Function started");
+    logStep("Function started", { requestId });
 
-    const { amount, currency = "USD" } = await req.json();
-
-    if (!amount || amount <= 0) {
-      throw new Error("Invalid amount");
-    }
-
-    // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
@@ -35,6 +42,8 @@ serve(async (req) => {
         },
       }
     );
+
+    const serviceClient = createServiceClient();
 
     // Get authenticated user
     const {
@@ -47,6 +56,17 @@ serve(async (req) => {
     }
 
     logStep("User authenticated", { userId: user.id });
+
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'request-payout', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId });
+      return createRateLimitResponse(rl);
+    }
+
+    // Validate input
+    const { amount, currency } = await validateRequestBody(req, requestPayoutSchema);
 
     // Get payout account
     const { data: payoutAccount, error: accountError } = await supabaseClient
@@ -91,10 +111,13 @@ serve(async (req) => {
 
     // Create transfer to connected account
     const transfer = await stripe.transfers.create({
-      amount: Math.round(amount * 100), // Convert to cents
-      currency: currency.toLowerCase(),
+      amount: Math.round(amount * 100),
+      currency: (currency || 'USD').toLowerCase(),
       destination: payoutAccount.stripe_account_id,
       description: `Payout to ${user.email}`,
+      metadata: {
+        request_id: requestId,
+      },
     });
 
     logStep("Transfer created", { transferId: transfer.id });
@@ -145,6 +168,7 @@ serve(async (req) => {
           status: "processing",
           transferId: transfer.id,
         },
+        requestId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -152,14 +176,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    logStep("Error", error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    logError('request-payout', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });
