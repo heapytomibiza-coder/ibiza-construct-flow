@@ -1,31 +1,31 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { checkRateLimitDb, createRateLimitResponse, getClientIdentifier, createServiceClient, corsHeaders, handleCors } from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const requestSchema = z.object({
+  serviceType: z.string().trim().min(1).max(200),
+  category: z.string().trim().max(200).optional(),
+  subcategory: z.string().trim().max(200).optional(),
+  questions: z.array(z.any()).min(1).max(50),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { serviceType, category, subcategory, questions } = await req.json();
+    const supabase = createServiceClient();
 
-    if (!serviceType || !questions) {
-      return new Response(JSON.stringify({ error: "Service type and questions are required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Rate limiting - AI_STANDARD (20/hr)
+    const clientId = getClientIdentifier(req);
+    const rateLimit = await checkRateLimitDb(supabase, clientId, 'ai-question-tester', 'AI_STANDARD');
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(rateLimit.retryAfter);
     }
 
-    // Initialize Supabase client for logging
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { serviceType, category, subcategory, questions } = await validateRequestBody(req, requestSchema);
 
     // Get AI prompt template
     const { data: promptData } = await supabase
@@ -55,7 +55,6 @@ serve(async (req) => {
 
     const startTime = Date.now();
 
-    // Get the LOVABLE_API_KEY from environment
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!apiKey) {
       throw new Error("AI service unavailable");
@@ -96,20 +95,18 @@ serve(async (req) => {
       const errorText = await response.text();
       console.error("AI Gateway error:", errorText);
       
-      // Log failed run
-      await supabase
-        .from('ai_runs')
-        .update({
-          status: 'failed',
-          error_message: errorText,
-          execution_time_ms: executionTime
-        })
-        .eq('id', aiRun.id);
+      if (aiRun?.id) {
+        await supabase
+          .from('ai_runs')
+          .update({
+            status: 'failed',
+            error_message: 'AI service error',
+            execution_time_ms: executionTime
+          })
+          .eq('id', aiRun.id);
+      }
 
-      return new Response(JSON.stringify({ error: "Failed to analyze questions" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      throw new Error("Failed to analyze questions");
     }
 
     const data = await response.json();
@@ -119,35 +116,33 @@ serve(async (req) => {
       throw new Error("No analysis generated");
     }
 
-    // Parse analysis for structured response
     const result = {
       analysis,
-      recommendations: [], // Could be enhanced to extract specific recommendations
-      score: 0.8, // Could be enhanced with actual scoring logic
-      issues: [], // Could be enhanced to extract specific issues
+      recommendations: [],
+      score: 0.8,
+      issues: [],
       timestamp: new Date().toISOString()
     };
 
     // Log successful run
-    await supabase
-      .from('ai_runs')
-      .update({
-        status: 'completed',
-        output_data: result,
-        execution_time_ms: executionTime,
-        confidence_score: result.score
-      })
-      .eq('id', aiRun.id);
+    if (aiRun?.id) {
+      await supabase
+        .from('ai_runs')
+        .update({
+          status: 'completed',
+          output_data: result,
+          execution_time_ms: executionTime,
+          confidence_score: result.score
+        })
+        .eq('id', aiRun.id);
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (error: any) {
-    console.error("Error in AI question tester:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  } catch (error) {
+    logError('ai-question-tester', error as Error);
+    return createErrorResponse(error as Error);
   }
 });

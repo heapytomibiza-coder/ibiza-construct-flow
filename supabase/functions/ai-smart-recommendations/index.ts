@@ -1,36 +1,36 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { checkRateLimitDb, createRateLimitResponse, getClientIdentifier, createServiceClient, corsHeaders, handleCors } from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface RequestBody {
-  context: {
-    searchTerm?: string;
-    location?: string;
-    userHistory?: any[];
-    availableServices: any[];
-    availableProfessionals: any[];
-    timeOfDay: number;
-    dayOfWeek: number;
-  };
-}
+const requestSchema = z.object({
+  context: z.object({
+    searchTerm: z.string().max(200).optional(),
+    location: z.string().max(200).optional(),
+    userHistory: z.array(z.any()).optional(),
+    availableServices: z.array(z.any()).default([]),
+    availableProfessionals: z.array(z.any()).default([]),
+    timeOfDay: z.number().int().min(0).max(23).default(12),
+    dayOfWeek: z.number().int().min(0).max(6).default(0),
+  }),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { context }: RequestBody = await req.json()
+    const supabase = createServiceClient();
 
-    if (!context) {
-      return new Response(
-        JSON.stringify({ error: 'Context is required' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      )
+    // Rate limiting - AI_STANDARD (20/hr)
+    const clientId = getClientIdentifier(req);
+    const rateLimit = await checkRateLimitDb(supabase, clientId, 'ai-smart-recommendations', 'AI_STANDARD');
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(rateLimit.retryAfter);
     }
+
+    const { context } = await validateRequestBody(req, requestSchema);
 
     // Create AI prompt for recommendations
     const systemPrompt = `You are an AI recommendation engine for CS Ibiza Elite Network marketplace. Generate smart, personalized recommendations based on user context.
@@ -43,23 +43,8 @@ CONTEXT:
 - User history: ${context.userHistory?.length || 0} past interactions
 
 AVAILABLE OPTIONS:
-Services (${context.availableServices.length}): ${context.availableServices.map(s => `${s.title} (${s.category})`).join(', ')}
-Professionals (${context.availableProfessionals.length}): ${context.availableProfessionals.map(p => `${p.full_name} (€${p.hourly_rate || 50}/hr)`).join(', ')}
-
-RECOMMENDATION LOGIC:
-1. Prioritize search term matches (0.9+ score)
-2. Consider time-appropriate services (morning cleaning, evening events)
-3. Factor in location proximity when available
-4. Weight popular/highly-rated options
-5. Consider user history patterns
-6. Balance services vs professionals
-
-SCORING CRITERIA:
-- Search relevance: 0.8-1.0
-- Time appropriateness: 0.7-0.9
-- Location match: 0.6-0.8
-- Popularity/rating: 0.5-0.7
-- User history match: 0.8-0.95
+Services (${(context.availableServices || []).length}): ${(context.availableServices || []).map((s: any) => `${s.title} (${s.category})`).join(', ')}
+Professionals (${(context.availableProfessionals || []).length}): ${(context.availableProfessionals || []).map((p: any) => `${p.full_name} (€${p.hourly_rate || 50}/hr)`).join(', ')}
 
 Generate exactly 4 recommendations. Return as JSON array with:
 {
@@ -73,7 +58,7 @@ Generate exactly 4 recommendations. Return as JSON array with:
       "confidence": 0.0-1.0
     }
   ]
-}`
+}`;
 
     // Call AI for intelligent recommendations
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -89,16 +74,16 @@ Generate exactly 4 recommendations. Return as JSON array with:
           { role: 'user', content: 'Generate 4 smart recommendations based on the context provided.' }
         ],
         max_tokens: 2000,
-        temperature: 0.3, // Lower temperature for more consistent recommendations
+        temperature: 0.3,
       }),
-    })
+    });
 
     if (!aiResponse.ok) {
-      throw new Error(`AI API error: ${aiResponse.status}`)
+      throw new Error(`AI API error: ${aiResponse.status}`);
     }
 
-    const aiData = await aiResponse.json()
-    const assistantMessage = aiData.choices[0]?.message?.content || ''
+    const aiData = await aiResponse.json();
+    const assistantMessage = aiData.choices[0]?.message?.content || '';
 
     // Parse AI response
     let recommendations;
@@ -107,11 +92,10 @@ Generate exactly 4 recommendations. Return as JSON array with:
       recommendations = parsed.recommendations || [];
     } catch (parseError) {
       console.error('Failed to parse AI recommendations:', parseError);
-      // Fallback to rule-based recommendations
       recommendations = generateFallbackRecommendations(context);
     }
 
-    // Ensure recommendations have required fields and valid items
+    // Ensure recommendations have required fields
     const validRecommendations = recommendations
       .filter((rec: any) => rec.item && (rec.type === 'service' || rec.type === 'professional'))
       .slice(0, 4)
@@ -126,25 +110,13 @@ Generate exactly 4 recommendations. Return as JSON array with:
     return new Response(
       JSON.stringify({ recommendations: validRecommendations }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
-
-  } catch (error) {
-    console.error('AI Smart Recommendations Error:', error)
-    
-    // Generate fallback recommendations
-    const fallbackRecs = generateFallbackRecommendations(
-      (await req.json().catch(() => ({}))).context || {}
     );
 
-    return new Response(
-      JSON.stringify({ 
-        recommendations: fallbackRecs,
-        fallback: true
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+  } catch (error) {
+    logError('ai-smart-recommendations', error as Error);
+    return createErrorResponse(error as Error);
   }
-})
+});
 
 interface Recommendation {
   id: string;
@@ -162,8 +134,8 @@ function generateFallbackRecommendations(context: any): Recommendation[] {
   // Search-based recommendations
   if (searchTerm) {
     const searchMatches = availableServices.filter((service: any) => 
-      service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.category.toLowerCase().includes(searchTerm.toLowerCase())
+      service.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.category?.toLowerCase().includes(searchTerm.toLowerCase())
     ).slice(0, 2);
 
     searchMatches.forEach((service: any, index: number) => {
@@ -174,27 +146,6 @@ function generateFallbackRecommendations(context: any): Recommendation[] {
         score: 0.9 - (index * 0.1),
         reason: 'Matches your search',
         confidence: 0.85
-      });
-    });
-  }
-
-  // Time-based recommendations
-  if (timeOfDay >= 8 && timeOfDay < 12) {
-    // Morning services
-    const morningServices = availableServices.filter((service: any) =>
-      service.title.toLowerCase().includes('cleaning') ||
-      service.title.toLowerCase().includes('grocery') ||
-      service.title.toLowerCase().includes('dog')
-    ).slice(0, 1);
-
-    morningServices.forEach((service: any) => {
-      recommendations.push({
-        id: 'morning_service',
-        type: 'service',
-        item: service,
-        score: 0.75,
-        reason: 'Perfect for morning hours',
-        confidence: 0.7
       });
     });
   }
@@ -215,7 +166,7 @@ function generateFallbackRecommendations(context: any): Recommendation[] {
     });
   });
 
-  // Fill remaining slots with popular services
+  // Fill remaining slots
   while (recommendations.length < 4 && availableServices.length > 0) {
     const remainingServices = availableServices.filter((service: any) =>
       !recommendations.some(rec => rec.type === 'service' && rec.item.id === service.id)

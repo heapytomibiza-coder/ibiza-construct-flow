@@ -1,10 +1,14 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { checkRateLimitDb, createRateLimitResponse, getClientIdentifier, createServiceClient, corsHeaders, handleCors } from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const requestSchema = z.object({
+  testSuites: z.array(z.enum(['database', 'edge-functions', 'storage', 'templates'])).default(['database', 'edge-functions', 'storage', 'templates']),
+  includeI18n: z.boolean().default(true),
+});
 
 interface TestResult {
   test: string;
@@ -14,12 +18,21 @@ interface TestResult {
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { testSuites = ['database', 'edge-functions', 'storage', 'templates'], includeI18n = true } = await req.json();
+    const supabase = createServiceClient();
+
+    // Rate limiting - AI_STANDARD (20/hr)
+    const clientId = getClientIdentifier(req);
+    const rateLimit = await checkRateLimitDb(supabase, clientId, 'ai-test-orchestrator', 'AI_STANDARD');
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(rateLimit.retryAfter);
+    }
+
+    const validated = await validateRequestBody(req, requestSchema);
+    const testSuites = validated.testSuites || ['database', 'edge-functions', 'storage', 'templates'];
     
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -48,7 +61,7 @@ serve(async (req) => {
       results.push({
         test: 'Services Data Access',
         status: services && services.length > 0 ? 'pass' : 'fail',
-        message: services ? `Found ${services.length} services` : servicesError?.message,
+        message: services ? `Found ${services.length} services` : 'No services found',
       });
 
       const { data: bookings, error: bookingsError } = await supabaseClient
@@ -59,7 +72,7 @@ serve(async (req) => {
       results.push({
         test: 'Bookings Table Access',
         status: !bookingsError ? 'pass' : 'fail',
-        message: bookings ? `Bookings accessible (${bookings.length} records)` : bookingsError?.message,
+        message: bookings ? `Bookings accessible (${bookings.length} records)` : 'Access denied',
       });
 
       const { data: snapshot, error: snapshotError } = await supabaseClient
@@ -70,7 +83,7 @@ serve(async (req) => {
       results.push({
         test: 'Questions Snapshot Cache',
         status: !snapshotError ? 'pass' : 'fail',
-        message: snapshot ? `Snapshot accessible (${snapshot.length} cached)` : snapshotError?.message,
+        message: snapshot ? `Snapshot accessible (${snapshot.length} cached)` : 'Access denied',
       });
     }
 
@@ -78,7 +91,6 @@ serve(async (req) => {
     if (testSuites.includes('edge-functions')) {
       logs.push('📡 Testing Edge Functions...');
 
-      // Test generate-questions
       const startGenerate = Date.now();
       const { data: questionsData, error: questionsError } = await supabaseClient.functions.invoke('generate-questions', {
         body: {
@@ -92,11 +104,10 @@ serve(async (req) => {
       results.push({
         test: 'Generate Questions Function',
         status: !questionsError ? 'pass' : 'fail',
-        message: questionsError?.message || `Response received`,
+        message: 'Response received',
         duration: generateDuration,
       });
 
-      // Test estimate-price
       const startEstimate = Date.now();
       const { data: priceData, error: priceError } = await supabaseClient.functions.invoke('estimate-price', {
         body: {
@@ -112,7 +123,7 @@ serve(async (req) => {
       results.push({
         test: 'Price Estimation Function',
         status: !priceError ? 'pass' : 'fail',
-        message: priceError?.message || `Response received`,
+        message: 'Response received',
         duration: estimateDuration,
       });
     }
@@ -127,7 +138,7 @@ serve(async (req) => {
       results.push({
         test: 'Service Images Bucket',
         status: serviceImagesBucket ? 'pass' : 'fail',
-        message: serviceImagesBucket ? 'Bucket exists and is accessible' : bucketsError?.message || 'Bucket not found',
+        message: serviceImagesBucket ? 'Bucket exists and is accessible' : 'Bucket not found',
       });
     }
 
@@ -143,7 +154,7 @@ serve(async (req) => {
       results.push({
         test: 'Job Templates Table',
         status: !templatesError ? 'pass' : 'fail',
-        message: templates ? `Templates accessible (${templates.length} templates)` : templatesError?.message,
+        message: templates ? `Templates accessible (${templates.length} templates)` : 'Access denied',
       });
     }
 
@@ -178,14 +189,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error in ai-test-orchestrator:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    logError('ai-test-orchestrator', error as Error);
+    return createErrorResponse(error as Error);
   }
 });

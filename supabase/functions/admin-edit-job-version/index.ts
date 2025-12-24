@@ -1,29 +1,64 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { checkRateLimitDb, createRateLimitResponse, createServiceClient, corsHeaders, handleCors, logSecurityEvent } from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const requestSchema = z.object({
+  jobId: z.string().uuid('Invalid job ID'),
+  newData: z.record(z.string(), z.any()),
+  changeReason: z.string().trim().min(1).max(500),
+  changedBy: z.string().uuid('Invalid user ID'),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createServiceClient();
 
-    const { jobId, newData, changeReason, changedBy } = await req.json();
+    // Rate limiting - API_STRICT for admin operations (30/hr)
+    const authHeader = req.headers.get('Authorization');
+    let userId: string | undefined;
+    
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data: userData } = await supabase.auth.getUser(token);
+      userId = userData.user?.id;
+    }
 
-    if (!jobId || !newData || !changeReason || !changedBy) {
+    if (!userId) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const rateLimit = await checkRateLimitDb(supabase, userId, 'admin-edit-job-version', 'API_STRICT');
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(rateLimit.retryAfter);
+    }
+
+    // Verify admin role
+    const { data: adminRole } = await supabase
+      .from('admin_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .single();
+
+    if (!adminRole || !['admin', 'super_admin', 'moderator'].includes(adminRole.role)) {
+      await logSecurityEvent(supabase, 'unauthorized_admin_access', 'high', userId, {
+        endpoint: 'admin-edit-job-version',
+        action: 'job_edit'
+      });
+      return new Response(
+        JSON.stringify({ error: 'Admin access required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { jobId, newData, changeReason, changedBy } = await validateRequestBody(req, requestSchema);
 
     // Create version snapshot before updating
     const { data: versionId, error: versionError } = await supabase.rpc(
@@ -69,6 +104,12 @@ serve(async (req) => {
       }
     });
 
+    await logSecurityEvent(supabase, 'admin_job_edit', 'low', userId, {
+      jobId,
+      versionId,
+      fieldsChanged: Object.keys(newData)
+    });
+
     console.log('Job updated successfully:', { jobId, versionId });
 
     return new Response(
@@ -83,15 +124,8 @@ serve(async (req) => {
       }
     );
 
-  } catch (error: any) {
-    console.error('Error in admin-edit-job-version:', error);
-    
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
+  } catch (error) {
+    logError('admin-edit-job-version', error as Error);
+    return createErrorResponse(error as Error);
   }
 });
