@@ -103,8 +103,7 @@ export const usePWA = () => {
   };
 
   const triggerUpdate = async () => {
-    // Import updateSW from main and trigger update
-    const { updateSW } = await import('../main');
+    const { updateSW } = await import('../pwa');
     await updateSW(true);
   };
 

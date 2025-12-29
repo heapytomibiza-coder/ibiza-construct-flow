@@ -3,18 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Clock, Zap } from 'lucide-react';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
-import { useServicesRegistry } from '@/contexts/ServicesRegistry';
-
-// Preset keys that map to translations
-const PRESET_KEYS = ['leakyTap', 'hangPictures', 'doorLock', 'lightFixture'] as const;
+import { PRESET_KEYS, PRESET_SERVICE_MAP } from '@/lib/expressPresets';
 
 const ExpressModeSection: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('home');
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
-  const { services, loading } = useServicesRegistry();
 
-  // Get presets from translations
+  // Get presets from translations with stable service mapping
   const getExpressPresets = () => {
     return PRESET_KEYS.map(key => {
       const preset = t(`expressMode.presets.${key}`, { returnObjects: true }) as {
@@ -25,16 +21,13 @@ const ExpressModeSection: React.FC = () => {
         price: string;
       };
       
-      // Try to match with database services for navigation
-      const dbService = services.find(s => 
-        s.micro.toLowerCase().includes(preset.title.toLowerCase().split(' ')[0]) ||
-        s.micro.toLowerCase() === preset.title.toLowerCase()
-      );
+      // Use stable mapping for navigation (language-proof)
+      const serviceMapping = PRESET_SERVICE_MAP[key];
       
       return {
         key,
         title: preset.title,
-        category: dbService?.category || preset.category,
+        category: serviceMapping.category,
         icon: preset.icon,
         estimatedTime: preset.time,
         estimatedPrice: preset.price
@@ -46,7 +39,8 @@ const ExpressModeSection: React.FC = () => {
 
   const handleExpressClick = (preset: ReturnType<typeof getExpressPresets>[0]) => {
     if (jobWizardEnabled) {
-      navigate(`/post?category=${encodeURIComponent(preset.category)}&preset=${encodeURIComponent(preset.title)}&express=true`);
+      // Use preset key for navigation (stable across languages)
+      navigate(`/post?category=${encodeURIComponent(preset.category)}&preset=${encodeURIComponent(preset.key)}&express=true`);
     }
   };
 
@@ -70,17 +64,7 @@ const ExpressModeSection: React.FC = () => {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {loading ? (
-              // Loading skeleton for express presets
-              Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-xl p-6 animate-pulse">
-                  <div className="w-8 h-8 bg-gradient-hero/20 rounded mb-3"></div>
-                  <div className="h-5 bg-gradient-hero/20 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gradient-hero/20 rounded w-1/2 mb-1"></div>
-                  <div className="h-4 bg-gradient-hero/20 rounded w-2/3"></div>
-                </div>
-              ))
-            ) : (
+            {
               expressPresets.map((preset) => (
                 <button
                   key={preset.key}
@@ -100,7 +84,7 @@ const ExpressModeSection: React.FC = () => {
                   </div>
                 </button>
               ))
-            )}
+            }
           </div>
 
           <div className="mt-8">

@@ -23,7 +23,7 @@ export const PWAUpdatePrompt = () => {
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      const { updateSW } = await import('../main');
+      const { updateSW } = await import('../pwa');
       await updateSW(true);
     } catch (error) {
       console.error('Failed to update:', error);
