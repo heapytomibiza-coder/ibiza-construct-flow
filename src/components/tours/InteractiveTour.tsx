@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TourStep {
   target: string;
@@ -73,14 +74,14 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     } else {
       handleComplete();
     }
   };
 
   const handleBack = () => {
-    setCurrentStep(prev => Math.max(0, prev - 1));
+    setCurrentStep((prev) => Math.max(0, prev - 1));
   };
 
   const handleComplete = () => {
@@ -98,10 +99,7 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
   return (
     <>
       {/* Overlay - Non-blocking with pointer-events: none */}
-      <div 
-        className="fixed inset-0 bg-black/50 z-[60]" 
-        style={{ pointerEvents: 'none' }}
-      />
+      <div className="fixed inset-0 bg-black/50 z-[60]" style={{ pointerEvents: 'none' }} />
 
       {/* Close button - Top right corner */}
       <button
@@ -134,12 +132,7 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
                   Step {currentStep + 1} of {steps.length}
                 </CardDescription>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSkip}
-                className="h-6 w-6"
-              >
+              <Button variant="ghost" size="icon" onClick={handleSkip} className="h-6 w-6">
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -152,11 +145,9 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              {step.description}
-            </p>
+            <p className="text-sm text-muted-foreground">{step.description}</p>
 
             <div className="flex flex-col sm:flex-row justify-between gap-2">
               <Button
@@ -179,8 +170,8 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
                     Skip Tour
                   </Button>
                 )}
-                <Button 
-                  className="min-h-[44px] flex-1 sm:flex-initial" 
+                <Button
+                  className="min-h-[44px] flex-1 sm:flex-initial"
                   onClick={handleNext}
                 >
                   {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
@@ -198,16 +189,18 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
 // Enhanced usage hook with manual triggers
 export function useTour(tourKey: string, steps: TourStep[]) {
   const [showTour, setShowTour] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
+    if (isMobile) return;
+
     const hasSeenTour = localStorage.getItem(`tour-${tourKey}`);
-    const isMobile = window.innerWidth < 768;
-    
+
     // Only auto-start on desktop
-    if (!hasSeenTour && !isMobile) {
+    if (!hasSeenTour) {
       setShowTour(true);
     }
-  }, [tourKey]);
+  }, [tourKey, isMobile]);
 
   const completeTour = () => {
     localStorage.setItem(`tour-${tourKey}`, 'true');
@@ -221,24 +214,22 @@ export function useTour(tourKey: string, steps: TourStep[]) {
 
   // Manual trigger functions for demo mode
   const startTour = () => {
+    if (isMobile) return;
     setShowTour(true);
   };
 
   const resetTour = () => {
+    if (isMobile) return;
     localStorage.removeItem(`tour-${tourKey}`);
     setShowTour(true);
   };
 
   return {
-    showTour,
+    showTour: isMobile ? false : showTour,
     startTour,
     resetTour,
-    TourComponent: showTour ? (
-      <InteractiveTour
-        steps={steps}
-        onComplete={completeTour}
-        onSkip={skipTour}
-      />
-    ) : null
+    TourComponent: !isMobile && showTour ? (
+      <InteractiveTour steps={steps} onComplete={completeTour} onSkip={skipTour} />
+    ) : null,
   };
 }
