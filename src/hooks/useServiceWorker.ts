@@ -6,28 +6,19 @@ export const useServiceWorker = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
-    // Register service worker
+    // Check if SW is already registered (VitePWA handles registration in main.tsx)
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          setIsRegistered(true);
-          
-          // Check for updates
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  setUpdateAvailable(true);
-                }
-              });
-            }
-          });
-        })
-        .catch((error) => {
-          console.error('Service worker registration failed:', error);
-        });
+      navigator.serviceWorker.ready.then(() => {
+        setIsRegistered(true);
+      });
     }
+
+    // Listen for update available event from VitePWA
+    const handleUpdateAvailable = () => {
+      setUpdateAvailable(true);
+    };
+
+    window.addEventListener('pwa:update-available', handleUpdateAvailable);
 
     // Listen for online/offline status
     const handleOnline = () => setIsOnline(true);
@@ -37,19 +28,16 @@ export const useServiceWorker = () => {
     window.addEventListener('offline', handleOffline);
 
     return () => {
+      window.removeEventListener('pwa:update-available', handleUpdateAvailable);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
 
-  const refreshApp = () => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.unregister().then(() => {
-          window.location.reload();
-        });
-      });
-    }
+  const refreshApp = async () => {
+    // Import updateSW from main and trigger update
+    const { updateSW } = await import('../main');
+    await updateSW(true);
   };
 
   const enableNotifications = async () => {

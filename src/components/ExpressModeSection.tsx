@@ -1,33 +1,39 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Clock, Zap, Wrench } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Clock, Zap } from 'lucide-react';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useServicesRegistry } from '@/contexts/ServicesRegistry';
 
+// Preset keys that map to translations
+const PRESET_KEYS = ['leakyTap', 'hangPictures', 'doorLock', 'lightFixture'] as const;
+
 const ExpressModeSection: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('home');
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const { services, loading } = useServicesRegistry();
 
-  // Get popular express tasks from database
+  // Get presets from translations
   const getExpressPresets = () => {
-    const popularMicroServices = [
-      { micro: 'Fix leaky tap', category: 'Plumbing', icon: '💧', time: 'Today', price: '€80-150' },
-      { micro: 'Hang pictures', category: 'Handyman', icon: '🖼️', time: '2 hours', price: '€50-100' },
-      { micro: 'Fix door lock', category: 'Handyman', icon: '🔒', time: '1 hour', price: '€60-120' },
-      { micro: 'Install light fixture', category: 'Electrical', icon: '💡', time: '2-3 hours', price: '€100-200' },
-    ];
-
-    // Try to match with database services, fallback to presets
-    return popularMicroServices.map(preset => {
+    return PRESET_KEYS.map(key => {
+      const preset = t(`expressMode.presets.${key}`, { returnObjects: true }) as {
+        title: string;
+        category: string;
+        icon: string;
+        time: string;
+        price: string;
+      };
+      
+      // Try to match with database services for navigation
       const dbService = services.find(s => 
-        s.micro.toLowerCase().includes(preset.micro.toLowerCase().split(' ')[0]) ||
-        s.micro.toLowerCase() === preset.micro.toLowerCase()
+        s.micro.toLowerCase().includes(preset.title.toLowerCase().split(' ')[0]) ||
+        s.micro.toLowerCase() === preset.title.toLowerCase()
       );
       
       return {
-        title: dbService?.micro || preset.micro,
+        key,
+        title: preset.title,
         category: dbService?.category || preset.category,
         icon: preset.icon,
         estimatedTime: preset.time,
@@ -38,7 +44,7 @@ const ExpressModeSection: React.FC = () => {
 
   const expressPresets = getExpressPresets();
 
-  const handleExpressClick = (preset: any) => {
+  const handleExpressClick = (preset: ReturnType<typeof getExpressPresets>[0]) => {
     if (jobWizardEnabled) {
       navigate(`/post?category=${encodeURIComponent(preset.category)}&preset=${encodeURIComponent(preset.title)}&express=true`);
     }
@@ -52,15 +58,15 @@ const ExpressModeSection: React.FC = () => {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full mb-6">
             <Zap className="w-4 h-4 text-white" />
-            <span className="text-white font-medium">Express Mode</span>
+            <span className="text-white font-medium">{t('expressMode.badge')}</span>
           </div>
           
           <h2 className="text-display text-3xl md:text-4xl font-bold text-white mb-4">
-            Quick Fixes, Fast
+            {t('expressMode.title')}
           </h2>
           
           <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
-            Get instant quotes for common repairs and small jobs
+            {t('expressMode.description')}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -75,9 +81,9 @@ const ExpressModeSection: React.FC = () => {
                 </div>
               ))
             ) : (
-              expressPresets.map((preset, index) => (
+              expressPresets.map((preset) => (
                 <button
-                  key={index}
+                  key={preset.key}
                   onClick={() => handleExpressClick(preset)}
                   className="bg-white rounded-xl p-6 text-left hover:scale-105 transition-transform shadow-card hover:shadow-luxury group"
                 >
@@ -99,7 +105,7 @@ const ExpressModeSection: React.FC = () => {
 
           <div className="mt-8">
             <p className="text-white/60 text-sm">
-              ⚡ Instant quotes • 🎯 Verified pros • 💬 Direct messaging
+              {t('expressMode.footer')}
             </p>
           </div>
         </div>

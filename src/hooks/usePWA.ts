@@ -11,6 +11,7 @@ export const usePWA = () => {
   const [isInstalled, setIsInstalled] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -41,8 +42,13 @@ export const usePWA = () => {
       setDeferredPrompt(null);
       toast({
         title: 'App installed',
-        description: 'TaskHub has been installed successfully!'
+        description: 'CS Ibiza has been installed successfully!'
       });
+    };
+
+    // Listen for update available from VitePWA
+    const handleUpdateAvailable = () => {
+      setUpdateAvailable(true);
     };
 
     // Handle online/offline status
@@ -65,12 +71,14 @@ export const usePWA = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener('pwa:update-available', handleUpdateAvailable);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener('pwa:update-available', handleUpdateAvailable);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
@@ -94,15 +102,10 @@ export const usePWA = () => {
     }
   };
 
-  const registerServiceWorker = async () => {
-    if ('serviceWorker' in navigator) {
-      try {
-        const registration = await navigator.serviceWorker.register('/service-worker.js');
-        console.log('Service Worker registered:', registration);
-      } catch (error) {
-        console.error('Service Worker registration failed:', error);
-      }
-    }
+  const triggerUpdate = async () => {
+    // Import updateSW from main and trigger update
+    const { updateSW } = await import('../main');
+    await updateSW(true);
   };
 
   const getInstallationStatus = () => {
@@ -118,8 +121,9 @@ export const usePWA = () => {
     canInstall: !!deferredPrompt,
     isInstallable: !!deferredPrompt,
     isOnline,
+    updateAvailable,
     installationStatus: getInstallationStatus(),
     installApp,
-    registerServiceWorker
+    triggerUpdate
   };
 };

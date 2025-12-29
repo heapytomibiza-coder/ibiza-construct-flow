@@ -11,5 +11,85 @@
     "step2Desc": "Upload documents",
     "step3": "Step 3: Services",
     "step3Desc": "Configure your offerings"
+  },
+  "expressMode": {
+    "badge": "Express Mode",
+    "title": "Fast Quotes for Small Jobs",
+    "description": "Get quick estimates for common repairs and minor works — from verified professionals.",
+    "footer": "Instant estimates • Verified professionals • Direct messaging",
+    "presets": {
+      "leakyTap": {
+        "title": "Repair a leaking tap",
+        "category": "Plumbing",
+        "icon": "💧",
+        "time": "Today",
+        "price": "€80-150"
+      },
+      "hangPictures": {
+        "title": "Mount pictures or shelves",
+        "category": "Handyman",
+        "icon": "🖼️",
+        "time": "2 hours",
+        "price": "€50-100"
+      },
+      "doorLock": {
+        "title": "Repair or adjust a door lock",
+        "category": "Handyman",
+        "icon": "🔒",
+        "time": "1 hour",
+        "price": "€60-120"
+      },
+      "lightFixture": {
+        "title": "Install a light fitting",
+        "category": "Electrical",
+        "icon": "💡",
+        "time": "2-3 hours",
+        "price": "€100-200"
+      }
+    }
+  },
+  "professionalNetwork": {
+    "title": "Join Ibiza's",
+    "titleHighlight": "Professional Network",
+    "description": "Grow your business with quality leads, clear job details, and a trusted reputation system.",
+    "stats": {
+      "verifiedPros": { "number": "500+", "label": "Verified Professionals" },
+      "projects": { "number": "2,000+", "label": "Projects Completed" },
+      "rating": { "number": "4.9/5", "label": "Average Rating" },
+      "safepay": { "number": "100%", "label": "SafePay Protected" }
+    },
+    "benefits": {
+      "verified": {
+        "title": "Verified Professionals",
+        "description": "Every professional is verified with background checks, licenses, and insurance"
+      },
+      "guaranteed": {
+        "title": "Excellence Guaranteed",
+        "description": "All work backed by our satisfaction guarantee and dispute resolution"
+      },
+      "rapid": {
+        "title": "Rapid Response",
+        "description": "Get matched with available professionals within 24 hours"
+      }
+    },
+    "categoriesTitle": "Professional Categories",
+    "categories": {
+      "handyman": "Handyman",
+      "electrician": "Electrician",
+      "plumber": "Plumber",
+      "painter": "Painter",
+      "builder": "Builder",
+      "architect": "Architect",
+      "designer": "Designer",
+      "hvac": "HVAC Tech",
+      "pool": "Pool Expert",
+      "landscaper": "Landscaper",
+      "roofer": "Roofer",
+      "carpenter": "Carpenter"
+    },
+    "cta": {
+      "findPros": "Find Professionals",
+      "joinNetwork": "Join Network"
+    }
   }
 }

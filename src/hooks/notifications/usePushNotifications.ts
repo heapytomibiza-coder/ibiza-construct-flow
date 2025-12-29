@@ -122,9 +122,8 @@ export const usePushNotifications = () => {
         return false;
       }
 
-      // Register service worker
-      const registration = await navigator.serviceWorker.register('/service-worker.js');
-      await navigator.serviceWorker.ready;
+      // Use existing service worker (registered by VitePWA in main.tsx)
+      const registration = await navigator.serviceWorker.ready;
 
       // Subscribe to push
       const subscription = await registration.pushManager.subscribe({
