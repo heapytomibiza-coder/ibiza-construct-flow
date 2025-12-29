@@ -7,6 +7,7 @@ import { SafeAreaProvider } from "@/components/mobile/SafeAreaProvider";
 import { MobileGestures } from "@/components/mobile/MobileGestures";
 import { OfflineIndicator } from "@/components/common/OfflineIndicator";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 import { SkipToContent } from "@/components/accessibility/SkipToContent";
 import { useWebVitals } from "@/hooks/useWebVitals";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -580,6 +581,7 @@ function AppContent() {
               </MobileAppWrapper>
             </MobileGestures>
             <BundleAnalyzer />
+            <PWAUpdatePrompt />
           </BrowserRouter>
         </SafeAreaProvider>
       </TooltipProvider>

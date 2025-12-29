@@ -15,6 +15,7 @@ import { validateEnvironment } from "./lib/deployment/environment";
 import { analytics } from "./lib/analytics";
 import { eventTracker, initializeAnalyticsBridge } from "./lib/analytics/index";
 import { cleanupSensitiveData } from "./lib/security/secureStorage";
+import { registerSW } from 'virtual:pwa-register';
 
 // Validate environment (Phase 9: Production Hardening)
 try {
@@ -44,18 +45,24 @@ if (import.meta.env.DEV) {
   window.addEventListener('load', logBundleMetrics);
 }
 
-// Register service worker for PWA
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('SW registered: ', registration);
-      })
-      .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
-}
+// Register service worker using VitePWA (single registration point)
+export const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    // Dispatch event for UI to show update prompt
+    window.dispatchEvent(new CustomEvent('pwa:update-available'));
+  },
+  onOfflineReady() {
+    console.log('App ready for offline use');
+    window.dispatchEvent(new CustomEvent('pwa:offline-ready'));
+  },
+  onRegistered(registration) {
+    console.log('SW registered:', registration);
+  },
+  onRegisterError(error) {
+    console.error('SW registration failed:', error);
+  },
+});
 
 const qc = new QueryClient({
   defaultOptions: {

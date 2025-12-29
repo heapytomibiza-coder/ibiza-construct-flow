@@ -1,33 +1,33 @@
-import { Shield, Award, Clock, Star, Users, Briefcase } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Shield, Award, Clock, Star, Users, Briefcase, LucideIcon } from 'lucide-react';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import professionalImage from '@/assets/professional-network.jpg';
 
+// Keys for stats, benefits, and categories
+const STAT_KEYS = ['verifiedPros', 'projects', 'rating', 'safepay'] as const;
+const BENEFIT_KEYS = ['verified', 'guaranteed', 'rapid'] as const;
+const CATEGORY_KEYS = [
+  'handyman', 'electrician', 'plumber', 'painter',
+  'builder', 'architect', 'designer', 'hvac',
+  'pool', 'landscaper', 'roofer', 'carpenter'
+] as const;
+
+// Icon mappings
+const STAT_ICONS: Record<typeof STAT_KEYS[number], LucideIcon> = {
+  verifiedPros: Users,
+  projects: Briefcase,
+  rating: Star,
+  safepay: Shield,
+};
+
+const BENEFIT_ICONS: Record<typeof BENEFIT_KEYS[number], LucideIcon> = {
+  verified: Shield,
+  guaranteed: Award,
+  rapid: Clock,
+};
+
 const ProfessionalNetwork = () => {
-
-  const stats = [
-    { icon: Users, number: "500+", label: "Verified Professionals" },
-    { icon: Briefcase, number: "2,000+", label: "Projects Completed" },  
-    { icon: Star, number: "4.9/5", label: "Average Rating" },
-    { icon: Shield, number: "100%", label: "SafePay Protected" }
-  ];
-
-  const benefits = [
-    {
-      icon: Shield,
-      title: "Verified Professionals",
-      description: "Every professional is verified with background checks, licenses, and insurance"
-    },
-    {
-      icon: Award,
-      title: "Excellence Guaranteed", 
-      description: "All work backed by our satisfaction guarantee and dispute resolution"
-    },
-    {
-      icon: Clock,
-      title: "Rapid Response",
-      description: "Get matched with available professionals within 24 hours"
-    }
-  ];
+  const { t } = useTranslation('home');
 
   return (
     <section className="py-20 bg-background">
@@ -36,29 +36,29 @@ const ProfessionalNetwork = () => {
           {/* Content */}
           <div>
             <h2 className="text-display text-4xl md:text-5xl font-bold text-charcoal mb-6">
-              Join Ibiza's Premier<br />
-              <span className="text-copper">Professional Network</span>
+              {t('professionalNetwork.title')}<br />
+              <span className="text-copper">{t('professionalNetwork.titleHighlight')}</span>
             </h2>
             
             <p className="text-body text-xl text-muted-foreground mb-8 leading-relaxed">
-              Connect with verified, trusted professionals ready to bring your vision to life
+              {t('professionalNetwork.description')}
             </p>
 
             {/* Benefits */}
             <div className="space-y-6 mb-10">
-              {benefits.map((benefit, index) => {
-                const IconComponent = benefit.icon;
+              {BENEFIT_KEYS.map((benefitKey) => {
+                const IconComponent = BENEFIT_ICONS[benefitKey];
                 return (
-                  <div key={index} className="flex items-start space-x-4">
+                  <div key={benefitKey} className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-hero rounded-lg flex items-center justify-center flex-shrink-0">
                       <IconComponent className="w-6 h-6 text-white" />
                     </div>
                     <div>
                       <h3 className="text-display font-semibold text-charcoal mb-2">
-                        {benefit.title}
+                        {t(`professionalNetwork.benefits.${benefitKey}.title`)}
                       </h3>
                       <p className="text-body text-muted-foreground leading-relaxed">
-                        {benefit.description}
+                        {t(`professionalNetwork.benefits.${benefitKey}.description`)}
                       </p>
                     </div>
                   </div>
@@ -69,10 +69,10 @@ const ProfessionalNetwork = () => {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button className="btn-hero">
-                Find Professionals
+                {t('professionalNetwork.cta.findPros')}
               </button>
               <button className="btn-secondary">
-                Join Network
+                {t('professionalNetwork.cta.joinNetwork')}
               </button>
             </div>
           </div>
@@ -94,18 +94,18 @@ const ProfessionalNetwork = () => {
             {/* Stats Overlay */}
             <div className="absolute -bottom-8 -left-8 right-8 bg-white rounded-xl shadow-luxury p-6">
               <div className="grid grid-cols-2 gap-6">
-                {stats.map((stat, index) => {
-                  const IconComponent = stat.icon;
+                {STAT_KEYS.map((statKey) => {
+                  const IconComponent = STAT_ICONS[statKey];
                   return (
-                    <div key={index} className="text-center">
+                    <div key={statKey} className="text-center">
                       <div className="flex items-center justify-center mb-2">
                         <IconComponent className="w-5 h-5 text-copper mr-2" />
                         <span className="text-display font-bold text-2xl text-charcoal">
-                          {stat.number}
+                          {t(`professionalNetwork.stats.${statKey}.number`)}
                         </span>
                       </div>
                       <p className="text-body text-sm text-muted-foreground">
-                        {stat.label}
+                        {t(`professionalNetwork.stats.${statKey}.label`)}
                       </p>
                     </div>
                   );
@@ -118,21 +118,17 @@ const ProfessionalNetwork = () => {
         {/* Professional Categories */}
         <div className="mt-24">
           <h3 className="text-display text-3xl font-semibold text-charcoal text-center mb-12">
-            Professional Categories
+            {t('professionalNetwork.categoriesTitle')}
           </h3>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            {[
-              "Handyman", "Electrician", "Plumber", "Painter", 
-              "Builder", "Architect", "Designer", "HVAC Tech",
-              "Pool Expert", "Landscaper", "Roofer", "Carpenter"
-            ].map((category, index) => (
+            {CATEGORY_KEYS.map((categoryKey) => (
               <div 
-                key={index}
+                key={categoryKey}
                 className="bg-sand-light/50 rounded-lg p-4 text-center hover:bg-sand-light transition-all duration-300 cursor-pointer"
               >
                 <span className="text-body font-medium text-charcoal text-sm">
-                  {category}
+                  {t(`professionalNetwork.categories.${categoryKey}`)}
                 </span>
               </div>
             ))}

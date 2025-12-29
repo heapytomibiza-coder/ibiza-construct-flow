@@ -85,6 +85,8 @@ i18n
     interpolation: { 
       escapeValue: false 
     },
+    returnNull: false,
+    returnEmptyString: false,
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],

@@ -11,5 +11,85 @@
     "step2Desc": "Sube documentos",
     "step3": "Paso 3: Servicios",
     "step3Desc": "Configura tus servicios"
+  },
+  "expressMode": {
+    "badge": "Modo Exprés",
+    "title": "Presupuestos Rápidos para Pequeños Trabajos",
+    "description": "Obtén estimaciones rápidas para reparaciones comunes y trabajos menores — con profesionales verificados.",
+    "footer": "Estimaciones al instante • Profesionales verificados • Mensajería directa",
+    "presets": {
+      "leakyTap": {
+        "title": "Reparar un grifo que gotea",
+        "category": "Fontanería",
+        "icon": "💧",
+        "time": "Hoy",
+        "price": "€80-150"
+      },
+      "hangPictures": {
+        "title": "Colgar cuadros o estanterías",
+        "category": "Manitas",
+        "icon": "🖼️",
+        "time": "2 horas",
+        "price": "€50-100"
+      },
+      "doorLock": {
+        "title": "Reparar o ajustar una cerradura",
+        "category": "Manitas",
+        "icon": "🔒",
+        "time": "1 hora",
+        "price": "€60-120"
+      },
+      "lightFixture": {
+        "title": "Instalar una luminaria",
+        "category": "Electricidad",
+        "icon": "💡",
+        "time": "2-3 horas",
+        "price": "€100-200"
+      }
+    }
+  },
+  "professionalNetwork": {
+    "title": "Únete a la",
+    "titleHighlight": "Red de Profesionales de Ibiza",
+    "description": "Haz crecer tu negocio con solicitudes de calidad, detalles claros del trabajo y un sistema de reputación fiable.",
+    "stats": {
+      "verifiedPros": { "number": "500+", "label": "Profesionales Verificados" },
+      "projects": { "number": "2.000+", "label": "Proyectos Completados" },
+      "rating": { "number": "4,9/5", "label": "Valoración Media" },
+      "safepay": { "number": "100%", "label": "Protegido con SafePay" }
+    },
+    "benefits": {
+      "verified": {
+        "title": "Profesionales Verificados",
+        "description": "Cada profesional está verificado con comprobaciones de antecedentes, licencias y seguros"
+      },
+      "guaranteed": {
+        "title": "Excelencia Garantizada",
+        "description": "Todo trabajo respaldado por nuestra garantía de satisfacción y resolución de disputas"
+      },
+      "rapid": {
+        "title": "Respuesta Rápida",
+        "description": "Te conectamos con profesionales disponibles en 24 horas"
+      }
+    },
+    "categoriesTitle": "Categorías Profesionales",
+    "categories": {
+      "handyman": "Manitas",
+      "electrician": "Electricista",
+      "plumber": "Fontanero",
+      "painter": "Pintor",
+      "builder": "Constructor",
+      "architect": "Arquitecto",
+      "designer": "Diseñador",
+      "hvac": "Climatización",
+      "pool": "Piscinas",
+      "landscaper": "Jardinero",
+      "roofer": "Tejados",
+      "carpenter": "Carpintero"
+    },
+    "cta": {
+      "findPros": "Encontrar Profesionales",
+      "joinNetwork": "Unirme a la Red"
+    }
   }
 }
