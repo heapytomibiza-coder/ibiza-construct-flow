@@ -1,96 +1,55 @@
-const CACHE_NAME = 'taskhub-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
-];
+/**
+ * Legacy Service Worker (Kill Switch)
+ *
+ * Older versions of this app registered `/service-worker.js`.
+ * The app now uses VitePWA-generated service worker (`/sw.js`).
+ *
+ * This file exists only to gracefully unregister the legacy SW and
+ * clear its old caches so users stop seeing "reverting"/stale homepage content.
+ */
 
-// Install event - cache essential resources
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting())
-  );
+  // Activate immediately
+  self.skipWaiting();
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
+    (async () => {
+      // Clear legacy caches (best effort)
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      } catch {
+        // ignore
+      }
 
-// Fetch event - network first, fallback to cache
-self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
+      // Unregister this legacy SW so it stops controlling pages
+      try {
+        await self.registration.unregister();
+      } catch {
+        // ignore
+      }
 
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // Clone the response before caching
-        const responseToCache = response.clone();
-        
-        caches.open(CACHE_NAME)
-          .then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        
-        return response;
-      })
-      .catch(() => {
-        // If network fails, try cache
-        return caches.match(event.request)
-          .then((response) => {
-            if (response) {
-              return response;
+      // Ask all open tabs to reload so the new SW can take over
+      try {
+        const clientList = await self.clients.matchAll({
+          type: 'window',
+          includeUncontrolled: true,
+        });
+
+        await Promise.all(
+          clientList.map((client) => {
+            try {
+              return client.navigate(client.url);
+            } catch {
+              return Promise.resolve();
             }
-            // Return offline page for navigation requests
-            if (event.request.mode === 'navigate') {
-              return caches.match('/');
-            }
-          });
-      })
-  );
-});
-
-// Handle push notifications
-self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : {};
-  const title = data.title || 'TaskHub Notification';
-  const options = {
-    body: data.body || 'You have a new notification',
-    icon: '/placeholder.svg',
-    badge: '/placeholder.svg',
-    vibrate: [200, 100, 200],
-    data: {
-      url: data.url || '/',
-      timestamp: Date.now()
-    },
-    actions: data.actions || []
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
-});
-
-// Handle notification clicks
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
+          })
+        );
+      } catch {
+        // ignore
+      }
+    })()
   );
 });

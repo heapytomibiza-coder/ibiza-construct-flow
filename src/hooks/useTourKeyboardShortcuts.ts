@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TourShortcutsConfig {
   onStartHomeTour: () => void;
@@ -20,13 +21,17 @@ export function useTourKeyboardShortcuts({
 }: TourShortcutsConfig) {
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
+    // Fully disable tours/shortcuts on mobile.
+    if (isMobile) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       // Shift + ? = Launch tour for current page
       if (e.shiftKey && e.key === '?') {
         e.preventDefault();
-        
+
         const path = location.pathname;
         if (path === '/') {
           onStartHomeTour();
@@ -42,7 +47,7 @@ export function useTourKeyboardShortcuts({
           }, 500);
         }
       }
-      
+
       // Shift + Ctrl + R = Reset all tours
       if (e.shiftKey && e.ctrlKey && e.key === 'r') {
         e.preventDefault();
@@ -53,5 +58,5 @@ export function useTourKeyboardShortcuts({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [location.pathname, onStartHomeTour, onStartWizardTour, onResetAllTours, navigate]);
+  }, [isMobile, location.pathname, onStartHomeTour, onStartWizardTour, onResetAllTours, navigate]);
 }
