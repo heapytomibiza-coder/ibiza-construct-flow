@@ -4,6 +4,14 @@
  */
 import { registerSW } from 'virtual:pwa-register';
 
+// Known legacy cache names that must be purged
+const LEGACY_CACHES = [
+  'taskhub-v1',
+  'static-v1',
+  'dynamic-v1',
+  'ibiza-build-flow-v1',
+];
+
 // Cleanup: unregister any legacy SW that may still be controlling clients.
 // This prevents "homepage reverting" caused by stale caches from older builds.
 async function cleanupLegacyServiceWorkers() {
@@ -16,9 +24,14 @@ async function cleanupLegacyServiceWorkers() {
         const scriptURL =
           reg.active?.scriptURL || reg.waiting?.scriptURL || reg.installing?.scriptURL || '';
 
-        // Legacy SW file shipped in /public
-        if (scriptURL.includes('/service-worker.js')) {
-          await reg.unregister();
+        // Legacy SW files shipped in /public
+        if (scriptURL.includes('/service-worker.js') || scriptURL.endsWith('/sw.js')) {
+          // Only unregister if it's NOT the VitePWA-generated one (which is also /sw.js but managed by workbox)
+          // We detect legacy by checking if it's from our old hand-written file
+          const isLegacy = !scriptURL.includes('workbox');
+          if (isLegacy || scriptURL.includes('/service-worker.js')) {
+            await reg.unregister();
+          }
         }
       })
     );
@@ -26,10 +39,10 @@ async function cleanupLegacyServiceWorkers() {
     // ignore
   }
 
-  // Best-effort cleanup of legacy caches
+  // Purge all known legacy caches
   try {
     if ('caches' in window) {
-      await caches.delete('taskhub-v1');
+      await Promise.all(LEGACY_CACHES.map((name) => caches.delete(name)));
     }
   } catch {
     // ignore

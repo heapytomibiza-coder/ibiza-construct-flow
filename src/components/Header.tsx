@@ -40,15 +40,17 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
   const navigate = useNavigate();
   const { totalUnread } = useConversationList(user?.id);
 
-  // Tour management state
+  // Tour management state - only on desktop
   const [tourTriggers, setTourTriggers] = useState({
     startHomeTour: () => {},
     startWizardTour: () => {},
     resetAllTours: () => {},
   });
 
-  // Listen for tour trigger functions from pages
+  // Listen for tour trigger functions from pages - desktop only
   useEffect(() => {
+    if (isMobile) return;
+
     const handleTourRegistration = (event: CustomEvent) => {
       setTourTriggers(prev => ({
         ...prev,
@@ -60,14 +62,18 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
     return () => {
       window.removeEventListener('register-tour-trigger', handleTourRegistration as EventListener);
     };
-  }, []);
+  }, [isMobile]);
 
-  // Enable keyboard shortcuts globally
-  useTourKeyboardShortcuts({
-    onStartHomeTour: tourTriggers.startHomeTour,
-    onStartWizardTour: tourTriggers.startWizardTour,
-    onResetAllTours: tourTriggers.resetAllTours,
-  });
+  // Enable keyboard shortcuts globally - desktop only
+  useTourKeyboardShortcuts(
+    isMobile
+      ? { onStartHomeTour: () => {}, onStartWizardTour: () => {}, onResetAllTours: () => {} }
+      : {
+          onStartHomeTour: tourTriggers.startHomeTour,
+          onStartWizardTour: tourTriggers.startWizardTour,
+          onResetAllTours: tourTriggers.resetAllTours,
+        }
+  );
 
   // Check if user is admin
   const [isAdminUser, setIsAdminUser] = useState(false);

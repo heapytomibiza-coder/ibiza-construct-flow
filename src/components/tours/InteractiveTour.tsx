@@ -18,9 +18,13 @@ interface InteractiveTourProps {
 }
 
 export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourProps) {
+  const isMobile = useIsMobile();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  // Hard kill-switch: never render on mobile
+  if (isMobile) return null;
 
   const step = steps[currentStep];
   const progress = ((currentStep + 1) / steps.length) * 100;
