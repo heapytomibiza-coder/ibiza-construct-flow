@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 interface TourStep {
   target: string;
@@ -20,14 +22,23 @@ interface TourProps {
 }
 
 export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip }) => {
+  const isMobile = useIsMobile();
+  const isCoarsePointer =
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(pointer: coarse)').matches
+      : false;
+  const toursDisabled = isMobile || isCoarsePointer;
+
   const [currentStep, setCurrentStep] = useState(0);
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
+    if (toursDisabled) return;
+
     if (isActive && steps[currentStep]) {
       const element = document.querySelector(steps[currentStep].target) as HTMLElement;
       setTargetElement(element);
-      
+
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         // Add highlight effect
@@ -45,7 +56,7 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
         targetElement.style.position = '';
       }
     };
-  }, [currentStep, isActive, steps, targetElement]);
+  }, [currentStep, isActive, toursDisabled, steps, targetElement]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -70,19 +81,20 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
     onSkip();
   };
 
-  if (!isActive || !steps[currentStep]) return null;
+  // Permanent kill-switch: never show tours on mobile/touch devices.
+  if (toursDisabled || !isActive || !steps[currentStep]) return null;
 
   const currentStepData = steps[currentStep];
 
   return (
     <>
       {/* Overlay - Non-blocking */}
-      <div 
-        className="fixed inset-0 bg-black/50 z-50" 
+      <div
+        className="fixed inset-0 bg-black/50 z-50"
         style={{ pointerEvents: 'none' }}
         onClick={handleSkip}
       />
-      
+
       {/* Close button - Top right corner for easy mobile access */}
       <button
         onClick={handleSkip}
@@ -92,13 +104,13 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
       >
         <X className="w-5 h-5" />
       </button>
-      
+
       {/* Tour Card */}
-      <div 
+      <div
         className="fixed inset-0 z-[51] flex items-center justify-center p-4 sm:p-6"
         style={{ pointerEvents: 'none' }}
       >
-        <Card 
+        <Card
           className="max-w-md w-full bg-background border-copper/20 shadow-xl max-h-[90vh] overflow-y-auto"
           style={{ pointerEvents: 'auto' }}
         >
@@ -118,25 +130,21 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
               </Badge>
             </div>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             <div>
-              <h3 className="font-semibold text-charcoal mb-2">
-                {currentStepData.title}
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                {currentStepData.content}
-              </p>
+              <h3 className="font-semibold text-charcoal mb-2">{currentStepData.title}</h3>
+              <p className="text-muted-foreground text-sm">{currentStepData.content}</p>
             </div>
-            
+
             {/* Progress Bar */}
             <div className="w-full bg-sand-light rounded-full h-2">
-              <div 
+              <div
                 className="bg-gradient-hero h-2 rounded-full transition-all duration-300"
                 style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
               />
             </div>
-            
+
             {/* Navigation */}
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center pt-2 gap-2">
               <Button
@@ -148,10 +156,10 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 Previous
               </Button>
-              
+
               <div className="flex gap-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="min-h-[44px] flex-1 sm:flex-initial"
                   onClick={handleSkip}
                 >
@@ -162,9 +170,7 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
                   className="bg-gradient-hero hover:bg-copper text-white min-h-[44px] flex-1 sm:flex-initial"
                 >
                   {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
-                  {currentStep !== steps.length - 1 && (
-                    <ChevronRight className="w-4 h-4 ml-1" />
-                  )}
+                  {currentStep !== steps.length - 1 && <ChevronRight className="w-4 h-4 ml-1" />}
                 </Button>
               </div>
             </div>
@@ -176,20 +182,33 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
 };
 
 export const useTour = (tourKey: string, steps: TourStep[]) => {
+  const isMobile = useIsMobile();
+  const isCoarsePointer =
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(pointer: coarse)').matches
+      : false;
+  const toursDisabled = isMobile || isCoarsePointer;
+
   const [isActive, setIsActive] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
+    // Permanent kill-switch: never auto-start tours on mobile/touch devices.
+    if (toursDisabled) {
+      setIsActive(false);
+      setIsCompleted(true);
+      return;
+    }
+
     const completed = localStorage.getItem(`tour_${tourKey}_completed`);
-    const isMobile = window.innerWidth < 768;
-    
-    if (!completed && !isMobile) {
+
+    if (!completed) {
       // Only auto-start on desktop - delay to ensure DOM is ready
       setTimeout(() => setIsActive(true), 1000);
     } else {
       setIsCompleted(true);
     }
-  }, [tourKey]);
+  }, [tourKey, toursDisabled]);
 
   const completeTour = () => {
     localStorage.setItem(`tour_${tourKey}_completed`, 'true');
@@ -204,13 +223,14 @@ export const useTour = (tourKey: string, steps: TourStep[]) => {
   };
 
   const resetTour = () => {
+    if (toursDisabled) return;
     localStorage.removeItem(`tour_${tourKey}_completed`);
     setIsCompleted(false);
     setIsActive(true);
   };
 
   return {
-    isActive,
+    isActive: toursDisabled ? false : isActive,
     isCompleted,
     completeTour,
     skipTour,
@@ -218,10 +238,11 @@ export const useTour = (tourKey: string, steps: TourStep[]) => {
     TourComponent: () => (
       <Tour
         steps={steps}
-        isActive={isActive}
+        isActive={toursDisabled ? false : isActive}
         onComplete={completeTour}
         onSkip={skipTour}
       />
-    )
+    ),
   };
 };
+
