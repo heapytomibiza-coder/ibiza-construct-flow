@@ -7,6 +7,7 @@ import { CanonicalJobWizard } from '@/components/wizard/canonical/CanonicalJobWi
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { useTour } from '@/components/tours/InteractiveTour';
 import { jobWizardTourSteps } from '@/config/tours';
+import { TOURS_ENABLED } from '@/config/toursEnabled';
 
 const PostJob: React.FC = () => {
   console.log('🎯 PostJob component rendering');
@@ -15,9 +16,13 @@ const PostJob: React.FC = () => {
   
   // Register tour trigger for header button
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent('register-tour-trigger', {
-      detail: { key: 'startWizardTour', trigger: startTour },
-    }));
+    if (!TOURS_ENABLED) return;
+
+    window.dispatchEvent(
+      new CustomEvent('register-tour-trigger', {
+        detail: { key: 'startWizardTour', trigger: startTour },
+      })
+    );
   }, [startTour]);
   
   return (

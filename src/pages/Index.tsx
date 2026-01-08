@@ -17,6 +17,7 @@ import { Helmet } from 'react-helmet-async';
 import { UserPlus, Shield, Settings } from 'lucide-react';
 import { useTour } from '@/components/tours/InteractiveTour';
 import { homepageTourSteps } from '@/config/tours';
+import { TOURS_ENABLED } from '@/config/toursEnabled';
 
 const Index = () => {
   const { t } = useTranslation(['common', 'navigation', 'home']);
@@ -31,9 +32,13 @@ const Index = () => {
 
   // Register tour triggers for header button
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent('register-tour-trigger', {
-      detail: { key: 'startHomeTour', trigger: startTour },
-    }));
+    if (!TOURS_ENABLED) return;
+
+    window.dispatchEvent(
+      new CustomEvent('register-tour-trigger', {
+        detail: { key: 'startHomeTour', trigger: startTour },
+      })
+    );
 
     // Reset all tours function
     const resetAllTours = () => {
@@ -41,10 +46,12 @@ const Index = () => {
       localStorage.removeItem('tour-job-wizard-tour');
       window.location.reload();
     };
-    
-    window.dispatchEvent(new CustomEvent('register-tour-trigger', {
-      detail: { key: 'resetAllTours', trigger: resetAllTours },
-    }));
+
+    window.dispatchEvent(
+      new CustomEvent('register-tour-trigger', {
+        detail: { key: 'resetAllTours', trigger: resetAllTours },
+      })
+    );
   }, [startTour]);
   
   return (

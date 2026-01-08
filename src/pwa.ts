@@ -24,14 +24,10 @@ async function cleanupLegacyServiceWorkers() {
         const scriptURL =
           reg.active?.scriptURL || reg.waiting?.scriptURL || reg.installing?.scriptURL || '';
 
-        // Legacy SW files shipped in /public
-        if (scriptURL.includes('/service-worker.js') || scriptURL.endsWith('/sw.js')) {
-          // Only unregister if it's NOT the VitePWA-generated one (which is also /sw.js but managed by workbox)
-          // We detect legacy by checking if it's from our old hand-written file
-          const isLegacy = !scriptURL.includes('workbox');
-          if (isLegacy || scriptURL.includes('/service-worker.js')) {
-            await reg.unregister();
-          }
+        // Only unregister the legacy SW that older versions registered at /service-worker.js.
+        // Never unregister the current VitePWA-generated /sw.js worker.
+        if (scriptURL.includes('/service-worker.js')) {
+          await reg.unregister();
         }
       })
     );

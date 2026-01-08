@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-
+import { TOURS_ENABLED } from '@/config/toursEnabled';
 
 interface TourStep {
   target: string;
@@ -27,7 +27,7 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
       ? window.matchMedia('(pointer: coarse)').matches
       : false;
-  const toursDisabled = isMobile || isCoarsePointer;
+  const toursDisabled = !TOURS_ENABLED || isMobile || isCoarsePointer;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
@@ -187,7 +187,7 @@ export const useTour = (tourKey: string, steps: TourStep[]) => {
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
       ? window.matchMedia('(pointer: coarse)').matches
       : false;
-  const toursDisabled = isMobile || isCoarsePointer;
+  const toursDisabled = !TOURS_ENABLED || isMobile || isCoarsePointer;
 
   const [isActive, setIsActive] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
