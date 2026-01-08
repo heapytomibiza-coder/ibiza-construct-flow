@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 const PrivacyPolicy = () => {
@@ -126,8 +126,11 @@ const PrivacyPolicy = () => {
               <li><strong>Analytics cookies:</strong> With your consent, to understand usage patterns</li>
             </ul>
             <p className="mt-2">
-              See our <a href="/cookie-policy" className="text-primary hover:underline">Cookie Policy</a> for details. 
-              You can manage your preferences via the cookie banner.
+              See our{' '}
+              <Link to="/cookie-policy" className="text-primary hover:underline">
+                Cookie Policy
+              </Link>{' '}
+              for details. You can manage your preferences via the cookie banner.
             </p>
           </section>
 

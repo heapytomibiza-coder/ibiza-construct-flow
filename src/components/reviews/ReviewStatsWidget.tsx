@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, Bell } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -171,12 +172,12 @@ export const ReviewStatsWidget = () => {
             <div className="flex gap-2">
               {totalPending > 0 && (
                 <Button variant="outline" className="flex-1" asChild>
-                  <a href="/reviews/submit">Review Completed Jobs</a>
+                  <Link to="/reviews/submit">Review Completed Jobs</Link>
                 </Button>
               )}
               {data.unreadNotifications > 0 && (
                 <Button variant="outline" className="flex-1" asChild>
-                  <a href="/reviews">View Responses</a>
+                  <Link to="/reviews">View Responses</Link>
                 </Button>
               )}
             </div>

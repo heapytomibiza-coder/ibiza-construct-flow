@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { X, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { TOURS_ENABLED } from '@/config/toursEnabled';
 
 interface TourStep {
   target: string;
@@ -23,8 +24,14 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
   const [isVisible, setIsVisible] = useState(true);
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
-  // Hard kill-switch: never render on mobile
-  if (isMobile) return null;
+  const isCoarsePointer =
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(pointer: coarse)').matches
+      : false;
+  const toursDisabled = !TOURS_ENABLED || isMobile || isCoarsePointer;
+
+  // Permanent kill-switch: tours are fully disabled.
+  if (toursDisabled) return null;
 
   const step = steps[currentStep];
   const progress = ((currentStep + 1) / steps.length) * 100;
@@ -194,9 +201,14 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
 export function useTour(tourKey: string, steps: TourStep[]) {
   const [showTour, setShowTour] = useState(false);
   const isMobile = useIsMobile();
+  const isCoarsePointer =
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(pointer: coarse)').matches
+      : false;
+  const toursDisabled = !TOURS_ENABLED || isMobile || isCoarsePointer;
 
   useEffect(() => {
-    if (isMobile) return;
+    if (toursDisabled) return;
 
     const hasSeenTour = localStorage.getItem(`tour-${tourKey}`);
 
@@ -204,7 +216,7 @@ export function useTour(tourKey: string, steps: TourStep[]) {
     if (!hasSeenTour) {
       setShowTour(true);
     }
-  }, [tourKey, isMobile]);
+  }, [tourKey, toursDisabled]);
 
   const completeTour = () => {
     localStorage.setItem(`tour-${tourKey}`, 'true');
@@ -218,21 +230,21 @@ export function useTour(tourKey: string, steps: TourStep[]) {
 
   // Manual trigger functions for demo mode
   const startTour = () => {
-    if (isMobile) return;
+    if (toursDisabled) return;
     setShowTour(true);
   };
 
   const resetTour = () => {
-    if (isMobile) return;
+    if (toursDisabled) return;
     localStorage.removeItem(`tour-${tourKey}`);
     setShowTour(true);
   };
 
   return {
-    showTour: isMobile ? false : showTour,
+    showTour: toursDisabled ? false : showTour,
     startTour,
     resetTour,
-    TourComponent: !isMobile && showTour ? (
+    TourComponent: !toursDisabled && showTour ? (
       <InteractiveTour steps={steps} onComplete={completeTour} onSkip={skipTour} />
     ) : null,
   };
