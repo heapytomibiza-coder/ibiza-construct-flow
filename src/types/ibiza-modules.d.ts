@@ -1,69 +1,91 @@
 /**
- * Module declarations for @ibiza/* packages
+ * Hybrid module shims for @ibiza/* packages
  * 
- * These declarations allow TypeScript to recognize @ibiza/* imports
- * in the Lovable environment where node_modules linking isn't available.
+ * Preserves typings for actively used imports while keeping the rest minimal.
+ * Avoids re-exporting from ../../packages/* (which can pull source into the 
+ * TS program and cause unexpected CI failures).
  * 
- * When running locally with `npm install`, the actual package types
- * from node_modules/@ibiza/* will take precedence.
+ * When running locally with `npm install`, real packages in node_modules 
+ * will provide proper typings and take precedence.
  */
 
-// Core package - persistence subpath
-declare module '@ibiza/core/persistence' {
-  export { 
-    registerSupabase, 
-    getSupabase, 
-    isSupabaseRegistered 
-  } from '../../packages/@core/persistence/clientRegistry';
-  export * from '../../packages/@core/persistence/queryKeys';
-  export * from '../../packages/@core/persistence/mutationKeys';
-  export * from '../../packages/@core/persistence/cacheTypes';
-  export { StorageManager, storageManager } from '../../packages/@core/persistence/storageManager';
+/** -------------------------
+ * @ibiza/core/services/api
+ * Matches: packages/@core/services/api/httpClient.ts
+ * -------------------------- */
+
+declare module "@ibiza/core/services/api" {
+  export interface HttpClientOptions {
+    url: string;
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    params?: Record<string, unknown>;
+    data?: unknown;
+    headers?: Record<string, string>;
+    signal?: AbortSignal;
+    /** Skip auth header injection (for public endpoints) */
+    skipAuth?: boolean;
+  }
+
+  /**
+   * HTTP client compatible with React Query and contract-generated hooks
+   * Handles auth token injection via registered Supabase client
+   */
+  export function httpClient<T>(config: HttpClientOptions): Promise<T>;
+
+  /** Error handler utilities */
+  export interface ErrorHandlerOptions {
+    showToast?: boolean;
+    logError?: boolean;
+    rethrow?: boolean;
+  }
+
+  export function getErrorMessage(error: unknown): string;
+  export function normalizeError(error: unknown): Error;
+  export function handleApiError(error: unknown, options?: ErrorHandlerOptions): void;
+  export function isAuthError(error: unknown): boolean;
+  export function isPermissionError(error: unknown): boolean;
+  export function isNotFoundError(error: unknown): boolean;
+  export function isValidationError(error: unknown): boolean;
+  export function isNetworkError(error: unknown): boolean;
 }
 
-// Core package - services/api subpath
-declare module '@ibiza/core/services/api' {
-  export { httpClient, type HttpClientOptions } from '../../packages/@core/services/api/httpClient';
-  export {
-    getErrorMessage,
-    normalizeError,
-    handleApiError,
-    isAuthError,
-    isPermissionError,
-    isNotFoundError,
-    isValidationError,
-    isNetworkError,
-    type ErrorHandlerOptions,
-  } from '../../packages/@core/services/api/errorHandler';
+/** -------------------------
+ * @ibiza/core/persistence
+ * Matches: packages/@core/persistence/clientRegistry.ts
+ * -------------------------- */
+
+declare module "@ibiza/core/persistence" {
+  /**
+   * Register the Supabase client instance
+   * Call this in app bootstrap before using any services
+   */
+  export function registerSupabase(client: unknown): void;
+
+  /**
+   * Get the registered Supabase client
+   * Throws if not registered
+   */
+  export function getSupabase<T = unknown>(): T;
+
+  /**
+   * Check if Supabase client is registered
+   */
+  export function isSupabaseRegistered(): boolean;
 }
 
-// Core package root
-declare module '@ibiza/core' {
-  export * from '../../packages/@core/index';
-}
+/** -------------------------
+ * Minimal existence shims for packages not directly used in src/
+ * When properly installed, real types from node_modules take over
+ * -------------------------- */
 
-// Contracts package
-declare module '@ibiza/contracts' {
-  export * from '../../packages/@contracts/clients/index';
-}
+declare module "@ibiza/core";
+declare module "@ibiza/core/*";
 
-// Ref-impl packages
-declare module '@ibiza/ref-impl-shared' {
-  export * from '../../packages/@ref-impl/shared/index';
-}
+declare module "@ibiza/contracts";
+declare module "@ibiza/contracts/*";
 
-declare module '@ibiza/ref-impl-user' {
-  export * from '../../packages/@ref-impl/user/index';
-}
-
-declare module '@ibiza/ref-impl-admin' {
-  export * from '../../packages/@ref-impl/admin/index';
-}
-
-declare module '@ibiza/ref-impl-client' {
-  export * from '../../packages/@ref-impl/client/index';
-}
-
-declare module '@ibiza/ref-impl-workers' {
-  export * from '../../packages/@ref-impl/workers/index';
-}
+declare module "@ibiza/ref-impl-shared";
+declare module "@ibiza/ref-impl-user";
+declare module "@ibiza/ref-impl-admin";
+declare module "@ibiza/ref-impl-client";
+declare module "@ibiza/ref-impl-workers";
