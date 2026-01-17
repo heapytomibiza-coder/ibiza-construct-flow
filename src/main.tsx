@@ -17,6 +17,11 @@ import { eventTracker, initializeAnalyticsBridge } from "./lib/analytics/index";
 import { cleanupSensitiveData } from "./lib/security/secureStorage";
 import './pwa'; // PWA registration (single source of truth)
 
+// @core client registry - wire Supabase before any @core services are used
+import { registerSupabase } from "../packages/@core/persistence/clientRegistry";
+import { supabase } from "@/integrations/supabase/client";
+registerSupabase(supabase);
+
 // Validate environment (Phase 9: Production Hardening)
 try {
   validateEnvironment();

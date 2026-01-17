@@ -6,20 +6,17 @@
  * Wire in app bootstrap (main.tsx) before using any @core services
  */
 
-type SupabaseClient = {
-  auth: {
-    getSession: () => Promise<{ data: { session: { access_token: string } | null } }>;
-  };
-  [key: string]: unknown;
-};
+// Use a generic type to accept any Supabase client shape
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySupabaseClient = any;
 
-let supabaseClient: SupabaseClient | null = null;
+let supabaseClient: AnySupabaseClient = null;
 
 /**
  * Register the Supabase client instance
  * Call this in app bootstrap before using any services
  */
-export function registerSupabase(client: SupabaseClient): void {
+export function registerSupabase(client: AnySupabaseClient): void {
   supabaseClient = client;
 }
 
@@ -27,13 +24,13 @@ export function registerSupabase(client: SupabaseClient): void {
  * Get the registered Supabase client
  * Throws if not registered
  */
-export function getSupabase(): SupabaseClient {
+export function getSupabase<T = AnySupabaseClient>(): T {
   if (!supabaseClient) {
     throw new Error(
       'Supabase client not registered. Call registerSupabase() in app bootstrap (main.tsx) before using @core services.'
     );
   }
-  return supabaseClient;
+  return supabaseClient as T;
 }
 
 /**

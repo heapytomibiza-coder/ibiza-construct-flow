@@ -68,9 +68,14 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@core": path.resolve(__dirname, "./packages/@core"),
-      "@contracts": path.resolve(__dirname, "./packages/@contracts"),
-      "@ref-impl": path.resolve(__dirname, "./packages/@ref-impl"),
+      // Package-name aliases (use these in imports)
+      "@ibiza/core": path.resolve(__dirname, "./packages/@core"),
+      "@ibiza/contracts": path.resolve(__dirname, "./packages/@contracts"),
+      "@ibiza/ref-impl-shared": path.resolve(__dirname, "./packages/@ref-impl/shared"),
+      "@ibiza/ref-impl-user": path.resolve(__dirname, "./packages/@ref-impl/user"),
+      "@ibiza/ref-impl-admin": path.resolve(__dirname, "./packages/@ref-impl/admin"),
+      "@ibiza/ref-impl-client": path.resolve(__dirname, "./packages/@ref-impl/client"),
+      "@ibiza/ref-impl-workers": path.resolve(__dirname, "./packages/@ref-impl/workers"),
     },
   },
   optimizeDeps: {

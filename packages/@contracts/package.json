@@ -1,0 +1,25 @@
+{
+  "name": "@ibiza/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Typed API contracts and React Query hooks",
+  "main": "clients/index.ts",
+  "types": "clients/index.ts",
+  "exports": {
+    ".": {
+      "types": "./clients/index.ts",
+      "default": "./clients/index.ts"
+    },
+    "./clients/*": {
+      "types": "./clients/*.ts",
+      "default": "./clients/*.ts"
+    }
+  },
+  "dependencies": {
+    "@ibiza/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "zod": "^3.0.0"
+  }
+}
