@@ -15,7 +15,9 @@
       "default": "./clients/*.ts"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "@ibiza/core": "file:../@core"
+  },
   "peerDependencies": {
     "@tanstack/react-query": "^5.0.0",
     "zod": "^3.0.0"

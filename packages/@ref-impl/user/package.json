@@ -6,9 +6,9 @@
   "main": "index.ts",
   "types": "index.ts",
   "dependencies": {
-    "@ibiza/core": "workspace:*",
-    "@ibiza/contracts": "workspace:*",
-    "@ibiza/ref-impl-shared": "workspace:*"
+    "@ibiza/core": "file:../../@core",
+    "@ibiza/contracts": "file:../../@contracts",
+    "@ibiza/ref-impl-shared": "file:../shared"
   },
   "peerDependencies": {
     "react": "^18.0.0",
