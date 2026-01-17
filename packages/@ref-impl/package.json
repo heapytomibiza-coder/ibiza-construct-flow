@@ -1,0 +1,54 @@
+{
+  "name": "@ibiza/ref-impl",
+  "version": "1.0.0",
+  "description": "Reference implementation - LOB modules (user, admin, client, workers)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./user": {
+      "types": "./user/index.ts",
+      "default": "./user/index.ts"
+    },
+    "./admin": {
+      "types": "./admin/index.ts",
+      "default": "./admin/index.ts"
+    },
+    "./client": {
+      "types": "./client/index.ts",
+      "default": "./client/index.ts"
+    },
+    "./workers": {
+      "types": "./workers/index.ts",
+      "default": "./workers/index.ts"
+    },
+    "./shared": {
+      "types": "./shared/index.ts",
+      "default": "./shared/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "user",
+    "admin",
+    "client",
+    "workers",
+    "shared"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@ibiza/core": "workspace:*",
+    "@ibiza/contracts": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "@tanstack/react-query": "^5.0.0"
+  }
+}

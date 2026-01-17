@@ -1,0 +1,39 @@
+{
+  "name": "@ibiza/core",
+  "version": "1.0.0",
+  "description": "Core infrastructure library - NON-LOB, NON-UI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./services/api": {
+      "types": "./dist/services/api/index.d.ts",
+      "default": "./dist/services/api/index.js"
+    },
+    "./dto": {
+      "types": "./dist/dto/index.d.ts",
+      "default": "./dist/dto/index.js"
+    },
+    "./persistence": {
+      "types": "./dist/persistence/index.d.ts",
+      "default": "./dist/persistence/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc --watch"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0"
+  }
+}
