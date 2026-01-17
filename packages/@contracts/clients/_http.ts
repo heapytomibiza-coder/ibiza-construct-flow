@@ -5,7 +5,7 @@
  * Now depends on @ibiza/core for httpClient
  */
 
-import { httpClient } from '../../@core/services/api/httpClient';
+import { httpClient } from '@ibiza/core/services/api';
 
 export type HttpOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
