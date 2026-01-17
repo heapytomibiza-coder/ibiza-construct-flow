@@ -68,7 +68,11 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Package-name aliases (use these in imports)
+      // Package-name aliases with subpath support
+      "@ibiza/core/services/api": path.resolve(__dirname, "./packages/@core/services/api"),
+      "@ibiza/core/persistence": path.resolve(__dirname, "./packages/@core/persistence"),
+      "@ibiza/core/dto": path.resolve(__dirname, "./packages/@core/dto"),
+      "@ibiza/core/utils": path.resolve(__dirname, "./packages/@core/utils"),
       "@ibiza/core": path.resolve(__dirname, "./packages/@core"),
       "@ibiza/contracts": path.resolve(__dirname, "./packages/@contracts"),
       "@ibiza/ref-impl-shared": path.resolve(__dirname, "./packages/@ref-impl/shared"),
