@@ -2,7 +2,7 @@
  * Lightweight fetch wrapper with JSON + error handling
  * Used by generated React Query hooks
  * 
- * Now depends on @core/services/api for httpClient
+ * Now depends on @ibiza/core for httpClient
  */
 
 import { httpClient } from '../../@core/services/api/httpClient';

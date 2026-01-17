@@ -1,34 +1,32 @@
 {
   "name": "@ibiza/core",
   "version": "1.0.0",
+  "private": true,
   "description": "Core infrastructure library - NON-LOB, NON-UI",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.ts",
+  "types": "index.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./index.ts",
+      "default": "./index.ts"
     },
     "./services/api": {
-      "types": "./dist/services/api/index.d.ts",
-      "default": "./dist/services/api/index.js"
+      "types": "./services/api/index.ts",
+      "default": "./services/api/index.ts"
     },
     "./dto": {
-      "types": "./dist/dto/index.d.ts",
-      "default": "./dist/dto/index.js"
+      "types": "./dto/index.ts",
+      "default": "./dto/index.ts"
     },
     "./persistence": {
-      "types": "./dist/persistence/index.d.ts",
-      "default": "./dist/persistence/index.js"
+      "types": "./persistence/index.ts",
+      "default": "./persistence/index.ts"
     },
     "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "default": "./dist/utils/index.js"
+      "types": "./utils/index.ts",
+      "default": "./utils/index.ts"
     }
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc --watch"

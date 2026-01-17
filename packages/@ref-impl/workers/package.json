@@ -1,0 +1,18 @@
+{
+  "name": "@ibiza/ref-impl-workers",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Workers module - Professionals (Person | Business)",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "@ibiza/core": "workspace:*",
+    "@ibiza/contracts": "workspace:*",
+    "@ibiza/ref-impl-shared": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "@tanstack/react-query": "^5.0.0"
+  }
+}

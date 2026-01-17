@@ -5,7 +5,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  { ignores: ["dist", "packages/@core/dist", "packages/@contracts/dist", "packages/@ref-impl/**/dist"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -27,5 +27,39 @@ export default tseslint.config(
         message: "Use generated contract clients from packages/@contracts instead of raw fetch()"
       }],
     },
+  },
+  // LOB Module Boundary Rules - prevent cross-LOB imports
+  {
+    files: ["packages/@ref-impl/client/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [
+          { group: ["@ibiza/ref-impl-workers", "@ibiza/ref-impl-workers/*"], message: "Cannot import workers from client module" },
+          { group: ["@ibiza/ref-impl-admin", "@ibiza/ref-impl-admin/*"], message: "Cannot import admin from client module" }
+        ]
+      }]
+    }
+  },
+  {
+    files: ["packages/@ref-impl/workers/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [
+          { group: ["@ibiza/ref-impl-client", "@ibiza/ref-impl-client/*"], message: "Cannot import client from workers module" },
+          { group: ["@ibiza/ref-impl-admin", "@ibiza/ref-impl-admin/*"], message: "Cannot import admin from workers module" }
+        ]
+      }]
+    }
+  },
+  {
+    files: ["packages/@ref-impl/admin/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [
+          { group: ["@ibiza/ref-impl-client", "@ibiza/ref-impl-client/*"], message: "Cannot import client from admin module" },
+          { group: ["@ibiza/ref-impl-workers", "@ibiza/ref-impl-workers/*"], message: "Cannot import workers from admin module" }
+        ]
+      }]
+    }
   },
 );
