@@ -3,6 +3,7 @@
  */
 
 export { httpClient, type HttpClientOptions } from './httpClient';
+export { APIError } from '../../dto/common';
 export {
   getErrorMessage,
   normalizeError,
