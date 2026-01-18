@@ -32,21 +32,46 @@ declare module "@ibiza/core/services/api" {
    */
   export function httpClient<T>(config: HttpClientOptions): Promise<T>;
 
-  /** Error handler utilities */
+  /** -------------------------
+   * Error Handling
+   * Matches: packages/@core/services/api/errorHandler.ts
+   * -------------------------- */
+
+  /** Standard API error structure */
+  export class APIError extends Error {
+    constructor(
+      message: string,
+      statusCode?: number,
+      code?: string,
+      details?: unknown
+    );
+    statusCode?: number;
+    code?: string;
+    details?: unknown;
+  }
+
+  /** Error handler options */
   export interface ErrorHandlerOptions {
     showToast?: boolean;
     logError?: boolean;
     rethrow?: boolean;
   }
 
-  export function getErrorMessage(error: unknown): string;
-  export function normalizeError(error: unknown): Error;
-  export function handleApiError(error: unknown, options?: ErrorHandlerOptions): void;
-  export function isAuthError(error: unknown): boolean;
-  export function isPermissionError(error: unknown): boolean;
-  export function isNotFoundError(error: unknown): boolean;
-  export function isValidationError(error: unknown): boolean;
-  export function isNetworkError(error: unknown): boolean;
+  /** Get user-friendly error message from APIError */
+  export function getErrorMessage(error: APIError): string;
+
+  /** Normalize any error to APIError */
+  export function normalizeError(error: unknown): APIError;
+
+  /** Handle API error with logging */
+  export function handleApiError(error: APIError, options?: ErrorHandlerOptions): string;
+
+  /** Error type classification utilities */
+  export function isAuthError(error: APIError): boolean;
+  export function isPermissionError(error: APIError): boolean;
+  export function isNotFoundError(error: APIError): boolean;
+  export function isValidationError(error: APIError): boolean;
+  export function isNetworkError(error: APIError): boolean;
 }
 
 /** -------------------------
