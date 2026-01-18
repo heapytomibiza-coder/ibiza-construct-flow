@@ -109,8 +109,22 @@ declare module "@ibiza/core/*";
 declare module "@ibiza/contracts";
 declare module "@ibiza/contracts/*";
 
-declare module "@ibiza/ref-impl-shared";
-declare module "@ibiza/ref-impl-user";
-declare module "@ibiza/ref-impl-admin";
-declare module "@ibiza/ref-impl-client";
-declare module "@ibiza/ref-impl-workers";
+declare module "@ibiza/ref-impl-shared" {
+  // Add specific exports here when src imports them
+}
+
+declare module "@ibiza/ref-impl-user" {
+  export function UserRoutes(): JSX.Element;
+}
+
+declare module "@ibiza/ref-impl-admin" {
+  export function AdminRoutes(): JSX.Element;
+}
+
+declare module "@ibiza/ref-impl-client" {
+  export function ClientRoutes(): JSX.Element;
+}
+
+declare module "@ibiza/ref-impl-workers" {
+  export function WorkerRoutes(): JSX.Element;
+}
