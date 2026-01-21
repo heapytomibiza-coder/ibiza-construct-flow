@@ -15,7 +15,7 @@ import { validateEnvironment } from "./lib/deployment/environment";
 import { analytics } from "./lib/analytics";
 import { eventTracker, initializeAnalyticsBridge } from "./lib/analytics/index";
 import { cleanupSensitiveData } from "./lib/security/secureStorage";
-import './pwa'; // PWA registration (single source of truth)
+import { enforceFreshBuildOncePerDeploy } from './pwa'; // PWA registration (single source of truth)
 
 // @core client registry - wire Supabase before any @core services are used
 import { registerSupabase } from "@ibiza/core/persistence";
@@ -70,18 +70,27 @@ const qc = new QueryClient({
   },
 });
 
-const root = ReactDOM.createRoot(document.getElementById("root")!);
+// Enforce fresh build on version change (Flow Contract v1.0: Homepage Reversion Contract)
+// This MUST run before app render to prevent users from seeing stale content
+enforceFreshBuildOncePerDeploy().then((reloading) => {
+  if (reloading) {
+    // Page is reloading, don't render
+    return;
+  }
+  
+  const root = ReactDOM.createRoot(document.getElementById("root")!);
 
-root.render(
-  <React.StrictMode>
-    <QueryClientProvider client={qc}>
-      <FeatureFlagsProvider>
-        <ServicesRegistryProvider>
-          <BookingCartProvider>
-            <App />
-          </BookingCartProvider>
-        </ServicesRegistryProvider>
-      </FeatureFlagsProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
-);
+  root.render(
+    <React.StrictMode>
+      <QueryClientProvider client={qc}>
+        <FeatureFlagsProvider>
+          <ServicesRegistryProvider>
+            <BookingCartProvider>
+              <App />
+            </BookingCartProvider>
+          </ServicesRegistryProvider>
+        </FeatureFlagsProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
+  );
+});
