@@ -88,14 +88,9 @@ const Footer = () => {
         {/* Bottom */}
         <div className="border-t border-white/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center gap-3 mb-4 md:mb-0">
-              <p className="text-body text-white/60 text-sm">
-                {t('legal.copyright')}
-              </p>
-              <span className="text-white/30 text-xs font-mono">
-                v{import.meta.env.VITE_BUILD_VERSION || 'dev'}
-              </span>
-            </div>
+            <p className="text-body text-white/60 text-sm mb-4 md:mb-0">
+              {t('legal.copyright')}
+            </p>
             <div className="flex flex-wrap gap-6">
               <Link to="/privacy" className="text-body text-white/60 hover:text-copper text-sm transition-all duration-300">{(t('legal.links', { returnObjects: true }) as string[])[0]}</Link>
               <Link to="/terms" className="text-body text-white/60 hover:text-copper text-sm transition-all duration-300">{(t('legal.links', { returnObjects: true }) as string[])[1]}</Link>
