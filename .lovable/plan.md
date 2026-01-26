@@ -1,103 +1,107 @@
 
 
-# Plan: Fix Authentication and Email Confirmation Issues
+# Revised Plan: Secure Authentication & Role Assignment Fixes
 
-## Problem Analysis
+## Summary of Issues Found
 
-Based on my investigation, there are actually **two separate issues**:
+### Confirmed Facts
+1. **User `heapymagic@googlemail.com`** signed up via **email/password** (not OAuth)
+2. **Account is verified** (email_confirmed_at: 2025-11-20)
+3. **The backfill worked** - user now has `professional` role assigned
+4. **Sign-in failures** are due to password mismatch (not email confirmation)
+5. **User roles table** has composite unique constraint `(user_id, role)`
 
-### Issue 1: Existing User Cannot Sign In
-- User `heapymagic@googlemail.com` already exists since November 2025
-- Account is fully verified but sign-in fails with "Invalid login credentials"
-- This means the password being entered doesn't match the original
-
-### Issue 2: Missing User Role
-- The user's profile exists but `user_roles` table has no entry
-- This could cause authorization issues after successful login
-
----
-
-## Immediate Fix (Manual)
-
-For the specific user experiencing this issue:
-
-**Option A - Password Reset (Recommended)**
-The user should click "Forgot password?" on the sign-in form and receive a reset link.
-
-**Option B - Admin Password Reset (If emails aren't working)**
-I can create a temporary admin function to reset the password directly.
+### Security Risks in Current Implementation
+1. **Trigger trusts `profiles.active_role`** - privilege escalation vector if users can edit this field
+2. **Trigger is on `profiles`** - unreliable if profile creation fails or is async
 
 ---
 
-## Technical Fixes Required
+## Phase 1: Harden the Role Assignment Trigger
 
-### Phase 1: Fix Role Assignment Gap
+### Current (Risky)
+```sql
+-- Trusts active_role from profile - SECURITY RISK
+INSERT INTO user_roles (user_id, role)
+VALUES (NEW.id, CASE WHEN NEW.active_role = 'admin' THEN 'admin'::app_role ...)
+```
 
-**Problem**: Users can have profiles without corresponding `user_roles` entries.
-
-**Solution**: Create a database trigger that ensures roles are created when profiles are created.
+### Proposed Fix
+Always assign `client` role by default. Role promotions happen through admin-only functions.
 
 ```sql
--- Migration: Ensure user roles exist for all profiles
-INSERT INTO user_roles (user_id, role)
-SELECT id, 
-  CASE 
-    WHEN active_role = 'professional' THEN 'professional'
-    WHEN active_role = 'admin' THEN 'admin'
-    ELSE 'client'
-  END
-FROM profiles
-WHERE id NOT IN (SELECT user_id FROM user_roles);
-
--- Create trigger to auto-assign role on profile creation
-CREATE OR REPLACE FUNCTION ensure_user_role()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION public.ensure_user_role_on_profile()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
+  -- Always default to 'client' - never trust user-provided data for roles
   INSERT INTO user_roles (user_id, role)
-  VALUES (NEW.id, COALESCE(NEW.active_role, 'client'))
+  VALUES (NEW.id, 'client'::app_role)
   ON CONFLICT (user_id, role) DO NOTHING;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-CREATE TRIGGER ensure_user_role_on_profile
-  AFTER INSERT ON profiles
-  FOR EACH ROW
-  EXECUTE FUNCTION ensure_user_role();
+$$;
 ```
 
-### Phase 2: Improve Auth Error Messaging
+### Future Enhancement (Optional)
+- Move trigger to `auth.users` creation for reliability
+- Create admin-only RPC for role promotions
 
-**Problem**: "Invalid login credentials" is generic and doesn't help users understand if:
-- Their email doesn't exist
-- Their password is wrong
-- Their account isn't verified
+---
 
-**Solution**: Update `UnifiedAuth.tsx` to provide better error guidance:
+## Phase 2: Improve Error Messaging (Security-Conscious)
+
+### Current Issue
+The error message reveals too much about the password reset flow.
+
+### Proposed Fix
+Generic message that covers both wrong password AND potential OAuth confusion:
 
 ```typescript
-// In catch block, detect specific error types
-if (error.message.includes('Invalid login credentials')) {
-  // Check if user exists first
+if (error.message?.includes('Invalid login credentials')) {
   toast({
     title: 'Sign in failed',
-    description: 'Please check your email and password, or try resetting your password.',
+    description: 'Email or password incorrect. If you normally sign in with Google, use "Continue with Google". Otherwise, try resetting your password.',
     variant: 'destructive'
   });
 }
 ```
 
-### Phase 3: Email Delivery Verification
+This:
+- Doesn't leak account existence
+- Covers OAuth users who forgot they used Google
+- Guides toward password reset without confirming the email exists
 
-**Current State**:
-- `RESEND_API_KEY` secret is configured
-- `send-email` edge function uses Resend
-- Auth emails use Supabase's built-in SMTP (separate from Resend)
+---
 
-**Verification Steps**:
-1. Supabase Auth emails use their own SMTP - not our Resend setup
-2. Need to check if custom SMTP is configured in Supabase Auth settings
-3. If using Supabase default SMTP, emails may be rate-limited or landing in spam
+## Phase 3: Immediate User Resolution
+
+For `heapymagic@googlemail.com`:
+
+1. **Role is now fixed** - backfill assigned `professional` role today
+2. **Password issue remains** - user needs to:
+   - Use "Forgot password" to receive a reset link
+   - If email doesn't arrive, check spam folder
+   - If still no email, investigate SMTP/deliverability
+
+**No OAuth needed** - confirmed email-only signup.
+
+---
+
+## Phase 4: Add Roles Integrity Monitoring (Admin Tool)
+
+Add a query to the admin toolkit to detect orphaned profiles:
+
+```sql
+-- Find profiles without any role assignment
+SELECT p.id, p.full_name, p.created_at
+FROM profiles p
+LEFT JOIN user_roles ur ON ur.user_id = p.id
+WHERE ur.user_id IS NULL;
+```
 
 ---
 
@@ -105,32 +109,35 @@ if (error.message.includes('Invalid login credentials')) {
 
 | File | Change |
 |------|--------|
-| `src/pages/UnifiedAuth.tsx` | Improve error messages, add password reset prominence |
-| Database migration | Add role sync trigger and backfill missing roles |
-| `supabase/config.toml` | No changes needed |
+| Database migration | Replace trigger to always default to 'client' |
+| `src/pages/UnifiedAuth.tsx` | Update error message to be more generic/helpful |
 
 ---
 
-## Immediate Action for This User
+## Technical Notes
 
-Since the user's account already exists and is verified:
+### Why the original trigger was risky
+The `profiles.active_role` field could be:
+- Set by the user during signup (via `intent_role` in metadata)
+- Modified client-side after creation
+- Used for UI display only
 
-1. **Direct them to use "Forgot password?"** - This will send a password reset email
-2. **If that email doesn't arrive**, the issue is with Supabase Auth SMTP settings (not our Resend integration)
-3. **Fallback**: I can create an admin endpoint to reset the password directly
+Trusting it for role assignment allows privilege escalation. A malicious user could:
+1. Sign up with `intent_role: admin`
+2. Profile trigger reads `active_role` = 'admin'
+3. User gets admin role automatically
 
----
-
-## Technical Details
-
-### Why "confirmation email not landing" is misleading
-The logs show the account IS confirmed. The issue is the password, not email verification.
-
-### Supabase Auth Email Flow
-- Auth emails (signup confirmation, password reset) use Supabase's internal SMTP
-- Our `send-email` edge function with Resend is for application emails (notifications, etc.)
-- These are two separate email systems
-
-### Auto-confirm Setting
-Currently, new signups require email confirmation. We could enable auto-confirm to bypass this, but that reduces security.
+### Safer architecture pattern
+```
+┌──────────────┐    ┌───────────────┐    ┌────────────────┐
+│  Sign Up     │───▶│ Create Profile │───▶│ Assign 'client' │
+│  (any role)  │    │ (stores intent)│    │ Role by Default │
+└──────────────┘    └───────────────┘    └────────────────┘
+                                                 │
+                                                 ▼
+┌──────────────┐    ┌───────────────┐    ┌────────────────┐
+│  Admin       │───▶│ Promote to    │───▶│ Add Role       │
+│  Dashboard   │    │ Professional  │    │ via Admin RPC  │
+└──────────────┘    └───────────────┘    └────────────────┘
+```
 
