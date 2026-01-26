@@ -5,7 +5,7 @@
  */
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -71,9 +71,15 @@ const TOTAL_STEPS = STEP_LABELS.length; // 7
 
 export const CanonicalJobWizard: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, isClient } = useAuth();
   const isMobile = useIsMobile();
-  const [currentStep, setCurrentStep] = useState(1);
+  
+  // Initialize step from URL param (preserving other params)
+  const stepFromUrl = parseInt(searchParams.get('step') || '1', 10);
+  const [currentStep, setCurrentStep] = useState(
+    stepFromUrl >= 1 && stepFromUrl <= 7 ? stepFromUrl : 1
+  );
   const [loading, setLoading] = useState(false);
   const [skipQuestions, setSkipQuestions] = useState(false);
   const [showDraftModal, setShowDraftModal] = useState(false);
@@ -101,6 +107,16 @@ export const CanonicalJobWizard: React.FC = () => {
     }
   });
 
+  // Sync step to URL (preserve other params like draftId)
+  useEffect(() => {
+    const currentUrlStep = parseInt(searchParams.get('step') || '1', 10);
+    if (currentStep !== currentUrlStep) {
+      // Create new params preserving all existing ones
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('step', String(currentStep));
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [currentStep, searchParams, setSearchParams]);
 
   // Restore draft on mount with modal prompt (only at start)
   useEffect(() => {
@@ -412,7 +428,16 @@ export const CanonicalJobWizard: React.FC = () => {
     return match ? Number(match[0]) : null;
   };
 
+  // Submission lock ref to prevent double submissions
+  const isSubmittingRef = useRef(false);
+  
   const handleSubmit = async () => {
+    // Prevent double submissions
+    if (isSubmittingRef.current) {
+      console.log('[Wizard] Submission already in progress, ignoring');
+      return;
+    }
+    
     if (!user) {
       toast.error('Please sign in to post a job');
       navigate('/auth');
@@ -424,7 +449,10 @@ export const CanonicalJobWizard: React.FC = () => {
       return;
     }
 
+    // Lock submission
+    isSubmittingRef.current = true;
     setLoading(true);
+    
     try {
       const budgetValue = parseBudgetValue(wizardState.logistics.budgetRange);
       // Use 'fixed' for ranges (actual range stored in answers.logistics.budgetRange)
@@ -435,6 +463,16 @@ export const CanonicalJobWizard: React.FC = () => {
       // Use first micro ID and UUID
       const primaryMicroId = wizardState.microIds[0];
       const primaryMicroUuid = wizardState.microUuids[0] || null;
+
+      // Generate idempotency key (user + content hash + time bucket)
+      // Time bucket = 1 hour windows to allow retries but prevent true duplicates
+      const timeBucket = Math.floor(Date.now() / (1000 * 60 * 60));
+      const contentHash = btoa(JSON.stringify({
+        userId: user.id,
+        micros: wizardState.microIds.sort().join(','),
+        location: wizardState.logistics.location,
+      })).slice(0, 32);
+      const idempotencyKey = `job-${user.id.slice(0, 8)}-${contentHash}-${timeBucket}`;
 
       const { data: newJob, error } = await supabase
         .from('jobs')
@@ -466,12 +504,31 @@ export const CanonicalJobWizard: React.FC = () => {
             startDate: wizardState.logistics.startDate?.toISOString(),
             completionDate: wizardState.logistics.completionDate?.toISOString()
           },
-          status: 'open'
+          status: 'open',
+          idempotency_key: idempotencyKey
         }])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        // Handle unique constraint violation (duplicate submission)
+        if (error.code === '23505' && error.message?.includes('idempotency_key')) {
+          console.log('[Wizard] Duplicate submission detected, finding existing job');
+          // Find the existing job
+          const { data: existingJob } = await supabase
+            .from('jobs')
+            .select('id')
+            .eq('idempotency_key', idempotencyKey)
+            .single();
+          
+          if (existingJob) {
+            toast.success('Job already posted!');
+            navigate(`/job-board?highlight=${existingJob.id}`);
+            return;
+          }
+        }
+        throw error;
+      }
 
       // Clear draft after successful post
       try {

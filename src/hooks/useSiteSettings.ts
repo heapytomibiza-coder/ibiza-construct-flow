@@ -18,12 +18,13 @@ export function useSiteSettings(section: string, key: string) {
           .select('value')
           .eq('section', section)
           .eq('key', key)
-          .single();
+          .maybeSingle(); // Use maybeSingle to avoid PGRST116 errors when no row exists
 
-        if (error) throw error;
+        // Only throw on real errors, not "no rows" (which is null with maybeSingle)
+        if (error) {
+          console.error('Error fetching site settings:', error);
+        }
         setValue(data?.value as SiteSettingValue || null);
-      } catch (error) {
-        console.error('Error fetching site settings:', error);
       } finally {
         setLoading(false);
       }

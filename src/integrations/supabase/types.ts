@@ -3758,38 +3758,62 @@ export type Database = {
         Row: {
           amount: number
           booking_id: string | null
+          captured_at: string | null
+          client_id: string | null
           contract_id: string | null
           created_at: string | null
+          currency: string | null
           escrow_status: string | null
           id: string
+          job_id: string | null
+          metadata: Json | null
           milestone_id: string | null
+          refunded_at: string | null
           released_at: string | null
           released_by: string | null
           status: Database["public"]["Enums"]["payment_status"] | null
+          stripe_charge_id: string | null
+          stripe_payment_intent_id: string | null
         }
         Insert: {
           amount: number
           booking_id?: string | null
+          captured_at?: string | null
+          client_id?: string | null
           contract_id?: string | null
           created_at?: string | null
+          currency?: string | null
           escrow_status?: string | null
           id?: string
+          job_id?: string | null
+          metadata?: Json | null
           milestone_id?: string | null
+          refunded_at?: string | null
           released_at?: string | null
           released_by?: string | null
           status?: Database["public"]["Enums"]["payment_status"] | null
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
         }
         Update: {
           amount?: number
           booking_id?: string | null
+          captured_at?: string | null
+          client_id?: string | null
           contract_id?: string | null
           created_at?: string | null
+          currency?: string | null
           escrow_status?: string | null
           id?: string
+          job_id?: string | null
+          metadata?: Json | null
           milestone_id?: string | null
+          refunded_at?: string | null
           released_at?: string | null
           released_by?: string | null
           status?: Database["public"]["Enums"]["payment_status"] | null
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
         }
         Relationships: [
           {
@@ -3797,6 +3821,13 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escrow_payments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -5182,6 +5213,7 @@ export type Database = {
           description: string | null
           duration_minutes: number | null
           id: string
+          idempotency_key: string | null
           location: Json | null
           micro_id: string
           scheduled_at: string | null
@@ -5199,6 +5231,7 @@ export type Database = {
           description?: string | null
           duration_minutes?: number | null
           id?: string
+          idempotency_key?: string | null
           location?: Json | null
           micro_id: string
           scheduled_at?: string | null
@@ -5216,6 +5249,7 @@ export type Database = {
           description?: string | null
           duration_minutes?: number | null
           id?: string
+          idempotency_key?: string | null
           location?: Json | null
           micro_id?: string
           scheduled_at?: string | null
@@ -11850,24 +11884,81 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_disputes: {
+        Row: {
+          amount: number
+          closed_at: string | null
+          created_at: string | null
+          currency: string | null
+          evidence_due_by: string | null
+          id: string
+          metadata: Json | null
+          reason: string | null
+          status: string | null
+          stripe_charge_id: string | null
+          stripe_dispute_id: string
+          stripe_payment_intent_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          closed_at?: string | null
+          created_at?: string | null
+          currency?: string | null
+          evidence_due_by?: string | null
+          id?: string
+          metadata?: Json | null
+          reason?: string | null
+          status?: string | null
+          stripe_charge_id?: string | null
+          stripe_dispute_id: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          closed_at?: string | null
+          created_at?: string | null
+          currency?: string | null
+          evidence_due_by?: string | null
+          id?: string
+          metadata?: Json | null
+          reason?: string | null
+          status?: string | null
+          stripe_charge_id?: string | null
+          stripe_dispute_id?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       stripe_processed_events: {
         Row: {
+          claimed_at: string | null
+          error_message: string | null
           event_id: string
           event_type: string
           processed_at: string | null
           result: Json | null
+          status: string | null
         }
         Insert: {
+          claimed_at?: string | null
+          error_message?: string | null
           event_id: string
           event_type: string
           processed_at?: string | null
           result?: Json | null
+          status?: string | null
         }
         Update: {
+          claimed_at?: string | null
+          error_message?: string | null
           event_id?: string
           event_type?: string
           processed_at?: string | null
           result?: Json | null
+          status?: string | null
         }
         Relationships: []
       }
@@ -13520,6 +13611,10 @@ export type Database = {
         | { Args: { p_dispute_id: string }; Returns: undefined }
         | { Args: { p_dispute_id: string; p_reason: string }; Returns: Json }
       execute_resolution: { Args: { p_resolution_id: string }; Returns: Json }
+      freeze_escrow_for_dispute: {
+        Args: { p_charge_id: string }
+        Returns: undefined
+      }
       generate_next_occurrence: {
         Args: { p_recurring_booking_id: string }
         Returns: string
