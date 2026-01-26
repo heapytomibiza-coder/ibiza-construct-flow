@@ -12,6 +12,12 @@ interface RouteGuardProps {
   skipAuthInDev?: boolean;
   requireOnboardingComplete?: boolean;
   enforce2FA?: boolean;
+  /**
+   * When true, allows users with intent_role='professional' to access this route
+   * even if they don't have the professional role yet. ONLY use for onboarding routes.
+   * @default false
+   */
+  allowProfessionalIntent?: boolean;
 }
 
 export default function RouteGuard({ 
@@ -20,7 +26,8 @@ export default function RouteGuard({
   fallbackPath = '/auth',
   skipAuthInDev = false,
   requireOnboardingComplete = false,
-  enforce2FA = true
+  enforce2FA = true,
+  allowProfessionalIntent = false
 }: RouteGuardProps) {
   const location = useLocation();
   const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized' | '2fa_required'>('loading');
@@ -85,8 +92,9 @@ export default function RouteGuard({
         console.log('🔒 [RouteGuard] Role check:', { userRoles, requiredRole, hasRequiredRole });
         
         // Special case: Allow users with intent_role = 'professional' to access onboarding
-        // even if they don't have the professional role yet (pending verification)
-        if (!hasRequiredRole && requiredRole === 'professional' && !requireOnboardingComplete) {
+        // ONLY when allowProfessionalIntent is explicitly set to true (opt-in, not default)
+        // This prevents unapproved users from accessing job board, dashboard, etc.
+        if (!hasRequiredRole && requiredRole === 'professional' && allowProfessionalIntent) {
           const { data: profileData } = await supabase
             .from('profiles')
             .select('intent_role')
@@ -94,7 +102,7 @@ export default function RouteGuard({
             .single();
           
           if (profileData?.intent_role === 'professional') {
-            console.log('🔒 [RouteGuard] User has intent_role=professional, allowing onboarding access');
+            console.log('🔒 [RouteGuard] User has intent_role=professional, allowing onboarding access (allowProfessionalIntent=true)');
             if (!isStale) setStatus('authorized');
             return;
           }
@@ -174,7 +182,7 @@ export default function RouteGuard({
       isStale = true;
       subscription.unsubscribe();
     };
-  }, [requiredRole, skipAuthInDev, requireOnboardingComplete, enforce2FA, toast]);
+  }, [requiredRole, skipAuthInDev, requireOnboardingComplete, enforce2FA, allowProfessionalIntent, toast]);
 
   if (status === 'loading') {
     return (
