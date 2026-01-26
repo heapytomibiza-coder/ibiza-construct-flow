@@ -1,140 +1,104 @@
 
-# RLS Refinement Plan: Policy Corrections
+# Fix Analytics Events RLS Policy for Anonymous Tracking
 
-## Summary
+## Problem Analysis
 
-Based on schema verification, 4 additional tables need tightening, and 2 policies need schema-accurate corrections.
+The `analytics_events` table is blocking inserts from **unauthenticated visitors** on the homepage and other public pages, causing a flood of console errors:
+
+```
+"new row violates row-level security policy for table \"analytics_events\""
+```
+
+### Root Cause
+
+| Issue | Detail |
+|-------|--------|
+| **Current INSERT Policy** | Role: `{authenticated}` only |
+| **CHECK Clause** | `auth.uid() IS NOT NULL` |
+| **Expected Behavior** | Anonymous visitors should be able to log page views |
+| **Actual Behavior** | All anonymous INSERT attempts are blocked |
+
+The analytics system explicitly supports anonymous tracking (generates `sessionId` for all visitors, allows `user_id` to be null), but the RLS policy was incorrectly tightened to `authenticated`-only in a previous migration.
 
 ---
 
-## Phase 1: Fix 4 Missed Permissive Policies
+## Solution
 
-These tables were not in the original 37 but still have `{authenticated}` WITH CHECK `true`:
+Fix the RLS policy to allow **mixed anonymous + authenticated tracking** while preventing impersonation.
 
-### Tables to Fix
+### Policy Logic
 
-| Table | Current Policy | Action |
-|-------|----------------|--------|
-| `automation_executions` | System can insert automation executions | → service_role only |
-| `payment_notifications` | System can create notifications | → service_role only |
-| `quote_request_items` | Authenticated users can create quote items | → owner-scoped |
-| `redirect_analytics` | Authenticated users can insert redirects | → authenticated with session check |
-
-### SQL Implementation
-
-```sql
--- 1) automation_executions - should be backend-only
-REVOKE INSERT ON public.automation_executions FROM anon, authenticated;
-DROP POLICY IF EXISTS "System can insert automation executions" ON public.automation_executions;
-CREATE POLICY "service_role_insert" ON public.automation_executions 
-  FOR INSERT TO service_role WITH CHECK (true);
-
--- 2) payment_notifications - should be backend-only
-REVOKE INSERT ON public.payment_notifications FROM anon, authenticated;
-DROP POLICY IF EXISTS "System can create notifications" ON public.payment_notifications;
-CREATE POLICY "service_role_insert" ON public.payment_notifications 
-  FOR INSERT TO service_role WITH CHECK (true);
-
--- 3) quote_request_items - needs schema check for owner column
--- (will verify if user_id or quote_request_id exists)
-
--- 4) redirect_analytics - likely needs auth + session tracking
--- (will verify schema before finalizing)
-```
+| User Type | Allowed? | Condition |
+|-----------|----------|-----------|
+| Anonymous | Yes | Must have `user_id IS NULL` (cannot claim to be a user) |
+| Authenticated | Yes | Must have `user_id = auth.uid()` OR `user_id IS NULL` |
+| Impersonation | No | Cannot set `user_id` to another user's ID |
 
 ---
 
-## Phase 2: Fix analytics_events Policy
-
-### Current Problem
-```sql
-WITH CHECK (auth.uid() IS NOT NULL)  -- Too weak!
-```
-
-### Schema Confirmed
-- `user_id` column exists and is **nullable** (allows both anon and auth tracking)
-
-### Corrected Policy
-Since `user_id` is nullable, we need a mixed approach:
-- Authenticated users MUST set `user_id = auth.uid()` (prevents impersonation)
-- Anonymous tracking would need separate handling (currently revoked)
+## Database Migration
 
 ```sql
+-- Fix analytics_events INSERT policy for mixed anonymous/authenticated tracking
+-- The previous policy blocked anonymous visitors from logging page views
+
+-- Drop the overly restrictive policy
 DROP POLICY IF EXISTS "Authenticated insert analytics" ON public.analytics_events;
 
-CREATE POLICY "Authenticated insert analytics"
+-- Allow anonymous inserts (for unauthenticated visitors)
+-- They cannot claim to be a user (user_id must be NULL)
+CREATE POLICY "Anon can insert analytics without user_id"
 ON public.analytics_events
-FOR INSERT TO authenticated
+FOR INSERT
+TO anon
+WITH CHECK (user_id IS NULL);
+
+-- Allow authenticated inserts with ownership enforcement
+-- If user_id is set, it must match auth.uid() (prevents impersonation)
+-- If user_id is NULL, that's also allowed (session-only tracking)
+CREATE POLICY "Authenticated can insert analytics with ownership"
+ON public.analytics_events
+FOR INSERT
+TO authenticated
 WITH CHECK (
-  -- If user_id is provided, it must match the authenticated user
-  -- This prevents impersonation while allowing NULL user_id for session-only events
   (user_id IS NULL) OR (user_id = auth.uid())
 );
 ```
 
 ---
 
-## Phase 3: Fix service_views Policy
+## Frontend Code Improvement (Optional)
 
-### Current Problem
-```sql
-WITH CHECK (auth.uid() IS NOT NULL)  -- Doesn't enforce ownership
+Update the analytics adapter to include `user_id` when the user is authenticated, improving data quality:
+
+**File**: `src/lib/analyticsAdapter.ts`
+
+```typescript
+// Add user_id when authenticated
+import { supabase } from '@/integrations/supabase/client';
+
+static async toRowWithUser(event: AnalyticsEventPayload): Promise<AnalyticsEventRow> {
+  const baseRow = this.toRow(event);
+  
+  // Try to get current user ID if authenticated
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  return {
+    ...baseRow,
+    user_id: user?.id ?? null
+  };
+}
 ```
 
-### Schema Confirmed
-- `viewer_id` column exists and is **nullable** (allows anonymous browsing)
-
-### Corrected Policy
-Allow authenticated users to log views, but if `viewer_id` is set, it must match:
-
-```sql
-DROP POLICY IF EXISTS "Authenticated can log service views" ON public.service_views;
-
-CREATE POLICY "Authenticated can log service views"
-ON public.service_views
-FOR INSERT TO authenticated
-WITH CHECK (
-  -- If viewer_id is provided, it must match the authenticated user
-  (viewer_id IS NULL) OR (viewer_id = auth.uid())
-);
-```
-
-### Optional: Restore Anonymous Tracking (if needed for metrics)
-If you want anonymous users to track views (common for marketing funnels):
-
-```sql
-CREATE POLICY "Anon can log views without viewer_id"
-ON public.service_views
-FOR INSERT TO anon
-WITH CHECK (viewer_id IS NULL);  -- Anon cannot claim to be a user
-```
+However, this is **not required** for the fix - the current code already works because `user_id` defaults to null.
 
 ---
 
-## Phase 4: Verify quote_request_items and redirect_analytics
+## Files to Modify
 
-Need to check their schemas before finalizing policies. Will query:
-- Does `quote_request_items` have a `user_id` or link to owner?
-- Does `redirect_analytics` have a `user_id` or session tracking?
-
----
-
-## Files to Create/Modify
-
-| File | Purpose |
-|------|---------|
-| Database Migration | Refinement policies for 4 missed tables + 2 corrections |
-| `docs/RLS_TRIAGE.md` | Update with additional tables |
-
----
-
-## Security Impact
-
-| Item | Before | After |
-|------|--------|-------|
-| Remaining `{authenticated}` WITH CHECK `true` | 4 tables | 0 tables |
-| `analytics_events` impersonation risk | Possible | Blocked |
-| `service_views` impersonation risk | Possible | Blocked |
+| File | Action | Purpose |
+|------|--------|---------|
+| Database Migration | Create | Fix RLS policy for anonymous tracking |
 
 ---
 
@@ -142,16 +106,40 @@ Need to check their schemas before finalizing policies. Will query:
 
 After implementation:
 
-1. **Analytics events**
-   - [ ] Authenticated user can insert event with `user_id = auth.uid()`
-   - [ ] Authenticated user can insert event with `user_id = NULL` (session-only)
-   - [ ] Authenticated user CANNOT insert event with `user_id = some_other_id`
+- [ ] Homepage loads without RLS errors in console
+- [ ] Anonymous visitor page views are recorded in `analytics_events`
+- [ ] Authenticated user page views include correct `user_id`
+- [ ] Impersonation attack blocked (cannot insert with fake `user_id`)
 
-2. **Service views**
-   - [ ] Same pattern as analytics_events
+---
 
-3. **System tables (automation_executions, payment_notifications)**
-   - [ ] Frontend doesn't break (these should be edge-function-only)
+## Security Considerations
 
-4. **Run verification query**
-   - [ ] Zero remaining `{authenticated}` WITH CHECK `true` policies
+| Concern | Mitigation |
+|---------|------------|
+| Spam from anonymous | Session-based tracking limits duplicate events; rate limiting can be added at edge |
+| Impersonation | `user_id = auth.uid()` check prevents authenticated users from spoofing |
+| Data pollution | Analytics is inherently low-trust; sensitive data stays in protected tables |
+
+---
+
+## Technical Details
+
+### Why This Was Broken
+
+The previous RLS refinement migration changed the analytics policy to:
+```sql
+CREATE POLICY "Authenticated insert analytics"
+ON public.analytics_events
+FOR INSERT TO authenticated
+WITH CHECK (auth.uid() IS NOT NULL);
+```
+
+This was too restrictive because:
+1. It only grants INSERT to the `authenticated` role (not `anon`)
+2. The `WITH CHECK` is redundant (authenticated users always have `auth.uid()`)
+3. It doesn't consider the design requirement for anonymous visitor tracking
+
+### Why Two Separate Policies
+
+Supabase RLS requires separate policies for different roles. A single policy cannot have `TO anon, authenticated` - it must be split.
