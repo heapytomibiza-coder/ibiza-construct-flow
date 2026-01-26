@@ -1,87 +1,98 @@
 
 
-# Security Tightening: RouteGuard Scope and RPC Hardening
+# Refinement Plan: Security Tightening Adjustments
 
-## Summary of Issues Found
+## Summary of Adjustments Needed
 
-Based on investigation, there are **critical security gaps** that need immediate attention:
+Based on the code review, there are 4 specific refinements to make the implementation bulletproof:
 
-### A) RouteGuard Intent Bypass is Too Broad
+## Changes to Implement
 
-**Current State:**
-The intent bypass logic at `RouteGuard.tsx:87-101` allows access when:
-- `requiredRole === 'professional'`
-- `requireOnboardingComplete === false` (this is the DEFAULT value!)
-- User has `intent_role === 'professional'`
+### 1. RouteGuard: Use `maybeSingle()` Instead of `single()`
 
-**Problem:**
-Since `requireOnboardingComplete` defaults to `false`, the intent bypass applies to ALL these routes:
-- `/job-board` - users can view full job details
-- `/dashboard/pro` - full professional dashboard
-- `/professional/services` - service management
-- `/professional/payout-setup` - payout configuration
-- `/professional/portfolio` - portfolio management
-- `/settings/professional` - professional settings
-
-This means **anyone who signs up with intent_role='professional' gets access to the entire professional area** before approval.
-
-### B) apply_to_become_professional() Missing Auth Guard
-
-The RPC uses `auth.uid()` directly but doesn't fail-fast if called anonymously. While `auth.uid()` returns NULL for anonymous users, the INSERT will fail silently with a constraint error rather than a clear "Not authenticated" message.
-
-### C) reject_professional() Using reviewer_notes for User-Facing Reason
-
-Currently `_reason` is stored in `reviewer_notes`, which should be internal. The table has no dedicated `rejection_reason` column for user-facing messages.
-
-### D) RLS Policies for professional_verifications Look Good
-
-Existing policies are correctly configured:
-- Professionals can INSERT their own verification (professional_id = auth.uid())
-- Professionals can SELECT their own verification
-- Admins can SELECT/UPDATE all verifications
-
----
-
-## Implementation Plan
-
-### Phase 1: Fix RouteGuard Scope (CRITICAL)
-
-**Approach:** Add a new prop `allowProfessionalIntent` that is explicitly opt-in, rather than relying on `!requireOnboardingComplete`.
-
-**Changes to RouteGuard.tsx:**
-1. Add new prop: `allowProfessionalIntent?: boolean` (default: false)
-2. Change the bypass logic to check this prop instead of `!requireOnboardingComplete`
-3. Only the onboarding route will pass `allowProfessionalIntent={true}`
-
-**Routes that should allow intent bypass (safe):**
-- `/onboarding/professional` - filling profile, uploading docs
-- `/professional/verification` - viewing verification status
-
-**Routes that MUST NOT allow intent bypass:**
-- `/job-board` - full job details and apply functionality
-- `/dashboard/pro` - professional dashboard
-- `/professional/payout-setup` - financial setup
-- `/professional/services`, `/services/new` - service management
-- `/professional/portfolio` - portfolio management
-
-### Phase 2: Add Auth Guard to apply_to_become_professional()
-
-Add a fail-fast check at the start of the RPC:
-```sql
-IF auth.uid() IS NULL THEN
-  RAISE EXCEPTION 'Not authenticated';
-END IF;
+**Current code (line 98-102):**
+```typescript
+const { data: profileData } = await supabase
+  .from('profiles')
+  .select('intent_role')
+  .eq('id', userId)
+  .single();
 ```
 
-### Phase 3: Add rejection_reason Column
+**Issue:** If profile creation fails or is delayed, `.single()` throws an error instead of returning null gracefully.
 
-Add a dedicated column for user-facing rejection reasons, keeping `reviewer_notes` for internal admin notes.
+**Fix:**
+```typescript
+const { data: profileData } = await supabase
+  .from('profiles')
+  .select('intent_role')
+  .eq('id', userId)
+  .maybeSingle();
+```
 
-### Phase 4: Fix active_role Default in handle_new_user()
+### 2. RouteGuard: Add Verification Status Check
 
-Currently the trigger sets `active_role = _intent_role` which can cause confusion. Users with `intent_role='professional'` see a pro dashboard they can't fully use.
+**Current code (line 104):**
+```typescript
+if (profileData?.intent_role === 'professional') {
+```
 
-**Fix:** Always set `active_role = 'client'` initially. Update to `'professional'` only after they explicitly start onboarding or get approved.
+**Issue:** Only checks intent_role, not whether a pending verification row exists.
+
+**Fix:** Also verify the user has a pending or rejected verification (not approved - if approved they should have the role):
+```typescript
+if (profileData?.intent_role === 'professional') {
+  // Verify they have a pending/rejected verification row (not yet approved)
+  const { data: verificationData } = await supabase
+    .from('professional_verifications')
+    .select('status')
+    .eq('professional_id', userId)
+    .maybeSingle();
+    
+  // Only allow access if verification exists and is pending or was rejected
+  // (approved users should have the professional role already)
+  if (verificationData && ['pending', 'rejected'].includes(verificationData.status)) {
+    console.log('🔒 [RouteGuard] User has intent_role=professional with pending/rejected verification, allowing onboarding access');
+    if (!isStale) setStatus('authorized');
+    return;
+  }
+}
+```
+
+### 3. apply_to_become_professional(): Remove active_role Update
+
+**Current code (lines 22-27):**
+```sql
+UPDATE public.profiles
+SET intent_role = 'professional',
+    active_role = 'professional',  -- This should NOT be here
+    updated_at = now()
+WHERE id = auth.uid();
+```
+
+**Issue:** The RPC shouldn't flip `active_role` to professional automatically. This should happen only when user explicitly starts onboarding in the UI.
+
+**Fix:**
+```sql
+UPDATE public.profiles
+SET intent_role = 'professional',
+    updated_at = now()
+WHERE id = auth.uid();
+```
+
+### 4. apply_to_become_professional(): Use Structured Error Code
+
+**Current code (line 14):**
+```sql
+RAISE EXCEPTION 'Not authenticated';
+```
+
+**Fix:** Use a proper error code for better client-side handling:
+```sql
+RAISE EXCEPTION USING
+  ERRCODE = '28000',
+  MESSAGE = 'Not authenticated';
+```
 
 ---
 
@@ -89,187 +100,104 @@ Currently the trigger sets `active_role = _intent_role` which can cause confusio
 
 | File | Change |
 |------|--------|
-| `src/components/RouteGuard.tsx` | Add `allowProfessionalIntent` prop, update bypass logic |
-| `src/App.tsx` | Update route declarations to use new prop correctly |
-| Database migration | Add auth guard to RPC, add rejection_reason column, fix active_role default |
+| `src/components/RouteGuard.tsx` | Use `maybeSingle()`, add verification status check |
+| Database migration | Fix `apply_to_become_professional()` RPC |
 
 ---
 
 ## Technical Details
 
-### RouteGuard.tsx Changes
+### RouteGuard.tsx - Lines 97-109
+
+Replace the current bypass block with:
 
 ```typescript
-interface RouteGuardProps {
-  children: React.ReactNode;
-  requiredRole?: 'client' | 'professional' | 'admin';
-  fallbackPath?: string;
-  skipAuthInDev?: boolean;
-  requireOnboardingComplete?: boolean;
-  enforce2FA?: boolean;
-  allowProfessionalIntent?: boolean; // NEW: Explicitly allow intent-based access
-}
-
-// ...
-
 // Special case: Allow users with intent_role = 'professional' to access onboarding
-// ONLY when allowProfessionalIntent is explicitly true
+// ONLY when allowProfessionalIntent is explicitly set to true (opt-in, not default)
+// This prevents unapproved users from accessing job board, dashboard, etc.
 if (!hasRequiredRole && requiredRole === 'professional' && allowProfessionalIntent) {
+  // Use maybeSingle() to handle missing profile gracefully
   const { data: profileData } = await supabase
     .from('profiles')
     .select('intent_role')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
   
   if (profileData?.intent_role === 'professional') {
-    console.log('🔒 [RouteGuard] User has intent_role=professional, allowing onboarding access');
-    if (!isStale) setStatus('authorized');
-    return;
+    // Additional check: verify they have a pending/rejected verification
+    // (approved users should already have the professional role)
+    const { data: verificationData } = await supabase
+      .from('professional_verifications')
+      .select('status')
+      .eq('professional_id', userId)
+      .maybeSingle();
+    
+    // Only allow if verification exists and is pending or rejected
+    if (verificationData && ['pending', 'rejected'].includes(verificationData.status)) {
+      console.log('🔒 [RouteGuard] User has pending/rejected verification, allowing onboarding access');
+      if (!isStale) setStatus('authorized');
+      return;
+    }
   }
 }
 ```
 
-### App.tsx Route Updates
-
-```typescript
-// Onboarding - ALLOW intent bypass
-<Route path="/onboarding/professional" element={
-  <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-    <ProfessionalOnboardingPage />
-  </RouteGuard>
-} />
-
-// Verification status - ALLOW intent bypass
-<Route path="/professional/verification" element={
-  <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-    <ProfessionalVerificationPage />
-  </RouteGuard>
-} />
-
-// Job board - NO intent bypass (requires actual role)
-<Route path="/job-board" element={
-  <RouteGuard requiredRole="professional">
-    <JobBoardPage />
-  </RouteGuard>
-} />
-
-// Dashboard - NO intent bypass
-<Route path="/dashboard/pro" element={
-  <RouteGuard requiredRole="professional">
-    <UnifiedProfessionalDashboard />
-  </RouteGuard>
-} />
-```
-
-### Database Migration
+### Database Migration - apply_to_become_professional()
 
 ```sql
--- 1. Add auth guard to apply_to_become_professional()
 CREATE OR REPLACE FUNCTION public.apply_to_become_professional()
 RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public, pg_temp
 AS $$
+DECLARE
+  _uid uuid;
 BEGIN
-  -- Fail-fast if not authenticated
-  IF auth.uid() IS NULL THEN
-    RAISE EXCEPTION 'Not authenticated';
+  _uid := auth.uid();
+  
+  -- Fail-fast with structured error if not authenticated
+  IF _uid IS NULL THEN
+    RAISE EXCEPTION USING
+      ERRCODE = '28000',
+      MESSAGE = 'Not authenticated';
   END IF;
   
+  -- Create pending verification entry
   INSERT INTO public.professional_verifications (professional_id, status)
-  VALUES (auth.uid(), 'pending')
+  VALUES (_uid, 'pending')
   ON CONFLICT (professional_id) DO NOTHING;
   
+  -- Update profile intent ONLY (do NOT change active_role here)
+  -- active_role switch happens explicitly when user starts onboarding in UI
   UPDATE public.profiles
   SET intent_role = 'professional',
-      active_role = 'professional',
       updated_at = now()
-  WHERE id = auth.uid();
+  WHERE id = _uid;
   
   RETURN true;
-END;
-$$;
-
--- 2. Add rejection_reason column for user-facing messages
-ALTER TABLE public.professional_verifications 
-ADD COLUMN IF NOT EXISTS rejection_reason text;
-
-COMMENT ON COLUMN public.professional_verifications.rejection_reason IS 'User-facing reason for rejection';
-COMMENT ON COLUMN public.professional_verifications.reviewer_notes IS 'Internal admin notes (not shown to user)';
-
--- 3. Fix handle_new_user to default active_role to client
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, pg_temp
-AS $$
-DECLARE
-  _intent_role text;
-BEGIN
-  _intent_role := COALESCE(NEW.raw_user_meta_data->>'intent_role', 'client');
-  
-  INSERT INTO public.profiles (id, full_name, active_role, intent_role)
-  VALUES (
-    NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    'client',      -- Always start as client
-    _intent_role   -- Store intent separately
-  )
-  ON CONFLICT (id) DO UPDATE SET
-    intent_role = EXCLUDED.intent_role;
-  
-  INSERT INTO public.user_roles (user_id, role)
-  VALUES (NEW.id, 'client'::app_role)
-  ON CONFLICT (user_id, role) DO NOTHING;
-  
-  IF _intent_role = 'professional' THEN
-    INSERT INTO public.professional_verifications (professional_id, status)
-    VALUES (NEW.id, 'pending')
-    ON CONFLICT (professional_id) DO NOTHING;
-  END IF;
-  
-  RETURN NEW;
 END;
 $$;
 ```
 
 ---
 
-## What This Fixes
+## What These Fixes Prevent
 
-| Issue | Fix |
-|-------|-----|
-| Intent bypass too broad | New `allowProfessionalIntent` prop is opt-in, not default |
-| Job board accessible pre-approval | Only routes with explicit prop get bypass |
-| RPC can be called anonymously | Auth.uid() check with clear error message |
-| Rejection reason mixed with admin notes | Separate `rejection_reason` column |
-| active_role confusion | Always start as 'client', update explicitly |
+| Edge Case | Current Behavior | After Fix |
+|-----------|------------------|-----------|
+| Profile creation fails | `.single()` throws error, auth flow crashes | `maybeSingle()` returns null, access denied gracefully |
+| Legacy user with intent but no verification | Could bypass RouteGuard | Verification row required |
+| Approved user still using intent bypass | Could trigger (redundant) | Not triggered - they have the role |
+| Anonymous RPC call | Generic error message | Structured error code for client handling |
+| Calling RPC auto-switches to pro mode | Unexpected UX (pro dashboard they can't use) | Stay in client mode until explicit switch |
 
 ---
 
-## Testing Checklist
+## Testing After Implementation
 
-After implementation, verify:
-
-1. **New pro-intent signup**
-   - Has `client` role only
-   - Has `intent_role = 'professional'`
-   - Has `active_role = 'client'`
-   - Can access `/onboarding/professional`
-   - BLOCKED from `/job-board`, `/dashboard/pro`
-
-2. **Existing client applies via RPC**
-   - Creates pending verification
-   - Updates intent_role
-   - Still blocked from pro-only routes
-
-3. **Admin approval**
-   - Grants `professional` role
-   - User can now access all pro routes
-   - Verification status shows approved
-
-4. **Anonymous RPC call**
-   - Returns clear "Not authenticated" error
+1. **Profile missing edge case**: Temporarily delete profile row, confirm RouteGuard doesn't crash
+2. **Verification missing edge case**: User with intent_role='professional' but no verification row - should be blocked
+3. **RPC doesn't flip active_role**: Call apply_to_become_professional(), confirm active_role stays 'client'
+4. **Anonymous RPC error**: Call RPC without auth, confirm error code 28000
 
