@@ -440,7 +440,9 @@ export const CanonicalJobWizard: React.FC = () => {
     
     if (!user) {
       toast.error('Please sign in to post a job');
-      navigate('/auth');
+      // Preserve wizard state in URL for return after auth
+      const currentUrl = `/post?step=${currentStep}`;
+      navigate(`/auth?redirect=${encodeURIComponent(currentUrl)}`);
       return;
     }
 

@@ -1,4 +1,6 @@
 import React from 'react';
+import { QueryClient } from '@tanstack/react-query';
+import { prefetchCategories } from '@/lib/performance/prefetchCategories';
 
 // Dynamic import utilities for better code splitting
 export const importUtils = {
@@ -19,7 +21,7 @@ export const importUtils = {
 };
 
 // Resource preloader for critical routes
-export const preloadRoute = (routePath: string) => {
+export const preloadRoute = (routePath: string, queryClient?: QueryClient) => {
   const routeMap: Record<string, () => Promise<any>> = {
     '/dashboard/pro': () => import('@/components/dashboards/UnifiedProfessionalDashboard'),
     '/dashboard/client': () => import('@/components/dashboards/UnifiedClientDashboard'),  
@@ -27,15 +29,27 @@ export const preloadRoute = (routePath: string) => {
     '/admin': () => import('@/pages/admin/AdminDashboardPage'),
     '/post': () => import('@/pages/PostJob'),
     '/discovery': () => import('@/pages/Discovery'),
+    '/job-board': () => import('@/pages/JobBoardPage'),
   };
 
   const loader = routeMap[routePath];
   if (loader) {
     // Preload in idle time
     if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(() => loader());
+      window.requestIdleCallback(() => {
+        loader();
+        // Also prefetch taxonomy for wizard route
+        if (routePath === '/post' && queryClient) {
+          prefetchCategories(queryClient);
+        }
+      });
     } else {
-      setTimeout(loader, 100);
+      setTimeout(() => {
+        loader();
+        if (routePath === '/post' && queryClient) {
+          prefetchCategories(queryClient);
+        }
+      }, 100);
     }
   }
 };
