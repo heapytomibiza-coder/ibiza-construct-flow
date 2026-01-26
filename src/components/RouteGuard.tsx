@@ -96,27 +96,33 @@ export default function RouteGuard({
         // This prevents unapproved users from accessing job board, dashboard, etc.
         if (!hasRequiredRole && requiredRole === 'professional' && allowProfessionalIntent) {
           // Use maybeSingle() to handle missing profile gracefully (prevents crash if profile creation delayed)
-          const { data: profileData } = await supabase
+          // Also capture errors to deny cleanly rather than risk accidental authorization
+          const { data: profileData, error: profileErr } = await supabase
             .from('profiles')
             .select('intent_role')
             .eq('id', userId)
             .maybeSingle();
           
-          if (profileData?.intent_role === 'professional') {
+          // Deny on error or missing/wrong intent (no crash, no accidental allow)
+          if (profileErr) {
+            console.error('🔒 [RouteGuard] Profile query error, denying access:', profileErr);
+          } else if (profileData?.intent_role === 'professional') {
             // Additional check: verify they have a pending/rejected verification row
             // (approved users should already have the professional role via user_roles)
-            const { data: verificationData } = await supabase
+            const { data: verificationData, error: verErr } = await supabase
               .from('professional_verifications')
               .select('status')
               .eq('professional_id', userId)
               .maybeSingle();
             
-            // Only allow access if verification exists and is pending or rejected
-            // This prevents legacy users with intent but no verification from bypassing
-            if (verificationData && ['pending', 'rejected'].includes(verificationData.status)) {
+            // Only allow access if no error AND verification exists with pending/rejected status
+            // This prevents: legacy users with intent but no verification, RLS misconfig, network issues
+            if (!verErr && verificationData && ['pending', 'rejected'].includes(verificationData.status)) {
               console.log('🔒 [RouteGuard] User has pending/rejected verification, allowing onboarding access');
               if (!isStale) setStatus('authorized');
               return;
+            } else if (verErr) {
+              console.error('🔒 [RouteGuard] Verification query error, denying access:', verErr);
             }
           }
         }
