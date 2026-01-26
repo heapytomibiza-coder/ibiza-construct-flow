@@ -148,11 +148,33 @@ export default function UnifiedAuth() {
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-      toast({
-        title: 'Error',
-        description: error.message || 'Authentication failed',
-        variant: 'destructive'
-      });
+      
+      // Provide more helpful error messages for common auth issues
+      if (error.message?.includes('Invalid login credentials')) {
+        toast({
+          title: 'Sign in failed',
+          description: 'Please check your email and password. If you forgot your password, use the "Forgot password?" link above.',
+          variant: 'destructive'
+        });
+      } else if (error.message?.includes('Email not confirmed')) {
+        toast({
+          title: 'Email not verified',
+          description: 'Please check your inbox and verify your email before signing in.',
+          variant: 'destructive'
+        });
+      } else if (error.message?.includes('User already registered')) {
+        toast({
+          title: 'Account exists',
+          description: 'An account with this email already exists. Try signing in instead.',
+          variant: 'destructive'
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: error.message || 'Authentication failed',
+          variant: 'destructive'
+        });
+      }
     } finally {
       setLoading(false);
     }
