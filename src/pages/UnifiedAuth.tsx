@@ -149,11 +149,11 @@ export default function UnifiedAuth() {
     } catch (error: any) {
       console.error('Auth error:', error);
       
-      // Provide more helpful error messages for common auth issues
+      // Provide security-conscious error messages that don't leak account existence
       if (error.message?.includes('Invalid login credentials')) {
         toast({
           title: 'Sign in failed',
-          description: 'Please check your email and password. If you forgot your password, use the "Forgot password?" link above.',
+          description: 'Email or password incorrect. If you normally sign in with Google, use "Continue with Google". Otherwise, try resetting your password.',
           variant: 'destructive'
         });
       } else if (error.message?.includes('Email not confirmed')) {
