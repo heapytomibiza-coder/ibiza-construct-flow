@@ -46,8 +46,14 @@ async function claimEvent(
     logStep("Event claimed successfully", { eventId });
     return { claimed: true };
   } catch (err) {
-    logStep("Claim error", { eventId, error: getErrorMessage(err) });
-    return { claimed: false, error: getErrorMessage(err) };
+    // Only return "not claimed" for unique violation (duplicate)
+    // Re-throw all other errors so Stripe retries
+    if (err && typeof err === 'object' && 'code' in err && err.code === "23505") {
+      logStep("Event already claimed (catch path)", { eventId });
+      return { claimed: false };
+    }
+    logStep("Claim error - will rethrow", { eventId, error: getErrorMessage(err) });
+    throw err;
   }
 }
 
@@ -166,8 +172,21 @@ async function handleCheckoutSessionCompleted(
 ): Promise<{ success: boolean; details: Record<string, unknown> }> {
   logStep("Handling checkout.session.completed", { 
     sessionId: session.id, 
+    paymentStatus: session.payment_status,
     metadata: session.metadata 
   });
+
+  // === CRITICAL: Only process if payment is actually confirmed ===
+  if (session.payment_status !== "paid") {
+    logStep("Checkout session not yet paid, skipping", { 
+      sessionId: session.id, 
+      paymentStatus: session.payment_status 
+    });
+    return {
+      success: true,
+      details: { sessionId: session.id, ignored: true, reason: "not_paid" },
+    };
+  }
 
   const { contractId, type, userId } = session.metadata || {};
 
@@ -185,13 +204,13 @@ async function handleCheckoutSessionCompleted(
       throw new Error(`Failed to update contract: ${contractError.message}`);
     }
 
-    // Update payment transaction
+    // Update payment transaction - FIX: use .filter for JSONB path query
     await supabase
       .from("payment_transactions")
       .update({
         status: "succeeded",
       })
-      .eq("metadata->sessionId", session.id);
+      .filter("metadata->>sessionId", "eq", session.id);
 
     return {
       success: true,

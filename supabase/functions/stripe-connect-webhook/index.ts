@@ -43,8 +43,12 @@ async function claimEvent(
     }
 
     return { claimed: true };
-  } catch {
-    return { claimed: false };
+  } catch (err) {
+    // Re-throw non-duplicate errors so Stripe retries
+    if (err && typeof err === 'object' && 'code' in err && err.code === "23505") {
+      return { claimed: false };
+    }
+    throw err;
   }
 }
 
@@ -145,20 +149,23 @@ serve(async (req) => {
           break;
         }
 
-        case "transfer.failed": {
+        // NOTE: "transfer.failed" is not a standard Stripe event.
+        // Transfer failures are typically handled via transfer.reversed or payout.failed.
+        // Keeping handler for defensive coverage in case custom Stripe setup emits this.
+        case "transfer.reversed": {
           const transfer = event.data.object as Stripe.Transfer;
           
           await supabase
             .from("escrow_transfer_logs")
             .update({
-              status: "failed",
-              failure_reason: (transfer as unknown as { failure_message?: string }).failure_message || "Transfer failed",
+              status: "reversed",
+              failure_reason: "Transfer reversed",
               completed_at: new Date().toISOString(),
             })
             .eq("stripe_transfer_id", transfer.id);
           
-          result = { transferId: transfer.id, status: "failed" };
-          logStep(`Transfer failed: ${transfer.id}`);
+          result = { transferId: transfer.id, status: "reversed" };
+          logStep(`Transfer reversed: ${transfer.id}`);
           break;
         }
 
