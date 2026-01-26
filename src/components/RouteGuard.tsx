@@ -84,6 +84,22 @@ export default function RouteGuard({
         
         console.log('🔒 [RouteGuard] Role check:', { userRoles, requiredRole, hasRequiredRole });
         
+        // Special case: Allow users with intent_role = 'professional' to access onboarding
+        // even if they don't have the professional role yet (pending verification)
+        if (!hasRequiredRole && requiredRole === 'professional' && !requireOnboardingComplete) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('intent_role')
+            .eq('id', userId)
+            .single();
+          
+          if (profileData?.intent_role === 'professional') {
+            console.log('🔒 [RouteGuard] User has intent_role=professional, allowing onboarding access');
+            if (!isStale) setStatus('authorized');
+            return;
+          }
+        }
+        
         if (!hasRequiredRole) {
           console.warn(`🔒 [RouteGuard] Access denied: User roles [${userRoles.join(', ')}] do not include required role '${requiredRole}'`);
           await logAdminAccessAttempt(false, 'insufficient_permissions');

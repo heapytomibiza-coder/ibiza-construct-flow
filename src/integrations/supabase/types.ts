@@ -9078,6 +9078,7 @@ export type Database = {
           display_name: string | null
           full_name: string | null
           id: string
+          intent_role: string | null
           location: string | null
           notification_preferences: Json | null
           phone: string | null
@@ -9105,6 +9106,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id: string
+          intent_role?: string | null
           location?: string | null
           notification_preferences?: Json | null
           phone?: string | null
@@ -9132,6 +9134,7 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
+          intent_role?: string | null
           location?: string | null
           notification_preferences?: Json | null
           phone?: string | null
@@ -13455,6 +13458,11 @@ export type Database = {
         Args: { p_metric_date: string }
         Returns: undefined
       }
+      apply_to_become_professional: { Args: never; Returns: boolean }
+      approve_professional: {
+        Args: { _notes?: string; _professional_id: string }
+        Returns: boolean
+      }
       auto_escalate_disputes: { Args: never; Returns: Json }
       bulk_user_suspend: {
         Args: { reason: string; suspended_by: string; user_ids: string[] }
@@ -13954,6 +13962,10 @@ export type Database = {
       recalculate_category_ratings: {
         Args: { p_micro_service_id: string; p_professional_id: string }
         Returns: undefined
+      }
+      reject_professional: {
+        Args: { _professional_id: string; _reason?: string }
+        Returns: boolean
       }
       should_expose_feature: {
         Args: { p_flag_key: string; p_user_id: string }
