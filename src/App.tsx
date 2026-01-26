@@ -191,12 +191,12 @@ function AppContent() {
   
   // Preload critical routes and initialize realtime on app start
   useEffect(() => {
-    // Preload common routes
-    preloadRoute('/dashboard/pro');
-    preloadRoute('/dashboard/client');
-    preloadRoute('/post');
-    preloadRoute('/job-board');
-    preloadRoute('/discovery');
+    // Preload common routes with queryClient for data prefetching
+    preloadRoute('/dashboard/pro', queryClient);
+    preloadRoute('/dashboard/client', queryClient);
+    preloadRoute('/post', queryClient); // Also prefetches taxonomy data
+    preloadRoute('/job-board', queryClient);
+    preloadRoute('/discovery', queryClient);
     
     // Initialize realtime sync for cross-tab updates
     const cleanup = initRealtime(queryClient);

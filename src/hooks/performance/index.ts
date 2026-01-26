@@ -11,3 +11,6 @@ export { useThrottle } from './useThrottle';
 export { useIntersectionObserver } from './useIntersectionObserver';
 export { useMemoCompare } from './useMemoCompare';
 export { useVirtualization } from './useVirtualization';
+
+// Sprint 3: Wizard prefetching
+export { useWizardPrefetch } from '../useWizardPrefetch';
