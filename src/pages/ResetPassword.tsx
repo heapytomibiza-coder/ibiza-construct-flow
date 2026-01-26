@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Eye, EyeOff, Loader2, KeyRound } from 'lucide-react';
+import { Eye, EyeOff, Loader2, KeyRound, AlertCircle } from 'lucide-react';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -15,9 +15,77 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [sessionError, setSessionError] = useState<string | null>(null);
+
+  // Wait for the recovery session to be established from the email link
+  useEffect(() => {
+    let mounted = true;
+    let attempts = 0;
+    const maxAttempts = 10; // Wait up to ~5 seconds
+
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (!mounted) return;
+      
+      if (error) {
+        console.error('Session check error:', error);
+        setSessionError('Failed to verify your reset link. Please try again.');
+        setCheckingSession(false);
+        return;
+      }
+      
+      if (session) {
+        console.log('Recovery session established');
+        setSessionReady(true);
+        setCheckingSession(false);
+        return;
+      }
+      
+      // No session yet, retry a few times (Supabase may still be processing the URL hash)
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(checkSession, 500);
+      } else {
+        // No session after retries - link may be expired or invalid
+        setSessionError('Your password reset link has expired or is invalid. Please request a new one.');
+        setCheckingSession(false);
+      }
+    };
+
+    // Listen for auth state changes (recovery event)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change in ResetPassword:', event);
+      if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
+        if (mounted) {
+          setSessionReady(true);
+          setCheckingSession(false);
+        }
+      }
+    });
+
+    // Initial check
+    checkSession();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!sessionReady) {
+      toast({
+        title: 'Session not ready',
+        description: 'Please wait for the session to be verified or request a new reset link.',
+        variant: 'destructive'
+      });
+      return;
+    }
     
     if (!password || !confirmPassword) {
       toast({
@@ -72,6 +140,60 @@ export default function ResetPassword() {
       setLoading(false);
     }
   };
+
+  // Show loading while checking session
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-muted-foreground">Verifying your reset link...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if session couldn't be established
+  if (sessionError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Card>
+            <CardHeader className="text-center">
+              <div className="mx-auto w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="w-8 h-8 text-destructive" />
+              </div>
+              <CardTitle className="text-2xl">Link Expired</CardTitle>
+              <CardDescription>
+                {sessionError}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button 
+                className="w-full" 
+                onClick={() => navigate('/auth/forgot-password')}
+              >
+                Request new reset link
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => navigate('/auth')}
+              >
+                Back to sign in
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background flex items-center justify-center p-4">
@@ -133,7 +255,7 @@ export default function ResetPassword() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading || !sessionReady}>
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
