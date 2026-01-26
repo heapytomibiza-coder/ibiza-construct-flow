@@ -8983,6 +8983,7 @@ export type Database = {
           id: string
           notes: string | null
           professional_id: string
+          rejection_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           reviewer_notes: string | null
@@ -8998,6 +8999,7 @@ export type Database = {
           id?: string
           notes?: string | null
           professional_id: string
+          rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_notes?: string | null
@@ -9013,6 +9015,7 @@ export type Database = {
           id?: string
           notes?: string | null
           professional_id?: string
+          rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_notes?: string | null
@@ -13963,10 +13966,19 @@ export type Database = {
         Args: { p_micro_service_id: string; p_professional_id: string }
         Returns: undefined
       }
-      reject_professional: {
-        Args: { _professional_id: string; _reason?: string }
-        Returns: boolean
-      }
+      reject_professional:
+        | {
+            Args: { _professional_id: string; _reason?: string }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              _notes?: string
+              _professional_id: string
+              _reason?: string
+            }
+            Returns: boolean
+          }
       should_expose_feature: {
         Args: { p_flag_key: string; p_user_id: string }
         Returns: boolean

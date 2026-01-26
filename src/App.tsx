@@ -274,16 +274,16 @@ function AppContent() {
                     <Route path="/auth/callback" element={<AuthCallback />} />
                     <Route path="/auth/quick-start" element={<QuickStart />} />
                     
-                    {/* Professional Onboarding - No completion requirement */}
+                    {/* Professional Onboarding - Allow intent-based access for pending verification */}
                     <Route path="/onboarding/professional" element={
-                      <RouteGuard requiredRole="professional" requireOnboardingComplete={false}>
+                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
                         <ProfessionalOnboardingPage />
                       </RouteGuard>
                     } />
                     
-                    {/* Professional Management Pages */}
+                    {/* Professional Verification Status - Allow intent-based access */}
                     <Route path="/professional/verification" element={
-                      <RouteGuard requiredRole="professional">
+                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
                         <ProfessionalVerificationPage />
                       </RouteGuard>
                     } />
