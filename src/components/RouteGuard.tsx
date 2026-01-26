@@ -95,16 +95,29 @@ export default function RouteGuard({
         // ONLY when allowProfessionalIntent is explicitly set to true (opt-in, not default)
         // This prevents unapproved users from accessing job board, dashboard, etc.
         if (!hasRequiredRole && requiredRole === 'professional' && allowProfessionalIntent) {
+          // Use maybeSingle() to handle missing profile gracefully (prevents crash if profile creation delayed)
           const { data: profileData } = await supabase
             .from('profiles')
             .select('intent_role')
             .eq('id', userId)
-            .single();
+            .maybeSingle();
           
           if (profileData?.intent_role === 'professional') {
-            console.log('🔒 [RouteGuard] User has intent_role=professional, allowing onboarding access (allowProfessionalIntent=true)');
-            if (!isStale) setStatus('authorized');
-            return;
+            // Additional check: verify they have a pending/rejected verification row
+            // (approved users should already have the professional role via user_roles)
+            const { data: verificationData } = await supabase
+              .from('professional_verifications')
+              .select('status')
+              .eq('professional_id', userId)
+              .maybeSingle();
+            
+            // Only allow access if verification exists and is pending or rejected
+            // This prevents legacy users with intent but no verification from bypassing
+            if (verificationData && ['pending', 'rejected'].includes(verificationData.status)) {
+              console.log('🔒 [RouteGuard] User has pending/rejected verification, allowing onboarding access');
+              if (!isStale) setStatus('authorized');
+              return;
+            }
           }
         }
         
