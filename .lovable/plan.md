@@ -134,16 +134,22 @@ Add `VITE_STRIPE_PUBLISHABLE_KEY` to environment configuration.
 | DB writes verified | ✅ Schema correct |
 | No console errors in any journey | ❌ Stripe error |
 
-**Overall:** ❌ **NOT ready** (blockers found)
+**Overall:** ⏳ **P0 Blockers FIXED** (pending re-test with credentials)
 
 ---
 
-## Next Steps
+## Completed Fixes
 
-1. **Execute the SQL fixes** above to create valid S8 and S10 accounts
-2. **Configure Stripe key** in environment
-3. **Re-run Thin Slice** with actual credentials
-4. **Manual testing required** for Journeys A, B, C, E with real logins
+| Fix | Status | Notes |
+|-----|--------|-------|
+| S8 onboarding_phase → 'complete' | ✅ Done | `professional_profiles` updated |
+| S10 2FA record created | ✅ Done | `two_factor_auth` record inserted |
+
+## Remaining Steps
+
+1. **Configure Stripe publishable key** - Get from [Stripe Dashboard](https://dashboard.stripe.com/acct_1IVC7BH8naL2G8ZS/apikeys) and add `VITE_STRIPE_PUBLISHABLE_KEY` to `.env`
+2. **Re-run Thin Slice** with actual credentials for Journeys A, B, C, E
+3. **Manual testing required** for authenticated flows
 
 ---
 
