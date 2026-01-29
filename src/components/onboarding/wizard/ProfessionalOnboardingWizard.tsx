@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { StepProgress } from './shared/StepProgress';
 import { NavigationButtons } from './shared/NavigationButtons';
@@ -56,6 +56,7 @@ export function ProfessionalOnboardingWizard({
   const [data, setData] = useState<OnboardingData>(EMPTY_DATA);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [hydrating, setHydrating] = useState(true);
+  const hydrationToastShownRef = useRef(false);
 
   // Auto-save functionality
   const { loadDraft, clearDraft, hasDraft, getDraftTimestamp } = useWizardAutosave(data, {
@@ -103,23 +104,40 @@ export function ProfessionalOnboardingWizard({
       const dbTimestamp = proProfile?.updated_at ? new Date(proProfile.updated_at).getTime() : 0;
       const localTimestamp = draftTimestamp || 0;
 
+      // Check for real progress indicators (not just empty arrays/strings)
+      const hasRealProgress = Boolean(
+        dbData.tagline?.trim() || 
+        dbData.bio?.trim() || 
+        (dbData.categories && dbData.categories.length > 0) ||
+        (dbData.regions && dbData.regions.length > 0)
+      );
+
       if (draft && localTimestamp > dbTimestamp) {
         // Local draft is newer - restore it
         setData({ ...EMPTY_DATA, displayName, ...draft });
-        toast.info('Draft restored', { duration: 2000 });
-      } else if (proProfile && Object.keys(dbData).some(k => (dbData as any)[k])) {
-        // DB data exists and is newer (or no local draft)
+        if (!hydrationToastShownRef.current) {
+          toast.info('Draft restored', { duration: 2000 });
+          hydrationToastShownRef.current = true;
+        }
+      } else if (proProfile && hasRealProgress) {
+        // DB data exists with real content and is newer (or no local draft)
         setData({ ...EMPTY_DATA, displayName, ...dbData });
         if (hasDraftSaved) {
           clearDraft(); // Clear stale draft
         }
-        toast.info('Previous progress loaded', { duration: 2000 });
+        if (!hydrationToastShownRef.current) {
+          toast.info('Previous progress loaded', { duration: 2000 });
+          hydrationToastShownRef.current = true;
+        }
       } else if (draft) {
         // Only draft exists
         setData({ ...EMPTY_DATA, displayName, ...draft });
-        toast.info('Draft restored', { duration: 2000 });
+        if (!hydrationToastShownRef.current) {
+          toast.info('Draft restored', { duration: 2000 });
+          hydrationToastShownRef.current = true;
+        }
       } else {
-        // Start fresh
+        // Start fresh - no toast needed
         setData({ ...EMPTY_DATA, displayName });
       }
     } catch (error) {
@@ -129,7 +147,10 @@ export function ProfessionalOnboardingWizard({
         const draft = loadDraft();
         if (draft) {
           setData({ ...EMPTY_DATA, ...draft });
-          toast.info('Draft restored', { duration: 2000 });
+          if (!hydrationToastShownRef.current) {
+            toast.info('Draft restored', { duration: 2000 });
+            hydrationToastShownRef.current = true;
+          }
         }
       }
     } finally {
