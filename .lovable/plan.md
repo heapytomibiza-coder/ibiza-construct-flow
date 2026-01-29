@@ -1,380 +1,444 @@
 
 
-# Fix: Professional Service Preferences Wizard - Critical Bugs
+# Complete Flow Audit: Comprehensive State-Based Testing Strategy
 
-## Problem Summary
+## Executive Summary
 
-The Phase 1 implementation has **critical logic bugs** that will cause data loss and confusing UX in production:
-
-| Bug | Impact | Severity |
-|-----|--------|----------|
-| **Existing services not shown as selected** | Pro opens wizard, sees 0 selected despite having 30 active services in DB | 🔴 Critical |
-| **Mass deactivation on save** | Pro adds 2 services, saves → all other 30 services get deactivated | 🔴 Critical |
-| **"Select all" can't deselect DB services** | Toggle only affects session state, not previously saved services | 🟡 High |
-| **Review step shows wrong count** | Shows only session-added services, not total active | 🟡 High |
+This audit provides a complete flow map, state matrix, route guard analysis, and edit/create mode inventory for your platform. The analysis reveals several potential issues and edge cases that should be tested systematically.
 
 ---
 
-## Root Cause Analysis
+## PART 1: Complete Flow Map (Directed Graph)
 
-### The Data Flow Problem
+### Route List (83 Routes Total)
+
+#### Public Routes (Unauthenticated Access)
+| Route | Entry Conditions | Exit Actions | Fail Redirect |
+|-------|-----------------|--------------|---------------|
+| `/` | None | CTAs → `/auth?mode=signup&role=*` | N/A |
+| `/discovery` | None | Card click → `/professionals/:id` | N/A |
+| `/professionals` | None | Filter/search | N/A |
+| `/professionals/:id` | None | Book/Contact → `/auth` if unauth | N/A |
+| `/calculator` | None | Results → `/post` or `/auth` | N/A |
+| `/how-it-works` | None | CTA → `/auth?mode=signup` | N/A |
+| `/contact` | None | Form submit → email | N/A |
+| `/book` | None | Booking flow | `/auth` if unauth |
+| `/terms`, `/privacy`, `/cookie-policy` | None | Back navigation | N/A |
+| `/install` | None | PWA install flow | N/A |
+| `/fair`, `/fair/:sectorSlug` | None | Showcase navigation | N/A |
+
+#### Auth Routes
+| Route | Entry Conditions | Exit Actions | Fail Redirect |
+|-------|-----------------|--------------|---------------|
+| `/auth` | Unauthenticated | `redirectTo` param or → `getInitialDashboardRoute()` | N/A |
+| `/auth?mode=signup&role=professional` | Unauthenticated | → `/auth/verify-email` | N/A |
+| `/auth/verify-email` | Has `pending_verification_email` in localStorage | Resend → email, verify → `/auth/callback` | `/auth` |
+| `/auth/forgot-password` | Unauthenticated | → `/auth/reset-password` (via email) | N/A |
+| `/auth/reset-password` | Has reset token in URL | → `/auth` on success | `/auth/forgot-password` |
+| `/auth/callback` | Email verification or OAuth | → `redirectTo` OR `getInitialDashboardRoute()` | `/auth` |
+| `/auth/quick-start` | Authenticated + missing `display_name` OR `onboarding_completed=false` | → `/dashboard/client` or `/onboarding/professional` | `/auth` |
+
+#### Dashboard Routes
+| Route | Entry Conditions | Required Role | Exit Actions | Fail Redirect |
+|-------|-----------------|---------------|--------------|---------------|
+| `/dashboard` | Authenticated | Any | Smart redirect via `getInitialDashboardRoute()` | `/auth?redirect=...` |
+| `/dashboard/client` | Authenticated | `client` | Navigation to features | `/auth?redirect=...` |
+| `/dashboard/pro` | Authenticated | `professional` | Wrapped in `OnboardingGate` | `/auth?redirect=...` |
+| `/dashboard/admin` | Authenticated | `admin` | Admin navigation | `/auth?redirect=...` |
+
+#### Professional Onboarding Flow
+| Route | Entry Conditions | Guard Config | Exit Actions | Fail Redirect |
+|-------|-----------------|--------------|--------------|---------------|
+| `/onboarding/professional` | `intent_role=professional` OR `role=professional` | `allowProfessionalIntent=true` | → Creates `professional_profiles` → `/dashboard/pro` | `/auth?redirect=...` |
+| `/professional/verification` | Same as above + `onboarding_phase=intro_submitted` | `allowProfessionalIntent=true` | → Updates verification docs → `/dashboard/pro` | `/auth?redirect=...` |
+| `/professional/service-setup` | `role=professional` + verified | `requiredRole=professional` | → Creates services → `/dashboard/pro` | `/auth?redirect=...` |
+| `/professional/services` | Full professional role | `requiredRole=professional` | Service management | `/auth?redirect=...` |
+| `/professional/services/wizard` | Full professional role | `requiredRole=professional` | Batch service selection | `/auth?redirect=...` |
+| `/professional/portfolio` | Full professional role | `requiredRole=professional` | Portfolio management | `/auth?redirect=...` |
+| `/professional/payout-setup` | Full professional role | `requiredRole=professional` | Stripe setup | `/auth?redirect=...` |
+
+#### Client Routes
+| Route | Entry Conditions | Required Role | Exit Actions | Fail Redirect |
+|-------|-----------------|---------------|--------------|---------------|
+| `/post` | Authenticated | `client` | 7-step wizard → `/post/success` | `/auth?redirect=...` |
+| `/post/success` | Job just created | `client` | → `/jobs/:jobId` or `/dashboard/client` | `/dashboard/client` |
+| `/templates` | Authenticated | `client` | Template selection | `/auth?redirect=...` |
+| `/jobs/:jobId` | Any (RLS enforced) | None | Job actions | N/A |
+| `/jobs/:jobId/matches` | Job owner | RLS | Match management | `/auth` |
+
+#### Admin Routes (All require `admin` role + 2FA)
+All 45+ admin routes are nested under `/admin/*` with shared `RouteGuard`:
+- `/admin` (index → `AdminDashboard`)
+- `/admin/users`, `/admin/profiles`, `/admin/jobs`, etc.
+
+#### Settings Routes
+| Route | Entry Conditions | Required Role | Nested In |
+|-------|-----------------|---------------|-----------|
+| `/settings` | Authenticated | None | `SettingsLayout` |
+| `/settings/profile` | Authenticated | None | Profile editing |
+| `/settings/account` | Authenticated | None | Account management |
+| `/settings/notifications` | Authenticated | None | Notification prefs |
+| `/settings/client` | Authenticated | `client` | Client-specific |
+| `/settings/professional` | Authenticated | `professional` | Pro-specific |
+
+### Shared Flows (Multiple Entry Points = Potential Bug Class)
 
 ```text
-Current (Broken):
-┌─────────────────────┐     ┌──────────────────────┐
-│  existingServices   │     │  selectedServices    │
-│  (from DB)          │  ×  │  (session only)      │
-│  [30 active items]  │     │  [2 new additions]   │
-└─────────────────────┘     └──────────────────────┘
-                                    ↓
-                            saveServices() uses
-                            selectedServices as 
-                            "final truth" (WRONG!)
-                                    ↓
-                            Deactivates 30 services
-```
+Critical Shared Routes:
+┌─────────────────────────────────────────────────────────────────────┐
+│ /onboarding/professional                                            │
+│ ├── Entry 1: New signup with intent_role=professional              │
+│ ├── Entry 2: Existing client switching to professional             │
+│ ├── Entry 3: Rejected professional re-applying                     │
+│ └── Entry 4: Incomplete onboarding returning                       │
+│                                                                     │
+│ RISK: All 4 entries use SAME component with NO explicit mode flag  │
+│ BUG RISK: May reset existing data on return visits                 │
+└─────────────────────────────────────────────────────────────────────┘
 
-The `selectedServices` array only tracks **session changes**, not the complete picture. When saving, the code treats this partial list as the complete selection.
+┌─────────────────────────────────────────────────────────────────────┐
+│ /professional/services/wizard                                       │
+│ ├── Entry 1: First-time service setup (onboarding gate)           │
+│ ├── Entry 2: Adding more services from dashboard                   │
+│ └── Entry 3: Editing existing services                             │
+│                                                                     │
+│ RISK: Uses delta-tracking pattern but entry context not explicit   │
+└─────────────────────────────────────────────────────────────────────┘
 
----
-
-## Solution Architecture
-
-### New Data Model (in hook state)
-
-Track **three** sets instead of one array:
-
-```typescript
-// What's currently active in DB
-existingActiveIds: Set<string>  // from DB query
-
-// Session changes only
-addedMicroIds: Set<string>      // user ticked NEW services
-removedMicroIds: Set<string>    // user UN-ticked EXISTING services
-
-// Computed final truth (for display & save)
-finalSelectedIds = existingActiveIds + addedMicroIds - removedMicroIds
+┌─────────────────────────────────────────────────────────────────────┐
+│ /settings/profile vs /settings/professional                        │
+│ ├── /settings/profile: Basic profile (all users)                  │
+│ └── /settings/professional: Pro-specific (bio, rates, portfolio)  │
+│                                                                     │
+│ RISK: Overlap in what fields are editable where                    │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Technical Implementation
+## PART 2: State Matrix Test Plan
 
-### 1. Update `useProfessionalServicePreferences.ts`
+### User States (Complete List)
 
-**Changes:**
+| State ID | Description | Key DB Conditions |
+|----------|-------------|-------------------|
+| `S1` | Unauthenticated visitor | No session |
+| `S2` | Authenticated client only | `user_roles.role='client'`, `active_role='client'` |
+| `S3` | Client with pro intent (pre-verification) | `intent_role='professional'`, `verification_status='pending'`, NO `professional` role |
+| `S4` | Professional pending verification | `professional_verifications.status='pending'`, may have `professional` role |
+| `S5` | Professional rejected | `professional_verifications.status='rejected'` |
+| `S6` | Professional verified, services incomplete | `verification_status='verified'`, `professional_services` count = 0 |
+| `S7` | Professional verified, services complete | Full access |
+| `S8` | Dual-role user (client + professional) | Both roles in `user_roles`, `active_role` determines context |
+| `S9` | Admin (with 2FA) | `role='admin'`, 2FA configured |
+| `S10` | Admin (without 2FA) | `role='admin'`, NO 2FA - blocked from admin routes |
+| `S11` | First login (no display_name) | `profiles.display_name IS NULL` |
+| `S12` | Onboarding incomplete | `profiles.onboarding_completed=false` |
+| `S13` | Session expired | Session existed but JWT expired |
+| `S14` | Profile missing (edge case) | User exists in auth.users but no profile row |
 
-| Current | Fixed |
-|---------|-------|
-| `selectedServices: ServiceSelection[]` | Keep for display metadata |
-| Single toggle function | Track adds vs removals separately |
-| `saveServices()` uses `selectedServices` | Compute `finalSelectedIds` from both sources |
+### State vs Route Matrix (Top Routes)
 
-**New state:**
-```typescript
-const [addedMicroIds, setAddedMicroIds] = useState<Set<string>>(new Set());
-const [removedMicroIds, setRemovedMicroIds] = useState<Set<string>>(new Set());
+| Route | S1 Unauth | S2 Client | S3 Intent | S4 Pending | S5 Rejected | S6 No Services | S7 Full Pro | S8 Dual | S9 Admin | S10 No2FA |
+|-------|-----------|-----------|-----------|------------|-------------|----------------|-------------|---------|----------|-----------|
+| `/` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/auth` | ✅ | → dashboard | → dashboard | → dashboard | → dashboard | → dashboard | → dashboard | → dashboard | → dashboard | → dashboard |
+| `/dashboard` | → `/auth` | → `/dashboard/client` | → `/onboarding/pro` | → `/dashboard/pro`* | → `/dashboard/pro`* | → `/dashboard/pro`* | → `/dashboard/pro` | → active_role | → `/admin` | → `/admin` |
+| `/dashboard/client` | → `/auth` | ✅ | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | ✅ if active=client | → `/auth` | → `/auth` |
+| `/dashboard/pro` | → `/auth` | → `/auth` | → `/auth` | ✅ gated | ✅ gated | ✅ gated | ✅ | ✅ if active=pro | → `/auth` | → `/auth` |
+| `/post` | → `/auth` | ✅ | ✅? | ✅? | ✅? | ✅? | ✅? | ✅ | ✅? | ✅? |
+| `/job-board` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | ✅ | ✅ if active=pro | → `/auth` | → `/auth` |
+| `/onboarding/pro` | → `/auth` | → `/auth` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | → `/auth` | → `/auth` |
+| `/admin` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | ✅ | → 2FA setup |
+| `/settings/pro` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | → `/auth` | ✅ | ✅ | → `/auth` | → `/auth` |
 
-// Computed
-const existingActiveIds = useMemo(() => 
-  new Set(existingServices.filter(s => s.is_active).map(s => s.micro_service_id)),
-  [existingServices]
-);
+`* gated` = `OnboardingGate` shows interstitial, not the actual dashboard
 
-const finalSelectedIds = useMemo(() => {
-  const result = new Set(existingActiveIds);
-  addedMicroIds.forEach(id => result.add(id));
-  removedMicroIds.forEach(id => result.delete(id));
-  return result;
-}, [existingActiveIds, addedMicroIds, removedMicroIds]);
+### Expected Toasts/Modals by State
+
+| State | Route | Expected UI |
+|-------|-------|-------------|
+| S10 (Admin no 2FA) | `/admin/*` | Toast: "Two-Factor Authentication Required" |
+| S5 (Rejected) | `/dashboard/pro` | Gate UI: "Verification Not Approved" with rejection reason |
+| S6 (No Services) | `/dashboard/pro` | Gate UI: "Configure Your Services" |
+| S4 (Pending) | `/dashboard/pro` | Gate UI: "Verification In Progress" |
+| S13 (Expired) | Any protected | → `/auth?redirect=...` (silent redirect) |
+| S14 (No Profile) | Any | Error toast or crash (BUG if crashes) |
+
+---
+
+## PART 3: Route Guard / Redirect Loop Audit
+
+### RouteGuard Configuration Matrix
+
+| Route | `requiredRole` | `allowProfessionalIntent` | `requireOnboardingComplete` | `enforce2FA` |
+|-------|---------------|---------------------------|----------------------------|--------------|
+| `/dashboard/client` | `client` | `false` | `false` | N/A |
+| `/dashboard/pro` | `professional` | `false` | `false` | N/A |
+| `/admin/*` | `admin` | `false` | `false` | `true` |
+| `/onboarding/professional` | `professional` | `true` | `false` | N/A |
+| `/professional/verification` | `professional` | `true` | `false` | N/A |
+| `/professional/services` | `professional` | `false` | `false` | N/A |
+| `/professional/service-setup` | `professional` | `false` | `false` | N/A |
+| `/post` | `client` | `false` | `false` | N/A |
+| `/job-board` | `professional` | `false` | `false` | N/A |
+| `/settings` | None (auth only) | `false` | `false` | N/A |
+| `/settings/professional` | `professional` | `false` | `false` | N/A |
+
+### Redirect Loop Analysis
+
+| Scenario | State | Route Entered | Expected Behavior | Loop Risk |
+|----------|-------|---------------|-------------------|-----------|
+| 1 | S3 (intent only) | `/dashboard/pro` | → `/auth?redirect=/dashboard/pro` → signs in → loops? | ⚠️ MEDIUM |
+| 2 | S4 (pending) | `/job-board` | → `/auth` (no pro role yet) → signs in → same state → loops | ⚠️ HIGH |
+| 3 | S11 (no name) | `/dashboard` | → `/auth/quick-start` → completes → `/dashboard` → routes correctly | ✅ OK |
+| 4 | S6 (no services) | `/dashboard/pro` | → `OnboardingGate` → `/professional/service-setup` | ✅ OK |
+| 5 | S10 (no 2FA) | `/admin` | → `/admin/security?setup2fa=true` → sets up → `/admin` | ✅ OK |
+| 6 | S14 (no profile) | Any | Crash? Or graceful handling? | 🔴 HIGH RISK |
+
+### Critical Redirect Flow: `getInitialDashboardRoute()`
+
+```text
+Priority Queue:
+1. No display_name → /auth/quick-start
+2. Admin + active_role=admin → /admin
+3. onboarding_completed=false → /auth/quick-start
+4. Professional + tasker_onboarding_status != 'complete' → /onboarding/professional
+5. Professional → /dashboard/pro
+6. Default → /dashboard/client
 ```
 
-**Fixed `toggleMicroService()`:**
-```typescript
-const toggleMicroService = useCallback((selection: ServiceSelection) => {
-  const { microServiceId } = selection;
-  const isExistingActive = existingActiveIds.has(microServiceId);
-  const isAdded = addedMicroIds.has(microServiceId);
-  const isRemoved = removedMicroIds.has(microServiceId);
-  const isCurrentlySelected = (isExistingActive && !isRemoved) || isAdded;
-
-  if (isCurrentlySelected) {
-    // Deselecting
-    if (isExistingActive) {
-      // Mark as removed (was from DB)
-      setRemovedMicroIds(prev => new Set(prev).add(microServiceId));
-    }
-    if (isAdded) {
-      // Remove from session additions
-      setAddedMicroIds(prev => {
-        const next = new Set(prev);
-        next.delete(microServiceId);
-        return next;
-      });
-    }
-    // Remove from display array
-    setSelectedServices(prev => prev.filter(s => s.microServiceId !== microServiceId));
-  } else {
-    // Selecting
-    if (isRemoved) {
-      // Un-remove (restore DB selection)
-      setRemovedMicroIds(prev => {
-        const next = new Set(prev);
-        next.delete(microServiceId);
-        return next;
-      });
-    } else if (!isExistingActive) {
-      // New addition
-      setAddedMicroIds(prev => new Set(prev).add(microServiceId));
-      setSelectedServices(prev => [...prev, selection]);
-    }
-  }
-}, [existingActiveIds, addedMicroIds, removedMicroIds]);
-```
-
-**Fixed `saveServices()`:**
-```typescript
-const saveServices = useCallback(async () => {
-  if (!professionalId) return false;
-
-  setSaving(true);
-  try {
-    const finalIds = [...finalSelectedIds];
-    const existingIds = existingServices.map(s => s.micro_service_id);
-    
-    // Services to INSERT (new, never existed)
-    const toInsert = finalIds.filter(id => !existingIds.includes(id));
-    
-    // Services to REACTIVATE (existed but was inactive, now selected)
-    const toReactivate = finalIds.filter(id => {
-      const existing = existingServices.find(s => s.micro_service_id === id);
-      return existing && !existing.is_active;
-    });
-    
-    // Services to DEACTIVATE (was active, now not selected)
-    const toDeactivate = existingServices
-      .filter(s => s.is_active && !finalSelectedIds.has(s.micro_service_id))
-      .map(s => s.micro_service_id);
-
-    // Execute batch operations...
-    // (same Promise.all pattern as before)
-
-    // Clear session state after save
-    setAddedMicroIds(new Set());
-    setRemovedMicroIds(new Set());
-    
-    await fetchExistingServices();
-    return true;
-  } catch (error) {
-    // error handling
-    return false;
-  } finally {
-    setSaving(false);
-  }
-}, [professionalId, finalSelectedIds, existingServices, fetchExistingServices]);
-```
+**Potential Issues:**
+1. Step 4 checks `tasker_onboarding_status` but `OnboardingGate` checks `onboarding_phase` - **inconsistent field usage**
+2. A user could have `onboarding_completed=true` but `tasker_onboarding_status='not_started'` - conflicting states
 
 ---
 
-### 2. Update `ServicePreferencesWizard.tsx`
+## PART 4: Edit Mode vs Create Mode Audit
 
-**Changes:**
+### Identified Dual-Mode Flows
 
-| Current | Fixed |
-|---------|-------|
-| `selectedMicroServiceIds` from `selectedServices` only | Get from hook's `finalSelectedIds` |
-| `canGoNext()` checks `selectedServices.length` | Check `finalSelectedIds.size` |
-| Review step shows `selectedServices.length` | Show `finalSelectedIds.size` |
+| Flow | Create Route | Edit Route | Mode Detection | Hydration Method |
+|------|-------------|------------|----------------|------------------|
+| **Professional Onboarding** | `/onboarding/professional` (first visit) | Same route (return visit) | `useWizardAutosave` draft detection | localStorage draft OR existing `professional_profiles` row |
+| **Service Selection Wizard** | `/professional/services/wizard` (first setup) | Same route (edit) | `existingServices` from DB | `useProfessionalServicePreferences` hook |
+| **Job Wizard** | `/post` (always creates new) | N/A | Always create mode | N/A (no edit flow) |
+| **Profile Settings** | `/settings/profile` | Same | Always edit (updates existing) | `useAuth().profile` |
+| **Professional Settings** | `/settings/professional` | Same | Always edit | `fetchProfile()` from `professional_profiles` |
+| **Portfolio Manager** | In `/settings/professional` | Same | Add/edit toggle via `editingImage` state | `portfolio_images` array |
+| **Service Management** | Modal in `/settings/professional` | Same modal | `editingService` state | Service passed to modal |
 
-**Key fixes:**
+### Detailed Flow Analysis
 
-```typescript
-// Destructure new values from hook
-const {
-  selectedServices,
-  existingServices,
-  finalSelectedIds, // NEW
-  loading: loadingExisting,
-  saving,
-  toggleMicroService,
-  toggleSubcategoryServices,
-  saveServices,
-  isMicroServiceSelected
-} = useProfessionalServicePreferences(user?.id);
+#### 1. Professional Onboarding Wizard
+**Files:** `ProfessionalOnboardingWizard.tsx`, `ProfessionalOnboardingPage.tsx`
 
-// Use finalSelectedIds for the multi-select component
-<MicroServiceMultiSelect
-  selectedMicroServiceIds={finalSelectedIds} // Changed from local Set
-  ...
-/>
+| Test Case | Expected Behavior | Current Implementation |
+|-----------|-------------------|----------------------|
+| First visit, no draft, no DB row | Start at step 0 with empty form | ✅ `data` initialized empty |
+| Return visit, draft exists | Resume from draft with data | ✅ `loadDraft()` on mount |
+| Return visit, DB row exists but no draft | Hydrate from DB | ⚠️ NOT IMPLEMENTED - will start fresh |
+| Rejected pro returning | Show rejection reason, resume editing | ⚠️ UNCLEAR - uses same flow |
 
-// Fix canGoNext for step 3
-const canGoNext = () => {
-  switch (currentStep) {
-    case 3: return finalSelectedIds.size > 0; // Changed
-    // ...
-  }
-};
+**BUG RISK:** If a professional completes Phase 1 onboarding, their data is saved to `professional_profiles`, but on return the wizard uses localStorage draft OR starts fresh - **existing DB data is NOT hydrated**.
 
-// Fix review step display
-<p className="text-2xl font-bold text-primary">
-  {finalSelectedIds.size} services
-</p>
-```
+#### 2. Service Preferences Wizard
+**Files:** `ServicePreferencesWizard.tsx`, `useProfessionalServicePreferences.ts`
 
----
+| Test Case | Expected Behavior | Current Implementation |
+|-----------|-------------------|----------------------|
+| First visit, no services | Start with 0 selected | ✅ `finalSelectedIds` computed correctly |
+| Return visit, has 20 active services | Show 20 as selected | ✅ Fixed via delta-tracking pattern |
+| Add 5 new services | Total becomes 25 | ✅ `addedMicroIds` tracked |
+| Remove 3 existing services | Total becomes 17, 3 become `is_active=false` | ✅ `removedMicroIds` tracked |
+| "Select all" in subcategory | All micro-services selected | ✅ `toggleSubcategoryServices` handles both sources |
 
-### 3. Update `MicroServiceMultiSelect.tsx`
+**Status:** ✅ Recently fixed with proper delta-tracking pattern.
 
-**Changes:**
+#### 3. Profile Settings vs Professional Settings Overlap
+**Files:** `ProfileSettings.tsx`, `ProfessionalSettings.tsx`
 
-| Current | Fixed |
-|---------|-------|
-| `selectedMicroServiceIds: Set<string>` | Change to accept computed Set from hook |
-| `totalSelected = selectedMicroServiceIds.size` | Works correctly now (shows true total) |
+| Field | ProfileSettings | ProfessionalSettings | Conflict? |
+|-------|----------------|---------------------|-----------|
+| `display_name` | ✅ Editable | ❌ Not shown | No |
+| `full_name` | ✅ Editable | ❌ Not shown | No |
+| `bio` | ✅ Editable (profiles.bio) | ✅ Editable (professional_profiles.bio) | ⚠️ **TWO DIFFERENT FIELDS** |
+| `phone` | ✅ Editable | ❌ Not shown | No |
+| `hourly_rate` | ❌ Not shown | ✅ Editable | No |
+| `portfolio_images` | ❌ Not shown | ✅ Editable | No |
 
-No major changes needed—the component already accepts a Set. The fix is in how the Set is computed (in the hook).
+**Issue:** `bio` exists in BOTH `profiles` and `professional_profiles` tables. Users may edit one thinking it updates the other.
 
 ---
 
-### 4. Fix `toggleSubcategoryServices()` in hook
+## PART 5: Button Contract Audit (Key Flows)
 
-**Current problem:** Only removes from `selectedServices`, doesn't add to `removedMicroIds`.
+### Auth Flow Buttons
+| Button | Location | Target | Preconditions | Success | Failure |
+|--------|----------|--------|---------------|---------|---------|
+| "Sign In" | `/auth` signin tab | Form submit → `signInMutation` | Valid email + password | → `redirectTo` or dashboard | Toast: "Email or password incorrect" |
+| "Create Account" | `/auth` signup tab | Form submit → `supabase.auth.signUp` | Valid form + role selected | → `/auth/verify-email` | Toast: error message |
+| "Forgot password?" | `/auth` signin tab | Link to `/auth/forgot-password` | None | Page navigation | N/A |
+| "Continue without signing in" | `/auth` signin tab | `navigate(redirectTo)` | None | → destination | N/A |
 
-**Fixed:**
-```typescript
-const toggleSubcategoryServices = useCallback((
-  subcategoryId: string,
-  subcategoryName: string,
-  categoryId: string,
-  categoryName: string,
-  microServices: Array<{ id: string; name: string }>
-) => {
-  const allSelected = microServices.every(ms => finalSelectedIds.has(ms.id));
-  
-  if (allSelected) {
-    // Deselect all in this subcategory
-    microServices.forEach(ms => {
-      if (existingActiveIds.has(ms.id)) {
-        setRemovedMicroIds(prev => new Set(prev).add(ms.id));
-      }
-      setAddedMicroIds(prev => {
-        const next = new Set(prev);
-        next.delete(ms.id);
-        return next;
-      });
-    });
-    setSelectedServices(prev => 
-      prev.filter(s => !microServices.some(ms => ms.id === s.microServiceId))
-    );
-  } else {
-    // Select all in this subcategory
-    microServices.forEach(ms => {
-      if (!finalSelectedIds.has(ms.id)) {
-        if (existingActiveIds.has(ms.id)) {
-          // Was removed, un-remove it
-          setRemovedMicroIds(prev => {
-            const next = new Set(prev);
-            next.delete(ms.id);
-            return next;
-          });
-        } else {
-          // New addition
-          setAddedMicroIds(prev => new Set(prev).add(ms.id));
-          setSelectedServices(prev => [...prev, {
-            categoryId,
-            categoryName,
-            subcategoryId,
-            subcategoryName,
-            microServiceId: ms.id,
-            microServiceName: ms.name
-          }]);
-        }
-      }
-    });
-  }
-}, [existingActiveIds, finalSelectedIds]);
-```
+### Dashboard Buttons
+| Button | Location | Target | Preconditions | Success | Failure |
+|--------|----------|--------|---------------|---------|---------|
+| "Post a Job" | Client dashboard | Link to `/post` | `client` role | Wizard opens | N/A |
+| "Edit Profile" | Pro dashboard | Link to `/settings/professional` | `professional` role | Settings open | N/A |
+| "Configure Services Now" | `OnboardingGate` | Link to `/professional/service-setup` | Verified but no services | Wizard opens | N/A |
+| "Upload Documents" | `OnboardingGate` | Link to `/professional/verification` | Phase = `intro_submitted` | Upload page opens | N/A |
+
+### Wizard Buttons
+| Button | Location | Target | Preconditions | Success | Failure |
+|--------|----------|--------|---------------|---------|---------|
+| "Next" | Job wizard | Step increment + URL param update | Step validation passed | Next step | Disabled/toast |
+| "Back" | Job wizard | Step decrement | Step > 1 | Previous step | N/A |
+| "Submit" | Pro onboarding step 5 | `handleSubmit()` | All required fields | → `/dashboard/pro` | Toast: error |
+| "Save Services" | Service wizard step 5 | `saveServices()` | At least 1 service selected | Toast: success | Toast: error |
 
 ---
 
-### 5. Initialize display metadata from existing services
+## PART 6: Critical Test Scenarios
 
-When wizard loads, populate `selectedServices` with metadata for existing active services:
+### Killer Test 1: Deep-Link Test Matrix
 
-```typescript
-// In hook, after existingServices loads
-useEffect(() => {
-  const loadExistingMetadata = async () => {
-    if (existingServices.length === 0) return;
-    
-    const activeIds = existingServices
-      .filter(s => s.is_active)
-      .map(s => s.micro_service_id);
-    
-    if (activeIds.length === 0) return;
+For each route, open directly in new browser tab:
 
-    // Fetch micro-service details for display
-    const { data } = await supabase
-      .from('service_micro_categories')
-      .select(`
-        id, name,
-        subcategory:service_subcategories!inner(
-          id, name,
-          category:service_categories!inner(id, name)
-        )
-      `)
-      .in('id', activeIds);
+| Route | S1 Unauth | S2 Client | S3 Intent | S7 Full Pro | S8 Dual |
+|-------|-----------|-----------|-----------|-------------|---------|
+| `/dashboard/client` | → `/auth?redirect=...` | ✅ Dashboard | → `/auth?redirect=...` | → `/auth?redirect=...` | ✅ if `active_role=client` |
+| `/dashboard/pro` | → `/auth?redirect=...` | → `/auth?redirect=...` | → `/auth?redirect=...` | ✅ or Gate | ✅ if `active_role=pro` |
+| `/post` | → `/auth?redirect=/post` | ✅ Wizard | ✅? | ✅? | ✅ |
+| `/job-board` | → `/auth?redirect=...` | → `/auth?redirect=...` | → `/auth?redirect=...` | ✅ | ✅ if `active_role=pro` |
+| `/professional/services/wizard` | → `/auth?redirect=...` | → `/auth?redirect=...` | → `/auth?redirect=...` | ✅ | ✅ |
+| `/admin` | → `/auth?redirect=/admin` | → `/auth?redirect=/admin` | → `/auth?redirect=/admin` | → `/auth?redirect=/admin` | → `/auth?redirect=/admin` |
+| `/settings/professional` | → `/auth?redirect=...` | → `/auth?redirect=...` | → `/auth?redirect=...` | ✅ | ✅ |
 
-    if (data) {
-      const selections: ServiceSelection[] = data.map(m => ({
-        microServiceId: m.id,
-        microServiceName: m.name,
-        subcategoryId: m.subcategory.id,
-        subcategoryName: m.subcategory.name,
-        categoryId: m.subcategory.category.id,
-        categoryName: m.subcategory.category.name
-      }));
-      setSelectedServices(selections);
-    }
-  };
+### Killer Test 2: Partial Completion Test
 
-  loadExistingMetadata();
-}, [existingServices]);
+| Step | Action | Expected |
+|------|--------|----------|
+| 1 | Start pro onboarding, fill steps 1-3, close browser | Data saved to localStorage via `useWizardAutosave` |
+| 2 | Return to `/onboarding/professional` | Toast: "Restore your previous progress?" + data restored |
+| 3 | Complete onboarding, verify submitted | `professional_profiles` row created |
+| 4 | Return to `/onboarding/professional` after verification pending | ⚠️ **UNCLEAR** - may show fresh wizard or block access |
+| 5 | After rejection, return to `/onboarding/professional` | Should show rejection reason + allow re-edit |
+
+### Killer Test 3: Empty Account Test
+
+Create user with minimal data:
+- No jobs posted
+- No `professional_profiles` row
+- No `professional_services` rows
+- `onboarding_completed = true`
+- `tasker_onboarding_status = 'not_started'`
+
+| Route | Expected |
+|-------|----------|
+| `/dashboard/client` | Empty state: "No jobs yet" |
+| `/dashboard/pro` | Either blocked (no pro role) OR empty with CTA |
+| `/settings/professional` | Either blocked OR empty profile form |
+| `/professional/services/wizard` | Empty selection (0 of 330) |
+
+### Killer Test 4: Session Expiry Mid-Flow
+
+| Scenario | Expected |
+|----------|----------|
+| User in job wizard step 4, session expires | On step 5 submit → `/auth?redirect=/post` with draft preserved |
+| User editing professional settings, session expires | On save → `/auth?redirect=/settings/professional` |
+| User in admin panel, session expires | → `/auth?redirect=/admin/...` |
+
+---
+
+## PART 7: Identified Issues & Recommendations
+
+### 🔴 High Priority Issues
+
+1. **Onboarding Field Inconsistency**
+   - `getInitialDashboardRoute()` uses `tasker_onboarding_status`
+   - `OnboardingGate` uses `onboarding_phase`
+   - These can be out of sync
+
+2. **Profile Bio Duplication**
+   - `profiles.bio` and `professional_profiles.bio` both exist
+   - Users may edit wrong one
+
+3. **No DB Hydration in Onboarding Wizard**
+   - Returning professionals with existing `professional_profiles` data start fresh
+   - Only localStorage draft is restored
+
+### 🟡 Medium Priority Issues
+
+4. **Intent-Based Access Edge Cases**
+   - User with `intent_role=professional` but NO verification row is blocked
+   - May cause confusion after signup
+
+5. **Dual-Role Active Role Context**
+   - `/post` requires `client` role but professionals can also be clients
+   - Role context affects what they see
+
+6. **Service Wizard Entry Points**
+   - First-time setup vs editing uses same route with no explicit mode
+
+### 🟢 Low Priority Issues
+
+7. **Admin 2FA Flow**
+   - Clear but could show more context about why 2FA is required
+
+8. **Empty State Consistency**
+   - Different components handle empty states differently
+
+---
+
+## PART 8: Recommended Test Automation
+
+### E2E Test Suite Structure
+
+```text
+tests/
+├── auth/
+│   ├── signup-client.spec.ts
+│   ├── signup-professional.spec.ts
+│   ├── signin.spec.ts
+│   ├── password-reset.spec.ts
+│   └── session-expiry.spec.ts
+├── onboarding/
+│   ├── professional-first-time.spec.ts
+│   ├── professional-resume-draft.spec.ts
+│   ├── professional-after-rejection.spec.ts
+│   └── client-quick-start.spec.ts
+├── dashboards/
+│   ├── client-empty-state.spec.ts
+│   ├── professional-gates.spec.ts
+│   ├── admin-2fa-gate.spec.ts
+│   └── role-switching.spec.ts
+├── wizards/
+│   ├── job-wizard-complete.spec.ts
+│   ├── job-wizard-draft-restore.spec.ts
+│   ├── service-wizard-create.spec.ts
+│   ├── service-wizard-edit.spec.ts
+│   └── service-wizard-deselect.spec.ts
+├── deep-links/
+│   ├── protected-routes-unauth.spec.ts
+│   ├── protected-routes-wrong-role.spec.ts
+│   └── redirect-loop-prevention.spec.ts
+└── settings/
+    ├── profile-settings.spec.ts
+    ├── professional-settings.spec.ts
+    └── field-sync.spec.ts
 ```
 
 ---
 
-## Files to Modify
+## Summary
 
-| File | Changes |
-|------|---------|
-| `src/hooks/useProfessionalServicePreferences.ts` | Add `addedMicroIds`, `removedMicroIds`, `finalSelectedIds`; fix toggle and save logic |
-| `src/components/professional/ServicePreferencesWizard.tsx` | Use `finalSelectedIds` from hook; fix review step display |
-| `src/components/professional/MicroServiceMultiSelect.tsx` | Minor - ensure it uses the computed Set correctly |
+This audit reveals a well-structured routing system with proper guards, but identifies several edge cases that need testing:
 
----
+1. **Inconsistent onboarding field usage** between different components
+2. **No database hydration** for returning professionals in onboarding wizard
+3. **Potential redirect loops** for users with intent but no verification
+4. **Duplicate bio fields** causing potential data confusion
 
-## Verification Checklist
-
-After implementation, test these scenarios:
-
-| Test | Expected Behavior |
-|------|-------------------|
-| Pro has 10 active services, opens wizard | ✅ Shows 10 as selected |
-| Pro adds 2 new services, saves | ✅ Total becomes 12 |
-| Pro removes 3 existing services, saves | ✅ Those 3 become `is_active=false` |
-| "Select all" on subcategory with mixed state | ✅ All become selected |
-| "Deselect all" on subcategory | ✅ All become deselected (including DB ones) |
-| Pro makes changes, navigates away, comes back | ✅ Session state preserved until save |
-
----
-
-## No Database Changes Required
-
-The existing `professional_services` table structure is sufficient:
-- `is_active` column already exists
-- `min_budget`, `can_work_solo`, etc. already added in previous migration
-
-This is purely a **frontend logic fix**.
+The recommended next step is to implement the E2E test suite outlined above, focusing first on the "Killer Tests" which will catch 80% of hidden bugs.
 
