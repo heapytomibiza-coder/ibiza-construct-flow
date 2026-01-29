@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Eye, EyeOff, Loader2, Home, Wrench, ArrowLeft, ShieldCheck, Mail, CheckCircle2 } from 'lucide-react';
-import { useSignIn, useSignUp } from '../../packages/@contracts/clients';
+import { useSignIn } from '../../packages/@contracts/clients';
 // QuickDemoLogin removed for launch - preserved in components for future restoration
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { z } from 'zod';
@@ -39,7 +39,6 @@ export default function UnifiedAuth() {
   const [loading, setLoading] = useState(false);
 
   const signInMutation = useSignIn();
-  const signUpMutation = useSignUp();
 
   // Redirect URL for after auth
   const redirectTo = useMemo(() => searchParams.get('redirect') || '/dashboard', [searchParams]);
@@ -275,7 +274,7 @@ export default function UnifiedAuth() {
                   {/* Inline validation hint */}
                   {!isEmailValid && email.length > 0 && (
                     <p className="text-xs text-destructive">
-                      That email doesn't look right — try name@domain.com
+                      That email doesn&apos;t look right — try name@domain.com
                     </p>
                   )}
 
@@ -292,13 +291,14 @@ export default function UnifiedAuth() {
                   
                   {/* Subtle skip link */}
                   <div className="text-center pt-2">
-                    <button
+                    <Button
                       type="button"
-                      className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+                      variant="link"
+                      className="text-xs text-muted-foreground hover:text-foreground p-0 h-auto"
                       onClick={() => navigate(redirectTo)}
                     >
                       Continue without signing in
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </TabsContent>
@@ -420,7 +420,7 @@ export default function UnifiedAuth() {
                   {/* Inline validation hints */}
                   {!isEmailValid && email.length > 0 && (
                     <p className="text-xs text-destructive">
-                      That email doesn't look right — try name@domain.com
+                      That email doesn&apos;t look right — try name@domain.com
                     </p>
                   )}
                   {password.length > 0 && password.length < PASSWORD_MIN_LENGTH && (
@@ -442,13 +442,14 @@ export default function UnifiedAuth() {
                   
                   {/* Subtle skip link */}
                   <div className="text-center pt-2">
-                    <button
+                    <Button
                       type="button"
-                      className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+                      variant="link"
+                      className="text-xs text-muted-foreground hover:text-foreground p-0 h-auto"
                       onClick={() => navigate(redirectTo)}
                     >
                       Continue without creating an account
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </TabsContent>
