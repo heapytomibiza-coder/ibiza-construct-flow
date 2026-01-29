@@ -120,6 +120,7 @@ const ServiceDetailPage = lazyWithRetry(() => import("./pages/ServiceDetailPage"
 const ProfessionalOnboardingPage = lazyWithRetry(() => import("./pages/ProfessionalOnboardingPage"));
 const ProfessionalVerificationPage = lazyWithRetry(() => import("./pages/ProfessionalVerificationPage"));
 const ProfessionalServicesPage = lazyWithRetry(() => import("./pages/ProfessionalServicesPage"));
+const ProfessionalServicesWizardPage = lazyWithRetry(() => import("./pages/ProfessionalServicesWizardPage"));
 const ProfessionalPortfolioPage = lazyWithRetry(() => import("./pages/ProfessionalPortfolioPage"));
 const ProfessionalAvailabilityPage = lazyWithRetry(() => import("./pages/ProfessionalAvailabilityPage"));
 const ProfessionalCalendarPage = lazyWithRetry(() => import("./pages/ProfessionalCalendarPage"));
@@ -301,6 +302,11 @@ function AppContent() {
                     <Route path="/professional/services" element={
                       <RouteGuard requiredRole="professional">
                         <ProfessionalServicesPage />
+                      </RouteGuard>
+                    } />
+                    <Route path="/professional/services/wizard" element={
+                      <RouteGuard requiredRole="professional">
+                        <ProfessionalServicesWizardPage />
                       </RouteGuard>
                     } />
                     <Route path="/services/new" element={

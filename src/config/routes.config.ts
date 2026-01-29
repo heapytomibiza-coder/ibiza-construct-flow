@@ -50,6 +50,7 @@ export const ROUTE_PATHS = {
   PROFESSIONAL_SERVICE_SETUP: '/professional/service-setup',
   PROFESSIONAL_PAYOUT_SETUP: '/professional/payout-setup',
   PROFESSIONAL_SERVICES: '/professional/services',
+  PROFESSIONAL_SERVICES_WIZARD: '/professional/services/wizard',
   PROFESSIONAL_PORTFOLIO: '/professional/portfolio',
   PROFESSIONAL_AVAILABILITY: '/availability',
   PROFESSIONAL_CALENDAR: '/calendar',

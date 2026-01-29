@@ -8771,36 +8771,51 @@ export type Database = {
       }
       professional_services: {
         Row: {
+          can_work_solo: boolean | null
+          certifications_required: string[] | null
           created_at: string
           id: string
           is_active: boolean
           micro_service_id: string
+          min_budget: number | null
           portfolio_urls: string[] | null
           pricing_structure: Json | null
           professional_id: string
+          requires_helper: boolean | null
           service_areas: Json | null
+          tools_available: string[] | null
           updated_at: string
         }
         Insert: {
+          can_work_solo?: boolean | null
+          certifications_required?: string[] | null
           created_at?: string
           id?: string
           is_active?: boolean
           micro_service_id: string
+          min_budget?: number | null
           portfolio_urls?: string[] | null
           pricing_structure?: Json | null
           professional_id: string
+          requires_helper?: boolean | null
           service_areas?: Json | null
+          tools_available?: string[] | null
           updated_at?: string
         }
         Update: {
+          can_work_solo?: boolean | null
+          certifications_required?: string[] | null
           created_at?: string
           id?: string
           is_active?: boolean
           micro_service_id?: string
+          min_budget?: number | null
           portfolio_urls?: string[] | null
           pricing_structure?: Json | null
           professional_id?: string
+          requires_helper?: boolean | null
           service_areas?: Json | null
+          tools_available?: string[] | null
           updated_at?: string
         }
         Relationships: [
