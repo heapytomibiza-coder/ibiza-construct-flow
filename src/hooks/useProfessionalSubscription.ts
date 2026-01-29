@@ -25,6 +25,9 @@ export interface SubscriptionStatus {
   tier: string;
 }
 
+// LAUNCH MODE: Grant all professionals premium access until paid version is enabled
+const LAUNCH_MODE_FREE_ACCESS = true;
+
 export function useProfessionalSubscription() {
   const queryClient = useQueryClient();
 
@@ -32,6 +35,16 @@ export function useProfessionalSubscription() {
   const { data: subscriptionStatus, isLoading, refetch } = useQuery({
     queryKey: ['professional-subscription'],
     queryFn: async () => {
+      // LAUNCH MODE: Skip network call, return premium status
+      if (LAUNCH_MODE_FREE_ACCESS) {
+        return {
+          hasActiveSubscription: true,
+          subscription: null,
+          commissionRate: 0.08, // Premium rate
+          tier: 'premium',
+        } as SubscriptionStatus;
+      }
+      
       const { data, error } = await supabase.functions.invoke('check-professional-subscription');
       
       if (error) throw error;

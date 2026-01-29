@@ -12,18 +12,35 @@ interface SubscriptionStatus {
   error: string | null;
 }
 
+// LAUNCH MODE: Grant all users premium access until paid version is enabled
+// To restore paid subscriptions: set LAUNCH_MODE_FREE_ACCESS = false
+const LAUNCH_MODE_FREE_ACCESS = true;
+
 export const useSubscription = () => {
   const { user } = useAuth();
   const [status, setStatus] = useState<SubscriptionStatus>({
-    subscribed: false,
-    tier: 'basic',
+    subscribed: LAUNCH_MODE_FREE_ACCESS ? true : false,
+    tier: LAUNCH_MODE_FREE_ACCESS ? 'premium' : 'basic',
     product_id: null,
     subscription_end: null,
-    loading: true,
+    loading: false,
     error: null
   });
 
   const checkSubscription = async () => {
+    // LAUNCH MODE: Skip subscription check, everyone has premium
+    if (LAUNCH_MODE_FREE_ACCESS) {
+      setStatus({
+        subscribed: true,
+        tier: 'premium',
+        product_id: null,
+        subscription_end: null,
+        loading: false,
+        error: null
+      });
+      return;
+    }
+    
     if (!user) {
       setStatus({
         subscribed: false,
