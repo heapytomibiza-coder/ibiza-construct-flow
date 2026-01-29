@@ -127,8 +127,8 @@ export function initRoleRealtime() {
         },
         (payload: any) => {
           const newRole = payload.new?.active_role ?? null;
-          const newRoles = payload.new?.roles ?? [];
-          emit(newRole, newRoles);
+          // Roles come from user_roles table, not profiles - preserve cached value
+          emit(newRole, cachedRoles);
         }
       )
       .subscribe();
