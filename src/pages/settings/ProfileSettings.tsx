@@ -1,23 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Upload, Loader2, Award } from 'lucide-react';
+import { Upload, Loader2, Award, Info } from 'lucide-react';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import { Link } from 'react-router-dom';
 import QualityScoreDetail from '@/components/disputes/QualityScoreDetail';
 
 export default function ProfileSettings() {
   const { enabled: qualityEnabled } = useFeatureFlag('quality_score_private');
-  const { profile, user } = useAuth();
+  const { profile, user, hasRole } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [isProfessional, setIsProfessional] = useState(false);
   
   const [formData, setFormData] = useState({
     display_name: profile?.display_name || '',
@@ -26,6 +29,15 @@ export default function ProfileSettings() {
     location: (profile as any)?.location || '',
     bio: (profile as any)?.bio || '',
   });
+
+  // Check if user has professional role
+  useEffect(() => {
+    const checkProfessionalRole = async () => {
+      const hasPro = await hasRole('professional');
+      setIsProfessional(hasPro);
+    };
+    checkProfessionalRole();
+  }, [hasRole]);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -209,16 +221,30 @@ export default function ProfileSettings() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={formData.bio}
-                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                placeholder="Tell us about yourself..."
-                rows={4}
-              />
-            </div>
+            {/* Bio field - only show for non-professionals */}
+            {!isProfessional ? (
+              <div className="space-y-2">
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={formData.bio}
+                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  placeholder="Tell us about yourself..."
+                  rows={4}
+                />
+              </div>
+            ) : (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  As a professional, manage your bio in{' '}
+                  <Link to="/settings/professional" className="text-primary underline underline-offset-2">
+                    Professional Settings
+                  </Link>
+                  .
+                </AlertDescription>
+              </Alert>
+            )}
 
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
