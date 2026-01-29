@@ -1,145 +1,73 @@
 
-# Fix Analytics Events RLS Policy for Anonymous Tracking
+# Remove Quick Demo Access from Auth Page
 
-## Problem Analysis
+## Problem
 
-The `analytics_events` table is blocking inserts from **unauthenticated visitors** on the homepage and other public pages, causing a flood of console errors:
+The "Quick Demo Access" section with Client Demo, Professional Demo, and Admin Demo buttons is still visible on the authentication page (`/auth`), even though demo mode functionality was requested to be removed for launch.
 
-```
-"new row violates row-level security policy for table \"analytics_events\""
-```
+## Current State
 
-### Root Cause
-
-| Issue | Detail |
-|-------|--------|
-| **Current INSERT Policy** | Role: `{authenticated}` only |
-| **CHECK Clause** | `auth.uid() IS NOT NULL` |
-| **Expected Behavior** | Anonymous visitors should be able to log page views |
-| **Actual Behavior** | All anonymous INSERT attempts are blocked |
-
-The analytics system explicitly supports anonymous tracking (generates `sessionId` for all visitors, allows `user_id` to be null), but the RLS policy was incorrectly tightened to `authenticated`-only in a previous migration.
-
----
+| Location | Component | Status |
+|----------|-----------|--------|
+| `src/pages/UnifiedAuth.tsx` (lines 441-444) | Desktop demo sidebar | Visible |
+| `src/pages/UnifiedAuth.tsx` (lines 446-449) | Mobile demo section | Visible |
+| `src/components/auth/QuickDemoLogin.tsx` | Full component | Active |
 
 ## Solution
 
-Fix the RLS policy to allow **mixed anonymous + authenticated tracking** while preventing impersonation.
+Remove the `QuickDemoLogin` component from the auth page layout while preserving the component file for future restoration.
 
-### Policy Logic
+### Changes to Make
 
-| User Type | Allowed? | Condition |
-|-----------|----------|-----------|
-| Anonymous | Yes | Must have `user_id IS NULL` (cannot claim to be a user) |
-| Authenticated | Yes | Must have `user_id = auth.uid()` OR `user_id IS NULL` |
-| Impersonation | No | Cannot set `user_id` to another user's ID |
+**File: `src/pages/UnifiedAuth.tsx`**
 
----
+Remove lines 441-449 (both desktop and mobile demo login sections):
 
-## Database Migration
+```diff
+          </CardFooter>
+        </Card>
 
-```sql
--- Fix analytics_events INSERT policy for mixed anonymous/authenticated tracking
--- The previous policy blocked anonymous visitors from logging page views
-
--- Drop the overly restrictive policy
-DROP POLICY IF EXISTS "Authenticated insert analytics" ON public.analytics_events;
-
--- Allow anonymous inserts (for unauthenticated visitors)
--- They cannot claim to be a user (user_id must be NULL)
-CREATE POLICY "Anon can insert analytics without user_id"
-ON public.analytics_events
-FOR INSERT
-TO anon
-WITH CHECK (user_id IS NULL);
-
--- Allow authenticated inserts with ownership enforcement
--- If user_id is set, it must match auth.uid() (prevents impersonation)
--- If user_id is NULL, that's also allowed (session-only tracking)
-CREATE POLICY "Authenticated can insert analytics with ownership"
-ON public.analytics_events
-FOR INSERT
-TO authenticated
-WITH CHECK (
-  (user_id IS NULL) OR (user_id = auth.uid())
-);
-```
-
----
-
-## Frontend Code Improvement (Optional)
-
-Update the analytics adapter to include `user_id` when the user is authenticated, improving data quality:
-
-**File**: `src/lib/analyticsAdapter.ts`
-
-```typescript
-// Add user_id when authenticated
-import { supabase } from '@/integrations/supabase/client';
-
-static async toRowWithUser(event: AnalyticsEventPayload): Promise<AnalyticsEventRow> {
-  const baseRow = this.toRow(event);
-  
-  // Try to get current user ID if authenticated
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  return {
-    ...baseRow,
-    user_id: user?.id ?? null
-  };
+-        {/* Quick Demo Login Sidebar */}
+-        <div className="hidden lg:block">
+-          <QuickDemoLogin />
+-        </div>
+-
+-        {/* Mobile Demo Login */}
+-        <div className="lg:hidden">
+-          <QuickDemoLogin />
+-        </div>
+      </div>
+    </div>
+  );
 }
 ```
 
-However, this is **not required** for the fix - the current code already works because `user_id` defaults to null.
+Also remove the import statement for `QuickDemoLogin` (around line 18-20):
 
----
+```diff
+- import { QuickDemoLogin } from '@/components/auth/QuickDemoLogin';
+```
 
 ## Files to Modify
 
 | File | Action | Purpose |
 |------|--------|---------|
-| Database Migration | Create | Fix RLS policy for anonymous tracking |
+| `src/pages/UnifiedAuth.tsx` | Modify | Remove QuickDemoLogin component usage |
 
----
+## Preservation Note
 
-## Testing Checklist
+The `QuickDemoLogin` component file (`src/components/auth/QuickDemoLogin.tsx`) will be preserved in the codebase for future restoration when demo mode is re-enabled. This follows the same pattern used for other demo-related components.
 
-After implementation:
+## Restoration
 
-- [ ] Homepage loads without RLS errors in console
-- [ ] Anonymous visitor page views are recorded in `analytics_events`
-- [ ] Authenticated user page views include correct `user_id`
-- [ ] Impersonation attack blocked (cannot insert with fake `user_id`)
+To restore demo functionality in the future:
+1. Uncomment the `QuickDemoLogin` import in `UnifiedAuth.tsx`
+2. Re-add the demo login sections in the page layout
+3. Set `VITE_DEMO_MODE=true` in environment
 
----
+## Testing After Implementation
 
-## Security Considerations
-
-| Concern | Mitigation |
-|---------|------------|
-| Spam from anonymous | Session-based tracking limits duplicate events; rate limiting can be added at edge |
-| Impersonation | `user_id = auth.uid()` check prevents authenticated users from spoofing |
-| Data pollution | Analytics is inherently low-trust; sensitive data stays in protected tables |
-
----
-
-## Technical Details
-
-### Why This Was Broken
-
-The previous RLS refinement migration changed the analytics policy to:
-```sql
-CREATE POLICY "Authenticated insert analytics"
-ON public.analytics_events
-FOR INSERT TO authenticated
-WITH CHECK (auth.uid() IS NOT NULL);
-```
-
-This was too restrictive because:
-1. It only grants INSERT to the `authenticated` role (not `anon`)
-2. The `WITH CHECK` is redundant (authenticated users always have `auth.uid()`)
-3. It doesn't consider the design requirement for anonymous visitor tracking
-
-### Why Two Separate Policies
-
-Supabase RLS requires separate policies for different roles. A single policy cannot have `TO anon, authenticated` - it must be split.
+- [ ] Auth page loads without "Quick Demo Access" section
+- [ ] Sign in flow works normally
+- [ ] Sign up flow works normally
+- [ ] Page layout remains clean and centered
