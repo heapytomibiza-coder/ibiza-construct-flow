@@ -23,11 +23,15 @@ export interface CustomInstanceOptions {
 export async function customInstance<T>(config: CustomInstanceOptions): Promise<T> {
   const { url, method, params, data, headers, signal } = config;
   
+  // Build full URL for edge functions
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const baseUrl = `${supabaseUrl}/functions/v1`;
+  
   // Build URL with query parameters
-  let fullUrl = url;
+  let fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
   if (params) {
     const queryString = new URLSearchParams(params).toString();
-    fullUrl = `${url}${url.includes('?') ? '&' : '?'}${queryString}`;
+    fullUrl = `${fullUrl}${fullUrl.includes('?') ? '&' : '?'}${queryString}`;
   }
 
   // Get auth token for edge function calls
