@@ -1,40 +1,28 @@
 
-# P0 Launch Patch v2 — Final Fixes
 
-## Current State Analysis
+# P0 Launch Patch v3 — Final Surgical Fixes
 
-I've reviewed all the key files. Here's what's working and what still needs attention:
+## Summary
 
-### ✅ Already Working Correctly
-
-| Component | Status | Notes |
-|-----------|--------|-------|
-| **useWizardAutosave.ts** | ✅ Complete | Properly saves/clears timestamp, returns `getDraftTimestamp()` |
-| **ProfileSettings.tsx** | ✅ Complete | Has `isProfessional` state, `useEffect`, and conditional bio rendering |
-| **OnboardingGate.tsx** | ✅ Aligned | Uses `professional_profiles.onboarding_phase` and `verification_status` |
-| **getInitialDashboardRoute()** | ✅ Aligned | Uses `professional_profiles.onboarding_phase` (same as OnboardingGate) |
-
-### 🔴 Issues Found
-
-| Issue | Location | Problem | Impact |
-|-------|----------|---------|--------|
-| **1. Fragile "has meaningful data" check** | `ProfessionalOnboardingWizard.tsx:110` | `Object.keys(dbData).some(k => (dbData as any)[k])` treats empty arrays as truthy | May load "progress" when there's nothing meaningful |
-| **2. Toast spam on mount** | `ProfessionalOnboardingWizard.tsx:109-116` | Toasts on every hydration, even if user already saw it | Annoying UX on page refresh |
-| **3. Onboarding phase mismatch** | `getInitialDashboardRoute():211-213` | Checks for `onboarding_phase === 'complete'` but wizard never sets this value | Route logic may never recognize pro as "complete" |
-| **4. Missing "complete" phase value** | `ProfessionalOnboardingPage.tsx` | Sets `onboarding_phase: 'intro_submitted'` but never updates to `complete` | Pro stays in onboarding loop |
+The P0 patch is 80% complete. Two files need small, targeted fixes to be launch-ready.
 
 ---
 
-## Issue 1: Fragile "has meaningful data" Check
+## Remaining Issues
 
-**Current Code (line 110):**
-```typescript
-} else if (proProfile && Object.keys(dbData).some(k => (dbData as any)[k])) {
-```
+| # | Issue | File | Fix |
+|---|-------|------|-----|
+| 1 | `hasRealProgress` missing fields | `ProfessionalOnboardingWizard.tsx` | Add `experienceYears`, `availability`, `contactEmail`, `contactPhone` |
+| 2 | Toast on every DB restore | `ProfessionalOnboardingWizard.tsx` | Only toast when draft existed and was cleared |
+| 3 | `onboarding_phase` set even with 0 services | `useProfessionalServicePreferences.ts` | Guard with `finalIds.length > 0` |
 
-**Problem:** Empty strings `''` and `[]` are both falsy, but `[]` is truthy when used in boolean context after assignment. The check doesn't validate actual content.
+---
 
-**Fix:** Check for real progress indicators:
+## Fix 1: Expand `hasRealProgress` Check
+
+**File:** `src/components/onboarding/wizard/ProfessionalOnboardingWizard.tsx`
+
+**Current (lines 107-113):**
 ```typescript
 const hasRealProgress = Boolean(
   dbData.tagline?.trim() || 
@@ -42,112 +30,67 @@ const hasRealProgress = Boolean(
   (dbData.categories && dbData.categories.length > 0) ||
   (dbData.regions && dbData.regions.length > 0)
 );
-
-if (proProfile && hasRealProgress) {
-  // Load from DB
-}
 ```
 
----
-
-## Issue 2: Toast Spam Prevention
-
-**Current Code (lines 109, 116):**
+**Fixed:**
 ```typescript
-toast.info('Draft restored', { duration: 2000 });
-// ...
-toast.info('Previous progress loaded', { duration: 2000 });
-```
-
-**Problem:** These toasts fire on every mount, including page refreshes.
-
-**Fix:** Add a ref to track if we've already shown the toast in this session:
-```typescript
-const hydrationToastShownRef = useRef(false);
-
-// Then in hydration:
-if (!hydrationToastShownRef.current) {
-  toast.info('Previous progress loaded', { duration: 2000 });
-  hydrationToastShownRef.current = true;
-}
-```
-
-Or better: Only toast when the user had to make a choice (draft vs DB conflict). Don't toast for simple DB restore.
-
----
-
-## Issue 3 & 4: Onboarding Phase Flow Gap
-
-**Analysis of `onboarding_phase` values:**
-
-| Phase Value | Set When | Set By |
-|-------------|----------|--------|
-| `not_started` | Default | Database default |
-| `intro_submitted` | Wizard step 5 submit | `ProfessionalOnboardingPage.tsx:54` |
-| `verification_pending` | After uploading docs | Verification page (assumed) |
-| `verified` | Admin approves | Admin action |
-| `complete` | ❓ **Never set** | Should be set when services configured |
-
-**The Route Logic:**
-```typescript
-// getInitialDashboardRoute():211-213
-const onboardingComplete = 
-  proProfile.onboarding_phase === 'complete' || 
-  proProfile.verification_status === 'verified';
-```
-
-**The Problem:** 
-- `onboarding_phase === 'complete'` is never set by any code
-- The fallback `verification_status === 'verified'` works, but...
-- **OnboardingGate will still block** verified users who haven't configured services
-
-**The Fix:** The current logic is actually OK because:
-1. `getInitialDashboardRoute()` sends verified pros to `/dashboard/pro`
-2. `OnboardingGate` on that page checks `hasConfiguredServices`
-3. If no services, it blocks with service setup gate
-
-However, for clarity, we should update the wizard or service setup to set `onboarding_phase = 'complete'` when services are saved.
-
----
-
-## Recommended Fixes
-
-### Fix A: Improve "has meaningful data" check
-
-**File:** `src/components/onboarding/wizard/ProfessionalOnboardingWizard.tsx`
-
-**Location:** Line 110
-
-**Change:**
-```typescript
-// BEFORE
-} else if (proProfile && Object.keys(dbData).some(k => (dbData as any)[k])) {
-
-// AFTER
 const hasRealProgress = Boolean(
   dbData.tagline?.trim() || 
   dbData.bio?.trim() || 
-  (dbData.categories && dbData.categories.length > 0) ||
-  (dbData.regions && dbData.regions.length > 0)
+  (dbData.experienceYears && dbData.experienceYears.trim()) ||
+  (dbData.categories?.length ?? 0) > 0 ||
+  (dbData.regions?.length ?? 0) > 0 ||
+  (dbData.availability?.length ?? 0) > 0 ||
+  dbData.contactEmail?.trim() ||
+  dbData.contactPhone?.trim()
 );
-
-if (proProfile && hasRealProgress) {
 ```
 
-### Fix B: Prevent toast spam
+**Why:** Ensures DB hydration happens when user has ANY meaningful progress, not just tagline/bio/categories/regions.
+
+---
+
+## Fix 2: Toast Only on Conflict
 
 **File:** `src/components/onboarding/wizard/ProfessionalOnboardingWizard.tsx`
 
-**Changes:**
-1. Add ref: `const hydrationToastShownRef = useRef(false);`
-2. Wrap toasts with: `if (!hydrationToastShownRef.current) { toast.info(...); hydrationToastShownRef.current = true; }`
-3. Only show toast when user had draft OR DB data (not on empty start)
+**Current behavior (lines 122-131):**
+```typescript
+} else if (proProfile && hasRealProgress) {
+  setData({ ...EMPTY_DATA, displayName, ...dbData });
+  if (hasDraftSaved) {
+    clearDraft(); // Clear stale draft
+  }
+  if (!hydrationToastShownRef.current) {
+    toast.info('Previous progress loaded', { duration: 2000 });  // ALWAYS toasts
+    hydrationToastShownRef.current = true;
+  }
+```
 
-### Fix C: Update onboarding_phase to 'complete' on service save
+**Fixed behavior:**
+```typescript
+} else if (proProfile && hasRealProgress) {
+  setData({ ...EMPTY_DATA, displayName, ...dbData });
+  const hadDraftCleared = hasDraftSaved;
+  if (hasDraftSaved) {
+    clearDraft(); // Clear stale draft
+  }
+  // Only toast if we cleared a draft (conflict scenario)
+  if (hadDraftCleared && !hydrationToastShownRef.current) {
+    toast.info('Loaded saved progress (draft cleared)', { duration: 2000 });
+    hydrationToastShownRef.current = true;
+  }
+```
+
+**Why:** Users shouldn't see "Previous progress loaded" on every page refresh. Only notify when something actionable happened (draft was cleared in favor of DB).
+
+---
+
+## Fix 3: Guard `onboarding_phase` Update
 
 **File:** `src/hooks/useProfessionalServicePreferences.ts`
 
-**In `saveServices()` after successful save:**
+**Current (lines 342-346):**
 ```typescript
 // After saving services, mark onboarding as complete
 await supabase
@@ -156,41 +99,18 @@ await supabase
   .eq('user_id', professionalId);
 ```
 
----
+**Fixed:**
+```typescript
+// After saving services, mark onboarding as complete (only if at least 1 active service)
+if (finalIds.length > 0) {
+  await supabase
+    .from('professional_profiles')
+    .update({ onboarding_phase: 'complete' })
+    .eq('user_id', professionalId);
+}
+```
 
-## Acceptance Criteria
-
-| Test | Expected Behavior |
-|------|-------------------|
-| Pro with no DB row, no draft | Wizard starts empty, no toast |
-| Pro with DB row (tagline filled) | Wizard loads DB data, single toast |
-| Pro with draft newer than DB | Wizard loads draft, single toast |
-| Page refresh mid-wizard | No duplicate toast |
-| Pro saves services | `onboarding_phase` updates to 'complete' |
-| Verified pro with services | Goes directly to dashboard (no gates) |
-
----
-
-## Manual Verification Steps
-
-1. **Fresh professional signup:**
-   - Sign up as pro intent
-   - Complete wizard step 1-2
-   - Close browser completely
-   - Return to `/onboarding/professional`
-   - ✓ Should load from DB (one toast)
-   
-2. **Draft vs DB conflict:**
-   - Complete step 1-2 (saves to DB)
-   - Make local edits (auto-saves to localStorage)
-   - Return after 1 minute
-   - ✓ Should load draft (newer timestamp)
-
-3. **Service setup completion:**
-   - As verified pro, go to service wizard
-   - Select and save services
-   - Check DB: `onboarding_phase` should be 'complete'
-   - ✓ Dashboard should load without gates
+**Why:** Prevents marking onboarding complete when user saves with 0 services selected (edge case that could cause confusing state).
 
 ---
 
@@ -198,17 +118,125 @@ await supabase
 
 | File | Changes |
 |------|---------|
-| `src/components/onboarding/wizard/ProfessionalOnboardingWizard.tsx` | Fix "has meaningful data" check, add toast spam prevention |
-| `src/hooks/useProfessionalServicePreferences.ts` | Update `onboarding_phase` to 'complete' after service save |
+| `src/components/onboarding/wizard/ProfessionalOnboardingWizard.tsx` | Fix 1 + Fix 2 |
+| `src/hooks/useProfessionalServicePreferences.ts` | Fix 3 |
 
 ---
 
-## Summary
+## Updated Acceptance Criteria
 
-The core architecture is now correctly aligned (OnboardingGate and getInitialDashboardRoute both use `professional_profiles`). The remaining fixes are:
+| Test | Expected Behavior |
+|------|-------------------|
+| Pro with DB row (only `experienceYears` filled) | ✅ Hydrates from DB |
+| Pro with DB row (only `contactEmail` filled) | ✅ Hydrates from DB |
+| DB restore, no draft existed | ✅ No toast shown |
+| DB restore, draft existed and was cleared | ✅ Toast: "Loaded saved progress (draft cleared)" |
+| Save with 0 services | ✅ `onboarding_phase` stays unchanged |
+| Save with 1+ services | ✅ `onboarding_phase` becomes 'complete' |
 
-1. **Improve data check** — Use explicit field validation instead of generic truthiness
-2. **Prevent toast spam** — Show toast only once per session
-3. **Complete the phase flow** — Set `onboarding_phase = 'complete'` when services are saved
+---
 
-These are small, surgical fixes that complete the P0 Launch Patch.
+## Manual Verification Steps
+
+1. **Expanded field detection:**
+   - Create pro profile with only `experience_years = '5'` in DB
+   - Clear localStorage
+   - Visit `/onboarding/professional`
+   - ✓ Should hydrate from DB (not start fresh)
+
+2. **Toast conflict-only:**
+   - Complete step 1-2 (saves to DB)
+   - Clear localStorage
+   - Return to wizard
+   - ✓ No toast (DB loaded without conflict)
+   
+3. **Toast on conflict:**
+   - Complete step 1-2
+   - Make local edits
+   - Close browser, wait, return
+   - If DB is newer → ✓ Toast "draft cleared"
+
+4. **Service save guard:**
+   - As verified pro, go to service wizard
+   - Deselect all services, save
+   - ✓ `onboarding_phase` should NOT become 'complete'
+
+---
+
+## Technical Implementation
+
+### Change 1: ProfessionalOnboardingWizard.tsx lines 107-131
+
+Replace the `hasRealProgress` definition and the DB restore block:
+
+```typescript
+// Check for real progress indicators (expanded to include all fields)
+const hasRealProgress = Boolean(
+  dbData.tagline?.trim() || 
+  dbData.bio?.trim() || 
+  (dbData.experienceYears && dbData.experienceYears.trim()) ||
+  (dbData.categories?.length ?? 0) > 0 ||
+  (dbData.regions?.length ?? 0) > 0 ||
+  (dbData.availability?.length ?? 0) > 0 ||
+  dbData.contactEmail?.trim() ||
+  dbData.contactPhone?.trim()
+);
+
+if (draft && localTimestamp > dbTimestamp) {
+  // Local draft is newer - restore it
+  setData({ ...EMPTY_DATA, displayName, ...draft });
+  if (!hydrationToastShownRef.current) {
+    toast.info('Draft restored', { duration: 2000 });
+    hydrationToastShownRef.current = true;
+  }
+} else if (proProfile && hasRealProgress) {
+  // DB data exists with real content and is newer (or no local draft)
+  setData({ ...EMPTY_DATA, displayName, ...dbData });
+  const hadDraftCleared = hasDraftSaved;
+  if (hasDraftSaved) {
+    clearDraft(); // Clear stale draft
+  }
+  // Only toast if we cleared a stale draft (conflict scenario)
+  if (hadDraftCleared && !hydrationToastShownRef.current) {
+    toast.info('Loaded saved progress (draft cleared)', { duration: 2000 });
+    hydrationToastShownRef.current = true;
+  }
+} else if (draft) {
+  // Only draft exists
+  setData({ ...EMPTY_DATA, displayName, ...draft });
+  if (!hydrationToastShownRef.current) {
+    toast.info('Draft restored', { duration: 2000 });
+    hydrationToastShownRef.current = true;
+  }
+} else {
+  // Start fresh - no toast needed
+  setData({ ...EMPTY_DATA, displayName });
+}
+```
+
+### Change 2: useProfessionalServicePreferences.ts lines 342-346
+
+Wrap the onboarding phase update with a guard:
+
+```typescript
+// After saving services, mark onboarding as complete (only if at least 1 active service)
+if (finalIds.length > 0) {
+  await supabase
+    .from('professional_profiles')
+    .update({ onboarding_phase: 'complete' })
+    .eq('user_id', professionalId);
+}
+```
+
+---
+
+## Go/No-Go After This Patch
+
+✅ App builds without errors
+✅ All onboarding fields trigger DB hydration
+✅ No toast spam on page refresh
+✅ Saving services only sets complete when services > 0
+✅ Verified pro with services → dashboard loads without gates
+
+**This completes the P0 Launch Patch.**
+
