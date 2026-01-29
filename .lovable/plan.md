@@ -1,324 +1,228 @@
 
 
-# Launch Rail System — Your Systematic Verification Framework
+# Enhanced Launch Rail System — Complete Test Matrix + Bug Reporting
 
-## Executive Summary
+## Summary
 
-Based on my codebase analysis, I've identified your current architecture and will provide you with a complete **Launch Rail System** you can use to systematically verify every part of your platform.
-
----
-
-## Part 1: Your Current State Model (The Foundation)
-
-### Canonical User Access State
-
-| Field | Table | Values | Purpose |
-|-------|-------|--------|---------|
-| `roles[]` | `user_roles` | `client`, `professional`, `admin` | What the user CAN do |
-| `active_role` | `profiles` | `client`, `professional`, `admin` | Current UI context |
-| `intent_role` | `profiles` | `client`, `professional` | Signup intention (routing) |
-| `onboarding_completed` | `profiles` | `true/false` | Quick-start gate (all users) |
-| `onboarding_phase` | `professional_profiles` | See below | Pro-specific progress |
-| `verification_status` | `professional_profiles` | See below | Pro credential approval |
-
-### Onboarding Phase Values (Professional Journey)
-
-| Phase | Meaning | Set By | Next Step |
-|-------|---------|--------|-----------|
-| `not_started` | Default | DB default | Complete intro wizard |
-| `intro_submitted` | Wizard done | `ProfessionalOnboardingPage.tsx:71` | Upload verification docs |
-| `verification_pending` | Docs uploaded | `VerificationForm.tsx:75` | Await admin review |
-| `service_configured` | Services set up | `ServiceCatalogSetup.tsx:88` | (Legacy path) |
-| `complete` | Fully onboarded | `useProfessionalServicePreferences.ts:346` | Access pro dashboard |
-
-### Verification Status Values
-
-| Status | Meaning | Set By |
-|--------|---------|--------|
-| `unverified` | Default | DB default |
-| `pending` | Awaiting review | Wizard submission |
-| `verified` | Approved by admin | Admin action |
-| `rejected` | Denied with reason | Admin action |
+Upgrading the existing docs with **two key improvements**:
+1. **Enhanced 15×10 State-Route Matrix** with Expected UI Outcome + Expected DB columns
+2. **Bug Report Template** for structured tester feedback
 
 ---
 
-## Part 2: The 10 User States (Your Test Matrix)
+## Part 1: Enhanced LAUNCH_RAIL.md
 
-| # | State Name | Roles | Active | Pro Phase | Ver Status | Expected Home |
-|---|------------|-------|--------|-----------|------------|---------------|
-| 1 | Unauthenticated | - | - | - | - | `/` or `/auth` |
-| 2 | New Client | `client` | `client` | - | - | `/dashboard/client` |
-| 3 | Pro Intent (no role yet) | `client` | `client` | `not_started` | `pending` | `/onboarding/professional` |
-| 4 | Pro Intro Done | `client` | `professional` | `intro_submitted` | `pending` | Gate: Upload Docs |
-| 5 | Pro Docs Submitted | `client` | `professional` | `verification_pending` | `pending` | Gate: Under Review |
-| 6 | Pro Rejected | `client`/`professional` | `professional` | varies | `rejected` | Gate: Resubmit |
-| 7 | Pro Verified (no services) | `client`, `professional` | `professional` | `verified`/varies | `verified` | Gate: Configure Services |
-| 8 | Pro Fully Onboarded | `client`, `professional` | `professional` | `complete` | `verified` | `/dashboard/pro` |
-| 9 | Dual-Role (active=client) | `client`, `professional` | `client` | `complete` | `verified` | `/dashboard/client` |
-| 10 | Admin | `client`, `admin` | `admin` | - | - | `/admin` (2FA gate) |
+### Replace Section 7 with Full State-Route Matrix
 
----
+The current doc has just a list of routes. We'll add a comprehensive matrix with:
 
-## Part 3: The 15 Critical Routes (Your Thin Slice)
+| Column | Purpose |
+|--------|---------|
+| Route | The URL path |
+| S1-S10 | Expected behavior per state |
+| Expected UI | What the user sees |
+| Expected DB | Tables read/written |
 
-Test these 15 routes across all 10 states for complete coverage:
-
-### Public Routes
-1. `/` — Landing page
-2. `/auth` — Sign in/up
-
-### Client Routes
-3. `/dashboard/client` — Client home
-4. `/post` — Create job
-5. `/post/success` — Job posted confirmation
-6. `/jobs/:id` — Job detail view
-
-### Professional Routes
-7. `/onboarding/professional` — Pro wizard
-8. `/professional/verification` — Upload docs
-9. `/professional/service-setup` — Configure services
-10. `/dashboard/pro` — Pro home (gated)
-11. `/jobs/:id/matches` — View matched pros
-
-### Settings
-12. `/settings/profile` — User profile
-13. `/settings/professional` — Pro-specific settings
-
-### Admin
-14. `/admin` — Admin dashboard (2FA)
-15. `/admin/users` — User management
-
----
-
-## Part 4: Route Guard Contract (Your Single Source of Truth)
-
-### Current Guard Implementations
-
-| Route | Guard | Required Role | Special Logic |
-|-------|-------|---------------|---------------|
-| `/onboarding/professional` | `RouteGuard` | `professional` | `allowProfessionalIntent=true` |
-| `/professional/verification` | `RouteGuard` | `professional` | `allowProfessionalIntent=true` |
-| `/professional/service-setup` | `RouteGuard` | `professional` | No intent fallback |
-| `/dashboard/pro` | `RouteGuard` + `OnboardingGate` | `professional` | Multi-phase gates |
-| `/admin/*` | `RouteGuard` | `admin` | `enforce2FA=true` |
-| `/dashboard/client` | `RouteGuard` | `client` | (implicit) |
-
-### Redirect Standard
-
-| Parameter | Usage |
-|-----------|-------|
-| `redirect` | Auth callback return URL |
-| `returnTo` | Deprecated (use `redirect`) |
-
----
-
-## Part 5: Core Journey Test Scripts
-
-### Journey A: Client Posts Job
+### New Matrix Format
 
 ```text
-Steps:
-1. Sign up with intent=client
-2. Complete quick-start (sets onboarding_completed=true)
-3. Navigate to /post
-4. Complete job wizard
-5. View /post/success
-6. See job at /jobs/:id
-
-Pass Criteria:
-✅ Job row created with correct owner
-✅ Client can view/edit own job
-✅ Pro cannot edit client's job (RLS)
-```
-
-### Journey B: Professional Onboarding
-
-```text
-Steps:
-1. Sign up with intent=professional
-2. Complete quick-start → redirected to /onboarding/professional
-3. Complete 5-step wizard → onboarding_phase='intro_submitted'
-4. Upload docs at /professional/verification → phase='verification_pending'
-5. Admin approves → verification_status='verified'
-6. Configure services → onboarding_phase='complete'
-7. Access /dashboard/pro without gates
-
-Pass Criteria:
-✅ Each phase transition persists correctly
-✅ Gates show at correct phases
-✅ Dashboard accessible only after complete
-```
-
-### Journey C: Role Switching
-
-```text
-Steps:
-1. As fully-onboarded pro (has both roles)
-2. Toggle active_role to 'client'
-3. Navigate to /dashboard → goes to /dashboard/client
-4. Toggle active_role to 'professional'
-5. Navigate to /dashboard → goes to /dashboard/pro
-
-Pass Criteria:
-✅ Active role persists across page refresh
-✅ Correct dashboard shown for active role
-✅ Navigation adapts to active role
-```
-
-### Journey D: Deep Link Protection
-
-```text
-Steps:
-1. As unauthenticated user
-2. Visit /dashboard/pro directly
-3. Should redirect to /auth?redirect=/dashboard/pro
-4. Sign in as verified pro
-5. Should land on /dashboard/pro (not /dashboard/client)
-
-Pass Criteria:
-✅ Deep link preserved through auth
-✅ No redirect loops
-✅ Correct destination after auth
-```
-
----
-
-## Part 6: State-Route Matrix Template
-
-Use this checklist for systematic testing:
-
-```text
-┌────────────────────────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┐
-│ Route                  │ S1   │ S2   │ S3   │ S4   │ S5   │ S6   │ S7   │ S8   │ S9   │ S10  │
-├────────────────────────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
-│ /                      │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │
-│ /auth                  │ ✓    │ →D   │ →D   │ →D   │ →D   │ →D   │ →D   │ →D   │ →D   │ →D   │
-│ /dashboard/client      │ →A   │ ✓    │ →O   │ →O   │ →O   │ →O   │ →O   │ ✓    │ ✓    │ ✓    │
-│ /dashboard/pro         │ →A   │ →A   │ →O   │ G1   │ G2   │ G3   │ G4   │ ✓    │ →C   │ ✓    │
-│ /onboarding/pro        │ →A   │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │
-│ /professional/verify   │ →A   │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │
-│ /professional/service  │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │
-│ /admin                 │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ 2FA  │
-│ /post                  │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │
-│ /settings/profile      │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │
-└────────────────────────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┘
+┌──────────────────────────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬─────────────────────┬─────────────────────────┐
+│ Route                    │ S1   │ S2   │ S3   │ S4   │ S5   │ S6   │ S7   │ S8   │ S9   │ S10  │ Expected UI         │ Expected DB             │
+├──────────────────────────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┼─────────────────────┼─────────────────────────┤
+│ /                        │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ Landing page        │ R: none                 │
+│ /auth                    │ ✓    │ →D   │ →D   │ →D   │ →D   │ →D   │ →D   │ →D   │ →D   │ →D   │ Sign in/up forms    │ R: profiles             │
+│ /dashboard/client        │ →A   │ ✓    │ →O   │ →O   │ →O   │ →O   │ →O   │ ✓    │ ✓    │ ✓    │ Client job list     │ R: jobs, profiles       │
+│ /dashboard/pro           │ →A   │ →A   │ →O   │ G1   │ G2   │ G3   │ G4   │ ✓    │ →C   │ ✓    │ Pro leads/contracts │ R: professional_profiles│
+│ /post                    │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ Job wizard          │ W: jobs, job_answers    │
+│ /post/success            │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ Success confirmation│ R: jobs                 │
+│ /jobs/:id                │ →A   │ ✓*   │ ✓*   │ ✓*   │ ✓*   │ ✓*   │ ✓*   │ ✓*   │ ✓*   │ ✓    │ Job detail          │ R: jobs, job_answers    │
+│ /jobs/:id/matches        │ →A   │ ✓*   │ →A   │ →A   │ →A   │ →A   │ →A   │ ✓    │ ✓*   │ ✓    │ Matched pros list   │ R: matches              │
+│ /onboarding/professional │ →A   │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ 5-step wizard       │ R/W: professional_profs │
+│ /professional/verify     │ →A   │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ Upload docs form    │ W: professional_profs   │
+│ /professional/service    │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ Service selection   │ R/W: pro_service_links  │
+│ /settings/profile        │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ Profile form        │ R/W: profiles           │
+│ /settings/professional   │ →A   │ →A   │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ ✓    │ Pro settings form   │ R/W: professional_profs │
+│ /admin                   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ 2FA  │ Admin dashboard     │ R: users, jobs, etc.    │
+│ /admin/users             │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ →A   │ 2FA  │ User management     │ R/W: profiles, roles    │
+└──────────────────────────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┴─────────────────────┴─────────────────────────┘
 
 Legend:
-✓  = Accessible
+✓  = Accessible (shows Expected UI)
+✓* = Accessible if owner (RLS-gated)
 →A = Redirect to /auth
-→D = Redirect to dashboard
-→O = Redirect to onboarding
-→C = Redirect to client dashboard
-G1 = Gate: Upload Docs
-G2 = Gate: Under Review
-G3 = Gate: Rejected
+→D = Redirect to dashboard (role-based)
+→O = Redirect to /onboarding/professional
+→C = Redirect to /dashboard/client
+G1 = Gate: Upload Verification Docs
+G2 = Gate: Under Admin Review
+G3 = Gate: Application Rejected
 G4 = Gate: Configure Services
-2FA = Requires 2FA setup
+2FA = Requires 2FA setup first
+
+R: = Database reads
+W: = Database writes
+R/W: = Both reads and writes
+```
+
+### Add Notes Column for Edge Cases
+
+| Route | Edge Case Notes |
+|-------|-----------------|
+| `/jobs/:id` | Owner sees edit button; others see view-only |
+| `/jobs/:id/matches` | Only job owner can view matches |
+| `/dashboard/pro` | Gate varies by `onboarding_phase` value |
+| `/professional/service` | Only accessible after `verification_status='verified'` |
+
+---
+
+## Part 2: Bug Report Template
+
+Create `docs/testing/BUG_REPORT_TEMPLATE.md`:
+
+```markdown
+# Bug Report Template
+
+## Quick Info
+- **Date:** 
+- **Tester:** 
+- **Priority:** P0 / P1 / P2
+- **State #:** (1-10 from Launch Rail)
+
+## What Happened
+_Describe what you saw_
+
+## Expected Behavior
+_Describe what should have happened_
+
+## Steps to Reproduce
+1. 
+2. 
+3. 
+
+## Browser Console Errors
+_Copy any red text from browser console (F12)_
+
+## Screenshots
+_Attach if helpful_
+
+## Priority Guide
+- **P0:** Blocks progress, crashes, wrong access, data loss
+- **P1:** Confusing but survivable (wrong redirect, UI glitch)
+- **P2:** Nice to fix later (cosmetic, minor UX)
 ```
 
 ---
 
-## Part 7: P0 Go/No-Go Checklist
+## Part 3: Thin Slice Test Checklist
 
-### Killer Tests (Must Pass)
+Create `docs/testing/THIN_SLICE_CHECKLIST.md`:
 
-| # | Test | Pass Criteria |
-|---|------|---------------|
-| 1 | Fresh signup → quick-start | Profile created, onboarding_completed=false |
-| 2 | Pro intent → onboarding wizard | Wizard loads with DB hydration |
-| 3 | Pro saves services → complete | onboarding_phase='complete' in DB |
-| 4 | Verified pro → dashboard | No gates shown, full access |
-| 5 | Role switch (pro→client) | Dashboard changes, nav adapts |
-| 6 | Deep link unauthenticated | Redirect preserved through auth |
-| 7 | Session expiry mid-flow | Graceful redirect to auth |
-| 8 | Admin 2FA gate | Blocks until 2FA configured |
-| 9 | Wrong-role access attempt | Clean denial, no crash |
-| 10 | Page refresh mid-wizard | Progress restored correctly |
+```markdown
+# Thin Slice Test Session
 
-### Data Contract Verification
-
-| Journey | Table Writes | RLS Check |
-|---------|--------------|-----------|
-| Client posts job | `jobs` | Pro can view, client can edit |
-| Pro onboards | `professional_profiles` | Only owner can update |
-| Admin approves | `professional_profiles` | Only admin can set verified |
-| Role switch | `profiles.active_role` | Only owner can toggle |
+## Required Test Accounts
+| Account Type | Email | Password | User ID |
+|--------------|-------|----------|---------|
+| Client only | | | |
+| Pro verified w/ services | | | |
+| Admin with 2FA | | | |
 
 ---
 
-## Part 8: Weekly Verification Cycle
+## Journey A: Client Job Post
+- [ ] Sign in as client
+- [ ] Navigate to /post
+- [ ] Complete job wizard (all steps)
+- [ ] See /post/success
+- [ ] View job at /jobs/:id
+- [ ] Verify job row in DB
 
-### Monday-Tuesday: Implement
-- Work on P0 tasks only
-- Update Flow Contract for any changes
-
-### Wednesday: Test Matrix
-- Run 15-route × 10-state matrix
-- Document failures
-
-### Thursday: Fix + Regression
-- Fix any failures
-- Run killer tests
-
-### Friday: Demo + Feedback
-- Short stakeholder demo
-- Collect 3 questions:
-  1. "What confused you?"
-  2. "Where did you get stuck?"
-  3. "What did you expect to happen?"
+**Result:** PASS / FAIL
+**Notes:**
 
 ---
 
-## Part 9: Known Issues to Monitor
+## Journey B: Pro Dashboard Access
+- [ ] Sign in as verified pro
+- [ ] Navigate to /dashboard/pro
+- [ ] No gates shown
+- [ ] Can see leads/matches
+- [ ] Can access /professional/service-setup
 
-### Current Inconsistency Found
-
-| Issue | Location | Impact |
-|-------|----------|--------|
-| `tasker_onboarding_status` check | `RouteGuard.tsx:165` | References deprecated field instead of `onboarding_phase` |
-| Missing `complete` phase in DB | Query result | Only `not_started`, `service_configured`, `verified` found |
-
-### Recommended Fixes
-
-1. Update RouteGuard line 165 to use `professional_profiles.onboarding_phase`
-2. Verify the `onboarding_phase='complete'` logic is executing (currently may not be reached)
+**Result:** PASS / FAIL
+**Notes:**
 
 ---
 
-## Part 10: Implementation Files
+## Journey C: Role Switching
+- [ ] Sign in as dual-role user (active=pro)
+- [ ] Switch to client role
+- [ ] Navigate to /dashboard
+- [ ] Lands on /dashboard/client
+- [ ] Switch back to pro role
+- [ ] Navigate to /dashboard
+- [ ] Lands on /dashboard/pro
+- [ ] Refresh page - role persists
 
-### Files to Create
+**Result:** PASS / FAIL
+**Notes:**
 
-| File | Purpose |
-|------|---------|
-| `docs/LAUNCH_RAIL.md` | Single source of truth document |
-| `docs/FLOW_CONTRACT.md` | Redirect params, phases, state model |
-| `src/lib/__tests__/routes.test.ts` | Automated route matrix tests |
+---
 
-### Files to Update
+## Journey D: Deep Link Protection
+- [ ] Sign out completely
+- [ ] Visit /dashboard/pro directly
+- [ ] Redirected to /auth?redirect=%2Fdashboard%2Fpro
+- [ ] Sign in as verified pro
+- [ ] Lands on /dashboard/pro (not /dashboard/client)
 
-| File | Change |
-|------|--------|
-| `src/components/RouteGuard.tsx:165` | Fix deprecated field reference |
-| `src/lib/roles.ts` | Add phase value constants |
+**Result:** PASS / FAIL
+**Notes:**
+
+---
+
+## Journey E: Session Expiry
+- [ ] Sign in, navigate to wizard mid-step
+- [ ] Clear session (DevTools → Application → Cookies → delete)
+- [ ] Try to proceed
+- [ ] Should redirect to /auth gracefully (no crash)
+
+**Result:** PASS / FAIL
+**Notes:**
 
 ---
 
 ## Summary
+| Journey | Result | Blocker? |
+|---------|--------|----------|
+| A: Client Job Post | | |
+| B: Pro Dashboard | | |
+| C: Role Switching | | |
+| D: Deep Link | | |
+| E: Session Expiry | | |
 
-This Launch Rail System gives you:
+**Overall:** Ready for feedback stage? YES / NO
+```
 
-1. **State Model** — The 10 canonical user states
-2. **Route Matrix** — 15 routes × 10 states checklist
-3. **Journey Scripts** — 4 core flows to test
-4. **Go/No-Go Gates** — 10 killer tests
-5. **Weekly Cycle** — Structured verification rhythm
+---
 
-**Next Steps:**
-1. Run the 10 killer tests manually
-2. Document any failures
-3. Fix P0 blockers only
-4. Repeat until all pass
+## Files to Create/Update
 
-This system prevents "wandering" by forcing every decision through the Launch Rail document.
+| File | Action |
+|------|--------|
+| `docs/LAUNCH_RAIL.md` | Update Section 7 with full matrix |
+| `docs/testing/BUG_REPORT_TEMPLATE.md` | Create new |
+| `docs/testing/THIN_SLICE_CHECKLIST.md` | Create new |
+
+---
+
+## Implementation Summary
+
+These enhancements give your team:
+
+1. **15×10 Matrix with DB columns** — Instant debugging when something fails
+2. **Bug Report Template** — Structured feedback from testers
+3. **Thin Slice Checklist** — Run the 5 critical journeys in under 30 minutes
+
+This is the **minimum viable test system** that prevents drift without overengineering.
 
