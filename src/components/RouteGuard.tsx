@@ -159,14 +159,20 @@ export default function RouteGuard({
         }
 
         // Check onboarding completion for professionals if required
+        // Uses professional_profiles as the single source of truth (not profiles.tasker_onboarding_status)
         if (requireOnboardingComplete && requiredRole === 'professional') {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('tasker_onboarding_status')
-            .eq('id', userId)
-            .single();
+          const { data: proProfile } = await supabase
+            .from('professional_profiles')
+            .select('onboarding_phase, verification_status')
+            .eq('user_id', userId)
+            .maybeSingle();
 
-          if (!profileData || profileData.tasker_onboarding_status !== 'complete') {
+          // Professional is complete if: onboarding_phase='complete' OR verification_status='verified'
+          const isComplete = 
+            proProfile?.onboarding_phase === 'complete' || 
+            proProfile?.verification_status === 'verified';
+
+          if (!isComplete) {
             console.warn('🔒 [RouteGuard] Professional onboarding not complete, redirecting to onboarding');
             if (!isStale) setStatus('unauthorized');
             return;

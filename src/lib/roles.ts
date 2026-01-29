@@ -2,10 +2,40 @@ import { supabase } from '@/integrations/supabase/client';
 
 export type Role = 'client' | 'professional' | 'admin';
 
+/**
+ * Canonical onboarding phase values (from professional_profiles table)
+ * These are the single source of truth for professional onboarding progress
+ */
+export const ONBOARDING_PHASES = {
+  NOT_STARTED: 'not_started',
+  INTRO_SUBMITTED: 'intro_submitted',
+  VERIFICATION_PENDING: 'verification_pending',
+  SERVICE_CONFIGURED: 'service_configured',
+  COMPLETE: 'complete',
+} as const;
+
+export type OnboardingPhase = typeof ONBOARDING_PHASES[keyof typeof ONBOARDING_PHASES];
+
+/**
+ * Canonical verification status values (from professional_profiles table)
+ */
+export const VERIFICATION_STATUSES = {
+  UNVERIFIED: 'unverified',
+  PENDING: 'pending',
+  VERIFIED: 'verified',
+  REJECTED: 'rejected',
+} as const;
+
+export type VerificationStatus = typeof VERIFICATION_STATUSES[keyof typeof VERIFICATION_STATUSES];
+
+/**
+ * @deprecated Use professional_profiles.onboarding_phase instead
+ */
 export interface UserProfile {
   id: string;
   roles: Role[];
   active_role: Role;
+  /** @deprecated Use professional_profiles.onboarding_phase instead */
   tasker_onboarding_status?: string;
 }
 
