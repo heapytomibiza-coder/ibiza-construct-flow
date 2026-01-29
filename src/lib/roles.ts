@@ -149,6 +149,7 @@ export function getDashboardRoute(role: Role): string {
 
 export type InitialRouteReason =
   | 'no_display_name'
+  | 'onboarding_incomplete'
   | 'admin_dashboard'
   | 'pro_needs_onboarding'
   | 'pro_dashboard'
@@ -161,10 +162,10 @@ export type InitialRouteReason =
 export async function getInitialDashboardRoute(
   userId: string
 ): Promise<{ path: string; reason: InitialRouteReason }> {
-  // 1) Check profile has display_name
+  // 1) Check profile has display_name and onboarding status
   const { data: profile } = await supabase
     .from('profiles')
-    .select('display_name, active_role')
+    .select('display_name, active_role, onboarding_completed')
     .eq('id', userId)
     .single();
 
@@ -184,6 +185,11 @@ export async function getInitialDashboardRoute(
   // 3) Admin takes precedence if active
   if (hasRole('admin') && profile.active_role === 'admin') {
     return { path: '/admin', reason: 'admin_dashboard' };
+  }
+
+  // 4) Check if first-time user needs onboarding welcome
+  if (profile.onboarding_completed === false) {
+    return { path: '/auth/quick-start', reason: 'onboarding_incomplete' };
   }
 
   // 4) Professional with onboarding check

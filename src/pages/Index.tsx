@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
@@ -21,6 +22,7 @@ import { TOURS_ENABLED } from '@/config/toursEnabled';
 
 const Index = () => {
   const { t } = useTranslation(['common', 'navigation', 'home']);
+  const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
   const featuredCarouselEnabled = useFeature('enable_featured_services_carousel');
@@ -29,6 +31,26 @@ const Index = () => {
   
   // Tour system integration
   const { TourComponent, startTour } = useTour('homepage-tour', homepageTourSteps);
+
+  // Safety fallback: Forward users who land here from email verification links
+  useEffect(() => {
+    try {
+      const hash = window.location.hash || "";
+      const search = window.location.search || "";
+
+      const looksLikeSupabaseCallback =
+        hash.includes("access_token") ||
+        hash.includes("refresh_token") ||
+        search.includes("code=");
+
+      if (looksLikeSupabaseCallback) {
+        // Tokens/code exist, send to the route built to handle it
+        navigate("/auth/callback", { replace: true });
+      }
+    } catch {
+      // fail silently - homepage must never crash
+    }
+  }, [navigate]);
 
   // Register tour triggers for header button
   useEffect(() => {

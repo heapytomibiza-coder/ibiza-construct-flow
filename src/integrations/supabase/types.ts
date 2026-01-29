@@ -9006,7 +9006,7 @@ export type Database = {
           status?: string
           submitted_at?: string
           updated_at?: string
-          verification_method: string
+          verification_method?: string
         }
         Update: {
           created_at?: string
@@ -9084,6 +9084,7 @@ export type Database = {
           intent_role: string | null
           location: string | null
           notification_preferences: Json | null
+          onboarding_completed: boolean | null
           phone: string | null
           preferences: Json | null
           preferred_currency: string | null
@@ -9112,6 +9113,7 @@ export type Database = {
           intent_role?: string | null
           location?: string | null
           notification_preferences?: Json | null
+          onboarding_completed?: boolean | null
           phone?: string | null
           preferences?: Json | null
           preferred_currency?: string | null
@@ -9140,6 +9142,7 @@ export type Database = {
           intent_role?: string | null
           location?: string | null
           notification_preferences?: Json | null
+          onboarding_completed?: boolean | null
           phone?: string | null
           preferences?: Json | null
           preferred_currency?: string | null
