@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,15 +7,17 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Eye, EyeOff, Loader2, Home, Wrench, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Home, Wrench, ArrowLeft, ShieldCheck, Mail, CheckCircle2 } from 'lucide-react';
 import { useSignIn, useSignUp } from '../../packages/@contracts/clients';
 // QuickDemoLogin removed for launch - preserved in components for future restoration
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { z } from 'zod';
 
+const PASSWORD_MIN_LENGTH = 8;
+
 const signupSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string().min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`),
   fullName: z.string().min(1, 'Name is required').optional(),
   role: z.union([z.literal('client'), z.literal('professional')])
 });
@@ -39,6 +41,22 @@ export default function UnifiedAuth() {
   const signInMutation = useSignIn();
   const signUpMutation = useSignUp();
 
+  // Redirect URL for after auth
+  const redirectTo = useMemo(() => searchParams.get('redirect') || '/dashboard', [searchParams]);
+
+  // Real-time validation
+  const isEmailValid = useMemo(() => {
+    if (!email) return false;
+    return /\S+@\S+\.\S+/.test(email);
+  }, [email]);
+
+  const isPasswordValid = useMemo(() => {
+    if (!password) return false;
+    return tab === 'signin' ? password.length >= 1 : password.length >= PASSWORD_MIN_LENGTH;
+  }, [password, tab]);
+
+  const canSubmit = isEmailValid && isPasswordValid && !loading;
+
   // Check if already authenticated and redirect away from auth page
   useEffect(() => {
     // Removed - RouteGuard should handle auth gating instead
@@ -50,8 +68,8 @@ export default function UnifiedAuth() {
     
     if (!email || !password) {
       toast({
-        title: 'Missing fields',
-        description: 'Please fill in all required fields',
+        title: 'Almost there',
+        description: 'Please enter your email and password.',
         variant: 'destructive'
       });
       return;
@@ -89,16 +107,13 @@ export default function UnifiedAuth() {
         console.log('🔵 [UnifiedAuth] ✅ Session confirmed, showing toast');
         toast({
           title: 'Welcome back!',
-          description: 'Successfully signed in'
+          description: "You're signed in. Taking you to your dashboard…"
         });
         
-        // Respect redirect parameter from URL
-        const redirectTo = searchParams.get('redirect');
-        
         // Delay to ensure session is fully propagated across all listeners
-        console.log('🔵 [UnifiedAuth] Navigating to:', redirectTo || '/dashboard');
+        console.log('🔵 [UnifiedAuth] Navigating to:', redirectTo);
         setTimeout(() => {
-          navigate(redirectTo || '/dashboard', { replace: true });
+          navigate(redirectTo, { replace: true });
         }, 250);
       } else {
         // Validate signup data
@@ -112,7 +127,7 @@ export default function UnifiedAuth() {
         if (!validationResult.success) {
           const firstError = validationResult.error.issues[0];
           toast({
-            title: 'Validation Error',
+            title: 'Please check your details',
             description: firstError.message,
             variant: 'destructive'
           });
@@ -141,7 +156,7 @@ export default function UnifiedAuth() {
 
         toast({
           title: 'Account created!',
-          description: 'Check your email to verify your account'
+          description: 'Check your inbox to verify your email.'
         });
         
         navigate('/auth/verify-email');
@@ -153,24 +168,24 @@ export default function UnifiedAuth() {
       if (error.message?.includes('Invalid login credentials')) {
         toast({
           title: 'Sign in failed',
-          description: 'Email or password incorrect. If you normally sign in with Google, use "Continue with Google". Otherwise, try resetting your password.',
+          description: 'Email or password incorrect. If you normally sign in with Google, use that option. Otherwise, try resetting your password.',
           variant: 'destructive'
         });
       } else if (error.message?.includes('Email not confirmed')) {
         toast({
           title: 'Email not verified',
-          description: 'Please check your inbox and verify your email before signing in.',
+          description: 'Please verify your email from your inbox before signing in.',
           variant: 'destructive'
         });
       } else if (error.message?.includes('User already registered')) {
         toast({
-          title: 'Account exists',
-          description: 'An account with this email already exists. Try signing in instead.',
+          title: 'Account already exists',
+          description: 'That email is already registered. Try signing in instead.',
           variant: 'destructive'
         });
       } else {
         toast({
-          title: 'Error',
+          title: 'Something went wrong',
           description: error.message || 'Authentication failed',
           variant: 'destructive'
         });
@@ -195,8 +210,8 @@ export default function UnifiedAuth() {
             </CardTitle>
             <CardDescription>
               {tab === 'signin' 
-                ? 'Sign in to continue to your dashboard'
-                : 'Choose your role and create an account to get started'}
+                ? 'Sign in to manage jobs, messages, and your dashboard.'
+                : 'Choose a role and get set up in about a minute.'}
             </CardDescription>
           </CardHeader>
           
@@ -219,6 +234,9 @@ export default function UnifiedAuth() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Use the email you registered with.
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -243,6 +261,7 @@ export default function UnifiedAuth() {
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -253,28 +272,34 @@ export default function UnifiedAuth() {
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  {/* Inline validation hint */}
+                  {!isEmailValid && email.length > 0 && (
+                    <p className="text-xs text-destructive">
+                      That email doesn't look right — try name@domain.com
+                    </p>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={!canSubmit}>
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Signing in...
+                        Signing in…
                       </>
                     ) : (
                       'Sign In'
                     )}
                   </Button>
                   
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => {
-                      const redirectTo = searchParams.get('redirect');
-                      navigate(redirectTo || '/dashboard');
-                    }}
-                  >
-                    Skip for now
-                  </Button>
+                  {/* Subtle skip link */}
+                  <div className="text-center pt-2">
+                    <button
+                      type="button"
+                      className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+                      onClick={() => navigate(redirectTo)}
+                    >
+                      Continue without signing in
+                    </button>
+                  </div>
                 </form>
               </TabsContent>
 
@@ -282,7 +307,7 @@ export default function UnifiedAuth() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {/* Role Selection */}
                   <div className="space-y-3">
-                    <Label>I want to...</Label>
+                    <Label>I want to…</Label>
                     <RadioGroup value={role} onValueChange={(v) => setRole(v as 'client' | 'professional')}>
                       <div className="grid gap-3">
                         <label
@@ -300,7 +325,7 @@ export default function UnifiedAuth() {
                               <span className="font-semibold">Find professionals</span>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              Post jobs and hire skilled professionals for your projects
+                              Post a job and hire skilled people for your project.
                             </p>
                           </div>
                         </label>
@@ -320,12 +345,15 @@ export default function UnifiedAuth() {
                               <span className="font-semibold">Offer my services</span>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              Connect with clients and grow your business
+                              Connect with clients and grow your work on the island.
                             </p>
                           </div>
                         </label>
                       </div>
                     </RadioGroup>
+                    <p className="text-xs text-muted-foreground">
+                      You can complete your profile details after verification.
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -337,6 +365,9 @@ export default function UnifiedAuth() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Helps people recognize you. You can change this later.
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -349,6 +380,9 @@ export default function UnifiedAuth() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
+                    <p className="text-xs text-muted-foreground">
+                      We never share your email publicly.
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -361,7 +395,7 @@ export default function UnifiedAuth() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        minLength={6}
+                        minLength={PASSWORD_MIN_LENGTH}
                       />
                       <Button
                         type="button"
@@ -369,6 +403,7 @@ export default function UnifiedAuth() {
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -378,32 +413,43 @@ export default function UnifiedAuth() {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Must be at least 6 characters
+                      8+ characters. A passphrase works great.
                     </p>
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  {/* Inline validation hints */}
+                  {!isEmailValid && email.length > 0 && (
+                    <p className="text-xs text-destructive">
+                      That email doesn't look right — try name@domain.com
+                    </p>
+                  )}
+                  {password.length > 0 && password.length < PASSWORD_MIN_LENGTH && (
+                    <p className="text-xs text-destructive">
+                      Password needs {PASSWORD_MIN_LENGTH} characters (currently {password.length}).
+                    </p>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={!canSubmit}>
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating account...
+                        Creating account…
                       </>
                     ) : (
                       'Create Account'
                     )}
                   </Button>
                   
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => {
-                      const redirectTo = searchParams.get('redirect');
-                      navigate(redirectTo || '/dashboard');
-                    }}
-                  >
-                    Skip for now
-                  </Button>
+                  {/* Subtle skip link */}
+                  <div className="text-center pt-2">
+                    <button
+                      type="button"
+                      className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+                      onClick={() => navigate(redirectTo)}
+                    >
+                      Continue without creating an account
+                    </button>
+                  </div>
                 </form>
               </TabsContent>
             </Tabs>
@@ -437,6 +483,80 @@ export default function UnifiedAuth() {
             </div>
           </CardFooter>
         </Card>
+
+        {/* Guidance Panel (Desktop) */}
+        <div className="hidden lg:block">
+          <Card className="h-full bg-muted/30 border-muted">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-primary" />
+                Quick, clear, and secure
+              </CardTitle>
+              <CardDescription>
+                Everything you need to get started — without the hassle.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Trust points */}
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Privacy first</p>
+                    <p className="text-xs text-muted-foreground">
+                      Your email isn't shown publicly. You control what's visible.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Email verification</p>
+                    <p className="text-xs text-muted-foreground">
+                      After sign up, verify your email and you're in.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* What happens next */}
+              <div className="pt-4 border-t border-border/50">
+                <p className="font-medium text-sm mb-3">What happens next</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    Create your account
+                  </li>
+                  <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    Verify your email
+                  </li>
+                  <li className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    Set up your profile when ready
+                  </li>
+                </ul>
+              </div>
+
+              {/* Help */}
+              <div className="pt-4 border-t border-border/50">
+                <p className="font-medium text-sm mb-1">Need a hand?</p>
+                <p className="text-xs text-muted-foreground">
+                  If something doesn't look right, use the{' '}
+                  <Link to="/contact" className="text-primary hover:underline">
+                    contact page
+                  </Link>{' '}
+                  and we'll help you quickly.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
       </div>
     </div>
