@@ -1,110 +1,220 @@
 
 
-# Fix: Create Missing `cover-photos` Storage Bucket
+# Professional Service Selection Wizard - Implementation Plan
 
-## Problem
+## Current State Analysis
 
-The "Submit for verification" button on the professional onboarding page fails with:
+### What Already Exists ✅
 
-```
-StorageApiError: Bucket not found
-```
+| Component | Status | Location |
+|-----------|--------|----------|
+| **3-tier taxonomy** | ✅ Active | 16 categories → 128 subcategories → 330 micro-services |
+| **Client Job Wizard** | ✅ Complete | `CanonicalJobWizard.tsx` - 7-step tap-first flow |
+| **professional_services table** | ✅ Exists | Stores `professional_id`, `micro_service_id`, `pricing_structure`, `service_areas` |
+| **ServiceCascadeConfigurator** | ✅ Exists | Multi-step category → subcategory → micro selection with pricing |
+| **professional_profiles fields** | ✅ Rich | Has `service_regions`, `languages`, `availability`, `min_project_value`, `certifications`, `team_size`, etc. |
+| **Job matching hook** | ⚠️ Stubbed | `useJobMatching.ts` returns empty array - needs implementation |
 
-The `ProfessionalOnboardingPage.tsx` tries to upload cover images to a storage bucket called `cover-photos`, but **this bucket was never created**.
+### What's Missing ❌
 
-## Root Cause
-
-Looking at the code:
-- `src/pages/ProfessionalOnboardingPage.tsx` uploads to `supabase.storage.from('cover-photos')`
-- Other buckets like `service-images` were created via SQL migration
-- The `cover-photos` bucket was never created
-
-## Solution
-
-Create the missing storage bucket with appropriate RLS policies via database migration.
+| Component | Impact |
+|-----------|--------|
+| **Checkbox multi-select for micro-services** | Professionals must pick services one-by-one instead of batch select |
+| **Capability filters per service** | No tools/solo/helper preferences stored |
+| **Unified preferences wizard** | Currently scattered across onboarding + service setup |
+| **Active matching algorithm** | Just a placeholder returning `[]` |
 
 ---
 
-## Technical Implementation
+## Proposed Architecture
 
-### Database Migration
+### User Experience Flow (5 Steps)
 
-Create the `cover-photos` bucket following the same pattern as `service-images`:
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: Pick Main Categories (multi-select tiles)             │
+│  ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐            │
+│  │Plumb  │ │Elect  │ │Carp   │ │HVAC   │ │Paint  │  ...       │
+│  └───────┘ └───────┘ └───────┘ └───────┘ └───────┘            │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 2: Pick Subcategories (expand only selected categories)  │
+│  ▼ Plumbing                                                    │
+│    ☑ Bathroom Plumbing                                         │
+│    ☑ Kitchen Plumbing                                          │
+│    ☐ Pool Plumbing                                             │
+│  ▼ Electrical                                                  │
+│    ☑ Home Automation                                           │
+│    ☐ Solar Installation                                        │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 3: Pick Micro-Services (checkboxes within subcats)       │
+│  ▼ Bathroom Plumbing                                           │
+│    ☑ Shower installation                                       │
+│    ☑ Bathtub replacement                                       │
+│    ☐ Bidet installation (not my thing)                         │
+│    ☐ Underfloor heating (don't have tools)                     │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 4: Capability Filters (global or per-service)            │
+│  • Service areas on island (multi-select regions)              │
+│  • Min job value (€)                                           │
+│  • Work style: Solo / Team / Either                            │
+│  • Languages spoken                                            │
+│  • Emergency callouts? Yes/No                                  │
+│  • Certifications (upload later)                               │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 5: Review & Save                                         │
+│  Summary of all selections → "Matching is now active"          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Data Model Changes
+
+### Option A: Extend `professional_services` (Recommended)
+
+Add capability columns to the existing table:
 
 ```sql
--- Create storage bucket for professional cover photos
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES (
-  'cover-photos',
-  'cover-photos',
-  true,
-  5242880, -- 5MB limit
-  ARRAY['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-)
-ON CONFLICT (id) DO NOTHING;
-
--- Drop existing policies if they exist (safety)
-DROP POLICY IF EXISTS "Public can view cover photos" ON storage.objects;
-DROP POLICY IF EXISTS "Authenticated can upload cover photos" ON storage.objects;
-DROP POLICY IF EXISTS "Users can update own cover photos" ON storage.objects;
-DROP POLICY IF EXISTS "Users can delete own cover photos" ON storage.objects;
-
--- Allow public read access to cover photos
-CREATE POLICY "Public can view cover photos"
-ON storage.objects
-FOR SELECT
-TO public
-USING (bucket_id = 'cover-photos');
-
--- Allow authenticated users to upload cover photos
-CREATE POLICY "Authenticated can upload cover photos"
-ON storage.objects
-FOR INSERT
-TO authenticated
-WITH CHECK (bucket_id = 'cover-photos');
-
--- Allow users to update their own cover photos
-CREATE POLICY "Users can update own cover photos"
-ON storage.objects
-FOR UPDATE
-TO authenticated
-USING (bucket_id = 'cover-photos' AND (storage.foldername(name))[1] = auth.uid()::text);
-
--- Allow users to delete their own cover photos
-CREATE POLICY "Users can delete own cover photos"
-ON storage.objects
-FOR DELETE
-TO authenticated
-USING (bucket_id = 'cover-photos' AND (storage.foldername(name))[1] = auth.uid()::text);
+ALTER TABLE professional_services ADD COLUMN IF NOT EXISTS 
+  min_budget numeric DEFAULT 0,
+  can_work_solo boolean DEFAULT true,
+  requires_helper boolean DEFAULT false,
+  tools_available text[] DEFAULT '{}',
+  certifications_required text[] DEFAULT '{}';
 ```
 
+### Option B: New `professional_service_preferences` table
+
+For complex filtering needs:
+
+```sql
+CREATE TABLE professional_service_preferences (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  professional_id uuid NOT NULL REFERENCES professional_profiles(user_id),
+  micro_service_id uuid NOT NULL REFERENCES service_micro_categories(id),
+  min_budget numeric DEFAULT 0,
+  coverage_areas jsonb DEFAULT '[]', -- specific areas for this service
+  solo_or_team text DEFAULT 'either', -- 'solo', 'team', 'either'
+  tools_tags text[] DEFAULT '{}',
+  availability_override jsonb, -- optional override from profile
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(professional_id, micro_service_id)
+);
+```
+
+**Recommendation**: Start with Option A (simpler), migrate to Option B if filtering complexity grows.
+
 ---
 
-## Why This Works
+## Matching Algorithm Design
 
-| Policy | Purpose |
-|--------|---------|
-| Public SELECT | Cover photos are public profile images - anyone can view |
-| Authenticated INSERT | Any logged-in user can upload their cover photo |
-| User-scoped UPDATE/DELETE | Users can only modify files in their own folder (`{user_id}/cover-*.jpg`) |
+### Hard Rules (Eligibility)
 
-The folder structure `${user.id}/cover-${timestamp}.jpg` used in the code aligns with these RLS policies.
+```sql
+-- Professional is eligible for a job IF:
+SELECT pp.user_id
+FROM professional_profiles pp
+JOIN professional_services ps ON pp.user_id = ps.professional_id
+WHERE 
+  ps.micro_service_id = :job_micro_service_id
+  AND ps.is_active = true
+  AND pp.is_active = true
+  AND pp.verification_status = 'verified'
+  AND (ps.min_budget IS NULL OR :job_budget >= ps.min_budget)
+  AND (pp.service_regions ?| :job_location_array)
+```
+
+### Soft Scoring (Ranking)
+
+| Factor | Points |
+|--------|--------|
+| Response time < 4 hours | +20 |
+| Rating > 4.5 | +15 |
+| Completed similar jobs | +10 per job (max 30) |
+| Has required certifications | +10 |
+| Language match | +5 |
+| Premium subscription | +10 |
 
 ---
 
-## Files Changed
+## Implementation Phases
 
-| File | Change |
-|------|--------|
-| Database migration | Create `cover-photos` bucket with RLS policies |
+### Phase 1: Multi-Select Micro-Service Wizard
+- Create `ProfessionalServicePreferencesWizard.tsx`
+- Reuse `CategorySelector` and `SubcategorySelector` from job wizard
+- Build new `MicroServiceMultiSelect.tsx` with checkbox grid
+- Save selections to `professional_services` table
+
+### Phase 2: Capability Filters UI
+- Add Step 4 with global filters (regions, min budget, work style)
+- Store in `professional_profiles` or per-service in `professional_services.service_areas`
+
+### Phase 3: Matching Algorithm
+- Implement `useJobMatching.ts` with actual SQL query
+- Create database function `match_professionals_for_job(job_id)`
+- Add scoring logic
+
+### Phase 4: Notifications
+- When job created, run matching
+- Notify top N professionals via `activity_feed`
 
 ---
 
-## Testing After Fix
+## Files to Create/Modify
 
-1. Go to `/onboarding/professional`
-2. Upload a cover photo
-3. Click "Submit for Verification"
-4. Should succeed without "Bucket not found" error
-5. Cover photo URL should be saved to `professional_profiles.cover_image_url`
+| File | Action | Purpose |
+|------|--------|---------|
+| `src/components/professional/ServicePreferencesWizard.tsx` | **Create** | Main 5-step wizard component |
+| `src/components/professional/MicroServiceMultiSelect.tsx` | **Create** | Checkbox grid for micro-services |
+| `src/components/professional/CapabilityFiltersStep.tsx` | **Create** | Step 4 filters UI |
+| `src/hooks/useProfessionalServicePreferences.ts` | **Create** | CRUD for service preferences |
+| `src/hooks/useJobMatching.ts` | **Modify** | Implement actual matching logic |
+| `supabase/migrations/xxx_add_service_capabilities.sql` | **Create** | Add columns or new table |
+| `src/pages/ProfessionalServicesPage.tsx` | **Create** | Dashboard entry point for wizard |
+
+---
+
+## Technical Notes
+
+### Same "Cannon" Principle
+Both wizards will use:
+- Same `service_categories` table (16 categories)
+- Same `service_subcategories` table (128 subcategories)  
+- Same `service_micro_categories` table (330 micro-services)
+
+This ensures:
+- Client posts job with `micro_service_id = 'abc123'`
+- Professional selects `micro_service_id = 'abc123'`  
+- Matching is a simple JOIN
+
+### Existing Fields to Leverage
+`professional_profiles` already has:
+- `service_regions` (jsonb) - island areas
+- `languages` (jsonb) - spoken languages
+- `min_project_value` / `max_project_value` - budget range
+- `team_size` - solo vs team indicator
+- `emergency_service` - callout availability
+- `certifications` (jsonb) - qualifications
+
+No need to duplicate; the wizard just needs to populate these.
+
+---
+
+## Success Metrics
+
+After implementation:
+- [ ] Professional can select 10+ micro-services in under 2 minutes
+- [ ] Job posting triggers notification to at least 3 matched professionals
+- [ ] Matching accuracy: >80% of notified professionals have relevant skills
+- [ ] Dashboard shows "X jobs match your services" counter
 
