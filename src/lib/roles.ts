@@ -194,15 +194,23 @@ export async function getInitialDashboardRoute(
 
   // 4) Professional with onboarding check
   if (profile.active_role === 'professional' || hasRole('professional')) {
-    // Check onboarding status from profiles table
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('tasker_onboarding_status')
-      .eq('id', userId)
-      .single();
+    // Check onboarding status from professional_profiles table (single source of truth)
+    const { data: proProfile } = await supabase
+      .from('professional_profiles')
+      .select('onboarding_phase, verification_status')
+      .eq('user_id', userId)
+      .maybeSingle();
 
-    // Check if onboarding is complete
-    const onboardingComplete = profileData?.tasker_onboarding_status === 'complete';
+    // No professional profile yet = needs onboarding
+    if (!proProfile) {
+      return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
+    }
+
+    // Check onboarding phase - must be at least 'intro_submitted' to have started
+    // and verification_status must be 'verified' to be complete
+    const onboardingComplete = 
+      proProfile.onboarding_phase === 'complete' || 
+      proProfile.verification_status === 'verified';
     
     if (!onboardingComplete) {
       return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };

@@ -21,6 +21,8 @@ export const useWizardAutosave = <T extends Record<string, any>>(
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSavedRef = useRef<string>('');
 
+  const TIMESTAMP_KEY = `${key}_timestamp`;
+
   // Save to localStorage with debounce
   const save = useCallback(() => {
     const stateJson = JSON.stringify(state);
@@ -32,6 +34,7 @@ export const useWizardAutosave = <T extends Record<string, any>>(
 
     try {
       localStorage.setItem(key, stateJson);
+      localStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
       lastSavedRef.current = stateJson;
       
       if (showToast) {
@@ -44,7 +47,7 @@ export const useWizardAutosave = <T extends Record<string, any>>(
       console.error('Autosave failed:', error);
       toast.error('Failed to save draft');
     }
-  }, [state, key, showToast]);
+  }, [state, key, showToast, TIMESTAMP_KEY]);
 
   // Debounced save
   useEffect(() => {
@@ -81,6 +84,7 @@ export const useWizardAutosave = <T extends Record<string, any>>(
   const clearDraft = useCallback(() => {
     try {
       localStorage.removeItem(key);
+      localStorage.removeItem(`${key}_timestamp`);
       lastSavedRef.current = '';
       
       if (showToast) {
@@ -90,6 +94,16 @@ export const useWizardAutosave = <T extends Record<string, any>>(
       console.error('Failed to clear draft:', error);
     }
   }, [key, showToast]);
+
+  // Get draft timestamp
+  const getDraftTimestamp = useCallback((): number | null => {
+    try {
+      const timestamp = localStorage.getItem(`${key}_timestamp`);
+      return timestamp ? parseInt(timestamp, 10) : null;
+    } catch {
+      return null;
+    }
+  }, [key]);
 
   // Check if draft exists
   const hasDraft = useCallback((): boolean => {
@@ -104,6 +118,7 @@ export const useWizardAutosave = <T extends Record<string, any>>(
     loadDraft,
     clearDraft,
     hasDraft,
+    getDraftTimestamp,
     save: () => save() // Manual save trigger
   };
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { StepProgress } from './shared/StepProgress';
 import { NavigationButtons } from './shared/NavigationButtons';
@@ -8,6 +8,8 @@ import { Step3Categories } from './steps/Step3Categories';
 import { Step4Coverage } from './steps/Step4Coverage';
 import { Step5Review } from './steps/Step5Review';
 import { useWizardAutosave } from '@/hooks/useWizardAutosave';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface OnboardingData {
@@ -31,43 +33,114 @@ interface ProfessionalOnboardingWizardProps {
 const STEP_TITLES = ['Welcome', 'Your Story', 'Services', 'Coverage', 'Review'];
 const AUTOSAVE_KEY = 'pro-onboarding-draft';
 
+const EMPTY_DATA: OnboardingData = {
+  displayName: '',
+  tagline: '',
+  experienceYears: '',
+  bio: '',
+  contactEmail: '',
+  contactPhone: '',
+  coverImageUrl: undefined,
+  categories: [],
+  regions: [],
+  availability: [],
+};
+
 export function ProfessionalOnboardingWizard({ 
   onSubmit, 
   isLoading 
 }: ProfessionalOnboardingWizardProps) {
+  const { user, profile } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
-  const [data, setData] = useState<OnboardingData>({
-    displayName: '',
-    tagline: '',
-    experienceYears: '',
-    bio: '',
-    contactEmail: '',
-    contactPhone: '',
-    coverImageUrl: undefined,
-    categories: [],
-    regions: [],
-    availability: [],
-  });
+  const [data, setData] = useState<OnboardingData>(EMPTY_DATA);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [hydrating, setHydrating] = useState(true);
 
   // Auto-save functionality
-  const { loadDraft, clearDraft, hasDraft } = useWizardAutosave(data, {
+  const { loadDraft, clearDraft, hasDraft, getDraftTimestamp } = useWizardAutosave(data, {
     key: AUTOSAVE_KEY,
     debounceMs: 1000,
     showToast: false,
   });
 
-  // Load draft on mount
-  useEffect(() => {
-    if (hasDraft()) {
-      const draft = loadDraft();
-      if (draft && Object.keys(draft).length > 0) {
-        setData({ ...data, ...draft });
-        toast.info('Draft restored', { duration: 2000 });
-      }
+  // Hydration: local draft (if newer) → DB row → empty
+  const hydrateData = useCallback(async () => {
+    if (!user) {
+      setHydrating(false);
+      return;
     }
-  }, []);
+
+    try {
+      // 1) Check for existing DB data
+      const { data: proProfile } = await supabase
+        .from('professional_profiles')
+        .select('tagline, bio, experience_years, intro_categories, service_regions, availability, cover_image_url, contact_email, contact_phone, updated_at')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      const dbData: Partial<OnboardingData> = proProfile ? {
+        tagline: proProfile.tagline || '',
+        bio: proProfile.bio || '',
+        experienceYears: proProfile.experience_years?.toString() || '',
+        categories: (proProfile.intro_categories as string[]) || [],
+        regions: (proProfile.service_regions as string[]) || [],
+        availability: (proProfile.availability as string[]) || [],
+        coverImageUrl: proProfile.cover_image_url || undefined,
+        contactEmail: proProfile.contact_email || '',
+        contactPhone: proProfile.contact_phone || '',
+      } : {};
+
+      // Get display name from profiles table
+      const displayName = profile?.display_name || '';
+
+      // 2) Check for local draft
+      const hasDraftSaved = hasDraft();
+      const draftTimestamp = getDraftTimestamp();
+      const draft = hasDraftSaved ? loadDraft() : null;
+
+      // 3) Determine which source is newer
+      const dbTimestamp = proProfile?.updated_at ? new Date(proProfile.updated_at).getTime() : 0;
+      const localTimestamp = draftTimestamp || 0;
+
+      if (draft && localTimestamp > dbTimestamp) {
+        // Local draft is newer - restore it
+        setData({ ...EMPTY_DATA, displayName, ...draft });
+        toast.info('Draft restored', { duration: 2000 });
+      } else if (proProfile && Object.keys(dbData).some(k => (dbData as any)[k])) {
+        // DB data exists and is newer (or no local draft)
+        setData({ ...EMPTY_DATA, displayName, ...dbData });
+        if (hasDraftSaved) {
+          clearDraft(); // Clear stale draft
+        }
+        toast.info('Previous progress loaded', { duration: 2000 });
+      } else if (draft) {
+        // Only draft exists
+        setData({ ...EMPTY_DATA, displayName, ...draft });
+        toast.info('Draft restored', { duration: 2000 });
+      } else {
+        // Start fresh
+        setData({ ...EMPTY_DATA, displayName });
+      }
+    } catch (error) {
+      console.error('Error hydrating onboarding data:', error);
+      // Fallback to draft if DB fails
+      if (hasDraft()) {
+        const draft = loadDraft();
+        if (draft) {
+          setData({ ...EMPTY_DATA, ...draft });
+          toast.info('Draft restored', { duration: 2000 });
+        }
+      }
+    } finally {
+      setHydrating(false);
+    }
+  }, [user, profile, hasDraft, loadDraft, getDraftTimestamp, clearDraft]);
+
+  // Hydrate on mount
+  useEffect(() => {
+    hydrateData();
+  }, [hydrateData]);
 
   const updateData = (field: string, value: any) => {
     setData({ ...data, [field]: value });
@@ -159,6 +232,17 @@ export function ProfessionalOnboardingWizard({
     }
     return true;
   };
+
+  if (hydrating) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-8 px-4 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading your progress...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-8 px-4">
