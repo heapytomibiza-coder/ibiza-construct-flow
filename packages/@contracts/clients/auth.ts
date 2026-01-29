@@ -90,7 +90,7 @@ export const useSignUp = () => {
   
   return useMutation<SignUpResponse, Error, SignUpRequest>({
     mutationFn: async ({ email, password, fullName }) => {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/auth/callback`;
       
       const { data, error } = await import('@/integrations/supabase/client').then(m => 
         m.supabase.auth.signUp({
