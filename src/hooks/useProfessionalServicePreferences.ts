@@ -339,6 +339,12 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
         throw new Error(errors.map(e => e.error?.message).join(', '));
       }
 
+      // After saving services, mark onboarding as complete
+      await supabase
+        .from('professional_profiles')
+        .update({ onboarding_phase: 'complete' })
+        .eq('user_id', professionalId);
+
       toast({
         title: 'Success',
         description: `Saved ${finalIds.length} service preferences`
