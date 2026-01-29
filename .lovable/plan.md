@@ -1,121 +1,132 @@
 
 
-# Fix: Realtime Role Listener Bug in roles.ts
+# Fix Authentication & Email Delivery
 
-## Problem Identified
+## Summary
 
-There's a bug in `src/lib/roles.ts` that will break the role switcher in multi-tab scenarios:
+Your account is already verified and ready to use. The "verification email" issue is a red herring — the real problem is a password mismatch. Here's the complete fix:
+
+---
+
+## Part 1: Sign In with Existing Account (Immediate)
+
+Your account status in the database:
+
+| Field | Value |
+|-------|-------|
+| Email | `heapymagic@googlemail.com` |
+| Verified | ✅ Nov 20, 2025 |
+| Roles | `client`, `professional` |
+
+**The "Invalid login credentials" error means the password is wrong**, not that the account isn't verified.
+
+### Solution: Reset Password
+
+1. Navigate to `/auth/forgot-password`
+2. Enter `heapymagic@googlemail.com`
+3. Check inbox (and spam) for reset link
+4. Set new password → sign in
+
+---
+
+## Part 2: Enable Auto-Confirm for Development
+
+This prevents email verification requirement during testing.
+
+### Database Changes
+
+No database changes needed — this is a Supabase Auth configuration.
+
+### Code Change
+
+Use the configure-auth tool to enable auto-confirm:
 
 ```text
-Current (buggy):
-┌─────────────────────────────┐
-│ profiles table UPDATE event │
-│   payload.new.active_role ✓ │
-│   payload.new.roles ✗       │ ← This column doesn't exist!
-└─────────────────────────────┘
-           ↓
-┌─────────────────────────────┐
-│ emit(newRole, [])           │ ← Roles get wiped to empty array
-│ → HeaderRoleSwitcher breaks │
-└─────────────────────────────┘
+Setting: Auto-confirm email signups = true
 ```
 
-**Impact:** When any profile field is updated (e.g., display name, active_role), the realtime listener emits an empty `roles` array, causing:
-- Role switcher to disappear (since `roles.length < 2`)
-- UI to fall back to showing a single-role badge
-- User has to refresh to restore correct state
+This means new signups will be immediately verified without email confirmation.
 
 ---
 
-## Root Cause
+## Part 3: Fix Email Delivery with Resend
 
-In `initRoleRealtime()` (lines 128-131):
+### Current Problem
+
+The `send-email` edge function uses Resend's test domain:
 
 ```typescript
-// BUG: profiles table doesn't have a 'roles' column
-const newRole = payload.new?.active_role ?? null;
-const newRoles = payload.new?.roles ?? [];  // ← Always returns []
-emit(newRole, newRoles);
+from: "Lovable <onboarding@resend.dev>"  // Test domain - unreliable
 ```
 
-The `profiles` table schema:
-- `active_role` ✓ (exists)
-- `roles` ✗ (does NOT exist — roles are in `user_roles` table)
+**Note:** Supabase Auth emails (signup verification, password reset) use Supabase's built-in SMTP, not your edge function. For production, you'd configure a custom SMTP in the Supabase dashboard.
 
----
+### Fix for Edge Function Emails
 
-## Solution
+Update all edge functions to use a verified domain. This requires:
 
-When a profile update event fires, preserve the cached roles (which were correctly fetched from `user_roles` on initial load) instead of overwriting with an empty array:
+1. **Resend Dashboard**: Verify your domain at https://resend.com/domains
+2. **Update Edge Functions**: Change `from` addresses
+
+### Files to Update
+
+| File | Current `from` | New `from` |
+|------|----------------|------------|
+| `supabase/functions/send-email/index.ts` | `onboarding@resend.dev` | `noreply@yourdomain.com` |
+| `supabase/functions/send-booking-reminder/index.ts` | `reminders@ibiza.app` | Keep (if domain verified) |
+| `supabase/functions/send-message-notification/index.ts` | `notifications@ibiza.app` | Keep (if domain verified) |
+| `supabase/functions/send-payment-reminder/index.ts` | `noreply@yourdomain.com` | Update to real domain |
+| `supabase/functions/send-booking-reminders/index.ts` | `notifications@yourdomain.com` | Update to real domain |
+
+### Recommended Approach
+
+If you have a verified domain (e.g., `ibiza.app`), update all `from` addresses to use it:
 
 ```typescript
-(payload: any) => {
-  const newRole = payload.new?.active_role ?? null;
-  // Keep existing cached roles — they come from user_roles table, not profiles
-  emit(newRole, cachedRoles);
-}
+// Standardized sender for all emails
+from: "Ibiza Construct <noreply@ibiza.app>"
 ```
-
-This is safe because:
-1. Roles are added/removed via admin actions (`approve_professional`), not profile updates
-2. The `user_roles` table is the authoritative source
-3. Initial load already fetches roles correctly from `user_roles`
-4. If roles actually change, user would need to refresh session anyway for security
 
 ---
 
-## File to Modify
+## Implementation Order
+
+```text
+┌─────────────────────────────────────────────┐
+│ Step 1: Reset password (immediate access)   │
+│         → /auth/forgot-password             │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│ Step 2: Enable auto-confirm for dev         │
+│         → Configure auth setting            │
+└─────────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────────┐
+│ Step 3: (Optional) Fix Resend domain        │
+│         → Verify domain in Resend dashboard │
+│         → Update edge function `from` fields│
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## Files to Modify
 
 | File | Change |
 |------|--------|
-| `src/lib/roles.ts` | Fix line 130 to use `cachedRoles` instead of `payload.new?.roles` |
+| Auth config | Enable `autoconfirm` for email signups |
+| `supabase/functions/send-email/index.ts` | Update `from` address (line 363) |
+| `supabase/functions/send-payment-reminder/index.ts` | Update `from` address (line 109) |
+| `supabase/functions/send-booking-reminders/index.ts` | Update `from` address (line 59) |
 
 ---
 
-## Code Change
+## Testing After Implementation
 
-**Before (line 128-132):**
-```typescript
-(payload: any) => {
-  const newRole = payload.new?.active_role ?? null;
-  const newRoles = payload.new?.roles ?? [];
-  emit(newRole, newRoles);
-}
-```
-
-**After:**
-```typescript
-(payload: any) => {
-  const newRole = payload.new?.active_role ?? null;
-  // Roles come from user_roles table, not profiles - preserve cached value
-  emit(newRole, cachedRoles);
-}
-```
-
----
-
-## Architecture Verification Summary
-
-After reviewing the full data flow, here's the verification:
-
-| Component | Source of Truth | Status |
-|-----------|-----------------|--------|
-| `auth-session` edge function | Reads from `user_roles` table | ✓ Correct |
-| `useRole()` hook | Uses `useCurrentSession()` → edge function | ✓ Correct |
-| `HeaderRoleSwitcher` | Uses `useRole()` for roles array | ✓ Correct |
-| `switchActiveRole()` | Validates against `user_roles`, writes to `profiles.active_role` | ✓ Correct |
-| `getActiveRole()` | Fetches from both `profiles` and `user_roles` | ✓ Correct |
-| `initRoleRealtime()` | Reads from `profiles` UPDATE event | ⚠️ Bug (roles field doesn't exist) |
-
----
-
-## Testing Checklist
-
-After fix:
-
-- [ ] Open app in two browser tabs
-- [ ] In Tab 1: Switch from Professional to Client mode
-- [ ] Verify Tab 2: Role switcher still shows both options (not just a badge)
-- [ ] Update any profile field (e.g., display name)
-- [ ] Verify role switcher remains visible with all roles
+- [ ] Request password reset for `heapymagic@googlemail.com`
+- [ ] Check email arrives (spam folder too)
+- [ ] Reset password and sign in
+- [ ] Verify role switcher appears (both client and professional roles)
+- [ ] Test new signup flow with auto-confirm enabled
 
