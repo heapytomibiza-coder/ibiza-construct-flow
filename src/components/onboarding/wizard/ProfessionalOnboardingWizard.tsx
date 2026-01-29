@@ -113,7 +113,8 @@ export function ProfessionalOnboardingWizard({
         (dbData.regions?.length ?? 0) > 0 ||
         (dbData.availability?.length ?? 0) > 0 ||
         dbData.contactEmail?.trim() ||
-        dbData.contactPhone?.trim()
+        dbData.contactPhone?.trim() ||
+        dbData.coverImageUrl
       );
 
       if (draft && localTimestamp > dbTimestamp) {
