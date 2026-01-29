@@ -211,3 +211,365 @@ interface UserAccessState {
 | ... | ... | ... |
 
 *Add new ideas here instead of implementing them during feedback stage.*
+
+---
+
+## 10. DB Verification Queries
+
+> **Purpose:** Every route becomes verifiable: Front → Expected UI → Expected DB with zero guessing.
+
+### Placeholders
+
+| Placeholder | Source | Description |
+|-------------|--------|-------------|
+| `[USER_ID]` | `auth.uid()` | The test user's UUID |
+| `[JOB_ID]` | Journey A output | A job created during testing |
+| `[BOOKING_ID]` | If applicable | A booking ID from the system |
+
+### Verification Rules
+
+1. **No writes on view**: Dashboards and detail pages should only READ
+2. **Owner-only writes**: Only the resource owner should be able to UPDATE
+3. **RLS enforcement**: Cross-user access should fail or return empty results
+
+---
+
+### Route: `/` (Landing)
+
+**Expected UI:** Landing page with hero, services  
+**Expected DB:** R: none (static content)
+
+```sql
+-- No DB queries required for landing page
+```
+
+---
+
+### Route: `/auth`
+
+**Expected UI:** Sign in/up forms  
+**Expected DB:** R: profiles | W: profiles, user_roles (on signup)
+
+```sql
+-- After signup: verify profile created
+SELECT id, display_name, onboarding_completed, active_role, intent_role, created_at
+FROM profiles
+WHERE id = '[USER_ID]';
+
+-- Verify roles assigned
+SELECT role, created_at
+FROM user_roles
+WHERE user_id = '[USER_ID]';
+```
+
+---
+
+### Route: `/auth/quick-start`
+
+**Expected UI:** First-time welcome + profile setup  
+**Expected DB:** R/W: profiles
+
+```sql
+-- Before quick-start
+SELECT id, display_name, onboarding_completed
+FROM profiles
+WHERE id = '[USER_ID]';
+-- Expected: onboarding_completed = false
+
+-- After quick-start completion
+SELECT id, display_name, onboarding_completed, active_role
+FROM profiles
+WHERE id = '[USER_ID]';
+-- Expected: onboarding_completed = true, display_name set
+```
+
+---
+
+### Route: `/dashboard/client`
+
+**Expected UI:** Client job list  
+**Expected DB:** R: jobs, profiles
+
+```sql
+-- Verify job list loads for client
+SELECT id, title, status, created_at
+FROM jobs
+WHERE client_id = '[USER_ID]'
+ORDER BY created_at DESC
+LIMIT 10;
+
+-- Verify no writes on load (check updated_at unchanged)
+```
+
+---
+
+### Route: `/post`
+
+**Expected UI:** Job wizard  
+**Expected DB:** W: jobs, bookings (on submit)
+
+```sql
+-- After submit: verify job created
+SELECT id, title, client_id, status, created_at
+FROM jobs
+WHERE client_id = '[USER_ID]'
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- Or using bookings table
+SELECT id, title, client_id, status, created_at
+FROM bookings
+WHERE client_id = '[USER_ID]'
+ORDER BY created_at DESC
+LIMIT 1;
+```
+
+---
+
+### Route: `/post/success`
+
+**Expected UI:** Success confirmation with job details  
+**Expected DB:** R: jobs/bookings
+
+```sql
+SELECT id, title, client_id, status, created_at
+FROM bookings
+WHERE client_id = '[USER_ID]'
+ORDER BY created_at DESC
+LIMIT 1;
+-- Expected: status = 'draft' or 'published', client_id matches
+```
+
+---
+
+### Route: `/jobs/:id`
+
+**Expected UI:** Job detail view (edit if owner)  
+**Expected DB:** R: jobs, job_answers
+
+```sql
+-- Verify job data
+SELECT id, title, description, client_id, status
+FROM jobs
+WHERE id = '[JOB_ID]';
+
+-- RLS test: run as different user
+-- Expected: 0 rows or access denied for non-owner
+SELECT id FROM jobs WHERE id = '[JOB_ID]';
+```
+
+---
+
+### Route: `/jobs/:id/matches`
+
+**Expected UI:** Matched professionals list  
+**Expected DB:** R: job_matches
+
+```sql
+-- Verify matches for job
+SELECT jm.id, jm.booking_id, jm.professional_id, jm.status, jm.created_at
+FROM job_matches jm
+WHERE jm.booking_id = '[BOOKING_ID]'
+ORDER BY jm.created_at DESC
+LIMIT 50;
+
+-- RLS test: only job owner should see matches
+```
+
+---
+
+### Route: `/onboarding/professional`
+
+**Expected UI:** 5-step professional wizard  
+**Expected DB:** R/W: professional_profiles
+
+```sql
+-- Verify pro profile exists with correct phase
+SELECT user_id, onboarding_phase, verification_status,
+       tagline, bio, experience_years, cover_image_url, updated_at
+FROM professional_profiles
+WHERE user_id = '[USER_ID]';
+
+-- After wizard completion
+-- Expected: onboarding_phase = 'intro_submitted'
+```
+
+---
+
+### Route: `/professional/verification`
+
+**Expected UI:** Document upload form  
+**Expected DB:** W: professional_profiles, professional_verifications, professional_documents
+
+```sql
+-- Pro profile phase check
+SELECT onboarding_phase, verification_status
+FROM professional_profiles
+WHERE user_id = '[USER_ID]';
+-- Expected after upload: onboarding_phase = 'verification_pending'
+
+-- Verification request created
+SELECT id, professional_id, status, verification_method, created_at
+FROM professional_verifications
+WHERE professional_id = '[USER_ID]'
+ORDER BY created_at DESC
+LIMIT 1;
+
+-- Documents uploaded
+SELECT id, professional_id, document_type, file_name, verification_status, created_at
+FROM professional_documents
+WHERE professional_id = '[USER_ID]'
+ORDER BY created_at DESC;
+```
+
+---
+
+### Route: `/professional/service-setup`
+
+**Expected UI:** Service selection interface  
+**Expected DB:** R/W: professional_services, professional_profiles
+
+```sql
+-- Active services count
+SELECT COUNT(*) AS active_services
+FROM professional_services
+WHERE professional_id = '[USER_ID]' AND is_active = true;
+
+-- Services detail
+SELECT id, micro_service_id, is_active, pricing_structure, updated_at
+FROM professional_services
+WHERE professional_id = '[USER_ID]'
+ORDER BY updated_at DESC;
+
+-- Phase check (should be 'complete' if active_services > 0)
+SELECT onboarding_phase
+FROM professional_profiles
+WHERE user_id = '[USER_ID]';
+-- Expected: 'complete' if at least 1 active service
+
+-- Edge case: 0 services should NOT force 'complete'
+SELECT COUNT(*) AS active_services
+FROM professional_services
+WHERE professional_id = '[USER_ID]' AND is_active = true;
+-- If 0, onboarding_phase should NOT be 'complete'
+```
+
+---
+
+### Route: `/dashboard/pro`
+
+**Expected UI:** Pro leads/contracts dashboard  
+**Expected DB:** R: professional_profiles, professional_services, job_matches
+
+```sql
+-- Pro profile status (determines gates)
+SELECT onboarding_phase, verification_status
+FROM professional_profiles
+WHERE user_id = '[USER_ID]';
+
+-- Active services count
+SELECT COUNT(*) AS active_services
+FROM professional_services
+WHERE professional_id = '[USER_ID]' AND is_active = true;
+
+-- Matches/leads (if shown on dashboard)
+SELECT jm.id, jm.booking_id, jm.status, b.title
+FROM job_matches jm
+JOIN bookings b ON jm.booking_id = b.id
+WHERE jm.professional_id = '[USER_ID]'
+ORDER BY jm.created_at DESC
+LIMIT 10;
+```
+
+---
+
+### Route: `/job-board`
+
+**Expected UI:** Available jobs for professionals  
+**Expected DB:** R: jobs/bookings
+
+```sql
+-- Open jobs available to pros
+SELECT id, title, status, created_at
+FROM bookings
+WHERE status IN ('draft', 'open', 'published')
+ORDER BY created_at DESC
+LIMIT 50;
+```
+
+---
+
+### Route: `/settings/profile`
+
+**Expected UI:** Profile edit form  
+**Expected DB:** R/W: profiles
+
+```sql
+-- Current profile data
+SELECT id, display_name, full_name, phone, location,
+       active_role, onboarding_completed
+FROM profiles
+WHERE id = '[USER_ID]';
+
+-- After role switch: verify persistence
+SELECT active_role
+FROM profiles
+WHERE id = '[USER_ID]';
+-- Should match the role user switched to
+```
+
+---
+
+### Route: `/admin`
+
+**Expected UI:** Admin dashboard  
+**Expected DB:** R: various admin tables
+
+```sql
+-- Verify admin role exists
+SELECT role
+FROM user_roles
+WHERE user_id = '[USER_ID]';
+-- Expected: includes 'admin'
+
+-- 2FA status check (if stored in profiles)
+SELECT id, two_factor_enabled
+FROM profiles
+WHERE id = '[USER_ID]';
+-- Must be true to access admin routes
+```
+
+---
+
+### Route: `/admin/users`
+
+**Expected UI:** User management interface  
+**Expected DB:** R/W: profiles, user_roles
+
+```sql
+-- Admin can read all profiles
+SELECT id, display_name, email, active_role, created_at
+FROM profiles
+ORDER BY created_at DESC
+LIMIT 50;
+
+-- Admin can modify roles
+SELECT user_id, role, created_at
+FROM user_roles
+WHERE user_id = '[TARGET_USER_ID]';
+```
+
+---
+
+### Quick Reference: Table Mapping
+
+| Purpose | Actual Table Name |
+|---------|-------------------|
+| Job matching | `job_matches` |
+| Verification requests | `professional_verifications` |
+| Verification documents | `professional_documents` |
+| Professional services | `professional_services` |
+| User profiles | `profiles` |
+| Pro profiles | `professional_profiles` |
+| User roles | `user_roles` |
+| Jobs/Bookings | `jobs`, `bookings` |
