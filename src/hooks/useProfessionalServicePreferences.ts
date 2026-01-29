@@ -1,9 +1,12 @@
 /**
  * Professional Service Preferences Hook
  * Handles batch CRUD operations for professional service selections
+ * 
+ * Key architecture: Tracks "deltas" (adds/removes) from existing DB state
+ * to prevent accidental mass deactivation and correctly show existing selections.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,13 +34,36 @@ export interface ServiceSelection {
 }
 
 export const useProfessionalServicePreferences = (professionalId?: string) => {
+  // Display metadata for UI rendering
   const [selectedServices, setSelectedServices] = useState<ServiceSelection[]>([]);
+  
+  // Database state
   const [existingServices, setExistingServices] = useState<ServicePreference[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [metadataLoaded, setMetadataLoaded] = useState(false);
+  
+  // Session delta tracking
+  const [addedMicroIds, setAddedMicroIds] = useState<Set<string>>(new Set());
+  const [removedMicroIds, setRemovedMicroIds] = useState<Set<string>>(new Set());
+  
   const { toast } = useToast();
 
-  // Fetch existing service preferences
+  // Computed: IDs of currently active services in DB
+  const existingActiveIds = useMemo(() => 
+    new Set(existingServices.filter(s => s.is_active).map(s => s.micro_service_id)),
+    [existingServices]
+  );
+
+  // Computed: Final selected IDs = (existing active + added) - removed
+  const finalSelectedIds = useMemo(() => {
+    const result = new Set(existingActiveIds);
+    addedMicroIds.forEach(id => result.add(id));
+    removedMicroIds.forEach(id => result.delete(id));
+    return result;
+  }, [existingActiveIds, addedMicroIds, removedMicroIds]);
+
+  // Fetch existing service preferences from DB
   const fetchExistingServices = useCallback(async () => {
     if (!professionalId) {
       setLoading(false);
@@ -64,7 +90,6 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
 
       if (error) throw error;
       
-      // Type assertion to handle the new columns
       setExistingServices((data || []) as ServicePreference[]);
     } catch (error) {
       console.error('Error fetching existing services:', error);
@@ -82,23 +107,104 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
     fetchExistingServices();
   }, [fetchExistingServices]);
 
-  // Toggle a micro-service selection
-  const toggleMicroService = useCallback((selection: ServiceSelection) => {
-    setSelectedServices(prev => {
-      const exists = prev.some(s => s.microServiceId === selection.microServiceId);
-      if (exists) {
-        return prev.filter(s => s.microServiceId !== selection.microServiceId);
-      } else {
-        return [...prev, selection];
+  // Load display metadata for existing active services
+  useEffect(() => {
+    const loadExistingMetadata = async () => {
+      if (existingServices.length === 0 || metadataLoaded) return;
+      
+      const activeIds = existingServices
+        .filter(s => s.is_active)
+        .map(s => s.micro_service_id);
+      
+      if (activeIds.length === 0) {
+        setMetadataLoaded(true);
+        return;
       }
-    });
-  }, []);
 
-  // Check if a micro-service is selected
+      try {
+        const { data, error } = await supabase
+          .from('service_micro_categories')
+          .select(`
+            id, name,
+            subcategory:service_subcategories!inner(
+              id, name,
+              category:service_categories!inner(id, name)
+            )
+          `)
+          .in('id', activeIds);
+
+        if (error) throw error;
+
+        if (data) {
+          const selections: ServiceSelection[] = data.map((m: any) => ({
+            microServiceId: m.id,
+            microServiceName: m.name,
+            subcategoryId: m.subcategory.id,
+            subcategoryName: m.subcategory.name,
+            categoryId: m.subcategory.category.id,
+            categoryName: m.subcategory.category.name
+          }));
+          setSelectedServices(selections);
+        }
+      } catch (error) {
+        console.error('Error loading service metadata:', error);
+      } finally {
+        setMetadataLoaded(true);
+      }
+    };
+
+    loadExistingMetadata();
+  }, [existingServices, metadataLoaded]);
+
+  // Toggle a micro-service selection (handles both new and existing services)
+  const toggleMicroService = useCallback((selection: ServiceSelection) => {
+    const { microServiceId } = selection;
+    const isExistingActive = existingActiveIds.has(microServiceId);
+    const isAdded = addedMicroIds.has(microServiceId);
+    const isRemoved = removedMicroIds.has(microServiceId);
+    const isCurrentlySelected = (isExistingActive && !isRemoved) || isAdded;
+
+    if (isCurrentlySelected) {
+      // Deselecting
+      if (isExistingActive) {
+        // Mark as removed (was from DB)
+        setRemovedMicroIds(prev => new Set(prev).add(microServiceId));
+      }
+      if (isAdded) {
+        // Remove from session additions
+        setAddedMicroIds(prev => {
+          const next = new Set(prev);
+          next.delete(microServiceId);
+          return next;
+        });
+      }
+      // Remove from display array
+      setSelectedServices(prev => prev.filter(s => s.microServiceId !== microServiceId));
+    } else {
+      // Selecting
+      if (isRemoved) {
+        // Un-remove (restore DB selection)
+        setRemovedMicroIds(prev => {
+          const next = new Set(prev);
+          next.delete(microServiceId);
+          return next;
+        });
+        // Re-add to display array (if not already there)
+        if (!selectedServices.some(s => s.microServiceId === microServiceId)) {
+          setSelectedServices(prev => [...prev, selection]);
+        }
+      } else if (!isExistingActive) {
+        // New addition
+        setAddedMicroIds(prev => new Set(prev).add(microServiceId));
+        setSelectedServices(prev => [...prev, selection]);
+      }
+    }
+  }, [existingActiveIds, addedMicroIds, removedMicroIds, selectedServices]);
+
+  // Check if a micro-service is currently selected
   const isMicroServiceSelected = useCallback((microServiceId: string) => {
-    return selectedServices.some(s => s.microServiceId === microServiceId) ||
-           existingServices.some(s => s.micro_service_id === microServiceId && s.is_active);
-  }, [selectedServices, existingServices]);
+    return finalSelectedIds.has(microServiceId);
+  }, [finalSelectedIds]);
 
   // Bulk select/deselect all micro-services in a subcategory
   const toggleSubcategoryServices = useCallback((
@@ -108,28 +214,54 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
     categoryName: string,
     microServices: Array<{ id: string; name: string }>
   ) => {
-    const allSelected = microServices.every(ms => isMicroServiceSelected(ms.id));
+    const allSelected = microServices.every(ms => finalSelectedIds.has(ms.id));
     
     if (allSelected) {
-      // Deselect all
+      // Deselect all in this subcategory
+      microServices.forEach(ms => {
+        if (existingActiveIds.has(ms.id)) {
+          setRemovedMicroIds(prev => new Set(prev).add(ms.id));
+        }
+        setAddedMicroIds(prev => {
+          const next = new Set(prev);
+          next.delete(ms.id);
+          return next;
+        });
+      });
       setSelectedServices(prev => 
         prev.filter(s => !microServices.some(ms => ms.id === s.microServiceId))
       );
     } else {
-      // Select all not already selected
-      const newSelections = microServices
-        .filter(ms => !isMicroServiceSelected(ms.id))
-        .map(ms => ({
-          categoryId,
-          categoryName,
-          subcategoryId,
-          subcategoryName,
-          microServiceId: ms.id,
-          microServiceName: ms.name
-        }));
-      setSelectedServices(prev => [...prev, ...newSelections]);
+      // Select all in this subcategory
+      microServices.forEach(ms => {
+        if (!finalSelectedIds.has(ms.id)) {
+          if (existingActiveIds.has(ms.id)) {
+            // Was removed, un-remove it
+            setRemovedMicroIds(prev => {
+              const next = new Set(prev);
+              next.delete(ms.id);
+              return next;
+            });
+          } else {
+            // New addition
+            setAddedMicroIds(prev => new Set(prev).add(ms.id));
+          }
+          // Add to display array if not present
+          setSelectedServices(prev => {
+            if (prev.some(s => s.microServiceId === ms.id)) return prev;
+            return [...prev, {
+              categoryId,
+              categoryName,
+              subcategoryId,
+              subcategoryName,
+              microServiceId: ms.id,
+              microServiceName: ms.name
+            }];
+          });
+        }
+      });
     }
-  }, [isMicroServiceSelected]);
+  }, [existingActiveIds, finalSelectedIds]);
 
   // Save all selected services to database
   const saveServices = useCallback(async () => {
@@ -144,24 +276,22 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
 
     setSaving(true);
     try {
-      // Get current micro_service_ids from selections
-      const selectedMicroIds = selectedServices.map(s => s.microServiceId);
-      const existingMicroIds = existingServices.map(s => s.micro_service_id);
+      const finalIds = [...finalSelectedIds];
+      const existingIds = existingServices.map(s => s.micro_service_id);
       
-      // New services to insert
-      const toInsert = selectedMicroIds.filter(id => !existingMicroIds.includes(id));
+      // Services to INSERT (new, never existed in DB)
+      const toInsert = finalIds.filter(id => !existingIds.includes(id));
       
-      // Services to deactivate (removed from selection)
-      const toDeactivate = existingMicroIds.filter(id => 
-        !selectedMicroIds.includes(id) && 
-        existingServices.find(s => s.micro_service_id === id)?.is_active
-      );
-      
-      // Services to reactivate (previously deactivated, now selected again)
-      const toReactivate = selectedMicroIds.filter(id => {
+      // Services to REACTIVATE (existed but was inactive, now selected)
+      const toReactivate = finalIds.filter(id => {
         const existing = existingServices.find(s => s.micro_service_id === id);
         return existing && !existing.is_active;
       });
+      
+      // Services to DEACTIVATE (was active, now not selected)
+      const toDeactivate = existingServices
+        .filter(s => s.is_active && !finalSelectedIds.has(s.micro_service_id))
+        .map(s => s.micro_service_id);
 
       // Batch operations
       const operations = [];
@@ -178,17 +308,6 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
         );
       }
 
-      // Deactivate removed services
-      if (toDeactivate.length > 0) {
-        operations.push(
-          supabase
-            .from('professional_services')
-            .update({ is_active: false })
-            .eq('professional_id', professionalId)
-            .in('micro_service_id', toDeactivate)
-        );
-      }
-
       // Reactivate services
       if (toReactivate.length > 0) {
         operations.push(
@@ -197,6 +316,17 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
             .update({ is_active: true })
             .eq('professional_id', professionalId)
             .in('micro_service_id', toReactivate)
+        );
+      }
+
+      // Deactivate removed services
+      if (toDeactivate.length > 0) {
+        operations.push(
+          supabase
+            .from('professional_services')
+            .update({ is_active: false })
+            .eq('professional_id', professionalId)
+            .in('micro_service_id', toDeactivate)
         );
       }
 
@@ -211,8 +341,13 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
 
       toast({
         title: 'Success',
-        description: `Saved ${selectedMicroIds.length} service preferences`
+        description: `Saved ${finalIds.length} service preferences`
       });
+
+      // Clear session state after save
+      setAddedMicroIds(new Set());
+      setRemovedMicroIds(new Set());
+      setMetadataLoaded(false); // Allow re-fetch of metadata
 
       // Refresh existing services
       await fetchExistingServices();
@@ -228,33 +363,31 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
     } finally {
       setSaving(false);
     }
-  }, [professionalId, selectedServices, existingServices, toast, fetchExistingServices]);
-
-  // Initialize selected services from existing active services
-  useEffect(() => {
-    if (existingServices.length > 0 && selectedServices.length === 0) {
-      // We'll populate this when the wizard loads micro-service details
-      // For now, just track the IDs
-    }
-  }, [existingServices]);
+  }, [professionalId, finalSelectedIds, existingServices, toast, fetchExistingServices]);
 
   // Get count of selected services by category
   const getSelectionCounts = useCallback(() => {
     const counts: Record<string, number> = {};
     selectedServices.forEach(s => {
-      counts[s.categoryId] = (counts[s.categoryId] || 0) + 1;
+      if (finalSelectedIds.has(s.microServiceId)) {
+        counts[s.categoryId] = (counts[s.categoryId] || 0) + 1;
+      }
     });
     return counts;
-  }, [selectedServices]);
+  }, [selectedServices, finalSelectedIds]);
 
-  // Clear all selections
+  // Clear all selections (including marking existing as removed)
   const clearSelections = useCallback(() => {
+    setAddedMicroIds(new Set());
+    setRemovedMicroIds(new Set(existingActiveIds));
     setSelectedServices([]);
-  }, []);
+  }, [existingActiveIds]);
 
   return {
     selectedServices,
     existingServices,
+    finalSelectedIds,
+    existingActiveIds,
     loading,
     saving,
     toggleMicroService,
