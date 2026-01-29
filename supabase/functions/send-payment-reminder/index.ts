@@ -106,7 +106,7 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Payments <noreply@yourdomain.com>',
+            from: 'Ibiza Construct <payments@ibiza.app>',
             to: userEmail,
             subject: `Payment Reminder: Installment #${payment.installment_number} Due Soon`,
             html: `
