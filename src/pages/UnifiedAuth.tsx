@@ -58,9 +58,15 @@ export default function UnifiedAuth() {
 
   // Check if already authenticated and redirect away from auth page
   useEffect(() => {
-    // Removed - RouteGuard should handle auth gating instead
-    // This prevents unnecessary redirects from the auth page
-  }, []);
+    const checkExistingSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        console.log('🔵 [UnifiedAuth] User already authenticated, redirecting to:', redirectTo);
+        navigate(redirectTo, { replace: true });
+      }
+    };
+    checkExistingSession();
+  }, [navigate, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
