@@ -104,12 +104,16 @@ export function ProfessionalOnboardingWizard({
       const dbTimestamp = proProfile?.updated_at ? new Date(proProfile.updated_at).getTime() : 0;
       const localTimestamp = draftTimestamp || 0;
 
-      // Check for real progress indicators (not just empty arrays/strings)
+      // Check for real progress indicators (expanded to include all fields)
       const hasRealProgress = Boolean(
         dbData.tagline?.trim() || 
         dbData.bio?.trim() || 
-        (dbData.categories && dbData.categories.length > 0) ||
-        (dbData.regions && dbData.regions.length > 0)
+        (dbData.experienceYears && dbData.experienceYears.trim()) ||
+        (dbData.categories?.length ?? 0) > 0 ||
+        (dbData.regions?.length ?? 0) > 0 ||
+        (dbData.availability?.length ?? 0) > 0 ||
+        dbData.contactEmail?.trim() ||
+        dbData.contactPhone?.trim()
       );
 
       if (draft && localTimestamp > dbTimestamp) {
@@ -122,11 +126,13 @@ export function ProfessionalOnboardingWizard({
       } else if (proProfile && hasRealProgress) {
         // DB data exists with real content and is newer (or no local draft)
         setData({ ...EMPTY_DATA, displayName, ...dbData });
+        const hadDraftCleared = hasDraftSaved;
         if (hasDraftSaved) {
           clearDraft(); // Clear stale draft
         }
-        if (!hydrationToastShownRef.current) {
-          toast.info('Previous progress loaded', { duration: 2000 });
+        // Only toast if we cleared a stale draft (conflict scenario)
+        if (hadDraftCleared && !hydrationToastShownRef.current) {
+          toast.info('Loaded saved progress (draft cleared)', { duration: 2000 });
           hydrationToastShownRef.current = true;
         }
       } else if (draft) {
