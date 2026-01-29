@@ -9028,14 +9028,14 @@ export type Database = {
           {
             foreignKeyName: "professional_verifications_professional_id_fkey"
             columns: ["professional_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "professional_profiles"
             referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "professional_verifications_professional_id_fkey"
             columns: ["professional_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "professional_profiles_public"
             referencedColumns: ["user_id"]
           },

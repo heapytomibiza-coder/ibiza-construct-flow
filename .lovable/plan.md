@@ -156,7 +156,16 @@ UNIQUE (professional_id);
 
 ## Testing After These Fixes
 
-- [ ] **Professional Signup Test**: Sign up with "Offer my services" - should not fail with constraint error
-- [ ] **Magic Link Test**: Use AuthModal OTP login - should redirect to `/auth/callback`
-- [ ] **Re-application Test**: Professional who was rejected can re-apply without duplicate errors
+- [x] **Professional Signup Test**: Sign up with "Offer my services" - should not fail with constraint error ✅ FIXED
+- [x] **Magic Link Test**: Use AuthModal OTP login - should redirect to `/auth/callback` ✅ FIXED
+- [x] **Re-application Test**: Professional who was rejected can re-apply without duplicate errors ✅ FIXED
+
+---
+
+## Implementation Status: COMPLETE ✅
+
+All fixes have been applied:
+1. ✅ Database migration: CHECK constraint updated, duplicates cleaned, UNIQUE constraint added
+2. ✅ AuthModal.tsx: emailRedirectTo updated to `/auth/callback`
+3. ✅ packages/@contracts/clients/auth.ts: redirectUrl updated to `/auth/callback`
 
