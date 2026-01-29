@@ -3,7 +3,7 @@
  * 5-step wizard for professionals to select their services and set preferences
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -20,7 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { useProfessionalServicePreferences, type ServiceSelection } from '@/hooks/useProfessionalServicePreferences';
+import { useProfessionalServicePreferences } from '@/hooks/useProfessionalServicePreferences';
 import { MicroServiceMultiSelect } from './MicroServiceMultiSelect';
 import { CapabilityFiltersStep, type CapabilityFilters } from './CapabilityFiltersStep';
 import { getCategoryIcon } from '@/lib/categoryIcons';
@@ -73,15 +73,16 @@ export const ServicePreferencesWizard = () => {
     hasOwnTools: true
   });
   
-  // Service preferences hook
+  // Service preferences hook - now with finalSelectedIds
   const {
     selectedServices,
+    existingServices,
+    finalSelectedIds,
     loading: loadingExisting,
     saving,
     toggleMicroService,
     toggleSubcategoryServices,
-    saveServices,
-    isMicroServiceSelected
+    saveServices
   } = useProfessionalServicePreferences(user?.id);
 
   // Create maps for quick lookup
@@ -121,6 +122,23 @@ export const ServicePreferencesWizard = () => {
 
     fetchCategories();
   }, [toast]);
+
+  // Auto-select categories/subcategories from existing services
+  useEffect(() => {
+    if (existingServices.length > 0 && selectedServices.length > 0 && selectedCategoryIds.size === 0) {
+      // Get unique category and subcategory IDs from existing active services
+      const catIds = new Set<string>();
+      const subIds = new Set<string>();
+      
+      selectedServices.forEach(service => {
+        catIds.add(service.categoryId);
+        subIds.add(service.subcategoryId);
+      });
+      
+      setSelectedCategoryIds(catIds);
+      setSelectedSubcategoryIds(subIds);
+    }
+  }, [existingServices, selectedServices, selectedCategoryIds.size]);
 
   // Fetch subcategories when categories are selected
   useEffect(() => {
@@ -185,12 +203,12 @@ export const ServicePreferencesWizard = () => {
     });
   };
 
-  // Navigation
+  // Navigation - use finalSelectedIds.size for step 3
   const canGoNext = () => {
     switch (currentStep) {
       case 1: return selectedCategoryIds.size > 0;
       case 2: return selectedSubcategoryIds.size > 0;
-      case 3: return selectedServices.length > 0;
+      case 3: return finalSelectedIds.size > 0;
       case 4: return capabilityFilters.serviceRegions.length > 0;
       default: return true;
     }
@@ -216,7 +234,7 @@ export const ServicePreferencesWizard = () => {
 
     // Update professional profile with capability filters
     if (user?.id) {
-          try {
+      try {
         const teamSize = capabilityFilters.workStyle === 'solo' ? 1 : 
                          capabilityFilters.workStyle === 'team' ? 3 : 2;
         const { error } = await supabase
@@ -249,8 +267,8 @@ export const ServicePreferencesWizard = () => {
     }
   };
 
-  // Selected micro service IDs set for quick lookup
-  const selectedMicroServiceIds = new Set(selectedServices.map(s => s.microServiceId));
+  // Get selected services for display in review step
+  const selectedServicesForDisplay = selectedServices.filter(s => finalSelectedIds.has(s.microServiceId));
 
   const progress = (currentStep / 5) * 100;
 
@@ -409,7 +427,7 @@ export const ServicePreferencesWizard = () => {
           </div>
         )}
 
-        {/* Step 3: Micro-services */}
+        {/* Step 3: Micro-services - use finalSelectedIds */}
         {currentStep === 3 && (
           <div className="space-y-6">
             <div className="text-center space-y-2">
@@ -424,7 +442,7 @@ export const ServicePreferencesWizard = () => {
               selectedSubcategoryIds={Array.from(selectedSubcategoryIds)}
               categoryMap={categoryMap}
               subcategoryMap={subcategoryMap}
-              selectedMicroServiceIds={selectedMicroServiceIds}
+              selectedMicroServiceIds={finalSelectedIds}
               onToggleMicroService={toggleMicroService}
               onToggleAllInSubcategory={toggleSubcategoryServices}
             />
@@ -439,7 +457,7 @@ export const ServicePreferencesWizard = () => {
           />
         )}
 
-        {/* Step 5: Review */}
+        {/* Step 5: Review - use finalSelectedIds.size */}
         {currentStep === 5 && (
           <div className="space-y-6">
             <div className="text-center space-y-2">
@@ -455,17 +473,17 @@ export const ServicePreferencesWizard = () => {
                 <div>
                   <h3 className="font-semibold mb-2">Selected Services</h3>
                   <p className="text-2xl font-bold text-primary">
-                    {selectedServices.length} services
+                    {finalSelectedIds.size} services
                   </p>
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {selectedServices.slice(0, 10).map((service) => (
+                    {selectedServicesForDisplay.slice(0, 10).map((service) => (
                       <Badge key={service.microServiceId} variant="secondary" className="text-xs">
                         {service.microServiceName}
                       </Badge>
                     ))}
-                    {selectedServices.length > 10 && (
+                    {finalSelectedIds.size > 10 && (
                       <Badge variant="outline" className="text-xs">
-                        +{selectedServices.length - 10} more
+                        +{finalSelectedIds.size - 10} more
                       </Badge>
                     )}
                   </div>
