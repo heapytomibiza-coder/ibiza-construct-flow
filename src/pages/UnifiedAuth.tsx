@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,10 +57,16 @@ export default function UnifiedAuth() {
   const canSubmit = isEmailValid && isPasswordValid && !loading;
 
   // Check if already authenticated and redirect away from auth page
+  // Use a ref to prevent multiple redirects
+  const hasRedirected = useRef(false);
+  
   useEffect(() => {
+    if (hasRedirected.current) return;
+    
     const checkExistingSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
+      if (session?.user && !hasRedirected.current) {
+        hasRedirected.current = true;
         console.log('🔵 [UnifiedAuth] User already authenticated, redirecting to:', redirectTo);
         navigate(redirectTo, { replace: true });
       }

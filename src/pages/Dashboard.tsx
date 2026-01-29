@@ -3,16 +3,19 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
 const Dashboard = () => {
-  const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(true);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
+    // Wait for auth state to settle before making redirect decisions
+    if (authLoading) return;
+
     const checkUserAndRedirect = async () => {
       try {
         if (!user) {
-          navigate('/auth');
+          navigate('/auth', { replace: true });
           return;
         }
 
@@ -29,7 +32,7 @@ const Dashboard = () => {
             currentPath.startsWith('/dashboard/pro') || 
             currentPath.startsWith('/dashboard/admin')) {
           console.log('Already on valid dashboard route:', currentPath);
-          setLoading(false);
+          setRedirecting(false);
           return;
         }
 
@@ -39,16 +42,16 @@ const Dashboard = () => {
         navigate(path);
       } catch (error) {
         console.error('Error checking user role:', error);
-        navigate('/auth');
+        navigate('/auth', { replace: true });
       } finally {
-        setLoading(false);
+        setRedirecting(false);
       }
     };
 
     checkUserAndRedirect();
-  }, [navigate, searchParams, user]);
+  }, [navigate, searchParams, user, authLoading]);
 
-  if (loading) {
+  if (authLoading || redirecting) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
