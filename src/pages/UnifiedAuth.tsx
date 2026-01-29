@@ -134,7 +134,7 @@ export default function UnifiedAuth() {
           return;
         }
 
-        const redirectUrl = `${window.location.origin}/`;
+        const redirectUrl = `${window.location.origin}/auth/callback`;
         
         const { error } = await supabase.auth.signUp({
           email,

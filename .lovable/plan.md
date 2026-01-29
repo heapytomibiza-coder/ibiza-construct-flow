@@ -1,132 +1,57 @@
 
 
-# Fix Authentication & Email Delivery
+# Fix All Launch-Blocking Issues from Tom's Testing Notes
 
-## Summary
+## ✅ Completed Fixes
 
-Your account is already verified and ready to use. The "verification email" issue is a red herring — the real problem is a password mismatch. Here's the complete fix:
+### P0-B: Professional Signup Fails ("Database error saving new user") ✅
+- Added default value `'application'` to `verification_method` column
+- Updated `handle_new_user()` trigger to explicitly set `verification_method`
+- Updated `apply_to_become_professional()` to explicitly set `verification_method`
 
----
+### P0-A: Email Verification Crashes ("supabase is undefined") ✅
+- Changed `emailRedirectTo` from `/` to `/auth/callback` in:
+  - `src/pages/UnifiedAuth.tsx`
+  - `src/hooks/useAuth.ts`
+  - `src/pages/VerifyEmail.tsx`
+- Added safety fallback in `src/pages/Index.tsx` to forward auth tokens to `/auth/callback`
 
-## Part 1: Sign In with Existing Account (Immediate)
+### P1-B: Dashboard Blocking Error ✅
+- Updated `src/hooks/dashboard/useClientProjects.ts` to:
+  - Always set projects to empty array on error (non-blocking)
+  - Only show toast for unexpected errors, not empty results
+  - Changed toast from `destructive` to `default` variant
 
-Your account status in the database:
-
-| Field | Value |
-|-------|-------|
-| Email | `heapymagic@googlemail.com` |
-| Verified | ✅ Nov 20, 2025 |
-| Roles | `client`, `professional` |
-
-**The "Invalid login credentials" error means the password is wrong**, not that the account isn't verified.
-
-### Solution: Reset Password
-
-1. Navigate to `/auth/forgot-password`
-2. Enter `heapymagic@googlemail.com`
-3. Check inbox (and spam) for reset link
-4. Set new password → sign in
-
----
-
-## Part 2: Enable Auto-Confirm for Development
-
-This prevents email verification requirement during testing.
-
-### Database Changes
-
-No database changes needed — this is a Supabase Auth configuration.
-
-### Code Change
-
-Use the configure-auth tool to enable auto-confirm:
-
-```text
-Setting: Auto-confirm email signups = true
-```
-
-This means new signups will be immediately verified without email confirmation.
+### P1-A: First-Time User Welcome Flow ✅
+- Added `onboarding_completed` column to profiles table
+- Updated `getInitialDashboardRoute()` to check `onboarding_completed`
+- Updated `QuickStart.tsx` to set `onboarding_completed: true` on completion
 
 ---
 
-## Part 3: Fix Email Delivery with Resend
+## Testing Checklist
 
-### Current Problem
+### P0-B Test
+- [ ] Sign up as Professional ("Offer my services")
+- [ ] Verify email
+- [ ] ✅ No "Database error saving new user"
+- [ ] ✅ `professional_verifications` row exists with `verification_method='application'`
 
-The `send-email` edge function uses Resend's test domain:
+### P0-A Test
+- [ ] Sign up new user
+- [ ] Click email verification link
+- [ ] ✅ Lands on `/auth/callback` (not `/`)
+- [ ] ✅ No crash ("supabase undefined")
+- [ ] ✅ Ends in quick-start or dashboard
 
-```typescript
-from: "Lovable <onboarding@resend.dev>"  // Test domain - unreliable
-```
+### P1-B Test
+- [ ] Sign in as a brand-new client user
+- [ ] Dashboard loads
+- [ ] ✅ No destructive "Failed to load projects"
+- [ ] ✅ "Post a job" works
 
-**Note:** Supabase Auth emails (signup verification, password reset) use Supabase's built-in SMTP, not your edge function. For production, you'd configure a custom SMTP in the Supabase dashboard.
-
-### Fix for Edge Function Emails
-
-Update all edge functions to use a verified domain. This requires:
-
-1. **Resend Dashboard**: Verify your domain at https://resend.com/domains
-2. **Update Edge Functions**: Change `from` addresses
-
-### Files to Update
-
-| File | Current `from` | New `from` |
-|------|----------------|------------|
-| `supabase/functions/send-email/index.ts` | `onboarding@resend.dev` | `noreply@yourdomain.com` |
-| `supabase/functions/send-booking-reminder/index.ts` | `reminders@ibiza.app` | Keep (if domain verified) |
-| `supabase/functions/send-message-notification/index.ts` | `notifications@ibiza.app` | Keep (if domain verified) |
-| `supabase/functions/send-payment-reminder/index.ts` | `noreply@yourdomain.com` | Update to real domain |
-| `supabase/functions/send-booking-reminders/index.ts` | `notifications@yourdomain.com` | Update to real domain |
-
-### Recommended Approach
-
-If you have a verified domain (e.g., `ibiza.app`), update all `from` addresses to use it:
-
-```typescript
-// Standardized sender for all emails
-from: "Ibiza Construct <noreply@ibiza.app>"
-```
-
----
-
-## Implementation Order
-
-```text
-┌─────────────────────────────────────────────┐
-│ Step 1: Reset password (immediate access)   │
-│         → /auth/forgot-password             │
-└─────────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────────┐
-│ Step 2: Enable auto-confirm for dev         │
-│         → Configure auth setting            │
-└─────────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────────┐
-│ Step 3: (Optional) Fix Resend domain        │
-│         → Verify domain in Resend dashboard │
-│         → Update edge function `from` fields│
-└─────────────────────────────────────────────┘
-```
-
----
-
-## Files to Modify
-
-| File | Change |
-|------|--------|
-| Auth config | Enable `autoconfirm` for email signups |
-| `supabase/functions/send-email/index.ts` | Update `from` address (line 363) |
-| `supabase/functions/send-payment-reminder/index.ts` | Update `from` address (line 109) |
-| `supabase/functions/send-booking-reminders/index.ts` | Update `from` address (line 59) |
-
----
-
-## Testing After Implementation
-
-- [ ] Request password reset for `heapymagic@googlemail.com`
-- [ ] Check email arrives (spam folder too)
-- [ ] Reset password and sign in
-- [ ] Verify role switcher appears (both client and professional roles)
-- [ ] Test new signup flow with auto-confirm enabled
-
+### P1-A Test
+- [ ] Brand new user after verification
+- [ ] ✅ Sees `/auth/quick-start`
+- [ ] Completes quick-start
+- [ ] ✅ Routed to correct dashboard and never sees quick-start again

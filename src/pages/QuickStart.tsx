@@ -46,11 +46,12 @@ export default function QuickStart() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
-      // Upsert profile
+      // Upsert profile and mark onboarding complete
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
           display_name: displayName,
+          onboarding_completed: true,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);

@@ -92,11 +92,27 @@ export function useClientProjects(clientId?: string) {
 
     } catch (error: any) {
       console.error('Error fetching projects:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load projects',
-        variant: 'destructive',
-      });
+      
+      // Never block dashboard usage - set empty projects
+      setProjects([]);
+
+      // Only notify if it's a real unexpected failure, not empty results
+      const msg = String(error?.message || '');
+      const code = String(error?.code || '');
+
+      const isExpected =
+        code === 'PGRST116' ||
+        msg.toLowerCase().includes('no rows') ||
+        msg.toLowerCase().includes('0 rows') ||
+        msg.toLowerCase().includes('not found');
+
+      if (!isExpected) {
+        toast({
+          title: 'Notice',
+          description: 'Some project data may be unavailable right now.',
+          variant: 'default',
+        });
+      }
     } finally {
       setLoading(false);
     }
