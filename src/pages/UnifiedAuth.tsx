@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Eye, EyeOff, Loader2, Home, Wrench, ArrowLeft } from 'lucide-react';
 import { useSignIn, useSignUp } from '../../packages/@contracts/clients';
-import { QuickDemoLogin } from '@/components/auth/QuickDemoLogin';
+// QuickDemoLogin removed for launch - preserved in components for future restoration
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { z } from 'zod';
 
@@ -438,15 +438,6 @@ export default function UnifiedAuth() {
           </CardFooter>
         </Card>
 
-        {/* Quick Demo Login Sidebar */}
-        <div className="hidden lg:block">
-          <QuickDemoLogin />
-        </div>
-
-        {/* Mobile Demo Login */}
-        <div className="lg:hidden">
-          <QuickDemoLogin />
-        </div>
       </div>
     </div>
   );
