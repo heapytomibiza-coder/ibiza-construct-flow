@@ -135,14 +135,14 @@ const Header = ({ jobWizardEnabled = false, proInboxEnabled = false }: HeaderPro
           <div className="hidden md:flex items-center space-x-4">
             <LanguageSwitcher />
             
-            {/* Demo Mode Button - Admin Only, Desktop Only */}
-            {isAdminUser && (
+            {/* Demo Mode Button - DISABLED FOR LAUNCH */}
+            {/* {isAdminUser && (
               <DemoModeButton
                 onStartHomeTour={tourTriggers.startHomeTour}
                 onStartWizardTour={tourTriggers.startWizardTour}
                 onResetAllTours={tourTriggers.resetAllTours}
               />
-            )}
+            )} */}
             
             {user ? (
               <>

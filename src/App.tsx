@@ -232,8 +232,9 @@ function AppContent() {
                     <Route path="/services" element={<Navigate to="/discovery" replace />} />
                     <Route path="/install" element={<Install />} />
                     <Route path="/calculator" element={<Calculator />} />
-      <Route path="/demo-setup" element={<DemoSetup />} />
-      <Route path="/demo-video-guide" element={<DemoVideoGuide />} />
+                    {/* Demo routes - DISABLED FOR LAUNCH */}
+                    {/* <Route path="/demo-setup" element={<DemoSetup />} /> */}
+                    {/* <Route path="/demo-video-guide" element={<DemoVideoGuide />} /> */}
                     <Route path="/micro-services-reference" element={<MicroServicesReference />} />
                     <Route path="/fair" element={<FairShowcase />} />
                     <Route path="/fair/onboarding" element={<FairExhibitorOnboarding />} />
