@@ -141,23 +141,55 @@ interface UserAccessState {
 
 ---
 
-## 7. Critical Routes (15-Route Thin Slice)
+## 7. State-Route Matrix (15×10 Complete)
 
-1. `/` — Landing
-2. `/auth` — Sign in/up
-3. `/dashboard/client` — Client home
-4. `/dashboard/pro` — Pro home (gated)
-5. `/post` — Create job
-6. `/post/success` — Job confirmation
-7. `/jobs/:id` — Job detail
-8. `/jobs/:id/matches` — Matched pros
-9. `/onboarding/professional` — Pro wizard
-10. `/professional/verification` — Upload docs
-11. `/professional/service-setup` — Configure services
-12. `/settings/profile` — User profile
-13. `/settings/professional` — Pro settings
-14. `/admin` — Admin dashboard
-15. `/admin/users` — User management
+### Full Matrix with Expected Outcomes
+
+| Route | S1 | S2 | S3 | S4 | S5 | S6 | S7 | S8 | S9 | S10 | Expected UI | Expected DB |
+|-------|----|----|----|----|----|----|----|----|----|----|-------------|-------------|
+| `/` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Landing page | R: none |
+| `/auth` | ✓ | →D | →D | →D | →D | →D | →D | →D | →D | →D | Sign in/up forms | R: profiles |
+| `/dashboard/client` | →A | ✓ | →O | →O | →O | →O | →O | ✓ | ✓ | ✓ | Client job list | R: jobs, profiles |
+| `/dashboard/pro` | →A | →A | →O | G1 | G2 | G3 | G4 | ✓ | →C | ✓ | Pro leads/contracts | R: professional_profiles |
+| `/post` | →A | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Job wizard | W: jobs, job_answers |
+| `/post/success` | →A | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Success confirmation | R: jobs |
+| `/jobs/:id` | →A | ✓* | ✓* | ✓* | ✓* | ✓* | ✓* | ✓* | ✓* | ✓ | Job detail | R: jobs, job_answers |
+| `/jobs/:id/matches` | →A | ✓* | →A | →A | →A | →A | →A | ✓ | ✓* | ✓ | Matched pros list | R: matches |
+| `/onboarding/professional` | →A | →A | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | 5-step wizard | R/W: professional_profiles |
+| `/professional/verification` | →A | →A | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Upload docs form | W: professional_profiles |
+| `/professional/service-setup` | →A | →A | →A | →A | →A | →A | ✓ | ✓ | ✓ | ✓ | Service selection | R/W: professional_service_links |
+| `/settings/profile` | →A | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Profile form | R/W: profiles |
+| `/settings/professional` | →A | →A | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | Pro settings form | R/W: professional_profiles |
+| `/admin` | →A | →A | →A | →A | →A | →A | →A | →A | →A | 2FA | Admin dashboard | R: users, jobs, etc. |
+| `/admin/users` | →A | →A | →A | →A | →A | →A | →A | →A | →A | 2FA | User management | R/W: profiles, roles |
+
+### Legend
+
+| Symbol | Meaning |
+|--------|---------|
+| ✓ | Accessible (shows Expected UI) |
+| ✓* | Accessible if owner (RLS-gated) |
+| →A | Redirect to `/auth` |
+| →D | Redirect to dashboard (role-based) |
+| →O | Redirect to `/onboarding/professional` |
+| →C | Redirect to `/dashboard/client` |
+| G1 | Gate: Upload Verification Docs |
+| G2 | Gate: Under Admin Review |
+| G3 | Gate: Application Rejected |
+| G4 | Gate: Configure Services |
+| 2FA | Requires 2FA setup first |
+| R: | Database reads |
+| W: | Database writes |
+| R/W: | Both reads and writes |
+
+### Edge Case Notes
+
+| Route | Notes |
+|-------|-------|
+| `/jobs/:id` | Owner sees edit button; others see view-only |
+| `/jobs/:id/matches` | Only job owner can view matches |
+| `/dashboard/pro` | Gate varies by `onboarding_phase` value |
+| `/professional/service-setup` | Only accessible after `verification_status='verified'` |
 
 ---
 
