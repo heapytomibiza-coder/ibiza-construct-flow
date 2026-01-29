@@ -1,99 +1,115 @@
 
 
-# Polish Tweaks for UnifiedAuth.tsx
+# Enable Multi-Role for Professionals (One Account, Two Roles)
 
-## Overview
+## Current Architecture Analysis
 
-Apply final refinements to ensure consistent styling, clean builds, and patch-safe text.
+Your codebase already has robust multi-role support:
+
+| Component | Status | Location |
+|-----------|--------|----------|
+| `user_roles` table | Implemented | Database |
+| `handle_new_user` trigger | Implemented | Always assigns `client` role |
+| `approve_professional` RPC | Implemented | Grants `professional` role |
+| `HeaderRoleSwitcher` dropdown | Implemented | Shows when user has 2+ roles |
+| `switchActiveRole()` function | Implemented | Updates `active_role` in profiles |
+
+**The gap:** When an admin approves a professional, the `approve_professional` function only grants the `professional` role. If the user somehow lost their `client` role, they can't switch back.
 
 ---
 
-## Changes Summary
+## Solution
 
-| Item | Change | Reason |
-|------|--------|--------|
-| Skip links | Replace `<button>` with `<Button variant="link">` | Consistent shadcn styling + focus states |
-| Unused variable | Remove `signUpMutation` | Prevents build warnings if `noUnusedLocals` enabled |
-| Apostrophe escaping | Change `doesn't` → `doesn't` | Patch-safe HTML entity |
+Update the `approve_professional` function to ensure both roles exist:
+
+```text
+Current Flow:
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  User signs up  │ ──► │ Gets 'client'    │ ──► │ Admin approves  │
+│  as professional│     │ role + pending   │     │ → gets 'pro'    │
+└─────────────────┘     │ verification     │     └─────────────────┘
+                        └──────────────────┘
+
+Updated Flow:
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────────────┐
+│  User signs up  │ ──► │ Gets 'client'    │ ──► │ Admin approves          │
+│  as professional│     │ role + pending   │     │ → ensures 'client' +    │
+└─────────────────┘     │ verification     │     │   grants 'professional' │
+                        └──────────────────┘     └─────────────────────────┘
+```
 
 ---
 
-## Detailed Changes
+## Database Changes
 
-### 1. Replace Raw Buttons with Button variant="link"
+### 1. Update `approve_professional` Function
 
-**Sign In skip link (lines 294-302):**
-```tsx
-// Current:
-<div className="text-center pt-2">
-  <button
-    type="button"
-    className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
-    onClick={() => navigate(redirectTo)}
-  >
-    Continue without signing in
-  </button>
-</div>
+Add one line to ensure the `client` role exists:
 
-// New:
-<div className="text-center pt-2">
-  <Button
-    type="button"
-    variant="link"
-    className="text-xs text-muted-foreground hover:text-foreground p-0 h-auto"
-    onClick={() => navigate(redirectTo)}
-  >
-    Continue without signing in
-  </Button>
-</div>
+```sql
+-- Inside approve_professional, after granting professional role:
+
+-- Grant professional role
+INSERT INTO public.user_roles (user_id, role)
+VALUES (_professional_id, 'professional'::app_role)
+ON CONFLICT (user_id, role) DO NOTHING;
+
+-- NEW: Ensure client role also exists (for role switching)
+INSERT INTO public.user_roles (user_id, role)
+VALUES (_professional_id, 'client'::app_role)
+ON CONFLICT (user_id, role) DO NOTHING;
 ```
 
-**Sign Up skip link (lines 443-452):** Same pattern with "Continue without creating an account" text.
+This is a defensive measure — the user should already have `client` from signup, but this guarantees it.
 
-### 2. Remove Unused Variable
+---
 
-**Line 42:**
-```tsx
-// Remove this line:
-const signUpMutation = useSignUp();
-```
+## No Frontend Changes Required
 
-**Line 11 — Update import:**
-```tsx
-// Current:
-import { useSignIn, useSignUp } from '../../packages/@contracts/clients';
+The UI already works correctly:
 
-// New:
-import { useSignIn } from '../../packages/@contracts/clients';
-```
+| Component | Behavior |
+|-----------|----------|
+| `HeaderRoleSwitcher` | Shows segmented control when `roles.length >= 2` |
+| `switchActiveRole()` | Validates user has the role before switching |
+| `getDashboardRoute()` | Returns correct dashboard for each role |
+| `getInitialDashboardRoute()` | Routes based on `active_role` and profile state |
 
-### 3. Escape Apostrophes in Validation Messages
-
-**Lines 278 and 423:**
-```tsx
-// Current:
-That email doesn't look right — try name@domain.com
-
-// New (HTML entity):
-That email doesn't look right — try name@domain.com
-```
+Once the database has both roles, the switcher will automatically appear.
 
 ---
 
 ## Files to Modify
 
-| File | Changes |
-|------|---------|
-| `src/pages/UnifiedAuth.tsx` | All changes above |
+| File | Change |
+|------|--------|
+| Database migration | Add line to ensure `client` role in `approve_professional` |
 
 ---
 
 ## Testing Checklist
 
-After implementation:
+After applying the change:
 
-- [ ] Skip links render with proper focus states (keyboard navigation)
-- [ ] No build warnings about unused variables
-- [ ] Validation messages display correctly with apostrophe
-- [ ] Sign in and sign up flows work correctly
+- [ ] Sign up as professional (should get `client` role + pending verification)
+- [ ] Admin approves → user now has both `client` and `professional` roles
+- [ ] HeaderRoleSwitcher shows segmented control with both options
+- [ ] Switching to Client mode → navigates to `/dashboard/client`
+- [ ] Switching to Professional mode → navigates to `/dashboard/pro`
+- [ ] Existing approved professionals can run a backfill to get `client` role
+
+---
+
+## Optional: Backfill Existing Professionals
+
+If you have professionals who were approved before this change and are missing the `client` role:
+
+```sql
+-- Backfill: ensure all professionals also have client role
+INSERT INTO public.user_roles (user_id, role)
+SELECT ur.user_id, 'client'::app_role
+FROM public.user_roles ur
+WHERE ur.role = 'professional'
+ON CONFLICT (user_id, role) DO NOTHING;
+```
 
