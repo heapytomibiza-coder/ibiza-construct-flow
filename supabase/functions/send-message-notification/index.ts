@@ -62,7 +62,7 @@ serve(async (req) => {
             Authorization: `Bearer ${RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: "notifications@ibiza.app",
+            from: "Ibiza Construct <notifications@ibiza.app>",
             to: email,
             subject: "New message waiting",
             html: `<p>You have a new message: "${escapeHtml(content?.slice(0, 120) ?? "")}"</p>`,

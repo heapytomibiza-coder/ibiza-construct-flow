@@ -56,7 +56,7 @@ serve(async (req) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'notifications@yourdomain.com',
+              from: 'Ibiza Construct <reminders@ibiza.app>',
               to: reminder.user_email,
               subject: `Reminder: ${reminder.event_title}`,
               html: `

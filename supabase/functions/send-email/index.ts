@@ -360,7 +360,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Lovable <onboarding@resend.dev>",
+        from: "Ibiza Construct <noreply@ibiza.app>",
         to: template.to,
         subject: template.subject,
         html: template.html,

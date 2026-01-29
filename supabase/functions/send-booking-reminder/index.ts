@@ -48,7 +48,7 @@ serve(async (req) => {
               Authorization: `Bearer ${RESEND_API_KEY}`
             },
             body: JSON.stringify({
-              from: "reminders@ibiza.app",
+              from: "Ibiza Construct <reminders@ibiza.app>",
               to: email,
               subject: `Booking reminder (${reminder.reminder_type})`,
               html: `<p>You have an upcoming booking. <a href="${req.headers.get("origin")}/booking/${reminder.booking_id}">View details</a></p>`,
