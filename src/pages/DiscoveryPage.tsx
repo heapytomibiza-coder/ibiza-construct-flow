@@ -25,33 +25,25 @@ export default function DiscoveryPage() {
   const { data: jobs, isLoading } = useQuery({
     queryKey: ['jobs-discovery', searchTerm, filters],
     queryFn: async () => {
+      // Use public_jobs_preview for anonymous/non-pro privacy (no client_id, no sensitive fields)
       let query = supabase
-        .from('jobs')
-        .select(`
-          *,
-          client:profiles!jobs_client_id_fkey(
-            full_name,
-            display_name,
-            avatar_url
-          ),
-          micro:services_micro(name)
-        `)
+        .from('public_jobs_preview')
+        .select('*')
         .eq('status', 'open')
-        .order('created_at', { ascending: false });
+        .order('published_at', { ascending: false, nullsFirst: false });
 
       if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+        query = query.or(`title.ilike.%${searchTerm}%,teaser.ilike.%${searchTerm}%`);
       }
 
       const { data, error } = await query;
       if (error) throw error;
 
       return data?.filter(job => {
-        if (filters.location && job.location) {
-          const locationStr = typeof job.location === 'string' 
-            ? job.location 
-            : (job.location as any).city;
-          if (!locationStr?.toLowerCase().includes(filters.location.toLowerCase())) {
+        // Location filter using area/town (no address in preview)
+        if (filters.location) {
+          const locationStr = job.area || job.town || '';
+          if (!locationStr.toLowerCase().includes(filters.location.toLowerCase())) {
             return false;
           }
         }
@@ -115,10 +107,9 @@ export default function DiscoveryPage() {
         ) : (
           <div className="space-y-4">
             {jobs?.map((job) => {
-              const client = Array.isArray(job.client) ? job.client[0] : job.client;
-              const micro = Array.isArray(job.micro) ? job.micro[0] : job.micro;
+              // public_jobs_preview has no client/micro joins - use safe fallbacks
               const budget = job.budget_value;
-              const location = typeof job.location === 'string' ? job.location : (job.location as any)?.city;
+              const location = job.area || job.town || 'Ibiza';
 
               return (
                 <Card
@@ -130,12 +121,9 @@ export default function DiscoveryPage() {
                     <div className="flex-1">
                       <div className="flex items-start gap-3 mb-2">
                         <h3 className="text-xl font-semibold">{job.title}</h3>
-                        {micro && (
-                          <Badge variant="secondary">{micro.name}</Badge>
-                        )}
                       </div>
                       <p className="text-muted-foreground line-clamp-2 mb-3">
-                        {job.description}
+                        {job.teaser || 'No description'}
                       </p>
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                         {budget && (
