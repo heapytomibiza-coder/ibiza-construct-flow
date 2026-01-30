@@ -18,7 +18,11 @@ export const MessagesPage = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const conversationParam = searchParams.get('conversation');
+  // Support both 'professional' and 'recipient' params for clarity
+  // 'recipient' is the neutral param for any user-to-user messaging
   const professionalParam = searchParams.get('professional');
+  const recipientParam = searchParams.get('recipient');
+  const targetUserId = recipientParam || professionalParam;
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(conversationParam);
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   
@@ -32,18 +36,25 @@ export const MessagesPage = () => {
   }, [conversationParam]);
 
   // Handle professional parameter - create or find conversation
+  // Handle recipient/professional parameter - create or find conversation
   useEffect(() => {
-    const handleProfessionalParam = async () => {
-      if (!professionalParam || !user?.id || isCreatingConversation) return;
+    const handleRecipientParam = async () => {
+      if (!targetUserId || !user?.id || isCreatingConversation) return;
+      
+      // Don't allow messaging yourself
+      if (targetUserId === user.id) {
+        console.warn('Cannot start conversation with yourself');
+        return;
+      }
       
       setIsCreatingConversation(true);
       
       try {
-        // Check if conversation exists
+        // Check if conversation exists (check both directions)
         const { data: existing } = await supabase
           .from('conversations')
           .select('*')
-          .or(`and(client_id.eq.${user.id},professional_id.eq.${professionalParam}),and(client_id.eq.${professionalParam},professional_id.eq.${user.id})`)
+          .or(`and(client_id.eq.${user.id},professional_id.eq.${targetUserId}),and(client_id.eq.${targetUserId},professional_id.eq.${user.id})`)
           .maybeSingle();
 
         if (existing) {
@@ -51,12 +62,38 @@ export const MessagesPage = () => {
           setSelectedConversationId(existing.id);
           navigate(`/messages?conversation=${existing.id}`, { replace: true });
         } else {
-          // Create new conversation
+          // Create new conversation - determine roles based on who is initiating
+          // For now, use a flexible approach: the user param is the "other" party
+          // The conversations table expects client_id and professional_id
+          // We'll need to determine which role each user has
+          const { data: targetProfile } = await supabase
+            .from('profiles')
+            .select('active_role')
+            .eq('id', targetUserId)
+            .single();
+          
+          const { data: myProfile } = await supabase
+            .from('profiles')
+            .select('active_role')
+            .eq('id', user.id)
+            .single();
+          
+          // Determine client_id and professional_id based on active roles
+          // If target is professional, I'm the client and vice versa
+          let clientId = user.id;
+          let professionalId = targetUserId;
+          
+          if (myProfile?.active_role === 'professional' && targetProfile?.active_role !== 'professional') {
+            // I'm the professional, target is the client
+            clientId = targetUserId;
+            professionalId = user.id;
+          }
+          
           const { data: newConv, error } = await supabase
             .from('conversations')
             .insert({
-              client_id: user.id,
-              professional_id: professionalParam
+              client_id: clientId,
+              professional_id: professionalId
             })
             .select()
             .single();
@@ -78,8 +115,8 @@ export const MessagesPage = () => {
       }
     };
 
-    handleProfessionalParam();
-  }, [professionalParam, user?.id, navigate, isCreatingConversation, toast]);
+    handleRecipientParam();
+  }, [targetUserId, user?.id, navigate, isCreatingConversation, toast]);
 
   // Find the selected conversation
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
