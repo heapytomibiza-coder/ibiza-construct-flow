@@ -41,6 +41,8 @@ interface JobListingCardProps {
     category?: string;
     subcategory?: string;
     micro?: string;
+    /** Explicit flag for preview mode when answers aren't available */
+    has_photos?: boolean;
   };
   onSendOffer?: (jobId: string) => void;
   onMessage?: (jobId: string) => void;
@@ -67,6 +69,8 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   const serviceVisuals = getServiceVisuals(job.category);
   const heroImage = job.answers?.extras?.photos?.[0] || serviceVisuals.hero;
   const photoCount = job.answers?.extras?.photos?.length || 0;
+  // Support both real photo count and explicit has_photos flag for preview mode
+  const hasPhotos = job.has_photos || photoCount > 0;
   const answerCount = job.answers?.microAnswers ? Object.keys(job.answers.microAnswers).length : 0;
   
   // Calculate match score (mock logic - replace with real matching algorithm)
@@ -190,15 +194,22 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
           </div>
         </div>
 
-        {/* Photo count indicator */}
-        {photoCount > 0 && (
+        {/* Photo count indicator - show actual count or "Photos available" badge in preview mode */}
+        {photoCount > 0 ? (
           <Badge 
             variant="secondary" 
             className="absolute bottom-4 right-4 backdrop-blur-md bg-background/90 border-2 border-background shadow-lg"
           >
             📷 {photoCount} {photoCount === 1 ? 'photo' : 'photos'}
           </Badge>
-        )}
+        ) : hasPhotos && previewMode ? (
+          <Badge 
+            variant="secondary" 
+            className="absolute bottom-4 right-4 backdrop-blur-md bg-background/90 border-2 border-background shadow-lg"
+          >
+            📷 Photos available
+          </Badge>
+        ) : null}
       </div>
 
       <CardContent className="p-6 flex-1 flex flex-col">

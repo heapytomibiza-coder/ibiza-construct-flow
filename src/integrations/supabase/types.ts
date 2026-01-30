@@ -13570,7 +13570,6 @@ export type Database = {
       }
       public_jobs_preview: {
         Row: {
-          address_preview: string | null
           area: string | null
           budget_type: string | null
           budget_value: number | null
@@ -13585,7 +13584,6 @@ export type Database = {
           town: string | null
         }
         Insert: {
-          address_preview?: never
           area?: never
           budget_type?: string | null
           budget_value?: number | null
@@ -13600,7 +13598,6 @@ export type Database = {
           town?: never
         }
         Update: {
-          address_preview?: never
           area?: never
           budget_type?: string | null
           budget_value?: number | null
