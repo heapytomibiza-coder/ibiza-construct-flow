@@ -51,17 +51,19 @@ const LatestJobsSection = () => {
     budget_type: job.budget_type,
     budget_value: job.budget_value,
     location: {
-      address: '',
+      address: '', // Never expose in preview
       area: formatJobLocation(job.location),
     },
     created_at: job.created_at,
     status: job.status || 'open',
     client: {
-      name: job.client.name,
-      avatar: job.client.avatar,
+      name: 'Client', // Privacy: always generic
+      avatar: undefined,
     },
     category: job.category_name || undefined,
-    answers: job.has_photos ? { extras: { photos: ['placeholder'] } } : undefined,
+    // Use boolean flag directly, no fake answers
+    has_photos: job.has_photos,
+    answers: undefined, // No answers in preview mode
   });
 
   return (

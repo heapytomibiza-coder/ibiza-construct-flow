@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { inferCategoryFromTitle } from '@/lib/jobs/categoryInference';
 
 export interface LatestJob {
   id: string;
@@ -30,43 +31,7 @@ export interface LatestJob {
 export const formatJobLocation = (location: any): string => {
   if (!location) return 'Ibiza';
   if (typeof location === 'string') return location;
-  return location.address || location.area || location.town || 'Ibiza';
-};
-
-/**
- * Infer category from job title keywords
- * Fallback when micro_id data is inconsistent
- */
-const inferCategoryFromTitle = (title: string): { name: string; slug: string } | null => {
-  if (!title) return null;
-  const titleLower = title.toLowerCase();
-  const categoryKeywords: Record<string, { name: string; slug: string }> = {
-    'kitchen': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
-    'bathroom': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
-    'electrical': { name: 'Electrical', slug: 'electrical' },
-    'lighting': { name: 'Electrical', slug: 'electrical' },
-    'painting': { name: 'Painting & Decorating', slug: 'painting-decorating' },
-    'deck': { name: 'Carpentry', slug: 'carpentry' },
-    'pergola': { name: 'Carpentry', slug: 'carpentry' },
-    'lawn': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
-    'garden': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
-    'landscaping': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
-    'pool': { name: 'Pool & Spa', slug: 'pool-spa' },
-    'window': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
-    'door': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
-    'floor': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
-    'plumbing': { name: 'Plumbing', slug: 'plumbing' },
-    'pipe': { name: 'Plumbing', slug: 'plumbing' },
-    'construction': { name: 'Construction', slug: 'construction' },
-    'renovation': { name: 'Construction', slug: 'construction' },
-    'facade': { name: 'Construction', slug: 'construction' },
-    'roof': { name: 'Construction', slug: 'construction' },
-  };
-  
-  for (const [keyword, category] of Object.entries(categoryKeywords)) {
-    if (titleLower.includes(keyword)) return category;
-  }
-  return null;
+  return location.area || location.town || 'Ibiza';
 };
 
 /**

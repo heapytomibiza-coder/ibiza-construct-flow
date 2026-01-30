@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { inferCategoryFromTitle, inferCategoryNameFromTitle } from '@/lib/jobs/categoryInference';
 
 interface JobsMarketplaceProps {
   searchQuery?: string;
@@ -71,38 +72,9 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
     loadJobs();
   }, [sortBy]);
 
-  // Category inference for public preview mode
-  const inferCategoryFromTitle = (title: string): string | null => {
-    if (!title) return null;
-    const titleLower = title.toLowerCase();
-    const categoryKeywords: Record<string, string> = {
-      'kitchen': 'Kitchen & Bathroom',
-      'bathroom': 'Kitchen & Bathroom',
-      'electrical': 'Electrical',
-      'lighting': 'Electrical',
-      'painting': 'Painting & Decorating',
-      'deck': 'Carpentry',
-      'pergola': 'Carpentry',
-      'lawn': 'Gardening & Landscaping',
-      'garden': 'Gardening & Landscaping',
-      'landscaping': 'Gardening & Landscaping',
-      'pool': 'Pool & Spa',
-      'window': 'Floors, Doors & Windows',
-      'door': 'Floors, Doors & Windows',
-      'floor': 'Floors, Doors & Windows',
-      'plumbing': 'Plumbing',
-      'pipe': 'Plumbing',
-      'construction': 'Construction',
-      'renovation': 'Construction',
-      'facade': 'Construction',
-      'roof': 'Construction',
-    };
-    
-    for (const [keyword, category] of Object.entries(categoryKeywords)) {
-      if (titleLower.includes(keyword)) return category;
-    }
-    return null;
-  };
+  useEffect(() => {
+    loadJobs();
+  }, [sortBy]);
 
   const loadJobs = async () => {
     try {
@@ -126,7 +98,9 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
           status: job.status,
           created_at: job.created_at,
           location: { address: '', area: job.area || job.town || 'Ibiza' },
-          category: inferCategoryFromTitle(job.title),
+          category: inferCategoryNameFromTitle(job.title),
+          // Use boolean flag, not fake placeholder photos
+          has_photos: job.has_photos || false,
           // Privacy: No client identity in public preview
           client: {
             name: 'Client',
@@ -134,7 +108,8 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
             rating: undefined,
             jobs_completed: undefined
           },
-          answers: { extras: { photos: job.has_photos ? ['placeholder'] : [] } }
+          // No answers exposed in preview mode
+          answers: undefined
         }));
 
         setJobs(formattedJobs);
@@ -200,7 +175,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
         const serviceData = servicesMap[job.micro_id];
         return {
           ...job,
-          category: serviceData?.category || inferCategoryFromTitle(job.title),
+          category: serviceData?.category || inferCategoryNameFromTitle(job.title),
           subcategory: serviceData?.subcategory,
           micro: serviceData?.micro,
           client: {
