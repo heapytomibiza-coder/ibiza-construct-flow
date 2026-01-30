@@ -1,208 +1,274 @@
 
+# Public Job Board & Sneaky Preview: Complete Fix Plan
 
-# Homepage Job Cards: Final Fixes Plan
+## Root Cause Analysis
 
-## Summary of Issues
+| Component | Issue | Impact |
+|-----------|-------|--------|
+| **jobs table RLS** | ✅ Correct - allows public SELECT on open jobs | Jobs accessible publicly |
+| **profiles table RLS** | ❌ Only allows viewing verified professional profiles | Client names/avatars fail to load for non-professional clients |
+| **JobsMarketplace** | Queries profiles for client info | Empty/broken client data when logged out |
+| **LatestJobsSection** | Custom cards instead of `JobListingCard` | Visual inconsistency with job board |
+| **Privacy** | No "sneaky preview" mode implemented | Client identity exposed publicly (when it loads) |
 
-Based on detailed investigation, I've identified the remaining blockers:
+### The Critical RLS Problem
 
-| Issue | Current State | Impact |
-|-------|--------------|--------|
-| Build verification | No visible version number | Can't prove new build is running |
-| Status filter | Uses `IN ('open', 'posted', 'published')` | Works - 24 jobs have `status='open'` |
-| Category data | `micro_id` values don't match `service_micro_categories` slugs | Category badges never display |
-| Job cards | Custom card layout in `LatestJobsSection` | Less engaging than `JobListingCard` |
-| is_publicly_listed | Column doesn't exist | No robust visibility flag |
+The `profiles` table has this public SELECT policy:
+```sql
+"Public can view verified professional profiles"
+USING (EXISTS (
+  SELECT 1 FROM professional_profiles pp
+  WHERE pp.user_id = profiles.id 
+    AND pp.is_active = true 
+    AND pp.verification_status = 'verified'
+))
+```
 
-### Database Reality Check
+This means **only verified professionals' profiles are publicly visible**. Regular clients who post jobs won't have their profile data accessible to anonymous users - causing empty client names/avatars.
 
-The `jobs.micro_id` field contains mixed data that doesn't match the `service_micro_categories` table:
-- Some have UUIDs like `71d97020-f5da-4f99-ab52-8ce0e761f824`
-- Some have custom slugs like `kitchen-upgrade-002`, `facade-restore-003`
-- The actual micro categories use different slugs like `full-kitchen-fit`, `deck-construction`
+---
 
-This means **category joins will always return null** until the data is normalized.
+## Solution Architecture: "Sneaky Preview" Mode
+
+### Principle
+- **Public visitors** see job cards with generic "Client" label (no real identity)
+- **Professionals (authenticated)** see full client details + can apply
+- **Actions (Apply/Message/Contact)** are gated behind professional login
+
+This is exactly what you requested: "sneaky view before committing".
 
 ---
 
 ## Implementation Plan
 
-### Fix 1: Add Build Version Banner (Verification)
+### 1. Create `public_jobs_preview` View (Security Best Practice)
 
-Add a visible build version to the footer so deployments can be verified.
+Create a database view that exposes ONLY preview-safe fields. This prevents accidental data leakage regardless of frontend code.
 
-**File:** `src/components/Footer.tsx`
+```sql
+CREATE OR REPLACE VIEW public.public_jobs_preview AS
+SELECT
+  id,
+  title,
+  LEFT(COALESCE(description, ''), 200) AS teaser,
+  budget_type,
+  budget_value,
+  location->>'area' AS area,
+  location->>'town' AS town,
+  created_at,
+  published_at,
+  status,
+  micro_id,
+  -- NO client_id exposed!
+  -- NO exact address exposed!
+  -- NO answers.extras (attachments) exposed!
+  CASE 
+    WHEN answers->'extras'->'photos' IS NOT NULL 
+    THEN jsonb_array_length(answers->'extras'->'photos') > 0 
+    ELSE false 
+  END AS has_photos
+FROM public.jobs
+WHERE is_publicly_listed = true
+  AND status IN ('open', 'posted', 'published');
 
-**Changes:**
-- Add build timestamp or version hash to footer
-- Uses Vite's build-time environment
-
-```typescript
-// Add to footer bottom section
-const buildVersion = import.meta.env.VITE_BUILD_VERSION || 
-  new Date().toISOString().slice(0, 10);
-
-// In JSX, add after copyright:
-<span className="text-xs text-primary-foreground/50 ml-2">
-  v{buildVersion}
-</span>
+GRANT SELECT ON public.public_jobs_preview TO anon, authenticated;
 ```
 
-**File:** `vite.config.ts`
-
-**Changes:**
-- Define `VITE_BUILD_VERSION` at build time
-
-```typescript
-define: {
-  'import.meta.env.VITE_BUILD_VERSION': JSON.stringify(
-    new Date().toISOString().slice(0, 16).replace('T', '-')
-  ),
-}
-```
+**Benefits:**
+- Anonymous users can ONLY access preview-safe data
+- `client_id`, exact address, attachments are NOT in the view
+- Future code changes can't accidentally leak private data
 
 ---
 
-### Fix 2: Add `is_publicly_listed` Column (Robust Visibility)
-
-Add a reliable visibility flag to decouple from inconsistent status values.
-
-**Database Migration:**
-```sql
-ALTER TABLE public.jobs
-ADD COLUMN IF NOT EXISTS is_publicly_listed boolean NOT NULL DEFAULT false,
-ADD COLUMN IF NOT EXISTS published_at timestamptz NULL;
-
--- Backfill: mark all 'open' jobs as publicly listed
-UPDATE public.jobs
-SET is_publicly_listed = true,
-    published_at = COALESCE(published_at, created_at)
-WHERE status = 'open';
-
--- Index for performance
-CREATE INDEX IF NOT EXISTS idx_jobs_publicly_listed 
-ON public.jobs(is_publicly_listed, published_at DESC NULLS LAST);
-```
+### 2. Update `useLatestJobs` Hook for Preview Mode
 
 **File:** `src/hooks/useLatestJobs.ts`
 
 **Changes:**
-- Switch from status filter to `is_publicly_listed`
+- For public preview: use `public_jobs_preview` view
+- Always return `client: { name: 'Client' }` (no real identity)
+- Add optional `mode` parameter for future authenticated fetches
 
 ```typescript
-// Replace .in('status', [...])
-.eq('is_publicly_listed', true)
-.order('published_at', { ascending: false, nullsFirst: false })
+export const useLatestJobs = (limit: number = 6, mode: 'public_preview' | 'authenticated' = 'public_preview') => {
+  return useQuery({
+    queryKey: ['latest-jobs', limit, mode],
+    queryFn: async (): Promise<LatestJob[]> => {
+      // Use preview view for public access - no client data exposed
+      const { data: jobs, error } = await supabase
+        .from('public_jobs_preview')
+        .select('*')
+        .order('published_at', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('Error fetching jobs preview:', error);
+        return [];
+      }
+
+      return (jobs || []).map((job: any) => {
+        const inferred = inferCategoryFromTitle(job.title);
+        return {
+          id: job.id,
+          title: job.title,
+          description: job.teaser || '',
+          status: job.status,
+          created_at: job.created_at,
+          budget_type: job.budget_type || 'fixed',
+          budget_value: job.budget_value || 0,
+          location: { area: job.area || job.town || 'Ibiza' },
+          category_name: inferred?.name || null,
+          category_slug: inferred?.slug || null,
+          has_photos: job.has_photos || false,
+          // Privacy: NEVER expose real client identity publicly
+          client: {
+            name: 'Client',
+            avatar: undefined,
+          },
+        };
+      });
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
+};
 ```
 
 ---
 
-### Fix 3: Store `category_slug` on Job (Category Badges)
+### 3. Update `JobsMarketplace` for Public Preview Mode
 
-Since `micro_id` data is inconsistent, store category directly on the job.
+**File:** `src/components/marketplace/JobsMarketplace.tsx`
 
-**Option A: Database Column (Best)**
-
-**Migration:**
-```sql
-ALTER TABLE public.jobs
-ADD COLUMN IF NOT EXISTS category_slug text NULL;
-
--- Backfill from micro where possible (limited success expected)
-UPDATE public.jobs j
-SET category_slug = sc.slug
-FROM service_micro_categories m
-JOIN service_subcategories ss ON m.subcategory_id = ss.id
-JOIN service_categories sc ON ss.category_id = sc.id
-WHERE j.micro_id = m.slug
-  AND j.category_slug IS NULL;
-```
-
-**Option B: Runtime Fallback (Immediate)**
-
-For now, parse category from job title keywords until data is fixed.
-
-**File:** `src/hooks/useLatestJobs.ts`
+**Changes:**
+- Use `public_jobs_preview` view when user is NOT authenticated
+- Use full jobs query with client profiles when authenticated as professional
+- Add `isAuthenticated` check
 
 ```typescript
-// Add category inference function
-const inferCategoryFromTitle = (title: string): { name: string; slug: string } | null => {
-  const titleLower = title.toLowerCase();
-  const categoryKeywords: Record<string, { name: string; slug: string }> = {
-    'kitchen': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
-    'bathroom': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
-    'electrical': { name: 'Electrical', slug: 'electrical' },
-    'lighting': { name: 'Electrical', slug: 'electrical' },
-    'painting': { name: 'Painting & Decorating', slug: 'painting-decorating' },
-    'deck': { name: 'Carpentry', slug: 'carpentry' },
-    'pergola': { name: 'Carpentry', slug: 'carpentry' },
-    'lawn': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
-    'garden': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
-    'pool': { name: 'Pool & Spa', slug: 'pool-spa' },
-    'window': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
-    'door': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
-    'plumbing': { name: 'Plumbing', slug: 'plumbing' },
-    'construction': { name: 'Construction', slug: 'construction' },
-  };
-  
-  for (const [keyword, category] of Object.entries(categoryKeywords)) {
-    if (titleLower.includes(keyword)) return category;
+const loadJobs = async () => {
+  try {
+    setLoading(true);
+    
+    if (!user) {
+      // PUBLIC PREVIEW MODE: Use safe view, no client data
+      const { data: jobsData, error } = await supabase
+        .from('public_jobs_preview')
+        .select('*')
+        .order(sortBy, { ascending: false });
+
+      if (error) throw error;
+
+      const formattedJobs = (jobsData || []).map(job => ({
+        ...job,
+        description: job.teaser,
+        location: { address: '', area: job.area || job.town || 'Ibiza' },
+        category: inferCategoryFromTitle(job.title)?.name,
+        client: {
+          name: 'Client',
+          avatar: undefined,
+          rating: undefined,
+          jobs_completed: undefined
+        }
+      }));
+
+      setJobs(formattedJobs);
+      return;
+    }
+
+    // AUTHENTICATED MODE: Full data with client profiles
+    // ... existing code for authenticated users ...
   }
-  return null;
-};
-
-// Use in job mapping
-const inferred = inferCategoryFromTitle(job.title);
-return {
-  ...job,
-  category_name: inferred?.name || null,
-  category_slug: inferred?.slug || null,
-  // ...
 };
 ```
 
 ---
 
-### Fix 4: Use JobListingCard Component (Visual Parity)
-
-Replace custom card markup with the actual `JobListingCard` in compact mode.
+### 4. Update `LatestJobsSection` to Use `JobListingCard`
 
 **File:** `src/components/home/LatestJobsSection.tsx`
 
 **Changes:**
+- Replace custom card markup with `JobListingCard` in compact mode
+- Add `previewMode` prop to `JobListingCard` to hide professional actions
+
 ```typescript
 import { JobListingCard } from '@/components/marketplace/JobListingCard';
 
-// Adapt job data to JobListingCard expected shape
-const adaptJob = (job: LatestJob) => ({
-  ...job,
-  client: {
-    name: job.client.name,
-    avatar: job.client.avatar,
-  },
-  category: job.category_name || undefined,
-});
-
-// In render:
+// In the render:
 {jobs?.slice(0, 6).map((job) => (
   <Link key={job.id} to={`/jobs/${job.id}`}>
     <JobListingCard
-      job={adaptJob(job)}
+      job={{
+        ...job,
+        location: { address: '', area: formatJobLocation(job.location) },
+        client: { name: 'Client' },
+        status: 'open',
+      }}
       viewMode="compact"
+      previewMode={true}  // New prop to hide Apply/Message buttons
     />
   </Link>
 ))}
 ```
 
-However, `JobListingCard` in compact mode includes a "Send Offer" button which isn't appropriate for public homepage. 
+---
 
-**Alternative: Create `JobPreviewCard` Component**
+### 5. Add `previewMode` to `JobListingCard`
 
-A simpler component that:
-- Uses the same styling as `JobListingCard`
-- Omits professional-only actions
-- Links to job detail page
-- Shows category badge when available
+**File:** `src/components/marketplace/JobListingCard.tsx`
+
+**Changes:**
+- Add optional `previewMode?: boolean` prop
+- When `previewMode=true`:
+  - Hide "Send Offer" button
+  - Hide "Message" button  
+  - Show "View Details" only
+  - Show "Sign in as Professional to apply" CTA
+
+```typescript
+interface JobListingCardProps {
+  // ... existing props
+  previewMode?: boolean;  // For public/anonymous viewers
+}
+
+// In compact mode render:
+{viewMode === 'compact' && (
+  <div className="flex items-center gap-2">
+    {previewMode ? (
+      <Button variant="outline" size="sm" asChild>
+        <Link to={`/jobs/${job.id}`}>View Details</Link>
+      </Button>
+    ) : (
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={() => onSendOffer?.(job.id)}
+      >
+        Send Offer
+      </Button>
+    )}
+  </div>
+)}
+```
+
+---
+
+### 6. Gate Actions on Job Detail Page
+
+**File:** `src/pages/JobDetail.tsx` (or equivalent)
+
+When a public user clicks "View Details":
+- Show preview data (title, teaser, budget, area, category)
+- Show locked panel with CTA: "Sign in as Professional to apply"
+- DO NOT show:
+  - Client identity/avatar
+  - Exact address/map
+  - Attachments
+  - Phone/email
+  - Apply/Message buttons
 
 ---
 
@@ -210,66 +276,40 @@ A simpler component that:
 
 | File | Change |
 |------|--------|
-| `vite.config.ts` | Add `VITE_BUILD_VERSION` define |
-| `src/components/Footer.tsx` | Display build version |
-| `src/hooks/useLatestJobs.ts` | Add category inference, use `is_publicly_listed` (if added) |
-| `src/components/home/LatestJobsSection.tsx` | Improve card styling or use `JobListingCard` |
-| Database migration | Add `is_publicly_listed`, `published_at`, optionally `category_slug` |
+| Database migration | Create `public_jobs_preview` view |
+| `src/hooks/useLatestJobs.ts` | Use preview view, remove client data |
+| `src/components/marketplace/JobsMarketplace.tsx` | Use preview view for unauthenticated |
+| `src/components/marketplace/JobListingCard.tsx` | Add `previewMode` prop |
+| `src/components/home/LatestJobsSection.tsx` | Use `JobListingCard` instead of custom cards |
 
 ---
 
 ## Implementation Order
 
-1. **Add build version** - Immediate verification capability
-2. **Add category inference** - Get category badges working now
-3. **Database migration** - Add `is_publicly_listed` + backfill
-4. **Update useLatestJobs** - Switch to `is_publicly_listed` filter
-5. **Enhance job cards** - Better visual parity with job board
+1. **Database migration** - Create `public_jobs_preview` view
+2. **useLatestJobs.ts** - Switch to preview view, remove client data
+3. **JobsMarketplace.tsx** - Split authenticated vs public query paths
+4. **JobListingCard.tsx** - Add `previewMode` prop
+5. **LatestJobsSection.tsx** - Use `JobListingCard` with `previewMode`
+6. **Test** - Verify cards appear logged out + actions are gated
 
 ---
 
-## Technical Notes
+## Expected Behavior After Fix
 
-### Why Category Joins Fail
-
-```text
-Job micro_id values:
-- "kitchen-upgrade-002" (custom, not in table)
-- "71d97020-f5da-4f99-ab52-8ce0e761f824" (UUID, not in slug column)
-
-service_micro_categories.slug values:
-- "full-kitchen-fit"
-- "deck-construction"
-- "room-painting"
-
-Result: LEFT JOIN always returns null
-```
-
-### Why is_publicly_listed is Better Than Status
-
-| Status Value | Count | Should Show? |
-|-------------|-------|--------------|
-| open | 24 | Yes |
-| complete | 2 | No |
-| in_progress | 2 | No |
-| assigned | 1 | No |
-| invited | 1 | No |
-| offered | 1 | No |
-
-Using `is_publicly_listed = true` is:
-- Explicit intent (not inferred from status)
-- Won't break if new statuses are added
-- Can show jobs that are "in progress but still accepting quotes"
+| Scenario | Job Cards | Client Name | Apply/Message |
+|----------|-----------|-------------|---------------|
+| Logged out on Homepage | ✅ Visible | "Client" (generic) | Hidden |
+| Logged out on Job Board | ✅ Visible | "Client" (generic) | Hidden |
+| Logged out on Job Detail | ✅ Preview visible | Hidden | "Sign in to apply" CTA |
+| Logged in as Professional | ✅ Full details | Real name | ✅ Enabled |
+| Logged in as Client | ✅ Visible | "Client" (own jobs show real) | Hidden (not their target) |
 
 ---
 
-## QA Checklist
+## Security Benefits
 
-- [ ] Build version visible in footer after deployment
-- [ ] Hard reload + Network tab shows no invalid joins
-- [ ] Homepage shows job cards with category badges (via inference)
-- [ ] "Latest Projects" section displays 6 jobs when data exists
-- [ ] Job card click routes to `/jobs/:id`
-- [ ] Empty state shows CTA when no jobs available
-- [ ] Test logged out vs logged in (same results for public jobs)
-
+1. **View-based access control** - Anonymous users literally cannot query private fields
+2. **No client identity leakage** - Clients stay anonymous until professional engagement
+3. **Consistent behavior** - Same preview logic for homepage AND job board
+4. **Future-proof** - Adding fields to jobs table won't accidentally expose them publicly
