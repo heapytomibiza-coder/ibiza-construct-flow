@@ -73,8 +73,9 @@ export const useSearch = () => {
           ...prof
         }));
       } else if (searchType === 'job') {
+        // Use public_jobs_preview for anonymous/non-pro privacy
         const { data, error } = await supabase
-          .from('jobs')
+          .from('public_jobs_preview')
           .select('*')
           .ilike('title', `%${query}%`)
           .eq('status', 'open');
@@ -85,9 +86,9 @@ export const useSearch = () => {
           id: job.id,
           type: 'job' as const,
           title: job.title,
-          description: job.description,
-          location: job.location_address,
-          price: job.budget_max,
+          description: job.teaser || '',
+          location: job.area || job.town || 'Ibiza',
+          price: job.budget_value,
           ...job
         }));
       }
