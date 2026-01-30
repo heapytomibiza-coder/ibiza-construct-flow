@@ -113,6 +113,7 @@ const PostJob = lazyWithRetry(() => import("./pages/PostJob"));
 const JobBoardPage = lazyWithRetry(() => import("./pages/JobBoardPage"));
 const PostJobSuccessPage = lazyWithRetry(() => import("./pages/PostJobSuccessPage"));
 const Discovery = lazyWithRetry(() => import("./pages/Discovery"));
+const ServiceCategoryPage = lazyWithRetry(() => import("./pages/ServiceCategoryPage"));
 const DiscoveryPage = lazyWithRetry(() => import("./pages/DiscoveryPage"));
 const BrowseProfessionalsPage = lazyWithRetry(() => import("./pages/BrowseProfessionalsPage"));
 const ProfessionalProfile = lazyWithRetry(() => import("./pages/ProfessionalProfile"));
@@ -230,7 +231,8 @@ function AppContent() {
                     {/* Public Routes */}
                     <Route path="/" element={<Index />} />
                     <Route path="/presentation" element={<Presentation />} />
-                    <Route path="/services" element={<Navigate to="/discovery" replace />} />
+                    <Route path="/services" element={<Discovery />} />
+                    <Route path="/services/:categorySlug" element={<ServiceCategoryPage />} />
                     <Route path="/install" element={<Install />} />
                     <Route path="/calculator" element={<Calculator />} />
                     {/* Demo routes - DISABLED FOR LAUNCH */}

@@ -51,14 +51,9 @@ const Hero = () => {
             {t('title')} <span className="text-sage-muted-light">{t('highlight')}</span>
           </h1>
 
-          {/* Tagline */}
-          <p className="text-xl md:text-2xl text-white/95 mb-4 max-w-3xl leading-relaxed font-medium">
+          {/* Tagline - SEO focused */}
+          <p className="text-xl md:text-2xl text-white/95 mb-8 max-w-3xl leading-relaxed font-medium">
             {t('tagline')}
-          </p>
-
-          {/* Description */}
-          <p className="text-body text-lg md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed">
-            {t('description')}
           </p>
 
           {/* Trust Indicators */}

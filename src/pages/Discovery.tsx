@@ -36,7 +36,12 @@ interface Filters {
   minRating?: number;
 }
 
-const Discovery = () => {
+interface DiscoveryProps {
+  /** Initial category name for pre-filtering (from ServiceCategoryPage) */
+  initialCategoryName?: string;
+}
+
+const Discovery = ({ initialCategoryName }: DiscoveryProps = {}) => {
   const { t } = useTranslation(['pages', 'services', 'common']);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -46,13 +51,29 @@ const Discovery = () => {
   const [viewMode, setViewMode] = useState<'services' | 'professionals'>('services');
   const [showFilters, setShowFilters] = useState(false);
   const [filtersCollapsed, setFiltersCollapsed] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [filters, setFilters] = useState<Filters>({
-    selectedTaxonomy: null,
-    specialists: [],
-    priceRange: [0, 10000],
-    availability: [],
-    location: '',
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategoryName || null);
+  const [filters, setFilters] = useState<Filters>(() => {
+    // Initialize with category filter if provided
+    if (initialCategoryName) {
+      return {
+        selectedTaxonomy: {
+          category: initialCategoryName,
+          subcategory: '',
+          micro: '',
+        },
+        specialists: [],
+        priceRange: [0, 10000],
+        availability: [],
+        location: '',
+      };
+    }
+    return {
+      selectedTaxonomy: null,
+      specialists: [],
+      priceRange: [0, 10000],
+      availability: [],
+      location: '',
+    };
   });
   
   const { services, loading } = useDiscoveryServices(searchTerm, filters);
@@ -72,14 +93,30 @@ const Discovery = () => {
 
   // Track page view
   useEffect(() => {
-    trackDiscoveryView('services', undefined);
-  }, [trackDiscoveryView]);
+    trackDiscoveryView('services', initialCategoryName);
+  }, [trackDiscoveryView, initialCategoryName]);
 
   // Initialize from URL params
   useEffect(() => {
     const q = searchParams.get('q');
     if (q) setSearchTerm(q);
-  }, [searchParams]);
+    
+    // Also check for category param in URL if no initial prop
+    if (!initialCategoryName) {
+      const categoryParam = searchParams.get('category');
+      if (categoryParam) {
+        setSelectedCategory(categoryParam);
+        setFilters(prev => ({
+          ...prev,
+          selectedTaxonomy: {
+            category: categoryParam,
+            subcategory: '',
+            micro: '',
+          },
+        }));
+      }
+    }
+  }, [searchParams, initialCategoryName]);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);

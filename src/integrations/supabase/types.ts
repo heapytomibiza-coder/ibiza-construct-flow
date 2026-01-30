@@ -4414,6 +4414,38 @@ export type Database = {
           },
         ]
       }
+      homepage_featured_services: {
+        Row: {
+          category_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          sort_order: number
+        }
+        Insert: {
+          category_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          sort_order: number
+        }
+        Update: {
+          category_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homepage_featured_services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integrations: {
         Row: {
           config: Json | null
