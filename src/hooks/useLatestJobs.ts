@@ -5,6 +5,7 @@ export interface LatestJob {
   id: string;
   title: string;
   description: string;
+  teaser?: string;
   status: string;
   created_at: string;
   budget_type: 'fixed' | 'hourly';
@@ -16,6 +17,7 @@ export interface LatestJob {
   } | null;
   category_name: string | null;
   category_slug: string | null;
+  has_photos?: boolean;
   client: {
     name: string;
     avatar?: string;
@@ -27,6 +29,7 @@ export interface LatestJob {
  */
 export const formatJobLocation = (location: any): string => {
   if (!location) return 'Ibiza';
+  if (typeof location === 'string') return location;
   return location.address || location.area || location.town || 'Ibiza';
 };
 
@@ -35,6 +38,7 @@ export const formatJobLocation = (location: any): string => {
  * Fallback when micro_id data is inconsistent
  */
 const inferCategoryFromTitle = (title: string): { name: string; slug: string } | null => {
+  if (!title) return null;
   const titleLower = title.toLowerCase();
   const categoryKeywords: Record<string, { name: string; slug: string }> = {
     'kitchen': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
@@ -67,36 +71,24 @@ const inferCategoryFromTitle = (title: string): { name: string; slug: string } |
 
 /**
  * Fetch latest publicly listed jobs for the homepage
- * Uses is_publicly_listed for robust filtering instead of status
+ * Uses the secure public_jobs_preview view for unauthenticated access
+ * Privacy: Never exposes client identity publicly
  */
 export const useLatestJobs = (limit: number = 6) => {
   return useQuery({
-    queryKey: ['latest-jobs', limit],
+    queryKey: ['latest-jobs-preview', limit],
     queryFn: async (): Promise<LatestJob[]> => {
-      // Use is_publicly_listed for stable visibility filtering
-      const { data: jobs, error: jobsError } = await supabase
-        .from('jobs')
-        .select(`
-          id,
-          title,
-          description,
-          status,
-          created_at,
-          published_at,
-          budget_type,
-          budget_value,
-          location,
-          client_id,
-          micro_id,
-          is_publicly_listed
-        `)
-        .eq('is_publicly_listed', true)
+      // Use the secure public_jobs_preview view
+      // This view only exposes preview-safe fields (no client_id, no attachments)
+      const { data: jobs, error } = await supabase
+        .from('public_jobs_preview')
+        .select('*')
         .order('published_at', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(limit);
 
-      if (jobsError) {
-        console.error('Error fetching latest jobs:', jobsError);
+      if (error) {
+        console.error('Error fetching jobs preview:', error);
         return [];
       }
 
@@ -104,68 +96,35 @@ export const useLatestJobs = (limit: number = 6) => {
         return [];
       }
 
-      // Get unique client IDs - guard against null/undefined
-      const clientIds = [...new Set(jobs.map(j => j.client_id).filter(Boolean))] as string[];
-
-      // Early return if no valid client IDs - skip profile fetch
-      if (clientIds.length === 0) {
-        return jobs.map((job: any) => {
-          const inferred = inferCategoryFromTitle(job.title);
-          return {
-            id: job.id,
-            title: job.title,
-            description: job.description || '',
-            status: job.status,
-            created_at: job.created_at,
-            budget_type: job.budget_type || 'fixed',
-            budget_value: job.budget_value || 0,
-            location: job.location,
-            category_name: inferred?.name || null,
-            category_slug: inferred?.slug || null,
-            client: {
-              name: 'Client',
-              avatar: undefined,
-            },
-          };
-        });
-      }
-
-      // Fetch profiles separately to avoid FK issues
-      let profileMap: Record<string, { display_name: string | null; avatar_url: string | null }> = {};
-      
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, display_name, avatar_url')
-        .in('id', clientIds);
-
-      if (!profilesError && profiles) {
-        profileMap = Object.fromEntries(
-          profiles.map(p => [p.id, { display_name: p.display_name, avatar_url: p.avatar_url }])
-        );
-      }
-
-      // Merge client-side with category inference
+      // Map the preview data to LatestJob format
+      // Privacy: Client name is always "Client" - no real identity exposed
       return jobs.map((job: any) => {
         const inferred = inferCategoryFromTitle(job.title);
         return {
           id: job.id,
           title: job.title,
-          description: job.description || '',
+          description: job.teaser || '',
+          teaser: job.teaser,
           status: job.status,
           created_at: job.created_at,
           budget_type: job.budget_type || 'fixed',
           budget_value: job.budget_value || 0,
-          location: job.location,
+          location: {
+            area: job.area || job.town || 'Ibiza',
+            town: job.town,
+          },
           category_name: inferred?.name || null,
           category_slug: inferred?.slug || null,
+          has_photos: job.has_photos || false,
+          // PRIVACY: Never expose real client identity in public preview
           client: {
-            name: profileMap[job.client_id]?.display_name || 'Client',
-            avatar: profileMap[job.client_id]?.avatar_url || undefined,
+            name: 'Client',
+            avatar: undefined,
           },
         };
       });
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes - jobs should be fresher
+    staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000,
   });
 };

@@ -71,15 +71,81 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
     loadJobs();
   }, [sortBy]);
 
+  // Category inference for public preview mode
+  const inferCategoryFromTitle = (title: string): string | null => {
+    if (!title) return null;
+    const titleLower = title.toLowerCase();
+    const categoryKeywords: Record<string, string> = {
+      'kitchen': 'Kitchen & Bathroom',
+      'bathroom': 'Kitchen & Bathroom',
+      'electrical': 'Electrical',
+      'lighting': 'Electrical',
+      'painting': 'Painting & Decorating',
+      'deck': 'Carpentry',
+      'pergola': 'Carpentry',
+      'lawn': 'Gardening & Landscaping',
+      'garden': 'Gardening & Landscaping',
+      'landscaping': 'Gardening & Landscaping',
+      'pool': 'Pool & Spa',
+      'window': 'Floors, Doors & Windows',
+      'door': 'Floors, Doors & Windows',
+      'floor': 'Floors, Doors & Windows',
+      'plumbing': 'Plumbing',
+      'pipe': 'Plumbing',
+      'construction': 'Construction',
+      'renovation': 'Construction',
+      'facade': 'Construction',
+      'roof': 'Construction',
+    };
+    
+    for (const [keyword, category] of Object.entries(categoryKeywords)) {
+      if (titleLower.includes(keyword)) return category;
+    }
+    return null;
+  };
+
   const loadJobs = async () => {
     try {
       setLoading(true);
       
-      // Fetch ALL open jobs
+      // PUBLIC PREVIEW MODE: Use secure view for unauthenticated users
+      if (!user) {
+        const { data: jobsData, error } = await supabase
+          .from('public_jobs_preview')
+          .select('*')
+          .order(sortBy === 'created_at' ? 'published_at' : sortBy, { ascending: false });
+
+        if (error) throw error;
+
+        const formattedJobs = (jobsData || []).map((job: any) => ({
+          id: job.id,
+          title: job.title,
+          description: job.teaser || '',
+          budget_type: job.budget_type || 'fixed',
+          budget_value: job.budget_value || 0,
+          status: job.status,
+          created_at: job.created_at,
+          location: { address: '', area: job.area || job.town || 'Ibiza' },
+          category: inferCategoryFromTitle(job.title),
+          // Privacy: No client identity in public preview
+          client: {
+            name: 'Client',
+            avatar: undefined,
+            rating: undefined,
+            jobs_completed: undefined
+          },
+          answers: { extras: { photos: job.has_photos ? ['placeholder'] : [] } }
+        }));
+
+        setJobs(formattedJobs);
+        return;
+      }
+      
+      // AUTHENTICATED MODE: Full data with client profiles
       const { data: jobsData, error: jobsError } = await supabase
         .from('jobs')
         .select('*')
-        .eq('status', 'open')
+        .eq('is_publicly_listed', true)
         .order(sortBy, { ascending: false });
 
       if (jobsError) throw jobsError;
@@ -134,11 +200,11 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
         const serviceData = servicesMap[job.micro_id];
         return {
           ...job,
-          category: serviceData?.category,
+          category: serviceData?.category || inferCategoryFromTitle(job.title),
           subcategory: serviceData?.subcategory,
           micro: serviceData?.micro,
           client: {
-            name: clientProfiles[job.client_id]?.full_name || 'Anonymous Client',
+            name: clientProfiles[job.client_id]?.full_name || 'Client',
             avatar: clientProfiles[job.client_id]?.avatar_url,
             rating: 4.5, // Mock rating
             jobs_completed: Math.floor(Math.random() * 50) + 1
@@ -386,6 +452,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
                   onMessage={handleMessageClient}
                   onSave={handleSaveJob}
                   viewMode="card"
+                  previewMode={!user}
                 />
               </div>
             ))}
@@ -410,6 +477,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
                   onMessage={handleMessageClient}
                   onSave={handleSaveJob}
                   viewMode={viewMode}
+                  previewMode={!user}
                 />
               </div>
             ))
