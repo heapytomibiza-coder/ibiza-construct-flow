@@ -1,274 +1,240 @@
 
-# Public Job Board & Sneaky Preview: Complete Fix Plan
 
-## Root Cause Analysis
+# Fixes for Public Job Board & Sneaky Preview: Critical Refinements
 
-| Component | Issue | Impact |
-|-----------|-------|--------|
-| **jobs table RLS** | ✅ Correct - allows public SELECT on open jobs | Jobs accessible publicly |
-| **profiles table RLS** | ❌ Only allows viewing verified professional profiles | Client names/avatars fail to load for non-professional clients |
-| **JobsMarketplace** | Queries profiles for client info | Empty/broken client data when logged out |
-| **LatestJobsSection** | Custom cards instead of `JobListingCard` | Visual inconsistency with job board |
-| **Privacy** | No "sneaky preview" mode implemented | Client identity exposed publicly (when it loads) |
+## Summary of Current Issues
 
-### The Critical RLS Problem
+Based on my investigation, I've identified three critical issues with the current implementation that need immediate attention:
 
-The `profiles` table has this public SELECT policy:
-```sql
-"Public can view verified professional profiles"
-USING (EXISTS (
-  SELECT 1 FROM professional_profiles pp
-  WHERE pp.user_id = profiles.id 
-    AND pp.is_active = true 
-    AND pp.verification_status = 'verified'
-))
-```
-
-This means **only verified professionals' profiles are publicly visible**. Regular clients who post jobs won't have their profile data accessible to anonymous users - causing empty client names/avatars.
+| Issue | Current State | Risk Level |
+|-------|--------------|------------|
+| **Privacy leak** | `public_jobs_preview` view exposes `address_preview` | CRITICAL |
+| **Status filter fragility** | View filters by `status IN ('open', 'posted', 'published')` | MEDIUM |
+| **Fake photo placeholders** | Cards inject `['placeholder']` as photo URLs | LOW-MEDIUM |
+| **Category inference** | Duplicated title-keyword parsing | TECH DEBT |
 
 ---
 
-## Solution Architecture: "Sneaky Preview" Mode
+## Detailed Findings
 
-### Principle
-- **Public visitors** see job cards with generic "Client" label (no real identity)
-- **Professionals (authenticated)** see full client details + can apply
-- **Actions (Apply/Message/Contact)** are gated behind professional login
+### Issue 1: Privacy Leak in Preview View (CRITICAL)
 
-This is exactly what you requested: "sneaky view before committing".
+**Current state in migration:**
+```sql
+location->>'address' AS address_preview, -- Only town/area portion for previews
+```
+
+**Actual data observed:**
+```
+address_preview: "San Antonio (Sant Antoni)"
+```
+
+This leaks the actual address to anonymous users! The comment says "Only town/area portion" but the column extracts the full `address` field.
+
+### Issue 2: Status Filter Fragility (MEDIUM)
+
+**Current filter:**
+```sql
+WHERE is_publicly_listed = true
+  AND status IN ('open', 'posted', 'published')
+```
+
+Since `is_publicly_listed = true` is the single source of truth you added, the status filter is redundant and could cause jobs to disappear if status values change.
+
+### Issue 3: Fake Photo Placeholders (LOW-MEDIUM)
+
+**In `LatestJobsSection.tsx`:**
+```typescript
+answers: job.has_photos ? { extras: { photos: ['placeholder'] } } : undefined,
+```
+
+**In `JobsMarketplace.tsx`:**
+```typescript
+answers: { extras: { photos: job.has_photos ? ['placeholder'] : [] } }
+```
+
+This injects a fake `'placeholder'` URL which could:
+- Break image loading in `JobListingCard` (tries to load `placeholder` as URL)
+- Confuse the hero image logic
+- Create inconsistent behavior
+
+### Issue 4: Duplicated Category Inference (TECH DEBT)
+
+The `inferCategoryFromTitle()` function is duplicated in:
+- `src/hooks/useLatestJobs.ts`
+- `src/components/marketplace/JobsMarketplace.tsx`
+
+Both have slight differences. This should be a shared utility.
 
 ---
 
 ## Implementation Plan
 
-### 1. Create `public_jobs_preview` View (Security Best Practice)
+### Fix 1: Database Migration - Remove Address and Simplify Status Filter
 
-Create a database view that exposes ONLY preview-safe fields. This prevents accidental data leakage regardless of frontend code.
+Create a new migration to update the `public_jobs_preview` view:
 
 ```sql
-CREATE OR REPLACE VIEW public.public_jobs_preview AS
+CREATE OR REPLACE VIEW public.public_jobs_preview 
+WITH (security_invoker=on) AS
 SELECT
   id,
   title,
   LEFT(COALESCE(description, ''), 200) AS teaser,
   budget_type,
   budget_value,
-  location->>'area' AS area,
+  -- SAFE: Only expose area/town, never address
+  COALESCE(location->>'area', location->>'town', 'Ibiza') AS area,
   location->>'town' AS town,
+  -- REMOVED: location->>'address' AS address_preview (PRIVACY LEAK)
   created_at,
   published_at,
   status,
   micro_id,
-  -- NO client_id exposed!
-  -- NO exact address exposed!
-  -- NO answers.extras (attachments) exposed!
   CASE 
     WHEN answers->'extras'->'photos' IS NOT NULL 
-    THEN jsonb_array_length(answers->'extras'->'photos') > 0 
+         AND jsonb_array_length(answers->'extras'->'photos') > 0 
+    THEN true 
     ELSE false 
   END AS has_photos
 FROM public.jobs
-WHERE is_publicly_listed = true
-  AND status IN ('open', 'posted', 'published');
-
-GRANT SELECT ON public.public_jobs_preview TO anon, authenticated;
+WHERE is_publicly_listed = true;
+-- REMOVED: status filter - rely on is_publicly_listed alone
 ```
 
-**Benefits:**
-- Anonymous users can ONLY access preview-safe data
-- `client_id`, exact address, attachments are NOT in the view
-- Future code changes can't accidentally leak private data
+**Changes:**
+1. Remove `address_preview` column entirely (privacy fix)
+2. Update `area` to use `COALESCE` with fallback chain
+3. Remove `status IN (...)` filter - rely solely on `is_publicly_listed`
 
 ---
 
-### 2. Update `useLatestJobs` Hook for Preview Mode
+### Fix 2: Create Shared Category Inference Utility
+
+**New file:** `src/lib/jobs/categoryInference.ts`
+
+```typescript
+/**
+ * Infer category from job title keywords
+ * Temporary fallback until category_slug is stored on jobs
+ */
+export interface InferredCategory {
+  name: string;
+  slug: string;
+}
+
+const CATEGORY_KEYWORDS: Record<string, InferredCategory> = {
+  'kitchen': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
+  'bathroom': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
+  'electrical': { name: 'Electrical', slug: 'electrical' },
+  'lighting': { name: 'Electrical', slug: 'electrical' },
+  // ... rest of keywords
+};
+
+export function inferCategoryFromTitle(title: string): InferredCategory | null {
+  if (!title) return null;
+  const titleLower = title.toLowerCase();
+  
+  for (const [keyword, category] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (titleLower.includes(keyword)) return category;
+  }
+  return null;
+}
+```
+
+Update both `useLatestJobs.ts` and `JobsMarketplace.tsx` to import from this shared utility.
+
+---
+
+### Fix 3: Remove Fake Photo Placeholders - Use Boolean Flag
 
 **File:** `src/hooks/useLatestJobs.ts`
 
-**Changes:**
-- For public preview: use `public_jobs_preview` view
-- Always return `client: { name: 'Client' }` (no real identity)
-- Add optional `mode` parameter for future authenticated fetches
-
+**Current (problematic):**
 ```typescript
-export const useLatestJobs = (limit: number = 6, mode: 'public_preview' | 'authenticated' = 'public_preview') => {
-  return useQuery({
-    queryKey: ['latest-jobs', limit, mode],
-    queryFn: async (): Promise<LatestJob[]> => {
-      // Use preview view for public access - no client data exposed
-      const { data: jobs, error } = await supabase
-        .from('public_jobs_preview')
-        .select('*')
-        .order('published_at', { ascending: false, nullsFirst: false })
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        console.error('Error fetching jobs preview:', error);
-        return [];
-      }
-
-      return (jobs || []).map((job: any) => {
-        const inferred = inferCategoryFromTitle(job.title);
-        return {
-          id: job.id,
-          title: job.title,
-          description: job.teaser || '',
-          status: job.status,
-          created_at: job.created_at,
-          budget_type: job.budget_type || 'fixed',
-          budget_value: job.budget_value || 0,
-          location: { area: job.area || job.town || 'Ibiza' },
-          category_name: inferred?.name || null,
-          category_slug: inferred?.slug || null,
-          has_photos: job.has_photos || false,
-          // Privacy: NEVER expose real client identity publicly
-          client: {
-            name: 'Client',
-            avatar: undefined,
-          },
-        };
-      });
-    },
-    staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
-  });
-};
+answers: job.has_photos ? { extras: { photos: ['placeholder'] } } : undefined,
 ```
 
----
-
-### 3. Update `JobsMarketplace` for Public Preview Mode
+**Fixed:**
+```typescript
+// Don't fake answers - use has_photos boolean directly
+has_photos: job.has_photos || false,
+// answers is NOT included in preview mode
+```
 
 **File:** `src/components/marketplace/JobsMarketplace.tsx`
 
-**Changes:**
-- Use `public_jobs_preview` view when user is NOT authenticated
-- Use full jobs query with client profiles when authenticated as professional
-- Add `isAuthenticated` check
-
+**Current (problematic):**
 ```typescript
-const loadJobs = async () => {
-  try {
-    setLoading(true);
-    
-    if (!user) {
-      // PUBLIC PREVIEW MODE: Use safe view, no client data
-      const { data: jobsData, error } = await supabase
-        .from('public_jobs_preview')
-        .select('*')
-        .order(sortBy, { ascending: false });
-
-      if (error) throw error;
-
-      const formattedJobs = (jobsData || []).map(job => ({
-        ...job,
-        description: job.teaser,
-        location: { address: '', area: job.area || job.town || 'Ibiza' },
-        category: inferCategoryFromTitle(job.title)?.name,
-        client: {
-          name: 'Client',
-          avatar: undefined,
-          rating: undefined,
-          jobs_completed: undefined
-        }
-      }));
-
-      setJobs(formattedJobs);
-      return;
-    }
-
-    // AUTHENTICATED MODE: Full data with client profiles
-    // ... existing code for authenticated users ...
-  }
-};
+answers: { extras: { photos: job.has_photos ? ['placeholder'] : [] } }
 ```
 
----
-
-### 4. Update `LatestJobsSection` to Use `JobListingCard`
-
-**File:** `src/components/home/LatestJobsSection.tsx`
-
-**Changes:**
-- Replace custom card markup with `JobListingCard` in compact mode
-- Add `previewMode` prop to `JobListingCard` to hide professional actions
-
+**Fixed:**
 ```typescript
-import { JobListingCard } from '@/components/marketplace/JobListingCard';
-
-// In the render:
-{jobs?.slice(0, 6).map((job) => (
-  <Link key={job.id} to={`/jobs/${job.id}`}>
-    <JobListingCard
-      job={{
-        ...job,
-        location: { address: '', area: formatJobLocation(job.location) },
-        client: { name: 'Client' },
-        status: 'open',
-      }}
-      viewMode="compact"
-      previewMode={true}  // New prop to hide Apply/Message buttons
-    />
-  </Link>
-))}
+// Use has_photos flag instead of fake photo arrays
+has_photos: job.has_photos || false,
+answers: undefined, // No answers in preview mode
 ```
-
----
-
-### 5. Add `previewMode` to `JobListingCard`
 
 **File:** `src/components/marketplace/JobListingCard.tsx`
 
-**Changes:**
-- Add optional `previewMode?: boolean` prop
-- When `previewMode=true`:
-  - Hide "Send Offer" button
-  - Hide "Message" button  
-  - Show "View Details" only
-  - Show "Sign in as Professional to apply" CTA
+Update to check `has_photos` boolean alongside `answers?.extras?.photos`:
 
 ```typescript
+// Add has_photos to props
 interface JobListingCardProps {
-  // ... existing props
-  previewMode?: boolean;  // For public/anonymous viewers
+  job: {
+    // ... existing props
+    has_photos?: boolean; // New: explicit flag for preview mode
+  };
 }
 
-// In compact mode render:
-{viewMode === 'compact' && (
-  <div className="flex items-center gap-2">
-    {previewMode ? (
-      <Button variant="outline" size="sm" asChild>
-        <Link to={`/jobs/${job.id}`}>View Details</Link>
-      </Button>
-    ) : (
-      <Button 
-        variant="outline" 
-        size="sm"
-        onClick={() => onSendOffer?.(job.id)}
-      >
-        Send Offer
-      </Button>
-    )}
-  </div>
+// In photo count logic:
+const photoCount = job.answers?.extras?.photos?.length || 0;
+const hasPhotos = job.has_photos || photoCount > 0;
+
+// In hero image logic:
+const heroImage = job.answers?.extras?.photos?.[0] || serviceVisuals.hero;
+
+// Show badge based on boolean when in preview mode
+{hasPhotos && !photoCount && previewMode && (
+  <Badge className="...">
+    Photos available
+  </Badge>
 )}
 ```
 
 ---
 
-### 6. Gate Actions on Job Detail Page
+### Fix 4: Update LatestJobsSection Adapter
 
-**File:** `src/pages/JobDetail.tsx` (or equivalent)
+**File:** `src/components/home/LatestJobsSection.tsx`
 
-When a public user clicks "View Details":
-- Show preview data (title, teaser, budget, area, category)
-- Show locked panel with CTA: "Sign in as Professional to apply"
-- DO NOT show:
-  - Client identity/avatar
-  - Exact address/map
-  - Attachments
-  - Phone/email
-  - Apply/Message buttons
+Update the `adaptJobForCard` function to match `JobListingCard` expectations without faking data:
+
+```typescript
+const adaptJobForCard = (job: NonNullable<typeof jobs>[0]) => ({
+  id: job.id,
+  title: job.title,
+  description: job.description || job.teaser || '',
+  budget_type: job.budget_type,
+  budget_value: job.budget_value,
+  location: {
+    address: '', // Never expose in preview
+    area: formatJobLocation(job.location),
+  },
+  created_at: job.created_at,
+  status: job.status || 'open',
+  client: {
+    name: 'Client', // Privacy: always generic
+    avatar: undefined,
+  },
+  category: job.category_name || undefined,
+  // Use boolean flag, don't fake answers
+  has_photos: job.has_photos,
+  answers: undefined, // No answers in preview
+});
+```
 
 ---
 
@@ -276,40 +242,39 @@ When a public user clicks "View Details":
 
 | File | Change |
 |------|--------|
-| Database migration | Create `public_jobs_preview` view |
-| `src/hooks/useLatestJobs.ts` | Use preview view, remove client data |
-| `src/components/marketplace/JobsMarketplace.tsx` | Use preview view for unauthenticated |
-| `src/components/marketplace/JobListingCard.tsx` | Add `previewMode` prop |
-| `src/components/home/LatestJobsSection.tsx` | Use `JobListingCard` instead of custom cards |
+| `supabase/migrations/` | New migration: update `public_jobs_preview` view |
+| `src/lib/jobs/categoryInference.ts` | NEW: shared category inference utility |
+| `src/hooks/useLatestJobs.ts` | Use shared utility, remove fake answers |
+| `src/components/marketplace/JobsMarketplace.tsx` | Use shared utility, remove fake answers |
+| `src/components/marketplace/JobListingCard.tsx` | Add `has_photos` prop support |
+| `src/components/home/LatestJobsSection.tsx` | Update adapter to use boolean flag |
 
 ---
 
 ## Implementation Order
 
-1. **Database migration** - Create `public_jobs_preview` view
-2. **useLatestJobs.ts** - Switch to preview view, remove client data
-3. **JobsMarketplace.tsx** - Split authenticated vs public query paths
-4. **JobListingCard.tsx** - Add `previewMode` prop
-5. **LatestJobsSection.tsx** - Use `JobListingCard` with `previewMode`
-6. **Test** - Verify cards appear logged out + actions are gated
+1. **Database migration** - Fix privacy leak + simplify filter
+2. **Create shared utility** - `categoryInference.ts`
+3. **Update hooks/components** - Use shared utility + has_photos flag
+4. **Test** - Verify cards show without broken images or leaked data
 
 ---
 
 ## Expected Behavior After Fix
 
-| Scenario | Job Cards | Client Name | Apply/Message |
-|----------|-----------|-------------|---------------|
-| Logged out on Homepage | ✅ Visible | "Client" (generic) | Hidden |
-| Logged out on Job Board | ✅ Visible | "Client" (generic) | Hidden |
-| Logged out on Job Detail | ✅ Preview visible | Hidden | "Sign in to apply" CTA |
-| Logged in as Professional | ✅ Full details | Real name | ✅ Enabled |
-| Logged in as Client | ✅ Visible | "Client" (own jobs show real) | Hidden (not their target) |
+| Scenario | Before | After |
+|----------|--------|-------|
+| Address in preview | Exposed via `address_preview` | Not exposed at all |
+| Photo URLs in preview | Fake `['placeholder']` injected | Boolean `has_photos` flag |
+| Category inference | Duplicated in 2 files | Shared utility |
+| Status filtering | Redundant `status IN (...)` | Only `is_publicly_listed` |
 
 ---
 
 ## Security Benefits
 
-1. **View-based access control** - Anonymous users literally cannot query private fields
-2. **No client identity leakage** - Clients stay anonymous until professional engagement
-3. **Consistent behavior** - Same preview logic for homepage AND job board
-4. **Future-proof** - Adding fields to jobs table won't accidentally expose them publicly
+1. **No address leakage** - Preview view cannot expose street addresses
+2. **No fake data injection** - Boolean flags instead of placeholder URLs
+3. **Single source of truth** - `is_publicly_listed` controls visibility
+4. **Maintainable inference** - Category logic in one place
+
