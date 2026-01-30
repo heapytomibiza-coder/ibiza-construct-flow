@@ -1,176 +1,243 @@
 
-# Homepage Fixes Plan: Critical Runtime Errors
+# Homepage Job Cards Fix Plan: Complete Implementation
 
-## Summary of Issues Found
+## Summary of Findings
 
-The homepage implementation has **critical runtime errors** preventing the Latest Jobs and Featured Professionals sections from loading. The network requests show these errors:
+### Current State Analysis
+| Item | Status | Issue |
+|------|--------|-------|
+| Database has jobs | 24 jobs with `status='open'` confirmed | Data exists |
+| `useLatestJobs.ts` | Query uses correct split pattern | No FK join errors |
+| RLS policy | "Anyone can view open jobs" exists | Public access enabled |
+| ServiceCategoryPage | Uses `category.name` not slug | Technical debt (fuzzy matching) |
+| Canonical URL | Uses dynamic origin with SSR guard | Implemented |
 
-| Section | Error | Root Cause |
-|---------|-------|------------|
-| Latest Jobs | PGRST200 - No FK relationship between `jobs` and `profiles` | Query uses `profiles!jobs_client_id_fkey` but no FK exists |
-| Featured Professionals | PGRST200 - No FK relationship between `professional_profiles` and `professional_stats` | Query tries to join tables without FK |
+### Root Cause: Why Job Cards May Still Be Empty
 
-Additionally, there are the secondary issues you flagged that also need addressing.
+The current implementation looks correct, but there are edge cases that could cause empty sections:
+
+1. **`micro_id` JOIN failures**: The nested join `service_micro_categories(...)` can fail silently if `jobs.micro_id` contains non-UUID text values or nulls, returning `null` for the entire nested object.
+
+2. **Empty client IDs**: If jobs have `null` client_id values, the profile fetch skips them but the mapping still works (defaults to "Client").
+
+3. **RLS blocking in practice**: Even with RLS policies, the actual response depends on the requesting user's context.
 
 ---
 
-## Fix 1: useLatestJobs.ts - Remove Invalid FK Join
+## Implementation Plan
 
-**Problem:** The query attempts to join `jobs` to `profiles` using a non-existent foreign key `jobs_client_id_fkey`.
-
-**Solution:** Fetch jobs and profiles separately, then merge client-side.
+### Fix 1: Robust `useLatestJobs` Query
 
 **File:** `src/hooks/useLatestJobs.ts`
 
 **Changes:**
-```typescript
-// BEFORE: Single query with invalid FK join
-.select(`
-  id, title, ...,
-  profiles!jobs_client_id_fkey (display_name, avatar_url),
-  service_micro_categories (...)
-`)
 
-// AFTER: Fetch jobs first, then profiles separately
-const { data: jobs } = await supabase
+A) **Guard against empty clientIds without extra query:**
+```typescript
+// Early return if no valid client IDs
+if (clientIds.length === 0) {
+  return jobs.map((job: any) => ({
+    ...job,
+    client: { name: 'Client', avatar: undefined },
+  }));
+}
+```
+
+B) **Remove micro_id join dependency for resilience:**
+
+The nested `service_micro_categories` join via text `micro_id` can fail. Make it optional and gracefully degrade:
+
+```typescript
+// Simplified query without complex nested join
+const { data: jobs, error: jobsError } = await supabase
   .from('jobs')
   .select(`
-    id, title, description, status, created_at,
-    budget_type, budget_value, location, client_id, micro_id,
-    service_micro_categories (
-      name, subcategory_id,
-      service_subcategories (
-        name, category_id,
-        service_categories (name, slug)
-      )
-    )
+    id,
+    title,
+    description,
+    status,
+    created_at,
+    budget_type,
+    budget_value,
+    location,
+    client_id,
+    micro_id
   `)
   .eq('status', 'open')
   .order('created_at', { ascending: false })
   .limit(limit);
-
-// Get unique client IDs
-const clientIds = [...new Set(jobs.map(j => j.client_id).filter(Boolean))];
-
-// Fetch profiles separately
-const { data: profiles } = await supabase
-  .from('profiles')
-  .select('id, display_name, avatar_url')
-  .in('id', clientIds);
-
-// Merge client-side
-const profileMap = Object.fromEntries(profiles.map(p => [p.id, p]));
-return jobs.map(job => ({
-  ...job,
-  client: {
-    name: profileMap[job.client_id]?.display_name || 'Client',
-    avatar: profileMap[job.client_id]?.avatar_url,
-  },
-}));
 ```
+
+If category badge is needed, fetch it separately or omit until `micro_id` is normalized to UUID.
+
+C) **Add multi-status support (future-proofing):**
+```typescript
+// Instead of .eq('status', 'open')
+.in('status', ['open', 'posted', 'published'])
+```
+
+Or create an `is_publicly_listed` flag as recommended.
 
 ---
 
-## Fix 2: useFeaturedProfessionals.ts - Remove Invalid FK Join + Fix Empty Section
-
-**Problem 1:** Query tries to join `professional_profiles` to `professional_stats` without a FK relationship.
-
-**Problem 2:** Fetches only 6 items, then filters client-side for avatars - could result in 0-2 displayed.
-
-**Solution:** 
-- Remove the `professional_stats` join (ratings can be added later when FK exists)
-- Fetch 20 items, filter for avatar + tagline, then slice to 6
+### Fix 2: Robust `useFeaturedProfessionals` with Over-fetch
 
 **File:** `src/hooks/useFeaturedProfessionals.ts`
 
 **Changes:**
+
+A) **Increase fetch limit to ensure full section:**
 ```typescript
-// BEFORE: Invalid join + insufficient limit
-const { data } = await supabase
-  .from('professional_profiles')
-  .select(`
-    ...,
-    professional_stats (average_rating, total_reviews)  // INVALID JOIN
-  `)
-  .limit(limit);  // Only fetches 6
+// Fetch more than needed to account for filtering
+const fetchLimit = Math.max(limit * 3, 20);
 
-// AFTER: Remove invalid join + over-fetch for safety
-const { data } = await supabase
+const { data, error } = await supabase
   .from('professional_profiles')
-  .select(`
-    user_id,
-    business_name,
-    tagline,
-    verification_status,
-    specializations,
-    profiles!professional_profiles_user_id_fkey (
-      display_name,
-      avatar_url
-    )
-  `)
-  .eq('verification_status', 'verified')
-  .eq('is_active', true)
-  .not('tagline', 'is', null)
-  .order('updated_at', { ascending: false })
-  .limit(20);  // Fetch more to ensure we have enough after filtering
+  .select(`...`)
+  .limit(fetchLimit);
+```
 
-// Filter for those with avatars, then take only what we need
-return (data || [])
-  .filter((pro) => pro.profiles?.avatar_url)
-  .slice(0, limit)  // Take only the requested limit
-  .map((pro) => ({
-    id: pro.user_id,
-    user_id: pro.user_id,
-    business_name: pro.business_name,
-    full_name: pro.profiles?.display_name || null,
-    tagline: pro.tagline,
-    avatar_url: pro.profiles?.avatar_url,
-    verification_status: pro.verification_status,
-    specializations: pro.specializations,
-    rating: null,  // Omit until FK relationship is created
-    total_reviews: null,
-  }));
+B) **Ensure section never appears empty:**
+```typescript
+// Filter and slice, but always return at least the available pros
+const filtered = (data || [])
+  .filter((pro: any) => pro.profiles?.avatar_url)
+  .slice(0, limit);
+
+// If we have less than requested but have some, return what we have
+return filtered.length > 0 ? filtered : [];
 ```
 
 ---
 
-## Fix 3: ServiceCategoryPage.tsx - Dynamic Canonical URL
-
-**Problem:** Canonical URL is hardcoded to `https://csibiza.com`.
-
-**Solution:** Use dynamic origin.
+### Fix 3: ServiceCategoryPage - Pass Slug Instead of Name
 
 **File:** `src/pages/ServiceCategoryPage.tsx`
 
-**Changes:**
-```typescript
-// BEFORE
-<link rel="canonical" href={`https://csibiza.com/services/${categorySlug}`} />
-
-// AFTER
-<link rel="canonical" href={`${window.location.origin}/services/${categorySlug}`} />
+**Current (risky):**
+```tsx
+<Discovery initialCategoryName={category.name} />
 ```
 
+**Improved:**
+```tsx
+<Discovery initialCategorySlug={category.slug} />
+```
+
+**File:** `src/pages/Discovery.tsx`
+
+**Update interface:**
+```typescript
+interface DiscoveryProps {
+  /** Initial category slug for pre-filtering (from ServiceCategoryPage) */
+  initialCategorySlug?: string;
+}
+```
+
+**Update filter initialization:**
+```typescript
+const [filters, setFilters] = useState<Filters>(() => {
+  if (initialCategorySlug) {
+    return {
+      selectedTaxonomy: {
+        category: initialCategorySlug, // Use slug for matching
+        subcategory: '',
+        micro: '',
+      },
+      // ...
+    };
+  }
+  // ...
+});
+```
+
+This ensures consistent slug-based filtering throughout.
+
 ---
 
-## Fix 4: Discovery Category Filtering (Optional Enhancement)
+### Fix 4: Canonical URL SSR Guard (Already Implemented)
 
-**Current State:** The implementation passes `category.name` (e.g., "Construction") to Discovery, and the filter logic uses case-insensitive substring matching which works with the current mixed data in `professional_service_items.category`.
+**Current code in ServiceCategoryPage.tsx is correct:**
+```tsx
+<link rel="canonical" href={`${typeof window !== 'undefined' ? window.location.origin : ''}/services/${categorySlug}`} />
+```
 
-**Assessment:** The current fuzzy matching approach (`itemCategory.includes(filterCategory)`) actually handles this adequately because:
-- "Construction" matches "construction" (case-insensitive)
-- "Carpentry" matches "carpentry-woodwork" (substring)
-
-**Recommendation:** No immediate fix needed, but document this as technical debt. Long-term, standardize `professional_service_items.category` to use slugs.
+**Note:** Empty string fallback for SSR is acceptable since canonical tags are primarily for crawler context where `window` is available.
 
 ---
 
-## Implementation Order
+### Fix 5: Privacy Gating for "Sneaky Preview"
 
-1. **Fix useLatestJobs.ts** - Split query into two fetches (jobs + profiles separately)
-2. **Fix useFeaturedProfessionals.ts** - Remove invalid join + over-fetch pattern
-3. **Fix ServiceCategoryPage.tsx** - Dynamic canonical URL
-4. **Test** - Verify homepage loads without console errors
+**Requirement:** Public can see job previews, but client details and apply actions are gated.
+
+**Implementation Strategy:**
+
+A) **Homepage/Job Board Cards (public preview):**
+- Show: title, teaser (first 160 chars), budget, area, category, posted time
+- Hide: client identity, exact address, attachments, contact info
+- CTA: "View Details" (always works)
+
+B) **Job Detail Page (gated actions):**
+- If not authenticated: Show preview + "Sign in as Professional to Apply" panel
+- If authenticated but not professional: Show "Switch to Professional to apply"
+- If authenticated as professional: Show full details + Apply/Message buttons
+
+**Files to modify:**
+- `src/pages/JobDetail.tsx` (or equivalent)
+- RLS policies on `jobs` table (optional: create `public_jobs_preview` view)
+
+---
+
+## Database Improvements (Recommended)
+
+### Option A: Add `is_publicly_listed` Flag (Best Practice)
+
+**Migration:**
+```sql
+ALTER TABLE public.jobs
+ADD COLUMN IF NOT EXISTS is_publicly_listed boolean NOT NULL DEFAULT false,
+ADD COLUMN IF NOT EXISTS published_at timestamptz NULL;
+
+-- Backfill existing open jobs
+UPDATE public.jobs
+SET is_publicly_listed = true,
+    published_at = COALESCE(published_at, created_at)
+WHERE status = 'open';
+
+-- Create index for performance
+CREATE INDEX IF NOT EXISTS idx_jobs_publicly_listed 
+ON public.jobs(is_publicly_listed, published_at DESC NULLS LAST);
+```
+
+**Benefits:**
+- Single source of truth for visibility
+- No dependency on inconsistent `status` values
+- Explicit control over public listings
+
+### Option B: Create Public Preview View (Security)
+
+```sql
+CREATE OR REPLACE VIEW public.public_jobs_preview AS
+SELECT
+  id,
+  title,
+  left(coalesce(description,''), 160) as teaser,
+  budget_type,
+  budget_value,
+  location->>'area' as area,
+  location->>'town' as town,
+  created_at,
+  micro_id
+FROM public.jobs
+WHERE status IN ('open', 'posted', 'published');
+
+-- Grant public access
+GRANT SELECT ON public.public_jobs_preview TO anon, authenticated;
+```
+
+**Benefits:**
+- Impossible to accidentally leak sensitive fields
+- Query the view instead of `jobs` table for public contexts
 
 ---
 
@@ -178,22 +245,55 @@ return (data || [])
 
 | File | Change |
 |------|--------|
-| `src/hooks/useLatestJobs.ts` | Split query, fetch profiles separately |
-| `src/hooks/useFeaturedProfessionals.ts` | Remove stats join, fetch 20 + slice to 6 |
-| `src/pages/ServiceCategoryPage.tsx` | Dynamic canonical URL |
+| `src/hooks/useLatestJobs.ts` | Guard empty clientIds, simplify micro join, multi-status support |
+| `src/hooks/useFeaturedProfessionals.ts` | Over-fetch (20-30), filter, slice to limit |
+| `src/pages/ServiceCategoryPage.tsx` | Pass `initialCategorySlug` instead of name |
+| `src/pages/Discovery.tsx` | Accept `initialCategorySlug` prop, use for filtering |
+| `supabase/migrations/` | (Optional) Add `is_publicly_listed` column + index |
+
+---
+
+## Implementation Order
+
+1. **Fix useLatestJobs.ts** - Guard empty clients, simplify query
+2. **Fix useFeaturedProfessionals.ts** - Over-fetch pattern
+3. **Update ServiceCategoryPage + Discovery** - Pass slug instead of name
+4. **Test homepage** - Verify job cards appear for logged-out users
+5. **(Optional) Database migration** - Add `is_publicly_listed` for robust filtering
+6. **(Future) Privacy gating** - Implement locked panel on job detail page
+
+---
+
+## QA Checklist
+
+- [ ] Homepage loads job cards when 24 open jobs exist in DB
+- [ ] Homepage loads when no jobs exist (shows empty state)
+- [ ] Featured professionals section never appears empty (min 6 with avatars)
+- [ ] `/services/construction` stays on that URL (no redirect)
+- [ ] Category filter works correctly using slug matching
+- [ ] Canonical URL renders correctly in page source
+- [ ] Job cards show public-safe fields only (no client contact info)
+- [ ] Test logged out vs logged in (RLS behavior)
 
 ---
 
 ## Technical Notes
 
-### Why Not Add Foreign Keys?
+### Why Pass Slug Instead of Name?
 
-Adding FKs would require:
-1. All `jobs.client_id` values to exist in `profiles.id`
-2. All `professional_stats.professional_id` values to exist in `professional_profiles.user_id`
+| Scenario | Name-based | Slug-based |
+|----------|------------|------------|
+| "Kitchen & Bathroom" | Exact match required | `kitchen-bathroom` stable |
+| Data has "construction" | Fuzzy match needed | Direct match |
+| Category renamed | Breaks filtering | URL stable |
 
-This may not be true for legacy data. The safer approach is to make queries work without FKs.
+### Why Over-fetch for Featured Professionals?
 
-### Why Over-Fetch for Featured Professionals?
+If limit=6 and 4 of 6 lack avatars, section shows 2 cards.
+Over-fetch (20) + filter + slice(6) = guaranteed 6 cards (if 6+ have avatars).
 
-If we fetch exactly 6 and 4 have no avatar, we display only 2. By fetching 20 and slicing to 6, we almost guarantee 6 results (assuming at least 6 verified professionals have avatars).
+### Why Simplify Micro Join?
+
+The `jobs.micro_id` column contains mixed data (UUIDs and text slugs).
+The nested join `service_micro_categories(...)` fails silently when `micro_id` isn't a valid FK.
+Omitting category badge is safer until data is normalized.
