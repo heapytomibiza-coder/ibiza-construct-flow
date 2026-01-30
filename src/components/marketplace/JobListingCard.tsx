@@ -322,7 +322,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             View Details
           </Button>
           
-          {!previewMode && (
+          {!previewMode ? (
             <QuickApplyButton
               jobId={job.id}
               jobTitle={job.title}
@@ -330,6 +330,13 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
               onSuccess={() => onSendOffer?.(job.id)}
               className="flex-1"
             />
+          ) : (
+            <div className="flex-1 text-center p-2 bg-muted/50 rounded-md">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium text-primary">Sign in as a professional</span>{' '}
+                to apply
+              </p>
+            </div>
           )}
         </div>
         

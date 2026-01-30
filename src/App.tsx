@@ -14,7 +14,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import MobileAppWrapper from "./components/app/MobileAppWrapper";
 import { useFeature } from "./contexts/FeatureFlagsContext";
 import { BundleAnalyzer, preloadRoute } from "./components/performance/BundleOptimizer";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { initRealtime } from "./lib/realtimeSync";
 import { ImpersonationBanner } from "./components/admin/ImpersonationBanner";
 import { HelmetProvider } from "react-helmet-async";
@@ -25,7 +25,8 @@ import { ROUTE_PATHS, ROUTE_GROUPS } from "@/config/routes.config";
 import DemoSetup from "@/pages/DemoSetup";
 const DemoVideoGuide = lazyWithRetry(() => import("./pages/DemoVideoGuide"));
 
-const queryClient = new QueryClient();
+// NOTE: QueryClientProvider is in main.tsx - do NOT create another QueryClient here
+// This was causing duplicate providers and inconsistent caching behavior
 
 // Phase 11: Enhanced route fallback with standardized loading
 const RouteFallback = () => <PageLoader />;
@@ -191,6 +192,9 @@ function AppContent() {
   // Feature flag for job wizard control
   const jobWizardEnabled = useFeature('ff.jobWizardV2', true);
   
+  // Get query client from context (provided by main.tsx)
+  const queryClient = useQueryClient();
+  
   // Preload critical routes and initialize realtime on app start
   useEffect(() => {
     // Preload common routes with queryClient for data prefetching
@@ -203,7 +207,7 @@ function AppContent() {
     // Initialize realtime sync for cross-tab updates
     const cleanup = initRealtime(queryClient);
     return cleanup;
-  }, []);
+  }, [queryClient]);
   
   return (
     <ErrorBoundary>
@@ -354,12 +358,8 @@ function AppContent() {
                       </RouteGuard>
                     } />
                     
-                    {/* Job Board - All professionals can see all jobs */}
-                    <Route path="/job-board" element={
-                      <RouteGuard requiredRole="professional">
-                        <JobBoardPage />
-                      </RouteGuard>
-                    } />
+                    {/* Job Board - Public browsing, actions gated at component level */}
+                    <Route path="/job-board" element={<JobBoardPage />} />
                     
                     {/* Post Job Success Page */}
                     <Route path="/post/success" element={
@@ -599,11 +599,11 @@ function AppContent() {
 }
 
 export default function App() {
+  // NOTE: QueryClientProvider is in main.tsx
+  // AppContent uses useQueryClient() to access it
   return (
     <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <AppContent />
-      </QueryClientProvider>
+      <AppContent />
     </HelmetProvider>
   );
 }

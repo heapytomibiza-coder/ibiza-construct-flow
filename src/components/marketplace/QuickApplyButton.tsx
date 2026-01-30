@@ -8,6 +8,7 @@ import { Zap, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useAuthGate } from '@/hooks/useAuthGate';
 
 interface QuickApplyButtonProps {
   jobId: string;
@@ -29,16 +30,30 @@ export const QuickApplyButton: React.FC<QuickApplyButtonProps> = ({
   className
 }) => {
   const { user, profile } = useAuth();
+  const gate = useAuthGate();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [quote, setQuote] = useState(suggestedQuote?.toString() || '');
   const [message, setMessage] = useState(`Hi! I'm interested in your project "${jobTitle}". I have relevant experience and can deliver quality results. Let's discuss the details!`);
 
+  // Gate before opening dialog - requires login + professional role
+  const handleOpenDialog = () => {
+    const canProceed = gate(user, profile?.active_role, {
+      requiredRole: 'professional',
+      reason: 'Sign in as a professional to apply for jobs',
+    });
+    if (!canProceed) return;
+    
+    setOpen(true);
+  };
+
   const handleQuickApply = async () => {
-    if (!user) {
-      toast.error('Please log in to apply');
-      return;
-    }
+    // Double-check auth (handles expired sessions)
+    const canProceed = gate(user, profile?.active_role, {
+      requiredRole: 'professional',
+      reason: 'Sign in as a professional to apply',
+    });
+    if (!canProceed) return;
 
     if (!quote || parseFloat(quote) <= 0) {
       toast.error('Please enter a valid quote amount');
@@ -51,7 +66,7 @@ export const QuickApplyButton: React.FC<QuickApplyButtonProps> = ({
         .from('job_quotes')
         .insert({
           job_id: jobId,
-          professional_id: user.id,
+          professional_id: user!.id,
           quote_amount: parseFloat(quote),
           proposal_message: message,
           status: 'pending'
@@ -75,7 +90,7 @@ export const QuickApplyButton: React.FC<QuickApplyButtonProps> = ({
         variant={variant}
         size={size}
         className={className}
-        onClick={() => setOpen(true)}
+        onClick={handleOpenDialog}
       >
         <Zap className="w-4 h-4 mr-2" />
         Quick Apply
