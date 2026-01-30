@@ -110,9 +110,17 @@ const LatestJobsSection = () => {
                       {job.description || t('latestJobs.noDescription', 'No description provided')}
                     </p>
 
-                    {/* Category badge */}
-                    {job.category_name && (
-                      <Badge variant="secondary" className="mb-3 text-xs">
+                    {/* Category badge with link */}
+                    {job.category_name && job.category_slug && (
+                      <Badge 
+                        variant="secondary" 
+                        className="mb-3 text-xs hover:bg-secondary/80 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          window.location.href = `/services/${job.category_slug}`;
+                        }}
+                      >
                         {job.category_name}
                       </Badge>
                     )}

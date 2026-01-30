@@ -5246,8 +5246,10 @@ export type Database = {
           duration_minutes: number | null
           id: string
           idempotency_key: string | null
+          is_publicly_listed: boolean
           location: Json | null
           micro_id: string
+          published_at: string | null
           scheduled_at: string | null
           status: string
           title: string
@@ -5264,8 +5266,10 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           idempotency_key?: string | null
+          is_publicly_listed?: boolean
           location?: Json | null
           micro_id: string
+          published_at?: string | null
           scheduled_at?: string | null
           status?: string
           title: string
@@ -5282,8 +5286,10 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           idempotency_key?: string | null
+          is_publicly_listed?: boolean
           location?: Json | null
           micro_id?: string
+          published_at?: string | null
           scheduled_at?: string | null
           status?: string
           title?: string
