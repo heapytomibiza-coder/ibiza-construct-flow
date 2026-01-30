@@ -15,6 +15,7 @@ import { EmptyJobBoardState } from './EmptyJobBoardState';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { useAuthGate } from '@/hooks/useAuthGate';
 import { cn } from '@/lib/utils';
 import { inferCategoryFromTitle, inferCategoryNameFromTitle } from '@/lib/jobs/categoryInference';
 
@@ -29,8 +30,13 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
 }) => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
+  const gate = useAuthGate();
   const [searchParams] = useSearchParams();
   const highlightJobId = searchParams.get('highlight');
+  
+  // Role-based preview mode: only professionals see full data
+  const isProfessional = !!user && profile?.active_role === 'professional';
+  const previewMode = !isProfessional;
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -68,20 +74,17 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
     }
   }, [quickFilter]);
 
+  // Single useEffect for loading jobs - removed duplicate
   useEffect(() => {
     loadJobs();
-  }, [sortBy]);
-
-  useEffect(() => {
-    loadJobs();
-  }, [sortBy]);
+  }, [sortBy, previewMode]);
 
   const loadJobs = async () => {
     try {
       setLoading(true);
       
-      // PUBLIC PREVIEW MODE: Use secure view for unauthenticated users
-      if (!user) {
+      // PREVIEW MODE: Use secure view for non-professionals (logged out OR client role)
+      if (previewMode) {
         const { data: jobsData, error } = await supabase
           .from('public_jobs_preview')
           .select('*')
@@ -229,9 +232,11 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
       }
     }
     
-    // Special filters
-    const hasPhotos = job.answers?.extras?.photos?.length > 0;
-    const matchesPhotos = !filters.hasPhotos || hasPhotos;
+    // Special filters - use mode-aware helper
+    const jobHasPhotos = previewMode 
+      ? !!job.has_photos 
+      : (job.answers?.extras?.photos?.length ?? 0) > 0;
+    const matchesPhotos = !filters.hasPhotos || jobHasPhotos;
     
     const matchesHighBudget = !filters.highBudget || job.budget_value >= 500;
     
@@ -244,34 +249,23 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
            matchesStartDate && matchesPhotos && matchesHighBudget && matchesHighlyRated && matchesNewToday;
   });
 
-  // Featured jobs (high budget + photos + recent)
+  // Featured jobs (high budget + photos + recent) - use mode-aware check
   const featuredJobs = filteredJobs.filter(job => {
-    const hasPhotos = job.answers?.extras?.photos?.length > 0;
+    const jobHasPhotos = previewMode ? !!job.has_photos : (job.answers?.extras?.photos?.length ?? 0) > 0;
     const isHighBudget = job.budget_value >= 500;
     const isRecent = new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
-    return hasPhotos && isHighBudget && isRecent;
+    return jobHasPhotos && isHighBudget && isRecent;
   }).slice(0, 3);
 
   const regularJobs = filteredJobs.filter(job => !featuredJobs.includes(job));
 
   const handleSendOffer = async (jobId: string) => {
-    if (!user) {
-      toast.error('You need to be logged in to send offers');
-      return;
-    }
-    
-    // Check if user has professional role
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('role', 'professional')
-      .maybeSingle();
-    
-    if (!roleData) {
-      toast.error('You need to be a professional to send offers');
-      return;
-    }
+    // Use gate instead of manual DB lookup
+    const ok = gate(user, profile?.active_role, {
+      requiredRole: 'professional',
+      reason: 'Sign in as a professional to send offers',
+    });
+    if (!ok) return;
     
     // Find the job to get its title
     const job = jobs.find(j => j.id === jobId);
@@ -290,6 +284,13 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   };
 
   const handleMessageClient = (jobId: string) => {
+    // Use gate for proper auth/role check with redirect
+    const ok = gate(user, profile?.active_role, {
+      requiredRole: 'professional',
+      reason: 'Sign in as a professional to message clients',
+    });
+    if (!ok) return;
+    
     const job = jobs.find(j => j.id === jobId);
     if (!job?.client_id) {
       toast.error('Unable to start conversation');
@@ -427,7 +428,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
                   onMessage={handleMessageClient}
                   onSave={handleSaveJob}
                   viewMode="card"
-                  previewMode={!user}
+                  previewMode={previewMode}
                 />
               </div>
             ))}
@@ -446,13 +447,13 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
                   highlightJobId === job.id && "ring-2 ring-copper animate-pulse"
                 )}
               >
-                <JobListingCard
+              <JobListingCard
                   job={job}
                   onSendOffer={handleSendOffer}
                   onMessage={handleMessageClient}
                   onSave={handleSaveJob}
                   viewMode={viewMode}
-                  previewMode={!user}
+                  previewMode={previewMode}
                 />
               </div>
             ))

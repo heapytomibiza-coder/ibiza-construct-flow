@@ -67,15 +67,20 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   
   // Get service visuals
   const serviceVisuals = getServiceVisuals(job.category);
-  const heroImage = job.answers?.extras?.photos?.[0] || serviceVisuals.hero;
-  const photoCount = job.answers?.extras?.photos?.length || 0;
-  // Support both real photo count and explicit has_photos flag for preview mode
-  const hasPhotos = job.has_photos || photoCount > 0;
+  
+  // PRIVACY: Never show client-uploaded photos in preview mode
+  const photoCount = previewMode ? 0 : (job.answers?.extras?.photos?.length || 0);
+  const heroImage = previewMode
+    ? serviceVisuals.hero
+    : (job.answers?.extras?.photos?.[0] || serviceVisuals.hero);
+  
+  // Preview mode uses explicit boolean flag from public view; full mode uses actual count
+  const hasPhotos = previewMode ? !!job.has_photos : photoCount > 0;
   const answerCount = job.answers?.microAnswers ? Object.keys(job.answers.microAnswers).length : 0;
   
-  // Calculate match score (mock logic - replace with real matching algorithm)
-  const matchScore = Math.floor(Math.random() * (95 - 60) + 60);
-  const matchBreakdown = {
+  // Don't show random match score in preview mode (looks buggy)
+  const matchScore = previewMode ? undefined : Math.floor(Math.random() * (95 - 60) + 60);
+  const matchBreakdown = previewMode ? undefined : {
     skillMatch: Math.floor(Math.random() * (100 - 70) + 70),
     locationMatch: job.location ? Math.floor(Math.random() * (100 - 60) + 60) : undefined,
     budgetMatch: Math.floor(Math.random() * (100 - 50) + 50),
@@ -136,7 +141,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
               </div>
             </div>
             
-            {!previewMode && (
+            {!previewMode ? (
               <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
@@ -145,6 +150,10 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
                 >
                   Send Offer
                 </Button>
+              </div>
+            ) : (
+              <div className="text-xs text-muted-foreground text-right">
+                Sign in as a professional to apply
               </div>
             )}
           </div>
@@ -172,10 +181,12 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
               micro={job.micro}
               icon={serviceVisuals.icon}
             />
-            <JobMatchScore 
-              score={matchScore} 
-              breakdown={matchBreakdown}
-            />
+            {matchScore && matchBreakdown && (
+              <JobMatchScore 
+                score={matchScore} 
+                breakdown={matchBreakdown}
+              />
+            )}
           </div>
           
           <div className="flex flex-col gap-2">
@@ -346,6 +357,7 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
           onClose={() => setShowDetailsModal(false)}
           onApply={onSendOffer}
           onMessage={onMessage}
+          previewMode={previewMode}
         />
       </CardContent>
     </Card>

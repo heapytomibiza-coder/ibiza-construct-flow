@@ -43,11 +43,19 @@ export function useAuthGate() {
       return false;
     }
 
-    // Logged in but wrong role → redirect to role switcher
-    if (opts?.requiredRole && activeRole && activeRole !== opts.requiredRole) {
-      toast.error(`Switch to ${opts.requiredRole} mode to continue`);
-      navigate(`/role-switcher?redirect=${redirect}&requiredRole=${opts.requiredRole}`);
-      return false;
+    // Logged in but missing or wrong role → redirect to role switcher
+    // CRITICAL: Block if activeRole is null/undefined to prevent slip-through during load
+    if (opts?.requiredRole) {
+      if (!activeRole) {
+        toast.error(`Switch to ${opts.requiredRole} mode to continue`);
+        navigate(`/role-switcher?redirect=${redirect}&requiredRole=${opts.requiredRole}`);
+        return false;
+      }
+      if (activeRole !== opts.requiredRole) {
+        toast.error(`Switch to ${opts.requiredRole} mode to continue`);
+        navigate(`/role-switcher?redirect=${redirect}&requiredRole=${opts.requiredRole}`);
+        return false;
+      }
     }
 
     return true;
