@@ -1,259 +1,294 @@
 
-# Public Job Board & Action-Point Gating Refactor
 
-## Overview
+# Critical Refinements: Public Job Board Privacy & Security Fixes
 
-This refactor makes the job board publicly browsable while gating professional-only actions (Apply/Message/Reveal) at the action point rather than the route level. After login, users return to the same page.
+## Summary of Issues Found
 
----
+Based on detailed analysis of the current implementation, here are the critical bugs that need fixing:
 
-## Current State Analysis
-
-| Component | Current Behavior | Problem |
-|-----------|-----------------|---------|
-| `/job-board` route | Wrapped in `RouteGuard requiredRole="professional"` | Forces login before browsing |
-| `QuickApplyButton` | Shows toast "Please log in to apply" | No redirect, poor UX |
-| `JobListingCard` | Has `previewMode` prop | Already partially implemented |
-| Auth flow | `RouteGuard` encodes `redirect` param | Works for route-level gating |
-| QueryClient | Two instances (main.tsx + App.tsx) | Inconsistent state, must fix |
+| Issue | Location | Severity | Impact |
+|-------|----------|----------|--------|
+| **Missing activeRole blocks wrong users** | `useAuthGate.ts` | 🔴 CRITICAL | Clients can slip through before role loads |
+| **Hero image leaks photos in preview** | `JobListingCard.tsx` | 🔴 CRITICAL | Client photos visible publicly |
+| **hasPhotos logic wrong in preview** | `JobListingCard.tsx` | 🟡 MEDIUM | Filter/featured logic fails |
+| **Duplicate useEffect** | `JobsMarketplace.tsx` | 🟡 MEDIUM | Double queries, race conditions |
+| **previewMode based on !user only** | `JobsMarketplace.tsx` | 🔴 CRITICAL | Logged-in clients see full mode |
+| **Filters use answers.extras.photos** | `JobsMarketplace.tsx` | 🟡 MEDIUM | Photos filter fails in preview |
+| **handleSendOffer queries DB per click** | `JobsMarketplace.tsx` | 🟡 MEDIUM | Slow, no redirect |
+| **Modal leaks photos/address/answers** | `JobDetailsModal.tsx` | 🔴 CRITICAL | All private data exposed |
+| **No preview CTA in compact mode** | `JobListingCard.tsx` | 🟢 LOW | Poor UX for anonymous users |
 
 ---
 
 ## Implementation Plan
 
-### Phase 1: Create `useAuthGate` Hook (Shared Utility)
+### Phase 1: Fix `useAuthGate.ts` - Block Missing Role
 
-**New file:** `src/hooks/useAuthGate.ts`
+**Problem:** Current logic only blocks if `activeRole !== requiredRole`, but if `activeRole` is `null/undefined`, users slip through.
 
+**Current (buggy):**
 ```typescript
-import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-
-type GateOptions = {
-  requiredRole?: "professional" | "client" | "admin";
-  reason?: string;
-};
-
-export function useAuthGate() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  return function gate(
-    user: any,
-    activeRole?: string | null,
-    opts?: GateOptions
-  ): boolean {
-    const redirect = encodeURIComponent(location.pathname + location.search);
-
-    // Not logged in → redirect to auth
-    if (!user) {
-      if (opts?.reason) toast.error(opts.reason);
-      navigate(`/auth?redirect=${redirect}`);
-      return false;
-    }
-
-    // Logged in but wrong role → redirect to role switcher
-    if (opts?.requiredRole && activeRole && activeRole !== opts.requiredRole) {
-      toast.error(`Switch to ${opts.requiredRole} mode to continue`);
-      navigate(`/role-switcher?redirect=${redirect}&requiredRole=${opts.requiredRole}`);
-      return false;
-    }
-
-    return true;
-  };
-}
-```
-
-**Benefits:**
-- One consistent behavior for all gated actions
-- Preserves current URL for return after auth
-- Handles role switching requirement
-- Reusable across Apply/Message/Reveal/Post buttons
-
----
-
-### Phase 2: Make `/job-board` Route Public
-
-**File:** `src/App.tsx` (line ~358-362)
-
-**Before:**
-```typescript
-<Route path="/job-board" element={
-  <RouteGuard requiredRole="professional">
-    <JobBoardPage />
-  </RouteGuard>
-} />
-```
-
-**After:**
-```typescript
-<Route path="/job-board" element={<JobBoardPage />} />
-```
-
-This allows anyone to browse the job board, while actions remain gated via component logic.
-
----
-
-### Phase 3: Update `QuickApplyButton` to Use Auth Gate
-
-**File:** `src/components/marketplace/QuickApplyButton.tsx`
-
-**Changes:**
-1. Import and use `useAuthGate`
-2. Gate BEFORE opening dialog (better UX)
-3. Gate again before submit (belt-and-suspenders)
-
-```typescript
-import { useAuthGate } from "@/hooks/useAuthGate";
-
-export const QuickApplyButton: React.FC<QuickApplyButtonProps> = ({
-  jobId,
-  jobTitle,
-  suggestedQuote,
-  onSuccess,
-  variant = 'default',
-  size = 'default',
-  className
-}) => {
-  const { user, profile } = useAuth();
-  const gate = useAuthGate();
-  const [open, setOpen] = useState(false);
-  // ... existing state
-
-  const handleOpenDialog = () => {
-    // Gate: require login + professional role to open dialog
-    const canProceed = gate(user, profile?.active_role, {
-      requiredRole: "professional",
-      reason: "Sign in as a professional to apply for jobs",
-    });
-    if (!canProceed) return;
-    
-    setOpen(true);
-  };
-
-  const handleQuickApply = async () => {
-    // Double-check auth (handles expired sessions)
-    const canProceed = gate(user, profile?.active_role, {
-      requiredRole: "professional",
-      reason: "Sign in as a professional to apply",
-    });
-    if (!canProceed) return;
-
-    // ... existing apply logic
-  };
-
-  return (
-    <>
-      <Button onClick={handleOpenDialog} ...>
-        Quick Apply
-      </Button>
-      {/* Dialog unchanged */}
-    </>
-  );
-};
-```
-
----
-
-### Phase 4: Remove Duplicate QueryClientProvider
-
-**File:** `src/App.tsx`
-
-**Current (problematic):**
-```typescript
-const queryClient = new QueryClient();
-
-export default function App() {
-  return (
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <AppContent />
-      </QueryClientProvider>
-    </HelmetProvider>
-  );
-}
+if (opts?.requiredRole && activeRole && activeRole !== opts.requiredRole) {
 ```
 
 **Fixed:**
 ```typescript
-// REMOVE: const queryClient = new QueryClient();
-
-export default function App() {
-  return (
-    <HelmetProvider>
-      <AppContent />
-    </HelmetProvider>
-  );
+if (opts?.requiredRole) {
+  if (!activeRole) {
+    toast.error(`Switch to ${opts.requiredRole} mode to continue`);
+    navigate(`/role-switcher?redirect=${redirect}&requiredRole=${opts.requiredRole}`);
+    return false;
+  }
+  if (activeRole !== opts.requiredRole) {
+    toast.error(`Switch to ${opts.requiredRole} mode to continue`);
+    navigate(`/role-switcher?redirect=${redirect}&requiredRole=${opts.requiredRole}`);
+    return false;
+  }
 }
 ```
 
-The `QueryClientProvider` in `main.tsx` (line 57-58) is the correct single source of truth with proper configuration (staleTime, gcTime, retry logic).
+This makes the gate deterministic - it blocks until role is confirmed.
 
 ---
 
-### Phase 5: Update `JobsMarketplace` for Public Access
+### Phase 2: Fix `JobListingCard.tsx` - Privacy & Logic Bugs
 
-**File:** `src/components/marketplace/JobsMarketplace.tsx`
+**Bug 1: Hero image can leak real client photos in preview mode**
 
-The component already supports `previewMode` for cards. Ensure:
-1. When user is NOT authenticated, cards render with `previewMode={true}`
-2. When user IS authenticated as professional, cards render with `previewMode={false}`
-
+Current code:
 ```typescript
-// In the job card render:
-<JobListingCard
-  key={job.id}
-  job={job}
-  viewMode={viewMode}
-  previewMode={!user || profile?.active_role !== 'professional'}
-  onSendOffer={handleSendOffer}
-  onMessage={handleMessage}
-/>
+const heroImage = job.answers?.extras?.photos?.[0] || serviceVisuals.hero;
+```
+
+This shows real photos even if previewMode is true.
+
+**Fix:**
+```typescript
+// Never show client-uploaded photos in preview mode (privacy)
+const photoCount = previewMode ? 0 : (job.answers?.extras?.photos?.length || 0);
+
+const heroImage = previewMode
+  ? serviceVisuals.hero
+  : (job.answers?.extras?.photos?.[0] || serviceVisuals.hero);
+```
+
+**Bug 2: hasPhotos logic is inconsistent**
+
+Current code mixes `job.has_photos` and `photoCount`:
+```typescript
+const hasPhotos = job.has_photos || photoCount > 0;
+```
+
+**Fix:**
+```typescript
+// Preview mode uses explicit boolean flag from public view
+const hasPhotos = previewMode
+  ? !!job.has_photos
+  : photoCount > 0;
+```
+
+**Bug 3: Compact mode shows no CTA**
+
+Add CTA in compact mode when previewMode is true:
+```typescript
+{!previewMode ? (
+  <div className="flex items-center gap-2">
+    <Button variant="outline" size="sm" onClick={() => onSendOffer?.(job.id)}>
+      Send Offer
+    </Button>
+  </div>
+) : (
+  <div className="text-xs text-muted-foreground text-right">
+    Sign in as a professional to apply
+  </div>
+)}
 ```
 
 ---
 
-### Phase 6: Add Message/Contact Gating
+### Phase 3: Fix `JobsMarketplace.tsx` - Multiple Bugs
 
-Apply the same `useAuthGate` pattern to any other action buttons:
+**Bug 1: Duplicate useEffect causes double queries**
 
-**Components to update:**
-- `JobListingCard` - "Message" button handler
-- `JobDetailsModal` - "Apply" and "Message" buttons
-- `ProfessionalCard` - "Contact" button (if applicable)
+Current code has TWO identical effects:
+```typescript
+useEffect(() => { loadJobs(); }, [sortBy]);
+useEffect(() => { loadJobs(); }, [sortBy]);
+```
 
-**Pattern:**
+**Fix:** Delete one, add `previewMode` to dependencies.
+
+**Bug 2: previewMode only checks `!user` (wrong)**
+
+Current:
+```typescript
+previewMode={!user}
+```
+
+This means logged-in clients see full mode incorrectly.
+
+**Fix:** Add role-based previewMode:
+```typescript
+const isProfessional = !!user && profile?.active_role === 'professional';
+const previewMode = !isProfessional;
+```
+
+Then pass:
+```typescript
+previewMode={previewMode}
+```
+
+**Bug 3: loadJobs branches on `!user` instead of `previewMode`**
+
+The authenticated branch loads full data even for clients.
+
+**Fix:** Change condition from `if (!user)` to `if (previewMode)`.
+
+**Bug 4: Filters use `job.answers?.extras?.photos` in preview mode**
+
+Current:
+```typescript
+const hasPhotos = job.answers?.extras?.photos?.length > 0;
+```
+
+In preview mode, `answers` is `undefined`, so this always returns `false`.
+
+**Fix:** Add helper:
+```typescript
+const jobHasPhotos = (job: any) =>
+  previewMode ? !!job.has_photos : (job.answers?.extras?.photos?.length ?? 0) > 0;
+```
+
+**Bug 5: handleSendOffer queries DB per click**
+
+Current code does a `supabase.from('user_roles')` query on every click.
+
+**Fix:** Use `useAuthGate` instead:
 ```typescript
 const gate = useAuthGate();
 
-const handleMessage = () => {
-  const canProceed = gate(user, profile?.active_role, {
-    requiredRole: "professional",
-    reason: "Sign in as a professional to message clients",
+const handleSendOffer = (jobId: string) => {
+  const ok = gate(user, profile?.active_role, {
+    requiredRole: 'professional',
+    reason: 'Sign in as a professional to send offers',
   });
-  if (!canProceed) return;
+  if (!ok) return;
   
-  // Proceed with messaging...
-  onMessage?.(job.id);
+  const job = jobs.find(j => j.id === jobId);
+  if (!job) return;
+  setSelectedJobForOffer({ jobId, jobTitle: job.title });
+};
+```
+
+Same for `handleMessageClient`:
+```typescript
+const handleMessageClient = (jobId: string) => {
+  const ok = gate(user, profile?.active_role, {
+    requiredRole: 'professional',
+    reason: 'Sign in as a professional to message clients',
+  });
+  if (!ok) return;
+  
+  const job = jobs.find(j => j.id === jobId);
+  if (!job?.client_id) {
+    toast.error('Unable to start conversation');
+    return;
+  }
+  navigate(`/messages?professional=${job.client_id}`);
 };
 ```
 
 ---
 
-### Phase 7: Add Preview CTA in Cards
+### Phase 4: Fix `JobDetailsModal.tsx` - Privacy Leaks
 
-**File:** `src/components/marketplace/JobListingCard.tsx`
+This modal currently leaks ALL private data if opened from the public job board.
 
-When `previewMode` is true and buttons are hidden, show an encouraging CTA:
-
+**Add `previewMode` prop:**
 ```typescript
-{previewMode && (
-  <div className="text-center p-2 bg-muted/50 rounded-md">
-    <p className="text-sm text-muted-foreground">
-      <span className="font-medium text-primary">Sign in as a professional</span>{' '}
-      to apply for this job
-    </p>
+interface JobDetailsModalProps {
+  // ... existing props
+  previewMode?: boolean;
+}
+
+export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
+  // ... existing
+  previewMode = false,
+}) => {
+```
+
+**Pass from JobListingCard:**
+```typescript
+<JobDetailsModal
+  job={job}
+  open={showDetailsModal}
+  onClose={() => setShowDetailsModal(false)}
+  onApply={onSendOffer}
+  onMessage={onMessage}
+  previewMode={previewMode}
+/>
+```
+
+**Fix 1: Block photo gallery in preview mode**
+
+Current:
+```typescript
+{hasPhotos && <JobPhotoGallery photos={extras.photos!} />}
+```
+
+Fixed:
+```typescript
+const hasPhotos = !previewMode && !!extras?.photos?.length;
+
+{!previewMode && hasPhotos && (
+  <JobPhotoGallery photos={extras.photos!} className="mb-0" />
+)}
+```
+
+**Fix 2: Block address leak**
+
+Current:
+```typescript
+{job.location.address && <p>{job.location.address}</p>}
+```
+
+Fixed:
+```typescript
+{!previewMode && job.location?.address && (
+  <p className="text-sm text-muted-foreground">{job.location.address}</p>
+)}
+```
+
+**Fix 3: Block entire Project Details accordion in preview mode**
+
+Current:
+```typescript
+{(hasMicroAnswers || hasLogistics || hasSchedule || hasExtras) && ( ... )}
+```
+
+Fixed:
+```typescript
+{!previewMode && (hasMicroAnswers || hasLogistics || hasSchedule || hasExtras) && ( ... )}
+```
+
+**Fix 4: Show CTA instead of action buttons in preview mode**
+
+Replace the action buttons section with conditional rendering:
+```typescript
+{previewMode ? (
+  <div className="flex gap-3 sticky bottom-0 bg-background pt-4 pb-2">
+    <Button variant="outline" onClick={onClose} className="flex-1">
+      Close
+    </Button>
+    <div className="flex-1 text-center p-2 bg-muted/50 rounded-md flex items-center justify-center">
+      <p className="text-sm text-muted-foreground">
+        <span className="font-medium text-primary">Sign in as a professional</span>{' '}
+        to message or apply
+      </p>
+    </div>
   </div>
+) : (
+  /* existing action buttons */
 )}
 ```
 
@@ -261,55 +296,53 @@ When `previewMode` is true and buttons are hidden, show an encouraging CTA:
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `src/hooks/useAuthGate.ts` | NEW: Create shared auth gate hook |
-| `src/App.tsx` | Remove RouteGuard from /job-board, remove duplicate QueryClient |
-| `src/components/marketplace/QuickApplyButton.tsx` | Use useAuthGate instead of toast |
-| `src/components/marketplace/JobsMarketplace.tsx` | Pass previewMode based on auth state |
-| `src/components/marketplace/JobListingCard.tsx` | Add CTA for preview mode |
-| `src/components/marketplace/JobDetailsModal.tsx` | Gate Apply/Message buttons |
+| File | Changes |
+|------|---------|
+| `src/hooks/useAuthGate.ts` | Block missing activeRole |
+| `src/components/marketplace/JobListingCard.tsx` | Fix heroImage leak, hasPhotos logic, add compact CTA |
+| `src/components/marketplace/JobsMarketplace.tsx` | Fix previewMode logic, remove duplicate effect, use gate |
+| `src/components/marketplace/JobDetailsModal.tsx` | Add previewMode, block photos/address/answers |
 
 ---
 
 ## Implementation Order
 
-1. **Create `useAuthGate` hook** - Foundation for all gating
-2. **Remove duplicate QueryClientProvider** - Critical cleanup
-3. **Remove RouteGuard from `/job-board`** - Make route public
-4. **Update `QuickApplyButton`** - Gate at action point
-5. **Update `JobsMarketplace`** - Pass previewMode correctly
-6. **Update `JobListingCard`** - Add preview CTA
-7. **Update `JobDetailsModal`** - Gate modal actions
-8. **Test** - Verify flow in incognito
+1. **Fix `useAuthGate.ts`** - Critical security fix
+2. **Fix `JobListingCard.tsx`** - Privacy + logic bugs
+3. **Fix `JobsMarketplace.tsx`** - Multiple bugs including duplicate effect
+4. **Fix `JobDetailsModal.tsx`** - Add previewMode protection
 
 ---
 
-## Expected Behavior After Implementation
+## Expected Behavior After Fix
 
-| User State | See Job Board | See Job Cards | Click Apply | Result |
-|------------|--------------|---------------|-------------|--------|
-| Logged out | ✅ Yes | ✅ Preview mode | Button visible | Redirects to `/auth?redirect=/job-board` |
-| Logged in as Client | ✅ Yes | ✅ Preview mode | Button hidden | Shows "Sign in as professional" CTA |
-| Logged in as Professional | ✅ Yes | ✅ Full mode | Button works | Opens apply dialog |
+| Scenario | Job Cards | Photos | Address | Apply/Message |
+|----------|-----------|--------|---------|---------------|
+| Logged out | ✅ Preview | ❌ Hidden | ❌ Hidden | Redirects to auth |
+| Client role | ✅ Preview | ❌ Hidden | ❌ Hidden | Shows CTA/redirects |
+| Professional | ✅ Full | ✅ Visible | ✅ Visible | ✅ Works |
 
 ---
 
-## Security Notes
+## Security Benefits
 
-1. **No client data exposure** - `previewMode` and `public_jobs_preview` view ensure no leakage
-2. **Action-level gating** - Even if button is somehow clicked, backend RLS protects data
-3. **Role verification** - Both frontend (`useAuthGate`) and backend (RLS policies on `job_quotes`) enforce professional role
+1. **No photo leakage** - Hero images always use category fallback in preview
+2. **No address leakage** - Modal hides address in preview mode
+3. **No answers leakage** - Entire Project Details section hidden
+4. **Deterministic gate** - Missing role now blocks (doesn't slip through)
+5. **Consistent behavior** - Same preview logic on homepage AND job board
+6. **Role-based, not auth-based** - Clients also see preview mode
 
 ---
 
 ## QA Checklist
 
-- [ ] Open `/job-board` in incognito - jobs visible
-- [ ] Click "Quick Apply" when logged out - redirects to `/auth?redirect=/job-board`
-- [ ] Complete login - returns to `/job-board`
-- [ ] Click "Quick Apply" as professional - dialog opens
-- [ ] Submit application - works correctly
-- [ ] Switch to client role - Apply buttons hidden, CTA shown
-- [ ] Build version visible in footer (from previous fix)
-- [ ] No console errors about missing QueryClient
+- [ ] Incognito → `/job-board` shows jobs with category hero images only
+- [ ] Incognito → Click "View Details" → Modal shows no photos/address/answers
+- [ ] Incognito → Click "Apply" → Redirects to `/auth?redirect=...`
+- [ ] Login as Client → Still sees preview mode (not full data)
+- [ ] Login as Professional → Sees full data with real photos
+- [ ] Hard refresh while role loading → Gate blocks until role confirmed
+- [ ] Featured jobs filter works correctly using `has_photos` flag
+- [ ] No console errors about missing data
+
