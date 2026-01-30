@@ -195,6 +195,14 @@ export default function RouteGuard({
     // Set up auth state listener to detect changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('🔒 [RouteGuard] Auth state change:', event, 'hasSession:', !!session);
+      
+      // Handle sign out explicitly - immediately set unauthorized
+      if (event === 'SIGNED_OUT') {
+        console.log('🔒 [RouteGuard] User signed out, setting unauthorized');
+        if (!isStale) setStatus('unauthorized');
+        return;
+      }
+      
       // Re-run auth check when auth state changes
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         checkAuth();

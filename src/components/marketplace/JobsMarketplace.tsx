@@ -15,6 +15,7 @@ import { EmptyJobBoardState } from './EmptyJobBoardState';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { useActiveRole } from '@/hooks/useActiveRole';
 import { useAuthGate } from '@/hooks/useAuthGate';
 import { cn } from '@/lib/utils';
 import { inferCategoryFromTitle, inferCategoryNameFromTitle } from '@/lib/jobs/categoryInference';
@@ -28,14 +29,17 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   searchQuery: externalSearchQuery = '',
   quickFilter = ''
 }) => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
+  const { activeRole, roles } = useActiveRole();
   const navigate = useNavigate();
   const gate = useAuthGate();
   const [searchParams] = useSearchParams();
   const highlightJobId = searchParams.get('highlight');
   
   // Role-based preview mode: only professionals see full data
-  const isProfessional = !!user && profile?.active_role === 'professional';
+  // Use activeRole from useActiveRole (synced with user_roles table) instead of profile.active_role
+  // This ensures consistency with RouteGuard and prevents role source mismatch
+  const isProfessional = !!user && activeRole === 'professional' && roles.includes('professional');
   const previewMode = !isProfessional;
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -261,7 +265,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
 
   const handleSendOffer = async (jobId: string) => {
     // Use gate instead of manual DB lookup
-    const ok = gate(user, profile?.active_role, {
+    const ok = gate(user, activeRole, {
       requiredRole: 'professional',
       reason: 'Sign in as a professional to send offers',
     });
@@ -285,7 +289,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
 
   const handleMessageClient = (jobId: string) => {
     // Use gate for proper auth/role check with redirect
-    const ok = gate(user, profile?.active_role, {
+    const ok = gate(user, activeRole, {
       requiredRole: 'professional',
       reason: 'Sign in as a professional to message clients',
     });
@@ -297,8 +301,9 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
       return;
     }
     
-    // Navigate to messages page with professional parameter to start conversation
-    navigate(`/messages?professional=${job.client_id}`);
+    // Navigate to messages page with recipient parameter (neutral param for any user)
+    // Using 'recipient' instead of 'professional' since we're messaging a CLIENT
+    navigate(`/messages?recipient=${job.client_id}`);
   };
 
   if (loading) {
