@@ -45,7 +45,8 @@ export const JobFiltersPanel: React.FC<JobFiltersPanelProps> = ({
 
   const loadCategoryStats = async () => {
     const { data: jobs } = await supabase
-      .from('jobs')
+      // Use public preview data source so anonymous/non-pro users never hit the private jobs table
+      .from('public_jobs_preview')
       .select('micro_id')
       .eq('status', 'open');
 

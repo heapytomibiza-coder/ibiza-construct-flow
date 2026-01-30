@@ -19,7 +19,8 @@ export const JobBoardStatsBar: React.FC = () => {
 
   const loadStats = async () => {
     const { data: jobs } = await supabase
-      .from('jobs')
+      // Use public preview data source so anonymous/non-pro users never hit the private jobs table
+      .from('public_jobs_preview')
       .select('budget_value, created_at')
       .eq('status', 'open');
 
