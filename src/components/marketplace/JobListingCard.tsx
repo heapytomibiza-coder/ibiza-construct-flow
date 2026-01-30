@@ -25,8 +25,8 @@ interface JobListingCardProps {
     budget_type: 'fixed' | 'hourly';
     budget_value: number;
     location?: {
-      address: string;
-      area: string;
+      address?: string;
+      area?: string;
     };
     created_at: string;
     status: string;
@@ -47,6 +47,8 @@ interface JobListingCardProps {
   onSave?: (jobId: string) => void;
   className?: string;
   viewMode?: 'card' | 'compact';
+  /** When true, hides professional actions (Apply/Message) for public visitors */
+  previewMode?: boolean;
 }
 
 export const JobListingCard: React.FC<JobListingCardProps> = ({
@@ -55,7 +57,8 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
   onMessage,
   onSave,
   className,
-  viewMode = 'card'
+  viewMode = 'card',
+  previewMode = false
 }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const isNew = new Date(job.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -129,15 +132,17 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => onSendOffer?.(job.id)}
-              >
-                Send Offer
-              </Button>
-            </div>
+            {!previewMode && (
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => onSendOffer?.(job.id)}
+                >
+                  Send Offer
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -275,23 +280,27 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 pt-4 mt-auto border-t">
-          <Button
-            variant="ghost"
-            size="default"
-            onClick={() => onSave?.(job.id)}
-            className="px-4"
-          >
-            <Heart className="w-4 h-4" />
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="default"
-            onClick={() => onMessage?.(job.id)}
-            className="px-4"
-          >
-            <MessageSquare className="w-4 h-4" />
-          </Button>
+          {!previewMode && (
+            <>
+              <Button
+                variant="ghost"
+                size="default"
+                onClick={() => onSave?.(job.id)}
+                className="px-4"
+              >
+                <Heart className="w-4 h-4" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="default"
+                onClick={() => onMessage?.(job.id)}
+                className="px-4"
+              >
+                <MessageSquare className="w-4 h-4" />
+              </Button>
+            </>
+          )}
           
           <Button
             variant="outline"
@@ -302,13 +311,15 @@ export const JobListingCard: React.FC<JobListingCardProps> = ({
             View Details
           </Button>
           
-          <QuickApplyButton
-            jobId={job.id}
-            jobTitle={job.title}
-            suggestedQuote={suggestedQuote}
-            onSuccess={() => onSendOffer?.(job.id)}
-            className="flex-1"
-          />
+          {!previewMode && (
+            <QuickApplyButton
+              jobId={job.id}
+              jobTitle={job.title}
+              suggestedQuote={suggestedQuote}
+              onSuccess={() => onSendOffer?.(job.id)}
+              className="flex-1"
+            />
+          )}
         </div>
         
         <JobDetailsModal

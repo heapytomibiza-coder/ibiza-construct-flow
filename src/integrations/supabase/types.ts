@@ -1979,6 +1979,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "calendar_events_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "calendar_events_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -2382,6 +2389,13 @@ export type Database = {
             referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "collaborative_sessions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
         ]
       }
       competitor_benchmarks: {
@@ -2628,6 +2642,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
             referencedColumns: ["id"]
           },
         ]
@@ -3625,6 +3646,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "early_warnings_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
             referencedColumns: ["id"]
           },
         ]
@@ -4749,6 +4777,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "job_applicants_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "job_applicants_professional_id_fkey"
             columns: ["professional_id"]
             isOneToOne: false
@@ -4967,6 +5002,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "job_question_snapshot_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: true
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "job_question_snapshot_pack_id_fkey"
             columns: ["pack_id"]
             isOneToOne: false
@@ -5035,6 +5077,13 @@ export type Database = {
             referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "job_quotes_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
         ]
       }
       job_state_transitions: {
@@ -5074,6 +5123,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_state_transitions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
             referencedColumns: ["id"]
           },
         ]
@@ -5231,6 +5287,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_versions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
             referencedColumns: ["id"]
           },
         ]
@@ -7181,6 +7244,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "payment_schedules_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "payment_schedules_payee_id_fkey"
             columns: ["payee_id"]
             isOneToOne: false
@@ -7257,6 +7327,13 @@ export type Database = {
             referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "payment_transactions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
         ]
       }
       payments: {
@@ -7314,6 +7391,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
             referencedColumns: ["id"]
           },
         ]
@@ -8625,6 +8709,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_reviews_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
             referencedColumns: ["id"]
           },
           {
@@ -10702,6 +10793,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reviews_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "reviews_reviewee_id_fkey"
             columns: ["reviewee_id"]
             isOneToOne: false
@@ -11756,6 +11854,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_documents_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
             referencedColumns: ["id"]
           },
           {
@@ -13032,6 +13137,13 @@ export type Database = {
             referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "uuid_migration_log_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "public_jobs_preview"
+            referencedColumns: ["id"]
+          },
         ]
       }
       ux_health_checks: {
@@ -13455,6 +13567,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      public_jobs_preview: {
+        Row: {
+          address_preview: string | null
+          area: string | null
+          budget_type: string | null
+          budget_value: number | null
+          created_at: string | null
+          has_photos: boolean | null
+          id: string | null
+          micro_id: string | null
+          published_at: string | null
+          status: string | null
+          teaser: string | null
+          title: string | null
+          town: string | null
+        }
+        Insert: {
+          address_preview?: never
+          area?: never
+          budget_type?: string | null
+          budget_value?: number | null
+          created_at?: string | null
+          has_photos?: never
+          id?: string | null
+          micro_id?: string | null
+          published_at?: string | null
+          status?: string | null
+          teaser?: never
+          title?: string | null
+          town?: never
+        }
+        Update: {
+          address_preview?: never
+          area?: never
+          budget_type?: string | null
+          budget_value?: number | null
+          created_at?: string | null
+          has_photos?: never
+          id?: string | null
+          micro_id?: string | null
+          published_at?: string | null
+          status?: string | null
+          teaser?: never
+          title?: string | null
+          town?: never
+        }
+        Relationships: []
       }
       services_catalog: {
         Row: {

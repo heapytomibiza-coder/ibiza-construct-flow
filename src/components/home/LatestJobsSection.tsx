@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { JobListingCard } from '@/components/marketplace/JobListingCard';
 import { MapPin, Euro, Clock, Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,21 +17,6 @@ const LatestJobsSection = () => {
     console.error('Error loading latest jobs:', error);
     return null;
   }
-
-  const isNew = (createdAt: string) => {
-    return new Date(createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000);
-  };
-
-  const formatRelativeTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffHours < 1) return t('latestJobs.justNow', 'Just now');
-    if (diffHours < 24) return t('latestJobs.hoursAgo', '{{hours}}h ago', { hours: diffHours });
-    const diffDays = Math.floor(diffHours / 24);
-    return t('latestJobs.daysAgo', '{{days}}d ago', { days: diffDays });
-  };
 
   // No jobs fallback
   if (!isLoading && (!jobs || jobs.length === 0)) {
@@ -56,6 +42,27 @@ const LatestJobsSection = () => {
       </section>
     );
   }
+
+  // Adapt job data for JobListingCard format
+  const adaptJobForCard = (job: NonNullable<typeof jobs>[0]) => ({
+    id: job.id,
+    title: job.title,
+    description: job.description || job.teaser || '',
+    budget_type: job.budget_type,
+    budget_value: job.budget_value,
+    location: {
+      address: '',
+      area: formatJobLocation(job.location),
+    },
+    created_at: job.created_at,
+    status: job.status || 'open',
+    client: {
+      name: job.client.name,
+      avatar: job.client.avatar,
+    },
+    category: job.category_name || undefined,
+    answers: job.has_photos ? { extras: { photos: ['placeholder'] } } : undefined,
+  });
 
   return (
     <section className="py-16 bg-muted/30">
@@ -86,68 +93,13 @@ const LatestJobsSection = () => {
             ))
           ) : (
             jobs?.slice(0, 6).map((job) => (
-              <Link key={job.id} to={`/jobs/${job.id}`} className="group">
-                <Card className={cn(
-                  "h-full hover:shadow-lg transition-all duration-200",
-                  "border-2 border-transparent hover:border-primary/20"
-                )}>
-                  <CardContent className="p-5">
-                    {/* Header with title and badges */}
-                    <div className="flex items-start gap-2 mb-3">
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors flex-1 line-clamp-1">
-                        {job.title}
-                      </h3>
-                      {isNew(job.created_at) && (
-                        <Badge className="bg-gradient-to-r from-copper to-copper-dark text-white text-xs shrink-0">
-                          <Sparkles className="w-3 h-3 mr-1" />
-                          {t('latestJobs.new', 'NEW')}
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {job.description || t('latestJobs.noDescription', 'No description provided')}
-                    </p>
-
-                    {/* Category badge with link */}
-                    {job.category_name && job.category_slug && (
-                      <Badge 
-                        variant="secondary" 
-                        className="mb-3 text-xs hover:bg-secondary/80 cursor-pointer"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          window.location.href = `/services/${job.category_slug}`;
-                        }}
-                      >
-                        {job.category_name}
-                      </Badge>
-                    )}
-
-                    {/* Meta info */}
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Euro className="w-4 h-4" />
-                        <span className="font-medium text-foreground">
-                          €{job.budget_value?.toLocaleString() || '0'}
-                          {job.budget_type === 'hourly' && '/hr'}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{formatJobLocation(job.location)}</span>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{formatRelativeTime(job.created_at)}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+              <JobListingCard
+                key={job.id}
+                job={adaptJobForCard(job)}
+                viewMode="compact"
+                previewMode={true}
+                className="h-full"
+              />
             ))
           )}
         </div>

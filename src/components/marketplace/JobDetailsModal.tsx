@@ -35,8 +35,8 @@ interface JobDetailsModalProps {
     budget_type: 'fixed' | 'hourly';
     budget_value: number;
     location?: {
-      address: string;
-      area: string;
+      address?: string;
+      area?: string;
     };
     created_at: string;
     status: string;
