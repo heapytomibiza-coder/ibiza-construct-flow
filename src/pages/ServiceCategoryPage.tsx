@@ -57,7 +57,7 @@ const ServiceCategoryPage = () => {
       <Helmet>
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={`https://csibiza.com/services/${categorySlug}`} />
+        <link rel="canonical" href={`${typeof window !== 'undefined' ? window.location.origin : ''}/services/${categorySlug}`} />
       </Helmet>
       
       {/* Pass category filter to Discovery */}
