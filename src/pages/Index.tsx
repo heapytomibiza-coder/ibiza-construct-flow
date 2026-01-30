@@ -133,9 +133,6 @@ const Index = () => {
             <HowItWorks />
           </section>
           
-          <section id="professional-network-section">
-            <ProfessionalNetwork />
-          </section>
         </main>
         <Footer />
       </div>
