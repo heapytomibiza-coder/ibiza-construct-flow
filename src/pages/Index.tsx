@@ -127,7 +127,7 @@ const Index = () => {
         
           {(layout?.showBenefitsStrip ?? benefitsStripEnabled) && <BenefitsStrip />}
           
-          <ExpressModeSection />
+          
           
           <section id="how-it-works-section">
             <HowItWorks />
