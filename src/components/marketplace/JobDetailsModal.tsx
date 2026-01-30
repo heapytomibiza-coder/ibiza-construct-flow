@@ -79,6 +79,8 @@ interface JobDetailsModalProps {
   onClose: () => void;
   onApply?: (jobId: string) => void;
   onMessage?: (jobId: string) => void;
+  /** When true, hides sensitive data (photos/address/answers) for public visitors */
+  previewMode?: boolean;
 }
 
 export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
@@ -86,7 +88,8 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
   open,
   onClose,
   onApply,
-  onMessage
+  onMessage,
+  previewMode = false
 }) => {
   const { user, profile } = useAuth();
   const gate = useAuthGate();
@@ -137,15 +140,16 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
   const hasLogistics = logistics && (logistics.location || logistics.customLocation || logistics.accessDetails);
   const hasSchedule = logistics && (logistics.startDate || logistics.completionDate || logistics.preferredDate || logistics.consultationType);
   const hasExtras = extras && (extras.photos?.length || extras.notes || extras.permitsConcern);
-  const hasPhotos = extras?.photos && extras.photos.length > 0;
+  // PRIVACY: Block photos/extras in preview mode
+  const hasPhotos = !previewMode && !!extras?.photos?.length;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] p-0">
         <ScrollArea className="max-h-[90vh]">
           <div className="p-0">
-            {/* Photo Gallery */}
-            {hasPhotos && (
+            {/* Photo Gallery - ONLY for non-preview mode */}
+            {!previewMode && hasPhotos && (
               <JobPhotoGallery photos={extras.photos!} className="mb-0" />
             )}
 
@@ -267,7 +271,8 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                         <p className="text-xl font-bold leading-tight">{job.location.area}</p>
                       </div>
                     </div>
-                    {job.location.address && (
+                    {/* PRIVACY: Hide exact address in preview mode */}
+                    {!previewMode && job.location.address && (
                       <p className="text-sm text-muted-foreground leading-relaxed">
                         {job.location.address}
                       </p>
@@ -296,8 +301,8 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
               </Card>
             </div>
 
-            {/* Detailed Requirements Accordion */}
-            {(hasMicroAnswers || hasLogistics || hasSchedule || hasExtras) && (
+            {/* Detailed Requirements Accordion - PRIVACY: Hide in preview mode */}
+            {!previewMode && (hasMicroAnswers || hasLogistics || hasSchedule || hasExtras) && (
               <>
                 <Separator className="my-8" />
                 <div className="mb-8">
@@ -582,51 +587,69 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
               </Card>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 sticky bottom-0 bg-background pt-4 pb-2">
-              <Button
-                variant="outline"
-                onClick={onClose}
-                className="flex-1"
-              >
-                Close
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  // Gate: require professional role to message
-                  const canProceed = gate(user, profile?.active_role, {
-                    requiredRole: 'professional',
-                    reason: 'Sign in as a professional to message clients',
-                  });
-                  if (!canProceed) return;
-                  
-                  onMessage?.(job.id);
-                }}
-                className="flex-1"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Message
-              </Button>
-              <Button
-                onClick={() => {
-                  // Gate: require professional role to apply
-                  const canProceed = gate(user, profile?.active_role, {
-                    requiredRole: 'professional',
-                    reason: 'Sign in as a professional to apply for jobs',
-                  });
-                  if (!canProceed) return;
-                  
-                  onApply?.(job.id);
-                  onClose();
-                }}
-                className="flex-1 bg-gradient-hero text-white"
-                size="lg"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                Apply Now
-              </Button>
-            </div>
+            {/* Action Buttons - Show CTA in preview mode */}
+            {previewMode ? (
+              <div className="flex gap-3 sticky bottom-0 bg-background pt-4 pb-2">
+                <Button
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+                <div className="flex-1 text-center p-3 bg-muted/50 rounded-md flex items-center justify-center">
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium text-primary">Sign in as a professional</span>{' '}
+                    to message or apply
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex gap-3 sticky bottom-0 bg-background pt-4 pb-2">
+                <Button
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    // Gate: require professional role to message
+                    const canProceed = gate(user, profile?.active_role, {
+                      requiredRole: 'professional',
+                      reason: 'Sign in as a professional to message clients',
+                    });
+                    if (!canProceed) return;
+                    
+                    onMessage?.(job.id);
+                  }}
+                  className="flex-1"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Message
+                </Button>
+                <Button
+                  onClick={() => {
+                    // Gate: require professional role to apply
+                    const canProceed = gate(user, profile?.active_role, {
+                      requiredRole: 'professional',
+                      reason: 'Sign in as a professional to apply for jobs',
+                    });
+                    if (!canProceed) return;
+                    
+                    onApply?.(job.id);
+                    onClose();
+                  }}
+                  className="flex-1 bg-gradient-hero text-white"
+                  size="lg"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Apply Now
+                </Button>
+              </div>
+            )}
             </div>
           </div>
         </ScrollArea>
