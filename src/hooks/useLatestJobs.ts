@@ -32,12 +32,14 @@ export const formatJobLocation = (location: any): string => {
 
 /**
  * Fetch latest open jobs for the homepage
+ * Uses separate queries to avoid FK relationship issues
  */
 export const useLatestJobs = (limit: number = 6) => {
   return useQuery({
     queryKey: ['latest-jobs', limit],
     queryFn: async (): Promise<LatestJob[]> => {
-      const { data, error } = await supabase
+      // Fetch jobs without profile join (no FK exists)
+      const { data: jobs, error: jobsError } = await supabase
         .from('jobs')
         .select(`
           id,
@@ -50,10 +52,6 @@ export const useLatestJobs = (limit: number = 6) => {
           location,
           client_id,
           micro_id,
-          profiles!jobs_client_id_fkey (
-            display_name,
-            avatar_url
-          ),
           service_micro_categories (
             name,
             subcategory_id,
@@ -71,12 +69,36 @@ export const useLatestJobs = (limit: number = 6) => {
         .order('created_at', { ascending: false })
         .limit(limit);
 
-      if (error) {
-        console.error('Error fetching latest jobs:', error);
+      if (jobsError) {
+        console.error('Error fetching latest jobs:', jobsError);
         return [];
       }
 
-      return (data || []).map((job: any) => ({
+      if (!jobs || jobs.length === 0) {
+        return [];
+      }
+
+      // Get unique client IDs
+      const clientIds = [...new Set(jobs.map(j => j.client_id).filter(Boolean))] as string[];
+
+      // Fetch profiles separately
+      let profileMap: Record<string, { display_name: string | null; avatar_url: string | null }> = {};
+      
+      if (clientIds.length > 0) {
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, display_name, avatar_url')
+          .in('id', clientIds);
+
+        if (!profilesError && profiles) {
+          profileMap = Object.fromEntries(
+            profiles.map(p => [p.id, { display_name: p.display_name, avatar_url: p.avatar_url }])
+          );
+        }
+      }
+
+      // Merge client-side
+      return jobs.map((job: any) => ({
         id: job.id,
         title: job.title,
         description: job.description || '',
@@ -88,8 +110,8 @@ export const useLatestJobs = (limit: number = 6) => {
         category_name: job.service_micro_categories?.service_subcategories?.service_categories?.name || null,
         category_slug: job.service_micro_categories?.service_subcategories?.service_categories?.slug || null,
         client: {
-          name: job.profiles?.display_name || 'Client',
-          avatar: job.profiles?.avatar_url,
+          name: profileMap[job.client_id]?.display_name || 'Client',
+          avatar: profileMap[job.client_id]?.avatar_url || undefined,
         },
       }));
     },
