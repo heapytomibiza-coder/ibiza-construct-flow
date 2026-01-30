@@ -9,7 +9,7 @@ export interface FeaturedProfessional {
   tagline: string | null;
   avatar_url: string | null;
   verification_status: string;
-  specializations: string[] | null;
+  skills: string[] | null;
   rating: number | null;
   total_reviews: number | null;
 }
@@ -23,9 +23,9 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
   return useQuery({
     queryKey: ['featured-professionals', limit],
     queryFn: async (): Promise<FeaturedProfessional[]> => {
-      // Fetch more than needed to ensure we have enough after filtering
-      // (Supabase can't filter on joined table columns server-side)
-      const fetchLimit = Math.max(limit * 3, 20);
+      // Over-fetch to ensure we have enough after client-side filtering
+      // This guarantees we display the requested limit (if enough qualified pros exist)
+      const fetchLimit = Math.max(limit * 4, 30);
       
       const { data, error } = await supabase
         .from('professional_profiles')
@@ -34,7 +34,7 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
           business_name,
           tagline,
           verification_status,
-          specializations,
+          skills,
           profiles!professional_profiles_user_id_fkey (
             display_name,
             avatar_url
@@ -52,21 +52,24 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
       }
 
       // Filter for those with avatars, then take only what we need
-      return (data || [])
+      // This ensures the section never appears empty if we have any qualified pros
+      const filtered = (data || [])
         .filter((pro: any) => pro.profiles?.avatar_url)
-        .slice(0, limit)
-        .map((pro: any) => ({
-          id: pro.user_id,
-          user_id: pro.user_id,
-          business_name: pro.business_name,
-          full_name: pro.profiles?.display_name || null,
-          tagline: pro.tagline,
-          avatar_url: pro.profiles?.avatar_url,
-          verification_status: pro.verification_status,
-          specializations: pro.specializations,
-          rating: null, // Omit until FK relationship to professional_stats is created
-          total_reviews: null,
-        }));
+        .slice(0, limit);
+
+      // Return whatever we have (even if less than requested limit)
+      return filtered.map((pro: any) => ({
+        id: pro.user_id,
+        user_id: pro.user_id,
+        business_name: pro.business_name,
+        full_name: pro.profiles?.display_name || null,
+        tagline: pro.tagline,
+        avatar_url: pro.profiles?.avatar_url,
+        verification_status: pro.verification_status,
+        skills: pro.skills,
+        rating: null, // Omit until FK relationship to professional_stats is created
+        total_reviews: null,
+      }));
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000,
