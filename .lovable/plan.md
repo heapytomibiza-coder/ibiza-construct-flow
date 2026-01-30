@@ -1,243 +1,208 @@
 
-# Homepage Job Cards Fix Plan: Complete Implementation
 
-## Summary of Findings
+# Homepage Job Cards: Final Fixes Plan
 
-### Current State Analysis
-| Item | Status | Issue |
-|------|--------|-------|
-| Database has jobs | 24 jobs with `status='open'` confirmed | Data exists |
-| `useLatestJobs.ts` | Query uses correct split pattern | No FK join errors |
-| RLS policy | "Anyone can view open jobs" exists | Public access enabled |
-| ServiceCategoryPage | Uses `category.name` not slug | Technical debt (fuzzy matching) |
-| Canonical URL | Uses dynamic origin with SSR guard | Implemented |
+## Summary of Issues
 
-### Root Cause: Why Job Cards May Still Be Empty
+Based on detailed investigation, I've identified the remaining blockers:
 
-The current implementation looks correct, but there are edge cases that could cause empty sections:
+| Issue | Current State | Impact |
+|-------|--------------|--------|
+| Build verification | No visible version number | Can't prove new build is running |
+| Status filter | Uses `IN ('open', 'posted', 'published')` | Works - 24 jobs have `status='open'` |
+| Category data | `micro_id` values don't match `service_micro_categories` slugs | Category badges never display |
+| Job cards | Custom card layout in `LatestJobsSection` | Less engaging than `JobListingCard` |
+| is_publicly_listed | Column doesn't exist | No robust visibility flag |
 
-1. **`micro_id` JOIN failures**: The nested join `service_micro_categories(...)` can fail silently if `jobs.micro_id` contains non-UUID text values or nulls, returning `null` for the entire nested object.
+### Database Reality Check
 
-2. **Empty client IDs**: If jobs have `null` client_id values, the profile fetch skips them but the mapping still works (defaults to "Client").
+The `jobs.micro_id` field contains mixed data that doesn't match the `service_micro_categories` table:
+- Some have UUIDs like `71d97020-f5da-4f99-ab52-8ce0e761f824`
+- Some have custom slugs like `kitchen-upgrade-002`, `facade-restore-003`
+- The actual micro categories use different slugs like `full-kitchen-fit`, `deck-construction`
 
-3. **RLS blocking in practice**: Even with RLS policies, the actual response depends on the requesting user's context.
+This means **category joins will always return null** until the data is normalized.
 
 ---
 
 ## Implementation Plan
 
-### Fix 1: Robust `useLatestJobs` Query
+### Fix 1: Add Build Version Banner (Verification)
 
-**File:** `src/hooks/useLatestJobs.ts`
+Add a visible build version to the footer so deployments can be verified.
+
+**File:** `src/components/Footer.tsx`
 
 **Changes:**
+- Add build timestamp or version hash to footer
+- Uses Vite's build-time environment
 
-A) **Guard against empty clientIds without extra query:**
 ```typescript
-// Early return if no valid client IDs
-if (clientIds.length === 0) {
-  return jobs.map((job: any) => ({
-    ...job,
-    client: { name: 'Client', avatar: undefined },
-  }));
+// Add to footer bottom section
+const buildVersion = import.meta.env.VITE_BUILD_VERSION || 
+  new Date().toISOString().slice(0, 10);
+
+// In JSX, add after copyright:
+<span className="text-xs text-primary-foreground/50 ml-2">
+  v{buildVersion}
+</span>
+```
+
+**File:** `vite.config.ts`
+
+**Changes:**
+- Define `VITE_BUILD_VERSION` at build time
+
+```typescript
+define: {
+  'import.meta.env.VITE_BUILD_VERSION': JSON.stringify(
+    new Date().toISOString().slice(0, 16).replace('T', '-')
+  ),
 }
 ```
 
-B) **Remove micro_id join dependency for resilience:**
-
-The nested `service_micro_categories` join via text `micro_id` can fail. Make it optional and gracefully degrade:
-
-```typescript
-// Simplified query without complex nested join
-const { data: jobs, error: jobsError } = await supabase
-  .from('jobs')
-  .select(`
-    id,
-    title,
-    description,
-    status,
-    created_at,
-    budget_type,
-    budget_value,
-    location,
-    client_id,
-    micro_id
-  `)
-  .eq('status', 'open')
-  .order('created_at', { ascending: false })
-  .limit(limit);
-```
-
-If category badge is needed, fetch it separately or omit until `micro_id` is normalized to UUID.
-
-C) **Add multi-status support (future-proofing):**
-```typescript
-// Instead of .eq('status', 'open')
-.in('status', ['open', 'posted', 'published'])
-```
-
-Or create an `is_publicly_listed` flag as recommended.
-
 ---
 
-### Fix 2: Robust `useFeaturedProfessionals` with Over-fetch
+### Fix 2: Add `is_publicly_listed` Column (Robust Visibility)
 
-**File:** `src/hooks/useFeaturedProfessionals.ts`
+Add a reliable visibility flag to decouple from inconsistent status values.
 
-**Changes:**
-
-A) **Increase fetch limit to ensure full section:**
-```typescript
-// Fetch more than needed to account for filtering
-const fetchLimit = Math.max(limit * 3, 20);
-
-const { data, error } = await supabase
-  .from('professional_profiles')
-  .select(`...`)
-  .limit(fetchLimit);
-```
-
-B) **Ensure section never appears empty:**
-```typescript
-// Filter and slice, but always return at least the available pros
-const filtered = (data || [])
-  .filter((pro: any) => pro.profiles?.avatar_url)
-  .slice(0, limit);
-
-// If we have less than requested but have some, return what we have
-return filtered.length > 0 ? filtered : [];
-```
-
----
-
-### Fix 3: ServiceCategoryPage - Pass Slug Instead of Name
-
-**File:** `src/pages/ServiceCategoryPage.tsx`
-
-**Current (risky):**
-```tsx
-<Discovery initialCategoryName={category.name} />
-```
-
-**Improved:**
-```tsx
-<Discovery initialCategorySlug={category.slug} />
-```
-
-**File:** `src/pages/Discovery.tsx`
-
-**Update interface:**
-```typescript
-interface DiscoveryProps {
-  /** Initial category slug for pre-filtering (from ServiceCategoryPage) */
-  initialCategorySlug?: string;
-}
-```
-
-**Update filter initialization:**
-```typescript
-const [filters, setFilters] = useState<Filters>(() => {
-  if (initialCategorySlug) {
-    return {
-      selectedTaxonomy: {
-        category: initialCategorySlug, // Use slug for matching
-        subcategory: '',
-        micro: '',
-      },
-      // ...
-    };
-  }
-  // ...
-});
-```
-
-This ensures consistent slug-based filtering throughout.
-
----
-
-### Fix 4: Canonical URL SSR Guard (Already Implemented)
-
-**Current code in ServiceCategoryPage.tsx is correct:**
-```tsx
-<link rel="canonical" href={`${typeof window !== 'undefined' ? window.location.origin : ''}/services/${categorySlug}`} />
-```
-
-**Note:** Empty string fallback for SSR is acceptable since canonical tags are primarily for crawler context where `window` is available.
-
----
-
-### Fix 5: Privacy Gating for "Sneaky Preview"
-
-**Requirement:** Public can see job previews, but client details and apply actions are gated.
-
-**Implementation Strategy:**
-
-A) **Homepage/Job Board Cards (public preview):**
-- Show: title, teaser (first 160 chars), budget, area, category, posted time
-- Hide: client identity, exact address, attachments, contact info
-- CTA: "View Details" (always works)
-
-B) **Job Detail Page (gated actions):**
-- If not authenticated: Show preview + "Sign in as Professional to Apply" panel
-- If authenticated but not professional: Show "Switch to Professional to apply"
-- If authenticated as professional: Show full details + Apply/Message buttons
-
-**Files to modify:**
-- `src/pages/JobDetail.tsx` (or equivalent)
-- RLS policies on `jobs` table (optional: create `public_jobs_preview` view)
-
----
-
-## Database Improvements (Recommended)
-
-### Option A: Add `is_publicly_listed` Flag (Best Practice)
-
-**Migration:**
+**Database Migration:**
 ```sql
 ALTER TABLE public.jobs
 ADD COLUMN IF NOT EXISTS is_publicly_listed boolean NOT NULL DEFAULT false,
 ADD COLUMN IF NOT EXISTS published_at timestamptz NULL;
 
--- Backfill existing open jobs
+-- Backfill: mark all 'open' jobs as publicly listed
 UPDATE public.jobs
 SET is_publicly_listed = true,
     published_at = COALESCE(published_at, created_at)
 WHERE status = 'open';
 
--- Create index for performance
+-- Index for performance
 CREATE INDEX IF NOT EXISTS idx_jobs_publicly_listed 
 ON public.jobs(is_publicly_listed, published_at DESC NULLS LAST);
 ```
 
-**Benefits:**
-- Single source of truth for visibility
-- No dependency on inconsistent `status` values
-- Explicit control over public listings
+**File:** `src/hooks/useLatestJobs.ts`
 
-### Option B: Create Public Preview View (Security)
+**Changes:**
+- Switch from status filter to `is_publicly_listed`
 
-```sql
-CREATE OR REPLACE VIEW public.public_jobs_preview AS
-SELECT
-  id,
-  title,
-  left(coalesce(description,''), 160) as teaser,
-  budget_type,
-  budget_value,
-  location->>'area' as area,
-  location->>'town' as town,
-  created_at,
-  micro_id
-FROM public.jobs
-WHERE status IN ('open', 'posted', 'published');
-
--- Grant public access
-GRANT SELECT ON public.public_jobs_preview TO anon, authenticated;
+```typescript
+// Replace .in('status', [...])
+.eq('is_publicly_listed', true)
+.order('published_at', { ascending: false, nullsFirst: false })
 ```
 
-**Benefits:**
-- Impossible to accidentally leak sensitive fields
-- Query the view instead of `jobs` table for public contexts
+---
+
+### Fix 3: Store `category_slug` on Job (Category Badges)
+
+Since `micro_id` data is inconsistent, store category directly on the job.
+
+**Option A: Database Column (Best)**
+
+**Migration:**
+```sql
+ALTER TABLE public.jobs
+ADD COLUMN IF NOT EXISTS category_slug text NULL;
+
+-- Backfill from micro where possible (limited success expected)
+UPDATE public.jobs j
+SET category_slug = sc.slug
+FROM service_micro_categories m
+JOIN service_subcategories ss ON m.subcategory_id = ss.id
+JOIN service_categories sc ON ss.category_id = sc.id
+WHERE j.micro_id = m.slug
+  AND j.category_slug IS NULL;
+```
+
+**Option B: Runtime Fallback (Immediate)**
+
+For now, parse category from job title keywords until data is fixed.
+
+**File:** `src/hooks/useLatestJobs.ts`
+
+```typescript
+// Add category inference function
+const inferCategoryFromTitle = (title: string): { name: string; slug: string } | null => {
+  const titleLower = title.toLowerCase();
+  const categoryKeywords: Record<string, { name: string; slug: string }> = {
+    'kitchen': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
+    'bathroom': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
+    'electrical': { name: 'Electrical', slug: 'electrical' },
+    'lighting': { name: 'Electrical', slug: 'electrical' },
+    'painting': { name: 'Painting & Decorating', slug: 'painting-decorating' },
+    'deck': { name: 'Carpentry', slug: 'carpentry' },
+    'pergola': { name: 'Carpentry', slug: 'carpentry' },
+    'lawn': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
+    'garden': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
+    'pool': { name: 'Pool & Spa', slug: 'pool-spa' },
+    'window': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
+    'door': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
+    'plumbing': { name: 'Plumbing', slug: 'plumbing' },
+    'construction': { name: 'Construction', slug: 'construction' },
+  };
+  
+  for (const [keyword, category] of Object.entries(categoryKeywords)) {
+    if (titleLower.includes(keyword)) return category;
+  }
+  return null;
+};
+
+// Use in job mapping
+const inferred = inferCategoryFromTitle(job.title);
+return {
+  ...job,
+  category_name: inferred?.name || null,
+  category_slug: inferred?.slug || null,
+  // ...
+};
+```
+
+---
+
+### Fix 4: Use JobListingCard Component (Visual Parity)
+
+Replace custom card markup with the actual `JobListingCard` in compact mode.
+
+**File:** `src/components/home/LatestJobsSection.tsx`
+
+**Changes:**
+```typescript
+import { JobListingCard } from '@/components/marketplace/JobListingCard';
+
+// Adapt job data to JobListingCard expected shape
+const adaptJob = (job: LatestJob) => ({
+  ...job,
+  client: {
+    name: job.client.name,
+    avatar: job.client.avatar,
+  },
+  category: job.category_name || undefined,
+});
+
+// In render:
+{jobs?.slice(0, 6).map((job) => (
+  <Link key={job.id} to={`/jobs/${job.id}`}>
+    <JobListingCard
+      job={adaptJob(job)}
+      viewMode="compact"
+    />
+  </Link>
+))}
+```
+
+However, `JobListingCard` in compact mode includes a "Send Offer" button which isn't appropriate for public homepage. 
+
+**Alternative: Create `JobPreviewCard` Component**
+
+A simpler component that:
+- Uses the same styling as `JobListingCard`
+- Omits professional-only actions
+- Links to job detail page
+- Shows category badge when available
 
 ---
 
@@ -245,55 +210,66 @@ GRANT SELECT ON public.public_jobs_preview TO anon, authenticated;
 
 | File | Change |
 |------|--------|
-| `src/hooks/useLatestJobs.ts` | Guard empty clientIds, simplify micro join, multi-status support |
-| `src/hooks/useFeaturedProfessionals.ts` | Over-fetch (20-30), filter, slice to limit |
-| `src/pages/ServiceCategoryPage.tsx` | Pass `initialCategorySlug` instead of name |
-| `src/pages/Discovery.tsx` | Accept `initialCategorySlug` prop, use for filtering |
-| `supabase/migrations/` | (Optional) Add `is_publicly_listed` column + index |
+| `vite.config.ts` | Add `VITE_BUILD_VERSION` define |
+| `src/components/Footer.tsx` | Display build version |
+| `src/hooks/useLatestJobs.ts` | Add category inference, use `is_publicly_listed` (if added) |
+| `src/components/home/LatestJobsSection.tsx` | Improve card styling or use `JobListingCard` |
+| Database migration | Add `is_publicly_listed`, `published_at`, optionally `category_slug` |
 
 ---
 
 ## Implementation Order
 
-1. **Fix useLatestJobs.ts** - Guard empty clients, simplify query
-2. **Fix useFeaturedProfessionals.ts** - Over-fetch pattern
-3. **Update ServiceCategoryPage + Discovery** - Pass slug instead of name
-4. **Test homepage** - Verify job cards appear for logged-out users
-5. **(Optional) Database migration** - Add `is_publicly_listed` for robust filtering
-6. **(Future) Privacy gating** - Implement locked panel on job detail page
-
----
-
-## QA Checklist
-
-- [ ] Homepage loads job cards when 24 open jobs exist in DB
-- [ ] Homepage loads when no jobs exist (shows empty state)
-- [ ] Featured professionals section never appears empty (min 6 with avatars)
-- [ ] `/services/construction` stays on that URL (no redirect)
-- [ ] Category filter works correctly using slug matching
-- [ ] Canonical URL renders correctly in page source
-- [ ] Job cards show public-safe fields only (no client contact info)
-- [ ] Test logged out vs logged in (RLS behavior)
+1. **Add build version** - Immediate verification capability
+2. **Add category inference** - Get category badges working now
+3. **Database migration** - Add `is_publicly_listed` + backfill
+4. **Update useLatestJobs** - Switch to `is_publicly_listed` filter
+5. **Enhance job cards** - Better visual parity with job board
 
 ---
 
 ## Technical Notes
 
-### Why Pass Slug Instead of Name?
+### Why Category Joins Fail
 
-| Scenario | Name-based | Slug-based |
-|----------|------------|------------|
-| "Kitchen & Bathroom" | Exact match required | `kitchen-bathroom` stable |
-| Data has "construction" | Fuzzy match needed | Direct match |
-| Category renamed | Breaks filtering | URL stable |
+```text
+Job micro_id values:
+- "kitchen-upgrade-002" (custom, not in table)
+- "71d97020-f5da-4f99-ab52-8ce0e761f824" (UUID, not in slug column)
 
-### Why Over-fetch for Featured Professionals?
+service_micro_categories.slug values:
+- "full-kitchen-fit"
+- "deck-construction"
+- "room-painting"
 
-If limit=6 and 4 of 6 lack avatars, section shows 2 cards.
-Over-fetch (20) + filter + slice(6) = guaranteed 6 cards (if 6+ have avatars).
+Result: LEFT JOIN always returns null
+```
 
-### Why Simplify Micro Join?
+### Why is_publicly_listed is Better Than Status
 
-The `jobs.micro_id` column contains mixed data (UUIDs and text slugs).
-The nested join `service_micro_categories(...)` fails silently when `micro_id` isn't a valid FK.
-Omitting category badge is safer until data is normalized.
+| Status Value | Count | Should Show? |
+|-------------|-------|--------------|
+| open | 24 | Yes |
+| complete | 2 | No |
+| in_progress | 2 | No |
+| assigned | 1 | No |
+| invited | 1 | No |
+| offered | 1 | No |
+
+Using `is_publicly_listed = true` is:
+- Explicit intent (not inferred from status)
+- Won't break if new statuses are added
+- Can show jobs that are "in progress but still accepting quotes"
+
+---
+
+## QA Checklist
+
+- [ ] Build version visible in footer after deployment
+- [ ] Hard reload + Network tab shows no invalid joins
+- [ ] Homepage shows job cards with category badges (via inference)
+- [ ] "Latest Projects" section displays 6 jobs when data exists
+- [ ] Job card click routes to `/jobs/:id`
+- [ ] Empty state shows CTA when no jobs available
+- [ ] Test logged out vs logged in (same results for public jobs)
+
