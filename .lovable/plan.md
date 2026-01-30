@@ -1,239 +1,260 @@
 
+# Public Job Board & Action-Point Gating Refactor
 
-# Fixes for Public Job Board & Sneaky Preview: Critical Refinements
+## Overview
 
-## Summary of Current Issues
-
-Based on my investigation, I've identified three critical issues with the current implementation that need immediate attention:
-
-| Issue | Current State | Risk Level |
-|-------|--------------|------------|
-| **Privacy leak** | `public_jobs_preview` view exposes `address_preview` | CRITICAL |
-| **Status filter fragility** | View filters by `status IN ('open', 'posted', 'published')` | MEDIUM |
-| **Fake photo placeholders** | Cards inject `['placeholder']` as photo URLs | LOW-MEDIUM |
-| **Category inference** | Duplicated title-keyword parsing | TECH DEBT |
+This refactor makes the job board publicly browsable while gating professional-only actions (Apply/Message/Reveal) at the action point rather than the route level. After login, users return to the same page.
 
 ---
 
-## Detailed Findings
+## Current State Analysis
 
-### Issue 1: Privacy Leak in Preview View (CRITICAL)
-
-**Current state in migration:**
-```sql
-location->>'address' AS address_preview, -- Only town/area portion for previews
-```
-
-**Actual data observed:**
-```
-address_preview: "San Antonio (Sant Antoni)"
-```
-
-This leaks the actual address to anonymous users! The comment says "Only town/area portion" but the column extracts the full `address` field.
-
-### Issue 2: Status Filter Fragility (MEDIUM)
-
-**Current filter:**
-```sql
-WHERE is_publicly_listed = true
-  AND status IN ('open', 'posted', 'published')
-```
-
-Since `is_publicly_listed = true` is the single source of truth you added, the status filter is redundant and could cause jobs to disappear if status values change.
-
-### Issue 3: Fake Photo Placeholders (LOW-MEDIUM)
-
-**In `LatestJobsSection.tsx`:**
-```typescript
-answers: job.has_photos ? { extras: { photos: ['placeholder'] } } : undefined,
-```
-
-**In `JobsMarketplace.tsx`:**
-```typescript
-answers: { extras: { photos: job.has_photos ? ['placeholder'] : [] } }
-```
-
-This injects a fake `'placeholder'` URL which could:
-- Break image loading in `JobListingCard` (tries to load `placeholder` as URL)
-- Confuse the hero image logic
-- Create inconsistent behavior
-
-### Issue 4: Duplicated Category Inference (TECH DEBT)
-
-The `inferCategoryFromTitle()` function is duplicated in:
-- `src/hooks/useLatestJobs.ts`
-- `src/components/marketplace/JobsMarketplace.tsx`
-
-Both have slight differences. This should be a shared utility.
+| Component | Current Behavior | Problem |
+|-----------|-----------------|---------|
+| `/job-board` route | Wrapped in `RouteGuard requiredRole="professional"` | Forces login before browsing |
+| `QuickApplyButton` | Shows toast "Please log in to apply" | No redirect, poor UX |
+| `JobListingCard` | Has `previewMode` prop | Already partially implemented |
+| Auth flow | `RouteGuard` encodes `redirect` param | Works for route-level gating |
+| QueryClient | Two instances (main.tsx + App.tsx) | Inconsistent state, must fix |
 
 ---
 
 ## Implementation Plan
 
-### Fix 1: Database Migration - Remove Address and Simplify Status Filter
+### Phase 1: Create `useAuthGate` Hook (Shared Utility)
 
-Create a new migration to update the `public_jobs_preview` view:
-
-```sql
-CREATE OR REPLACE VIEW public.public_jobs_preview 
-WITH (security_invoker=on) AS
-SELECT
-  id,
-  title,
-  LEFT(COALESCE(description, ''), 200) AS teaser,
-  budget_type,
-  budget_value,
-  -- SAFE: Only expose area/town, never address
-  COALESCE(location->>'area', location->>'town', 'Ibiza') AS area,
-  location->>'town' AS town,
-  -- REMOVED: location->>'address' AS address_preview (PRIVACY LEAK)
-  created_at,
-  published_at,
-  status,
-  micro_id,
-  CASE 
-    WHEN answers->'extras'->'photos' IS NOT NULL 
-         AND jsonb_array_length(answers->'extras'->'photos') > 0 
-    THEN true 
-    ELSE false 
-  END AS has_photos
-FROM public.jobs
-WHERE is_publicly_listed = true;
--- REMOVED: status filter - rely on is_publicly_listed alone
-```
-
-**Changes:**
-1. Remove `address_preview` column entirely (privacy fix)
-2. Update `area` to use `COALESCE` with fallback chain
-3. Remove `status IN (...)` filter - rely solely on `is_publicly_listed`
-
----
-
-### Fix 2: Create Shared Category Inference Utility
-
-**New file:** `src/lib/jobs/categoryInference.ts`
+**New file:** `src/hooks/useAuthGate.ts`
 
 ```typescript
-/**
- * Infer category from job title keywords
- * Temporary fallback until category_slug is stored on jobs
- */
-export interface InferredCategory {
-  name: string;
-  slug: string;
-}
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
-const CATEGORY_KEYWORDS: Record<string, InferredCategory> = {
-  'kitchen': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
-  'bathroom': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
-  'electrical': { name: 'Electrical', slug: 'electrical' },
-  'lighting': { name: 'Electrical', slug: 'electrical' },
-  // ... rest of keywords
+type GateOptions = {
+  requiredRole?: "professional" | "client" | "admin";
+  reason?: string;
 };
 
-export function inferCategoryFromTitle(title: string): InferredCategory | null {
-  if (!title) return null;
-  const titleLower = title.toLowerCase();
-  
-  for (const [keyword, category] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (titleLower.includes(keyword)) return category;
-  }
-  return null;
+export function useAuthGate() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  return function gate(
+    user: any,
+    activeRole?: string | null,
+    opts?: GateOptions
+  ): boolean {
+    const redirect = encodeURIComponent(location.pathname + location.search);
+
+    // Not logged in → redirect to auth
+    if (!user) {
+      if (opts?.reason) toast.error(opts.reason);
+      navigate(`/auth?redirect=${redirect}`);
+      return false;
+    }
+
+    // Logged in but wrong role → redirect to role switcher
+    if (opts?.requiredRole && activeRole && activeRole !== opts.requiredRole) {
+      toast.error(`Switch to ${opts.requiredRole} mode to continue`);
+      navigate(`/role-switcher?redirect=${redirect}&requiredRole=${opts.requiredRole}`);
+      return false;
+    }
+
+    return true;
+  };
 }
 ```
 
-Update both `useLatestJobs.ts` and `JobsMarketplace.tsx` to import from this shared utility.
+**Benefits:**
+- One consistent behavior for all gated actions
+- Preserves current URL for return after auth
+- Handles role switching requirement
+- Reusable across Apply/Message/Reveal/Post buttons
 
 ---
 
-### Fix 3: Remove Fake Photo Placeholders - Use Boolean Flag
+### Phase 2: Make `/job-board` Route Public
 
-**File:** `src/hooks/useLatestJobs.ts`
+**File:** `src/App.tsx` (line ~358-362)
+
+**Before:**
+```typescript
+<Route path="/job-board" element={
+  <RouteGuard requiredRole="professional">
+    <JobBoardPage />
+  </RouteGuard>
+} />
+```
+
+**After:**
+```typescript
+<Route path="/job-board" element={<JobBoardPage />} />
+```
+
+This allows anyone to browse the job board, while actions remain gated via component logic.
+
+---
+
+### Phase 3: Update `QuickApplyButton` to Use Auth Gate
+
+**File:** `src/components/marketplace/QuickApplyButton.tsx`
+
+**Changes:**
+1. Import and use `useAuthGate`
+2. Gate BEFORE opening dialog (better UX)
+3. Gate again before submit (belt-and-suspenders)
+
+```typescript
+import { useAuthGate } from "@/hooks/useAuthGate";
+
+export const QuickApplyButton: React.FC<QuickApplyButtonProps> = ({
+  jobId,
+  jobTitle,
+  suggestedQuote,
+  onSuccess,
+  variant = 'default',
+  size = 'default',
+  className
+}) => {
+  const { user, profile } = useAuth();
+  const gate = useAuthGate();
+  const [open, setOpen] = useState(false);
+  // ... existing state
+
+  const handleOpenDialog = () => {
+    // Gate: require login + professional role to open dialog
+    const canProceed = gate(user, profile?.active_role, {
+      requiredRole: "professional",
+      reason: "Sign in as a professional to apply for jobs",
+    });
+    if (!canProceed) return;
+    
+    setOpen(true);
+  };
+
+  const handleQuickApply = async () => {
+    // Double-check auth (handles expired sessions)
+    const canProceed = gate(user, profile?.active_role, {
+      requiredRole: "professional",
+      reason: "Sign in as a professional to apply",
+    });
+    if (!canProceed) return;
+
+    // ... existing apply logic
+  };
+
+  return (
+    <>
+      <Button onClick={handleOpenDialog} ...>
+        Quick Apply
+      </Button>
+      {/* Dialog unchanged */}
+    </>
+  );
+};
+```
+
+---
+
+### Phase 4: Remove Duplicate QueryClientProvider
+
+**File:** `src/App.tsx`
 
 **Current (problematic):**
 ```typescript
-answers: job.has_photos ? { extras: { photos: ['placeholder'] } } : undefined,
+const queryClient = new QueryClient();
+
+export default function App() {
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+}
 ```
 
 **Fixed:**
 ```typescript
-// Don't fake answers - use has_photos boolean directly
-has_photos: job.has_photos || false,
-// answers is NOT included in preview mode
+// REMOVE: const queryClient = new QueryClient();
+
+export default function App() {
+  return (
+    <HelmetProvider>
+      <AppContent />
+    </HelmetProvider>
+  );
+}
 ```
+
+The `QueryClientProvider` in `main.tsx` (line 57-58) is the correct single source of truth with proper configuration (staleTime, gcTime, retry logic).
+
+---
+
+### Phase 5: Update `JobsMarketplace` for Public Access
 
 **File:** `src/components/marketplace/JobsMarketplace.tsx`
 
-**Current (problematic):**
-```typescript
-answers: { extras: { photos: job.has_photos ? ['placeholder'] : [] } }
-```
-
-**Fixed:**
-```typescript
-// Use has_photos flag instead of fake photo arrays
-has_photos: job.has_photos || false,
-answers: undefined, // No answers in preview mode
-```
-
-**File:** `src/components/marketplace/JobListingCard.tsx`
-
-Update to check `has_photos` boolean alongside `answers?.extras?.photos`:
+The component already supports `previewMode` for cards. Ensure:
+1. When user is NOT authenticated, cards render with `previewMode={true}`
+2. When user IS authenticated as professional, cards render with `previewMode={false}`
 
 ```typescript
-// Add has_photos to props
-interface JobListingCardProps {
-  job: {
-    // ... existing props
-    has_photos?: boolean; // New: explicit flag for preview mode
-  };
-}
-
-// In photo count logic:
-const photoCount = job.answers?.extras?.photos?.length || 0;
-const hasPhotos = job.has_photos || photoCount > 0;
-
-// In hero image logic:
-const heroImage = job.answers?.extras?.photos?.[0] || serviceVisuals.hero;
-
-// Show badge based on boolean when in preview mode
-{hasPhotos && !photoCount && previewMode && (
-  <Badge className="...">
-    Photos available
-  </Badge>
-)}
+// In the job card render:
+<JobListingCard
+  key={job.id}
+  job={job}
+  viewMode={viewMode}
+  previewMode={!user || profile?.active_role !== 'professional'}
+  onSendOffer={handleSendOffer}
+  onMessage={handleMessage}
+/>
 ```
 
 ---
 
-### Fix 4: Update LatestJobsSection Adapter
+### Phase 6: Add Message/Contact Gating
 
-**File:** `src/components/home/LatestJobsSection.tsx`
+Apply the same `useAuthGate` pattern to any other action buttons:
 
-Update the `adaptJobForCard` function to match `JobListingCard` expectations without faking data:
+**Components to update:**
+- `JobListingCard` - "Message" button handler
+- `JobDetailsModal` - "Apply" and "Message" buttons
+- `ProfessionalCard` - "Contact" button (if applicable)
+
+**Pattern:**
+```typescript
+const gate = useAuthGate();
+
+const handleMessage = () => {
+  const canProceed = gate(user, profile?.active_role, {
+    requiredRole: "professional",
+    reason: "Sign in as a professional to message clients",
+  });
+  if (!canProceed) return;
+  
+  // Proceed with messaging...
+  onMessage?.(job.id);
+};
+```
+
+---
+
+### Phase 7: Add Preview CTA in Cards
+
+**File:** `src/components/marketplace/JobListingCard.tsx`
+
+When `previewMode` is true and buttons are hidden, show an encouraging CTA:
 
 ```typescript
-const adaptJobForCard = (job: NonNullable<typeof jobs>[0]) => ({
-  id: job.id,
-  title: job.title,
-  description: job.description || job.teaser || '',
-  budget_type: job.budget_type,
-  budget_value: job.budget_value,
-  location: {
-    address: '', // Never expose in preview
-    area: formatJobLocation(job.location),
-  },
-  created_at: job.created_at,
-  status: job.status || 'open',
-  client: {
-    name: 'Client', // Privacy: always generic
-    avatar: undefined,
-  },
-  category: job.category_name || undefined,
-  // Use boolean flag, don't fake answers
-  has_photos: job.has_photos,
-  answers: undefined, // No answers in preview
-});
+{previewMode && (
+  <div className="text-center p-2 bg-muted/50 rounded-md">
+    <p className="text-sm text-muted-foreground">
+      <span className="font-medium text-primary">Sign in as a professional</span>{' '}
+      to apply for this job
+    </p>
+  </div>
+)}
 ```
 
 ---
@@ -242,39 +263,53 @@ const adaptJobForCard = (job: NonNullable<typeof jobs>[0]) => ({
 
 | File | Change |
 |------|--------|
-| `supabase/migrations/` | New migration: update `public_jobs_preview` view |
-| `src/lib/jobs/categoryInference.ts` | NEW: shared category inference utility |
-| `src/hooks/useLatestJobs.ts` | Use shared utility, remove fake answers |
-| `src/components/marketplace/JobsMarketplace.tsx` | Use shared utility, remove fake answers |
-| `src/components/marketplace/JobListingCard.tsx` | Add `has_photos` prop support |
-| `src/components/home/LatestJobsSection.tsx` | Update adapter to use boolean flag |
+| `src/hooks/useAuthGate.ts` | NEW: Create shared auth gate hook |
+| `src/App.tsx` | Remove RouteGuard from /job-board, remove duplicate QueryClient |
+| `src/components/marketplace/QuickApplyButton.tsx` | Use useAuthGate instead of toast |
+| `src/components/marketplace/JobsMarketplace.tsx` | Pass previewMode based on auth state |
+| `src/components/marketplace/JobListingCard.tsx` | Add CTA for preview mode |
+| `src/components/marketplace/JobDetailsModal.tsx` | Gate Apply/Message buttons |
 
 ---
 
 ## Implementation Order
 
-1. **Database migration** - Fix privacy leak + simplify filter
-2. **Create shared utility** - `categoryInference.ts`
-3. **Update hooks/components** - Use shared utility + has_photos flag
-4. **Test** - Verify cards show without broken images or leaked data
+1. **Create `useAuthGate` hook** - Foundation for all gating
+2. **Remove duplicate QueryClientProvider** - Critical cleanup
+3. **Remove RouteGuard from `/job-board`** - Make route public
+4. **Update `QuickApplyButton`** - Gate at action point
+5. **Update `JobsMarketplace`** - Pass previewMode correctly
+6. **Update `JobListingCard`** - Add preview CTA
+7. **Update `JobDetailsModal`** - Gate modal actions
+8. **Test** - Verify flow in incognito
 
 ---
 
-## Expected Behavior After Fix
+## Expected Behavior After Implementation
 
-| Scenario | Before | After |
-|----------|--------|-------|
-| Address in preview | Exposed via `address_preview` | Not exposed at all |
-| Photo URLs in preview | Fake `['placeholder']` injected | Boolean `has_photos` flag |
-| Category inference | Duplicated in 2 files | Shared utility |
-| Status filtering | Redundant `status IN (...)` | Only `is_publicly_listed` |
+| User State | See Job Board | See Job Cards | Click Apply | Result |
+|------------|--------------|---------------|-------------|--------|
+| Logged out | ✅ Yes | ✅ Preview mode | Button visible | Redirects to `/auth?redirect=/job-board` |
+| Logged in as Client | ✅ Yes | ✅ Preview mode | Button hidden | Shows "Sign in as professional" CTA |
+| Logged in as Professional | ✅ Yes | ✅ Full mode | Button works | Opens apply dialog |
 
 ---
 
-## Security Benefits
+## Security Notes
 
-1. **No address leakage** - Preview view cannot expose street addresses
-2. **No fake data injection** - Boolean flags instead of placeholder URLs
-3. **Single source of truth** - `is_publicly_listed` controls visibility
-4. **Maintainable inference** - Category logic in one place
+1. **No client data exposure** - `previewMode` and `public_jobs_preview` view ensure no leakage
+2. **Action-level gating** - Even if button is somehow clicked, backend RLS protects data
+3. **Role verification** - Both frontend (`useAuthGate`) and backend (RLS policies on `job_quotes`) enforce professional role
 
+---
+
+## QA Checklist
+
+- [ ] Open `/job-board` in incognito - jobs visible
+- [ ] Click "Quick Apply" when logged out - redirects to `/auth?redirect=/job-board`
+- [ ] Complete login - returns to `/job-board`
+- [ ] Click "Quick Apply" as professional - dialog opens
+- [ ] Submit application - works correctly
+- [ ] Switch to client role - Apply buttons hidden, CTA shown
+- [ ] Build version visible in footer (from previous fix)
+- [ ] No console errors about missing QueryClient
