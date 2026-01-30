@@ -1,9 +1,9 @@
 {
   "badge": "Ibizas #1 bewertetes Netzwerk",
-  "title": "Die Insel bauen.",
-  "subtitle": "Ihre Träume bauen.",
-  "highlight": "Ibizas führendes Baunetzwerk",
-  "description": "Verbinden Sie sich mit Ibizas vertrauenswürdigsten Baufachleuten. Von Handwerkerarbeiten bis zu Luxusbauten – unsere Community liefert Qualität auf der ganzen Insel.",
+  "title": "Vertrauenswürdige Bau- und Immobilienprofis",
+  "highlight": "auf Ibiza",
+  "tagline": "Finden Sie verifizierte Bauunternehmer, Handwerker und Spezialisten für Ihre Immobilie auf Ibiza. Vergleichen Sie Angebote, Bewertungen und Portfolios — alles an einem Ort.",
+  "description": "Eine vertrauenswürdige Plattform für sichere, geschützte Projekte. Aufbau stärkerer, rationalisierter Standards auf der ganzen Insel.",
   "trustIndicators": {
     "safepay": "SafePay geschützt",
     "response": "24h Antwort",
@@ -11,7 +11,7 @@
   },
   "cta": {
     "postProject": "Ihr Projekt veröffentlichen",
-    "browseServices": "Dienste durchsuchen"
+    "browseServices": "Fachleute finden"
   },
   "stats": {
     "pros": "Verifizierte Profis",

@@ -1,8 +1,8 @@
 {
   "badge": "Ibiza's #1 Rated Network",
-  "title": "Constructive Solutions",
-  "highlight": "Ibiza",
-  "tagline": "Constructing a safer, smarter way for Ibiza's construction community to connect.",
+  "title": "Trusted Construction & Property Professionals",
+  "highlight": "in Ibiza",
+  "tagline": "Find verified builders, tradespeople, and specialists for your Ibiza property. Compare quotes, reviews, and portfolios — all in one place.",
   "description": "A trusted platform for secure, protected projects. Building stronger, streamlined standards across the island.",
   "trustIndicators": {
     "safepay": "SafePay Protected",
@@ -11,7 +11,7 @@
   },
   "cta": {
     "postProject": "Post Your Project",
-    "browseServices": "Browse Services"
+    "browseServices": "Find Professionals"
   },
   "stats": {
     "pros": "Verified Pros",

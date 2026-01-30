@@ -1,10 +1,21 @@
 {
   "badge": "Réseau #1 d'Ibiza",
-  "title": "Construire l'île.",
-  "subtitle": "Construire vos rêves.",
-  "description": "Connectez-vous avec les professionnels de construction les plus fiables d'Ibiza.",
+  "title": "Professionnels de la Construction et de la Propriété de Confiance",
+  "highlight": "à Ibiza",
+  "tagline": "Trouvez des constructeurs, artisans et spécialistes vérifiés pour votre propriété à Ibiza. Comparez devis, avis et portfolios — tout en un seul endroit.",
+  "description": "Une plateforme de confiance pour des projets sécurisés et protégés. Construire des normes plus solides et rationalisées sur toute l'île.",
+  "trustIndicators": {
+    "safepay": "Protégé SafePay",
+    "response": "Réponse 24h",
+    "verified": "Pros Vérifiés Uniquement"
+  },
   "cta": {
     "postProject": "Publier votre projet",
-    "browseServices": "Parcourir les services"
+    "browseServices": "Trouver des Professionnels"
+  },
+  "stats": {
+    "pros": "Pros Vérifiés",
+    "projects": "Projets Réalisés",
+    "protected": "Protégé"
   }
 }

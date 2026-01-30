@@ -1,8 +1,8 @@
 {
   "badge": "Red #1 Valorada de Ibiza",
-  "title": "Constructive Solutions",
-  "highlight": "Ibiza",
-  "tagline": "Construyendo una forma más segura e inteligente de conectar a la comunidad de construcción de Ibiza.",
+  "title": "Profesionales de Construcción y Propiedad de Confianza",
+  "highlight": "en Ibiza",
+  "tagline": "Encuentra constructores, comerciantes y especialistas verificados para tu propiedad en Ibiza. Compara presupuestos, reseñas y portafolios — todo en un solo lugar.",
   "description": "Una plataforma confiable para proyectos seguros y protegidos. Construyendo estándares más fuertes y optimizados en toda la isla.",
   "trustIndicators": {
     "safepay": "Protegido SafePay",
@@ -11,7 +11,7 @@
   },
   "cta": {
     "postProject": "Publica Tu Proyecto",
-    "browseServices": "Explorar Servicios"
+    "browseServices": "Encontrar Profesionales"
   },
   "stats": {
     "pros": "Pros Verificados",

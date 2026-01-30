@@ -3,31 +3,27 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
-import Services from '@/components/Services';
-import FeaturedServicesCarousel from '@/components/FeaturedServicesCarousel';
-import BenefitsStrip from '@/components/BenefitsStrip';
 import HowItWorks from '@/components/HowItWorks';
-import ProfessionalNetwork from '@/components/ProfessionalNetwork';
-import ExpressModeSection from '@/components/ExpressModeSection';
 import Footer from '@/components/Footer';
 import { useFeature } from '@/contexts/FeatureFlagsContext';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Helmet } from 'react-helmet-async';
-import { UserPlus, Shield, Settings } from 'lucide-react';
 import { useTour } from '@/components/tours/InteractiveTour';
 import { homepageTourSteps } from '@/config/tours';
 import { TOURS_ENABLED } from '@/config/toursEnabled';
+import {
+  HomepageServiceTiles,
+  LatestJobsSection,
+  FeaturedProfessionalsSection,
+  ValuePropsSection,
+  SEOContentBlock,
+  FinalCTASection,
+} from '@/components/home';
 
 const Index = () => {
   const { t } = useTranslation(['common', 'navigation', 'home']);
   const navigate = useNavigate();
   const jobWizardEnabled = useFeature('ff.jobWizardV2');
   const proInboxEnabled = useFeature('ff.proInboxV1');
-  const featuredCarouselEnabled = useFeature('enable_featured_services_carousel');
-  const benefitsStripEnabled = useFeature('enable_home_benefits_strip');
-  const { value: layout } = useSiteSettings('homepage', 'layout');
   
   // Tour system integration
   const { TourComponent, startTour } = useTour('homepage-tour', homepageTourSteps);
@@ -81,59 +77,45 @@ const Index = () => {
       {TourComponent}
       <div className="min-h-screen">
         <Helmet>
-          <title>CS Ibiza - Professional Construction & Renovation Services in Ibiza</title>
+          <title>Construction & Property Professionals in Ibiza | CS Ibiza</title>
           <meta 
             name="description" 
-            content="Connect with verified construction professionals in Ibiza. Get instant quotes for renovations, repairs, and building projects. Trusted by homeowners and businesses." 
+            content="Find trusted builders, tradespeople, and construction professionals in Ibiza. Compare quotes, reviews, and portfolios on CS Ibiza." 
           />
           <link rel="canonical" href="https://csibiza.com/" />
         </Helmet>
         <Header jobWizardEnabled={jobWizardEnabled} proInboxEnabled={proInboxEnabled} />
         
         <main id="main-content" className="pt-0">
+          {/* Hero Section - Updated SEO copy */}
           <section id="hero-section">
             <Hero />
           </section>
-        
-        {/* Quick Access - Professional Onboarding Pages */}
-        <section className="container py-12 bg-muted/30">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-center">{t('home:professionalRegistration.title')}</h2>
-            <div className="grid gap-4 md:grid-cols-3">
-              <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
-                <Link to="/onboarding/professional">
-                  <UserPlus className="w-8 h-8 text-primary" />
-                  <span className="font-semibold">{t('home:professionalRegistration.step1')}</span>
-                  <span className="text-xs text-muted-foreground">{t('home:professionalRegistration.step1Desc')}</span>
-                </Link>
-              </Button>
-              <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
-                <Link to="/professional/verification">
-                  <Shield className="w-8 h-8 text-primary" />
-                  <span className="font-semibold">{t('home:professionalRegistration.step2')}</span>
-                  <span className="text-xs text-muted-foreground">{t('home:professionalRegistration.step2Desc')}</span>
-                </Link>
-              </Button>
-              <Button variant="outline" className="w-full h-auto flex-col gap-3 py-6 hover:bg-accent" asChild>
-                <Link to="/professional/service-setup">
-                  <Settings className="w-8 h-8 text-primary" />
-                  <span className="font-semibold">{t('home:professionalRegistration.step3')}</span>
-                  <span className="text-xs text-muted-foreground">{t('home:professionalRegistration.step3Desc')}</span>
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-        
-          {(layout?.showBenefitsStrip ?? benefitsStripEnabled) && <BenefitsStrip />}
           
+          {/* Service Category Tiles - DB-driven, links to /services/:slug */}
+          <HomepageServiceTiles />
           
+          {/* Latest Jobs - Shows platform activity */}
+          <LatestJobsSection />
           
+          {/* Featured Professionals - Verified pros with complete profiles */}
+          <FeaturedProfessionalsSection />
+          
+          {/* How It Works - Simplified */}
           <section id="how-it-works-section">
             <HowItWorks />
           </section>
           
+          {/* Trust Indicators */}
+          <ValuePropsSection />
+          
+          {/* SEO Content Block - Crawlable, keyword-rich */}
+          <SEOContentBlock />
+          
+          {/* Final CTA */}
+          <FinalCTASection />
         </main>
+        
         <Footer />
       </div>
     </>

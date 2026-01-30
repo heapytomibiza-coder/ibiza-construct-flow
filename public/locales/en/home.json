@@ -1,7 +1,46 @@
 {
   "meta": {
-    "title": "CS Ibiza - Professional Construction & Renovation Services in Ibiza",
-    "description": "Connect with verified construction professionals in Ibiza. Get instant quotes for renovations, repairs, and building projects. Trusted by homeowners and businesses."
+    "title": "Construction & Property Professionals in Ibiza | CS Ibiza",
+    "description": "Find trusted builders, tradespeople, and construction professionals in Ibiza. Compare quotes, reviews, and portfolios on CS Ibiza."
+  },
+  "serviceTiles": {
+    "title": "Find the Right Service",
+    "subtitle": "Browse our most popular construction and property service categories",
+    "viewAll": "View All Services"
+  },
+  "latestJobs": {
+    "title": "Latest Projects in Ibiza",
+    "subtitle": "Real jobs, real budgets, real professionals",
+    "new": "NEW",
+    "justNow": "Just now",
+    "hoursAgo": "{{hours}}h ago",
+    "daysAgo": "{{days}}d ago",
+    "noDescription": "No description provided",
+    "emptyState": "Be the first to post a project!",
+    "postProject": "Post Your Project",
+    "viewAll": "View All Projects"
+  },
+  "featuredPros": {
+    "title": "Verified Professionals",
+    "subtitle": "Trusted tradespeople ready to work on your Ibiza project",
+    "professional": "Professional",
+    "viewAll": "View All Professionals"
+  },
+  "valueProps": {
+    "verified": "Verified Ibiza professionals",
+    "secure": "Secure escrow-style payments",
+    "transparent": "Transparent reviews & portfolios",
+    "local": "Built specifically for Ibiza property"
+  },
+  "seoContent": {
+    "title": "Construction & Property Services Across Ibiza",
+    "paragraph1": "CS Ibiza connects homeowners, developers, and property managers with trusted construction professionals across Ibiza. From full villa renovations and new builds to carpentry, electrical work, plumbing, and bespoke finishes, our platform helps you find reliable tradespeople without stress, delays, or hidden risks.",
+    "paragraph2": "Whether you're renovating a historic finca, building a modern villa, or need urgent repairs, our verified network of Ibiza-based professionals delivers quality workmanship with the protection of secure payments and transparent reviews."
+  },
+  "finalCTA": {
+    "title": "Ready to Start Your Project?",
+    "subtitle": "Join property owners across Ibiza who trust CS Ibiza to get the job done right.",
+    "button": "Post Your Project"
   },
   "professionalRegistration": {
     "title": "Professional Registration",
