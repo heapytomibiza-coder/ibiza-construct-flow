@@ -26,6 +26,8 @@ import { cn } from '@/lib/utils';
 import { JobPhotoGallery } from './JobPhotoGallery';
 import { ServiceCategoryBadge } from './ServiceCategoryBadge';
 import { getServiceVisuals } from '@/data/serviceCategoryImages';
+import { useAuth } from '@/hooks/useAuth';
+import { useAuthGate } from '@/hooks/useAuthGate';
 
 interface JobDetailsModalProps {
   job: {
@@ -86,6 +88,9 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
   onApply,
   onMessage
 }) => {
+  const { user, profile } = useAuth();
+  const gate = useAuthGate();
+  
   const daysPosted = Math.floor(
     (Date.now() - new Date(job.created_at).getTime()) / (1000 * 60 * 60 * 24)
   );
@@ -589,6 +594,13 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
               <Button
                 variant="outline"
                 onClick={() => {
+                  // Gate: require professional role to message
+                  const canProceed = gate(user, profile?.active_role, {
+                    requiredRole: 'professional',
+                    reason: 'Sign in as a professional to message clients',
+                  });
+                  if (!canProceed) return;
+                  
                   onMessage?.(job.id);
                 }}
                 className="flex-1"
@@ -598,6 +610,13 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
               </Button>
               <Button
                 onClick={() => {
+                  // Gate: require professional role to apply
+                  const canProceed = gate(user, profile?.active_role, {
+                    requiredRole: 'professional',
+                    reason: 'Sign in as a professional to apply for jobs',
+                  });
+                  if (!canProceed) return;
+                  
                   onApply?.(job.id);
                   onClose();
                 }}
