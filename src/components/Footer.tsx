@@ -8,6 +8,9 @@ const Footer = () => {
   const { value: contact } = useSiteSettings('footer', 'contact');
   const { value: social } = useSiteSettings('footer', 'social');
   
+  // Build version for deployment verification
+  const buildVersion = import.meta.env.VITE_BUILD_VERSION || 'dev';
+  
   return (
     <footer className="bg-gradient-hero text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
@@ -90,6 +93,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-body text-primary-foreground/70 text-sm mb-4 md:mb-0">
               {t('legal.copyright')}
+              <span className="text-xs text-primary-foreground/50 ml-2">v{buildVersion}</span>
             </p>
             <div className="flex flex-wrap gap-6">
               <Link to="/privacy" className="text-body text-primary-foreground/70 hover:text-primary-foreground text-sm underline-offset-4 hover:underline transition-all duration-300">{(t('legal.links', { returnObjects: true }) as string[])[0]}</Link>

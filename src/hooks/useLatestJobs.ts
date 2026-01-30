@@ -31,14 +31,49 @@ export const formatJobLocation = (location: any): string => {
 };
 
 /**
- * Fetch latest open jobs for the homepage
- * Uses separate queries to avoid FK relationship issues
+ * Infer category from job title keywords
+ * Fallback when micro_id data is inconsistent
+ */
+const inferCategoryFromTitle = (title: string): { name: string; slug: string } | null => {
+  const titleLower = title.toLowerCase();
+  const categoryKeywords: Record<string, { name: string; slug: string }> = {
+    'kitchen': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
+    'bathroom': { name: 'Kitchen & Bathroom', slug: 'kitchen-bathroom' },
+    'electrical': { name: 'Electrical', slug: 'electrical' },
+    'lighting': { name: 'Electrical', slug: 'electrical' },
+    'painting': { name: 'Painting & Decorating', slug: 'painting-decorating' },
+    'deck': { name: 'Carpentry', slug: 'carpentry' },
+    'pergola': { name: 'Carpentry', slug: 'carpentry' },
+    'lawn': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
+    'garden': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
+    'landscaping': { name: 'Gardening & Landscaping', slug: 'gardening-landscaping' },
+    'pool': { name: 'Pool & Spa', slug: 'pool-spa' },
+    'window': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
+    'door': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
+    'floor': { name: 'Floors, Doors & Windows', slug: 'floors-doors-windows' },
+    'plumbing': { name: 'Plumbing', slug: 'plumbing' },
+    'pipe': { name: 'Plumbing', slug: 'plumbing' },
+    'construction': { name: 'Construction', slug: 'construction' },
+    'renovation': { name: 'Construction', slug: 'construction' },
+    'facade': { name: 'Construction', slug: 'construction' },
+    'roof': { name: 'Construction', slug: 'construction' },
+  };
+  
+  for (const [keyword, category] of Object.entries(categoryKeywords)) {
+    if (titleLower.includes(keyword)) return category;
+  }
+  return null;
+};
+
+/**
+ * Fetch latest publicly listed jobs for the homepage
+ * Uses is_publicly_listed for robust filtering instead of status
  */
 export const useLatestJobs = (limit: number = 6) => {
   return useQuery({
     queryKey: ['latest-jobs', limit],
     queryFn: async (): Promise<LatestJob[]> => {
-      // Simplified query - avoid complex nested joins that can fail with mixed micro_id data
+      // Use is_publicly_listed for stable visibility filtering
       const { data: jobs, error: jobsError } = await supabase
         .from('jobs')
         .select(`
@@ -47,13 +82,16 @@ export const useLatestJobs = (limit: number = 6) => {
           description,
           status,
           created_at,
+          published_at,
           budget_type,
           budget_value,
           location,
           client_id,
-          micro_id
+          micro_id,
+          is_publicly_listed
         `)
-        .in('status', ['open', 'posted', 'published']) // Multi-status support
+        .eq('is_publicly_listed', true)
+        .order('published_at', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(limit);
 
@@ -71,22 +109,25 @@ export const useLatestJobs = (limit: number = 6) => {
 
       // Early return if no valid client IDs - skip profile fetch
       if (clientIds.length === 0) {
-        return jobs.map((job: any) => ({
-          id: job.id,
-          title: job.title,
-          description: job.description || '',
-          status: job.status,
-          created_at: job.created_at,
-          budget_type: job.budget_type || 'fixed',
-          budget_value: job.budget_value || 0,
-          location: job.location,
-          category_name: null, // Omit until micro_id is normalized
-          category_slug: null,
-          client: {
-            name: 'Client',
-            avatar: undefined,
-          },
-        }));
+        return jobs.map((job: any) => {
+          const inferred = inferCategoryFromTitle(job.title);
+          return {
+            id: job.id,
+            title: job.title,
+            description: job.description || '',
+            status: job.status,
+            created_at: job.created_at,
+            budget_type: job.budget_type || 'fixed',
+            budget_value: job.budget_value || 0,
+            location: job.location,
+            category_name: inferred?.name || null,
+            category_slug: inferred?.slug || null,
+            client: {
+              name: 'Client',
+              avatar: undefined,
+            },
+          };
+        });
       }
 
       // Fetch profiles separately to avoid FK issues
@@ -103,23 +144,26 @@ export const useLatestJobs = (limit: number = 6) => {
         );
       }
 
-      // Merge client-side
-      return jobs.map((job: any) => ({
-        id: job.id,
-        title: job.title,
-        description: job.description || '',
-        status: job.status,
-        created_at: job.created_at,
-        budget_type: job.budget_type || 'fixed',
-        budget_value: job.budget_value || 0,
-        location: job.location,
-        category_name: null, // Omit until micro_id is normalized to UUID
-        category_slug: null,
-        client: {
-          name: profileMap[job.client_id]?.display_name || 'Client',
-          avatar: profileMap[job.client_id]?.avatar_url || undefined,
-        },
-      }));
+      // Merge client-side with category inference
+      return jobs.map((job: any) => {
+        const inferred = inferCategoryFromTitle(job.title);
+        return {
+          id: job.id,
+          title: job.title,
+          description: job.description || '',
+          status: job.status,
+          created_at: job.created_at,
+          budget_type: job.budget_type || 'fixed',
+          budget_value: job.budget_value || 0,
+          location: job.location,
+          category_name: inferred?.name || null,
+          category_slug: inferred?.slug || null,
+          client: {
+            name: profileMap[job.client_id]?.display_name || 'Client',
+            avatar: profileMap[job.client_id]?.avatar_url || undefined,
+          },
+        };
+      });
     },
     staleTime: 2 * 60 * 1000, // 2 minutes - jobs should be fresher
     gcTime: 5 * 60 * 1000,
