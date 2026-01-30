@@ -1,335 +1,199 @@
 
-# Updated Homepage Redesign Plan (Validated)
+# Homepage Fixes Plan: Critical Runtime Errors
 
-## Changes from Original Plan
+## Summary of Issues Found
 
-Based on validation against the actual codebase and database, I've made these critical updates:
+The homepage implementation has **critical runtime errors** preventing the Latest Jobs and Featured Professionals sections from loading. The network requests show these errors:
 
-| Issue | Original Plan | Updated Plan |
-|-------|---------------|--------------|
-| Routing | `/discovery?category={slug}` | `/services/:slug` (SEO-friendly) |
-| Category names | Some hardcoded mismatches | 100% DB-driven, no hardcoding |
-| Professional query | `ORDER BY RANDOM()` | Pre-filter + cache |
-| Descriptions | Assumed `short_description` column | Omit for now (column doesn't exist) |
+| Section | Error | Root Cause |
+|---------|-------|------------|
+| Latest Jobs | PGRST200 - No FK relationship between `jobs` and `profiles` | Query uses `profiles!jobs_client_id_fkey` but no FK exists |
+| Featured Professionals | PGRST200 - No FK relationship between `professional_profiles` and `professional_stats` | Query tries to join tables without FK |
 
----
-
-## Database Schema
-
-### Actual Category Names (from DB)
-The homepage tiles will use these exact names from `service_categories`:
-
-| Category | Slug | Group |
-|----------|------|-------|
-| Construction | construction | STRUCTURAL |
-| Carpentry | carpentry | STRUCTURAL |
-| Plumbing | plumbing | MEP |
-| Electrical | electrical | MEP |
-| Painting & Decorating | painting-decorating | FINISHES |
-| Gardening & Landscaping | gardening-landscaping | EXTERIOR |
-| Pool & Spa | pool-spa | EXTERIOR |
-| Kitchen & Bathroom | kitchen-bathroom | PROFESSIONAL |
-
-### New Table: `homepage_featured_services`
-
-```sql
-CREATE TABLE homepage_featured_services (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  category_id UUID NOT NULL REFERENCES service_categories(id) ON DELETE CASCADE,
-  sort_order INT NOT NULL,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- RLS: Public read access
-ALTER TABLE homepage_featured_services ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Public can view featured services"
-  ON homepage_featured_services FOR SELECT
-  TO public USING (is_active = true);
-```
-
-### Seed Data (8 Featured Categories)
-
-```sql
-INSERT INTO homepage_featured_services (category_id, sort_order) VALUES
-('5e97f736-36b8-4d7d-9fcf-f1c52f845237', 1), -- Construction
-('d384aa17-5dc6-4bc6-b0f1-0ea1f4186a8c', 2), -- Carpentry
-('098dc559-b205-4f0c-9dbe-6210358fc2df', 3), -- Electrical
-('1e540b07-14c7-471a-87db-25704275de48', 4), -- Plumbing
-('ba7182bd-0867-45af-8df5-30888fa32dee', 5), -- Painting & Decorating
-('ec0e677b-4f65-42af-b137-d2d9c4b53509', 6), -- Pool & Spa
-('d00c7fec-2c46-4540-9aa8-4bb509a90b02', 7), -- Gardening & Landscaping
-('1d0d5594-33b5-4244-8041-167017de5cbf', 8); -- Kitchen & Bathroom
-```
+Additionally, there are the secondary issues you flagged that also need addressing.
 
 ---
 
-## Routing Updates
+## Fix 1: useLatestJobs.ts - Remove Invalid FK Join
 
-### New Route: `/services/:categorySlug`
+**Problem:** The query attempts to join `jobs` to `profiles` using a non-existent foreign key `jobs_client_id_fkey`.
 
-**File:** `src/App.tsx`
+**Solution:** Fetch jobs and profiles separately, then merge client-side.
 
-Add new route that renders Discovery pre-filtered:
+**File:** `src/hooks/useLatestJobs.ts`
 
-```tsx
-// Replace the redirect
-<Route path="/services" element={<Navigate to="/discovery" replace />} />
-
-// With these routes
-<Route path="/services" element={<Discovery />} />
-<Route path="/services/:categorySlug" element={<ServiceCategoryPage />} />
-```
-
-### New Page: `src/pages/ServiceCategoryPage.tsx`
-
-Thin wrapper that:
-1. Extracts `categorySlug` from URL params
-2. Looks up `category_id` from `service_categories` table using slug
-3. Renders Discovery component with pre-set category filter
-4. Sets SEO meta tags specific to that category
-
-```text
-URL: /services/construction
-Resolves to: category_id = 5e97f736-...
-Renders: Discovery with filters.selectedTaxonomy.category = "construction"
-Meta title: "Construction Services in Ibiza | CS Ibiza"
-```
-
----
-
-## Component Architecture
-
-### New Files to Create
-
-```text
-src/pages/ServiceCategoryPage.tsx        -- SEO-friendly category landing page
-src/components/home/
-├── HomepageServiceTiles.tsx             -- Featured category grid
-├── LatestJobsSection.tsx                -- Recent open jobs
-├── FeaturedProfessionalsSection.tsx     -- Verified professionals
-├── ValuePropsSection.tsx                -- Trust indicators
-├── SEOContentBlock.tsx                  -- Crawlable keyword text
-├── FinalCTASection.tsx                  -- Closing CTA
-└── index.ts                             -- Barrel export
-src/hooks/
-├── useHomepageFeaturedServices.ts       -- Fetch featured categories
-├── useLatestJobs.ts                     -- Fetch recent open jobs
-└── useFeaturedProfessionals.ts          -- Fetch verified professionals
-```
-
-### Files to Modify
-
-```text
-src/App.tsx                              -- Add /services/:slug route
-src/pages/Index.tsx                      -- New section composition
-src/components/Hero.tsx                  -- Updated copy and CTAs
-src/components/HowItWorks.tsx            -- Simplified content
-public/locales/en/hero.json              -- New SEO-focused copy
-```
-
----
-
-## Component Specifications
-
-### 1. HomepageServiceTiles
-
-**Data Query:**
-```sql
-SELECT 
-  hfs.sort_order,
-  sc.id,
-  sc.name,
-  sc.slug,
-  sc.icon_emoji,
-  sc.category_group
-FROM homepage_featured_services hfs
-JOIN service_categories sc ON hfs.category_id = sc.id
-WHERE hfs.is_active = true AND sc.is_active = true
-ORDER BY hfs.sort_order
-```
-
-**Tile Click Destination:**
-```text
-/services/{slug}
-Example: /services/construction
-```
-
-**No descriptions** - omit until `short_description` column is added to `service_categories`.
-
-**Fallback:** If featured list is empty, show first 8 categories ordered by `display_order`.
-
-### 2. LatestJobsSection
-
-**Data Query:**
-```sql
-SELECT 
-  j.id, 
-  j.title, 
-  j.status, 
-  j.location,
-  j.created_at,
-  j.budget_type,
-  j.budget_value,
-  m.name as micro_name,
-  ss.name as subcategory_name,
-  sc.name as category_name,
-  sc.slug as category_slug
-FROM jobs j
-LEFT JOIN service_micro_categories m ON j.micro_id::uuid = m.id
-LEFT JOIN service_subcategories ss ON m.subcategory_id = ss.id
-LEFT JOIN service_categories sc ON ss.category_id = sc.id
-WHERE j.status = 'open'
-ORDER BY j.created_at DESC
-LIMIT 6
-```
-
-**Location Formatting:**
+**Changes:**
 ```typescript
-const formatLocation = (location: any): string => {
-  if (!location) return 'Ibiza';
-  return location.address || location.area || location.town || 'Ibiza';
-};
-```
+// BEFORE: Single query with invalid FK join
+.select(`
+  id, title, ...,
+  profiles!jobs_client_id_fkey (display_name, avatar_url),
+  service_micro_categories (...)
+`)
 
-**Uses existing:** `JobListingCard` with `viewMode="compact"`
+// AFTER: Fetch jobs first, then profiles separately
+const { data: jobs } = await supabase
+  .from('jobs')
+  .select(`
+    id, title, description, status, created_at,
+    budget_type, budget_value, location, client_id, micro_id,
+    service_micro_categories (
+      name, subcategory_id,
+      service_subcategories (
+        name, category_id,
+        service_categories (name, slug)
+      )
+    )
+  `)
+  .eq('status', 'open')
+  .order('created_at', { ascending: false })
+  .limit(limit);
 
-**Fallback:** If no jobs, show "Be the first to post a project" with CTA.
+// Get unique client IDs
+const clientIds = [...new Set(jobs.map(j => j.client_id).filter(Boolean))];
 
-### 3. FeaturedProfessionalsSection
+// Fetch profiles separately
+const { data: profiles } = await supabase
+  .from('profiles')
+  .select('id, display_name, avatar_url')
+  .in('id', clientIds);
 
-**Data Query (improved):**
-```sql
-SELECT 
-  pp.user_id,
-  pp.business_name,
-  pp.tagline,
-  pp.verification_status,
-  p.display_name,
-  p.avatar_url
-FROM professional_profiles pp
-JOIN profiles p ON pp.user_id = p.id
-WHERE 
-  pp.verification_status = 'verified' 
-  AND pp.is_active = true
-  AND p.avatar_url IS NOT NULL
-  AND pp.tagline IS NOT NULL
-ORDER BY pp.updated_at DESC
-LIMIT 6
-```
-
-**Caching:** 5 minute stale time in React Query
-
-**Uses existing:** `ProfessionalCard` or simplified version
-
----
-
-## Hero Section Updates
-
-### New Copy (SEO-focused)
-
-**H1:** "Trusted Construction & Property Professionals in Ibiza"
-
-**Tagline:** "Find verified builders, tradespeople, and specialists for your Ibiza property. Compare quotes, reviews, and portfolios - all in one place."
-
-**Primary CTA:** "Post Your Project" → `/post`
-
-**Secondary CTA:** "Find Professionals" → `/services`
-
-### Translation File Updates
-
-**public/locales/en/hero.json:**
-```json
-{
-  "title": "Trusted Construction & Property Professionals",
-  "highlight": "in Ibiza",
-  "tagline": "Find verified builders, tradespeople, and specialists for your Ibiza property. Compare quotes, reviews, and portfolios — all in one place.",
-  "cta": {
-    "postProject": "Post Your Project",
-    "browseServices": "Find Professionals"
-  }
-}
+// Merge client-side
+const profileMap = Object.fromEntries(profiles.map(p => [p.id, p]));
+return jobs.map(job => ({
+  ...job,
+  client: {
+    name: profileMap[job.client_id]?.display_name || 'Client',
+    avatar: profileMap[job.client_id]?.avatar_url,
+  },
+}));
 ```
 
 ---
 
-## SEO Implementation
+## Fix 2: useFeaturedProfessionals.ts - Remove Invalid FK Join + Fix Empty Section
 
-### Meta Tags (Index.tsx)
-```tsx
-<Helmet>
-  <title>Construction & Property Professionals in Ibiza | CS Ibiza</title>
-  <meta 
-    name="description" 
-    content="Find trusted builders, tradespeople, and construction professionals in Ibiza. Compare quotes, reviews, and portfolios on CS Ibiza." 
-  />
-</Helmet>
-```
+**Problem 1:** Query tries to join `professional_profiles` to `professional_stats` without a FK relationship.
 
-### SEO Content Block (visible, crawlable)
-```text
-## Construction & Property Services Across Ibiza
+**Problem 2:** Fetches only 6 items, then filters client-side for avatars - could result in 0-2 displayed.
 
-CS Ibiza connects homeowners, developers, and property managers with 
-trusted construction professionals across Ibiza. From full villa 
-renovations and new builds to carpentry, electrical work, plumbing, 
-and bespoke finishes, our platform helps you find reliable tradespeople 
-without stress, delays, or hidden risks.
+**Solution:** 
+- Remove the `professional_stats` join (ratings can be added later when FK exists)
+- Fetch 20 items, filter for avatar + tagline, then slice to 6
+
+**File:** `src/hooks/useFeaturedProfessionals.ts`
+
+**Changes:**
+```typescript
+// BEFORE: Invalid join + insufficient limit
+const { data } = await supabase
+  .from('professional_profiles')
+  .select(`
+    ...,
+    professional_stats (average_rating, total_reviews)  // INVALID JOIN
+  `)
+  .limit(limit);  // Only fetches 6
+
+// AFTER: Remove invalid join + over-fetch for safety
+const { data } = await supabase
+  .from('professional_profiles')
+  .select(`
+    user_id,
+    business_name,
+    tagline,
+    verification_status,
+    specializations,
+    profiles!professional_profiles_user_id_fkey (
+      display_name,
+      avatar_url
+    )
+  `)
+  .eq('verification_status', 'verified')
+  .eq('is_active', true)
+  .not('tagline', 'is', null)
+  .order('updated_at', { ascending: false })
+  .limit(20);  // Fetch more to ensure we have enough after filtering
+
+// Filter for those with avatars, then take only what we need
+return (data || [])
+  .filter((pro) => pro.profiles?.avatar_url)
+  .slice(0, limit)  // Take only the requested limit
+  .map((pro) => ({
+    id: pro.user_id,
+    user_id: pro.user_id,
+    business_name: pro.business_name,
+    full_name: pro.profiles?.display_name || null,
+    tagline: pro.tagline,
+    avatar_url: pro.profiles?.avatar_url,
+    verification_status: pro.verification_status,
+    specializations: pro.specializations,
+    rating: null,  // Omit until FK relationship is created
+    total_reviews: null,
+  }));
 ```
 
 ---
 
-## Page Layout Order
+## Fix 3: ServiceCategoryPage.tsx - Dynamic Canonical URL
 
-```text
-1. Hero (updated copy, SEO H1)
-2. HomepageServiceTiles (8 featured categories)
-3. LatestJobsSection (6 recent jobs)
-4. FeaturedProfessionalsSection (6 verified pros)
-5. HowItWorks (simplified)
-6. ValuePropsSection (trust bullets)
-7. SEOContentBlock (crawlable text)
-8. FinalCTASection ("Ready to Start?")
-9. Footer
+**Problem:** Canonical URL is hardcoded to `https://csibiza.com`.
+
+**Solution:** Use dynamic origin.
+
+**File:** `src/pages/ServiceCategoryPage.tsx`
+
+**Changes:**
+```typescript
+// BEFORE
+<link rel="canonical" href={`https://csibiza.com/services/${categorySlug}`} />
+
+// AFTER
+<link rel="canonical" href={`${window.location.origin}/services/${categorySlug}`} />
 ```
 
-Removed: "Professional Registration Step 1/2/3" section
+---
+
+## Fix 4: Discovery Category Filtering (Optional Enhancement)
+
+**Current State:** The implementation passes `category.name` (e.g., "Construction") to Discovery, and the filter logic uses case-insensitive substring matching which works with the current mixed data in `professional_service_items.category`.
+
+**Assessment:** The current fuzzy matching approach (`itemCategory.includes(filterCategory)`) actually handles this adequately because:
+- "Construction" matches "construction" (case-insensitive)
+- "Carpentry" matches "carpentry-woodwork" (substring)
+
+**Recommendation:** No immediate fix needed, but document this as technical debt. Long-term, standardize `professional_service_items.category` to use slugs.
 
 ---
 
 ## Implementation Order
 
-1. **Database:** Create `homepage_featured_services` table and seed
-2. **Routing:** Add `/services/:categorySlug` route + `ServiceCategoryPage`
-3. **Hooks:** Create the three data-fetching hooks
-4. **Components:** Build home section components
-5. **Integration:** Update Index.tsx with new layout
-6. **Copy:** Update Hero and localization files
-7. **Testing:** Verify all tile links resolve correctly
+1. **Fix useLatestJobs.ts** - Split query into two fetches (jobs + profiles separately)
+2. **Fix useFeaturedProfessionals.ts** - Remove invalid join + over-fetch pattern
+3. **Fix ServiceCategoryPage.tsx** - Dynamic canonical URL
+4. **Test** - Verify homepage loads without console errors
 
 ---
 
-## QA Checklist
+## Files to Modify
 
-- [ ] Every tile title exactly matches DB `service_categories.name`
-- [ ] Every tile links to `/services/{slug}` and returns 200
-- [ ] Renaming a category in DB updates homepage automatically
-- [ ] Deleting/deactivating a category removes it from homepage
-- [ ] Location fallback works for jobs with missing address
-- [ ] Featured professionals show only those with avatars and taglines
-- [ ] Meta tags render correctly for SEO
-- [ ] Mobile responsive grid layouts work
+| File | Change |
+|------|--------|
+| `src/hooks/useLatestJobs.ts` | Split query, fetch profiles separately |
+| `src/hooks/useFeaturedProfessionals.ts` | Remove stats join, fetch 20 + slice to 6 |
+| `src/pages/ServiceCategoryPage.tsx` | Dynamic canonical URL |
 
 ---
 
-## Summary of Key Decisions
+## Technical Notes
 
-| Decision | Rationale |
-|----------|-----------|
-| Use `/services/:slug` not query params | Better SEO, cleaner URLs |
-| Tiles 100% DB-driven | Prevents naming drift |
-| No hardcoded descriptions | Column doesn't exist yet |
-| Filter professionals by avatar+tagline | Ensures quality display |
-| 5-min cache on featured pros | Prevents random churn |
-| Resolve slug→id internally | Slug changes won't break filtering |
+### Why Not Add Foreign Keys?
+
+Adding FKs would require:
+1. All `jobs.client_id` values to exist in `profiles.id`
+2. All `professional_stats.professional_id` values to exist in `professional_profiles.user_id`
+
+This may not be true for legacy data. The safer approach is to make queries work without FKs.
+
+### Why Over-Fetch for Featured Professionals?
+
+If we fetch exactly 6 and 4 have no avatar, we display only 2. By fetching 20 and slicing to 6, we almost guarantee 6 results (assuming at least 6 verified professionals have avatars).
