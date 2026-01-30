@@ -37,11 +37,11 @@ interface Filters {
 }
 
 interface DiscoveryProps {
-  /** Initial category name for pre-filtering (from ServiceCategoryPage) */
-  initialCategoryName?: string;
+  /** Initial category slug for pre-filtering (from ServiceCategoryPage) */
+  initialCategorySlug?: string;
 }
 
-const Discovery = ({ initialCategoryName }: DiscoveryProps = {}) => {
+const Discovery = ({ initialCategorySlug }: DiscoveryProps = {}) => {
   const { t } = useTranslation(['pages', 'services', 'common']);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -51,13 +51,13 @@ const Discovery = ({ initialCategoryName }: DiscoveryProps = {}) => {
   const [viewMode, setViewMode] = useState<'services' | 'professionals'>('services');
   const [showFilters, setShowFilters] = useState(false);
   const [filtersCollapsed, setFiltersCollapsed] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategoryName || null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategorySlug || null);
   const [filters, setFilters] = useState<Filters>(() => {
-    // Initialize with category filter if provided
-    if (initialCategoryName) {
+    // Initialize with category filter if provided (using slug for stable matching)
+    if (initialCategorySlug) {
       return {
         selectedTaxonomy: {
-          category: initialCategoryName,
+          category: initialCategorySlug,
           subcategory: '',
           micro: '',
         },
@@ -93,8 +93,8 @@ const Discovery = ({ initialCategoryName }: DiscoveryProps = {}) => {
 
   // Track page view
   useEffect(() => {
-    trackDiscoveryView('services', initialCategoryName);
-  }, [trackDiscoveryView, initialCategoryName]);
+    trackDiscoveryView('services', initialCategorySlug);
+  }, [trackDiscoveryView, initialCategorySlug]);
 
   // Initialize from URL params
   useEffect(() => {
@@ -102,7 +102,7 @@ const Discovery = ({ initialCategoryName }: DiscoveryProps = {}) => {
     if (q) setSearchTerm(q);
     
     // Also check for category param in URL if no initial prop
-    if (!initialCategoryName) {
+    if (!initialCategorySlug) {
       const categoryParam = searchParams.get('category');
       if (categoryParam) {
         setSelectedCategory(categoryParam);
@@ -116,7 +116,7 @@ const Discovery = ({ initialCategoryName }: DiscoveryProps = {}) => {
         }));
       }
     }
-  }, [searchParams, initialCategoryName]);
+  }, [searchParams, initialCategorySlug]);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);

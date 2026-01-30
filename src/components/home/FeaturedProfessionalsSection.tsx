@@ -99,17 +99,17 @@ const FeaturedProfessionalsSection = () => {
                           </p>
                         )}
 
-                        {/* Specializations */}
-                        {pro.specializations && pro.specializations.length > 0 && (
+                        {/* Skills */}
+                        {pro.skills && pro.skills.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {pro.specializations.slice(0, 2).map((spec) => (
-                              <Badge key={spec} variant="secondary" className="text-xs">
-                                {spec}
+                            {pro.skills.slice(0, 2).map((skill) => (
+                              <Badge key={skill} variant="secondary" className="text-xs">
+                                {skill}
                               </Badge>
                             ))}
-                            {pro.specializations.length > 2 && (
+                            {pro.skills.length > 2 && (
                               <Badge variant="outline" className="text-xs">
-                                +{pro.specializations.length - 2}
+                                +{pro.skills.length - 2}
                               </Badge>
                             )}
                           </div>

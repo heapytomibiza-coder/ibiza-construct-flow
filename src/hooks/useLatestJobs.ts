@@ -38,7 +38,7 @@ export const useLatestJobs = (limit: number = 6) => {
   return useQuery({
     queryKey: ['latest-jobs', limit],
     queryFn: async (): Promise<LatestJob[]> => {
-      // Fetch jobs without profile join (no FK exists)
+      // Simplified query - avoid complex nested joins that can fail with mixed micro_id data
       const { data: jobs, error: jobsError } = await supabase
         .from('jobs')
         .select(`
@@ -51,21 +51,9 @@ export const useLatestJobs = (limit: number = 6) => {
           budget_value,
           location,
           client_id,
-          micro_id,
-          service_micro_categories (
-            name,
-            subcategory_id,
-            service_subcategories (
-              name,
-              category_id,
-              service_categories (
-                name,
-                slug
-              )
-            )
-          )
+          micro_id
         `)
-        .eq('status', 'open')
+        .in('status', ['open', 'posted', 'published']) // Multi-status support
         .order('created_at', { ascending: false })
         .limit(limit);
 
@@ -78,23 +66,41 @@ export const useLatestJobs = (limit: number = 6) => {
         return [];
       }
 
-      // Get unique client IDs
+      // Get unique client IDs - guard against null/undefined
       const clientIds = [...new Set(jobs.map(j => j.client_id).filter(Boolean))] as string[];
 
-      // Fetch profiles separately
+      // Early return if no valid client IDs - skip profile fetch
+      if (clientIds.length === 0) {
+        return jobs.map((job: any) => ({
+          id: job.id,
+          title: job.title,
+          description: job.description || '',
+          status: job.status,
+          created_at: job.created_at,
+          budget_type: job.budget_type || 'fixed',
+          budget_value: job.budget_value || 0,
+          location: job.location,
+          category_name: null, // Omit until micro_id is normalized
+          category_slug: null,
+          client: {
+            name: 'Client',
+            avatar: undefined,
+          },
+        }));
+      }
+
+      // Fetch profiles separately to avoid FK issues
       let profileMap: Record<string, { display_name: string | null; avatar_url: string | null }> = {};
       
-      if (clientIds.length > 0) {
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, display_name, avatar_url')
-          .in('id', clientIds);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url')
+        .in('id', clientIds);
 
-        if (!profilesError && profiles) {
-          profileMap = Object.fromEntries(
-            profiles.map(p => [p.id, { display_name: p.display_name, avatar_url: p.avatar_url }])
-          );
-        }
+      if (!profilesError && profiles) {
+        profileMap = Object.fromEntries(
+          profiles.map(p => [p.id, { display_name: p.display_name, avatar_url: p.avatar_url }])
+        );
       }
 
       // Merge client-side
@@ -107,8 +113,8 @@ export const useLatestJobs = (limit: number = 6) => {
         budget_type: job.budget_type || 'fixed',
         budget_value: job.budget_value || 0,
         location: job.location,
-        category_name: job.service_micro_categories?.service_subcategories?.service_categories?.name || null,
-        category_slug: job.service_micro_categories?.service_subcategories?.service_categories?.slug || null,
+        category_name: null, // Omit until micro_id is normalized to UUID
+        category_slug: null,
         client: {
           name: profileMap[job.client_id]?.display_name || 'Client',
           avatar: profileMap[job.client_id]?.avatar_url || undefined,

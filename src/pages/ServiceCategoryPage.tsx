@@ -60,8 +60,8 @@ const ServiceCategoryPage = () => {
         <link rel="canonical" href={`${typeof window !== 'undefined' ? window.location.origin : ''}/services/${categorySlug}`} />
       </Helmet>
       
-      {/* Pass category filter to Discovery */}
-      <Discovery initialCategoryName={category.name} />
+      {/* Pass category slug for stable filtering */}
+      <Discovery initialCategorySlug={category.slug} />
     </>
   );
 };
