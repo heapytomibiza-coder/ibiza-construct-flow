@@ -384,7 +384,6 @@ const tradeBlocks: Record<ConstructionTrade, (keyof typeof questionBlocks)[]> = 
     'budget_expectations'
   ],
   bathroom_renovation: [
-    'access_site_conditions',
     'dimensions_quantities',
     'materials_finish_level',
     'existing_state_demolition',
