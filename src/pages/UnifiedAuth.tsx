@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { normalizeRedirectPath } from '@/lib/navigation';
 import { Eye, EyeOff, Loader2, Home, Wrench, ArrowLeft, ShieldCheck, Mail, CheckCircle2 } from 'lucide-react';
 import { useSignIn } from '../../packages/@contracts/clients';
 // QuickDemoLogin removed for launch - preserved in components for future restoration
@@ -42,6 +43,52 @@ export default function UnifiedAuth() {
 
   // Redirect URL for after auth
   const redirectTo = useMemo(() => searchParams.get('redirect') || '/dashboard', [searchParams]);
+  const normalizedRedirectPath = useMemo(
+    () => normalizeRedirectPath(searchParams.get('redirect')),
+    [searchParams]
+  );
+
+  const safeRedirectPathForAuth = useMemo(() => {
+    if (!normalizedRedirectPath) return null;
+
+    // Hard-block onboarding redirects from being used as an auth landing target.
+    // If user truly needs onboarding, the route resolver / guards will send them there.
+    const isOnboardingRedirect =
+      normalizedRedirectPath.startsWith('/onboarding/professional') ||
+      normalizedRedirectPath.startsWith('/professional/verification') ||
+      normalizedRedirectPath.startsWith('/professional/service-setup') ||
+      normalizedRedirectPath.startsWith('/professional/services/wizard');
+
+    return isOnboardingRedirect ? null : normalizedRedirectPath;
+  }, [normalizedRedirectPath]);
+
+  const clearRedirectStorageKeys = () => {
+    try {
+      localStorage.removeItem('redirect');
+      localStorage.removeItem('redirectTo');
+      localStorage.removeItem('postLoginRedirect');
+      localStorage.removeItem('returnTo');
+      sessionStorage.removeItem('redirect');
+      sessionStorage.removeItem('redirectTo');
+      sessionStorage.removeItem('postLoginRedirect');
+      sessionStorage.removeItem('returnTo');
+    } catch {
+      // ignore
+    }
+  };
+
+  const redirectAfterAuth = async (userId: string) => {
+    clearRedirectStorageKeys();
+
+    if (safeRedirectPathForAuth) {
+      navigate(safeRedirectPathForAuth, { replace: true });
+      return;
+    }
+
+    const { getInitialDashboardRoute } = await import('@/lib/roles');
+    const { path } = await getInitialDashboardRoute(userId);
+    navigate(path, { replace: true });
+  };
 
   // Real-time validation
   const isEmailValid = useMemo(() => {
@@ -67,12 +114,12 @@ export default function UnifiedAuth() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user && !hasRedirected.current) {
         hasRedirected.current = true;
-        console.log('🔵 [UnifiedAuth] User already authenticated, redirecting to:', redirectTo);
-        navigate(redirectTo, { replace: true });
+        console.log('🔵 [UnifiedAuth] User already authenticated, redirecting. safeRedirect:', safeRedirectPathForAuth);
+        await redirectAfterAuth(session.user.id);
       }
     };
     checkExistingSession();
-  }, [navigate, redirectTo]);
+  }, [navigate, redirectTo, safeRedirectPathForAuth]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,11 +167,15 @@ export default function UnifiedAuth() {
           title: 'Welcome back!',
           description: "You're signed in. Taking you to your dashboard…"
         });
-        
+
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+        if (!userId) throw new Error('Failed to establish session');
+
         // Delay to ensure session is fully propagated across all listeners
-        console.log('🔵 [UnifiedAuth] Navigating to:', redirectTo);
+        console.log('🔵 [UnifiedAuth] Redirecting after auth. safeRedirect:', safeRedirectPathForAuth);
         setTimeout(() => {
-          navigate(redirectTo, { replace: true });
+          void redirectAfterAuth(userId);
         }, 250);
       } else {
         // Validate signup data

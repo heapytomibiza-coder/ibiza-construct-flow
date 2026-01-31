@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { isOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 
 export type Role = 'client' | 'professional' | 'admin';
 
@@ -236,10 +237,11 @@ export async function getInitialDashboardRoute(
       return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
     }
 
-    // Check onboarding phase - must be at least 'intro_submitted' to have started
-    // and verification_status must be 'verified' to be complete
-    const onboardingComplete = 
-      proProfile.onboarding_phase === 'complete' || 
+    // Professional is complete if:
+    // - onboarding_phase is 'service_configured' or 'complete' (see isOnboardingComplete)
+    // - OR verification_status is 'verified'
+    const onboardingComplete =
+      isOnboardingComplete(proProfile.onboarding_phase) ||
       proProfile.verification_status === 'verified';
     
     if (!onboardingComplete) {
