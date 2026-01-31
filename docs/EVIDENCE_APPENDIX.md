@@ -223,14 +223,26 @@ USING btree (client_id, professional_id, job_id);
 .insert({ ..., job_id: jobId })
 ```
 
-**Risk:** 
-- If `jobId` is `null`, lookup queries `job_id = ''`
+**This causes:** 
+- When `jobId` is `null`, lookup queries `job_id = ''`
 - But insert creates a row with `job_id = NULL`
 - In PostgreSQL, `NULL != ''` so lookup won't find it
-- **Duplicates can still happen even with the unique index** because PostgreSQL treats each NULL as distinct
+- **Duplicates WILL occur** even with the unique index because PostgreSQL treats each NULL as distinct
 - Result: Multiple `(client1, pro1, NULL)` rows can coexist, violating intended uniqueness
 
-**Recommended Fixes (pick one):**
+**Proof (this WILL succeed in PostgreSQL):**
+```sql
+-- Both inserts succeed because NULL is treated as distinct for uniqueness
+INSERT INTO conversations (client_id, professional_id, job_id)
+VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002', NULL);
+
+INSERT INTO conversations (client_id, professional_id, job_id)
+VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002', NULL);
+
+-- Result: TWO rows exist with identical (client_id, professional_id, NULL)
+```
+
+**Fix requirement (implement ONE):**
 
 1. **Enforce `job_id NOT NULL` with sentinel value:**
    ```sql
@@ -238,7 +250,7 @@ USING btree (client_id, professional_id, job_id);
    ALTER TABLE conversations ALTER COLUMN job_id SET NOT NULL;
    ```
 
-2. **Use partial unique index for NULL handling:**
+2. **Add partial unique index for NULL handling:**
    ```sql
    CREATE UNIQUE INDEX conversations_no_job_unique 
    ON conversations (client_id, professional_id) 
