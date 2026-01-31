@@ -30,7 +30,7 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   quickFilter = ''
 }) => {
   const { user } = useAuth();
-  const { activeRole, roles } = useActiveRole();
+  const { activeRole, roles, loading: rolesLoading } = useActiveRole();
   const navigate = useNavigate();
   const gate = useAuthGate();
   const [searchParams] = useSearchParams();
@@ -39,8 +39,11 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   // Role-based preview mode: only professionals see full data
   // Use activeRole from useActiveRole (synced with user_roles table) instead of profile.active_role
   // This ensures consistency with RouteGuard and prevents role source mismatch
-  const isProfessional = !!user && activeRole === 'professional' && roles.includes('professional');
-  const previewMode = !isProfessional;
+  // roles.includes('professional') is the permission check; activeRole is the UI mode
+  const canActAsProfessional = roles.includes('professional');
+  const isProfessional = !!user && activeRole === 'professional' && canActAsProfessional;
+  // Avoid flash of preview mode during hydration - treat loading as "not ready"
+  const previewMode = rolesLoading ? true : !isProfessional;
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');

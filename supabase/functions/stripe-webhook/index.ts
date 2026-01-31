@@ -130,6 +130,17 @@ async function handlePaymentIntentSucceeded(
     throw new Error(`Failed to update escrow payment: ${error.message}`);
   }
 
+  // CRITICAL: Guard against "0 rows updated" silent failure
+  // If no escrow_payments row exists for this intent, this is a data integrity issue
+  // We throw to ensure Stripe retries and alert operators via logging
+  if (!data || data.length === 0) {
+    logStep("CRITICAL: No escrow_payments row found for payment_intent", { 
+      intentId: intent.id,
+      amount: intent.amount 
+    });
+    throw new Error(`No escrow_payments row found for payment_intent ${intent.id} - payment received but not recorded`);
+  }
+
   // Also update payment_transactions if exists
   await supabase
     .from("payment_transactions")
@@ -158,7 +169,7 @@ async function handlePaymentIntentSucceeded(
     details: {
       intentId: intent.id,
       amount: intent.amount,
-      updatedRecords: data?.length || 0,
+      updatedRecords: data.length,
     },
   };
 }
