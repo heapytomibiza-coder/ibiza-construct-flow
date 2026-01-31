@@ -1,10 +1,15 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
-import { serverClient } from "../_shared/client.ts";
-import { json } from "../_shared/json.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateRequestBody } from '../_shared/inputValidation.ts';
-import { mapError } from '../_shared/errorMapping.ts';
+import { createErrorResponse, logError, mapError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  corsHeaders, 
+  handleCors, 
+  logSecurityEvent 
+} from '../_shared/securityMiddleware.ts';
 
 const verifySchema = z.object({
   verificationId: z.string().uuid(),
@@ -13,62 +18,100 @@ const verifySchema = z.object({
 });
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const supabase = serverClient(req);
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    // Get authenticated user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return json({ error: "Unauthorized" }, 401);
+    // 1) Auth check
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Check if user is admin
-    const { data: roles, error: roleError } = await supabase
-      .from("user_roles")
+    const userClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await userClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 2) Rate limiting - ADMIN_STANDARD (30/hr for verifications)
+    const serviceClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const rateLimit = await checkRateLimitDb(serviceClient, user.id, 'admin-verify', 'API_STRICT');
+    if (!rateLimit.allowed) {
+      return createRateLimitResponse(rateLimit.retryAfter);
+    }
+
+    // 3) Verify admin role via admin_roles table (consistent pattern)
+    const { data: adminRole, error: roleError } = await serviceClient
+      .from("admin_roles")
       .select("role")
       .eq("user_id", user.id)
-      .eq("role", "admin")
-      .single();
+      .maybeSingle();
 
-    if (roleError || !roles) {
-      return json({ error: "Admin access required" }, 403);
+    if (roleError) {
+      logError('admin-verify', roleError as Error, { userId: user.id });
+      return new Response(
+        JSON.stringify({ error: "Error checking admin privileges" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
+    // admin, super_admin, or moderator can verify profiles
+    if (!adminRole || !['admin', 'super_admin', 'moderator'].includes(adminRole.role)) {
+      await logSecurityEvent(serviceClient, 'unauthorized_admin_access', 'high', user.id, {
+        endpoint: 'admin-verify',
+        action: 'professional_verification',
+        attemptedRole: adminRole?.role ?? 'none'
+      });
+      return new Response(
+        JSON.stringify({ error: "Admin access required" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 4) Validate request body
     const { verificationId, approved, notes } = await validateRequestBody(req, verifySchema);
 
-    // Get verification details
-    const { data: verification, error: verificationError } = await supabase
+    // 5) Get verification details
+    const { data: verification, error: verificationError } = await serviceClient
       .from("professional_verifications")
       .select("professional_id")
       .eq("id", verificationId)
       .single();
 
     if (verificationError || !verification) {
-      return json({ error: "Verification not found" }, 404);
+      return new Response(
+        JSON.stringify({ error: "Verification not found" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const professionalId = verification.professional_id;
 
-    // Get professional profile and user details
-    const { data: profile, error: profileError } = await supabase
+    // 6) Get professional profile for notification
+    const { data: profile } = await serviceClient
       .from("profiles")
       .select("full_name, email")
       .eq("id", professionalId)
       .single();
 
-    if (profileError || !profile) {
-      return json({ error: "Professional profile not found" }, 404);
-    }
-
-    const professionalName = profile.full_name;
-    const professionalEmail = profile.email;
-
-    // Update verification status
-    const { error: updateError } = await supabase
+    // 7) Update verification status
+    const { error: updateError } = await serviceClient
       .from("professional_verifications")
       .update({
         status: approved ? "approved" : "rejected",
@@ -79,27 +122,26 @@ serve(async (req) => {
       .eq("id", verificationId);
 
     if (updateError) {
-      console.error("Failed to update verification:", updateError);
-      return json({ error: "Failed to update verification" }, 500);
+      logError('admin-verify', updateError as Error, { verificationId });
+      return new Response(
+        JSON.stringify({ error: "Failed to update verification" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // If approved, update professional_profiles
+    // 8) If approved, update professional_profiles
     if (approved) {
-      const { error: profileError } = await supabase
+      await serviceClient
         .from("professional_profiles")
         .update({
           verified: true,
-          kyc_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year
+          kyc_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
         })
         .eq("user_id", professionalId);
-
-      if (profileError) {
-        console.error("Failed to update professional profile:", profileError);
-      }
     }
 
-    // Log admin action
-    const { error: auditError } = await supabase
+    // 9) Audit log
+    await serviceClient
       .from("admin_audit_logs")
       .insert({
         admin_id: user.id,
@@ -108,42 +150,49 @@ serve(async (req) => {
         entity_id: verificationId,
         details: {
           professional_id: professionalId,
-          professional_name: professionalName,
-          notes: notes,
+          professional_name: profile?.full_name,
+          notes,
         },
       });
 
-    if (auditError) {
-      console.error("Failed to log admin action:", auditError);
-    }
-
-    // Send notification email
-    try {
-      await supabase.functions.invoke("send-email", {
-        body: {
-          type: approved ? "verification_approved" : "verification_rejected",
-          data: {
-            email: professionalEmail,
-            name: professionalName,
-            reason: notes,
-          },
-        },
-      });
-    } catch (emailError) {
-      console.error("Failed to send notification email:", emailError);
-      // Don't fail the request if email fails
-    }
-
-    console.log(`Verification ${approved ? "approved" : "rejected"}: ${verificationId} by admin ${user.id}`);
-
-    return json({
-      success: true,
+    // 10) Security event log
+    await logSecurityEvent(serviceClient, 'admin_verification_processed', 'low', user.id, {
       verificationId,
+      professionalId,
       approved,
+      adminRole: adminRole.role
     });
 
+    // 11) Send notification email (non-blocking)
+    try {
+      if (profile?.email) {
+        await serviceClient.functions.invoke("send-email", {
+          body: {
+            type: approved ? "verification_approved" : "verification_rejected",
+            data: {
+              email: profile.email,
+              name: profile.full_name,
+              reason: notes,
+            },
+          },
+        });
+      }
+    } catch (emailError) {
+      // Don't fail the request if email fails
+      logError('admin-verify', emailError as Error, { context: 'email_send' });
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        verificationId,
+        approved,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+
   } catch (error) {
-    console.error("Admin verify error:", error);
-    return json({ error: mapError(error) }, 500);
+    logError('admin-verify', error as Error);
+    return createErrorResponse(error as Error);
   }
 });
