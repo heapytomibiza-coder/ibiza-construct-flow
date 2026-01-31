@@ -4,10 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard, Loader2 } from 'lucide-react';
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+import { getStripePromise, isStripeConfigured } from '@/lib/stripe/stripePromise';
 
 interface InstallmentPaymentButtonProps {
   paymentId: string;
@@ -153,7 +151,7 @@ export function InstallmentPaymentButton({
             <DialogTitle>Pay Installment</DialogTitle>
           </DialogHeader>
           {clientSecret && (
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <Elements stripe={getStripePromise()} options={{ clientSecret }}>
               <PaymentForm
                 clientSecret={clientSecret}
                 amount={amount}
