@@ -18,6 +18,10 @@ export interface FeaturedProfessional {
  * Fetch featured professionals for homepage
  * Filters for verified professionals with avatars and taglines
  * Over-fetches to ensure we have enough after client-side filtering
+ * 
+ * IMPORTANT: Do NOT join profiles from the client.
+ * Public pages must query public_professionals_preview to avoid 401/42501 on profiles.
+ * The view handles the join server-side with owner privileges.
  */
 export const useFeaturedProfessionals = (limit: number = 6) => {
   return useQuery({
