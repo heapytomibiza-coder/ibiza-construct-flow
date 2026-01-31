@@ -52,13 +52,25 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
 
   const loadProfileState = async () => {
     try {
+      // Use maybeSingle() to handle case where profile doesn't exist yet
+      // .single() would throw an error and leave the gate in a broken state
       const { data, error } = await supabase
         .from('professional_profiles')
         .select('onboarding_phase, verification_status, rejection_reason')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+
+      // Handle case where profile doesn't exist yet (new user starting onboarding)
+      if (!data) {
+        setProfileState({
+          onboardingPhase: null,
+          verificationStatus: 'pending',
+          rejectionReason: null,
+        });
+        return;
+      }
 
       // Type assertion since types may not be updated yet
       const profile = data as any;
@@ -69,6 +81,12 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
       });
     } catch (error) {
       console.error('Error loading profile state:', error);
+      // Set a safe default state instead of leaving it null
+      setProfileState({
+        onboardingPhase: null,
+        verificationStatus: 'pending',
+        rejectionReason: null,
+      });
     } finally {
       setLoading(false);
     }
@@ -92,8 +110,11 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
   };
 
   useEffect(() => {
+    // Check service configuration for verified users OR if onboarding is complete
+    // This ensures the check runs for all terminal states
     if (profileState?.verificationStatus === 'verified' || 
-        profileState?.onboardingPhase === 'service_configured') {
+        profileState?.onboardingPhase === 'service_configured' ||
+        profileState?.onboardingPhase === 'complete') {
       checkServiceConfiguration();
     }
   }, [profileState]);
