@@ -1,29 +1,45 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
+
+// Strict schema with payload caps
+const translateSchema = z.object({
+  text: z.string().trim().min(1).max(5000), // Cap at 5k chars
+  sourceLang: z.string().max(10).optional(),
+  targetLang: z.string().min(2).max(10),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { text, sourceLang, targetLang } = await req.json();
-
-    if (!text || !targetLang) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required fields: text, targetLang' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+    const supabase = createServiceClient();
+    
+    // Rate limiting - AI_STANDARD (20/hr)
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'translate-message', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
     }
 
-    // Use Lovable AI for translation
-    const lovableAiUrl = Deno.env.get('LOVABLE_AI_URL');
-    const lovableAiKey = Deno.env.get('LOVABLE_AI_KEY');
+    const { text, sourceLang, targetLang } = await validateRequestBody(req, translateSchema);
 
-    if (!lovableAiUrl || !lovableAiKey) {
+    // Use Lovable AI for translation
+    const lovableAiUrl = 'https://ai.gateway.lovable.dev/v1/chat/completions';
+    const lovableAiKey = Deno.env.get('LOVABLE_API_KEY');
+
+    if (!lovableAiKey) {
       console.error('Lovable AI credentials not configured');
       return new Response(
         JSON.stringify({ error: 'Translation service not configured' }),
@@ -48,7 +64,7 @@ ${text}`;
         'Authorization': `Bearer ${lovableAiKey}`,
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash', // Fast and cost-effective for simple translations
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'user',
@@ -61,13 +77,12 @@ ${text}`;
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Lovable AI error:', errorText);
+      console.error('Lovable AI error:', response.status);
       throw new Error('Translation request failed');
     }
 
     const data = await response.json();
-    const translatedText = data.choices[0]?.message?.content?.trim();
+    const translatedText = data.choices?.[0]?.message?.content?.trim();
 
     if (!translatedText) {
       throw new Error('No translation received');
@@ -85,15 +100,7 @@ ${text}`;
       }
     );
   } catch (error) {
-    console.error('Translation error:', error);
-    return new Response(
-      JSON.stringify({
-        error: error instanceof Error ? error.message : 'Translation failed',
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    logError('translate-message', error as Error);
+    return createErrorResponse(error as Error);
   }
 });

@@ -46,11 +46,17 @@ interface JobLifecycleEvent {
   [key: string]: any;
 }
 
+// Strict schema with validated thresholds instead of z.record(z.any())
 const anomalyDetectorSchema = z.object({
   analysisType: z.enum(['pricing', 'job_flow', 'professional_behavior', 'system_performance']).optional(),
   timeframe: z.enum(['24h', '7d', '72h']).optional().default('72h'),
   entityType: z.string().max(100).optional(),
-  thresholds: z.record(z.any()).optional(),
+  thresholds: z.object({
+    pricingDeviation: z.number().min(0).max(10).optional(),
+    cancellationRateLimit: z.number().min(0).max(1).optional(),
+    failureRateLimit: z.number().min(0).max(1).optional(),
+    applicationLimit: z.number().int().min(1).max(1000).optional(),
+  }).optional(),
 });
 
 serve(async (req) => {

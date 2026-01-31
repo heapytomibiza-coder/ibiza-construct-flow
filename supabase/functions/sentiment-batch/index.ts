@@ -1,11 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { serverClient } from "../_shared/client.ts";
-import { getErrorMessage } from '../_shared/errorUtils.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// Batch processing schema - strict limits to prevent abuse
+const batchSchema = z.object({
+  limit: z.number().int().min(1).max(50).optional().default(50), // Cap batch size
+}).optional();
 
 function quickSentimentRule(text: string): { label: string; score: number; confidence: number } {
   const t = text.toLowerCase();
@@ -27,20 +36,50 @@ function quickSentimentRule(text: string): { label: string; score: number; confi
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const supabase = serverClient(req);
+    const supabase = createServiceClient();
+    
+    // Rate limiting - AI_STRICT for batch operations (10/hr) - this is expensive
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'sentiment-batch', 'AI_STRICT');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
+    }
 
-    // Get messages without sentiment analysis (limit to recent 500)
-    const { data: messages, error: messagesError } = await supabase
+    // Parse optional limit parameter
+    let limit = 50;
+    try {
+      const body = await req.json();
+      if (body?.limit && typeof body.limit === 'number') {
+        limit = Math.min(Math.max(body.limit, 1), 50);
+      }
+    } catch {
+      // No body or invalid JSON - use defaults
+    }
+
+    // Get messages without sentiment analysis (limit to batch size)
+    const { data: existingSentiments } = await supabase
+      .from('message_sentiments')
+      .select('message_id');
+
+    const existingIds = existingSentiments?.map(s => s.message_id) || [];
+
+    // Build query for messages without sentiment
+    let query = supabase
       .from('dispute_messages')
       .select('id, message')
-      .is('id', 'not.in.(select message_id from message_sentiments)')
       .order('created_at', { ascending: false })
-      .limit(500);
+      .limit(limit);
+
+    if (existingIds.length > 0) {
+      query = query.not('id', 'in', `(${existingIds.join(',')})`);
+    }
+
+    const { data: messages, error: messagesError } = await query;
 
     if (messagesError) throw messagesError;
 
@@ -63,14 +102,11 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, processed }),
+      JSON.stringify({ success: true, processed, batchSize: limit }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Sentiment batch error:', error);
-    return new Response(
-      JSON.stringify({ error: getErrorMessage(error) }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logError('sentiment-batch', error as Error);
+    return createErrorResponse(error as Error);
   }
 });

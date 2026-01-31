@@ -1,28 +1,39 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { getErrorMessage } from '../_shared/errorUtils.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// Strict schema with payload caps
+const sentimentSchema = z.object({
+  textContent: z.string().trim().min(1).max(5000), // Cap at 5k chars
+  entityType: z.string().trim().min(1).max(100),
+  entityId: z.string().uuid(),
+});
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
-
-    const { textContent, entityType, entityId } = await req.json();
-
-    if (!textContent || !entityType || !entityId) {
-      throw new Error('Missing required fields');
+    const supabase = createServiceClient();
+    
+    // Rate limiting - AI_STANDARD (20/hr)
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'sentiment-analyzer', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
     }
+
+    const { textContent, entityType, entityId } = await validateRequestBody(req, sentimentSchema);
 
     console.log(`Analyzing sentiment for ${entityType}: ${entityId}`);
 
@@ -30,6 +41,10 @@ serve(async (req) => {
 
     // Use Lovable AI for sentiment analysis
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('AI service unavailable');
+    }
+
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -51,8 +66,26 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      console.error('AI Gateway error:', response.status);
+      throw new Error('Sentiment analysis failed');
+    }
+
     const data = await response.json();
-    const analysis = JSON.parse(data.choices[0].message.content);
+    const content = data.choices?.[0]?.message?.content;
+    
+    let analysis;
+    try {
+      analysis = JSON.parse(content);
+    } catch {
+      // Fallback if AI returns non-JSON
+      analysis = {
+        sentiment: 'neutral',
+        confidence: 0.5,
+        scores: { positive: 0.33, negative: 0.33, neutral: 0.34 },
+        keyPhrases: []
+      };
+    }
 
     // Store sentiment analysis
     const { data: sentimentRecord, error } = await supabase
@@ -60,7 +93,7 @@ serve(async (req) => {
       .insert({
         entity_type: entityType,
         entity_id: entityId,
-        text_content: textContent,
+        text_content: textContent.substring(0, 1000), // Store truncated version
         sentiment: analysis.sentiment,
         confidence_score: analysis.confidence,
         sentiment_scores: analysis.scores,
@@ -94,20 +127,14 @@ serve(async (req) => {
         confidence: analysis.confidence,
         scores: analysis.scores,
         keyPhrases: analysis.keyPhrases,
-        id: sentimentRecord.id,
+        id: sentimentRecord?.id,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
   } catch (error) {
-    console.error('Error analyzing sentiment:', error);
-    return new Response(
-      JSON.stringify({ error: getErrorMessage(error) }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    logError('sentiment-analyzer', error as Error);
+    return createErrorResponse(error as Error);
   }
 });

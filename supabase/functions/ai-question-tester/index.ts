@@ -4,11 +4,21 @@ import { validateRequestBody } from '../_shared/inputValidation.ts';
 import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
 import { checkRateLimitDb, createRateLimitResponse, getClientIdentifier, createServiceClient, corsHeaders, handleCors } from '../_shared/securityMiddleware.ts';
 
+// Strict schema with validated question structure
+const questionSchema = z.object({
+  id: z.string().max(100).optional(),
+  text: z.string().max(1000).optional(),
+  question: z.string().max(1000).optional(),
+  type: z.string().max(50).optional(),
+  required: z.boolean().optional(),
+  options: z.array(z.string().max(200)).max(20).optional(),
+}).passthrough();
+
 const requestSchema = z.object({
   serviceType: z.string().trim().min(1).max(200),
   category: z.string().trim().max(200).optional(),
   subcategory: z.string().trim().max(200).optional(),
-  questions: z.array(z.any()).min(1).max(50),
+  questions: z.array(questionSchema).min(1).max(50),
 });
 
 serve(async (req) => {

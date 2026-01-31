@@ -13,10 +13,27 @@ import {
   createServiceClient
 } from '../_shared/securityMiddleware.ts';
 
+// Strict schema with validated fields instead of z.record(z.any())
 const riskAnalyzerSchema = z.object({
   jobId: z.string().uuid(),
-  jobDetails: z.record(z.any()),
-  professionalProfile: z.record(z.any()).optional(),
+  jobDetails: z.object({
+    id: z.string().uuid().optional(),
+    category: z.string().max(100).optional(),
+    complexity: z.string().max(50).optional(),
+    safety_equipment: z.array(z.string().max(100)).max(20).optional(),
+    estimated_hours: z.number().min(0).max(1000).optional(),
+    time_window_hours: z.number().min(0).max(1000).optional(),
+    total_price: z.number().min(0).max(1000000).optional(),
+    market_average_price: z.number().min(0).max(1000000).optional(),
+    location: z.object({
+      risk_factors: z.array(z.string().max(200)).max(10).optional(),
+    }).passthrough().optional(),
+  }).passthrough(), // Allow additional fields
+  professionalProfile: z.object({
+    id: z.string().uuid().optional(),
+    experience_level: z.string().max(50).optional(),
+    rating: z.number().min(0).max(5).optional(),
+  }).passthrough().optional(),
 });
 
 serve(async (req) => {

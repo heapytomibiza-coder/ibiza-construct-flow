@@ -4,13 +4,30 @@ import { validateRequestBody } from '../_shared/inputValidation.ts';
 import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
 import { checkRateLimitDb, createRateLimitResponse, getClientIdentifier, createServiceClient, corsHeaders, handleCors } from '../_shared/securityMiddleware.ts';
 
+// Strict schema with array size limits to prevent payload abuse
+const serviceItemSchema = z.object({
+  id: z.string().max(100).optional(),
+  title: z.string().max(200).optional(),
+  category: z.string().max(100).optional(),
+}).passthrough();
+
+const professionalItemSchema = z.object({
+  id: z.string().max(100).optional(),
+  full_name: z.string().max(200).optional(),
+  hourly_rate: z.number().min(0).max(10000).optional(),
+  rating: z.number().min(0).max(5).optional(),
+}).passthrough();
+
 const requestSchema = z.object({
   context: z.object({
     searchTerm: z.string().max(200).optional(),
     location: z.string().max(200).optional(),
-    userHistory: z.array(z.any()).optional(),
-    availableServices: z.array(z.any()).default([]),
-    availableProfessionals: z.array(z.any()).default([]),
+    userHistory: z.array(z.object({
+      action: z.string().max(100).optional(),
+      entityId: z.string().max(100).optional(),
+    }).passthrough()).max(20).optional(),
+    availableServices: z.array(serviceItemSchema).max(50).default([]),
+    availableProfessionals: z.array(professionalItemSchema).max(50).default([]),
     timeOfDay: z.number().int().min(0).max(23).default(12),
     dayOfWeek: z.number().int().min(0).max(6).default(0),
   }),

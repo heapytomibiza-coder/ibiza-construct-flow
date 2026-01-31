@@ -12,15 +12,20 @@ import {
   createServiceClient
 } from '../_shared/securityMiddleware.ts';
 
+// Strict schema with validated context fields
 const discoverySchema = z.object({
   message: z.string().trim().min(1).max(2000),
   context: z.object({
     searchTerm: z.string().max(500).optional(),
     location: z.string().max(200).optional(),
-    userLocation: z.any().optional(),
+    userLocation: z.object({
+      lat: z.number().min(-90).max(90).optional(),
+      lng: z.number().min(-180).max(180).optional(),
+      city: z.string().max(100).optional(),
+    }).optional(),
     isAuthenticated: z.boolean().optional(),
     previousMessages: z.array(z.object({
-      type: z.string(),
+      type: z.string().max(20),
       content: z.string().max(5000),
     })).max(10).optional(),
   }).optional().default({}),
