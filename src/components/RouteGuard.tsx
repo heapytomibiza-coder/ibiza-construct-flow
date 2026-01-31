@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { requiresTwoFactor } from '@/lib/security/securityMonitor';
 import { logAdminAccessAttempt } from '@/lib/security/ipWhitelist';
 import { useToast } from '@/hooks/use-toast';
-import { getNextOnboardingStep, isOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
+import { getNextOnboardingStep, canAccessProDashboard } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 import { normalizeRedirectPath } from '@/lib/navigation';
 
 interface RouteGuardProps {
@@ -193,18 +193,15 @@ export default function RouteGuard({
           const verStatus = profileResult.data?.verification_status ?? 'pending';
           const activeServicesCount = servicesResult.data?.length ?? 0;
 
-          // Full access requires ALL: verified AND phase complete AND has service
-          const phaseComplete = isOnboardingComplete(phase);
-          const isVerified = verStatus === 'verified';
-          const hasService = activeServicesCount >= 1;
-          const isComplete = isVerified && phaseComplete && hasService;
+          // Use canonical access check: verified AND phase complete AND has service
+          const isComplete = canAccessProDashboard(phase, verStatus, activeServicesCount);
 
           if (!isComplete) {
             // Determine the next step in onboarding flow (linear progression)
             const nextStep = getNextOnboardingStep(phase);
             setOnboardingRedirectPath(nextStep);
             console.warn('🔒 [RouteGuard] Professional onboarding not complete:', { 
-              phase, verStatus, activeServicesCount, isVerified, phaseComplete, hasService 
+              phase, verStatus, activeServicesCount 
             });
             if (!isStale) setStatus('onboarding_required');
             return;
