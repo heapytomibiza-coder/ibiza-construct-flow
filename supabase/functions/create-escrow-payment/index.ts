@@ -1,58 +1,70 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.84.0";
+import Stripe from "https://esm.sh/stripe@18.5.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { validateRequestBody } from '../_shared/inputValidation.ts';
-import { createErrorResponse } from '../_shared/errorMapping.ts';
-import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const escrowPaymentSchema = z.object({
+  contractId: z.string().uuid('Invalid contract ID'),
+  amount: z.number()
+    .positive('Amount must be positive')
+    .max(1000000, 'Amount exceeds maximum allowed'),
+});
+
+const logStep = (step: string, details?: any) => {
+  console.log(`[CREATE-ESCROW-PAYMENT] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
 };
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-  );
+  const requestId = generateRequestId();
 
   try {
+    logStep("Function started", { requestId });
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      }
+    );
+
+    const serviceClient = createServiceClient();
+
+    // Authenticate user
     const authHeader = req.headers.get('Authorization')!;
     const token = authHeader.replace('Bearer ', '');
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error('User not authenticated');
+    logStep("User authenticated", { userId: user.id });
 
-    // Check rate limit (10 requests per hour for payment operations)
-    const rateLimitCheck = await checkRateLimit(
-      supabaseClient,
-      user.id,
-      'create-escrow-payment',
-      STRICT_RATE_LIMIT
-    );
-
-    if (!rateLimitCheck.allowed) {
-      return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-        { status: 429, headers: corsHeaders }
-      );
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'create-escrow-payment', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId });
+      return createRateLimitResponse(rl);
     }
 
     // Validate request body
-    const schema = z.object({
-      contractId: z.string().uuid('Invalid contract ID'),
-      amount: z.number()
-        .positive('Amount must be positive')
-        .max(1000000, 'Amount exceeds maximum allowed')
-        .multipleOf(0.01, 'Amount must have at most 2 decimal places')
-    });
-
-    const { contractId, amount } = await validateRequestBody(req, schema);
+    const { contractId, amount } = await validateRequestBody(req, escrowPaymentSchema);
 
     // Verify user is the client for this contract
     const { data: contract, error: contractError } = await supabaseClient
@@ -64,14 +76,17 @@ serve(async (req) => {
     if (contractError || !contract) throw new Error('Contract not found');
     if (contract.client_id !== user.id) throw new Error('Unauthorized');
 
+    logStep("Contract verified", { contractId, jobId: contract.job_id });
+
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
-      apiVersion: '2023-10-16',
+      apiVersion: '2025-08-27.basil',
     });
 
     // Check for existing Stripe customer
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
+    logStep("Customer lookup", { customerId: customerId || 'new' });
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
@@ -97,22 +112,18 @@ serve(async (req) => {
         contractId,
         userId: user.id,
         type: 'escrow_funding',
+        request_id: requestId,
       },
     });
 
-    console.log('Checkout session created:', session.id);
+    logStep('Checkout session created', { sessionId: session.id });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ url: session.url, sessionId: session.id, requestId }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorStack = error instanceof Error ? error.stack : undefined;
-    console.error('[create-escrow-payment] Error:', {
-      error: errorMessage,
-      stack: errorStack
-    });
-    return createErrorResponse(error);
+    logError('create-escrow-payment', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

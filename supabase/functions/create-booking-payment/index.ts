@@ -1,30 +1,78 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+// Line item schema for booking items
+const lineItemSchema = z.object({
+  serviceName: z.string().max(200),
+  professionalName: z.string().max(200).optional(),
+  pricePerUnit: z.number().positive().max(100000),
+  quantity: z.number().int().positive().max(100),
+});
+
+const bookingPaymentSchema = z.object({
+  bookingId: z.string().uuid('Invalid booking ID'),
+  amount: z.number().positive().max(1000000),
+  items: z.array(lineItemSchema).min(1).max(50),
+});
+
+const logStep = (step: string, details?: any) => {
+  console.log(`[CREATE-BOOKING-PAYMENT] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
+  const requestId = generateRequestId();
 
   try {
+    logStep("Function started", { requestId });
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      }
+    );
+
+    const serviceClient = createServiceClient();
+
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
+    logStep("User authenticated", { userId: user.id });
 
-    const { bookingId, amount, items } = await req.json();
+    // Rate limiting - PAYMENT_STANDARD (10 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'create-booking-payment', 'PAYMENT_STANDARD');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId });
+      return createRateLimitResponse(rl);
+    }
+
+    // Validate request body
+    const { bookingId, amount, items } = await validateRequestBody(req, bookingPaymentSchema);
+
+    logStep("Processing payment", { bookingId, amount, itemCount: items.length });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -35,15 +83,16 @@ serve(async (req) => {
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      logStep("Found existing customer", { customerId });
     }
 
     // Create line items from booking items
-    const lineItems = items.map((item: any) => ({
+    const lineItems = items.map((item) => ({
       price_data: {
         currency: 'eur',
         product_data: {
           name: item.serviceName,
-          description: `Service by ${item.professionalName}`,
+          description: item.professionalName ? `Service by ${item.professionalName}` : undefined,
         },
         unit_amount: Math.round(item.pricePerUnit * 100), // Convert to cents
       },
@@ -60,19 +109,18 @@ serve(async (req) => {
       metadata: {
         booking_id: bookingId,
         user_id: user.id,
+        request_id: requestId,
       },
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    logStep("Checkout session created", { sessionId: session.id });
+
+    return new Response(JSON.stringify({ url: session.url, sessionId: session.id, requestId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error('Payment error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    logError('create-booking-payment', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

@@ -1,27 +1,55 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.84.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { validateRequestBody } from '../_shared/inputValidation.ts';
-import { createErrorResponse } from '../_shared/errorMapping.ts';
-import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+const jobPaymentSchema = z.object({
+  jobId: z.string().uuid('Invalid job ID'),
+  amount: z.number()
+    .positive('Amount must be positive')
+    .max(1000000, 'Amount exceeds maximum allowed'),
+  currency: z.enum(['EUR', 'USD', 'GBP'], {
+    errorMap: () => ({ message: 'Currency must be EUR, USD, or GBP' })
+  }).default('EUR')
+});
+
+const logStep = (step: string, details?: any) => {
+  console.log(`[CREATE-JOB-PAYMENT] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
+  const requestId = generateRequestId();
 
   try {
+    logStep("Function started", { requestId });
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      }
+    );
+
+    const serviceClient = createServiceClient();
+
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
@@ -30,35 +58,18 @@ serve(async (req) => {
     if (!user?.email) {
       throw new Error("User not authenticated");
     }
+    logStep("User authenticated", { userId: user.id });
 
-    // Check rate limit (20 requests per hour for payment operations)
-    const rateLimitCheck = await checkRateLimit(
-      supabaseClient,
-      user.id,
-      'create-job-payment',
-      STRICT_RATE_LIMIT
-    );
-
-    if (!rateLimitCheck.allowed) {
-      return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'create-job-payment', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId });
+      return createRateLimitResponse(rl);
     }
 
     // Validate request body
-    const schema = z.object({
-      jobId: z.string().uuid('Invalid job ID'),
-      amount: z.number()
-        .positive('Amount must be positive')
-        .max(1000000, 'Amount exceeds maximum allowed')
-        .multipleOf(0.01, 'Amount must have at most 2 decimal places'),
-      currency: z.enum(['EUR', 'USD', 'GBP'], {
-        errorMap: () => ({ message: 'Currency must be EUR, USD, or GBP' })
-      }).default('EUR')
-    });
-
-    const { jobId, amount, currency } = await validateRequestBody(req, schema);
+    const { jobId, amount, currency } = await validateRequestBody(req, jobPaymentSchema);
 
     // Get job details
     const { data: job, error: jobError } = await supabaseClient
@@ -76,6 +87,8 @@ serve(async (req) => {
       throw new Error("Unauthorized: Not the job owner");
     }
 
+    logStep("Job verified", { jobId, clientId: job.client_id });
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
@@ -85,6 +98,7 @@ serve(async (req) => {
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      logStep("Existing customer found", { customerId });
     }
 
     // Create Stripe PaymentIntent
@@ -95,11 +109,14 @@ serve(async (req) => {
       metadata: {
         job_id: jobId,
         user_id: user.id,
+        request_id: requestId,
       },
       automatic_payment_methods: {
         enabled: true,
       },
     });
+
+    logStep("PaymentIntent created", { paymentIntentId: paymentIntent.id });
 
     // Create payment transaction record
     const { error: transactionError } = await supabaseClient
@@ -114,11 +131,12 @@ serve(async (req) => {
         stripe_payment_intent_id: paymentIntent.id,
         metadata: {
           client_secret: paymentIntent.client_secret,
+          request_id: requestId,
         },
       });
 
     if (transactionError) {
-      console.error("Error creating transaction:", transactionError);
+      logStep("Error creating transaction", { error: transactionError.message });
       throw new Error("Failed to create payment transaction");
     }
 
@@ -126,6 +144,7 @@ serve(async (req) => {
       JSON.stringify({
         clientSecret: paymentIntent.client_secret,
         paymentIntentId: paymentIntent.id,
+        requestId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -133,12 +152,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorStack = error instanceof Error ? error.stack : undefined;
-    console.error('[create-job-payment] Error:', {
-      error: errorMessage,
-      stack: errorStack
-    });
-    return createErrorResponse(error);
+    logError('create-job-payment', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });

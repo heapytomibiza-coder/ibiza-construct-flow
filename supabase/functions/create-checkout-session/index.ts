@@ -2,13 +2,18 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { validateRequestBody } from '../_shared/inputValidation.ts';
-import { mapError } from '../_shared/errorMapping.ts';
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
 
 const checkoutSchema = z.object({
   bookingRequestId: z.string().uuid(),
@@ -22,17 +27,25 @@ const logStep = (step: string, details?: any) => {
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
+  const requestId = generateRequestId();
 
   try {
-    logStep("Function started");
+    logStep("Function started", { requestId });
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      }
+    );
+
+    const serviceClient = createServiceClient();
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
@@ -46,6 +59,14 @@ serve(async (req) => {
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
+
+    // Rate limiting - PAYMENT_STANDARD (10 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'create-checkout-session', 'PAYMENT_STANDARD');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId });
+      return createRateLimitResponse(rl);
+    }
 
     const { bookingRequestId, amount, description } = await validateRequestBody(req, checkoutSchema);
 
@@ -84,20 +105,18 @@ serve(async (req) => {
       metadata: {
         bookingRequestId,
         userId: user.id,
+        request_id: requestId,
       },
     });
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
 
-    return new Response(JSON.stringify({ url: session.url, sessionId: session.id }), {
+    return new Response(JSON.stringify({ url: session.url, sessionId: session.id, requestId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    logStep("ERROR in create-checkout-session", { message: error instanceof Error ? error.message : String(error) });
-    return new Response(JSON.stringify({ error: mapError(error) }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    logError('create-checkout-session', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });
