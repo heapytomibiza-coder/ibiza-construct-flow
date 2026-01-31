@@ -597,12 +597,18 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                 >
                   Close
                 </Button>
-                <div className="flex-1 text-center p-3 bg-muted/50 rounded-md flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium text-primary">Sign in as a professional</span>{' '}
-                    to message or apply
-                  </p>
-                </div>
+                <Button
+                  onClick={() => {
+                    // Redirect to auth with return URL preserving job context
+                    const currentPath = `/job-board?jobId=${job.id}`;
+                    window.location.href = `/auth?redirect=${encodeURIComponent(currentPath)}&intent=professional`;
+                  }}
+                  className="flex-1 bg-gradient-hero text-white"
+                  size="lg"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Sign in to Apply
+                </Button>
               </div>
             ) : (
               <div className="flex gap-3 sticky bottom-0 bg-background pt-4 pb-2">
