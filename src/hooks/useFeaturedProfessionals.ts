@@ -27,6 +27,7 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
       // This guarantees we display the requested limit (if enough qualified pros exist)
       const fetchLimit = Math.max(limit * 4, 30);
       
+      // Use public_professionals_preview join instead of profiles to avoid 401 for anon users
       const { data, error } = await supabase
         .from('professional_profiles')
         .select(`
@@ -35,7 +36,7 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
           tagline,
           verification_status,
           skills,
-          profiles!professional_profiles_user_id_fkey (
+          public_professionals_preview!professional_profiles_user_id_fkey (
             display_name,
             avatar_url
           )
@@ -54,7 +55,7 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
       // Filter for those with avatars, then take only what we need
       // This ensures the section never appears empty if we have any qualified pros
       const filtered = (data || [])
-        .filter((pro: any) => pro.profiles?.avatar_url)
+        .filter((pro: any) => pro.public_professionals_preview?.avatar_url)
         .slice(0, limit);
 
       // Return whatever we have (even if less than requested limit)
@@ -62,9 +63,9 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
         id: pro.user_id,
         user_id: pro.user_id,
         business_name: pro.business_name,
-        full_name: pro.profiles?.display_name || null,
+        full_name: pro.public_professionals_preview?.display_name || null,
         tagline: pro.tagline,
-        avatar_url: pro.profiles?.avatar_url,
+        avatar_url: pro.public_professionals_preview?.avatar_url,
         verification_status: pro.verification_status,
         skills: pro.skills,
         rating: null, // Omit until FK relationship to professional_stats is created
