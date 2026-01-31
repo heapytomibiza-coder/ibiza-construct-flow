@@ -101,6 +101,51 @@ serve(async (req) => {
 
     logStep("Job verified", { jobId, status: job.status });
 
+    // IDEMPOTENCY CHECK: Check for existing active escrow for this job
+    const { data: existingEscrow } = await supabaseClient
+      .from('escrow_payments')
+      .select('id, stripe_payment_intent_id, amount, currency, escrow_status')
+      .eq('job_id', jobId)
+      .in('escrow_status', ['pending', 'funded', 'processing'])
+      .maybeSingle();
+
+    // If existing escrow found, return it (idempotent behavior)
+    if (existingEscrow) {
+      logStep("Existing escrow found - returning idempotent response", { 
+        escrowId: existingEscrow.id,
+        status: existingEscrow.escrow_status 
+      });
+
+      // Retrieve the client secret from Stripe if pending
+      let clientSecret = null;
+      if (existingEscrow.escrow_status === 'pending' && existingEscrow.stripe_payment_intent_id) {
+        const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+          apiVersion: '2025-08-27.basil',
+        });
+        const existingIntent = await stripe.paymentIntents.retrieve(existingEscrow.stripe_payment_intent_id);
+        clientSecret = existingIntent.client_secret;
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          escrowId: existingEscrow.id,
+          holdingAccountId: existingEscrow.id,
+          stripePaymentIntentId: existingEscrow.stripe_payment_intent_id,
+          clientSecret,
+          amount: existingEscrow.amount,
+          currency: existingEscrow.currency,
+          status: existingEscrow.escrow_status,
+          requestId,
+          idempotent: true, // Flag indicating this was a duplicate request
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        }
+      );
+    }
+
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2025-08-27.basil',
@@ -125,6 +170,7 @@ serve(async (req) => {
     logStep("PaymentIntent created", { paymentIntentId: paymentIntent.id });
 
     // Create escrow holding account entry
+    // DB has unique partial index: escrow_one_active_per_job to enforce single active escrow
     const { data: escrowData, error: escrowError } = await supabaseClient
       .from('escrow_payments')
       .insert({
@@ -145,7 +191,44 @@ serve(async (req) => {
       .single();
 
     if (escrowError) {
-      logStep('Escrow DB insert error', { error: escrowError.message });
+      // Handle race condition: another request created escrow between check and insert
+      if (escrowError.code === '23505') { // unique_violation
+        logStep('Race condition detected - fetching existing escrow');
+        const { data: raceEscrow } = await supabaseClient
+          .from('escrow_payments')
+          .select('id, stripe_payment_intent_id, amount, currency, escrow_status')
+          .eq('job_id', jobId)
+          .in('escrow_status', ['pending', 'funded', 'processing'])
+          .single();
+
+        if (raceEscrow) {
+          // Cancel the orphaned PaymentIntent we just created
+          try {
+            await stripe.paymentIntents.cancel(paymentIntent.id);
+          } catch (cancelErr) {
+            logStep('Failed to cancel orphaned PaymentIntent', { error: cancelErr });
+          }
+
+          return new Response(
+            JSON.stringify({
+              success: true,
+              escrowId: raceEscrow.id,
+              holdingAccountId: raceEscrow.id,
+              stripePaymentIntentId: raceEscrow.stripe_payment_intent_id,
+              amount: raceEscrow.amount,
+              currency: raceEscrow.currency,
+              status: raceEscrow.escrow_status,
+              requestId,
+              idempotent: true,
+            }),
+            {
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+              status: 200,
+            }
+          );
+        }
+      }
+      logStep('Escrow DB insert error', { error: escrowError.message, code: escrowError.code });
       throw new Error('Failed to create escrow record');
     }
 
