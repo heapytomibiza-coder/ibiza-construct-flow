@@ -42,8 +42,10 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   // roles.includes('professional') is the permission check; activeRole is the UI mode
   const canActAsProfessional = roles.includes('professional');
   const isProfessional = !!user && activeRole === 'professional' && canActAsProfessional;
-  // Avoid flash of preview mode during hydration - treat loading as "not ready"
-  const previewMode = rolesLoading ? true : !isProfessional;
+  // Compute previewMode cleanly - no "loading = preview" hack
+  const previewMode = !(user && canActAsProfessional && activeRole === 'professional');
+  // rolesReady: if logged out, no need to wait; if logged in, wait for roles to load
+  const rolesReady = !user || !rolesLoading;
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,10 +83,11 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
     }
   }, [quickFilter]);
 
-  // Single useEffect for loading jobs - removed duplicate
+  // Single useEffect for loading jobs - wait for rolesReady to prevent double fetch
   useEffect(() => {
+    if (!rolesReady) return; // Don't load until roles are known (or user is logged out)
     loadJobs();
-  }, [sortBy, previewMode]);
+  }, [sortBy, previewMode, rolesReady]);
 
   const loadJobs = async () => {
     try {
