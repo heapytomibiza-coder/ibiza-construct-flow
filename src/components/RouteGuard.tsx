@@ -193,15 +193,17 @@ export default function RouteGuard({
           const verStatus = profileResult.data?.verification_status ?? 'pending';
           const activeServicesCount = servicesResult.data?.length ?? 0;
 
-          // Use canonical access check: verified AND phase complete AND has service
-          const isComplete = canAccessProDashboard(phase, verStatus, activeServicesCount);
+          // Single source of truth for professional dashboard access
+          const hasProDashboardAccess = canAccessProDashboard(phase, verStatus, activeServicesCount);
 
-          if (!isComplete) {
-            // Determine the next step in onboarding flow (linear progression)
+          if (!hasProDashboardAccess) {
             const nextStep = getNextOnboardingStep(phase);
             setOnboardingRedirectPath(nextStep);
-            console.warn('🔒 [RouteGuard] Professional onboarding not complete:', { 
-              phase, verStatus, activeServicesCount 
+            console.warn('🔒 [RouteGuard] Professional onboarding not complete:', {
+              phase,
+              verStatus,
+              activeServicesCount,
+              nextStep,
             });
             if (!isStale) setStatus('onboarding_required');
             return;
