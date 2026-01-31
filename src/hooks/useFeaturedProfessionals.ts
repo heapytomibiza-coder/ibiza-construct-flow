@@ -24,26 +24,22 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
     queryKey: ['featured-professionals', limit],
     queryFn: async (): Promise<FeaturedProfessional[]> => {
       // Over-fetch to ensure we have enough after client-side filtering
-      // This guarantees we display the requested limit (if enough qualified pros exist)
       const fetchLimit = Math.max(limit * 4, 30);
       
-      // Use public_professionals_preview join instead of profiles to avoid 401 for anon users
+      // Query the public-safe view directly (no joins, no 401 for anon)
+      // View already filters: is_active=true, verification_status='verified', tagline IS NOT NULL
       const { data, error } = await supabase
-        .from('professional_profiles')
+        .from('public_professionals_preview')
         .select(`
           user_id,
           business_name,
           tagline,
           verification_status,
           skills,
-          public_professionals_preview!professional_profiles_user_id_fkey (
-            display_name,
-            avatar_url
-          )
+          display_name,
+          avatar_url,
+          updated_at
         `)
-        .eq('verification_status', 'verified')
-        .eq('is_active', true)
-        .not('tagline', 'is', null)
         .order('updated_at', { ascending: false })
         .limit(fetchLimit);
 
@@ -53,26 +49,25 @@ export const useFeaturedProfessionals = (limit: number = 6) => {
       }
 
       // Filter for those with avatars, then take only what we need
-      // This ensures the section never appears empty if we have any qualified pros
       const filtered = (data || [])
-        .filter((pro: any) => pro.public_professionals_preview?.avatar_url)
+        .filter((pro) => pro.avatar_url)
         .slice(0, limit);
 
-      // Return whatever we have (even if less than requested limit)
-      return filtered.map((pro: any) => ({
+      // Map to expected interface
+      return filtered.map((pro) => ({
         id: pro.user_id,
         user_id: pro.user_id,
         business_name: pro.business_name,
-        full_name: pro.public_professionals_preview?.display_name || null,
+        full_name: pro.display_name || null,
         tagline: pro.tagline,
-        avatar_url: pro.public_professionals_preview?.avatar_url,
+        avatar_url: pro.avatar_url,
         verification_status: pro.verification_status,
-        skills: pro.skills,
-        rating: null, // Omit until FK relationship to professional_stats is created
+        skills: (pro.skills as string[] | null) || null,
+        rating: null,
         total_reviews: null,
       }));
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 };
