@@ -49,6 +49,7 @@ export const MessagesPage = () => {
       if (!targetUserId || !user?.id) return;
       if (creatingRef.current) return;
       
+      // NOTE: Keep self-check BEFORE locking to avoid deadlocks if refactored
       // Don't allow messaging yourself
       if (targetUserId === user.id) {
         console.warn('Cannot start conversation with yourself');
