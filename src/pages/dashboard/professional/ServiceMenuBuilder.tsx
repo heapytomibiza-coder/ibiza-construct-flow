@@ -10,8 +10,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Trash2, Eye, Save, Menu } from 'lucide-react';
+import { Plus, Trash2, Eye, Save, Menu, Wrench, Info, ArrowRight } from 'lucide-react';
 
 interface ServiceItem {
   id: string;
@@ -28,32 +29,55 @@ interface ServiceItem {
   is_active: boolean;
 }
 
+interface ServiceWithName {
+  micro_service_id: string;
+  is_active: boolean;
+  service_name: string;
+}
+
 export default function ServiceMenuBuilder() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedService, setSelectedService] = useState<string>('');
+  const [selectedServiceName, setSelectedServiceName] = useState<string>('');
   const [editingItem, setEditingItem] = useState<Partial<ServiceItem> | null>(null);
 
-  // Fetch professional's services
-  const { data: services = [] } = useQuery({
-    queryKey: ['professional-services', user?.id],
+  // Fetch professional's active services from professional_services (the canonical source)
+  // This shows ALL services they've opted into, not just ones with menu items
+  const { data: services = [], isLoading: servicesLoading } = useQuery({
+    queryKey: ['professional-services-with-names', user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('professional_service_items')
-        .select('service_id')
+      // First get the professional's services
+      const { data: proServices, error: proError } = await supabase
+        .from('professional_services')
+        .select('micro_service_id, is_active')
         .eq('professional_id', user!.id)
-        .order('service_id');
+        .eq('is_active', true)
+        .order('micro_service_id');
 
-      if (error) throw error;
-      
-      // Get unique services
-      const uniqueServices = Array.from(
-        new Map(data.map(item => [item.service_id, item])).values()
-      );
-      
-      return uniqueServices;
+      if (proError) throw proError;
+      if (!proServices?.length) return [];
+
+      // Then fetch the names for those services
+      const microIds = proServices.map(s => s.micro_service_id);
+      const { data: microData, error: microError } = await supabase
+        .from('service_micro_categories')
+        .select('id, name')
+        .in('id', microIds);
+
+      if (microError) throw microError;
+
+      // Create a name lookup map
+      const nameMap = new Map(microData?.map(m => [m.id, m.name]) || []);
+
+      // Merge services with their names
+      return proServices.map(s => ({
+        micro_service_id: s.micro_service_id,
+        is_active: s.is_active,
+        service_name: nameMap.get(s.micro_service_id) ?? s.micro_service_id,
+      })) as ServiceWithName[];
     },
     enabled: !!user,
   });
@@ -78,8 +102,22 @@ export default function ServiceMenuBuilder() {
 
   const createItemMutation = useMutation({
     mutationFn: async (item: Partial<ServiceItem>) => {
+      // Calculate next sort_order within the group
+      const existingInGroup = serviceItems.filter(si => si.group_name === item.group_name);
+      const nextSortOrder = existingInGroup.length > 0 
+        ? Math.max(...existingInGroup.map(si => si.sort_order || 0)) + 1 
+        : 0;
+
+      // Build payload with safe defaults
       const payload = {
-        ...item,
+        name: item.name,
+        description: item.description ?? null,
+        base_price: item.base_price ?? 0,
+        pricing_type: item.pricing_type ?? 'fixed',
+        unit_type: item.unit_type ?? '',
+        group_name: item.group_name ?? null,
+        sort_order: item.sort_order ?? nextSortOrder,
+        is_active: item.is_active ?? true,
         professional_id: user!.id,
         service_id: selectedService,
       };
@@ -170,30 +208,68 @@ export default function ServiceMenuBuilder() {
         <Card>
           <CardHeader>
             <CardTitle>Your Services</CardTitle>
-            <CardDescription>Select a service to manage</CardDescription>
+            <CardDescription>Select a service to manage its menu</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            {services.map((service) => (
-              <Button
-                key={service.service_id}
-                variant={selectedService === service.service_id ? 'default' : 'outline'}
-                className="w-full justify-start"
-                onClick={() => setSelectedService(service.service_id)}
-              >
-                <Menu className="h-4 w-4 mr-2" />
-                {service.service_id}
-              </Button>
-            ))}
+            {servicesLoading ? (
+              <p className="text-sm text-muted-foreground text-center py-4">Loading services...</p>
+            ) : services.length === 0 ? (
+              // Empty state - no services configured yet
+              <div className="space-y-4 py-4">
+                <div className="text-center">
+                  <Wrench className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    No services configured yet
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => navigate('/professional/service-setup')}
+                >
+                  Configure Services
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            ) : (
+              services.map((service) => (
+                <Button
+                  key={service.micro_service_id}
+                  variant={selectedService === service.micro_service_id ? 'default' : 'outline'}
+                  className="w-full justify-start text-left"
+                  onClick={() => {
+                    setSelectedService(service.micro_service_id);
+                    setSelectedServiceName(service.service_name);
+                  }}
+                >
+                  <Menu className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <span className="truncate">{service.service_name}</span>
+                </Button>
+              ))
+            )}
           </CardContent>
         </Card>
 
         {/* Main Content - Menu Items */}
         <div className="space-y-6">
+          {/* Info banner explaining this is optional */}
+          <Alert className="bg-muted/50 border-muted">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Optional:</strong> Your base services are already configured. 
+              Use this tool to create detailed pricing packages and menu items for each service.
+            </AlertDescription>
+          </Alert>
+
           {!selectedService ? (
             <Card>
               <CardContent className="py-12 text-center">
+                <Menu className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">
-                  Select a service from the sidebar to manage its menu
+                  {services.length > 0 
+                    ? 'Select a service from the sidebar to manage its pricing menu'
+                    : 'Configure your services first to start building pricing menus'
+                  }
                 </p>
               </CardContent>
             </Card>
@@ -202,7 +278,8 @@ export default function ServiceMenuBuilder() {
               {/* Add New Item */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Add Service Item</CardTitle>
+                  <CardTitle>Add Item to "{selectedServiceName}"</CardTitle>
+                  <CardDescription>Create a pricing package or menu item</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
