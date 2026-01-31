@@ -99,6 +99,91 @@ WHERE pp.is_active = true
 
 ---
 
+## 1.5. Grants Proof (View vs Base Table Access)
+
+**Source:** `pg_class.relacl` for tables and views
+
+### ACL Comparison Table
+
+| Object | Kind | anon | authenticated |
+|--------|------|------|---------------|
+| `public_jobs_preview` | VIEW | `arwdDxtm` ✅ Full | `arwdDxtm` ✅ Full |
+| `public_professionals_preview` | VIEW | `arwdDxtm` ✅ Full | `arwdDxtm` ✅ Full |
+| `jobs` | TABLE | `Dxtm` ❌ No SELECT | `arwdDxtm` ✅ Full |
+| `profiles` | TABLE | ❌ No grants | `arw` ✅ Limited |
+
+**ACL Key:** `a`=INSERT, `r`=SELECT, `w`=UPDATE, `d`=DELETE, `D`=TRUNCATE, `x`=REFERENCES, `t`=TRIGGER, `m`=MAINTENANCE
+
+### Proof Interpretation
+
+1. **Views are publicly readable:** Both `public_jobs_preview` and `public_professionals_preview` grant full access to `anon`.
+2. **Base `jobs` table blocks anon SELECT:** The `Dxtm` ACL for anon is missing `r` (SELECT), so anon cannot query `jobs` directly.
+3. **Base `profiles` table has no anon grants:** Anonymous users cannot read profiles at all.
+
+This proves the views provide a safe data surface while base tables remain protected.
+
+---
+
+## 1.6. RouteGuard Footprint (Which Routes Are Protected)
+
+**Source:** `src/App.tsx` - RouteGuard usages
+
+### Routes NOT Wrapped by RouteGuard (Public)
+
+| Route | Component | Evidence |
+|-------|-----------|----------|
+| `/` | `Index` | No RouteGuard wrapper |
+| `/job-board` | `JobBoardPage` | Line 363: `<Route path="/job-board" element={<JobBoardPage />} />` |
+| `/professionals` | `ProfessionalsPage` | No RouteGuard wrapper |
+| `/auth` | `Auth` | No RouteGuard wrapper |
+| `/auth/callback` | `AuthCallback` | No RouteGuard wrapper |
+
+### Routes Wrapped by RouteGuard (Protected)
+
+| Route | Required Role | Additional Flags |
+|-------|---------------|------------------|
+| `/onboarding/professional` | `professional` | `allowProfessionalIntent={true}` |
+| `/professional/verification` | `professional` | `allowProfessionalIntent={true}` |
+| `/professional/service-setup` | `professional` | `allowProfessionalIntent={true}` |
+| `/dashboard/pro` | `professional` | `requireOnboardingComplete={true}` |
+| `/post` | `client` | - |
+| `/dashboard/client` | `client` | - |
+| `/admin/*` | `admin` | `enforce2FA` implicit |
+| `/messages` | (any authenticated) | No specific role |
+| `/payments` | (any authenticated) | No specific role |
+
+### Action-Point Gates (Public Route, Protected Action)
+
+| Route | Action | Gate Location |
+|-------|--------|---------------|
+| `/job-board` | "Apply" button | `QuickApplyButton.tsx:40` uses `useAuthGate()` |
+| `/job-board` | "Message" button | `JobDetailsModal.tsx:95` uses `useAuthGate()` |
+| `/professionals/:id` | "Start Conversation" | Uses `useAuthGate({ requiredRole: 'client' })` |
+
+**Conclusion:** `/job-board` is confirmed NOT wrapped by RouteGuard. The "asking to sign in" behavior can only come from:
+1. A component inside JobBoardPage calling a protected endpoint
+2. A background query to a protected table (e.g., `profiles` instead of `public_*` view)
+3. An error handler that treats any 401 as "must sign in"
+
+---
+
+## 1.7. Professional Profiles Policies
+
+**Source:** `pg_policies WHERE tablename = 'professional_profiles'`
+
+| Policy | Command | Condition |
+|--------|---------|-----------|
+| `Anyone can view active professional profiles` | SELECT | `is_active = true` |
+| `Limited professional profile access` | SELECT | `user_id = auth.uid() OR has_role('admin') OR (is_active = true AND verification_status = 'verified')` |
+| `Professionals can create their own profile` | INSERT | `auth.uid() = user_id` |
+| `Users can insert their own professional profile` | INSERT | `auth.uid() = user_id` |
+| `Users can update their own professional profile` | UPDATE | `auth.uid() = user_id` |
+| `Users can view their own professional profile` | SELECT | `auth.uid() = user_id` |
+
+**Note:** Authenticated users can view ANY active, verified professional profile (for public listing). Anonymous users cannot query this table directly — they must use `public_professionals_preview` view.
+
+---
+
 ## 2. Key Constraints & Indexes
 
 ### Conversation Uniqueness
@@ -114,6 +199,36 @@ USING btree (client_id, professional_id, job_id);
 **Enforcement:** Database-level uniqueness prevents duplicate conversations even under race conditions.
 
 **Behavior on Conflict:** The app's `getOrCreateConversation` uses check-then-insert with `maybeSingle()`. If a race occurs, the second insert fails with a unique violation, which is caught and handled gracefully.
+
+### ⚠️ KNOWN ISSUE: job_id NULL Semantics
+
+**Problem:** The current code uses `jobId || ''` for lookup but `jobId` (raw) for insert:
+
+```typescript
+// Lookup: converts null/undefined to empty string
+.eq("job_id", jobId || '')
+
+// Insert: passes null/undefined as-is
+.insert({ ..., job_id: jobId })
+```
+
+**Risk:** 
+- If `jobId` is `null`, lookup queries `job_id = ''`
+- But insert creates a row with `job_id = NULL`
+- In PostgreSQL, `NULL != ''` so lookup won't find it
+- Unique index with nullable column: PostgreSQL treats `NULL` as distinct, so `(client1, pro1, NULL)` can coexist with another `(client1, pro1, NULL)` — potential duplicates!
+
+**Fix Required:**
+```typescript
+// Use .is() for null values in lookup
+if (jobId) {
+  query.eq("job_id", jobId);
+} else {
+  query.is("job_id", null);
+}
+```
+
+**Alternative:** Make `job_id` NOT NULL with a sentinel value like `'no_job'` for conversations without a job context.
 
 ---
 

@@ -79,9 +79,24 @@ pending → submitted → verified
 | `verified` | Admin approved | ✅ Yes (if phase allows) |
 | `rejected` | Admin rejected | ❌ No |
 
-**Access Rule:**
+**Access Rules (Corrected):**
+
+```typescript
+// Can the user enter the professional dashboard area?
+canEnterProArea = (verification_status === 'verified')
+
+// Has the user completed all onboarding steps?
+onboardingComplete = (onboarding_phase === 'complete') AND (active_services >= 1)
+
+// Full dashboard access (both conditions required for full features)
+fullDashboardAccess = canEnterProArea AND onboardingComplete
 ```
-isComplete = (onboarding_phase === 'complete') || (verification_status === 'verified')
+
+**Why the old rule was wrong:**
+```
+// ❌ OLD: isComplete = (phase === 'complete') || (status === 'verified')
+// This allowed someone verified with zero services to be "complete"
+// That contradicts the invariant: "completion requires ≥1 active service"
 ```
 
 **Key Invariants:**
