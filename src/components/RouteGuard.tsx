@@ -174,23 +174,38 @@ export default function RouteGuard({
         // Check onboarding completion for professionals if required
         // Uses professional_profiles as the single source of truth (not profiles.tasker_onboarding_status)
         if (requireOnboardingComplete && requiredRole === 'professional') {
-          const { data: proProfile } = await supabase
-            .from('professional_profiles')
-            .select('onboarding_phase, verification_status')
-            .eq('user_id', userId)
-            .maybeSingle();
+          // Fetch profile AND active services count for full access check
+          const [profileResult, servicesResult] = await Promise.all([
+            supabase
+              .from('professional_profiles')
+              .select('onboarding_phase, verification_status')
+              .eq('user_id', userId)
+              .maybeSingle(),
+            supabase
+              .from('professional_services')
+              .select('id')
+              .eq('professional_id', userId)
+              .eq('is_active', true)
+              .limit(1)
+          ]);
 
-          const phase = proProfile?.onboarding_phase ?? null;
-          const verStatus = proProfile?.verification_status ?? 'pending';
+          const phase = profileResult.data?.onboarding_phase ?? null;
+          const verStatus = profileResult.data?.verification_status ?? 'pending';
+          const activeServicesCount = servicesResult.data?.length ?? 0;
 
-          // Professional is complete if: onboarding_phase='complete' OR verification_status='verified'
-          const isComplete = isOnboardingComplete(phase) || verStatus === 'verified';
+          // Full access requires ALL: verified AND phase complete AND has service
+          const phaseComplete = isOnboardingComplete(phase);
+          const isVerified = verStatus === 'verified';
+          const hasService = activeServicesCount >= 1;
+          const isComplete = isVerified && phaseComplete && hasService;
 
           if (!isComplete) {
             // Determine the next step in onboarding flow (linear progression)
             const nextStep = getNextOnboardingStep(phase);
             setOnboardingRedirectPath(nextStep);
-            console.warn('🔒 [RouteGuard] Professional onboarding not complete, redirecting to:', nextStep);
+            console.warn('🔒 [RouteGuard] Professional onboarding not complete:', { 
+              phase, verStatus, activeServicesCount, isVerified, phaseComplete, hasService 
+            });
             if (!isStale) setStatus('onboarding_required');
             return;
           }
