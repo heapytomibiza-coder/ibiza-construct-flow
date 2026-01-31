@@ -12,9 +12,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { DollarSign, Loader2 } from 'lucide-react';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+import { getStripePromise, isStripeConfigured } from '@/lib/stripe/stripePromise';
 
 interface PaymentDialogProps {
   open: boolean;
@@ -189,7 +187,7 @@ export const PaymentDialog = ({
           </div>
         ) : (
           <Elements
-            stripe={stripePromise}
+            stripe={getStripePromise()}
             options={{
               clientSecret,
               appearance: { theme: 'stripe' },

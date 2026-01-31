@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Loader2, Lock, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePayments } from '@/hooks/usePayments';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+import { getStripePromise, isStripeConfigured } from '@/lib/stripe/stripePromise';
 
 interface PaymentFormProps {
   jobId: string;
@@ -159,7 +157,7 @@ interface PaymentFlowProps {
 
 export const PaymentFlow: React.FC<PaymentFlowProps> = (props) => {
   return (
-    <Elements stripe={stripePromise}>
+    <Elements stripe={getStripePromise()}>
       <PaymentForm {...props} />
     </Elements>
   );
