@@ -1,13 +1,23 @@
 import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Onboarding phase ordering - phases can only move forward, never backward
+ * Onboarding Phase Ordering
+ * 
+ * IMPORTANT: These are LINEAR phases only. Do NOT include verification_status values here.
+ * 
+ * Phase = progression through onboarding steps
+ * verification_status = orthogonal admin approval state (pending → submitted → verified → rejected)
+ * 
+ * The two dimensions are INDEPENDENT:
+ * - A user can be at phase 'service_configured' with verification_status 'pending'
+ * - A user can be at phase 'intro_submitted' with verification_status 'verified' (edge case)
+ * 
+ * Dashboard access requires BOTH: onboarding_phase complete AND verification_status verified
  */
 export const ONBOARDING_PHASE_ORDER = [
   'not_started',
   'intro_submitted',
   'verification_pending',
-  'verified',
   'service_configured',
   'complete',
 ] as const;
@@ -32,10 +42,34 @@ export function maxPhase(current: string | null | undefined, proposed: string): 
 }
 
 /**
- * Checks if a phase is considered "complete" for dashboard access
+ * Checks if onboarding phase is complete (independent of verification status)
+ */
+export function isOnboardingPhaseComplete(phase: string | null | undefined): boolean {
+  return phase === 'complete' || phase === 'service_configured';
+}
+
+/**
+ * Checks if user can access the professional dashboard
+ * Requires BOTH: phase complete AND verification verified
+ * 
+ * @deprecated Use canAccessProDashboard() for clarity
  */
 export function isOnboardingComplete(phase: string | null | undefined): boolean {
+  // Legacy: only checks phase, not verification
+  // RouteGuard separately checks verification_status
   return phase === 'complete' || phase === 'service_configured';
+}
+
+/**
+ * Full access check: combines phase and verification status
+ */
+export function canAccessProDashboard(
+  phase: string | null | undefined,
+  verificationStatus: string | null | undefined
+): boolean {
+  const phaseComplete = phase === 'complete' || phase === 'service_configured';
+  const isVerified = verificationStatus === 'verified';
+  return phaseComplete || isVerified; // Either grants access (backwards compat)
 }
 
 /**
