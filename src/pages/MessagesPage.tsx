@@ -35,8 +35,8 @@ export const MessagesPage = () => {
     }
   }, [conversationParam]);
 
-  // Handle professional parameter - create or find conversation
   // Handle recipient/professional parameter - create or find conversation
+  // Uses user_roles (not profiles.active_role) for consistent role determination
   useEffect(() => {
     const handleRecipientParam = async () => {
       if (!targetUserId || !user?.id || isCreatingConversation) return;
@@ -62,32 +62,36 @@ export const MessagesPage = () => {
           setSelectedConversationId(existing.id);
           navigate(`/messages?conversation=${existing.id}`, { replace: true });
         } else {
-          // Create new conversation - determine roles based on who is initiating
-          // For now, use a flexible approach: the user param is the "other" party
-          // The conversations table expects client_id and professional_id
-          // We'll need to determine which role each user has
-          const { data: targetProfile } = await supabase
-            .from('profiles')
-            .select('active_role')
-            .eq('id', targetUserId)
-            .single();
+          // Create new conversation - determine roles from user_roles table (source of truth)
+          // This matches RouteGuard and prevents role mismatch issues
+          const [myRolesResult, targetRolesResult] = await Promise.all([
+            supabase.from('user_roles').select('role').eq('user_id', user.id),
+            supabase.from('user_roles').select('role').eq('user_id', targetUserId)
+          ]);
           
-          const { data: myProfile } = await supabase
-            .from('profiles')
-            .select('active_role')
-            .eq('id', user.id)
-            .single();
+          const myRoles = (myRolesResult.data ?? []).map(r => r.role);
+          const targetRoles = (targetRolesResult.data ?? []).map(r => r.role);
           
-          // Determine client_id and professional_id based on active roles
-          // If target is professional, I'm the client and vice versa
+          const iAmProfessional = myRoles.includes('professional');
+          const targetIsProfessional = targetRoles.includes('professional');
+          
+          // Determine client_id and professional_id based on actual roles
           let clientId = user.id;
           let professionalId = targetUserId;
           
-          if (myProfile?.active_role === 'professional' && targetProfile?.active_role !== 'professional') {
+          if (iAmProfessional && !targetIsProfessional) {
             // I'm the professional, target is the client
             clientId = targetUserId;
             professionalId = user.id;
+          } else if (iAmProfessional && targetIsProfessional) {
+            // Both are professionals - the initiator defaults to client role
+            // unless they're currently active as professional (then they're pro)
+            // For simplicity, treat initiator as client when both are pros
+            clientId = user.id;
+            professionalId = targetUserId;
           }
+          // If neither has professional role, block (shouldn't happen in normal flow)
+          // but for safety, just proceed with default assignment
           
           const { data: newConv, error } = await supabase
             .from('conversations')
