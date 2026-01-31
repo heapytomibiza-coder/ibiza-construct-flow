@@ -65,13 +65,15 @@ export function canEnterProArea(verificationStatus: string | null | undefined): 
  * 1. verification_status === 'verified'
  * 2. onboarding_phase in ['service_configured', 'complete']
  * 3. active_services >= 1
+ * 
+ * @param activeServicesCount - MUST be passed by caller. Defaults to 0 (fail-safe).
  */
 export function canAccessProDashboard(
   phase: string | null | undefined,
   verificationStatus: string | null | undefined,
-  activeServicesCount: number | null | undefined = 1 // Default to 1 for backwards compat when count unavailable
+  activeServicesCount: number | null | undefined = 0 // Default to 0 = fail-safe (deny access if caller forgets)
 ): boolean {
-  const phaseComplete = phase === 'complete' || phase === 'service_configured';
+  const phaseComplete = isOnboardingPhaseComplete(phase);
   const isVerified = verificationStatus === 'verified';
   const hasService = (activeServicesCount ?? 0) >= 1;
   

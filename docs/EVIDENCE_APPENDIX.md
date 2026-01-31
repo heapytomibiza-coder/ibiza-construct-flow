@@ -227,7 +227,8 @@ USING btree (client_id, professional_id, job_id);
 - If `jobId` is `null`, lookup queries `job_id = ''`
 - But insert creates a row with `job_id = NULL`
 - In PostgreSQL, `NULL != ''` so lookup won't find it
-- Result: Duplicate conversations created on race conditions
+- **Duplicates can still happen even with the unique index** because PostgreSQL treats each NULL as distinct
+- Result: Multiple `(client1, pro1, NULL)` rows can coexist, violating intended uniqueness
 
 **Recommended Fixes (pick one):**
 
