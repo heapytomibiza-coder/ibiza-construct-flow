@@ -14107,6 +14107,7 @@ export type Database = {
         | { Args: { _user_id?: string }; Returns: boolean }
       is_admin_user: { Args: never; Returns: boolean }
       is_feature_on: { Args: { p_key: string }; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
       log_activity: {
         Args: {
           p_action: string
