@@ -759,11 +759,64 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
     return { questions: [] as WizardQuestion[], microId: null as string | null, microUuid: null as string | null }
   }
 
-  // ========== NEW: TRY DATABASE FIRST ==========
-  // Look up micro-service UUID and check for database question pack
-  let microUuid: string | null = null;
+  // ========== TRY DATABASE QUESTION PACK FIRST ==========
+  // Check both the original input slugs AND the matched micro ID for database packs
   const lookupStartTime = performance.now();
+  let microUuid: string | null = null;
   let fallbackUsed = false;
+  
+  // Build list of potential slugs to check: original inputs + matched ID
+  const potentialSlugs = [
+    ...categories.map(cat => normalize(cat).replace(/\s+/g, '-')), // Original input as slug
+    matchedMicro.id.replace(/_/g, '-'), // Matched ID with hyphens
+    matchedMicro.id // Matched ID as-is
+  ];
+  
+  // Dedupe and filter empty
+  const uniqueSlugs = [...new Set(potentialSlugs.filter(Boolean))];
+  console.log('[Question Pack] Checking DB for slugs:', uniqueSlugs);
+  
+  // Try each potential slug for a question pack
+  for (const slug of uniqueSlugs) {
+    try {
+      const { data: packData, error: packError } = await supabase
+        .from('question_packs')
+        .select('content')
+        .eq('micro_slug', slug)
+        .eq('is_active', true)
+        .eq('status', 'approved')
+        .order('version', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!packError && packData?.content) {
+        const content = packData.content as { questions?: QuestionPackDef[] };
+        if (content.questions && Array.isArray(content.questions) && content.questions.length > 0) {
+          // Found database questions - use them!
+          const transformedQuestions = content.questions.map(transformToWizardQuestion);
+          
+          console.log(`[Question Pack] ✅ Loaded ${transformedQuestions.length} questions from DB for slug: ${slug}`);
+          
+          // Also try to get UUID for analytics
+          const { data: microData } = await supabase
+            .from('service_micro_categories')
+            .select('id')
+            .eq('slug', slug)
+            .maybeSingle();
+          
+          return {
+            questions: transformedQuestions,
+            microId: slug,
+            microUuid: microData?.id || null
+          };
+        }
+      }
+    } catch (err) {
+      console.warn(`[Question Pack] Error checking slug ${slug}:`, err);
+    }
+  }
+  
+  console.log('[Question Pack] No DB pack found for any slug, checking UUID lookup...');
   
   try {
     // Check cache first
@@ -810,35 +863,6 @@ export const buildConstructionWizardQuestions = async (categories: string[]) => 
           microServiceCache.set(matchedMicro.id, microUuid);
           uuidLookupLogger.logSuccess(matchedMicro.id, microUuid, lookupTimeMs, fallbackUsed);
           console.log('[UUID Lookup] Database lookup successful:', matchedMicro.id, '→', microUuid);
-
-          // ========== NEW: CHECK FOR QUESTION PACK IN DATABASE ==========
-          const { data: packData, error: packError } = await supabase
-            .from('question_packs')
-            .select('content')
-            .eq('micro_slug', matchedMicro.id)
-            .eq('is_active', true)
-            .eq('status', 'approved')
-            .order('version', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-
-          if (!packError && packData?.content) {
-            const content = packData.content as { questions?: QuestionPackDef[] };
-            if (content.questions && Array.isArray(content.questions)) {
-              // Found database questions - use them!
-              const transformedQuestions = content.questions.map(transformToWizardQuestion);
-              
-              console.log(`[Question Pack] ✅ Loaded ${transformedQuestions.length} questions from DB for: ${matchedMicro.id}`);
-              
-              return {
-                questions: transformedQuestions,
-                microId: matchedMicro.id,
-                microUuid
-              };
-            }
-          }
-          
-          console.log(`[Question Pack] No DB pack found for ${matchedMicro.id}, using fallback questions`);
         }
       } catch (lookupError) {
         const lookupTimeMs = Math.round(performance.now() - lookupStartTime);
