@@ -13,9 +13,19 @@ import {
   createServiceClient
 } from '../_shared/securityMiddleware.ts';
 
+// Strict schema with payload caps to prevent cost bombs
 const communicationsSchema = z.object({
   communicationType: z.string().trim().min(1).max(100),
-  context: z.record(z.any()),
+  // Limit context fields instead of allowing arbitrary data
+  context: z.object({
+    jobId: z.string().uuid().optional(),
+    clientName: z.string().max(200).optional(),
+    professionalName: z.string().max(200).optional(),
+    serviceName: z.string().max(200).optional(),
+    amount: z.number().min(0).max(1000000).optional(),
+    date: z.string().max(50).optional(),
+    notes: z.string().max(2000).optional(),
+  }).passthrough(), // Allow additional fields but validate core ones
   recipientType: z.string().max(100).optional(),
   tone: z.string().max(50).optional(),
   keyPoints: z.array(z.string().max(500)).max(10).optional(),

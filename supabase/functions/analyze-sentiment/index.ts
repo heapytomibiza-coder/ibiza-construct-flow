@@ -1,33 +1,44 @@
-// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+// Strict schema with payload caps
+const analyzeSchema = z.object({
+  text: z.string().trim().min(1).max(5000), // Cap at 5k chars
+  entityType: z.string().trim().min(1).max(100),
+  entityId: z.string().uuid(),
+});
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { text, entityType, entityId } = await req.json();
-
-    if (!text || !entityType || !entityId) {
-      throw new Error("Text, entityType, and entityId are required");
+    const supabase = createServiceClient();
+    
+    // Rate limiting - AI_STANDARD (20/hr)
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'analyze-sentiment', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const { text, entityType, entityId } = await validateRequestBody(req, analyzeSchema);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY not configured");
+      throw new Error("AI service unavailable");
     }
 
     const prompt = `Analyze the sentiment and emotions of the following text. Provide a detailed analysis.
@@ -75,11 +86,25 @@ Analyze the emotional tone, positivity/negativity, and extract key meaningful ph
     });
 
     if (!aiResponse.ok) {
+      console.error("AI Gateway error:", aiResponse.status);
       throw new Error("AI sentiment analysis failed");
     }
 
     const aiData = await aiResponse.json();
-    const analysis = JSON.parse(aiData.choices[0].message.content);
+    const content = aiData.choices?.[0]?.message?.content;
+    
+    let analysis;
+    try {
+      analysis = JSON.parse(content);
+    } catch {
+      // Fallback if AI returns invalid JSON
+      analysis = {
+        sentiment_score: 0,
+        sentiment_label: "neutral",
+        emotions: { joy: 0, anger: 0, sadness: 0, fear: 0, surprise: 0, trust: 0 },
+        key_phrases: []
+      };
+    }
 
     // Store sentiment analysis
     const { data: sentimentRecord, error: insertError } = await supabase
@@ -103,13 +128,7 @@ Analyze the emotional tone, positivity/negativity, and extract key meaningful ph
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in analyze-sentiment:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    logError('analyze-sentiment', error as Error);
+    return createErrorResponse(error as Error);
   }
 });

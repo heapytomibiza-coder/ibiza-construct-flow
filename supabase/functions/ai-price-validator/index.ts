@@ -1,39 +1,50 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { validateRequestBody, commonSchemas } from '../_shared/inputValidation.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
 import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
+// Strict schema with payload caps to prevent cost bombs
 const priceValidatorSchema = z.object({
   serviceType: z.string().trim().min(1).max(200),
   location: z.string().trim().max(200).optional(),
-  pricingData: z.record(z.any()),
+  // Limit pricingData to prevent large payloads
+  pricingData: z.object({
+    basePrice: z.number().min(0).max(1000000).optional(),
+    price: z.number().min(0).max(1000000).optional(),
+    hourlyRate: z.number().min(0).max(10000).optional(),
+    minPrice: z.number().min(0).max(1000000).optional(),
+    maxPrice: z.number().min(0).max(1000000).optional(),
+    currency: z.string().max(10).optional(),
+  }).passthrough(), // Allow additional fields but validate core ones
   category: z.string().trim().max(100).optional(),
   subcategory: z.string().trim().max(100).optional(),
 });
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // TODO: Add rate limiting once authenticated endpoints are implemented
-    // Rate limiting requires userId, but this is currently a public endpoint
+    const supabase = createServiceClient();
+    
+    // Rate limiting - AI_STANDARD (20/hr) - IP-based for public endpoint
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'ai-price-validator', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.retryAfter);
+    }
 
     const { serviceType, location, pricingData, category, subcategory } = await validateRequestBody(req, priceValidatorSchema);
-
 
     // Get historical pricing data for context
     const { data: historicalData } = await supabase
@@ -109,17 +120,18 @@ serve(async (req) => {
     const executionTime = Date.now() - startTime;
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI Gateway error:", errorText);
+      console.error("AI Gateway error:", response.status);
       
-      await supabase
-        .from('ai_runs')
-        .update({
-          status: 'failed',
-          error_message: errorText,
-          execution_time_ms: executionTime
-        })
-        .eq('id', aiRun.id);
+      if (aiRun?.id) {
+        await supabase
+          .from('ai_runs')
+          .update({
+            status: 'failed',
+            error_message: 'AI service error',
+            execution_time_ms: executionTime
+          })
+          .eq('id', aiRun.id);
+      }
 
       return new Response(JSON.stringify({ error: "Failed to validate pricing" }), {
         status: 500,
@@ -140,7 +152,7 @@ serve(async (req) => {
     
     if (historicalData && historicalData.length > 0) {
       const avgMarketPrice = historicalData.reduce((sum, item) => sum + parseFloat(item.avg_price || 0), 0) / historicalData.length;
-      const proposedPrice = parseFloat(pricingData.basePrice || pricingData.price || 0);
+      const proposedPrice = parseFloat(String(pricingData.basePrice || pricingData.price || 0));
       
       if (proposedPrice < avgMarketPrice * 0.8) {
         marketPosition = 'below_market';
@@ -157,7 +169,7 @@ serve(async (req) => {
       analysis,
       marketPosition,
       confidenceScore,
-      recommendations: [], // Could be enhanced to extract specific recommendations
+      recommendations: [],
       priceRange: {
         min: historicalData?.[0]?.min_price || null,
         max: historicalData?.[0]?.max_price || null,
@@ -168,15 +180,17 @@ serve(async (req) => {
     };
 
     // Log successful run
-    await supabase
-      .from('ai_runs')
-      .update({
-        status: 'completed',
-        output_data: result,
-        execution_time_ms: executionTime,
-        confidence_score: confidenceScore
-      })
-      .eq('id', aiRun.id);
+    if (aiRun?.id) {
+      await supabase
+        .from('ai_runs')
+        .update({
+          status: 'completed',
+          output_data: result,
+          execution_time_ms: executionTime,
+          confidence_score: confidenceScore
+        })
+        .eq('id', aiRun.id);
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
