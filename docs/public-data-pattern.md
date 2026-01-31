@@ -92,6 +92,17 @@ SELECT id, display_name FROM public.profiles LIMIT 1; -- Should fail
 RESET ROLE;
 ```
 
+## Code Review Checklist (Public Pages)
+
+Before approving changes to public pages:
+
+- [ ] Does this page query a `public_*` view only?
+- [ ] Are there any client-side joins to protected tables?
+- [ ] Does the view expose only whitelisted columns?
+- [ ] Are 401s on this route handled without redirecting to `/auth`?
+
+---
+
 ## Related Files
 
 - `src/hooks/useFeaturedProfessionals.ts` — exemplar implementation
