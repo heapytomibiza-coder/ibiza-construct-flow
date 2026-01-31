@@ -204,7 +204,7 @@ export function getNextOnboardingStep(phase: string | null | undefined): string 
   if (phase === 'intro_submitted') {
     return '/professional/verification';
   }
-  if (phase === 'verification_pending' || phase === 'verified') {
+  if (phase === 'verification_pending') {
     return '/professional/service-setup';
   }
   // service_configured or complete = go to dashboard
