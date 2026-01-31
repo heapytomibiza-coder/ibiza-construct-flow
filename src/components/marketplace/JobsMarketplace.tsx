@@ -84,10 +84,11 @@ export const JobsMarketplace: React.FC<JobsMarketplaceProps> = ({
   }, [quickFilter]);
 
   // Single useEffect for loading jobs - wait for rolesReady to prevent double fetch
+  // Key off isProfessional (not previewMode) so we only reload when data source actually changes
   useEffect(() => {
     if (!rolesReady) return; // Don't load until roles are known (or user is logged out)
     loadJobs();
-  }, [sortBy, previewMode, rolesReady]);
+  }, [sortBy, isProfessional, rolesReady]);
 
   const loadJobs = async () => {
     try {

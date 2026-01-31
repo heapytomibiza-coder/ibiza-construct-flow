@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useActiveRole } from '@/hooks/useActiveRole';
@@ -40,9 +40,14 @@ export const MessagesPage = () => {
 
   // Handle recipient/professional parameter - create or find conversation
   // Uses user_roles (not profiles.active_role) for consistent role determination
+  // useRef lock prevents race conditions on rapid URL changes
+  const creatingRef = useRef(false);
+  
   useEffect(() => {
     const handleRecipientParam = async () => {
-      if (!targetUserId || !user?.id || isCreatingConversation) return;
+      // Early exit conditions - including ref lock to prevent race conditions
+      if (!targetUserId || !user?.id) return;
+      if (creatingRef.current || isCreatingConversation) return;
       
       // Don't allow messaging yourself
       if (targetUserId === user.id) {
@@ -50,6 +55,8 @@ export const MessagesPage = () => {
         return;
       }
       
+      // Set both state and ref lock
+      creatingRef.current = true;
       setIsCreatingConversation(true);
       
       try {
@@ -78,6 +85,17 @@ export const MessagesPage = () => {
           const iAmProfessional = myRoles.includes('professional');
           const targetIsProfessional = targetRoles.includes('professional');
           
+          // SAFETY: Block if neither user has professional role
+          // This prevents link tampering and weird UI routing
+          if (!iAmProfessional && !targetIsProfessional) {
+            toast({
+              variant: "destructive",
+              title: "Not allowed",
+              description: "Messaging requires a professional account."
+            });
+            return;
+          }
+          
           // Determine client_id and professional_id based on actual roles
           let clientId = user.id;
           let professionalId = targetUserId;
@@ -97,8 +115,8 @@ export const MessagesPage = () => {
               professionalId = targetUserId;
             }
           }
-          // If neither has professional role, block (shouldn't happen in normal flow)
-          // but for safety, just proceed with default assignment
+          // Remaining case: !iAmProfessional && targetIsProfessional
+          // → Default assignment is correct (I'm client, target is professional)
           
           const { data: newConv, error } = await supabase
             .from('conversations')
@@ -122,12 +140,13 @@ export const MessagesPage = () => {
           description: "Failed to start conversation. Please try again."
         });
       } finally {
+        creatingRef.current = false;
         setIsCreatingConversation(false);
       }
     };
 
     handleRecipientParam();
-  }, [targetUserId, user?.id, navigate, isCreatingConversation, toast]);
+  }, [targetUserId, user?.id, navigate, isCreatingConversation, toast, activeRole]);
 
   // Find the selected conversation
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
