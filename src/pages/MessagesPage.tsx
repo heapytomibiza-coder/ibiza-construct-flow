@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useActiveRole } from '@/hooks/useActiveRole';
 import { useConversationList } from '@/hooks/useConversationList';
 import { MessagingPanel } from '@/components/collaboration/MessagingPanel';
 import ConversationsList from '@/components/collaboration/ConversationsList';
@@ -13,16 +14,18 @@ import { useToast } from '@/hooks/use-toast';
 
 export const MessagesPage = () => {
   const { user } = useAuth();
+  const { activeRole } = useActiveRole();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const conversationParam = searchParams.get('conversation');
-  // Support both 'professional' and 'recipient' params for clarity
+  // Support both 'professional' and 'recipient' params for backwards compatibility
   // 'recipient' is the neutral param for any user-to-user messaging
+  // Resolve once to avoid double triggers
   const professionalParam = searchParams.get('professional');
   const recipientParam = searchParams.get('recipient');
-  const targetUserId = recipientParam || professionalParam;
+  const targetUserId = recipientParam ?? professionalParam;
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(conversationParam);
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   
@@ -84,11 +87,15 @@ export const MessagesPage = () => {
             clientId = targetUserId;
             professionalId = user.id;
           } else if (iAmProfessional && targetIsProfessional) {
-            // Both are professionals - the initiator defaults to client role
-            // unless they're currently active as professional (then they're pro)
-            // For simplicity, treat initiator as client when both are pros
-            clientId = user.id;
-            professionalId = targetUserId;
+            // Both are professionals - use initiator's activeRole for intent-driven assignment
+            // If I'm currently in professional mode, I'm the professional; otherwise I'm the client
+            if (activeRole === 'professional') {
+              clientId = targetUserId;
+              professionalId = user.id;
+            } else {
+              clientId = user.id;
+              professionalId = targetUserId;
+            }
           }
           // If neither has professional role, block (shouldn't happen in normal flow)
           // but for safety, just proceed with default assignment

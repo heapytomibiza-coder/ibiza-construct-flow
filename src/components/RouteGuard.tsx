@@ -203,11 +203,9 @@ export default function RouteGuard({
         return;
       }
       
-      // Re-run auth check when auth state changes
-      // Include USER_UPDATED for role/claims changes and PASSWORD_RECOVERY for security
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED' || event === 'PASSWORD_RECOVERY') {
-        checkAuth();
-      }
+      // Re-run auth check on any other auth state change
+      // This covers SIGNED_IN, TOKEN_REFRESHED, USER_UPDATED, PASSWORD_RECOVERY, and future events
+      checkAuth();
     });
 
     checkAuth();
