@@ -14261,6 +14261,7 @@ export type Database = {
         Returns: boolean
       }
       cleanup_expired_typing_indicators: { Args: never; Returns: number }
+      cleanup_old_security_records: { Args: never; Returns: undefined }
       cleanup_rate_limit_records: { Args: never; Returns: undefined }
       convert_currency: {
         Args: {
