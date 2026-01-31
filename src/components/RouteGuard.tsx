@@ -5,6 +5,7 @@ import { requiresTwoFactor } from '@/lib/security/securityMonitor';
 import { logAdminAccessAttempt } from '@/lib/security/ipWhitelist';
 import { useToast } from '@/hooks/use-toast';
 import { getNextOnboardingStep, isOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
+import { normalizeRedirectPath } from '@/lib/navigation';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -250,7 +251,25 @@ export default function RouteGuard({
   }
 
   if (status === 'unauthorized') {
-    const redirectUrl = encodeURIComponent(location.pathname + location.search);
+    // Build redirect URL but NEVER store onboarding paths as redirect targets.
+    // If onboarding is needed, RouteGuard will route there directly post-login.
+    const attemptedPath = location.pathname + location.search;
+    const normalized = normalizeRedirectPath(attemptedPath);
+    
+    const isOnboardingTrap =
+      !!normalized &&
+      (
+        normalized.startsWith('/onboarding/professional') ||
+        normalized.startsWith('/professional/verification') ||
+        normalized.startsWith('/professional/service-setup') ||
+        normalized.startsWith('/professional/services/wizard')
+      );
+    
+    // If the attempted path is an onboarding route, redirect to /dashboard instead
+    // This prevents users getting trapped in "/auth?redirect=/onboarding/..." loops
+    const safeRedirectTarget = isOnboardingTrap ? '/dashboard' : attemptedPath;
+    const redirectUrl = encodeURIComponent(safeRedirectTarget);
+    
     return <Navigate to={`${fallbackPath}?redirect=${redirectUrl}`} replace />;
   }
 
