@@ -246,6 +246,21 @@ export function ServiceTreeSelector({
         if (insertError) throw insertError;
       }
 
+      // Mark onboarding as complete when at least one active service exists.
+      // This is the single condition required by RouteGuard (requireOnboardingComplete).
+      if (selectedMicroServices.size > 0) {
+        const { error: phaseErr } = await supabase
+          .from('professional_profiles')
+          .upsert(
+            { user_id: professionalId, onboarding_phase: 'complete' } as any,
+            { onConflict: 'user_id' }
+          );
+
+        if (phaseErr) {
+          console.error('Failed to mark onboarding complete:', phaseErr);
+        }
+      }
+
       toast.success(`${selectedMicroServices.size} services selected successfully`);
       onComplete?.();
     } catch (error) {

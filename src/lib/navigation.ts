@@ -90,3 +90,24 @@ export const getJobRoute = (jobId: string, page?: 'matches'): string => {
   if (page === 'matches') return `/jobs/${jobId}/matches`;
   return `/jobs/${jobId}`;
 };
+
+/**
+ * Normalize and validate an internal redirect path.
+ * - Must start with '/'
+ * - Rejects protocol-based URLs and protocol-relative URLs
+ */
+export function normalizeRedirectPath(input: string | null | undefined): string | null {
+  if (!input) return null;
+  let decoded = input;
+  try {
+    decoded = decodeURIComponent(input);
+  } catch {
+    // ignore decode errors; fall back to raw
+  }
+
+  if (!decoded.startsWith('/')) return null;
+  if (decoded.startsWith('//')) return null;
+  if (decoded.includes('://')) return null;
+
+  return decoded;
+}
