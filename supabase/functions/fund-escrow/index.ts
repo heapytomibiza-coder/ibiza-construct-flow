@@ -11,63 +11,77 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
-import { serverClient } from "../_shared/client.ts";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-import { validateRequestBody } from '../_shared/inputValidation.ts';
-import { createErrorResponse } from '../_shared/errorMapping.ts';
-import { checkRateLimit, STRICT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
+import {
+  handleCors,
+  corsHeaders,
+  createServiceClient,
+  checkRateLimitDb,
+  createRateLimitResponse,
+  getClientIdentifier,
+  validateRequestBody,
+  createErrorResponse,
+  logError,
+  generateRequestId,
+} from "../_shared/securityMiddleware.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+const fundEscrowSchema = z.object({
+  jobId: z.string().uuid('Invalid job ID'),
+  amount: z.number()
+    .positive('Amount must be positive')
+    .max(1000000, 'Amount exceeds maximum allowed'),
+  currency: z.enum(['EUR', 'USD', 'GBP'], {
+    errorMap: () => ({ message: 'Currency must be EUR, USD, or GBP' })
+  }).default('EUR'),
+  paymentMethodId: z.string().max(100).optional()
+});
+
+const logStep = (step: string, details?: any) => {
+  console.log(`[FUND-ESCROW] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
-  const supabase = serverClient(req);
-  
+  const requestId = generateRequestId();
+
   try {
+    logStep("Function started", { requestId });
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: req.headers.get("Authorization")! },
+        },
+      }
+    );
+
+    const serviceClient = createServiceClient();
+
     // Authenticate user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
     if (authError || !user) {
       throw new Error("Unauthorized");
     }
+    logStep("User authenticated", { userId: user.id });
 
-    // Check rate limit (20 requests per hour for escrow operations)
-    const rateLimitCheck = await checkRateLimit(
-      supabase,
-      user.id,
-      'fund-escrow',
-      STRICT_RATE_LIMIT
-    );
-
-    if (!rateLimitCheck.allowed) {
-      return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-        { status: 429, headers: corsHeaders }
-      );
+    // Rate limiting - PAYMENT_STRICT (5 req/hr, fail-closed)
+    const clientId = getClientIdentifier(req, user.id);
+    const rl = await checkRateLimitDb(serviceClient, clientId, 'fund-escrow', 'PAYMENT_STRICT');
+    if (!rl.allowed) {
+      logStep("Rate limit exceeded", { clientId });
+      return createRateLimitResponse(rl);
     }
 
     // Validate request body
-    const schema = z.object({
-      jobId: z.string().uuid('Invalid job ID'),
-      amount: z.number()
-        .positive('Amount must be positive')
-        .max(1000000, 'Amount exceeds maximum allowed')
-        .multipleOf(0.01, 'Amount must have at most 2 decimal places'),
-      currency: z.enum(['EUR', 'USD', 'GBP'], {
-        errorMap: () => ({ message: 'Currency must be EUR, USD, or GBP' })
-      }).default('EUR'),
-      paymentMethodId: z.string().optional()
-    });
-
-    const { jobId, amount, currency, paymentMethodId } = await validateRequestBody(req, schema);
+    const { jobId, amount, currency, paymentMethodId } = await validateRequestBody(req, fundEscrowSchema);
 
     // Verify user is job client
-    const { data: job, error: jobError } = await supabase
+    const { data: job, error: jobError } = await supabaseClient
       .from('jobs')
       .select('id, client_id, status')
       .eq('id', jobId)
@@ -84,6 +98,8 @@ serve(async (req) => {
     if (job.status !== 'open' && job.status !== 'in_progress') {
       throw new Error("Job not eligible for escrow funding");
     }
+
+    logStep("Job verified", { jobId, status: job.status });
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
@@ -102,21 +118,26 @@ serve(async (req) => {
         client_id: user.id,
         escrow_hold: 'true',
         platform: 'constructive_solutions_ibiza',
+        request_id: requestId,
       },
     });
 
+    logStep("PaymentIntent created", { paymentIntentId: paymentIntent.id });
+
     // Create escrow holding account entry
-    const { data: escrowData, error: escrowError } = await supabase
+    const { data: escrowData, error: escrowError } = await supabaseClient
       .from('escrow_payments')
       .insert({
         job_id: jobId,
         client_id: user.id,
         amount: amount,
         currency: currency,
-        status: 'held',
+        status: 'pending',
+        escrow_status: 'pending',
         stripe_payment_intent_id: paymentIntent.id,
         metadata: {
           payment_method_id: paymentMethodId,
+          request_id: requestId,
           created_at: new Date().toISOString(),
         },
       })
@@ -124,25 +145,28 @@ serve(async (req) => {
       .single();
 
     if (escrowError) {
-      console.error('Escrow DB insert error:', escrowError);
+      logStep('Escrow DB insert error', { error: escrowError.message });
       throw new Error('Failed to create escrow record');
     }
 
     // Log transaction
-    await supabase
+    await supabaseClient
       .from('escrow_transactions')
       .insert({
         escrow_payment_id: escrowData.id,
         transaction_type: 'deposit',
         amount: amount,
         currency: currency,
-        status: 'completed',
+        status: 'pending',
         initiated_by: user.id,
         metadata: {
           stripe_payment_intent_id: paymentIntent.id,
           job_id: jobId,
+          request_id: requestId,
         },
       });
+
+    logStep("Escrow record created", { escrowId: escrowData.id });
 
     return new Response(
       JSON.stringify({
@@ -153,7 +177,8 @@ serve(async (req) => {
         clientSecret: paymentIntent.client_secret,
         amount: amount,
         currency: currency,
-        status: 'held',
+        status: 'pending',
+        requestId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -162,10 +187,7 @@ serve(async (req) => {
     );
 
   } catch (error: any) {
-    console.error('[fund-escrow] Error:', {
-      error: error.message,
-      stack: error.stack
-    });
-    return createErrorResponse(error);
+    logError('fund-escrow', error, { requestId });
+    return createErrorResponse(error, requestId);
   }
 });
