@@ -1,28 +1,53 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createAuthenticatedClient,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const analyzeImageSchema = z.object({
+  imageUrl: z.string().url().max(2000),
+  analysisType: z.enum(['quality_check', 'object_detection', 'text_extraction', 'safety_check', 'general']),
+  entityType: z.string().min(1).max(100),
+  entityId: z.string().uuid(),
+});
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const { imageUrl, analysisType, entityType, entityId } = await req.json();
-
-    if (!imageUrl || !analysisType || !entityType || !entityId) {
-      throw new Error("imageUrl, analysisType, entityType, and entityId are required");
+    // Authentication required for image analysis
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Unauthorized');
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabaseClient = createAuthenticatedClient(authHeader);
+    const serviceClient = createServiceClient();
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Rate limiting - 10 requests/hour for image analysis (expensive)
+    const clientId = getClientIdentifier(req, user.id);
+    const rateLimitResult = await checkRateLimitDb(serviceClient, clientId, 'analyze-image', 'AI_STRICT');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult);
+    }
+
+    const { imageUrl, analysisType, entityType, entityId } = await validateRequestBody(req, analyzeImageSchema);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -113,8 +138,6 @@ Provide a JSON response with this structure:
     });
 
     if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      console.error("AI API error:", aiResponse.status, errorText);
       throw new Error("AI image analysis failed");
     }
 
@@ -122,7 +145,7 @@ Provide a JSON response with this structure:
     const analysis = JSON.parse(aiData.choices[0].message.content);
 
     // Store analysis results
-    const { data: analysisRecord, error: insertError } = await supabase
+    const { error: insertError } = await serviceClient
       .from("ai_image_analysis")
       .insert({
         image_url: imageUrl,
@@ -134,9 +157,8 @@ Provide a JSON response with this structure:
         confidence_score: analysis.confidence_score,
         issues_found: analysis.issues_found || [],
         recommendations: analysis.recommendations || [],
-      })
-      .select()
-      .single();
+        user_id: user.id,
+      });
 
     if (insertError) {
       console.error("Error storing analysis:", insertError);
@@ -146,14 +168,7 @@ Provide a JSON response with this structure:
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in analyze-image:", error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    logError('analyze-image', error);
+    return createErrorResponse(error);
   }
 });

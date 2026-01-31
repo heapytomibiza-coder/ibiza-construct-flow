@@ -3,67 +3,36 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateRequestBody } from '../_shared/inputValidation.ts';
-import { mapError } from '../_shared/errorMapping.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createAuthenticatedClient,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
 const chatRequestSchema = z.object({
   message: z.string().trim().min(1).max(5000).optional(),
   messages: z.array(z.object({
     role: z.string(),
     content: z.string().max(10000),
-  })).optional(),
+  })).max(50).optional(), // Cap conversation history
   conversation_id: z.string().uuid().optional(),
   context: z.object({
-    page: z.string().optional(),
-    user_role: z.string().optional(),
-    current_job: z.string().optional(),
+    page: z.string().max(200).optional(),
+    user_role: z.string().max(50).optional(),
+    current_job: z.string().uuid().optional(),
   }).optional().default({}),
 });
 
-// Simple in-memory rate limiter
-const rateLimiter = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(clientIp: string): boolean {
-  const now = Date.now();
-  const limit = rateLimiter.get(clientIp);
-  
-  if (!limit || limit.resetAt < now) {
-    rateLimiter.set(clientIp, { count: 1, resetAt: now + 60000 });
-    return true;
-  }
-  
-  if (limit.count >= 30) {
-    return false;
-  }
-  
-  limit.count++;
-  return true;
-}
-
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    // Rate limiting check
-    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0] || 
-                     req.headers.get('cf-connecting-ip') || 'unknown';
-    if (!checkRateLimit(clientIp)) {
-      console.warn('Rate limit exceeded for IP:', clientIp);
-      return new Response(JSON.stringify({ 
-        error: 'Rate limit exceeded. Please try again later.',
-        response: 'I apologize, but you\'re making too many requests. Please wait a moment and try again.'
-      }), {
-        status: 429,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     // Authentication check
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
@@ -76,22 +45,13 @@ serve(async (req) => {
       });
     }
 
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-    if (!lovableApiKey) {
-      throw new Error('LOVABLE_API_KEY is not configured');
-    }
-
     // Create Supabase client with auth header to verify user
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
-    );
+    const supabaseClient = createAuthenticatedClient(authHeader);
+    const serviceClient = createServiceClient();
 
     // Verify the authenticated user
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
     if (authError || !user) {
-      console.error('Authentication failed:', authError);
       return new Response(JSON.stringify({ 
         error: 'Invalid authentication',
         response: 'Your session has expired. Please sign in again.'
@@ -99,6 +59,19 @@ serve(async (req) => {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // DB-backed rate limiting (20 requests/hour for AI chatbot)
+    const clientId = getClientIdentifier(req, user.id);
+    const rateLimitResult = await checkRateLimitDb(serviceClient, clientId, 'ai-chatbot', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult);
+    }
+
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    if (!lovableApiKey) {
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     const authenticatedUserId = user.id;
@@ -236,15 +209,8 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Error in ai-chatbot function:', error);
-    return new Response(JSON.stringify({
-      error: mapError(error),
-      response: 'I apologize, but I\'m experiencing technical difficulties. Please try again in a moment or contact our support team.',
-      conversation_id: null
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    logError('ai-chatbot', error);
+    return createErrorResponse(error);
   }
 });
 
