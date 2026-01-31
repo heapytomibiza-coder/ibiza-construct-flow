@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, FileText, Clock, XCircle, CheckCircle, AlertCircle, Wrench, ArrowRight } from 'lucide-react';
+import { Loader2, FileText, Clock, XCircle, AlertCircle, Wrench, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { OnboardingProgressBar } from '@/components/onboarding/OnboardingProgressBar';
@@ -250,7 +250,7 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
     );
   }
 
-  // Gate 4.5: Services not configured (verified but no services)
+  // Gate 4: Services not configured (verified but no active services)
   if (
     profileState.verificationStatus === 'verified' && 
     hasConfiguredServices === false
@@ -291,46 +291,6 @@ export function OnboardingGate({ userId, children }: OnboardingGateProps) {
               >
                 <Wrench className="w-4 h-4 mr-2" />
                 Configure Services Now
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // Gate 4: Verified but service setup incomplete (verified, verified)
-  if (profileState.verificationStatus === 'verified' && profileState.onboardingPhase === 'verified') {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background to-muted/20">
-        <div className="max-w-2xl w-full space-y-6">
-          <OnboardingProgressBar currentPhase="service_setup" />
-          <Card className="w-full">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle className="w-6 h-6 text-primary" />
-              </div>
-              <CardTitle>Complete Your Service Setup</CardTitle>
-              <CardDescription>
-                Step 3 of 3: You're verified! Now let's build your detailed service catalog and pricing.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert className="bg-primary/5 border-primary/20">
-                <CheckCircle className="h-4 w-4 text-primary" />
-                <AlertDescription>
-                  <strong>Congratulations!</strong> Your credentials have been verified. 
-                  Complete your service setup to start receiving jobs.
-                </AlertDescription>
-              </Alert>
-              <Button
-                onClick={() => navigate('/professional/service-setup')}
-                size="lg"
-                className="w-full"
-              >
-                <Wrench className="w-4 h-4 mr-2" />
-                Set Up Your Services
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </CardContent>

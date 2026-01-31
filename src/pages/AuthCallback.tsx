@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { getAuthRoute, normalizeRedirectPath, sanitizeRedirectForCompletedPro } from '@/lib/navigation';
-import { isOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
+import { canAccessProDashboard } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -91,15 +91,36 @@ export default function AuthCallback() {
           // Check if professional is complete (to sanitize stale redirect params)
           let proComplete = false;
           if (profile.active_role === 'professional') {
-            const { data: proProfile } = await supabase
-              .from('professional_profiles')
-              .select('onboarding_phase, verification_status')
-              .eq('user_id', data.session.user.id)
-              .maybeSingle();
-            
-            const phase = proProfile?.onboarding_phase;
-            const ver = (proProfile as any)?.verification_status;
-            proComplete = isOnboardingComplete(phase) || ver === 'verified';
+            // Fetch profile AND active services count (canonical pro dashboard access check)
+            const [{ data: proProfile, error: proErr }, { data: services, error: svcErr }] = await Promise.all([
+              supabase
+                .from('professional_profiles')
+                .select('onboarding_phase, verification_status')
+                .eq('user_id', data.session.user.id)
+                .maybeSingle(),
+              supabase
+                .from('professional_services')
+                .select('id')
+                .eq('professional_id', data.session.user.id)
+                .eq('is_active', true)
+                .limit(1),
+            ]);
+
+            // Fail-safe: if we can't evaluate pro dashboard access, do NOT treat as complete.
+            // This avoids reintroducing accidental access while also not breaking sign-in.
+            if (proErr || svcErr) {
+              console.warn('[AuthCallback] Unable to evaluate pro dashboard access, treating as incomplete', {
+                proErr,
+                svcErr,
+              });
+              proComplete = false;
+            } else {
+              const phase = (proProfile as any)?.onboarding_phase ?? null;
+              const verStatus = (proProfile as any)?.verification_status ?? 'pending';
+              const activeServicesCount = services?.length ?? 0;
+
+              proComplete = canAccessProDashboard(phase, verStatus, activeServicesCount);
+            }
           }
 
           // Handle redirect with sanitization for completed professionals
