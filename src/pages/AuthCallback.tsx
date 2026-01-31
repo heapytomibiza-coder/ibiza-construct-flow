@@ -27,9 +27,34 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
+          // Clear any common redirect storage keys (defensive, prevents sticky loops)
+          try {
+            localStorage.removeItem('redirect');
+            localStorage.removeItem('redirectTo');
+            localStorage.removeItem('postLoginRedirect');
+            localStorage.removeItem('returnTo');
+            sessionStorage.removeItem('redirect');
+            sessionStorage.removeItem('redirectTo');
+            sessionStorage.removeItem('postLoginRedirect');
+            sessionStorage.removeItem('returnTo');
+          } catch {
+            // ignore
+          }
+
           // Normalize and validate redirect parameter
           const rawRedirect = searchParams.get('redirect');
           const redirectPath = normalizeRedirectPath(rawRedirect);
+
+          // Hard-block onboarding redirects from being used as a landing target.
+          // If onboarding is truly required, the route resolver / guards will send them there.
+          const isOnboardingRedirect =
+            !!redirectPath && (
+              redirectPath.startsWith('/onboarding/professional') ||
+              redirectPath.startsWith('/professional/verification') ||
+              redirectPath.startsWith('/professional/service-setup') ||
+              redirectPath.startsWith('/professional/services/wizard')
+            );
+          const safeRedirectCandidate = isOnboardingRedirect ? null : redirectPath;
 
           // Wait for profile to be created by trigger
           let retries = 0;
@@ -68,21 +93,26 @@ export default function AuthCallback() {
           if (profile.active_role === 'professional') {
             const { data: proProfile } = await supabase
               .from('professional_profiles')
-              .select('onboarding_phase')
+              .select('onboarding_phase, verification_status')
               .eq('user_id', data.session.user.id)
               .maybeSingle();
             
-            proComplete = isOnboardingComplete(proProfile?.onboarding_phase);
+            const phase = proProfile?.onboarding_phase;
+            const ver = (proProfile as any)?.verification_status;
+            proComplete = isOnboardingComplete(phase) || ver === 'verified';
           }
 
           // Handle redirect with sanitization for completed professionals
-          if (redirectPath) {
+          if (safeRedirectCandidate) {
             const safeRedirect = sanitizeRedirectForCompletedPro(
-              redirectPath,
+              safeRedirectCandidate,
               proComplete,
               '/dashboard/pro'
             );
             navigate(safeRedirect, { replace: true });
+          } else if (proComplete) {
+            // Absolute override: completed professionals should never land back in onboarding.
+            navigate('/dashboard/pro', { replace: true });
           } else {
             // Use centralized routing logic
             const { getInitialDashboardRoute } = await import('@/lib/roles');
