@@ -3893,6 +3893,7 @@ export type Database = {
           status: Database["public"]["Enums"]["payment_status"] | null
           stripe_charge_id: string | null
           stripe_payment_intent_id: string | null
+          total_refunded_amount: number | null
         }
         Insert: {
           amount: number
@@ -3913,6 +3914,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["payment_status"] | null
           stripe_charge_id?: string | null
           stripe_payment_intent_id?: string | null
+          total_refunded_amount?: number | null
         }
         Update: {
           amount?: number
@@ -3933,6 +3935,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["payment_status"] | null
           stripe_charge_id?: string | null
           stripe_payment_intent_id?: string | null
+          total_refunded_amount?: number | null
         }
         Relationships: [
           {
@@ -14458,6 +14461,10 @@ export type Database = {
       }
       get_recent_profile_views: {
         Args: { p_professional_id: string }
+        Returns: number
+      }
+      get_refundable_amount: {
+        Args: { p_escrow_payment_id: string }
         Returns: number
       }
       get_revenue_trend: {

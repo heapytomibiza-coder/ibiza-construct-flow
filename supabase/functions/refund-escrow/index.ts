@@ -99,12 +99,20 @@ serve(async (req) => {
       throw new Error(`Cannot refund: escrow status is ${milestone.escrow_payment.status}`);
     }
 
-    // Calculate refund amount
-    const refundAmount = amount || milestone.amount;
+    // Calculate remaining refundable amount from ledger (not just milestone amount)
+    const { data: refundableData } = await supabase.rpc('get_refundable_amount', {
+      p_escrow_payment_id: milestone.escrow_payment.id
+    });
     
-    if (refundAmount > milestone.amount) {
-      throw new Error("Refund amount exceeds milestone amount");
+    const refundableAmount = refundableData || milestone.escrow_payment.amount;
+    const requestedRefund = amount || milestone.amount;
+    
+    // Validate against cumulative cap
+    if (requestedRefund > refundableAmount) {
+      throw new Error(`Refund amount (${requestedRefund}) exceeds remaining refundable amount (${refundableAmount})`);
     }
+    
+    const refundAmount = requestedRefund;
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
