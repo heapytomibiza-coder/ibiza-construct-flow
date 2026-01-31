@@ -2,7 +2,25 @@
 
 > **Purpose**: Acceptance test suite proving the app matches the logic spec.
 > **Created**: 2026-01-31
-> **Coverage**: 20 scripted paths covering Client, Professional, Admin, Cross-role, and Edge cases.
+> **Coverage**: 20 scripted paths + 6 Release Gate tests
+> **Evidence**: Proof artifacts in [EVIDENCE_APPENDIX.md](./EVIDENCE_APPENDIX.md)
+
+---
+
+## ⚠️ Release Gates (Non-Negotiable)
+
+These 6 tests must pass before any release. They catch the most common recurring bugs.
+
+| # | Gate | Test | Must NOT Happen |
+|---|------|------|-----------------|
+| 1 | `/job-board` logged out browsable | Anonymous → `/job-board` loads | ❌ Redirect to `/auth` |
+| 2 | Onboarding step resumes correctly | Refresh mid-onboarding | ❌ Reset to `not_started` |
+| 3 | Edit profile does not restart onboarding | Verified pro edits display name | ❌ Redirect to onboarding |
+| 4 | Role switching persists | Switch role → Refresh | ❌ Role reverts |
+| 5 | Public preview never calls private endpoints | Anon on `/job-board` | ❌ GET /rest/v1/jobs (private table) |
+| 6 | Conversation uniqueness survives race | Rapid double-click "Message" | ❌ 2+ conversations created |
+
+**See detailed proofs:** [EVIDENCE_APPENDIX.md § Release Gate Proofs](./EVIDENCE_APPENDIX.md#6-release-gate-proofs)
 
 ---
 
@@ -27,7 +45,7 @@
 
 ## Client Journeys
 
-### C1: Visitor Browses Job Board Without Login ✅
+### C1: Visitor Browses Job Board Without Login ✅ (RELEASE GATE #1)
 
 **State:** S1 (Unauthenticated)  
 **Route:** `/job-board`
@@ -40,6 +58,17 @@
 | 4 | Click "Apply" button | Toast: "Sign in as a professional to apply" → Redirect to `/auth` | `useAuthGate` triggered |
 
 **Pass Criteria:** Job board is fully browsable without authentication.
+
+**Required Proof Artifacts:**
+1. **Screenshot/Video**: Direct visit to `/job-board` logged out, no redirect
+2. **Network Panel**: `GET /rest/v1/public_jobs_preview` = 200, no calls to `jobs` or `profiles`
+3. **Console Logs**: No `🔒 [RouteGuard]` logs on `/job-board` (page is not wrapped)
+
+**Must NOT Happen:**
+- ❌ Redirect to `/auth` on page load
+- ❌ Query to `jobs` table from anonymous context
+- ❌ Any 401/42501 errors
+- ❌ RouteGuard wrapping of `/job-board`
 
 ---
 
