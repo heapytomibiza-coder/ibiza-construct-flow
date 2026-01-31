@@ -79,24 +79,19 @@ pending → submitted → verified
 | `verified` | Admin approved | ✅ Yes (if phase allows) |
 | `rejected` | Admin rejected | ❌ No |
 
-**Access Rules (Corrected):**
+**Access Rules (Corrected - enforced in code):**
 
 ```typescript
-// Can the user enter the professional dashboard area?
+// Can the user enter the professional area? (basic gate)
 canEnterProArea = (verification_status === 'verified')
 
 // Has the user completed all onboarding steps?
-onboardingComplete = (onboarding_phase === 'complete') AND (active_services >= 1)
+onboardingComplete = (onboarding_phase in ['service_configured', 'complete']) AND (active_services >= 1)
 
-// Full dashboard access (both conditions required for full features)
+// Full dashboard access requires ALL conditions
 fullDashboardAccess = canEnterProArea AND onboardingComplete
-```
 
-**Why the old rule was wrong:**
-```
-// ❌ OLD: isComplete = (phase === 'complete') || (status === 'verified')
-// This allowed someone verified with zero services to be "complete"
-// That contradicts the invariant: "completion requires ≥1 active service"
+// Source: src/lib/onboarding/markProfessionalOnboardingComplete.ts:canAccessProDashboard()
 ```
 
 **Key Invariants:**
@@ -196,6 +191,34 @@ These rules must **always** be true:
 | `/professionals` | `public_professionals_preview` | Message button gated |
 | `/auth` | - | Login/signup |
 | `/auth/callback` | - | Token exchange |
+
+#### Route Definition Proof (`/job-board`)
+
+**File:** `src/App.tsx` line ~363
+```tsx
+<Route path="/job-board" element={<JobBoardPage />} />
+```
+
+No `RouteGuard` wrapper — route is fully public.
+
+#### Data Source Proof (`JobBoardPage`)
+
+**File:** `src/components/marketplace/JobsMarketplace.tsx` lines 98-102
+```typescript
+// PREVIEW MODE: Use secure view for non-professionals (logged out OR client role)
+if (previewMode) {
+  const { data: jobsData, error } = await supabase
+    .from('public_jobs_preview')
+    .select('*')
+    .order(sortBy === 'created_at' ? 'published_at' : sortBy, { ascending: false });
+```
+
+All sub-components also use `public_jobs_preview`:
+- `JobBoardHeroSection.tsx:29-33`
+- `JobBoardStatsBar.tsx:21-25`
+- `JobBoardSidebar.tsx:26-30`
+
+**Conclusion:** Sign-in prompts can ONLY come from action buttons (`useAuthGate`), NOT from page load or data fetching.
 
 ### Protected Routes
 
