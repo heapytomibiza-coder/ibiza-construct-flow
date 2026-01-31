@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { requiresTwoFactor } from '@/lib/security/securityMonitor';
 import { logAdminAccessAttempt } from '@/lib/security/ipWhitelist';
 import { useToast } from '@/hooks/use-toast';
+import { getNextOnboardingStep, isOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -31,6 +32,7 @@ export default function RouteGuard({
 }: RouteGuardProps) {
   const location = useLocation();
   const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized' | '2fa_required' | 'onboarding_required'>('loading');
+  const [onboardingRedirectPath, setOnboardingRedirectPath] = useState<string>('/onboarding/professional');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -177,13 +179,17 @@ export default function RouteGuard({
             .eq('user_id', userId)
             .maybeSingle();
 
+          const phase = proProfile?.onboarding_phase ?? null;
+          const verStatus = proProfile?.verification_status ?? 'pending';
+
           // Professional is complete if: onboarding_phase='complete' OR verification_status='verified'
-          const isComplete = 
-            proProfile?.onboarding_phase === 'complete' || 
-            proProfile?.verification_status === 'verified';
+          const isComplete = isOnboardingComplete(phase) || verStatus === 'verified';
 
           if (!isComplete) {
-            console.warn('🔒 [RouteGuard] Professional onboarding not complete, redirecting to onboarding');
+            // Determine the next step in onboarding flow (linear progression)
+            const nextStep = getNextOnboardingStep(phase);
+            setOnboardingRedirectPath(nextStep);
+            console.warn('🔒 [RouteGuard] Professional onboarding not complete, redirecting to:', nextStep);
             if (!isStale) setStatus('onboarding_required');
             return;
           }
@@ -239,8 +245,8 @@ export default function RouteGuard({
   }
 
   if (status === 'onboarding_required') {
-    // Explicit redirect for onboarding-incomplete (not same as unauthorized)
-    return <Navigate to="/onboarding/professional" replace />;
+    // Redirect to the next required onboarding step (linear progression)
+    return <Navigate to={onboardingRedirectPath} replace />;
   }
 
   if (status === 'unauthorized') {

@@ -111,3 +111,38 @@ export function normalizeRedirectPath(input: string | null | undefined): string 
 
   return decoded;
 }
+
+/**
+ * Routes that should be blocked for completed professionals
+ * (prevents stale redirect params from trapping users in onboarding)
+ */
+const ONBOARDING_TRAP_ROUTES = [
+  '/onboarding/professional',
+  '/professional/verification',
+  '/settings/profile',
+];
+
+/**
+ * Sanitizes redirect path for completed professionals.
+ * If the redirect would send a completed pro back to onboarding, 
+ * returns their dashboard instead.
+ */
+export function sanitizeRedirectForCompletedPro(
+  redirectPath: string | null,
+  isOnboardingComplete: boolean,
+  fallback: string = '/dashboard/pro'
+): string {
+  if (!redirectPath) return fallback;
+  
+  if (isOnboardingComplete) {
+    const isTrapRoute = ONBOARDING_TRAP_ROUTES.some(trap => 
+      redirectPath.startsWith(trap)
+    );
+    if (isTrapRoute) {
+      console.log('[navigation] Blocked trap redirect for completed pro:', redirectPath);
+      return fallback;
+    }
+  }
+  
+  return redirectPath;
+}

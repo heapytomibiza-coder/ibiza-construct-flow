@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { getAuthRoute } from '@/lib/navigation';
+import { getAuthRoute, normalizeRedirectPath, sanitizeRedirectForCompletedPro } from '@/lib/navigation';
+import { isOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -26,12 +27,9 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
-          // Determine redirect destination
-          const redirectTo = searchParams.get('redirect');
-          if (redirectTo) {
-            navigate(decodeURIComponent(redirectTo));
-            return;
-          }
+          // Normalize and validate redirect parameter
+          const rawRedirect = searchParams.get('redirect');
+          const redirectPath = normalizeRedirectPath(rawRedirect);
 
           // Wait for profile to be created by trigger
           let retries = 0;
@@ -65,14 +63,31 @@ export default function AuthCallback() {
             return;
           }
 
-          // Handle redirect or navigate based on centralized routing
-          if (redirectTo) {
-            navigate(decodeURIComponent(redirectTo));
+          // Check if professional is complete (to sanitize stale redirect params)
+          let proComplete = false;
+          if (profile.active_role === 'professional') {
+            const { data: proProfile } = await supabase
+              .from('professional_profiles')
+              .select('onboarding_phase')
+              .eq('user_id', data.session.user.id)
+              .maybeSingle();
+            
+            proComplete = isOnboardingComplete(proProfile?.onboarding_phase);
+          }
+
+          // Handle redirect with sanitization for completed professionals
+          if (redirectPath) {
+            const safeRedirect = sanitizeRedirectForCompletedPro(
+              redirectPath,
+              proComplete,
+              '/dashboard/pro'
+            );
+            navigate(safeRedirect, { replace: true });
           } else {
             // Use centralized routing logic
             const { getInitialDashboardRoute } = await import('@/lib/roles');
             const { path } = await getInitialDashboardRoute(data.session.user.id);
-            navigate(path);
+            navigate(path, { replace: true });
           }
         } else {
           navigate(getAuthRoute('signin'));
