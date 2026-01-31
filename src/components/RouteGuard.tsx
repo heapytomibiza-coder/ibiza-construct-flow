@@ -30,7 +30,7 @@ export default function RouteGuard({
   allowProfessionalIntent = false
 }: RouteGuardProps) {
   const location = useLocation();
-  const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized' | '2fa_required'>('loading');
+  const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized' | '2fa_required' | 'onboarding_required'>('loading');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -107,22 +107,32 @@ export default function RouteGuard({
           if (profileErr) {
             console.error('🔒 [RouteGuard] Profile query error, denying access:', profileErr);
           } else if (profileData?.intent_role === 'professional') {
-            // Additional check: verify they have a pending/rejected verification row
-            // (approved users should already have the professional role via user_roles)
+            // Check verification status - but DON'T require a row to exist
+            // New users starting onboarding won't have a verification row yet
             const { data: verificationData, error: verErr } = await supabase
               .from('professional_verifications')
               .select('status')
               .eq('professional_id', userId)
               .maybeSingle();
             
-            // Only allow access if no error AND verification exists with pending/rejected status
-            // This prevents: legacy users with intent but no verification, RLS misconfig, network issues
-            if (!verErr && verificationData && ['pending', 'rejected'].includes(verificationData.status)) {
-              console.log('🔒 [RouteGuard] User has pending/rejected verification, allowing onboarding access');
-              if (!isStale) setStatus('authorized');
-              return;
-            } else if (verErr) {
+            if (verErr) {
               console.error('🔒 [RouteGuard] Verification query error, denying access:', verErr);
+            } else {
+              // Allow onboarding access if:
+              // 1. No verification row yet (user is starting onboarding)
+              // 2. OR verification exists with non-approved status
+              const status = verificationData?.status;
+              const blockedStatuses = ['verified', 'approved']; // These users should have professional role already
+              const isBlocked = status && blockedStatuses.includes(status);
+              
+              if (!isBlocked) {
+                console.log('🔒 [RouteGuard] Allowing onboarding via professional intent', { 
+                  hasVerificationRow: !!verificationData, 
+                  status 
+                });
+                if (!isStale) setStatus('authorized');
+                return;
+              }
             }
           }
         }
@@ -174,7 +184,7 @@ export default function RouteGuard({
 
           if (!isComplete) {
             console.warn('🔒 [RouteGuard] Professional onboarding not complete, redirecting to onboarding');
-            if (!isStale) setStatus('unauthorized');
+            if (!isStale) setStatus('onboarding_required');
             return;
           }
         }
@@ -228,12 +238,12 @@ export default function RouteGuard({
     return <Navigate to="/admin/security?setup2fa=true" replace />;
   }
 
+  if (status === 'onboarding_required') {
+    // Explicit redirect for onboarding-incomplete (not same as unauthorized)
+    return <Navigate to="/onboarding/professional" replace />;
+  }
+
   if (status === 'unauthorized') {
-    // If professional needs onboarding, redirect there directly
-    if (requireOnboardingComplete && requiredRole === 'professional') {
-      return <Navigate to="/onboarding/professional" replace />;
-    }
-    
     const redirectUrl = encodeURIComponent(location.pathname + location.search);
     return <Navigate to={`${fallbackPath}?redirect=${redirectUrl}`} replace />;
   }

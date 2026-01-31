@@ -340,11 +340,14 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
       }
 
       // After saving services, mark onboarding as complete (only if at least 1 active service)
+      // Use UPSERT to guarantee the row exists (prevents silent 0-row update if profile doesn't exist yet)
       if (finalIds.length > 0) {
         await supabase
           .from('professional_profiles')
-          .update({ onboarding_phase: 'complete' })
-          .eq('user_id', professionalId);
+          .upsert(
+            { user_id: professionalId, onboarding_phase: 'complete' },
+            { onConflict: 'user_id' }
+          );
       }
 
       toast({
