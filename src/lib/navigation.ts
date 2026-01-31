@@ -119,6 +119,8 @@ export function normalizeRedirectPath(input: string | null | undefined): string 
 const ONBOARDING_TRAP_ROUTES = [
   '/onboarding/professional',
   '/professional/verification',
+  '/professional/service-setup',
+  '/professional/services/wizard',
   '/settings/profile',
 ];
 

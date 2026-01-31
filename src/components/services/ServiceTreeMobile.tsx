@@ -184,27 +184,34 @@ export function ServiceTreeMobile({
     try {
       setSaving(true);
 
-      await supabase
+      // 1) Deactivate all existing services (safer than delete - preserves data if upsert fails)
+      const { error: deactivateError } = await supabase
         .from('professional_services')
-        .delete()
+        .update({ is_active: false })
         .eq('professional_id', professionalId);
 
+      if (deactivateError) throw deactivateError;
+
+      // 2) Upsert selected services as active
       if (selectedMicroServices.size > 0) {
-        const insertData = Array.from(selectedMicroServices).map(serviceId => ({
+        const upsertData = Array.from(selectedMicroServices).map((serviceId) => ({
           professional_id: professionalId,
           micro_service_id: serviceId,
-          is_active: true
+          is_active: true,
         }));
 
-        const { error: insertError } = await supabase
+        const { error: upsertError } = await supabase
           .from('professional_services')
-          .insert(insertData);
+          .upsert(upsertData, {
+            onConflict: 'professional_id,micro_service_id',
+            ignoreDuplicates: false,
+          });
 
-        if (insertError) throw insertError;
+        if (upsertError) throw upsertError;
       }
 
-      // Mark onboarding as complete using centralized helper
-      // This verifies DB state (at least 1 active service) before marking complete
+      // 3) Mark onboarding complete based on DB truth (not UI state)
+      // This verifies at least 1 active service exists before marking complete
       await markProfessionalOnboardingComplete(professionalId);
 
       toast.success(`${selectedMicroServices.size} services selected`);
