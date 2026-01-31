@@ -55,6 +55,19 @@ export default function ProfessionalOnboardingPage() {
       if (profileUpdateError) throw profileUpdateError;
 
       // Create/update professional profile with Phase 1 data
+      // IMPORTANT: Do NOT overwrite onboarding_phase if it's already at a later stage
+      // This prevents regressing users who are already past intro_submitted
+      const { data: existingProfile } = await supabase
+        .from('professional_profiles')
+        .select('onboarding_phase')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      // Only set to 'intro_submitted' if no phase exists or phase is null/not_started
+      const currentPhase = existingProfile?.onboarding_phase;
+      const laterPhases = ['verification_pending', 'verified', 'service_configured', 'complete'];
+      const shouldPreservePhase = currentPhase && laterPhases.includes(currentPhase);
+
       const { error: professionalProfileError } = await supabase
         .from('professional_profiles')
         .upsert({
@@ -68,7 +81,8 @@ export default function ProfessionalOnboardingPage() {
           cover_image_url: coverImageUrl,
           contact_email: data.contactEmail,
           contact_phone: data.contactPhone,
-          onboarding_phase: 'intro_submitted',
+          // Preserve existing phase if user is already past intro_submitted
+          onboarding_phase: shouldPreservePhase ? currentPhase : 'intro_submitted',
           verification_status: 'pending',
           is_active: false,
           updated_at: new Date().toISOString()
