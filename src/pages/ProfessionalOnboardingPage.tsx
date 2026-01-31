@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { ProfessionalOnboardingWizard, OnboardingData } from '@/components/onboarding/wizard/ProfessionalOnboardingWizard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { updateOnboardingPhase } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 
 export default function ProfessionalOnboardingPage() {
   const navigate = useNavigate();
@@ -55,19 +56,7 @@ export default function ProfessionalOnboardingPage() {
       if (profileUpdateError) throw profileUpdateError;
 
       // Create/update professional profile with Phase 1 data
-      // IMPORTANT: Do NOT overwrite onboarding_phase if it's already at a later stage
-      // This prevents regressing users who are already past intro_submitted
-      const { data: existingProfile } = await supabase
-        .from('professional_profiles')
-        .select('onboarding_phase')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      // Only set to 'intro_submitted' if no phase exists or phase is null/not_started
-      const currentPhase = existingProfile?.onboarding_phase;
-      const laterPhases = ['verification_pending', 'verified', 'service_configured', 'complete'];
-      const shouldPreservePhase = currentPhase && laterPhases.includes(currentPhase);
-
+      // Use forward-only phase update to prevent regressing users
       const { error: professionalProfileError } = await supabase
         .from('professional_profiles')
         .upsert({
@@ -81,14 +70,15 @@ export default function ProfessionalOnboardingPage() {
           cover_image_url: coverImageUrl,
           contact_email: data.contactEmail,
           contact_phone: data.contactPhone,
-          // Preserve existing phase if user is already past intro_submitted
-          onboarding_phase: shouldPreservePhase ? currentPhase : 'intro_submitted',
           verification_status: 'pending',
           is_active: false,
           updated_at: new Date().toISOString()
-        } as any);
+        } as any, { onConflict: 'user_id' });
 
       if (professionalProfileError) throw professionalProfileError;
+
+      // Update phase using forward-only helper (never downgrades)
+      await updateOnboardingPhase(user.id, 'intro_submitted');
 
       toast.success('Thanks! Next: Upload your verification docs', {
         duration: 4000,

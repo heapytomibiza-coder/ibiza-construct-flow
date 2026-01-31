@@ -9,6 +9,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { markProfessionalOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 
 export interface ServicePreference {
   id?: string;
@@ -339,15 +340,10 @@ export const useProfessionalServicePreferences = (professionalId?: string) => {
         throw new Error(errors.map(e => e.error?.message).join(', '));
       }
 
-      // After saving services, mark onboarding as complete (only if at least 1 active service)
-      // Use UPSERT to guarantee the row exists (prevents silent 0-row update if profile doesn't exist yet)
+      // After saving services, mark onboarding as complete using centralized helper
+      // This verifies DB state (at least 1 active service) before marking complete
       if (finalIds.length > 0) {
-        await supabase
-          .from('professional_profiles')
-          .upsert(
-            { user_id: professionalId, onboarding_phase: 'complete' },
-            { onConflict: 'user_id' }
-          );
+        await markProfessionalOnboardingComplete(professionalId);
       }
 
       toast({

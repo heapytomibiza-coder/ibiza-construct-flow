@@ -9,6 +9,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } f
 import { ChevronRight, ArrowLeft, Check, Star, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { markProfessionalOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 
 interface MicroService {
   id: string;
@@ -201,6 +202,10 @@ export function ServiceTreeMobile({
 
         if (insertError) throw insertError;
       }
+
+      // Mark onboarding as complete using centralized helper
+      // This verifies DB state (at least 1 active service) before marking complete
+      await markProfessionalOnboardingComplete(professionalId);
 
       toast.success(`${selectedMicroServices.size} services selected`);
       onComplete?.();
