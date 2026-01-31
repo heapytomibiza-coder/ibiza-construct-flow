@@ -5,14 +5,17 @@ import { supabase } from '@/integrations/supabase/client';
  * 
  * IMPORTANT: These are LINEAR phases only. Do NOT include verification_status values here.
  * 
- * Phase = progression through onboarding steps
- * verification_status = orthogonal admin approval state (pending → submitted → verified → rejected)
+ * Two Orthogonal Dimensions:
+ * 1. onboarding_phase = progression through onboarding steps (linear, forward-only)
+ * 2. verification_status = admin approval state (pending → submitted → verified → rejected)
  * 
- * The two dimensions are INDEPENDENT:
- * - A user can be at phase 'service_configured' with verification_status 'pending'
- * - A user can be at phase 'intro_submitted' with verification_status 'verified' (edge case)
+ * Access Rules:
+ * - canEnterProArea: verification_status === 'verified'
+ * - onboardingComplete: onboarding_phase in ['service_configured', 'complete'] AND active_services >= 1
+ * - fullDashboardAccess: canEnterProArea AND onboardingComplete
  * 
- * Dashboard access requires BOTH: onboarding_phase complete AND verification_status verified
+ * The old rule "(phase === 'complete') || (status === 'verified')" was WRONG because it
+ * allowed verified users with zero services to be treated as "complete".
  */
 export const ONBOARDING_PHASE_ORDER = [
   'not_started',
@@ -49,28 +52,48 @@ export function isOnboardingPhaseComplete(phase: string | null | undefined): boo
 }
 
 /**
- * Checks if user can access the professional dashboard
- * Requires BOTH: phase complete AND verification verified
- * 
- * @deprecated Use canAccessProDashboard() for clarity
+ * Can user ENTER the professional area? (basic gate)
+ * Requires: verification_status === 'verified'
  */
-export function isOnboardingComplete(phase: string | null | undefined): boolean {
-  // Legacy: only checks phase, not verification
-  // RouteGuard separately checks verification_status
-  return phase === 'complete' || phase === 'service_configured';
+export function canEnterProArea(verificationStatus: string | null | undefined): boolean {
+  return verificationStatus === 'verified';
 }
 
 /**
- * Full access check: combines phase and verification status
+ * Full professional dashboard access check.
+ * Requires ALL THREE conditions:
+ * 1. verification_status === 'verified'
+ * 2. onboarding_phase in ['service_configured', 'complete']
+ * 3. active_services >= 1
  */
 export function canAccessProDashboard(
   phase: string | null | undefined,
-  verificationStatus: string | null | undefined
+  verificationStatus: string | null | undefined,
+  activeServicesCount: number | null | undefined = 1 // Default to 1 for backwards compat when count unavailable
 ): boolean {
   const phaseComplete = phase === 'complete' || phase === 'service_configured';
   const isVerified = verificationStatus === 'verified';
-  return phaseComplete || isVerified; // Either grants access (backwards compat)
+  const hasService = (activeServicesCount ?? 0) >= 1;
+  
+  return isVerified && phaseComplete && hasService;
 }
+
+/**
+ * @deprecated Legacy function for backwards compatibility during migration.
+ * Use canEnterProArea() + canAccessProDashboard() instead.
+ */
+export function canAccessProDashboardLegacy(
+  phase: string | null | undefined,
+  verificationStatus: string | null | undefined
+): boolean {
+  return (phase === 'complete' || phase === 'service_configured') || verificationStatus === 'verified';
+}
+
+/**
+ * @deprecated Alias for isOnboardingPhaseComplete. Use isOnboardingPhaseComplete() instead.
+ * Kept for backwards compatibility with existing imports.
+ */
+export const isOnboardingComplete = isOnboardingPhaseComplete;
 
 /**
  * Marks professional onboarding as complete.

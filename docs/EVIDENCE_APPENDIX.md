@@ -202,6 +202,17 @@ USING btree (client_id, professional_id, job_id);
 
 ### ⚠️ KNOWN ISSUE: job_id NULL Semantics
 
+**Unique Index Definition:**
+```sql
+CREATE UNIQUE INDEX conversations_client_id_professional_id_job_id_key 
+ON public.conversations 
+USING btree (client_id, professional_id, job_id);
+```
+
+**PostgreSQL NULL Behavior in Unique Indexes:**
+> PostgreSQL unique indexes allow multiple NULLs — each NULL is treated as distinct.
+> This means `(client1, pro1, NULL)` can coexist with another `(client1, pro1, NULL)`.
+
 **Problem:** The current code uses `jobId || ''` for lookup but `jobId` (raw) for insert:
 
 ```typescript
@@ -216,19 +227,31 @@ USING btree (client_id, professional_id, job_id);
 - If `jobId` is `null`, lookup queries `job_id = ''`
 - But insert creates a row with `job_id = NULL`
 - In PostgreSQL, `NULL != ''` so lookup won't find it
-- Unique index with nullable column: PostgreSQL treats `NULL` as distinct, so `(client1, pro1, NULL)` can coexist with another `(client1, pro1, NULL)` — potential duplicates!
+- Result: Duplicate conversations created on race conditions
 
-**Fix Required:**
-```typescript
-// Use .is() for null values in lookup
-if (jobId) {
-  query.eq("job_id", jobId);
-} else {
-  query.is("job_id", null);
-}
-```
+**Recommended Fixes (pick one):**
 
-**Alternative:** Make `job_id` NOT NULL with a sentinel value like `'no_job'` for conversations without a job context.
+1. **Enforce `job_id NOT NULL` with sentinel value:**
+   ```sql
+   ALTER TABLE conversations ALTER COLUMN job_id SET DEFAULT 'no_job';
+   ALTER TABLE conversations ALTER COLUMN job_id SET NOT NULL;
+   ```
+
+2. **Use partial unique index for NULL handling:**
+   ```sql
+   CREATE UNIQUE INDEX conversations_no_job_unique 
+   ON conversations (client_id, professional_id) 
+   WHERE job_id IS NULL;
+   ```
+
+3. **Use `.is()` for NULL lookup in code:**
+   ```typescript
+   if (jobId) {
+     query.eq("job_id", jobId);
+   } else {
+     query.is("job_id", null);
+   }
+   ```
 
 ---
 
