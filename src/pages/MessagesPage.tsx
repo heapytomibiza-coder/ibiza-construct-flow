@@ -45,9 +45,9 @@ export const MessagesPage = () => {
   
   useEffect(() => {
     const handleRecipientParam = async () => {
-      // Early exit conditions - including ref lock to prevent race conditions
+      // Early exit conditions - ref lock prevents race conditions
       if (!targetUserId || !user?.id) return;
-      if (creatingRef.current || isCreatingConversation) return;
+      if (creatingRef.current) return;
       
       // Don't allow messaging yourself
       if (targetUserId === user.id) {
@@ -61,11 +61,16 @@ export const MessagesPage = () => {
       
       try {
         // Check if conversation exists (check both directions)
-        const { data: existing } = await supabase
+        // Use .order().limit(1) to safely handle duplicates (legacy data / race conditions)
+        const { data: existing, error: existingErr } = await supabase
           .from('conversations')
-          .select('*')
+          .select('id')
           .or(`and(client_id.eq.${user.id},professional_id.eq.${targetUserId}),and(client_id.eq.${targetUserId},professional_id.eq.${user.id})`)
+          .order('created_at', { ascending: false })
+          .limit(1)
           .maybeSingle();
+
+        if (existingErr) throw existingErr;
 
         if (existing) {
           // Conversation exists, select it
@@ -86,14 +91,14 @@ export const MessagesPage = () => {
           const targetIsProfessional = targetRoles.includes('professional');
           
           // SAFETY: Block if neither user has professional role
-          // This prevents link tampering and weird UI routing
+          // Throw to ensure finally block runs and unlocks state
           if (!iAmProfessional && !targetIsProfessional) {
             toast({
               variant: "destructive",
               title: "Not allowed",
               description: "Messaging requires a professional account."
             });
-            return;
+            throw new Error("blocked_no_professional_role");
           }
           
           // Determine client_id and professional_id based on actual roles
@@ -133,12 +138,17 @@ export const MessagesPage = () => {
           navigate(`/messages?conversation=${newConv.id}`, { replace: true });
         }
       } catch (error) {
-        console.error('Failed to create conversation:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to start conversation. Please try again."
-        });
+        // Don't show error toast for intentional blocks
+        if (error instanceof Error && error.message === 'blocked_no_professional_role') {
+          // Already showed toast above, just exit cleanly
+        } else {
+          console.error('Failed to create conversation:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to start conversation. Please try again."
+          });
+        }
       } finally {
         creatingRef.current = false;
         setIsCreatingConversation(false);
@@ -146,7 +156,7 @@ export const MessagesPage = () => {
     };
 
     handleRecipientParam();
-  }, [targetUserId, user?.id, navigate, isCreatingConversation, toast, activeRole]);
+  }, [targetUserId, user?.id, navigate, toast, activeRole]);
 
   // Find the selected conversation
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
