@@ -59,16 +59,42 @@ serve(async (req) => {
     // Retrieve payment intent from Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
-    // Update payment transaction status
+    // Check current status first (idempotency)
+    const { data: existingTransaction } = await supabaseClient
+      .from("payment_transactions")
+      .select("id, status")
+      .eq("stripe_payment_intent_id", paymentIntentId)
+      .maybeSingle();
+
+    // If already in final state, return early (idempotent)
+    if (existingTransaction?.status === 'completed' && paymentIntent.status === 'succeeded') {
+      return new Response(
+        JSON.stringify({
+          status: paymentIntent.status,
+          amount: paymentIntent.amount / 100,
+          duplicate: true,
+          requestId,
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        }
+      );
+    }
+
+    // Update payment transaction status (only if state changed)
+    const newStatus = paymentIntent.status === "succeeded" ? "completed" : paymentIntent.status;
+    
     const { error: updateError } = await supabaseClient
       .from("payment_transactions")
       .update({
-        status: paymentIntent.status === "succeeded" ? "completed" : paymentIntent.status,
+        status: newStatus,
         updated_at: new Date().toISOString(),
       })
-      .eq("stripe_payment_intent_id", paymentIntentId);
+      .eq("stripe_payment_intent_id", paymentIntentId)
+      .neq("status", newStatus); // Only update if status is different
 
-    if (updateError) {
+    if (updateError && updateError.code !== 'PGRST116') {
       console.error("Error updating transaction:", updateError);
       throw new Error("Failed to update payment transaction");
     }

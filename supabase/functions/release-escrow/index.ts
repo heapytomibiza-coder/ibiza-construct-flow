@@ -84,6 +84,32 @@ serve(async (req) => {
       throw new Error("Milestone must be completed before release");
     }
 
+    // Check if already released (idempotency check first)
+    const { data: existingRelease } = await supabaseClient
+      .from('escrow_releases')
+      .select('id, amount, released_at, status')
+      .eq('milestone_id', milestoneId)
+      .in('status', ['pending', 'completed'])
+      .maybeSingle();
+
+    if (existingRelease) {
+      logStep("Already released (idempotent)", { existingRelease });
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Escrow already released',
+          amount: existingRelease.amount,
+          releaseId: existingRelease.id,
+          duplicate: true,
+          requestId,
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        }
+      );
+    }
+
     // Get escrow payment
     const { data: escrowPayment, error: paymentError } = await supabaseClient
       .from('escrow_payments')
@@ -214,8 +240,8 @@ serve(async (req) => {
         },
       });
 
-    // Create escrow release record
-    await supabaseClient
+    // Create escrow release record (atomic with unique constraint)
+    const { error: releaseInsertError } = await supabaseClient
       .from('escrow_releases')
       .insert({
         milestone_id: milestoneId,
@@ -226,6 +252,11 @@ serve(async (req) => {
         released_at: new Date().toISOString(),
         notes,
       });
+
+    // Handle race condition - if duplicate, that's OK, transfer already succeeded
+    if (releaseInsertError && releaseInsertError.code !== '23505') {
+      logStep("Warning: escrow_releases insert failed", { error: releaseInsertError.message });
+    }
 
     logStep("Escrow released successfully");
 
