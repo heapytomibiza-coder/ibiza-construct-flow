@@ -4,7 +4,8 @@ import { useFeature } from '@/contexts/FeatureFlagsContext';
 import { useDashboardPreference } from '@/hooks/useDashboardPreference';
 import SimpleProfessionalDashboard from './SimpleProfessionalDashboard';
 import ProfessionalDashboard from './ProfessionalDashboard';
-import { OnboardingGate } from '@/components/professional/OnboardingGate';
+// NOTE: OnboardingGate removed - enforcement is now handled solely by RouteGuard at route level
+// This prevents double-gating loops where RouteGuard and OnboardingGate fight each other
 import { EnhancedNotificationCenter } from '@/components/notifications/EnhancedNotificationCenter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CardLoader } from '@/components/common/LoadingStates';
@@ -72,8 +73,11 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
     );
   };
 
+  // NOTE: Onboarding enforcement removed from here - RouteGuard is the single source of truth
+  // This prevents the double-gating loop where both RouteGuard and OnboardingGate 
+  // were checking different conditions and fighting each other
   return (
-    <OnboardingGate userId={user.id}>
+    <>
       <div className="flex items-center justify-end mb-4">
         <EnhancedNotificationCenter userId={user.id} />
       </div>
@@ -123,7 +127,7 @@ const UnifiedProfessionalDashboard: React.FC<UnifiedProfessionalDashboardProps> 
           </TabsContent>
         )}
       </Tabs>
-    </OnboardingGate>
+    </>
   );
 };
 

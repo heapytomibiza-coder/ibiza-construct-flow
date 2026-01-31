@@ -295,33 +295,34 @@ function AppContent() {
                         <ProfessionalVerificationPage />
                       </RouteGuard>
                     } />
+                    {/* Professional Setup Routes - Allow intent-based access for pending pros during onboarding */}
                     <Route path="/professional/service-setup" element={
-                      <RouteGuard requiredRole="professional">
+                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
                         <ServiceSetupWizard />
                       </RouteGuard>
                     } />
                     <Route path="/professional/payout-setup" element={
-                      <RouteGuard requiredRole="professional">
+                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
                         <ProfessionalPayoutSetup />
                       </RouteGuard>
                     } />
                     <Route path="/professional/services" element={
-                      <RouteGuard requiredRole="professional">
+                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
                         <ProfessionalServicesPage />
                       </RouteGuard>
                     } />
                     <Route path="/professional/services/wizard" element={
-                      <RouteGuard requiredRole="professional">
+                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
                         <ProfessionalServicesWizardPage />
                       </RouteGuard>
                     } />
                     <Route path="/services/new" element={
-                      <RouteGuard requiredRole="professional">
+                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
                         <CreateService />
                       </RouteGuard>
                     } />
                     <Route path="/professional/portfolio" element={
-                      <RouteGuard requiredRole="professional">
+                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
                         <ProfessionalPortfolioPage />
                       </RouteGuard>
                     } />
@@ -468,15 +469,16 @@ function AppContent() {
                         </RouteGuard>
                       </ErrorBoundary>
                     } />
+                    {/* Professional Dashboard - Require onboarding complete (single source of truth) */}
                     <Route path="/dashboard/pro" element={
                       <ErrorBoundary fallback={<div className="p-6 text-center">Professional dashboard error. Please refresh or contact support.</div>}>
-                        <RouteGuard requiredRole="professional">
+                        <RouteGuard requiredRole="professional" requireOnboardingComplete={true}>
                           <UnifiedProfessionalDashboard />
                         </RouteGuard>
                       </ErrorBoundary>
                     } />
                     <Route path="/dashboard/pro/service-menu" element={
-                      <RouteGuard requiredRole="professional">
+                      <RouteGuard requiredRole="professional" requireOnboardingComplete={true}>
                         <ServiceMenuBuilder />
                       </RouteGuard>
                     } />
