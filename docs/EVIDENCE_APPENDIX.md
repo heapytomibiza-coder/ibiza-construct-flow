@@ -622,7 +622,6 @@ export const ONBOARDING_PHASE_ORDER = [
   'not_started',
   'intro_submitted',
   'verification_pending',
-  'verified',
   'service_configured',
   'complete',
 ] as const;

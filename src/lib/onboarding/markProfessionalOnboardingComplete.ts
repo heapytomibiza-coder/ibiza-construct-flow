@@ -84,13 +84,6 @@ export function canAccessProDashboard(
  * @deprecated Legacy function for backwards compatibility during migration.
  * Use canEnterProArea() + canAccessProDashboard() instead.
  */
-export function canAccessProDashboardLegacy(
-  phase: string | null | undefined,
-  verificationStatus: string | null | undefined
-): boolean {
-  return (phase === 'complete' || phase === 'service_configured') || verificationStatus === 'verified';
-}
-
 /**
  * @deprecated Alias for isOnboardingPhaseComplete. Use isOnboardingPhaseComplete() instead.
  * Kept for backwards compatibility with existing imports.
@@ -198,15 +191,11 @@ export async function updateOnboardingPhase(
  * Determines the next onboarding step based on current phase
  */
 export function getNextOnboardingStep(phase: string | null | undefined): string {
-  if (!phase || phase === 'not_started') {
-    return '/onboarding/professional';
-  }
-  if (phase === 'intro_submitted') {
-    return '/professional/verification';
-  }
-  if (phase === 'verification_pending') {
-    return '/professional/service-setup';
-  }
-  // service_configured or complete = go to dashboard
-  return '/dashboard/pro';
+  if (!phase || phase === 'not_started') return '/onboarding/professional';
+  if (phase === 'intro_submitted') return '/professional/verification';
+  // Legacy safety: older data used 'services' to represent the service setup step.
+  if (phase === 'verification_pending' || phase === 'services') return '/professional/service-setup';
+  if (phase === 'service_configured' || phase === 'complete') return '/dashboard/pro';
+  // Fail-safe for unknown phase values: restart onboarding rather than looping on /dashboard/pro.
+  return '/onboarding/professional';
 }

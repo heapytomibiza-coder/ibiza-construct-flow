@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { isOnboardingComplete } from '@/lib/onboarding/markProfessionalOnboardingComplete';
+import { canAccessProDashboard } from '@/lib/onboarding/markProfessionalOnboardingComplete';
 
 export type Role = 'client' | 'professional' | 'admin';
 
@@ -225,26 +225,39 @@ export async function getInitialDashboardRoute(
 
   // 4) Professional with onboarding check
   if (profile.active_role === 'professional' || hasRole('professional')) {
-    // Check onboarding status from professional_profiles table (single source of truth)
-    const { data: proProfile } = await supabase
-      .from('professional_profiles')
-      .select('onboarding_phase, verification_status')
-      .eq('user_id', userId)
-      .maybeSingle();
+    // Fetch profile AND active services count (canonical pro dashboard access check)
+    const [{ data: proProfile, error: proErr }, { data: services, error: svcErr }] = await Promise.all([
+      supabase
+        .from('professional_profiles')
+        .select('onboarding_phase, verification_status')
+        .eq('user_id', userId)
+        .maybeSingle(),
+      supabase
+        .from('professional_services')
+        .select('id')
+        .eq('professional_id', userId)
+        .eq('is_active', true)
+        .limit(1),
+    ]);
+
+    // Fail-safe: treat errors as incomplete (deny pro dashboard access)
+    if (proErr || svcErr) {
+      return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
+    }
 
     // No professional profile yet = needs onboarding
     if (!proProfile) {
       return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
     }
 
-    // Professional is complete if:
-    // - onboarding_phase is 'service_configured' or 'complete' (see isOnboardingComplete)
-    // - OR verification_status is 'verified'
-    const onboardingComplete =
-      isOnboardingComplete(proProfile.onboarding_phase) ||
-      proProfile.verification_status === 'verified';
-    
-    if (!onboardingComplete) {
+    const phase = (proProfile as any)?.onboarding_phase ?? null;
+    const verStatus = (proProfile as any)?.verification_status ?? 'pending';
+    const activeServicesCount = services?.length ?? 0;
+
+    // Full pro access requires: verified AND phaseComplete AND 1 active service (canonical helper)
+    const hasProDashboardAccess = canAccessProDashboard(phase, verStatus, activeServicesCount);
+
+    if (!hasProDashboardAccess) {
       return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
     }
     
