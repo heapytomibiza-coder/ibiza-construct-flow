@@ -1,17 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.84.0";
-import { checkRateLimit, DEFAULT_RATE_LIMIT } from '../_shared/rateLimiter.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { validateRequestBody } from '../_shared/inputValidation.ts';
+import { createErrorResponse, logError } from '../_shared/errorMapping.ts';
+import { 
+  checkRateLimitDb, 
+  createRateLimitResponse, 
+  getClientIdentifier,
+  corsHeaders,
+  handleCors,
+  createServiceClient
+} from '../_shared/securityMiddleware.ts';
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-// Initialize Supabase client
-const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const generateQuestionsSchema = z.object({
+  serviceType: z.string().min(1).max(200),
+  category: z.string().max(200).optional(),
+  subcategory: z.string().max(200).optional(),
+  existingAnswers: z.record(z.any()).optional(),
+});
 
 // Helper functions
 function createMicroCategoryId(serviceType: string, category: string, subcategory: string): string {
@@ -98,45 +104,23 @@ async function getMinimalFallback(serviceType: string): Promise<any[]> {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
+
+  const supabase = createServiceClient();
 
   try {
-    // Get authorization header to check user
-    const authHeader = req.headers.get('Authorization');
-    if (authHeader) {
-      const token = authHeader.replace('Bearer ', '');
-      const { data: { user } } = await supabase.auth.getUser(token);
-      
-      if (user) {
-        // Check rate limit (100 requests per hour for AI generation)
-        const rateLimitCheck = await checkRateLimit(
-          supabase,
-          user.id,
-          'generate-questions',
-          DEFAULT_RATE_LIMIT
-        );
-
-        if (!rateLimitCheck.allowed) {
-          return new Response(
-            JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-      }
+    // Rate limiting by IP (no auth required for question generation)
+    const clientId = getClientIdentifier(req);
+    const rateLimitResult = await checkRateLimitDb(supabase, clientId, 'generate-questions', 'AI_STANDARD');
+    
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult);
     }
 
-    const { serviceType, category, subcategory, existingAnswers } = await req.json();
+    const { serviceType, category, subcategory, existingAnswers } = await validateRequestBody(req, generateQuestionsSchema);
 
-    if (!serviceType) {
-      return new Response(JSON.stringify({ error: "Service type is required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const microCategoryId = createMicroCategoryId(serviceType, category, subcategory);
+    const microCategoryId = createMicroCategoryId(serviceType, category || '', subcategory || '');
     console.log("Processing questions for micro category:", microCategoryId);
 
     // 1. Try to load from snapshot first (instant response)
@@ -330,12 +314,12 @@ CRITICAL: Ask questions that a seasoned professional with 20+ years experience w
       });
     }
   } catch (error) {
-    console.error("Error generating questions:", error);
+    logError('generate-questions', error);
     
-    // Last resort fallback
+    // Return minimal fallback on error
     try {
-      const { serviceType } = await req.json();
-      const fallbackQuestions = await getMinimalFallback(serviceType || 'service');
+      const body = await req.clone().json().catch(() => ({}));
+      const fallbackQuestions = await getMinimalFallback(body.serviceType || 'service');
       
       return new Response(JSON.stringify({ 
         questions: fallbackQuestions,
@@ -344,13 +328,7 @@ CRITICAL: Ask questions that a seasoned professional with 20+ years experience w
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } catch {
-      return new Response(JSON.stringify({ 
-        error: "Internal server error", 
-        fallback: true 
-      }), {
-        status: 503,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return createErrorResponse(error);
     }
   }
 });
