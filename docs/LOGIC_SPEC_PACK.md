@@ -2,6 +2,20 @@
 
 > **Purpose**: Prove the dev team understands the system logic. This document contains the role matrix, state machines, invariants, and gating map.
 > **Created**: 2026-01-31
+> **Evidence**: All claims are backed by proof artifacts in [EVIDENCE_APPENDIX.md](./EVIDENCE_APPENDIX.md)
+
+---
+
+## Table of Contents
+
+1. [Role & Capability Matrix](#1-role--capability-matrix)
+2. [State Machines](#2-state-machines)
+3. [System Invariants](#3-system-invariants)
+4. [Route Gating Map](#4-route-gating-map)
+5. [Data Visibility Map](#5-data-visibility-map)
+6. [Role Switching Rules](#6-role-switching-rules)
+7. [Data Contracts](#7-data-contracts)
+8. [Key Source Files](#8-key-source-files)
 
 ---
 
@@ -28,32 +42,53 @@
 
 ### A. Professional Onboarding
 
+> **IMPORTANT**: Onboarding has TWO orthogonal dimensions that must not be conflated.
+
+#### Dimension 1: Onboarding Phase (Linear Progression)
+
+**Source:** `professional_profiles.onboarding_phase`
+
 ```
-┌──────────────┐    ┌──────────────────┐    ┌────────────────────┐
-│ not_started  │ ─► │ intro_submitted  │ ─► │ verification_pending│
-└──────────────┘    └──────────────────┘    └────────────────────┘
-                                                      │
-                                                      ▼
-┌──────────────┐    ┌──────────────────┐    ┌────────────────────┐
-│   complete   │ ◄─ │ service_configured│ ◄─ │     verified       │
-└──────────────┘    └──────────────────┘    └────────────────────┘
+not_started → intro_submitted → verification_pending → service_configured → complete
 ```
 
-**Phases & Routes:**
+| Phase | UI Route | Trigger |
+|-------|----------|---------|
+| `not_started` | `/onboarding/professional` | User starts onboarding |
+| `intro_submitted` | `/professional/verification` | Intro form submitted |
+| `verification_pending` | `/professional/verification/status` | Docs uploaded |
+| `service_configured` | - | At least 1 service created |
+| `complete` | `/dashboard` | ≥1 active service validated |
 
-| Phase | UI Route | Who Can Advance |
-|-------|----------|-----------------|
-| `not_started` | `/onboarding/professional` | User submits intro form |
-| `intro_submitted` | `/professional/verification` | User submits verification |
-| `verification_pending` | `/professional/verification/status` | Admin approves |
-| `verified` | `/professional/service-setup` | User configures services |
-| `service_configured` | `/professional/services/wizard` | System validates service exists |
-| `complete` | `/dashboard` | Requires ≥1 active service in DB |
+**Evidence:** See `maxPhase()` in [EVIDENCE_APPENDIX.md](./EVIDENCE_APPENDIX.md#onboarding-phase-forward-only-logic)
+
+#### Dimension 2: Verification Status (Orthogonal)
+
+**Source:** `professional_profiles.verification_status`
+
+```
+pending → submitted → verified
+            ↓
+         rejected
+```
+
+| Status | Meaning | Dashboard Access |
+|--------|---------|------------------|
+| `pending` | User hasn't submitted docs | ❌ No |
+| `submitted` | Docs awaiting review | ❌ No |
+| `verified` | Admin approved | ✅ Yes (if phase allows) |
+| `rejected` | Admin rejected | ❌ No |
+
+**Access Rule:**
+```
+isComplete = (onboarding_phase === 'complete') || (verification_status === 'verified')
+```
 
 **Key Invariants:**
 - Phase can only move forward (enforced by `maxPhase()`)
 - Completion requires truth-based validation (service must exist in DB)
 - Refresh doesn't reset phase
+- `verified` is NOT a phase — it's a status
 
 **Source:** `src/lib/onboarding/markProfessionalOnboardingComplete.ts`
 
@@ -204,7 +239,100 @@ These rules must **always** be true:
 
 ---
 
-## 6. Key Source Files
+## 6. Role Switching Rules
+
+> The platform supports dual-role users who can switch between client and professional modes.
+
+### Role Sources
+
+| Source | Purpose | Modifiable By |
+|--------|---------|---------------|
+| `user_roles` table | Granted DB roles (permissions) | Admin only (via `admin_assign_role`) |
+| `profiles.active_role` | Current UI mode | User (role switcher dropdown) |
+
+**Evidence:** See `admin_assign_role()` in [EVIDENCE_APPENDIX.md](./EVIDENCE_APPENDIX.md#admin_assign_role)
+
+### Role Switch Behavior
+
+| Action | Effect | Persists? |
+|--------|--------|-----------|
+| User clicks "Switch to Professional" | `profiles.active_role` → `'professional'` | ✅ DB |
+| Page refresh | Active role reloaded from `profiles` | ✅ Yes |
+| Open new tab | Realtime listener syncs active role | ✅ Yes |
+| Role switch | Navigation changes, DB access unchanged | - |
+
+### Invariants
+
+| # | Rule | Enforcement |
+|---|------|-------------|
+| 1 | Switching role must NOT change DB access policies | Roles in `user_roles`, not `active_role` |
+| 2 | Switching role must change UI navigation + gating rules | `active_role` read by `useRole()` |
+| 3 | Switching role must persist across refresh | Stored in `profiles.active_role` |
+| 4 | Role switch must NOT cause route guard loops | Separate `unauthorized` vs `wrong_role` states |
+| 5 | Role switch must NOT wipe cached roles | Realtime listener preserves `cachedRoles` |
+
+### Micro-Test Suite
+
+| Test | Steps | Expected |
+|------|-------|----------|
+| Persist across refresh | Switch role → Refresh | Same role |
+| Persist across tabs | Switch in Tab A → Check Tab B | Same role (via realtime) |
+| No route guard loops | Switch role on protected page | Clean redirect, no loop |
+
+---
+
+## 7. Data Contracts
+
+### Job Card Contract (Wizard Output)
+
+The job wizard must produce a complete payload that renders correctly in all contexts:
+
+```typescript
+type JobPayload = {
+  // Required
+  title: string;           // min 5 chars
+  category: string;        // from services catalog
+  location: string;        // min 2 chars
+  location_type: 'in_person' | 'online' | 'both';
+  budget_type: 'fixed' | 'hourly' | 'negotiable';
+  urgency: 'low' | 'medium' | 'high';
+  
+  // Optional
+  description?: string;    // min 10 chars if present
+  budget_amount?: number;  // positive if present
+  duration?: string;
+  skills?: string[];
+  metadata?: {
+    photos?: string[];
+    notes?: string;
+  };
+};
+```
+
+**Source:** `src/lib/schemas/jobWizard.ts`
+
+**Validation Rules:**
+- Wizard validates per-step before advancing
+- Final submission validates entire payload
+- Missing required fields block submission
+
+### Conversation Contract
+
+```typescript
+type ConversationCreate = {
+  client_id: string;       // UUID, must match auth.uid() for client
+  professional_id: string; // UUID, must match auth.uid() for pro
+  job_id?: string;         // Optional job context
+};
+```
+
+**Uniqueness:** `(client_id, professional_id, job_id)` — enforced by DB unique index.
+
+**Evidence:** See [EVIDENCE_APPENDIX.md](./EVIDENCE_APPENDIX.md#conversation-uniqueness)
+
+---
+
+## 8. Key Source Files
 
 | Component | File | Purpose |
 |-----------|------|---------|
