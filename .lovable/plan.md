@@ -1,181 +1,274 @@
 
 
-# Launch Readiness Assessment & 48-Hour Checklist
+# Step 3 → Step 4 Contract Lock Implementation
 
-Based on a comprehensive analysis of your codebase, here's your concrete, evidence-based launch readiness status against the 7 gates you defined.
+## Executive Summary
 
----
+This plan enforces a single-slug contract between Step 3 (Micro Service Selection) and Step 4 (Questions). Currently, Step 4 uses a complex 4-tier fallback system that undermines data quality. With **329/330** micro-services already having approved question packs, the infrastructure is ready—the code just doesn't trust it.
 
-## Current State Summary
-
-Your codebase has **exceptional launch infrastructure** already in place. You have test matrices, flow contracts, and documented standards that most startups don't have at Series A. The question isn't "are you ready?" — it's "have you run the tests?"
+**The missing micro-service**: `door-installation` (Carpentry → General Joinery)
 
 ---
 
-## Gate-by-Gate Assessment
+## What This Fixes
 
-### ✅ Gate 1: Stranger Test Infrastructure — READY (needs execution)
-
-**What exists:**
-- 10-state × 15-route matrix documenting every user journey
-- P0 "Killer Tests" defined with pass criteria
-- Thin Slice Checklist with Go/No-Go decision template
-
-**What's missing:**
-- Actual execution with a real stranger
-- Recording of that session
-
-**Action:** Find 1 person who has never seen the product. Watch them in silence for 15 minutes. No hints.
+| Before | After |
+|--------|-------|
+| Generic "scope/urgency" questions leak through | Only micro-specific questions OR explicit placeholder |
+| 4 competing question sources | Single database lookup |
+| AI generates random questions | AI removed from wizard flow |
+| Trust breaks when questions feel unrelated | Questions always match selected service |
 
 ---
 
-### ✅ Gate 2: Golden Path — FULLY DEFINED
+## Implementation Phases
 
-**Your two Golden Paths are locked:**
+### Phase 1: Clean Step 4 Loading Logic
 
-| Path | Entry | End State |
-|------|-------|-----------|
-| Client Journey | `/` → `/job-board` → Sign up → `/post` → Success | Job visible on board |
-| Pro Journey | Sign up as pro → Onboarding wizard → Verification → Service setup → Dashboard | Active service listing |
+**File**: `src/components/wizard/canonical/QuestionsStep.tsx`
 
-**Evidence:** Routes are documented in `LAUNCH_RAIL.md` with expected UI and DB writes.
-
----
-
-### ✅ Gate 3: Auth Gating — CORRECTLY PLACED
-
-**Your architecture is sound:**
-- `/job-board` is public (browsing = no auth)
-- Actions like "Apply" and "Message" use `useAuthGate()` at component level
-- Sensitive routes use `RouteGuard` with role requirements
-
-**Flow Contract enforces:**
-- No `<a href="#">` placeholders
-- All email callbacks through `/auth/callback`
-- Redirect param standardized as `redirect`
-
----
-
-### ⚠️ Gate 4: Cold Browser Audit — NEEDS EXECUTION
-
-**Infrastructure exists:**
-- `public_jobs_preview` view protects sensitive data
-- QA Checklist in `.lovable/plan.md` defines incognito tests
-
-**Specific tests to run:**
+**Current 4-tier fallback** (lines 127-289):
 ```text
-1. Incognito → `/job-board` → Jobs load without auth prompt
-2. Incognito → Click "View Details" → No private data shown
-3. Incognito → Click "Apply" → Redirect to `/auth?redirect=...`
-4. Deep link: `/jobs/[id]` → Loads preview, not error
-5. Deep link: `/professionals/[id]` → Loads public profile
+TIER -1: buildConstructionWizardQuestions (local matchers)
+TIER  0: Static JSON via mapMicroIdToServiceId  
+TIER  1: Database question_packs (correct approach)
+TIER  2: AI edge function generate-contextual-questions
+TIER  3: Generic fallback (scope/urgency)
+```
+
+**New single-source approach**:
+```text
+1. Query question_packs WHERE micro_slug = :slug AND status = 'approved' AND is_active = true
+2. If found → use pack questions
+3. If NOT found → show "specialist review" placeholder
+```
+
+**Changes**:
+- Remove the dynamic import of `buildConstructionWizardQuestions` (lines 141-189)
+- Remove static JSON lookup via `mapMicroIdToServiceId` (lines 192-214)
+- Remove AI edge function call `generate-contextual-questions` (lines 248-275)
+- Remove `getFallbackQuestions()` usage (lines 99-125, 133-136, 277-279)
+- Keep `transformPackToAIQuestions` as the only transformer
+
+**Critical SQL fix** (line 219-225):
+```typescript
+// BEFORE (missing version ordering)
+.maybeSingle();
+
+// AFTER (guarantees newest approved pack)
+.order('version', { ascending: false })
+.limit(1)
+.maybeSingle();
 ```
 
 ---
 
-### ⚠️ Gate 5: Error Silence Test — MOSTLY CLEAN
+### Phase 2: Add "No Pack" Graceful Handling
 
-**What's in place:**
-- `ErrorBoundary` wrapping critical pages (PostJob, CreateService)
-- `useErrorHandler` for consistent toast messaging
-- Edge function error tracking to `edge_function_errors` table
-
-**Current console state:** No errors recorded in session (clean)
-
-**DB Linter Issues (review before launch):**
-- 1 ERROR: Security Definer View (may be intentional)
-- 6 WARN: Overly permissive RLS policies (`USING (true)`)
-- 3 WARN: Functions without `search_path` set
-
-**Recommendation:** Review the 6 "RLS Always True" warnings — these may be intentional for public data but should be documented.
-
----
-
-### ✅ Gate 6: Kill Switches — COMPREHENSIVE
-
-**You have multi-layer protection:**
-
-| Level | Control | Status |
-|-------|---------|--------|
-| Environment | `VITE_DEMO_MODE` | Gate for demo routes |
-| Code | `TOURS_ENABLED = false` | Tours globally disabled |
-| Database | `kill_switch_active` on feature_flags | Per-feature disable |
-| Admin UI | Feature Flags Manager at `/admin/feature-flags` | Real-time toggles |
-| Legacy | Service worker kill switch | Prevents stale cache |
-
-**Panic recovery:** Can disable features via DB in <2 minutes without deploy.
-
----
-
-### ✅ Gate 7: Support Reality Check — PREDICTABLE
-
-Based on architecture, likely user questions will be:
-
-| Question Type | Predicted Issue | Pre-emptive Fix |
-|--------------|-----------------|------------------|
-| "Where is X?" | Pro trying to access dashboard before verification | Onboarding gate messaging is in place |
-| "Why can't I...?" | Anonymous user trying to apply | Auth redirect with return URL preserves intent |
-| "I'm stuck" | Onboarding phase confusion | Phase forward-only logic prevents regression |
-
----
-
-## Your 48-Hour Execution Checklist
-
-### Day 1: Run the Tests
-
-| Time | Task | Evidence Required |
-|------|------|-------------------|
-| Morning | Cold Browser Audit (incognito, all 5 tests) | Screenshot each result |
-| Afternoon | Run P0 Killer Tests (10 tests from LAUNCH_RAIL) | Fill thin-slice checklist |
-| Evening | Stranger Test (15 min, 1 person, no hints) | Screen recording |
-
-### Day 2: Fix & Document
-
-| Time | Task | Definition of Done |
-|------|------|-------------------|
-| Morning | Address any blockers from Day 1 | All P0 tests green |
-| Afternoon | Review 6 RLS warnings (document if intentional) | Decision logged |
-| Evening | Set `VITE_DEMO_MODE=false`, verify demo routes blocked | Production config verified |
-
----
-
-## Non-Negotiable Pre-Launch Commands
-
-Run these before declaring "ready":
+**New Component**: `src/components/wizard/canonical/NoQuestionsPlaceholder.tsx`
 
 ```text
-1. docs/testing/THIN_SLICE_CHECKLIST.md → Execute & sign
-2. docs/TEST_PACK.md → Verify 6 Release Gates pass
-3. Admin → /admin/health → Check for unresolved errors
-4. Incognito → `/job-board` → Confirm public access works
+┌─────────────────────────────────────────────────────────┐
+│  📋  We're refining the briefing questions for          │
+│      [Door Installation]                                 │
+│                                                          │
+│  A specialist will review your request personally.      │
+│  Continue to share timing, location, and any photos.    │
+│                                                          │
+│  [ Continue to Logistics → ]                             │
+└─────────────────────────────────────────────────────────┘
+```
+
+**When pack missing, flag in answers** (for admin visibility):
+```typescript
+onAnswersChange({
+  ...answers,
+  _pack_missing: true,
+  _pack_missing_slug: primaryMicroSlug,
+});
+```
+
+This gives admin visibility without adding a new table—jobs with missing packs can be queried via:
+```sql
+SELECT * FROM jobs WHERE answers->>'_pack_missing' = 'true';
 ```
 
 ---
 
-## The Honest Assessment
+### Phase 3: Clean Logistics ID Filtering
 
-**You are architecturally ready.** Your codebase has:
-- Canonical access logic (three-pillar rule for pros)
-- Documented test matrices most teams never build
-- Kill switches at every layer
-- Error boundaries on critical paths
+**Current problematic filter** (lines 232-238):
+```typescript
+const logisticsIds = ['job_location', 'location', 'start_time', 'start_date', 
+  'preferred_date', 'project_assets', 'budget', 'budget_range',
+  'timeline', 'completion_date', 'access', 'access_details', 
+  'consultation', 'consultation_type', 'urgency', 'q8', 'q9',  // ← DANGEROUS
+  'description', 'additional_notes', 'notes', 'when_needed',
+  'occupied', 'property_access', 'start_date_preference'];
+```
 
-**What separates you from launch is execution, not code:**
-1. Have you watched a stranger use it?
-2. Have you filled out the thin-slice checklist?
-3. Have you reviewed the RLS warnings?
+**Problem**: `q8`, `q9` are generic IDs that could match legitimate micro-questions.
 
-If you do those 3 things and they pass, you're ready for a soft launch.
+**Fix**: Remove numeric IDs, keep only semantic logistics keys:
+```typescript
+const LOGISTICS_KEYS = new Set([
+  'job_location', 'location',
+  'start_date', 'start_time', 'preferred_date', 'when_needed', 'start_date_preference',
+  'budget', 'budget_range',
+  'project_assets', 'photos',
+  'access', 'access_details', 'property_access',
+  'consultation', 'consultation_type',
+  'completion_date', 'timeline',
+  'urgency', 'description', 'additional_notes', 'notes', 'occupied'
+]);
+```
 
 ---
 
-## Recommended First 100 Users Approach
+### Phase 4: Wizard State Guard
 
-Given your infrastructure:
-1. **Soft launch to 10 users first** (invite-only)
-2. **Watch edge function error table** for first 24h
-3. **Monitor auth callback failures** (common launch bug)
-4. **Keep demo mode disabled** but feature flags granular
+**File**: `src/components/wizard/canonical/CanonicalJobWizard.tsx`
 
-You have the panic buttons. You have the test docs. Trust your architecture and ship.
+Add guard in `handleMicroSelect` (line 330-352):
+
+```typescript
+const handleMicroSelect = useCallback(async (micros: string[], microIds: string[], microSlugs: string[]) => {
+  // GUARD: Ensure slug exists for pack lookup
+  if (microSlugs.length === 0 || !microSlugs[0]) {
+    console.error('[Wizard] No micro_slug provided - cannot proceed to Step 4');
+    toast.error('Service data incomplete. Please try selecting again.');
+    return;
+  }
+  
+  // Remove legacy UUID lookup (lines 332-341)
+  setWizardState(prev => ({ 
+    ...prev, 
+    microNames: micros, 
+    microIds,
+    microSlugs
+  }));
+});
+```
+
+**Also remove** the `checkShouldSkipQuestions` function (lines 354-405) and `skipQuestions` state entirely—Step 4 always shows, either with pack questions or the placeholder.
+
+---
+
+### Phase 5: Create Pack for Missing Micro (Optional but Recommended)
+
+**Missing**: `door-installation` (Carpentry → General Joinery)
+
+**Option A**: Create a 6-question manual DNA pack via SQL or admin UI
+
+**Option B**: Temporarily exclude from Step 3 during soft launch
+
+Given 329/330 coverage, creating one pack is faster than adding exclusion logic.
+
+---
+
+## Files Changed
+
+| File | Action |
+|------|--------|
+| `QuestionsStep.tsx` | Major refactor: remove 4-tier fallback, single DB lookup |
+| `CanonicalJobWizard.tsx` | Remove `buildConstructionWizardQuestions` call, remove `skipQuestions` logic |
+| **New**: `NoQuestionsPlaceholder.tsx` | Graceful "specialist review" component |
+
+## Files Deprecated (Mark as Legacy, Do Not Delete Yet)
+
+| File | Reason |
+|------|--------|
+| `src/lib/data/constructionQuestionBlocks.ts` | No longer used in wizard; keep for reference |
+| `src/lib/mappers/serviceIdMapper.ts` | No longer used in wizard |
+| `src/lib/transformers/blockToQuestion.ts` | Only used for static JSON (removed) |
+| `src/data/construction-services.json` | 10,517 lines of static data, now superseded by DB |
+
+---
+
+## Technical Details
+
+### Simplified QuestionsStep.loadQuestions()
+
+```typescript
+const loadQuestions = async () => {
+  setLoading(true);
+  setError(null);
+
+  // GUARD: Must have micro_slug
+  if (!primaryMicroSlug) {
+    console.error('[Step4] No micro_slug provided');
+    setQuestions([]);
+    setPackSource('no_pack');
+    setLoading(false);
+    return;
+  }
+
+  // SINGLE SOURCE: Database pack lookup
+  const { data: pack, error: packError } = await supabase
+    .from('question_packs')
+    .select('content, version')
+    .eq('micro_slug', primaryMicroSlug)
+    .eq('status', 'approved')
+    .eq('is_active', true)
+    .order('version', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!packError && pack?.content) {
+    const transformed = transformPackToAIQuestions(pack.content);
+    const filtered = transformed.filter(q => !LOGISTICS_KEYS.has(q.id));
+    
+    if (filtered.length > 0) {
+      setQuestions(filtered);
+      setPackSource('pack');
+      setLoading(false);
+      return;
+    }
+  }
+
+  // NO PACK: Flag for admin visibility
+  onAnswersChange({
+    ...answers,
+    _pack_missing: true,
+    _pack_missing_slug: primaryMicroSlug,
+  });
+  
+  setQuestions([]);
+  setPackSource('no_pack');
+  setLoading(false);
+};
+```
+
+---
+
+## QA Test Checklist
+
+1. Pick a micro from Step 3 that definitely has an approved pack
+2. Confirm Step 4 shows only micro-specific questions
+3. Temporarily set that pack to `is_active = false` → Step 4 shows placeholder
+4. Submit job → `answers` includes `_pack_missing: true` flag
+5. Re-enable pack → Step 4 returns to normal
+6. Verify "door-installation" shows placeholder until pack is created
+
+---
+
+## What NOT to Do
+
+- Do NOT invent slugs on the fly in Step 4
+- Do NOT map names → slugs in Step 4
+- Do NOT let AI create identity
+- Do NOT reuse category-level questions
+- Do NOT keep generic fallback as a hidden option
+
+---
+
+## Outcome
+
+After this change, Step 4 becomes deterministic and trustworthy:
+
+- **329 micros**: Show curated, micro-specific questions
+- **1 micro (door-installation)**: Show placeholder + flag for follow-up
+- **Zero micros**: Generic questions never shown
+
+The wizard is now "subscription-worthy"—professionals can trust that leads come with relevant, detailed briefings.
 
