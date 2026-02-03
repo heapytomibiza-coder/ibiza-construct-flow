@@ -28,16 +28,15 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
       ? window.matchMedia('(pointer: coarse)').matches
       : false;
+  
+  // CRITICAL: Tours are globally disabled
   const toursDisabled = !TOURS_ENABLED || isMobile || isCoarsePointer;
-
-  // Permanent kill-switch: tours are fully disabled.
-  if (toursDisabled) return null;
 
   const step = steps[currentStep];
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   useEffect(() => {
-    if (!step) return;
+    if (toursDisabled || !step) return;
 
     const element = document.querySelector(step.target);
     if (element) {
@@ -68,7 +67,6 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
 
       setPosition({ top, left });
 
-      // Highlight the target element with increased z-index
       element.classList.add('tour-highlight');
       const htmlElement = element as HTMLElement;
       htmlElement.style.position = 'relative';
@@ -81,7 +79,10 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
         htmlElement.style.zIndex = '';
       };
     }
-  }, [currentStep, step]);
+  }, [currentStep, step, toursDisabled]);
+
+  // CRITICAL: Return null if tours disabled - after all hooks
+  if (toursDisabled || !isVisible || !step) return null;
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -105,14 +106,12 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
     onSkip?.();
   };
 
-  if (!isVisible || !step) return null;
-
   return (
     <>
-      {/* Overlay - Non-blocking with pointer-events: none */}
+      {/* Overlay */}
       <div className="fixed inset-0 bg-black/50 z-[60]" style={{ pointerEvents: 'none' }} />
 
-      {/* Close button - Top right corner */}
+      {/* Close button */}
       <button
         onClick={handleSkip}
         className="fixed top-4 right-4 z-[63] p-3 rounded-full bg-background/90 hover:bg-background shadow-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
@@ -122,7 +121,7 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
         <X className="h-5 w-5" />
       </button>
 
-      {/* Tour Card - Mobile responsive positioning */}
+      {/* Tour Card */}
       <div
         className="fixed z-[62] w-[300px] sm:w-[350px] animate-in fade-in max-w-[calc(100vw-2rem)]"
         style={{
@@ -199,20 +198,24 @@ export function InteractiveTour({ steps, onComplete, onSkip }: InteractiveTourPr
 
 // Enhanced usage hook with manual triggers
 export function useTour(tourKey: string, steps: TourStep[]) {
-  const [showTour, setShowTour] = useState(false);
   const isMobile = useIsMobile();
+  const [showTour, setShowTour] = useState(false);
+
   const isCoarsePointer =
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
       ? window.matchMedia('(pointer: coarse)').matches
       : false;
+  
+  // CRITICAL: Tours are globally disabled
   const toursDisabled = !TOURS_ENABLED || isMobile || isCoarsePointer;
 
   useEffect(() => {
-    if (toursDisabled) return;
+    if (toursDisabled) {
+      setShowTour(false);
+      return;
+    }
 
     const hasSeenTour = localStorage.getItem(`tour-${tourKey}`);
-
-    // Only auto-start on desktop
     if (!hasSeenTour) {
       setShowTour(true);
     }
@@ -228,7 +231,6 @@ export function useTour(tourKey: string, steps: TourStep[]) {
     setShowTour(false);
   };
 
-  // Manual trigger functions for demo mode
   const startTour = () => {
     if (toursDisabled) return;
     setShowTour(true);
@@ -240,11 +242,14 @@ export function useTour(tourKey: string, steps: TourStep[]) {
     setShowTour(true);
   };
 
+  // CRITICAL: Always return null if tours are disabled
+  const shouldShow = !toursDisabled && showTour;
+
   return {
-    showTour: toursDisabled ? false : showTour,
+    showTour: shouldShow,
     startTour,
     resetTour,
-    TourComponent: !toursDisabled && showTour ? (
+    TourComponent: shouldShow ? (
       <InteractiveTour steps={steps} onComplete={completeTour} onSkip={skipTour} />
     ) : null,
   };

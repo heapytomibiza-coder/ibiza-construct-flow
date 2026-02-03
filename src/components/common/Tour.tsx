@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { TOURS_ENABLED } from '@/config/toursEnabled';
 
@@ -23,14 +22,16 @@ interface TourProps {
 
 export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip }) => {
   const isMobile = useIsMobile();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
+
   const isCoarsePointer =
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
       ? window.matchMedia('(pointer: coarse)').matches
       : false;
+  
+  // CRITICAL: Tours are globally disabled
   const toursDisabled = !TOURS_ENABLED || isMobile || isCoarsePointer;
-
-  const [currentStep, setCurrentStep] = useState(0);
-  const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     if (toursDisabled) return;
@@ -41,7 +42,6 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
 
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Add highlight effect
         element.style.position = 'relative';
         element.style.zIndex = '1000';
         element.style.boxShadow = '0 0 0 4px hsl(var(--copper) / 0.5)';
@@ -57,6 +57,9 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
       }
     };
   }, [currentStep, isActive, toursDisabled, steps, targetElement]);
+
+  // CRITICAL: Return null if tours are disabled - after all hooks
+  if (toursDisabled || !isActive || !steps[currentStep]) return null;
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -81,9 +84,6 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
     onSkip();
   };
 
-  // Permanent kill-switch: never show tours on mobile/touch devices.
-  if (toursDisabled || !isActive || !steps[currentStep]) return null;
-
   const currentStepData = steps[currentStep];
 
   return (
@@ -95,7 +95,7 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
         onClick={handleSkip}
       />
 
-      {/* Close button - Top right corner for easy mobile access */}
+      {/* Close button */}
       <button
         onClick={handleSkip}
         className="fixed top-4 right-4 z-[52] p-3 rounded-full bg-background/90 hover:bg-background shadow-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
@@ -183,17 +183,19 @@ export const Tour: React.FC<TourProps> = ({ steps, isActive, onComplete, onSkip 
 
 export const useTour = (tourKey: string, steps: TourStep[]) => {
   const isMobile = useIsMobile();
+  const [isActive, setIsActive] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+
   const isCoarsePointer =
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
       ? window.matchMedia('(pointer: coarse)').matches
       : false;
+  
+  // CRITICAL: Tours are globally disabled
   const toursDisabled = !TOURS_ENABLED || isMobile || isCoarsePointer;
 
-  const [isActive, setIsActive] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
-
   useEffect(() => {
-    // Permanent kill-switch: never auto-start tours on mobile/touch devices.
+    // Immediately disable if tours are off
     if (toursDisabled) {
       setIsActive(false);
       setIsCompleted(true);
@@ -203,7 +205,6 @@ export const useTour = (tourKey: string, steps: TourStep[]) => {
     const completed = localStorage.getItem(`tour_${tourKey}_completed`);
 
     if (!completed) {
-      // Only auto-start on desktop - delay to ensure DOM is ready
       setTimeout(() => setIsActive(true), 1000);
     } else {
       setIsCompleted(true);
@@ -229,20 +230,23 @@ export const useTour = (tourKey: string, steps: TourStep[]) => {
     setIsActive(true);
   };
 
+  // CRITICAL: Always return null component if tours are disabled
+  const shouldShow = !toursDisabled && isActive;
+
   return {
-    isActive: toursDisabled ? false : isActive,
+    isActive: shouldShow,
     isCompleted,
     completeTour,
     skipTour,
     resetTour,
-    TourComponent: () => (
-      <Tour
-        steps={steps}
-        isActive={toursDisabled ? false : isActive}
-        onComplete={completeTour}
-        onSkip={skipTour}
-      />
-    ),
+    TourComponent: () =>
+      shouldShow ? (
+        <Tour
+          steps={steps}
+          isActive={true}
+          onComplete={completeTour}
+          onSkip={skipTour}
+        />
+      ) : null,
   };
 };
-
