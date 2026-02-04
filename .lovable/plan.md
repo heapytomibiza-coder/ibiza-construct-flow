@@ -1,53 +1,128 @@
 
+# Export All Question Packs to CSV
 
-# Disable Mobile Filters Plan
+## Overview
 
-## What's Being Disabled
+Add a comprehensive CSV export feature for all question packs. This will create a downloadable CSV file containing pack metadata and flattened question data for all 329+ active packs.
 
-Mobile filter UI elements across the app that appear on small screens. This affects:
+---
 
-| Component | Location | What It Does |
-|-----------|----------|--------------|
-| Job Board floating actions | Bottom of screen | Bell, Filter, Scroll-to-top buttons |
-| Job Board filter button | Above job listings | "Filters" button with badge |
-| Discovery filter sheet | Left slide-in | Full filter panel on mobile |
-| Discovery search bar filter toggle | Search area | Filter button next to search |
+## Export Format
+
+The CSV will include two levels of data:
+
+### Pack-Level Export (Summary)
+| Column | Description |
+|--------|-------------|
+| micro_slug | Unique identifier |
+| pack_name | Display name from content |
+| category | Category from content |
+| status | approved/draft/retired |
+| version | Pack version number |
+| is_active | true/false |
+| question_count | Number of questions |
+| source | manual/ai/hybrid |
+| created_at | Creation timestamp |
+| approved_at | Approval timestamp |
+
+### Question-Level Export (Detailed)
+| Column | Description |
+|--------|-------------|
+| micro_slug | Parent pack identifier |
+| pack_name | Parent pack name |
+| question_index | Position (1, 2, 3...) |
+| question_key | Unique question key |
+| question_type | text/single/multi/yesno/etc |
+| question_text | aiHint or i18nKey |
+| required | true/false |
+| options | Comma-separated option values |
+| option_labels | Comma-separated option labels |
 
 ---
 
 ## Implementation
 
-### 1. Job Board Page - Remove Floating Actions
+### 1. Add Export Functions
 
-**File**: `src/pages/JobBoardPage.tsx`
+**File**: `src/pages/admin/QuestionPackAudit.tsx`
 
-Remove the `JobBoardFloatingActions` component import and usage entirely. This removes the floating filter/notification bar at the bottom of the screen on mobile.
+Add two export buttons:
+- **Export Pack Summary** - One row per pack with metadata
+- **Export All Questions** - One row per question with pack context
 
----
-
-### 2. Jobs Marketplace - Hide Mobile Filter Button
-
-**File**: `src/components/marketplace/JobsMarketplace.tsx`
-
-Remove the mobile filter button (currently visible only on `lg:hidden`). The filter panel trigger will be disabled on mobile.
+New export functions:
+- `exportPackSummary()` - Exports pack metadata
+- `exportAllQuestions()` - Exports flattened question data
 
 ---
 
-### 3. Discovery Page - Disable Mobile Filter Sheet
+### 2. UI Changes
 
-**File**: `src/pages/Discovery.tsx`
+Add export buttons to the existing header section:
 
-- Remove or disable the mobile filter `Sheet` component
-- Modify `UnifiedSearchBar` to not show the filter toggle on mobile
-- Keep desktop sidebar filters intact
+```text
+┌─────────────────────────────────────────────────────────┐
+│ Question Pack Audit                                      │
+│ Comprehensive validation of all 329 question packs      │
+│                                                          │
+│ [Go to Tone Standardizer] [Export Summary ▼]            │
+│                            └── Pack Summary (CSV)        │
+│                            └── All Questions (CSV)       │
+│                            └── Issues Report (CSV)       │
+└─────────────────────────────────────────────────────────┘
+```
 
 ---
 
-### 4. Unified Search Bar - Conditionally Hide Filter Button
+## Technical Details
 
-**File**: `src/components/discovery/UnifiedSearchBar.tsx`
+### Export Pack Summary Function
 
-Add `hidden sm:flex` class to the filter button so it only appears on tablet and larger screens.
+```typescript
+const exportPackSummary = () => {
+  const rows = packsWithIssues.map(p => ({
+    micro_slug: p.micro_slug,
+    pack_name: p.content?.name || '',
+    category: p.content?.category || '',
+    status: p.status,
+    version: p.version,
+    is_active: p.is_active,
+    question_count: p.questionCount,
+    source: p.source || 'unknown',
+    created_at: p.created_at,
+    approved_at: p.approved_at || '',
+    issues_count: p.issues.length
+  }));
+  
+  // Convert to CSV and download
+};
+```
+
+### Export All Questions Function
+
+```typescript
+const exportAllQuestions = () => {
+  const rows: any[] = [];
+  
+  packsWithIssues.forEach(pack => {
+    (pack.content?.questions || []).forEach((q, idx) => {
+      rows.push({
+        micro_slug: pack.micro_slug,
+        pack_name: pack.content?.name || '',
+        question_index: idx + 1,
+        question_key: q.key || '',
+        question_type: q.type || '',
+        question_text: q.aiHint || q.i18nKey || q.title || '',
+        required: q.required ? 'true' : 'false',
+        options: (q.options || []).map(o => o.value).join('|'),
+        option_labels: (q.options || []).map(o => o.i18nKey || o.label || o.value).join('|')
+      });
+    });
+  });
+  
+  // Convert to CSV and download
+};
+```
 
 ---
 
@@ -55,28 +130,23 @@ Add `hidden sm:flex` class to the filter button so it only appears on tablet and
 
 | File | Change |
 |------|--------|
-| `JobBoardPage.tsx` | Remove `JobBoardFloatingActions` component |
-| `JobsMarketplace.tsx` | Remove mobile filter button (lines 359-377) |
-| `Discovery.tsx` | Remove mobile Sheet filter (lines 262-280) |
-| `UnifiedSearchBar.tsx` | Hide filter button on mobile |
+| `src/pages/admin/QuestionPackAudit.tsx` | Add `exportPackSummary()` and `exportAllQuestions()` functions, update UI with dropdown menu |
 
 ---
 
-## What Stays Working
+## Output Files
 
-- Desktop filters remain fully functional
-- Search functionality remains on mobile
-- Tablet and larger screens keep filter access
-- No data or backend changes needed
+1. **question-packs-summary-YYYY-MM-DD.csv** - ~330 rows (one per pack)
+2. **question-packs-all-questions-YYYY-MM-DD.csv** - ~2000+ rows (one per question)
+3. **question-pack-audit-YYYY-MM-DD.csv** - Existing issues report (unchanged)
 
 ---
 
 ## Outcome
 
-Mobile users will see a cleaner interface without filter buttons/panels. They can still:
-- Search for services/jobs
-- Browse listings
-- View all content
-
-Filtering is temporarily a desktop/tablet feature until mobile filters are refined.
-
+Admin users can download a complete export of all question packs in CSV format for:
+- Offline review and editing
+- Spreadsheet analysis
+- Backup purposes
+- Bulk content auditing
+- Sharing with stakeholders
