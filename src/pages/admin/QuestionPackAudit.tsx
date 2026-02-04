@@ -25,9 +25,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Search, AlertTriangle, CheckCircle, Eye, Download } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Search, AlertTriangle, CheckCircle, Eye, Download, ChevronDown } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { exportToCSV } from '@/utils/exportData';
 
 interface QuestionPack {
   pack_id: string;
@@ -160,8 +167,8 @@ const QuestionPackAudit = () => {
     return { total, withIssues, healthy, totalErrors, totalWarnings };
   }, [packsWithIssues]);
 
-  // Export audit report
-  const exportReport = () => {
+  // Export audit report (issues only)
+  const exportIssuesReport = () => {
     const report = packsWithIssues
       .filter(p => p.issues.length > 0)
       .map(p => ({
@@ -182,6 +189,67 @@ const QuestionPackAudit = () => {
     a.href = url;
     a.download = `question-pack-audit-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
+  };
+
+  // Export pack summary (one row per pack)
+  const exportPackSummary = () => {
+    const dateStr = new Date().toISOString().split('T')[0];
+    exportToCSV({
+      filename: `question-packs-summary-${dateStr}`,
+      columns: [
+        { header: 'micro_slug', accessor: 'micro_slug' },
+        { header: 'pack_name', accessor: (p: PackWithIssues) => p.content?.name || '' },
+        { header: 'category', accessor: (p: PackWithIssues) => p.content?.category || '' },
+        { header: 'status', accessor: 'status' },
+        { header: 'version', accessor: 'version' },
+        { header: 'is_active', accessor: (p: PackWithIssues) => p.is_active ? 'true' : 'false' },
+        { header: 'question_count', accessor: 'questionCount' },
+        { header: 'source', accessor: (p: any) => p.source || 'unknown' },
+        { header: 'created_at', accessor: 'created_at' },
+        { header: 'approved_at', accessor: (p: PackWithIssues) => p.approved_at || '' },
+        { header: 'issues_count', accessor: (p: PackWithIssues) => p.issues.length },
+      ],
+      data: packsWithIssues,
+    });
+  };
+
+  // Export all questions (one row per question)
+  const exportAllQuestions = () => {
+    const rows: any[] = [];
+    
+    packsWithIssues.forEach(pack => {
+      const questions = pack.content?.questions || [];
+      questions.forEach((q: any, idx: number) => {
+        rows.push({
+          micro_slug: pack.micro_slug,
+          pack_name: pack.content?.name || '',
+          question_index: idx + 1,
+          question_key: q.key || '',
+          question_type: q.type || '',
+          question_text: q.aiHint || q.i18nKey || q.title || '',
+          required: q.required ? 'true' : 'false',
+          options: (q.options || []).map((o: any) => o.value).join('|'),
+          option_labels: (q.options || []).map((o: any) => o.i18nKey || o.label || o.value).join('|'),
+        });
+      });
+    });
+
+    const dateStr = new Date().toISOString().split('T')[0];
+    exportToCSV({
+      filename: `question-packs-all-questions-${dateStr}`,
+      columns: [
+        { header: 'micro_slug', accessor: 'micro_slug' },
+        { header: 'pack_name', accessor: 'pack_name' },
+        { header: 'question_index', accessor: 'question_index' },
+        { header: 'question_key', accessor: 'question_key' },
+        { header: 'question_type', accessor: 'question_type' },
+        { header: 'question_text', accessor: 'question_text' },
+        { header: 'required', accessor: 'required' },
+        { header: 'options', accessor: 'options' },
+        { header: 'option_labels', accessor: 'option_labels' },
+      ],
+      data: rows,
+    });
   };
 
   if (isLoading) {
@@ -208,10 +276,26 @@ const QuestionPackAudit = () => {
           >
             Go to Tone Standardizer
           </Button>
-          <Button onClick={exportReport} variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export Issues Report
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <Download className="w-4 h-4 mr-2" />
+                Export
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportPackSummary}>
+                Pack Summary (CSV)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportAllQuestions}>
+                All Questions (CSV)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportIssuesReport}>
+                Issues Report (CSV)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
