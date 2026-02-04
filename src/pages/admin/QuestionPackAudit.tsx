@@ -276,10 +276,26 @@ const QuestionPackAudit = () => {
           >
             Go to Tone Standardizer
           </Button>
-          <Button onClick={exportReport} variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export Issues Report
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <Download className="w-4 h-4 mr-2" />
+                Export
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportPackSummary}>
+                Pack Summary (CSV)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportAllQuestions}>
+                All Questions (CSV)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportIssuesReport}>
+                Issues Report (CSV)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
