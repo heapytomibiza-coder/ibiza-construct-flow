@@ -108,6 +108,7 @@ const SeedPaintingQuestions = lazyWithRetry(() => import("./pages/admin/SeedPain
 const QuestionPackGenerator = lazyWithRetry(() => import("./pages/QuestionPackGenerator"));
 const QuestionPackAudit = lazyWithRetry(() => import("./pages/admin/QuestionPackAudit"));
 const QuestionPackStandardizer = lazyWithRetry(() => import("./pages/admin/QuestionPackStandardizer"));
+const PageChecklist = lazyWithRetry(() => import("./pages/admin/PageChecklist"));
 
 // Job & Professional Pages
 const PostJob = lazyWithRetry(() => import("./pages/PostJob"));
