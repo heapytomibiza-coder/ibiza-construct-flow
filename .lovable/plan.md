@@ -1,66 +1,128 @@
 
+# Export All Question Packs to CSV
 
-# Unlock All Access + Page Checklist
+## Overview
 
-## What We're Doing
-
-Three changes to make the app fully navigable as a template for review:
-
-1. **Enable auto-confirm email signups** - No email verification needed
-2. **Remove all route guards** - Every page accessible without role checks
-3. **Create a Page Checklist page** - Master list of every route with checkboxes to track review progress
+Add a comprehensive CSV export feature for all question packs. This will create a downloadable CSV file containing pack metadata and flattened question data for all 329+ active packs.
 
 ---
 
-## 1. Auto-Confirm Email Signups
+## Export Format
 
-Use the auth configuration tool to enable auto-confirm so new accounts are instantly active.
+The CSV will include two levels of data:
+
+### Pack-Level Export (Summary)
+| Column | Description |
+|--------|-------------|
+| micro_slug | Unique identifier |
+| pack_name | Display name from content |
+| category | Category from content |
+| status | approved/draft/retired |
+| version | Pack version number |
+| is_active | true/false |
+| question_count | Number of questions |
+| source | manual/ai/hybrid |
+| created_at | Creation timestamp |
+| approved_at | Approval timestamp |
+
+### Question-Level Export (Detailed)
+| Column | Description |
+|--------|-------------|
+| micro_slug | Parent pack identifier |
+| pack_name | Parent pack name |
+| question_index | Position (1, 2, 3...) |
+| question_key | Unique question key |
+| question_type | text/single/multi/yesno/etc |
+| question_text | aiHint or i18nKey |
+| required | true/false |
+| options | Comma-separated option values |
+| option_labels | Comma-separated option labels |
 
 ---
 
-## 2. Strip Route Guards from App.tsx
+## Implementation
 
-Replace every `<RouteGuard ...>` wrapper with just the child component. This means:
+### 1. Add Export Functions
 
-- ~30 RouteGuard wrappers removed across dashboards, admin, settings, professional, client routes
-- AdminGuard components inside individual pages (like `QuestionPackAudit.tsx`, `PricingManager.tsx`) left as-is for now since they're inside the page files - but we'll also strip those
+**File**: `src/pages/admin/QuestionPackAudit.tsx`
 
-**Files affected:**
-- `src/App.tsx` - Remove all RouteGuard wrappers
-- `src/pages/AdminQuestions.tsx` - Remove AdminGuard
-- `src/pages/admin/PricingManager.tsx` - Remove AdminGuard
-- `src/pages/admin/CalculatorAnalytics.tsx` - Remove AdminGuard
-- Any other pages with inline AdminGuard usage
+Add two export buttons:
+- **Export Pack Summary** - One row per pack with metadata
+- **Export All Questions** - One row per question with pack context
+
+New export functions:
+- `exportPackSummary()` - Exports pack metadata
+- `exportAllQuestions()` - Exports flattened question data
 
 ---
 
-## 3. Create Page Review Checklist
+### 2. UI Changes
 
-New page at `/admin/page-checklist` with:
+Add export buttons to the existing header section:
 
-- Every route from the app organized by section (Public, Auth, Client, Professional, Admin, Settings, etc.)
-- Checkbox for each page with localStorage persistence
-- Direct link to navigate to each page
-- Progress counter (e.g., "14/72 checked")
-- "Clear all" reset button
+```text
+┌─────────────────────────────────────────────────────────┐
+│ Question Pack Audit                                      │
+│ Comprehensive validation of all 329 question packs      │
+│                                                          │
+│ [Go to Tone Standardizer] [Export Summary ▼]            │
+│                            └── Pack Summary (CSV)        │
+│                            └── All Questions (CSV)       │
+│                            └── Issues Report (CSV)       │
+└─────────────────────────────────────────────────────────┘
+```
 
-### Route Sections
+---
 
-| Section | Routes |
-|---------|--------|
-| Public | `/`, `/services`, `/discovery`, `/job-board`, `/calculator`, `/how-it-works`, `/contact`, `/professionals`, `/fair`, etc. |
-| Auth | `/auth`, `/auth/verify-email`, `/auth/forgot-password`, `/auth/reset-password`, `/role-switcher` |
-| Client | `/dashboard/client`, `/post`, `/templates`, `/dashboard/client/analytics/*` |
-| Professional | `/dashboard/pro`, `/onboarding/professional`, `/professional/verification`, `/professional/services`, `/professional/portfolio`, `/availability`, `/calendar`, `/earnings`, etc. |
-| Messaging | `/messages`, `/messaging` |
-| Contracts & Payments | `/contracts`, `/disputes`, `/payments`, `/escrow/*` |
-| Admin | All `/admin/*` routes (~35 routes) |
-| Settings | `/settings/profile`, `/settings/account`, `/settings/notifications`, etc. |
-| Legal | `/terms`, `/privacy`, `/cookie-policy` |
+## Technical Details
 
-**File**: `src/pages/admin/PageChecklist.tsx`
+### Export Pack Summary Function
 
-Add route in App.tsx at `/page-checklist` (public, no guard).
+```typescript
+const exportPackSummary = () => {
+  const rows = packsWithIssues.map(p => ({
+    micro_slug: p.micro_slug,
+    pack_name: p.content?.name || '',
+    category: p.content?.category || '',
+    status: p.status,
+    version: p.version,
+    is_active: p.is_active,
+    question_count: p.questionCount,
+    source: p.source || 'unknown',
+    created_at: p.created_at,
+    approved_at: p.approved_at || '',
+    issues_count: p.issues.length
+  }));
+  
+  // Convert to CSV and download
+};
+```
+
+### Export All Questions Function
+
+```typescript
+const exportAllQuestions = () => {
+  const rows: any[] = [];
+  
+  packsWithIssues.forEach(pack => {
+    (pack.content?.questions || []).forEach((q, idx) => {
+      rows.push({
+        micro_slug: pack.micro_slug,
+        pack_name: pack.content?.name || '',
+        question_index: idx + 1,
+        question_key: q.key || '',
+        question_type: q.type || '',
+        question_text: q.aiHint || q.i18nKey || q.title || '',
+        required: q.required ? 'true' : 'false',
+        options: (q.options || []).map(o => o.value).join('|'),
+        option_labels: (q.options || []).map(o => o.i18nKey || o.label || o.value).join('|')
+      });
+    });
+  });
+  
+  // Convert to CSV and download
+};
+```
 
 ---
 
@@ -68,10 +130,23 @@ Add route in App.tsx at `/page-checklist` (public, no guard).
 
 | File | Change |
 |------|--------|
-| `src/App.tsx` | Remove all RouteGuard wrappers, add `/page-checklist` route |
-| `src/pages/admin/PageChecklist.tsx` | New checklist page |
-| `src/pages/AdminQuestions.tsx` | Remove AdminGuard |
-| `src/pages/admin/PricingManager.tsx` | Remove AdminGuard |
-| `src/pages/admin/CalculatorAnalytics.tsx` | Remove AdminGuard |
-| Auth config | Enable auto-confirm emails |
+| `src/pages/admin/QuestionPackAudit.tsx` | Add `exportPackSummary()` and `exportAllQuestions()` functions, update UI with dropdown menu |
 
+---
+
+## Output Files
+
+1. **question-packs-summary-YYYY-MM-DD.csv** - ~330 rows (one per pack)
+2. **question-packs-all-questions-YYYY-MM-DD.csv** - ~2000+ rows (one per question)
+3. **question-pack-audit-YYYY-MM-DD.csv** - Existing issues report (unchanged)
+
+---
+
+## Outcome
+
+Admin users can download a complete export of all question packs in CSV format for:
+- Offline review and editing
+- Spreadsheet analysis
+- Backup purposes
+- Bulk content auditing
+- Sharing with stakeholders

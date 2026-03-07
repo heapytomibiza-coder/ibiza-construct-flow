@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AdminGuard } from '@/components/admin/AdminGuard';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BasePricingTable } from '@/components/admin/pricing/BasePricingTable';
@@ -14,7 +14,7 @@ export default function PricingManager() {
   const [activeTab, setActiveTab] = useState('base-pricing');
 
   return (
-    <AdminGuard>
+    <>
       <Helmet>
         <title>Pricing Manager - Admin</title>
         <meta name="robots" content="noindex, nofollow" />
@@ -132,6 +132,6 @@ export default function PricingManager() {
           </Tabs>
         </div>
       </div>
-    </AdminGuard>
+    </>
   );
 }

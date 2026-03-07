@@ -108,6 +108,7 @@ const SeedPaintingQuestions = lazyWithRetry(() => import("./pages/admin/SeedPain
 const QuestionPackGenerator = lazyWithRetry(() => import("./pages/QuestionPackGenerator"));
 const QuestionPackAudit = lazyWithRetry(() => import("./pages/admin/QuestionPackAudit"));
 const QuestionPackStandardizer = lazyWithRetry(() => import("./pages/admin/QuestionPackStandardizer"));
+const PageChecklist = lazyWithRetry(() => import("./pages/admin/PageChecklist"));
 
 // Job & Professional Pages
 const PostJob = lazyWithRetry(() => import("./pages/PostJob"));
@@ -282,50 +283,15 @@ function AppContent() {
                     <Route path="/auth/callback" element={<AuthCallback />} />
                     <Route path="/auth/quick-start" element={<QuickStart />} />
                     
-                    {/* Professional Onboarding - Allow intent-based access for pending verification */}
-                    <Route path="/onboarding/professional" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalOnboardingPage />
-                      </RouteGuard>
-                    } />
-                    
-                    {/* Professional Verification Status - Allow intent-based access */}
-                    <Route path="/professional/verification" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalVerificationPage />
-                      </RouteGuard>
-                    } />
-                    {/* Professional Setup Routes - Allow intent-based access for pending pros during onboarding */}
-                    <Route path="/professional/service-setup" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ServiceSetupWizard />
-                      </RouteGuard>
-                    } />
-                    <Route path="/professional/payout-setup" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalPayoutSetup />
-                      </RouteGuard>
-                    } />
-                    <Route path="/professional/services" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalServicesPage />
-                      </RouteGuard>
-                    } />
-                    <Route path="/professional/services/wizard" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalServicesWizardPage />
-                      </RouteGuard>
-                    } />
-                    <Route path="/services/new" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <CreateService />
-                      </RouteGuard>
-                    } />
-                    <Route path="/professional/portfolio" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalPortfolioPage />
-                      </RouteGuard>
-                    } />
+                    {/* Professional Routes - Guards removed for template review */}
+                    <Route path="/onboarding/professional" element={<ProfessionalOnboardingPage />} />
+                    <Route path="/professional/verification" element={<ProfessionalVerificationPage />} />
+                    <Route path="/professional/service-setup" element={<ServiceSetupWizard />} />
+                    <Route path="/professional/payout-setup" element={<ProfessionalPayoutSetup />} />
+                    <Route path="/professional/services" element={<ProfessionalServicesPage />} />
+                    <Route path="/professional/services/wizard" element={<ProfessionalServicesWizardPage />} />
+                    <Route path="/services/new" element={<CreateService />} />
+                    <Route path="/professional/portfolio" element={<ProfessionalPortfolioPage />} />
                     
                     {/* Role Switcher */}
                     <Route path="/role-switcher" element={<RoleSwitcher />} />
@@ -336,50 +302,25 @@ function AppContent() {
                     <Route path="/subscription-success" element={<SubscriptionSuccess />} />
                     <Route path="/subscription-canceled" element={<SubscriptionCanceled />} />
                     
-                    {/* Job Posting - Gated by Feature Flag */}
-                    {jobWizardEnabled ? (
-                      <Route 
-                        path="/post" 
-                        element={
-                          <RouteGuard requiredRole="client">
-                            <Suspense fallback={<RouteFallback />}>
-                              <PostJob />
-                            </Suspense>
-                          </RouteGuard>
-                        } 
-                      />
-                    ) : (
-                      <Route path="/post" element={<Navigate to="/dashboard/client" replace />} />
-                    )}
+                    {/* Job Posting */}
+                    <Route path="/post" element={
+                      <Suspense fallback={<RouteFallback />}>
+                        <PostJob />
+                      </Suspense>
+                    } />
                     
                     {/* Templates Page */}
-                    <Route path="/templates" element={
-                      <RouteGuard requiredRole="client">
-                        <Templates />
-                      </RouteGuard>
-                    } />
+                    <Route path="/templates" element={<Templates />} />
                     
                     {/* Job Board - Public browsing, actions gated at component level */}
                     <Route path="/job-board" element={<JobBoardPage />} />
                     
                     {/* Post Job Success Page */}
-                    <Route path="/post/success" element={
-                      <RouteGuard requiredRole="client">
-                        <PostJobSuccessPage />
-                      </RouteGuard>
-                    } />
+                    <Route path="/post/success" element={<PostJobSuccessPage />} />
                     
                     {/* Messages Routes */}
-                    <Route path="/messages" element={
-                      <RouteGuard>
-                        <MessagesPage />
-                      </RouteGuard>
-                    } />
-                    <Route path="/messages/:conversationId" element={
-                      <RouteGuard>
-                        <ConversationPage />
-                      </RouteGuard>
-                    } />
+                    <Route path="/messages" element={<MessagesPage />} />
+                    <Route path="/messages/:conversationId" element={<ConversationPage />} />
                     
                     {/* Messaging Routes */}
                     <Route path="/messaging" element={<MessagingPage />} />
@@ -402,55 +343,19 @@ function AppContent() {
                     <Route path="/professional/insights" element={<ProfessionalInsightsPage />} />
                     
                     {/* Payments Page */}
-                    <Route path="/payments" element={
-                      <RouteGuard>
-                        <PaymentsPage />
-                      </RouteGuard>
-                    } />
+                    <Route path="/payments" element={<PaymentsPage />} />
                     
                     {/* Dispute Center Routes */}
-                    <Route path="/disputes" element={
-                      <RouteGuard>
-                        <DisputeCenterPage />
-                      </RouteGuard>
-                    } />
-                    <Route path="/disputes/:id" element={
-                      <RouteGuard>
-                        <DisputeDetailPage />
-                      </RouteGuard>
-                    } />
+                    <Route path="/disputes" element={<DisputeCenterPage />} />
+                    <Route path="/disputes/:id" element={<DisputeDetailPage />} />
                     
                     {/* Client Analytics Routes */}
-                    <Route path="/dashboard/client/analytics" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientAnalyticsOverview />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/overview" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientAnalyticsOverview />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/jobs" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientJobsAnalytics />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/hiring" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientHiringAnalytics />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/payments" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientPaymentAnalytics />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/professionals" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientProfessionalAnalytics />
-                      </RouteGuard>
-                    } />
+                    <Route path="/dashboard/client/analytics" element={<ClientAnalyticsOverview />} />
+                    <Route path="/dashboard/client/analytics/overview" element={<ClientAnalyticsOverview />} />
+                    <Route path="/dashboard/client/analytics/jobs" element={<ClientJobsAnalytics />} />
+                    <Route path="/dashboard/client/analytics/hiring" element={<ClientHiringAnalytics />} />
+                    <Route path="/dashboard/client/analytics/payments" element={<ClientPaymentAnalytics />} />
+                    <Route path="/dashboard/client/analytics/professionals" element={<ClientProfessionalAnalytics />} />
                     
                     {/* Test Pages */}
                     <Route path="/color-preview" element={<ColorPreview />} />
@@ -563,27 +468,18 @@ function AppContent() {
                       <Route path="calculator/analytics" element={<CalculatorAnalytics />} />
                     </Route>
                     
-                    {/* Settings Routes - Role-Aware */}
-                    <Route path="/settings" element={
-                      <RouteGuard>
-                        <SettingsLayout />
-                      </RouteGuard>
-                    }>
+                    {/* Settings Routes */}
+                    <Route path="/settings" element={<SettingsLayout />}>
                       <Route index element={<Navigate to="/settings/profile" replace />} />
                       <Route path="profile" element={<ProfileSettings />} />
                       <Route path="account" element={<AccountSettings />} />
                       <Route path="notifications" element={<NotificationSettings />} />
-                      <Route path="client" element={
-                        <RouteGuard requiredRole="client">
-                          <ClientSettings />
-                        </RouteGuard>
-                      } />
-                      <Route path="professional" element={
-                        <RouteGuard requiredRole="professional">
-                          <ProfessionalSettings />
-                        </RouteGuard>
-                      } />
+                      <Route path="client" element={<ClientSettings />} />
+                      <Route path="professional" element={<ProfessionalSettings />} />
                     </Route>
+                    
+                    {/* Page Checklist - Template Review Tool */}
+                    <Route path="/page-checklist" element={<Suspense fallback={<RouteFallback />}><PageChecklist /></Suspense>} />
                     
                     {/* Catch-all 404 Route - MUST BE LAST */}
                     <Route path="*" element={<NotFound />} />
