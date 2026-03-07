@@ -361,46 +361,27 @@ function AppContent() {
                     <Route path="/color-preview" element={<ColorPreview />} />
                     <Route path="/test" element={<DesignTest />} />
                     
-                    {/* Protected Dashboard Routes */}
-                    <Route path="/dashboard" element={
-                      <RouteGuard>
-                        <Dashboard />
-                      </RouteGuard>
-                    } />
+                    {/* Dashboard Routes - Guards removed for template review */}
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/dashboard/client" element={
                       <ErrorBoundary fallback={<div className="p-6 text-center">Client dashboard error. Please refresh or contact support.</div>}>
-                        <RouteGuard requiredRole="client">
-                          <UnifiedClientDashboard />
-                        </RouteGuard>
+                        <UnifiedClientDashboard />
                       </ErrorBoundary>
                     } />
-                    {/* Professional Dashboard - Require onboarding complete (single source of truth) */}
                     <Route path="/dashboard/pro" element={
                       <ErrorBoundary fallback={<div className="p-6 text-center">Professional dashboard error. Please refresh or contact support.</div>}>
-                        <RouteGuard requiredRole="professional" requireOnboardingComplete={true}>
-                          <UnifiedProfessionalDashboard />
-                        </RouteGuard>
+                        <UnifiedProfessionalDashboard />
                       </ErrorBoundary>
                     } />
-                    <Route path="/dashboard/pro/service-menu" element={
-                      <RouteGuard requiredRole="professional" requireOnboardingComplete={true}>
-                        <ServiceMenuBuilder />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/admin" element={
-                      <RouteGuard requiredRole="admin">
-                        <AdminDashboard />
-                      </RouteGuard>
-                    } />
+                    <Route path="/dashboard/pro/service-menu" element={<ServiceMenuBuilder />} />
+                    <Route path="/dashboard/admin" element={<AdminDashboard />} />
                     
                     {/* Admin Routes - Nested under /admin parent */}
                     <Route path="/admin" element={
                       <ErrorBoundary fallback={<div className="p-6 text-center">Admin section error. Please contact support.</div>}>
-                        <RouteGuard requiredRole="admin">
-                          <Suspense fallback={<RouteFallback />}>
-                            <Outlet />
-                          </Suspense>
-                        </RouteGuard>
+                        <Suspense fallback={<RouteFallback />}>
+                          <Outlet />
+                        </Suspense>
                       </ErrorBoundary>
                     }>
                       {/* Admin Home/Overview */}
