@@ -282,50 +282,15 @@ function AppContent() {
                     <Route path="/auth/callback" element={<AuthCallback />} />
                     <Route path="/auth/quick-start" element={<QuickStart />} />
                     
-                    {/* Professional Onboarding - Allow intent-based access for pending verification */}
-                    <Route path="/onboarding/professional" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalOnboardingPage />
-                      </RouteGuard>
-                    } />
-                    
-                    {/* Professional Verification Status - Allow intent-based access */}
-                    <Route path="/professional/verification" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalVerificationPage />
-                      </RouteGuard>
-                    } />
-                    {/* Professional Setup Routes - Allow intent-based access for pending pros during onboarding */}
-                    <Route path="/professional/service-setup" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ServiceSetupWizard />
-                      </RouteGuard>
-                    } />
-                    <Route path="/professional/payout-setup" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalPayoutSetup />
-                      </RouteGuard>
-                    } />
-                    <Route path="/professional/services" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalServicesPage />
-                      </RouteGuard>
-                    } />
-                    <Route path="/professional/services/wizard" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalServicesWizardPage />
-                      </RouteGuard>
-                    } />
-                    <Route path="/services/new" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <CreateService />
-                      </RouteGuard>
-                    } />
-                    <Route path="/professional/portfolio" element={
-                      <RouteGuard requiredRole="professional" allowProfessionalIntent={true}>
-                        <ProfessionalPortfolioPage />
-                      </RouteGuard>
-                    } />
+                    {/* Professional Routes - Guards removed for template review */}
+                    <Route path="/onboarding/professional" element={<ProfessionalOnboardingPage />} />
+                    <Route path="/professional/verification" element={<ProfessionalVerificationPage />} />
+                    <Route path="/professional/service-setup" element={<ServiceSetupWizard />} />
+                    <Route path="/professional/payout-setup" element={<ProfessionalPayoutSetup />} />
+                    <Route path="/professional/services" element={<ProfessionalServicesPage />} />
+                    <Route path="/professional/services/wizard" element={<ProfessionalServicesWizardPage />} />
+                    <Route path="/services/new" element={<CreateService />} />
+                    <Route path="/professional/portfolio" element={<ProfessionalPortfolioPage />} />
                     
                     {/* Role Switcher */}
                     <Route path="/role-switcher" element={<RoleSwitcher />} />
