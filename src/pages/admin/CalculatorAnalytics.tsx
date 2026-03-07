@@ -9,7 +9,7 @@ import { Helmet } from 'react-helmet-async';
 
 export default function CalculatorAnalytics() {
   return (
-    <AdminGuard>
+    <>
       <Helmet>
         <title>Calculator Analytics - Admin</title>
         <meta name="robots" content="noindex, nofollow" />
