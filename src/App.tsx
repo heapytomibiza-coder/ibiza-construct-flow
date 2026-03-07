@@ -315,23 +315,11 @@ function AppContent() {
                     <Route path="/job-board" element={<JobBoardPage />} />
                     
                     {/* Post Job Success Page */}
-                    <Route path="/post/success" element={
-                      <RouteGuard requiredRole="client">
-                        <PostJobSuccessPage />
-                      </RouteGuard>
-                    } />
+                    <Route path="/post/success" element={<PostJobSuccessPage />} />
                     
                     {/* Messages Routes */}
-                    <Route path="/messages" element={
-                      <RouteGuard>
-                        <MessagesPage />
-                      </RouteGuard>
-                    } />
-                    <Route path="/messages/:conversationId" element={
-                      <RouteGuard>
-                        <ConversationPage />
-                      </RouteGuard>
-                    } />
+                    <Route path="/messages" element={<MessagesPage />} />
+                    <Route path="/messages/:conversationId" element={<ConversationPage />} />
                     
                     {/* Messaging Routes */}
                     <Route path="/messaging" element={<MessagingPage />} />
