@@ -14,7 +14,7 @@ export default function PricingManager() {
   const [activeTab, setActiveTab] = useState('base-pricing');
 
   return (
-    <AdminGuard>
+    <>
       <Helmet>
         <title>Pricing Manager - Admin</title>
         <meta name="robots" content="noindex, nofollow" />
