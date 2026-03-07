@@ -16,7 +16,6 @@ import { PackAnalytics } from '@/components/admin/packs/PackAnalytics';
 import ImportQuestions from '@/pages/admin/ImportQuestions';
 import BulkImportMaster from '@/pages/admin/BulkImportMaster';
 import QuestionBuilder from '@/components/admin/packs/QuestionBuilder';
-import { AdminGuard } from '@/components/admin/AdminGuard';
 
 export default function AdminQuestions() {
   const navigate = useNavigate();
