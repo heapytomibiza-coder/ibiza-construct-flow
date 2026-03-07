@@ -132,6 +132,6 @@ export default function PricingManager() {
           </Tabs>
         </div>
       </div>
-    </AdminGuard>
+    </>
   );
 }

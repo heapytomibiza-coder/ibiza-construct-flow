@@ -148,6 +148,6 @@ export default function CalculatorAnalytics() {
           </Card>
         </div>
       </div>
-    </AdminGuard>
+    </>
   );
 }

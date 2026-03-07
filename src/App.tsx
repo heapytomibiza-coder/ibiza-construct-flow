@@ -467,27 +467,18 @@ function AppContent() {
                       <Route path="calculator/analytics" element={<CalculatorAnalytics />} />
                     </Route>
                     
-                    {/* Settings Routes - Role-Aware */}
-                    <Route path="/settings" element={
-                      <RouteGuard>
-                        <SettingsLayout />
-                      </RouteGuard>
-                    }>
+                    {/* Settings Routes */}
+                    <Route path="/settings" element={<SettingsLayout />}>
                       <Route index element={<Navigate to="/settings/profile" replace />} />
                       <Route path="profile" element={<ProfileSettings />} />
                       <Route path="account" element={<AccountSettings />} />
                       <Route path="notifications" element={<NotificationSettings />} />
-                      <Route path="client" element={
-                        <RouteGuard requiredRole="client">
-                          <ClientSettings />
-                        </RouteGuard>
-                      } />
-                      <Route path="professional" element={
-                        <RouteGuard requiredRole="professional">
-                          <ProfessionalSettings />
-                        </RouteGuard>
-                      } />
+                      <Route path="client" element={<ClientSettings />} />
+                      <Route path="professional" element={<ProfessionalSettings />} />
                     </Route>
+                    
+                    {/* Page Checklist - Template Review Tool */}
+                    <Route path="/page-checklist" element={<Suspense fallback={<RouteFallback />}><PageChecklist /></Suspense>} />
                     
                     {/* Catch-all 404 Route - MUST BE LAST */}
                     <Route path="*" element={<NotFound />} />

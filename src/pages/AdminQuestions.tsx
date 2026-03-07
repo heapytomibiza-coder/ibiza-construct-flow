@@ -82,6 +82,5 @@ export default function AdminQuestions() {
         </TabsContent>
       </Tabs>
     </div>
-    </AdminGuard>
   );
 }
