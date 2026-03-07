@@ -301,28 +301,15 @@ function AppContent() {
                     <Route path="/subscription-success" element={<SubscriptionSuccess />} />
                     <Route path="/subscription-canceled" element={<SubscriptionCanceled />} />
                     
-                    {/* Job Posting - Gated by Feature Flag */}
-                    {jobWizardEnabled ? (
-                      <Route 
-                        path="/post" 
-                        element={
-                          <RouteGuard requiredRole="client">
-                            <Suspense fallback={<RouteFallback />}>
-                              <PostJob />
-                            </Suspense>
-                          </RouteGuard>
-                        } 
-                      />
-                    ) : (
-                      <Route path="/post" element={<Navigate to="/dashboard/client" replace />} />
-                    )}
+                    {/* Job Posting */}
+                    <Route path="/post" element={
+                      <Suspense fallback={<RouteFallback />}>
+                        <PostJob />
+                      </Suspense>
+                    } />
                     
                     {/* Templates Page */}
-                    <Route path="/templates" element={
-                      <RouteGuard requiredRole="client">
-                        <Templates />
-                      </RouteGuard>
-                    } />
+                    <Route path="/templates" element={<Templates />} />
                     
                     {/* Job Board - Public browsing, actions gated at component level */}
                     <Route path="/job-board" element={<JobBoardPage />} />
