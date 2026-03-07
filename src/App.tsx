@@ -342,55 +342,19 @@ function AppContent() {
                     <Route path="/professional/insights" element={<ProfessionalInsightsPage />} />
                     
                     {/* Payments Page */}
-                    <Route path="/payments" element={
-                      <RouteGuard>
-                        <PaymentsPage />
-                      </RouteGuard>
-                    } />
+                    <Route path="/payments" element={<PaymentsPage />} />
                     
                     {/* Dispute Center Routes */}
-                    <Route path="/disputes" element={
-                      <RouteGuard>
-                        <DisputeCenterPage />
-                      </RouteGuard>
-                    } />
-                    <Route path="/disputes/:id" element={
-                      <RouteGuard>
-                        <DisputeDetailPage />
-                      </RouteGuard>
-                    } />
+                    <Route path="/disputes" element={<DisputeCenterPage />} />
+                    <Route path="/disputes/:id" element={<DisputeDetailPage />} />
                     
                     {/* Client Analytics Routes */}
-                    <Route path="/dashboard/client/analytics" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientAnalyticsOverview />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/overview" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientAnalyticsOverview />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/jobs" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientJobsAnalytics />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/hiring" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientHiringAnalytics />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/payments" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientPaymentAnalytics />
-                      </RouteGuard>
-                    } />
-                    <Route path="/dashboard/client/analytics/professionals" element={
-                      <RouteGuard requiredRole="client">
-                        <ClientProfessionalAnalytics />
-                      </RouteGuard>
-                    } />
+                    <Route path="/dashboard/client/analytics" element={<ClientAnalyticsOverview />} />
+                    <Route path="/dashboard/client/analytics/overview" element={<ClientAnalyticsOverview />} />
+                    <Route path="/dashboard/client/analytics/jobs" element={<ClientJobsAnalytics />} />
+                    <Route path="/dashboard/client/analytics/hiring" element={<ClientHiringAnalytics />} />
+                    <Route path="/dashboard/client/analytics/payments" element={<ClientPaymentAnalytics />} />
+                    <Route path="/dashboard/client/analytics/professionals" element={<ClientProfessionalAnalytics />} />
                     
                     {/* Test Pages */}
                     <Route path="/color-preview" element={<ColorPreview />} />
