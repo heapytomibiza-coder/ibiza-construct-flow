@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { User, Briefcase, Shield } from 'lucide-react';
 import { useCurrentSession } from '../../../packages/@contracts/clients/auth';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function HeaderRoleSwitcher() {
   const { active: activeRole, roles } = useRole();
@@ -14,6 +15,7 @@ export default function HeaderRoleSwitcher() {
   const [switching, setSwitching] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleRoleSwitch = async (newRole: 'client' | 'professional' | 'admin') => {
     if (activeRole === newRole || switching) return;
@@ -21,15 +23,18 @@ export default function HeaderRoleSwitcher() {
     setSwitching(true);
     try {
       await switchActiveRole(newRole);
+
+      // 🔥 CRITICAL: clear stale data tied to previous role
+      queryClient.invalidateQueries();
       
       toast({
         title: "Role switched",
         description: `You're now in ${newRole === 'client' ? 'client' : newRole === 'professional' ? 'professional' : 'admin'} mode`
       });
       
-      // Navigate to appropriate dashboard
+      // Always force navigation to correct lane
       const dashboardRoute = getDashboardRoute(newRole);
-      navigate(dashboardRoute);
+      navigate(dashboardRoute, { replace: true });
     } catch (error: any) {
       toast({
         title: "Error switching role",
@@ -45,7 +50,6 @@ export default function HeaderRoleSwitcher() {
     return <div className="h-8 w-20 bg-muted animate-pulse rounded-full" />;
   }
 
-  // If user only has one role, show a simple badge
   if (roles.length < 2) {
     return (
       <Badge variant="secondary" className="flex items-center gap-1">
@@ -69,7 +73,6 @@ export default function HeaderRoleSwitcher() {
     );
   }
 
-  // If user has multiple roles, show segmented control
   return (
     <div className="inline-flex rounded-full bg-muted p-1">
       {roles.includes('client') && (
