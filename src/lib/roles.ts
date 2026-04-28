@@ -182,13 +182,50 @@ export type InitialRouteReason =
   | 'no_display_name'
   | 'onboarding_incomplete'
   | 'admin_dashboard'
+  | 'choose_role'
   | 'pro_needs_onboarding'
   | 'pro_dashboard'
   | 'client_dashboard';
 
+async function getProfessionalDashboardOrOnboardingRoute(userId: string) {
+  const [{ data: proProfile, error: proErr }, { data: services, error: svcErr }] = await Promise.all([
+    supabase
+      .from('professional_profiles')
+      .select('onboarding_phase, verification_status')
+      .eq('user_id', userId)
+      .maybeSingle(),
+    supabase
+      .from('professional_services')
+      .select('id')
+      .eq('professional_id', userId)
+      .eq('is_active', true)
+      .limit(1),
+  ]);
+
+  // Fail-safe: treat errors as incomplete (deny pro dashboard access)
+  if (proErr || svcErr || !proProfile) {
+    return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' as const };
+  }
+
+  const phase = (proProfile as any)?.onboarding_phase ?? null;
+  const verStatus = (proProfile as any)?.verification_status ?? 'pending';
+  const activeServicesCount = services?.length ?? 0;
+
+  const hasProDashboardAccess = canAccessProDashboard(phase, verStatus, activeServicesCount);
+
+  if (!hasProDashboardAccess) {
+    return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' as const };
+  }
+
+  return { path: '/dashboard/pro', reason: 'pro_dashboard' as const };
+}
+
 /**
- * Single source of truth for initial dashboard routing
- * Checks profile completeness, role, and onboarding status
+ * Single source of truth for initial dashboard routing.
+ *
+ * Important: this resolver must respect profiles.active_role for dual-role users.
+ * A user who has both client and professional roles should not be pushed into the
+ * professional lane just because the professional role exists.
  */
 export async function getInitialDashboardRoute(
   userId: string
@@ -198,13 +235,9 @@ export async function getInitialDashboardRoute(
     .from('profiles')
     .select('display_name, active_role, onboarding_completed')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
-  if (!profile?.display_name) {
-    return { path: '/auth/quick-start', reason: 'no_display_name' };
-  }
-
-  // 2) Get user roles
+  // 2) Get user roles before deciding a fallback lane
   const { data: rolesData } = await supabase
     .from('user_roles')
     .select('role')
@@ -212,9 +245,17 @@ export async function getInitialDashboardRoute(
 
   const roles = rolesData?.map(r => r.role as Role) || [];
   const hasRole = (r: Role) => roles.includes(r);
+  const profileActiveRole = profile?.active_role as Role | null | undefined;
+  const activeRole: Role | null = profileActiveRole && hasRole(profileActiveRole)
+    ? profileActiveRole
+    : null;
 
-  // 3) Admin takes precedence if active
-  if (hasRole('admin') && profile.active_role === 'admin') {
+  if (!profile?.display_name) {
+    return { path: '/auth/quick-start', reason: 'no_display_name' };
+  }
+
+  // 3) Admin only takes precedence when admin is the active lane.
+  if (activeRole === 'admin') {
     return { path: '/admin', reason: 'admin_dashboard' };
   }
 
@@ -223,48 +264,29 @@ export async function getInitialDashboardRoute(
     return { path: '/auth/quick-start', reason: 'onboarding_incomplete' };
   }
 
-  // 4) Professional with onboarding check
-  if (profile.active_role === 'professional' || hasRole('professional')) {
-    // Fetch profile AND active services count (canonical pro dashboard access check)
-    const [{ data: proProfile, error: proErr }, { data: services, error: svcErr }] = await Promise.all([
-      supabase
-        .from('professional_profiles')
-        .select('onboarding_phase, verification_status')
-        .eq('user_id', userId)
-        .maybeSingle(),
-      supabase
-        .from('professional_services')
-        .select('id')
-        .eq('professional_id', userId)
-        .eq('is_active', true)
-        .limit(1),
-    ]);
-
-    // Fail-safe: treat errors as incomplete (deny pro dashboard access)
-    if (proErr || svcErr) {
-      return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
-    }
-
-    // No professional profile yet = needs onboarding
-    if (!proProfile) {
-      return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
-    }
-
-    const phase = (proProfile as any)?.onboarding_phase ?? null;
-    const verStatus = (proProfile as any)?.verification_status ?? 'pending';
-    const activeServicesCount = services?.length ?? 0;
-
-    // Full pro access requires: verified AND phaseComplete AND 1 active service (canonical helper)
-    const hasProDashboardAccess = canAccessProDashboard(phase, verStatus, activeServicesCount);
-
-    if (!hasProDashboardAccess) {
-      return { path: '/onboarding/professional', reason: 'pro_needs_onboarding' };
-    }
-    
-    return { path: '/dashboard/pro', reason: 'pro_dashboard' };
+  // 5) Respect the explicitly active lane for dual-role users.
+  if (activeRole === 'client') {
+    return { path: '/dashboard/client', reason: 'client_dashboard' };
   }
 
-  // 5) Default to client
+  if (activeRole === 'professional') {
+    return getProfessionalDashboardOrOnboardingRoute(userId);
+  }
+
+  // 6) If active_role is missing/stale, choose the safest clear route.
+  if (roles.length > 1) {
+    return { path: '/role-switcher', reason: 'choose_role' };
+  }
+
+  if (hasRole('professional')) {
+    return getProfessionalDashboardOrOnboardingRoute(userId);
+  }
+
+  if (hasRole('admin')) {
+    return { path: '/admin', reason: 'admin_dashboard' };
+  }
+
+  // 7) Default to client only when there is no better role context.
   return { path: '/dashboard/client', reason: 'client_dashboard' };
 }
 
